@@ -27,7 +27,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at: NOW, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const ctx = (): StampContext => ({
-  at: NOW, device: 'd0', vault: 'personal', zone: TZ,
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ),
   seq: () => seq++, id: () => `i${seq}`,
 });
 const write = (prior: State, offered: AppEvent[]): State =>
@@ -299,7 +299,7 @@ test('a new date in bulk is the same resolution a person makes by hand', () => {
   s = write(s, [ev('suspense.set', 'A', { at: '2026-07-05T12:00:00.000Z' })]);
   s = write(s, [ev('clock.set', 'B', { clockKind: 'due', at: '2026-09-01T12:00:00.000Z', source: 'detail:due' })]);
 
-  const params = { dayKey: '2026-08-20', nowIso: NOW, zone: TZ };
+  const params = { dayKey: '2026-08-20', nowIso: NOW, zone: TZ, day: atMidnight(TZ) };
   // B's date has NOT gone by, so it is not eligible. Setting a new date on
   // something whose date is still ahead is an edit, not a resolution, and doing
   // it to a whole range because those items happened to be in it would overwrite
@@ -433,7 +433,7 @@ test('the same holds for a bulk new date — the verb that shipped broken', () =
       payload: { clockKind: 'due', at: '2026-07-01T12:00:00.000Z', source: 'detail:due' },
     } as AppEvent)));
     const items = ids.map(i => session.state().nodes.get(i)!);
-    const params = { dayKey: '2026-08-20', nowIso: NOW, zone: TZ };
+    const params = { dayKey: '2026-08-20', nowIso: NOW, zone: TZ, day: atMidnight(TZ) };
     const plan = planBulk(session.state(), items, 'new-date', params, 'three passed dates');
     assert.equal(plan.eligibleNow, 3);
 

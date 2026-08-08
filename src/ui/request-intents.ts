@@ -13,8 +13,9 @@ import type { AppEvent, NodeId } from '../events.ts';
 import type { NodeState, State } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { TIMER_CHOICES } from '../timer.ts';
-import { endOfLocalDay, atMidnight} from '../time.ts';
+import { endOfLocalDay} from '../time.ts';
 import { nextSlotOccurrence, parseSlot, slotOf, type SlotDay } from '../requests.ts';
+import { isBoundaryHour } from '../day.ts';
 
 const base = (ctx: StampContext, kind: string, node: string | null, payload: unknown): AppEvent => ({
   id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
@@ -25,7 +26,7 @@ const base = (ctx: StampContext, kind: string, node: string | null, payload: unk
  *  the end of today — the same-day boundary every other cure uses. */
 const declineReturnAt = (ctx: StampContext, state: State): string => {
   const day = slotOf(state);
-  return day ? nextSlotOccurrence(day, ctx.at, ctx.zone) : endOfLocalDay(ctx.at, atMidnight(ctx.zone), 0);
+  return day ? nextSlotOccurrence(day, ctx.at, ctx.zone) : endOfLocalDay(ctx.at, ctx.day, 0);
 };
 
 /** The one write shape for a decline: the record, then the deliberate park.
@@ -85,3 +86,16 @@ export const setTimerLengthEvents = (ctx: StampContext, minutes: number): AppEve
   TIMER_CHOICES.includes(minutes)
     ? [base(ctx, 'timer.length.set', null, { minutes })]
     : [];
+
+/**
+ * Say when your day ends (V2 stage 5). The timer-length shape exactly, and
+ * refused the same way: an hour outside 0–11 declines to build an event rather
+ * than writing a number nobody chose into the arithmetic behind every "today".
+ *
+ * The fold refuses it a second time, deliberately. This intent guards the
+ * SURFACE; the fold guards the STORE, which also takes events from another
+ * device and from an imported log — and a guarantee enforced only at the place
+ * that happens to be convenient is not enforced.
+ */
+export const setDayBoundaryEvents = (ctx: StampContext, hour: number): AppEvent[] =>
+  isBoundaryHour(hour) ? [base(ctx, 'day.boundary.set', null, { hour })] : [];

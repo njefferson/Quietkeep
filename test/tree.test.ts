@@ -18,6 +18,7 @@ import {
 import { stalled } from '../src/review.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent, NodeKind } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const NOW = '2026-07-29T18:00:00.000Z';
 
@@ -31,6 +32,7 @@ const mk = (id: string, kind: string, title = id, parent?: string): AppEvent =>
 const ctx = {
   id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0',
   seq: () => seq++, zone: 'America/Denver',
+  day: atMidnight('America/Denver'),
 };
 
 // --- cycles, which are the whole reason this module exists ------------------

@@ -42,6 +42,7 @@ import { anchors } from '../src/anchors.ts';
 import { toCalendar } from '../src/ics.ts';
 import { people } from '../src/people.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-03T18:00:00.000Z';
@@ -50,7 +51,7 @@ let cached: State | null = null;
 async function store(): Promise<State> {
   if (cached) return cached;
   let n = 0, s = 0;
-  const ctx = { at: NOW, device: 'member', vault: 'personal', zone: TZ, seq: () => s++, id: () => `mb${n++}` };
+  const ctx = { at: NOW, device: 'member', vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => s++, id: () => `mb${n++}` };
   cached = fold(admit(await bigSampleEvents(ctx, NOW), fold([]), gateOptionsFor(TZ)));
   return cached;
 }

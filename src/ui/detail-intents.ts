@@ -172,10 +172,10 @@ export const weightEvents = (ctx: StampContext, node: string, weight: string): A
  * choice adds no coverage and removes none.
  */
 export const chooseTodayEvents = (ctx: StampContext, node: string): AppEvent[] =>
-  [base(ctx, 'today.chosen', node, { day: localDayKey(ctx.at, atMidnight(ctx.zone)) })];
+  [base(ctx, 'today.chosen', node, { day: localDayKey(ctx.at, ctx.day) })];
 
 export const releaseTodayEvents = (ctx: StampContext, node: string): AppEvent[] =>
-  [base(ctx, 'today.released', node, { day: localDayKey(ctx.at, atMidnight(ctx.zone)) })];
+  [base(ctx, 'today.released', node, { day: localDayKey(ctx.at, ctx.day) })];
 
 /** Turn an optional module on or off (1.6.0 — the first emitters for two
  *  Phase-0 nouns). A decision, recorded; the log viewer already has the words. */
@@ -284,7 +284,7 @@ export function makeRepeatEvents(
   // the kind change with a same-day clock, which would bring a monthly thing
   // back this evening — legal, but wrong.
   out.push(base(ctx, 'clock.set', node, {
-    clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), intervalDays), source: 'detail:repeat',
+    clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.day, intervalDays), source: 'detail:repeat',
   }));
   return out;
 }

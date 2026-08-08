@@ -19,6 +19,7 @@ import { nextUp } from '../src/nextup.ts';
 import { waitingOnAnyone } from '../src/people.ts';
 import { setTrackRoleEvents, setSuspenseEvents, linkPersonEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -35,7 +36,7 @@ const clocked = (id: string, at = NOW): AppEvent =>
   ev('clock.set', id, { clockKind: 'review', at, source: 't' });
 
 const ctx = {
-  id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ,
+  id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ),
 };
 /** Stamped explicitly, so a shard's device and seq can be set. */
 const mkAt = (id: string, title: string, at: string, device: string, sq: number): AppEvent =>

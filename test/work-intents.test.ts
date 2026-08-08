@@ -17,6 +17,7 @@ import { fold, type State } from '../src/fold.ts';
 import { admit, isSilent } from '../src/gate.ts';
 import { biteEvents } from '../src/ui/work-intents.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-05T20:20:00.000Z';
@@ -24,7 +25,7 @@ const NOW = '2026-08-05T20:20:00.000Z';
 let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown, at = NOW): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
-const ctx = { id: () => `b${seq}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ };
+const ctx = { id: () => `b${seq}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ) };
 const apply = (state: State, events: AppEvent[]): State =>
   events.length === 0 ? state : fold(admit(events, state), state);
 

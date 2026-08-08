@@ -31,6 +31,7 @@ const ctx = () => ({
   id: () => `01K0000000000000000000${String(cn++).padStart(2, '0')}`,
   vault: 'personal', at: '2026-07-28T12:00:00.000Z', device: 'd0', seq: () => n++,
   zone: 'America/Denver',
+  day: atMidnight('America/Denver'),
 });
 
 let n = 0;

@@ -19,6 +19,7 @@ import { rangeChoices } from '../src/range.ts';
 import { releaseEvents, reclaimEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const AGO = '2026-07-01T15:00:00.000Z';
@@ -28,7 +29,7 @@ let seq = 9000;
 const ev = (kind: string, node: string | null, payload: unknown): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at: AGO, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const ctx = (): StampContext =>
-  ({ at: AGO, device: 'd0', vault: 'personal', zone: TZ, seq: () => seq++, id: () => `s${seq++}` } as StampContext);
+  ({ at: AGO, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => seq++, id: () => `s${seq++}` } as StampContext);
 const write = (prior: State, offered: AppEvent[]): State =>
   fold(admit(offered, prior, gateOptionsFor(TZ)), prior);
 

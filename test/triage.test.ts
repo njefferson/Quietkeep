@@ -27,7 +27,7 @@ const at = '2026-07-28T14:00:00.000Z';
 // A NON-UTC zone, deliberately: end-of-UTC-day equals end-of-local-day only in
 // UTC, so a suite pinned to UTC cannot see a whole class of clock bug (V-13).
 const ctx = (): StampContext => ({
-  at, device: 'd0', vault: 'personal', zone: 'America/Denver',
+  at, device: 'd0', vault: 'personal', zone: 'America/Denver', day: atMidnight('America/Denver'),
   seq: () => seq++, id: () => `i${seq}-${Math.floor(seq)}`,
 });
 
@@ -182,7 +182,7 @@ test('a do-now routed in the evening returns THAT evening, not the next day (V-1
   // that does not come back until the following afternoon.
   const evening = '2026-07-29T02:30:00.000Z';
   const tz = 'America/Denver';
-  const c: StampContext = { at: evening, device: 'd0', vault: 'personal', zone: tz,
+  const c: StampContext = { at: evening, device: 'd0', vault: 'personal', zone: tz, day: atMidnight(tz),
     seq: () => seq++, id: () => `tz${seq}` };
   let s = fold(admit([{
     id: c.id(), vault: 'personal', at: evening, device: 'd0', seq: c.seq(),

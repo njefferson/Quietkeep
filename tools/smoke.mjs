@@ -665,6 +665,42 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(logLenAfterSearch, logLenBeforeSearch, 'searching and opening a result wrote nothing to the log');
   await fillSearch('');            // leave the box as we found it
 
+  console.log('\nWhen your day ends (V2 stage 5)');
+  // Everything meaning "today" asks this, and a preference you must restate
+  // after every reload is not a preference — so the RELOAD is the assertion,
+  // not the setting.
+  //
+  // Placed at a section boundary on purpose. It first sat mid-way through the
+  // Do-now flow, where the reload wiped the offer a later line was waiting on
+  // and timed out the whole walk. A block that reloads the page belongs where
+  // nothing in flight depends on what was on screen.
+  await tpage.click('#open-about');
+  await expandGroups(tpage);
+  await tpage.selectOption('#day-boundary', '3');
+  await tpage.click('#day-boundary-set');
+  await tpage.waitForFunction(() => /3am/.test(
+    document.querySelector('#day-boundary-note')?.textContent ?? ''));
+  await tpage.click('#about-close');
+  await tpage.reload();
+  await tpage.waitForSelector('body[data-ready=true]');
+  await tpage.click('#open-about');
+  await expandGroups(tpage);
+  const keptBoundary = await tpage.evaluate(() => ({
+    value: document.querySelector('#day-boundary')?.value,
+    note: document.querySelector('#day-boundary-note')?.textContent ?? '',
+  }));
+  is(keptBoundary.value, '3', 'the day boundary survives a full reload');
+  is(/3am/.test(keptBoundary.note), true,
+    `and the surface says so in words ("${keptBoundary.note}")`);
+  is(/you|night|late|sleep|bed/i.test(keptBoundary.note), false,
+    'and says nothing whatever about the person keeping those hours');
+  // Back to midnight, so nothing after this walks a shifted day.
+  await tpage.selectOption('#day-boundary', '0');
+  await tpage.click('#day-boundary-set');
+  await tpage.waitForFunction(() => /midnight/i.test(
+    document.querySelector('#day-boundary-note')?.textContent ?? ''));
+  await tpage.click('#about-close');
+
   console.log('\nDo now — the timer asks, it does not assume');
   // ITS OWN item. The one routed above is left alone deliberately: a later
   // section asserts that an item due today is filed under "Ready now", and

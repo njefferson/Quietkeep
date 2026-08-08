@@ -13,6 +13,7 @@ import {
 } from '../src/timer.ts';
 import { setTimerLengthEvents } from '../src/ui/request-intents.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 let n = 0;
 const ev = (kind: string, node: string | null, payload: unknown, over: Partial<AppEvent> = {}): AppEvent => ({
@@ -23,6 +24,7 @@ const write = (prior: State, offered: AppEvent[]): State => fold(admit(offered, 
 const ctx = () => ({
   id: () => `c${n++}`, vault: 'personal', at: '2026-08-02T12:00:00.000Z',
   device: 'd0', seq: () => n++, zone: 'America/Denver',
+  day: atMidnight('America/Denver'),
 });
 
 test('nobody has chosen: the cheap default runs, and it is the two minutes', () => {

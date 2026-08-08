@@ -21,6 +21,7 @@ import { heldGroups, heldStatus } from '../src/held.ts';
 import { workSurface } from '../src/nextup.ts';
 import type { AppEvent, ReplanChoice } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';                    // never UTC (V-13)
 const NOW = '2026-07-29T18:00:00.000Z';         // 12:00 on the 29th, Denver
@@ -30,7 +31,7 @@ const ev = (kind: string, node: string, payload: unknown, at = '2026-07-01T12:00
   ({ id: `e${seq}`, vault: 'personal', at, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const st = (...events: AppEvent[]): State => fold(events);
 const ctx = (): StampContext => ({
-  at: NOW, device: 'd0', vault: 'personal', zone: TZ,
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ),
   seq: () => seq++, id: () => `r${seq}`,
 });
 const opts = gateOptionsFor(TZ);

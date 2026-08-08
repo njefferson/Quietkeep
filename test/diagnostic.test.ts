@@ -17,6 +17,7 @@ import { diagnosticReport, findings, kindCounts, clockCounts, pressureBands, typ
 import { lastCopy } from '../src/copies.ts';
 import { NODE_KINDS } from '../src/events.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-03T18:00:00.000Z';

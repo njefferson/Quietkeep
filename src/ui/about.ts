@@ -48,10 +48,11 @@ import { copyDayWords, copyNote, lastCopy } from '../copies.ts';
 import { KDF_ITERATIONS, PASSPHRASE_WARNING, deriveKey, journalEntries, journalSeal, newSalt } from '../journal.ts';
 import { open as unseal, seal } from '../seal.ts';
 import { entryEvents, sealJournalEvents } from './journal-intents.ts';
-import { setTimerLengthEvents } from './request-intents.ts';
+import { setTimerLengthEvents, setDayBoundaryEvents } from './request-intents.ts';
 import { setSlotEvents } from './request-intents.ts';
 import { anchors, anchorWords, lastFiring, recurrenceOf } from '../anchors.ts';
 import { defineAnchorEvents, fireAnchorEvents } from './anchor-intents.ts';
+import { boundaryOf, boundaryWords } from '../day.ts';
 
 const SEEN = 'about.seen';
 const FIRST_GRANT = 'v00.firstGrant';
@@ -1365,6 +1366,33 @@ export async function mountAbout(
         .then(() => { paintTimer(); try { onChange?.(); } catch { /* a surface */ } })
         .catch((err: unknown) => {
           timerNote.textContent = `Not set — ${(err as Error).message}`;
+        });
+    });
+  }
+
+  // WHEN YOUR DAY ENDS (V2 stage 5). The timer-length shape, and set in the same
+  // place for the same reason: calmly, and never at the moment it would matter.
+  //
+  // Nothing proposes an hour and nothing detects one. Working out somebody's day
+  // boundary from when they last wrote something is an inference about a person
+  // from their logs, and this app does not have those — the same rule that
+  // governs weight, capacity and the minimum state.
+  const dayBound = document.querySelector<HTMLSelectElement>('#day-boundary');
+  const dayBoundSet = document.querySelector<HTMLButtonElement>('#day-boundary-set');
+  const dayBoundNote = document.querySelector<HTMLElement>('#day-boundary-note');
+  if (dayBound && dayBoundSet && dayBoundNote) {
+    const paintBoundary = (): void => {
+      const hour = boundaryOf(session.state());
+      dayBound.value = String(hour);
+      dayBoundNote.textContent = boundaryWords(hour);
+    };
+    paintBoundary();
+    dayBoundSet.addEventListener('click', () => {
+      const chosen = Number(dayBound.value);
+      void session.commit(ctx => setDayBoundaryEvents(ctx, chosen))
+        .then(() => { paintBoundary(); try { onChange?.(); } catch { /* a surface */ } })
+        .catch((err: unknown) => {
+          dayBoundNote.textContent = `Not set — ${(err as Error).message}`;
         });
     });
   }

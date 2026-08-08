@@ -543,6 +543,55 @@ were promoted together 2026-08-06. `staging` carries 1.26.0, 1.27.0, 1.27.1,
 - **https://staging.quietkeep.pages.dev** — the candidate, **1.36.0**
 - **https://quietkeep.pages.dev** — production, **1.25.0**
 
+**Stage 5 is in flight on `staging`, unreleased — the day the person is in.**
+
+Every clock here is day-granular and every writer builds it with
+`endOfLocalDay`, which means 23:59:59. So "today" ended at midnight for
+everybody, and at 00:30 the app had already rolled over: work nobody had
+stopped doing became a date that had gone by, law 3 turned each one into a
+replan card, and the header clock's remainder — the gradient this whole app
+leans on — jumped from "0h 12m left" to "23h 59m left" at the stroke.
+**Delayed circadian phase is the norm rather than the exception in this
+population**, so midnight is not a neutral default; it is somebody else's,
+imposed, and it fired nightly.
+
+`day.boundary.set{hour}`, 0–11, folding to `State.dayBoundaryHour` under
+state-level LWW. **Refused, never clamped**: an hour outside the range folds to
+null rather than to the nearest legal value, because clamping 14 to 11 would
+have the app invent a boundary and then run every "today" in the product off
+it. **Null reads as midnight**, so an unset boundary cannot change one existing
+answer — the only honest way to move something this load-bearing.
+
+**`DayShape { zone, boundary }`, and it is REQUIRED.** `zone` alone answers what
+wall time it is; it does not answer which day you are in. A bare `tz: string`
+let ~85 call sites take the first fact and silently assume the second. Making
+the pair required means the COMPILER enumerates the sites — 123 of them — rather
+than a list somebody writes and forgets, which is the same lesson three separate
+defects taught this run. Done in two passes: one mechanical and
+behaviour-preserving, with the whole suite passing untouched as the proof it
+hides nothing, then one deliberate. `atMidnight(` at a call site is a visible
+"not yet threaded" marker that grep can count; 52 remain and the number only
+falls.
+
+Threaded so far: the header clock, the replan surface and everything that asks
+what has gone by (held list, dates-gone-by range, re-entry count, bulk verbs),
+and **the whole write path** — `StampContext` carries `day`, so every intent
+that builds a date gets it from the stamp rather than re-reading state, on the
+same rule as `at`: one commit is one moment.
+
+**Three defects on the way.** A DST one caught by an EXISTING test: computing
+the day's end as "the boundary, less one second" asks for 00:00, and in Santiago
+the clocks go forward at midnight, so that lands in the gap an hour off. It now
+names the last whole second directly, which at midnight is character for
+character the request this function always made. One of mine in a test — the
+byte-identical check asserted the result ended `:59:59Z` and failed on Chatham,
+which is UTC+12:45; the assertion was wrong, not the code, and a weaker one
+would have hidden the DST bug rather than surfacing it. It now compares against
+a reimplemented old `endOfLocalDay` across six zones. And a smoke block that
+reloaded the page mid-way through the Do-now flow, wiping the offer a later line
+waited on — the walk TIMED OUT rather than failing an assertion, which is the
+worse failure because it reports nothing about what broke.
+
 **1.36.0 is stage 4's last item: fog is a THIRD failure mode.**
 
 *Fewer things* and *less thinking* are different transformations and the app had

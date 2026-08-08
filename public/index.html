@@ -1671,6 +1671,34 @@
     does, quietly, when its day ends.
   </p>
 
+  <h3 class="about-section">When your day ends</h3>
+  <p class="about-p">
+    Everything in Quietkeep that means <em>today</em> asks this. A day that ends
+    at midnight is the usual answer and it is not everybody&rsquo;s: if you are
+    still going at one in the morning, that is still tonight, and the app should
+    not have decided otherwise an hour ago.
+  </p>
+  <div class="about-actions">
+    <label class="detail-inline" for="day-boundary">Today ends at</label>
+    <select id="day-boundary">
+      <option value="0">midnight</option>
+      <option value="1">1am</option>
+      <option value="2">2am</option>
+      <option value="3">3am</option>
+      <option value="4">4am</option>
+      <option value="5">5am</option>
+      <option value="6">6am</option>
+    </select>
+    <button id="day-boundary-set" type="button" class="ghost">Set when the day ends</button>
+  </div>
+  <p id="day-boundary-note" class="storage-note" role="status" aria-live="polite"></p>
+  <p class="about-p about-caveat">
+    This moves where the day&rsquo;s edge falls. It does not add a time of day to
+    anything &mdash; dates here are still whole days &mdash; and nothing works it
+    out from when you last used the app. Quietkeep has no way of knowing what
+    kind of hours you keep, and would not be right to guess.
+  </p>
+
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">
     When you send something to <em>Do now</em> you can start a timer on it. This

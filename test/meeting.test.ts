@@ -21,6 +21,7 @@ import { logDecisionEvents, removeStakeholderEvents } from '../src/ui/detail-int
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -30,7 +31,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown, at = NOW, device = 'd0'): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at, device, seq: seq++, kind, node, payload } as AppEvent);
 const ctx = (): StampContext => ({
-  at: NOW, device: 'd0', vault: 'personal', zone: TZ,
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ),
   seq: () => seq++, id: () => `i${seq}`,
 });
 const write = (prior: State, offered: AppEvent[]): State =>

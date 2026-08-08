@@ -506,7 +506,7 @@ test('and the real routing intent produces exactly that, end to end', () => {
   // A fixture-shaped approximation of routing would have agreed with either.
   let n = 0;
   const ctx = {
-    at: NOW, device: 'd0', vault: 'personal', zone: DENVER,
+    at: NOW, device: 'd0', vault: 'personal', zone: DENVER, day: atMidnight(DENVER),
     seq: () => n, id: () => `r${n++}`,
   };
   const created = ev('node.created', 'X', { nodeKind: 'action', title: 'brief the boss' });
@@ -544,7 +544,7 @@ test('nine things routed in one afternoon do not become nine events', () => {
   // on a single day, each with an alarm.
   let n = 0;
   const ctx = {
-    at: NOW, device: 'd0', vault: 'personal', zone: DENVER,
+    at: NOW, device: 'd0', vault: 'personal', zone: DENVER, day: atMidnight(DENVER),
     seq: () => n, id: () => `q${n++}`,
   };
   const events: AppEvent[] = [];

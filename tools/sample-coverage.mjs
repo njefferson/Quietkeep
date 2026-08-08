@@ -42,6 +42,7 @@ import { bigSampleEvents } from '../src/big-sample.ts';
 import { EVENT_KINDS, NODE_KINDS } from '../src/events.ts';
 import { admit, gateOptionsFor } from '../src/gate.ts';
 import { fold } from '../src/fold.ts';
+import { atMidnight } from '../src/time.ts';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -111,7 +112,7 @@ const TZ = 'America/Denver';
 const NOW = new Date().toISOString();
 let n = 0, s = 0;
 const ctx = {
-  at: NOW, device: 'coverage', vault: 'personal', zone: TZ,
+  at: NOW, device: 'coverage', vault: 'personal', zone: TZ, day: atMidnight(TZ),
   seq: () => s++, id: () => `c${n++}`,
 };
 

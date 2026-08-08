@@ -18,6 +18,7 @@ import {
 import { botherEvents, answerBotherEvents, ownBotherEvents } from '../src/ui/bother-intents.ts';
 import { unclarified } from '../src/triage.ts';
 import type { AppEvent, Ownership } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -25,7 +26,7 @@ const NOW = '2026-07-29T18:00:00.000Z';
 let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at: NOW, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
-const ctx = { id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ };
+const ctx = { id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ) };
 const apply = (s: State, e: AppEvent[]): State => (e.length ? fold(admit(e, s), s) : s);
 
 /** A worry put down through the app's own control. */

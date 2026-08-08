@@ -28,6 +28,7 @@ import { fold } from '../src/fold.ts';
 import { sampleEvents, type SampleContext } from '../src/sample.ts';
 import { exportAll } from '../src/portability.ts';
 import { MemoryLogStore } from '../src/log-store.ts';
+import { atMidnight } from '../src/time.ts';
 
 const DENVER = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';

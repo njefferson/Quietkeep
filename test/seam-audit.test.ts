@@ -33,7 +33,7 @@ import { declareFeedsEvents } from '../src/ui/detail-intents.ts';
 import { ledgerRowWords, notNowLedger, standingDecline } from '../src/requests.ts';
 import { canHold } from '../src/ui/merge-intents.ts';
 import { anchorWords } from '../src/anchors.ts';
-import { daysWords, everyDaysWords, recordDayWords } from '../src/time.ts';
+import { daysWords, everyDaysWords, recordDayWords , atMidnight} from '../src/time.ts';
 import { renderCsv, renderMarkdown, type DeltaReport } from '../src/delta.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
@@ -57,7 +57,7 @@ const write = (prior: State, offered: AppEvent[]): State =>
 // was undoing, in the test only: the app's session hands out monotonic seqs.
 let gseq = 1000;
 const ctx = (): StampContext => ({
-  at: NOW, device: 'd0', vault: 'personal', zone: TZ,
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ),
   seq: () => gseq++, id: () => `sc${String(n++).padStart(6, '0')}`,
 });
 

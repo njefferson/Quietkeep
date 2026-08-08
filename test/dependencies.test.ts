@@ -19,6 +19,7 @@ import { replanCards, contextWords } from '../src/replan.ts';
 import { declareFeedsEvents, releaseFeedsEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';                    // never UTC (V-13)
 const NOW = '2026-07-29T18:00:00.000Z';         // 12:00 on the 29th, Denver
@@ -29,7 +30,7 @@ const ev = (kind: string, node: string | null, payload: unknown): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at: NOW, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const st = (...events: AppEvent[]): State => fold(events);
 const ctx = (): StampContext => ({
-  at: NOW, device: 'd0', vault: 'personal', zone: TZ, seq: () => seq++, id: () => `x${seq}`,
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => seq++, id: () => `x${seq}`,
 });
 const node = (id: string, title = id): AppEvent => ev('node.created', id, { nodeKind: 'action', title });
 const clock = (id: string, kind: string, days: number): AppEvent =>

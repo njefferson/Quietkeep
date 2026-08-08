@@ -19,6 +19,7 @@ import {
 import { startCommsSweepEvents, stopCommsSweepEvents } from '../src/ui/focus-intents.ts';
 import { doneEvents } from '../src/ui/work.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -28,7 +29,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown, at = NOW): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const ctxAt = (at: string) => ({
-  id: () => 'sweep', vault: 'personal', at, device: 'd0', seq: () => seq++, zone: TZ,
+  id: () => 'sweep', vault: 'personal', at, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ),
 });
 const apply = (state: State, events: AppEvent[]): State =>
   events.length === 0 ? state : fold(admit(events, state), state);

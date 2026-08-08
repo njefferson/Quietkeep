@@ -12,7 +12,7 @@
 import type { AppEvent } from '../events.ts';
 import type { StampContext } from './session.ts';
 import { ARRANGEMENT_FIELD, DEPENDS_FIELD } from '../arrangement.ts';
-import { endOfLocalDay, atMidnight} from '../time.ts';
+import { endOfLocalDay} from '../time.ts';
 
 // Each intents module carries its own `base`, as every sibling here does.
 const base = (ctx: StampContext, kind: string, node: string | null, payload: unknown): AppEvent => ({
@@ -68,7 +68,7 @@ export function confirmArrangementEvents(
   if (Number.isFinite(intervalDays) && (intervalDays as number) > 0) {
     events.push(base(ctx, 'clock.set', node, {
       clockKind: 'review',
-      at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), intervalDays as number),
+      at: endOfLocalDay(ctx.at, ctx.day, intervalDays as number),
       source: 'arrangement:confirmed',
     }));
   }

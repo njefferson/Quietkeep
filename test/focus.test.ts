@@ -19,6 +19,7 @@ import { nextUp } from '../src/nextup.ts';
 import { heldGroups } from '../src/held.ts';
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -32,7 +33,7 @@ const mk = (id: string, title = id): AppEvent =>
 
 const ctxAt = (at: string) => ({
   id: () => `n${seq++}`, vault: 'personal', at, device: 'd0',
-  seq: () => seq++, zone: TZ,
+  seq: () => seq++, zone: TZ, day: atMidnight(TZ),
 });
 const ctx = ctxAt(NOW);
 

@@ -24,6 +24,7 @@ import { reportedBefore } from '../src/delta.ts';
 import { searchHeld } from '../src/search.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-03T18:00:00.000Z';
@@ -38,7 +39,7 @@ const ev = (kind: string, node: string | null, payload: unknown, over: Partial<A
 const write = (prior: State, offered: AppEvent[]): State => fold(admit(offered, prior, gateOptionsFor(TZ)), prior);
 const ctx = (at = NOW, device = 'd0'): StampContext => {
   let s = 0;
-  return { at, device, vault: 'personal', zone: TZ, seq: () => s++, id: () => `c${n++}` };
+  return { at, device, vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => s++, id: () => `c${n++}` };
 };
 
 const withAnchor = (): { state: State; log: AppEvent[] } => {

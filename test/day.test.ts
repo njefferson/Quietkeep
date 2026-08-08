@@ -24,6 +24,8 @@ import {
 } from '../src/time.ts';
 import { clockFace } from '../src/clock.ts';
 import { replanAll } from '../src/replan.ts';
+import { routeEvents } from '../src/ui/triage-intents.ts';
+import type { StampContext } from '../src/ui/session.ts';
 import type { AppEvent } from '../src/events.ts';
 
 /** The day key exactly as it read before the boundary existed — the calendar day
@@ -233,6 +235,41 @@ test('THE REPLAN PILE: work you have not stopped doing is not "gone by" at 00:01
   const fourAm = '2026-08-09T10:00:00.000Z';
   assert.equal(replanAll(theirs, fourAm, TZ).length, 1,
     'after their boundary it has genuinely gone by, and law 3 still holds');
+});
+
+test('THE WRITE PATH: a date the app sets ends when the person s day ends', () => {
+  // Threading the readers is only half of it. Every date this app writes is
+  // built with `endOfLocalDay`, so without this a clock set at 9pm still expired
+  // at midnight — the reader would correctly report "not gone by" about a clock
+  // that had already been given the wrong instant.
+  //
+  // It rides on the STAMP rather than being read from state inside each intent,
+  // for the same reason `at` does: one commit is one moment, and an intent free
+  // to re-read the boundary is free to disagree with the surface that offered it.
+  const at = '2026-08-08T20:00:00.000Z'; // 14:00 in Denver
+  let n = 0;
+  const ctxFor = (boundary: number): StampContext => ({
+    at, device: 'd0', vault: 'personal', zone: TZ,
+    day: { zone: TZ, boundary },
+    seq: () => n++, id: () => `w${n++}`,
+  });
+
+  const midnight = routeEvents(ctxFor(0), 'A', 'next-action', 'action', [])
+    .find(e => e.kind === 'clock.set');
+  const theirs = routeEvents(ctxFor(3), 'A', 'next-action', 'action', [])
+    .find(e => e.kind === 'clock.set');
+  assert.ok(midnight && theirs, 'routing writes a clock either way');
+
+  const midnightAt = (midnight!.payload as { at: string }).at;
+  const theirsAt = (theirs!.payload as { at: string }).at;
+  // Routing to a next action dates it a day out, so these are the 9th and the
+  // 10th — the offsets are the route's business and unchanged. What this asserts
+  // is the EDGE: the same date now ends three hours later, at the end of the day
+  // the person is actually in.
+  assert.equal(midnightAt, '2026-08-10T05:59:59.000Z', '23:59:59 local, exactly as before');
+  assert.equal(theirsAt, '2026-08-10T08:59:59.000Z', '02:59:59 the next morning — their day');
+  assert.equal(Date.parse(theirsAt) - Date.parse(midnightAt), 3 * 3_600_000,
+    'three hours later, which is the boundary and nothing else');
 });
 
 test('nothing observes it — there is no function here that reads a log and proposes an hour', () => {

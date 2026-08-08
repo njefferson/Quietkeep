@@ -61,7 +61,7 @@ async function built(): Promise<{ events: AppEvent[]; admitted: AppEvent[]; stat
   if (cached) return cached;
   let n = 0, s = 0;
   const ctx = {
-    at: NOW, device: 'big-sample', vault: 'personal', zone: TZ,
+    at: NOW, device: 'big-sample', vault: 'personal', zone: TZ, day: atMidnight(TZ),
     seq: () => s++, id: () => `g${n++}`,
   };
   const events = await bigSampleEvents(ctx, NOW);
@@ -137,7 +137,7 @@ test('big-sample: it is big enough to clear every cap in the app', async () => {
 
 test('big-sample: two runs are identical, or a finding cannot be reproduced', async () => {
   let n = 0, s = 0;
-  const mk = () => ({ at: NOW, device: 'd', vault: 'personal', zone: TZ, seq: () => s++, id: () => `x${n++}` });
+  const mk = () => ({ at: NOW, device: 'd', vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => s++, id: () => `x${n++}` });
   const a = await bigSampleEvents(mk(), NOW);
   n = 0; s = 0;
   const b = await bigSampleEvents(mk(), NOW);
@@ -151,7 +151,7 @@ test('big-sample: two runs are identical, or a finding cannot be reproduced', as
 test('big-sample: generated a year apart it describes the same relative situation', async () => {
   // The property `sample.test.ts` pins for the small set, at this scale. A
   // fixture with a literal date in it exercises the wrong code paths.
-  const mk = () => { let n = 0, s = 0; return { at: NOW, device: 'd', vault: 'personal', zone: TZ, seq: () => s++, id: () => `y${n++}` }; };
+  const mk = () => { let n = 0, s = 0; return { at: NOW, device: 'd', vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => s++, id: () => `y${n++}` }; };
   const A = '2026-08-03T18:00:00.000Z', B = '2027-12-11T18:00:00.000Z';
   const one = fold(admit(await bigSampleEvents({ ...mk(), at: A }, A), fold([]), gateOptionsFor(TZ)));
   const two = fold(admit(await bigSampleEvents({ ...mk(), at: B }, B), fold([]), gateOptionsFor(TZ)));

@@ -16,6 +16,7 @@ import { OFFER_CAP, offerNow } from '../src/offer.ts';
 import { raisePebbleEvents } from '../src/ui/load-intents.ts';
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-02T18:00:00.000Z';
@@ -282,7 +283,7 @@ test('the wish still rides along on a heavy day', () => {
 test('the emitter carries `affects` through the gate and onto the row', () => {
   const ctx = {
     id: () => 'PB', vault: 'personal', at: '2026-08-02T12:00:00.000Z',
-    device: 'd0', seq: () => 900, zone: TZ,
+    device: 'd0', seq: () => 900, zone: TZ, day: atMidnight(TZ),
   };
   const events = raisePebbleEvents(ctx, 'PB', 'the wall of it', 'rock', ['w1']);
   const raised = events.find(e => e.kind === 'pebble.raised');
@@ -300,7 +301,7 @@ test('the payload is a COPY — the caller cannot rewrite history later', () => 
   // of a live list would rewrite an event that has already been written down.
   const ctx = {
     id: () => 'PB', vault: 'personal', at: '2026-08-02T12:00:00.000Z',
-    device: 'd0', seq: () => 901, zone: TZ,
+    device: 'd0', seq: () => 901, zone: TZ, day: atMidnight(TZ),
   };
   const mine = ['w1'];
   const events = raisePebbleEvents(ctx, 'PB', 'the wall of it', 'rock', mine);
@@ -315,7 +316,7 @@ test('a weight said about work is STILL not a demand, and still not a score', ()
   // on the task. It may not. A pebble is demand-free by construction — the gate
   // refuses a clock on one — and nothing about the work changes.
   const s = write(withWork(), raisePebbleEvents(
-    { id: () => 'PB', vault: 'personal', at: '2026-08-02T12:00:00.000Z', device: 'd0', seq: () => 902, zone: TZ },
+    { id: () => 'PB', vault: 'personal', at: '2026-08-02T12:00:00.000Z', device: 'd0', seq: () => 902, zone: TZ, day: atMidnight(TZ) },
     'PB', 'the wall of it', 'boulder', ['w1'],
   ));
   const work = s.nodes.get('w1')!;

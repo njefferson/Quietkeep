@@ -38,7 +38,7 @@ const routed = (ctx: StampContext, node: string, route: ClarifyRoute): AppEvent 
 // counts calendar days, so a DST changeover in between does not move it an hour.
 const clockInDays = (ctx: StampContext, node: string, days: number, source: string): AppEvent =>
   base(ctx, 'clock.set', node, {
-    clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), days), source,
+    clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.day, days), source,
   });
 
 const menu = (ctx: StampContext, node: string): AppEvent =>

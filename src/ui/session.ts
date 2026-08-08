@@ -17,6 +17,8 @@ import { ulid, newDeviceId } from '../ids.ts';
 import { DexieLogStore } from '../dexie-store.ts';
 import type { LogStore } from '../log-store.ts';
 import { SNAPSHOT_LAG_LIMIT, loadState, snapshotFrom, snapshotLag } from '../snapshot.ts';
+import { boundaryOf } from '../day.ts';
+import type { DayShape } from '../time.ts';
 
 const DEVICE_KEY = 'device.id';
 
@@ -67,6 +69,19 @@ export interface StampContext {
   vault: VaultId;
   /** So an intent can clock things to the end of the user's day, not UTC's. */
   zone: string;
+  /**
+   * The day this commit is happening in — the zone AND where the person's day
+   * ends (V2 stage 5), in the shape every date helper takes.
+   *
+   * It rides on the STAMP rather than being read from state inside each intent,
+   * for the same reason `at` and `zone` do: one commit is one moment, and an
+   * intent that re-read the boundary would be free to disagree with the surface
+   * that offered it.
+   *
+   * `zone` above stays because plenty of intents want the wall clock and not the
+   * day — but anything building a DATE takes this, and cannot take half of it.
+   */
+  day: DayShape;
   seq: () => number;
   id: () => string;
 }
@@ -104,6 +119,7 @@ export async function openSession(
       device: device!,
       vault,
       zone,
+      day: { zone, boundary: boundaryOf(state) },
       seq: () => seq++,
       id: () => ulid(now()),
     };

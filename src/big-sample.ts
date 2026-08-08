@@ -462,6 +462,13 @@ export async function bigSampleEvents(
   stamp('replan.resolved', replanned, { choice: 'new-date' });
   clock(replanned, 'due', 5);
 
+  // WHEN THIS SAMPLE'S DAY ENDS (V2 stage 5). Midnight, stated rather than left
+  // unsaid — the sample demonstrates the noun without moving the demonstration's
+  // own day, so every date in the set reads exactly as it did before the
+  // boundary existed. A sample that quietly ran on a 3am day would be showing
+  // arithmetic nobody looking at it had chosen.
+  stamp('day.boundary.set', null, { hour: 0 });
+
   // --- focus, interruption, and the resume card -----------------------------
   stamp('timer.length.set', null, { minutes: 25 });
   const focused = projects[6]!;

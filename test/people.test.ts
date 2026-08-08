@@ -17,6 +17,7 @@ import {
 } from '../src/people.ts';
 import { linkPersonEvents, closeWaitingEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -32,7 +33,7 @@ const clocked = (id: string): AppEvent =>
   ev('clock.set', id, { clockKind: 'review', at: NOW, source: 't' });
 
 const ctxAt = (at: string) => ({
-  id: () => `x${seq++}`, vault: 'personal', at, device: 'd0', seq: () => seq++, zone: TZ,
+  id: () => `x${seq++}`, vault: 'personal', at, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ),
 });
 const ctx = ctxAt(NOW);
 const apply = (state: State, events: AppEvent[]): State =>

@@ -22,7 +22,7 @@ import { DEMAND_FREE_KINDS, type AppEvent, type ClockKind, type NodeId } from '.
 import { fold, noteOf, type NodeState, type State } from '../fold.ts';
 import { wouldCycle } from '../dependencies.ts';
 import { choosable } from '../composed.ts';
-import { localDayKey, atMidnight} from '../time.ts';
+import { localDayKey} from '../time.ts';
 import { heldNodes } from '../gate.ts';
 import { standingDecline } from '../requests.ts';
 import type { StampContext } from './session.ts';
@@ -343,7 +343,7 @@ export function mergePlan(
   // Its place in TODAY, and only when that place is today. A stale value is
   // precisely what ADR-0051 makes uncomputable, so it is never carried; the net
   // count is unchanged, so the cap cannot be exceeded.
-  const todayKey = localDayKey(ctx.at, atMidnight(ctx.zone));
+  const todayKey = localDayKey(ctx.at, ctx.day);
   if (source.todayFor === todayKey && target.todayFor !== todayKey && choosable(target)) {
     out.push(base(ctx, 'today.chosen', target.id, { day: todayKey }));
   }

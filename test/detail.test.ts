@@ -26,7 +26,7 @@ const AT = '2026-07-29T18:00:00.000Z';          // 12:00 on the 29th, Denver
 
 let seq = 0;
 const ctx = (zone = TZ): StampContext => ({
-  at: AT, device: 'd0', vault: 'personal', zone,
+  at: AT, device: 'd0', vault: 'personal', zone, day: atMidnight(zone),
   seq: () => seq++, id: () => `d${seq}`,
 });
 

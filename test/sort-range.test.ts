@@ -40,7 +40,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown, at = NOW): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const ctx = (): StampContext => ({
-  at: NOW, device: 'd0', vault: 'personal', zone: TZ,
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ),
   seq: () => seq++, id: () => `i${seq}`,
 });
 const write = (prior: State, offered: AppEvent[]): State =>

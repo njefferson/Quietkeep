@@ -188,6 +188,9 @@ const REGISTRY = {
   // thing it switches on are never on screen together — the toggle is in a
   // modal and the clock is in the header behind it.
   'clock opt-in': ['#clock-on', '.about-caveat'],
+  // When your day ends (V2 stage 5). A select and its button, in the panel where
+  // the timer length is chosen — the same shape, set in the same calm place.
+  'day boundary': ['#day-boundary', '#day-boundary-set', '#day-boundary-note'],
   // The clock itself, after the panel has been closed. `.clock-face` is an SVG
   // and the sampler reads an element's `color`, so this measures the dial only
   // because the strokes are `currentColor` — see the note in app.css. `.clock-rim`
@@ -1979,6 +1982,23 @@ try {
     await auditNames(page, 'clock opt-in', theme);
     await auditTargets(page, 'clock opt-in', theme);
     await auditFocusRings(page, 'clock opt-in', theme, ['#clock-on']);
+    // WHEN YOUR DAY ENDS (V2 stage 5) — driven with a real choice made, because a
+    // control measured in its default state measures the default and not the
+    // control. A new surface joins this gate in the SAME commit (LESSONS §28).
+    await page.selectOption('#day-boundary', '3');
+    await page.click('#day-boundary-set');
+    await page.waitForFunction(() =>
+      /3am/.test(document.querySelector('#day-boundary-note')?.textContent || ''));
+    await auditContrast(page, 'day boundary', theme);
+    await auditNames(page, 'day boundary', theme);
+    await auditTargets(page, 'day boundary', theme);
+    await auditFocusRings(page, 'day boundary', theme, ['#day-boundary-set']);
+    // Back to midnight, so nothing after this walks a shifted day.
+    await page.selectOption('#day-boundary', '0');
+    await page.click('#day-boundary-set');
+    await page.waitForFunction(() =>
+      /midnight/i.test(document.querySelector('#day-boundary-note')?.textContent || ''));
+
     await page.click('#clock-on');
     // Waited on the STATE, not on the sentence (hub LESSONS §59). The
     // neighbouring toggles wait for /^On\./ in their own note, which makes a

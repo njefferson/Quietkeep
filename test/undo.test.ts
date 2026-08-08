@@ -18,13 +18,14 @@ import { unclarified } from '../src/triage.ts';
 import { routeEvents, undoRouteEvents } from '../src/ui/triage-intents.ts';
 import type { AppEvent, ClarifyRoute } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 
 let seq = 0;
 const at = '2026-07-28T14:00:00.000Z';
 // Non-UTC on purpose (V-13): the gate's cures clock to end-of-LOCAL-day, and a
 // UTC-pinned suite cannot see a whole class of zone bug.
 const ctx = (): StampContext => ({
-  at, device: 'd0', vault: 'personal', zone: 'America/Denver',
+  at, device: 'd0', vault: 'personal', zone: 'America/Denver', day: atMidnight('America/Denver'),
   seq: () => seq++, id: () => `i${seq}`,
 });
 

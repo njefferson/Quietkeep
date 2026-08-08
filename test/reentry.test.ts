@@ -31,7 +31,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown, at = NOW): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const st = (...e: AppEvent[]): State => fold(e);
-const ctx = { id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ };
+const ctx = { id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ) };
 const apply = (s: State, e: AppEvent[]): State => (e.length ? fold(admit(e, s), s) : s);
 
 /** A capture made `d` days ago and never routed. */

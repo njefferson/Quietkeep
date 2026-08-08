@@ -21,6 +21,7 @@ import {
 } from '../src/menu.ts';
 import { setSaveForEvents, toMenuEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent, MenuCategory } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-07-29T18:00:00.000Z';
@@ -29,7 +30,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at: NOW, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const st = (...e: AppEvent[]): State => fold(e);
-const ctx = { id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ };
+const ctx = { id: () => `x${seq++}`, vault: 'personal', at: NOW, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ) };
 const apply = (s: State, e: AppEvent[]): State => (e.length ? fold(admit(e, s), s) : s);
 
 const onMenu = (id: string, cat: MenuCategory, title = id): AppEvent[] => [

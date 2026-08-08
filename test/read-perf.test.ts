@@ -65,7 +65,7 @@ let cached: State | null = null;
 async function store(): Promise<State> {
   if (cached) return cached;
   let n = 0, s = 0;
-  const ctx = { at: NOW, device: 'perf', vault: 'personal', zone: TZ, seq: () => s++, id: () => `q${n++}` };
+  const ctx = { at: NOW, device: 'perf', vault: 'personal', zone: TZ, day: atMidnight(TZ), seq: () => s++, id: () => `q${n++}` };
   const events = await bigSampleEvents(ctx, NOW);
   cached = fold(admit(events, fold([]), gateOptionsFor(TZ)));
   return cached;

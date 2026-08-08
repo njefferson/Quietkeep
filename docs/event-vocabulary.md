@@ -473,15 +473,12 @@ is a valid, unremarkable value, never nagged about.
     length outside the offer reads as the two-minute default — refused at read
     time, never guessed, because a length nobody was offered is a commitment
     nobody made.
-- **`day.boundary.set`** (V2 stage 5)
+- **`day.boundary.set`** (emitter V2 stage 5)
   - Payload: `hour` — a whole number, 0–11, local. `node: null`.
   - Silent risk: no
-  - **Unemitted, and deferred rather than reserved.** The noun, the fold and the
-    refusal ship first so the store can hold a boundary before anything reads
-    one; the control that writes it, and the readers that act on it, land in the
-    same stage. Nothing infers an hour in the meantime — there is no fallback
-    writer, and an unset boundary is midnight, which is what every clock already
-    did.
+  - **Emitted from Extras**, beside the timer length and set the same way:
+    calmly, and never at the moment it would matter. The offered list stops at
+    6am; the fold accepts to 11.
   - Folds to `State.dayBoundaryHour` (state-level LWW, the `timerMinutes`
     shape). An hour outside 0–11 is refused at the fold and reads as null —
     never clamped, because clamping would have the app invent a boundary and

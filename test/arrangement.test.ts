@@ -20,6 +20,7 @@ import {
   clearDependsEvents, confirmArrangementEvents,
 } from '../src/ui/arrangement-intents.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-05T18:00:00.000Z';
@@ -29,7 +30,7 @@ let seq = 0;
 const ev = (kind: string, node: string | null, payload: unknown, at = NOW): AppEvent =>
   ({ id: `e${seq}`, vault: 'personal', at, device: 'd0', seq: seq++, kind, node, payload } as AppEvent);
 const ctxAt = (at: string) => ({
-  id: () => `s${seq}`, vault: 'personal', at, device: 'd0', seq: () => seq++, zone: TZ,
+  id: () => `s${seq}`, vault: 'personal', at, device: 'd0', seq: () => seq++, zone: TZ, day: atMidnight(TZ),
 });
 const apply = (state: State, events: AppEvent[]): State =>
   events.length === 0 ? state : fold(admit(events, state), state);
