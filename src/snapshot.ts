@@ -143,6 +143,12 @@ export function deserialiseState(raw: unknown): State {
       // MUTABLE, and the third place the rule bites: a pre-1.9.0 snapshot
       // stored no decisions — none had been logged.
       decisions: [...(n.decisions ?? [])],
+      // HOW LONG THINGS TAKE (V2 stage 5). A snapshot written before these were
+      // folded has neither — the events were in the log all along and nothing
+      // read them, so null and empty are exactly true for that data. COPIED,
+      // like every other container here.
+      estimateMinutes: n.estimateMinutes ?? null,
+      timedMinutes: [...(n.timedMinutes ?? [])],
       fields: { ...(n.fields ?? {}) },
       stamps: { ...(n.stamps ?? {}) },
       clocks: { ...(n.clocks ?? {}) },

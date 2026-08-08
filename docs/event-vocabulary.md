@@ -263,6 +263,13 @@ merely *lapsed* — that is a different case entirely, and it is `replan.raised`
     times you did not finish your own work, which ADR-0042 and ADR-0056 forbid
     in absolute terms. The chosen length is deliberately NOT in the payload, so
     a shortfall cannot be computed by subtraction.
+  - **Folds to `n.timedMinutes` as of V2 stage 5** — a LIST, appended, never
+    summed and never averaged. `src/duration.ts` reads the two ENDS, because
+    task durations are tau-heavy and the mean sits in the gap where almost
+    nothing actually lands; folding a total or an average would settle that in
+    the store, where no surface could undo it. A span that rounds to zero
+    minutes, or that ends before it starts, is dropped — "between 0 minutes and
+    4h" says nothing true about either end.
 - **`bother.received`**
   - Payload: `text`
   - Silent risk: **yes — gated**
@@ -548,11 +555,17 @@ is a valid, unremarkable value, never nagged about.
     Its intended consumer is the cap on **Composed Today** — a limit you place on
     your own choosing — and that waits on the module rather than on a decision.
 - **`estimate.recorded`**
-  - Payload: `duration, basis: guess | prior`
+  - Payload: `durationMinutes, basis: guess | prior`
   - Silent risk: no
-
-`estimate.recorded` ships in **v1** even though duration *learning* is v2. The
-feature can be late; the data cannot be backfilled.
+  - **Folds to `n.estimateMinutes` as of V2 stage 5**, under per-node LWW. It
+    shipped in v1 and stayed unfolded for eleven releases on purpose — "the
+    feature can be late; the data cannot be backfilled" — and this is the
+    projection that finally consumes it. A non-positive or non-finite value is
+    REFUSED rather than stored, on the timer-length rule.
+  - It is the person's own word about how long something will take, and it is
+    never scored against what happened. `do-now.timed` records what did happen;
+    nothing in the app draws a line between the two, because "you said twenty
+    minutes and it took ninety" is an indictment dressed as data.
 
 ### G · Structure and store
 

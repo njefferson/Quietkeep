@@ -132,6 +132,16 @@ export const MERGE_DISPOSITION: Record<keyof NodeState, Disposition> = {
   ownership: { carry: 'no', because: 'a bother\'s answer to "whose is this"; the flow is not re-entered' },
   botherRouted: { carry: 'no', because: 'a LATCH whose whole purpose is not being asked the same question twice' },
   lastReplan: { carry: 'no', because: 'a decision about one passed date on one thing' },
+  // HOW LONG THINGS TAKE (V2 stage 5). Both stay with the survivor and neither
+  // is combined, and the reason is the same for both: a merged pair is ONE
+  // thing that was written down twice, so carrying the other's numbers over
+  // would attribute attempts and a guess to work they were never about.
+  //
+  // Concatenating the timings is the tempting move and it is the wrong one — it
+  // would widen the range with runs from a different item, which is exactly the
+  // kind of quietly-wrong number this whole projection exists to refuse.
+  estimateMinutes: { carry: 'no', because: 'the guess was made about the item it was made about' },
+  timedMinutes: { carry: 'no', because: 'real attempts belong to the thing they were spent on; combining two items\' runs would widen the range with work it was never about' },
 };
 
 /** Which `fields` entries a fold carries. Unnamed means not carried — so a

@@ -149,6 +149,23 @@ export interface NodeState {
   waitingSince: ISODateTime | null;
   /** How a waiting-for ended, once it has. */
   waitingOutcome: string | null;
+  /**
+   * What the person SAID this would take, in whole minutes, or null (V2 stage
+   * 5). Their own word, like weight and capacity — never derived, never
+   * corrected against what happened.
+   */
+  estimateMinutes: number | null;
+  /**
+   * How long real timed attempts on this actually ran, in whole minutes.
+   *
+   * A LIST and never a total or an average: `src/duration.ts` reads the two
+   * ends, because task durations are tau-heavy and the mean sits in the gap
+   * where almost nothing lands. Keeping every value means the range can be
+   * stated without the fold having decided anything.
+   *
+   * MUTABLE, so it is copied everywhere the three-place rule applies.
+   */
+  timedMinutes: number[];
   /** For an interrupt captured during a focus session: which node was being
    *  worked on, and when. Together they say which SESSION it belongs to — a
    *  node id alone would make yesterday's interruptions reappear inside today's
@@ -571,6 +588,8 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       todayFor: null,
       notNow: null,
       pebble: null,
+      estimateMinutes: null,
+      timedMinutes: [],
       decisions: [],
       fields: {}, stamps: {},
     };
@@ -596,6 +615,9 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       people: [...n.people],
       // And the decision log, for the same reason a third time (1.9.0).
       decisions: [...n.decisions],
+      // And the timed runs, a fifth (V2 stage 5). Same rule, same reason: a
+      // mutable array on a structural field aliases through a bare spread.
+      timedMinutes: [...n.timedMinutes],
       // And the standing decline, a fourth (1.8.0, found by the 1.9.2 audit —
       // it was aliased from the day it shipped). `clocks` values and the
       // Ordering tuples in `stamps` stay SHARED on purpose: every write
@@ -1338,17 +1360,52 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         break;
       }
 
+      // HOW LONG THINGS TAKE (V2 stage 5). Both of these were logged from v1 and
+      // deliberately unfolded — "the feature can be late; the data cannot be
+      // backfilled" (NOTES.md). This is the projection that consumes them, so
+      // they fold now, and the comment below no longer names them.
+      //
+      // The estimate is the person's own word, LWW like every other stated
+      // fact. A non-positive or non-finite value is REFUSED rather than stored,
+      // on the same rule as the timer length and the day boundary.
+      case 'estimate.recorded': {
+        const m = e.payload.durationMinutes;
+        if (e.node) {
+          const n = ensureNode(s, e.node, e.vault, touched);
+          if (wins(n.stamps['estimate'], o)) {
+            n.estimateMinutes = Number.isFinite(m) && m > 0 ? Math.round(m) : null;
+            n.stamps['estimate'] = o;
+          }
+        }
+        break;
+      }
+      // A real attempt, appended. APPENDED and never summed: `src/duration.ts`
+      // reads the two ends, because the average of a tau-heavy distribution
+      // sits in the gap where almost nothing actually lands. Folding a total or
+      // a mean here would decide that question in the store, where no surface
+      // could undo it.
+      case 'do-now.timed': {
+        if (e.node) {
+          const started = Date.parse(e.payload.startedAt);
+          const ended = Date.parse(e.payload.endedAt);
+          if (Number.isFinite(started) && Number.isFinite(ended) && ended > started) {
+            const mins = Math.round((ended - started) / 60_000);
+            // A run shorter than a minute rounds to zero, and zero is not a
+            // duration. Dropped rather than stored as 0: a range reading
+            // "between 0 minutes and 2h" says nothing true about either end.
+            if (mins > 0) ensureNode(s, e.node, e.vault, touched).timedMinutes.push(mins);
+          }
+        }
+        break;
+      }
+
       default:
         // Every other kind is recorded in the log and contributes to history,
         // but does not change the structural projection Phase 0 computes.
         // Later phases add projections over these; the log already holds them.
         //
         // DELIBERATELY UNFOLDED, recorded so the omission reads as a decision
-        // rather than an oversight: `do-now.timed` (emitted by the triage
-        // timer since 0.10.1), `estimate.recorded` (emitted by the detail
-        // sheet since 1.3.0 — logged from v1 per NOTES.md because the data
-        // cannot be backfilled; the learning that reads it is v2), and
-        // `range.acted` (1.5.0 — the bulk-act receipt; the state change is
+        // rather than an oversight: `range.acted` (1.5.0 — the bulk-act receipt; the state change is
         // carried entirely by the ordinary events that follow it in the same
         // chunk, and folding the receipt would be counting the act twice). No
         // surface reads a folded form of any of these, and this repo has
