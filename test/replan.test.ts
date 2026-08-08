@@ -392,7 +392,7 @@ test('an upkeep already in its rhythm raises nothing, whatever date it carries',
   const group = heldGroups(s, NOW, TZ).find(g => g.items.some(n => n.id === 'U'))!;
   assert.notEqual(group.key, 'done',
     'a rhythm that has come round again is not finished, whatever it says in the log');
-  assert.notEqual(heldStatus(s.nodes.get('U')!, NOW, TZ), 'done',
+  assert.notEqual(heldStatus(s.nodes.get('U')!, NOW, TZ, atMidnight(TZ)), 'done',
     'and the row agrees with the chip beside it');
 });
 
@@ -404,7 +404,7 @@ test('but a recurring thing just done IS done, until it comes round', () => {
     ev('upkeep.interval.set', 'U', { intervalDays: 30, comfortWindowDays: 5 }),
     ev('done.marked', 'U', { at: NOW }),
   );
-  assert.equal(heldStatus(s.nodes.get('U')!, NOW, TZ), 'done');
+  assert.equal(heldStatus(s.nodes.get('U')!, NOW, TZ, atMidnight(TZ)), 'done');
   assert.equal(heldGroups(s, NOW, TZ)[0]!.key, 'done');
   assert.equal(workSurface(s, NOW, TZ).chips.length, 0, 'and it is not asking for anything');
 });
@@ -417,7 +417,7 @@ test('nothing vanishes: the list still holds it, under its own heading', () => {
   assert.equal(groups[0]!.key, 'replan');
   assert.equal(groups[0]!.title, 'Needs a new plan',
     'under "Ready now" it reads as ordinary work, which the passed date has ruled out');
-  assert.equal(heldStatus(s.nodes.get('D')!, NOW, TZ), 'needs a new plan',
+  assert.equal(heldStatus(s.nodes.get('D')!, NOW, TZ, atMidnight(TZ)), 'needs a new plan',
     'and the row says the same words as its heading — one state, one phrasing');
 });
 
@@ -462,7 +462,7 @@ test('the list and the replan surface never describe one item differently', () =
   assert.deepEqual([...raised].sort(), ['hard', 'susp'], 'the set is what it should be');
   for (const g of heldGroups(s, NOW, TZ)) {
     for (const n of g.items) {
-      assert.equal(heldStatus(n, NOW, TZ) === 'needs a new plan', raised.has(n.id),
+      assert.equal(heldStatus(n, NOW, TZ, atMidnight(TZ)) === 'needs a new plan', raised.has(n.id),
         `${n.id}: the list and the card surface agree, in both directions`);
     }
   }

@@ -17,7 +17,7 @@ import { isAppClock, type NodeState, type State } from './fold.ts';
 import { heldWork } from './gate.ts';
 import { isReadyAgain, pressureOf } from './pressure.ts';
 import { raisesReplanCard } from './replan.ts';
-import { calendarDaysBetween, isValidIso, atMidnight, type DayShape } from './time.ts';
+import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
 import { boundaryOf } from './day.ts';
 import { isGone, isHeld } from './fold.ts';
 
@@ -47,11 +47,11 @@ export const SOON_DAYS = 7;
  * `park` is excluded from DEMAND: a parked thing is being held away from you on
  * purpose, so it must not make something "Ready now". It is reported separately.
  */
-function soonestDemand(n: NodeState, zone: string, nowIso: string): { days: number; at: string } | null {
+function soonestDemand(n: NodeState, day: DayShape, nowIso: string): { days: number; at: string } | null {
   // App clocks excluded too, and for the same reason `park` is: a gate cure is not
   // a demand. It exists so nothing goes silent, and reading it as "ready" made
   // every undated thing claim a place in today.
-  const demand = soonestClock(n, zone, nowIso, false, false);
+  const demand = soonestClock(n, day, nowIso, false, false);
   if (demand) return demand;
 
   // A PARK THAT HAS COME ROUND IS NO LONGER HOLDING ANYTHING AWAY.
@@ -72,7 +72,7 @@ function soonestDemand(n: NodeState, zone: string, nowIso: string): { days: numb
   // failure the Not Now ledger exists to prevent.
   const park = n.clocks.park;
   if (!park || !isValidIso(park.at)) return null;
-  const days = calendarDaysBetween(nowIso, park.at, atMidnight(zone));
+  const days = calendarDaysBetween(nowIso, park.at, day);
   return days <= 0 ? { days, at: park.at } : null;
 }
 
@@ -95,7 +95,7 @@ function soonestDemand(n: NodeState, zone: string, nowIso: string): { days: numb
  * different days for the same node (audit).
  */
 export function soonestClock(
-  n: NodeState, zone: string, nowIso: string, includePark: boolean,
+  n: NodeState, day: DayShape, nowIso: string, includePark: boolean,
   /**
    * Count clocks the APP set (gate cures)?
    *
@@ -117,7 +117,7 @@ export function soonestClock(
     if (!includeAppClocks && isAppClock(c)) continue;
     const ms = Date.parse(c.at);
     if (best === null || ms < best.ms) {
-      best = { days: calendarDaysBetween(nowIso, c.at, atMidnight(zone)), at: c.at, ms };
+      best = { days: calendarDaysBetween(nowIso, c.at, day), at: c.at, ms };
     }
   }
   return best ? { days: best.days, at: best.at } : null;
@@ -199,7 +199,7 @@ export function heldGroups(state: State, nowIso: string, zone: string): HeldGrou
     // accident of branch order, and the branch above has just changed, which is
     // exactly how that kind of agreement breaks silently.
     if (raisesReplanCard(n, nowIso, day)) { buckets.replan.push(n); continue; }
-    const soon = soonestDemand(n, zone, nowIso);
+    const soon = soonestDemand(n, day, nowIso);
     if (soon === null) { buckets.later.push(n); continue; }   // held, but nothing asking
     if (soon.days <= 0) { buckets.ready.push(n); continue; }
     if (soon.days <= SOON_DAYS) { buckets.soon.push(n); continue; }
@@ -230,7 +230,7 @@ export function heldGroups(state: State, nowIso: string, zone: string): HeldGrou
 /** The status line for one card, in words. Never a countdown, never a rebuke,
  *  and never a claim the data does not support — a finished thing says so
  *  instead of reporting the cure clock it happens to carry. */
-export function heldStatus(n: NodeState, nowIso: string, zone: string, day: DayShape = atMidnight(zone)): string {
+export function heldStatus(n: NodeState, nowIso: string, zone: string, day: DayShape): string {
   // Same guard, same order, same reasons as `heldGroups` — the two must agree
   // node for node, and a status that disagreed with its own heading is the
   // defect ADR-0032 exists to have fixed.
@@ -253,17 +253,17 @@ export function heldStatus(n: NodeState, nowIso: string, zone: string, day: DayS
   // precise word wins, in the same order-matters way as every guard above.
   {
     const park = parkedUntil(n);
-    if (park && calendarDaysBetween(nowIso, park, atMidnight(zone)) <= 0
-      && soonestClock(n, zone, nowIso, false, false) === null) return 'back now';
+    if (park && calendarDaysBetween(nowIso, park, day) <= 0
+      && soonestClock(n, day, nowIso, false, false) === null) return 'back now';
   }
-  const soon = soonestDemand(n, zone, nowIso);
+  const soon = soonestDemand(n, day, nowIso);
   if (soon === null) {
     // Nothing is demanding it — but a park is still a return date, and saying
     // "held" about something coming back tomorrow tells the user less than the
     // app knows.
     const park = parkedUntil(n);
     if (!park) return 'held';
-    const d = calendarDaysBetween(nowIso, park, atMidnight(zone));
+    const d = calendarDaysBetween(nowIso, park, day);
     if (d <= 0) return 'back now';
     if (d === 1) return 'parked until tomorrow';
     return `parked until ${dateWords(park, zone, d)}`;
@@ -402,12 +402,13 @@ export function placeWords(n: NodeState, state: State, childCounts: Map<string, 
  * (ADR-0014). A journal entry is the same shape.
  */
 export function undatedCount(state: State, nowIso: string, zone: string): number {
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   let n = 0;
   for (const node of heldWork(state)) {
     if (node.lastDone) continue;
     if (node.onMenu) continue;
     if (node.captured && node.route === null) continue;   // the inbox says this already
-    if (soonestDemand(node, zone, nowIso) === null) n++;
+    if (soonestDemand(node, day, nowIso) === null) n++;
   }
   return n;
 }

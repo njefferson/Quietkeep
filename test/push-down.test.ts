@@ -11,6 +11,7 @@ import { admit, gateOptionsFor, coverageGauge } from '../src/gate.ts';
 import { nextUpQueue } from '../src/nextup.ts';
 import { heldGroups, heldStatus } from '../src/held.ts';
 import type { AppEvent } from '../src/events.ts';
+import { atMidnight } from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const AGO = '2026-07-01T15:00:00.000Z';
@@ -38,7 +39,7 @@ test('law 4 pushes DOWN: a horizon coming round offers the work beneath it', () 
   // says what it is about: the area really does surface, and the leaf really is
   // covered — `silent` is 0 and honestly so. This was never law 1 failing.
   assert.equal(coverageGauge(s).silent, 0, 'fixture: nothing is silent, which was always true');
-  assert.equal(heldStatus(s.nodes.get('AREA')!, NOW, TZ), 'ready now', 'fixture: the horizon has come round');
+  assert.equal(heldStatus(s.nodes.get('AREA')!, NOW, TZ, atMidnight(TZ)), 'ready now', 'fixture: the horizon has come round');
 
   // Before this change the queue was EMPTY here: the app answered "what now"
   // with silence while its own list said something was ready.
@@ -96,7 +97,7 @@ test('a park whose day has arrived stops being held away', () => {
   assert.ok(groups.some(g => g.title === 'Ready now' && g.items.some(i => i.id === 'P')),
     'a returned park is still filed under nothing-is-asking');
   assert.ok(!groups.some(g => g.title === 'Later' && g.items.some(i => i.id === 'P')));
-  assert.equal(heldStatus(s.nodes.get('P')!, NOW, TZ), 'back now',
+  assert.equal(heldStatus(s.nodes.get('P')!, NOW, TZ, atMidnight(TZ)), 'back now',
     '"ready now" is an answer; this is the question being handed back');
 });
 
@@ -111,6 +112,6 @@ test('QUIETLY — a returned park is never put on the work surface', () => {
 test('a park still in the future stays held away, and says until when', () => {
   const s = declinedAndParked('2026-12-01T05:59:59.000Z', 'F');
   assert.ok(heldGroups(s, NOW, TZ).some(g => g.title === 'Later' && g.items.some(i => i.id === 'F')));
-  assert.match(heldStatus(s.nodes.get('F')!, NOW, TZ), /^parked until /);
+  assert.match(heldStatus(s.nodes.get('F')!, NOW, TZ, atMidnight(TZ)), /^parked until /);
   assert.deepEqual(nextUpQueue(s, NOW, TZ), []);
 });

@@ -138,7 +138,7 @@ test('a finished thing says "done", not "returns today" (Doctrine §5)', () => {
   );
   const n = s.nodes.get('D')!;
   assert.ok(Object.keys(n.clocks).length > 0, 'it really does still carry a clock');
-  assert.equal(heldStatus(n, NOW, TZ), 'done', 'but it says what is true');
+  assert.equal(heldStatus(n, NOW, TZ, atMidnight(TZ)), 'done', 'but it says what is true');
   assert.equal(heldGroups(s, NOW, TZ).find(g => g.key === 'ready'), undefined,
     'and it is not filed under Ready now');
 });
@@ -150,7 +150,7 @@ test('a Menu item is never filed under a heading that implies it is asking (law 
     ev('menu.item.added', 'M', { category: 'read' }),
   );
   assert.equal(heldGroups(s, NOW, TZ)[0]!.key, 'menu', 'the Menu wins over any clock');
-  assert.equal(heldStatus(s.nodes.get('M')!, NOW, TZ), 'on the Menu');
+  assert.equal(heldStatus(s.nodes.get('M')!, NOW, TZ, atMidnight(TZ)), 'on the Menu');
 });
 
 test('the group boundary is calendar days in the reader’s zone', () => {
@@ -185,7 +185,7 @@ test('a held item with no clock at all is Later, not lost', () => {
   );
   const kid = heldGroups(s, NOW, TZ).flatMap(g => g.items).find(n => n.id === 'KID');
   assert.ok(kid, 'a clockless child fell out of the list entirely');
-  assert.equal(heldStatus(s.nodes.get('KID')!, NOW, TZ), 'held');
+  assert.equal(heldStatus(s.nodes.get('KID')!, NOW, TZ, atMidnight(TZ)), 'held');
   const group = heldGroups(s, NOW, TZ).find(g => g.items.some(n => n.id === 'KID'));
   assert.equal(group!.key, 'later', 'and it is filed under Later rather than claiming a date');
 });
@@ -196,7 +196,7 @@ test('a malformed stored date does not throw out of the list (audit class)', () 
     ev('clock.set', 'BAD', { clockKind: 'due', at: '2026-08-32T00:00:00.000Z', source: 'import' }),
   );
   assert.doesNotThrow(() => heldGroups(s, NOW, TZ));
-  assert.doesNotThrow(() => heldStatus(s.nodes.get('BAD')!, NOW, TZ));
+  assert.doesNotThrow(() => heldStatus(s.nodes.get('BAD')!, NOW, TZ, atMidnight(TZ)));
   assert.equal(heldGroups(s, NOW, TZ).flatMap(g => g.items).length, 1, 'and it is still shown');
 });
 
@@ -298,7 +298,7 @@ test('the status a card prints always agrees with the group it is filed under', 
     const s = st(...events);
     for (const g of heldGroups(s, NOW, TZ)) {
       for (const n of g.items) {
-        const words = heldStatus(n, NOW, TZ);
+        const words = heldStatus(n, NOW, TZ, atMidnight(TZ));
         assert.match(words, GROUP_ALLOWS[g.key]!,
           `${label}: filed under "${g.title}" but the card says "${words}"`);
       }
@@ -310,20 +310,20 @@ test('the words name the SOONEST clock, not whichever was written first', () => 
   const s = st(ev('node.created', 'A', { nodeKind: 'action', title: 'a' }),
     clockKind('A', 'review', 400), clockKind('A', 'due', 9));
   const expected = new Date(at(9)).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: TZ });
-  assert.equal(heldStatus(s.nodes.get('A')!, NOW, TZ), expected,
+  assert.equal(heldStatus(s.nodes.get('A')!, NOW, TZ, atMidnight(TZ)), expected,
     'it names the clock that will actually bring it back');
 });
 
 test('a far-future date says which year', () => {
   const s = st(ev('node.created', 'F', { nodeKind: 'action', title: 'f' }),
     ev('clock.set', 'F', { clockKind: 'due', at: '2036-09-02T12:00:00.000Z', source: 't' }));
-  assert.match(heldStatus(s.nodes.get('F')!, NOW, TZ), /2036/,
+  assert.match(heldStatus(s.nodes.get('F')!, NOW, TZ, atMidnight(TZ)), /2036/,
     '"Sep 1" alone is indistinguishable from this September');
 });
 
 test('a parked thing says when it comes back, rather than just "held"', () => {
   const s = st(ev('node.created', 'P', { nodeKind: 'action', title: 'p' }), clockKind('P', 'park', 3));
-  const words = heldStatus(s.nodes.get('P')!, NOW, TZ);
+  const words = heldStatus(s.nodes.get('P')!, NOW, TZ, atMidnight(TZ));
   assert.match(words, /^parked until /, `says it is parked ("${words}")`);
   assert.equal(heldGroups(s, NOW, TZ)[0]!.key, 'later', 'and a park never makes something Ready now');
 });

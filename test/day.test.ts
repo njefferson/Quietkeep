@@ -24,6 +24,8 @@ import {
 } from '../src/time.ts';
 import { clockFace } from '../src/clock.ts';
 import { replanAll } from '../src/replan.ts';
+import { heldGroups } from '../src/held.ts';
+import { workSurface } from '../src/nextup.ts';
 import { routeEvents } from '../src/ui/triage-intents.ts';
 import type { StampContext } from '../src/ui/session.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -270,6 +272,41 @@ test('THE WRITE PATH: a date the app sets ends when the person s day ends', () =
   assert.equal(theirsAt, '2026-08-10T08:59:59.000Z', '02:59:59 the next morning — their day');
   assert.equal(Date.parse(theirsAt) - Date.parse(midnightAt), 3 * 3_600_000,
     'three hours later, which is the boundary and nothing else');
+});
+
+test('EVERY SURFACE AGREES about the same item, because they all ask whose day it is', () => {
+  // The failure this guards is not "one surface is wrong" — it is two surfaces
+  // saying different things about one item, which is the thing that destroys
+  // trust in a container. If the offer thinks a date has arrived and the replan
+  // card thinks it has gone by, the app is arguing with itself in front of you.
+  const halfPastMidnight = '2026-08-09T06:30:00.000Z'; // 00:30 in Denver
+
+  let s = write(emptyState(), [ev('capture.recorded', 'A', { text: 'ring the plumber' })]);
+  s = write(s, [ev('clarify.routed', 'A', { route: 'next-action' })]);
+  const dated = endOfLocalDay('2026-08-08T20:00:00.000Z', atMidnight(TZ));
+  s = write(s, [ev('clock.set', 'A', { clockKind: 'due', at: dated, source: 'detail:due' })]);
+  const theirs = setHour(s, 3);
+
+  // Under midnight: gone by, so it is a replan card and NOT an offer — one item
+  // is never asked two different questions.
+  assert.equal(replanAll(s, halfPastMidnight, TZ).length, 1);
+  const midnightGroups = heldGroups(s, halfPastMidnight, TZ);
+  assert.equal(midnightGroups.find(g => g.items.some(i => i.id === 'A'))?.key, 'replan',
+    'the held list files it under the replan group, agreeing with the replan surface');
+
+  // Under their 3am day: still tonight, so it is NOT a replan card — and the
+  // held list must say the same thing rather than filing it as needing a plan.
+  assert.equal(replanAll(theirs, halfPastMidnight, TZ).length, 0);
+  const theirGroups = heldGroups(theirs, halfPastMidnight, TZ);
+  assert.notEqual(theirGroups.find(g => g.items.some(i => i.id === 'A'))?.key, 'replan',
+    'and the held list agrees — no surface calls it a passed date while another does not');
+  // `workSurface` is the layer that withholds an item with a live replan card,
+  // so it is the one that can disagree — `nextUpQueue` alone does not do the
+  // exclusion, and asserting there would have proved nothing.
+  assert.equal(workSurface(theirs, halfPastMidnight, TZ).up.head?.node.id, 'A',
+    'and it is still offered as work, because it has not gone anywhere');
+  assert.equal(workSurface(s, halfPastMidnight, TZ).up.head, null,
+    'whereas under midnight it is withheld — one item is never asked two different questions');
 });
 
 test('nothing observes it — there is no function here that reads a log and proposes an hour', () => {

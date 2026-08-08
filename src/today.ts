@@ -19,7 +19,8 @@ import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { workSurface } from './nextup.ts';
 import { waitingOnAnyone, withWhom, waitingWords } from './people.ts';
-import { calendarDaysBetween, isValidIso, localDayKey, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, localDayKey, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 
 /** What one page can carry without becoming the pile. Deliberately the same
  *  order of magnitude as every other capped surface in this app. */
@@ -58,6 +59,8 @@ const title = (n: NodeState): string => n.title || '(untitled)';
  * while both looked authoritative.
  */
 export function todayCard(state: State, nowIso: string, zone: string, aheadDays = 7): TodayCard {
+  // Composed Today is the surface most literally about "today", so it asks whose.
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   // `workSurface`, NOT `nextUp` — corrected by the seam audit (1.17.3). The
   // docstring above promised "the SAME projections the screen uses" while the
   // code called the raw queue: the screen subtracts upkeep chips (they have
@@ -74,14 +77,14 @@ export function todayCard(state: State, nowIso: string, zone: string, aheadDays 
     if (n.lastDone) continue;
     const c = n.clocks.due ?? n.clocks.suspense;
     if (!c || !isValidIso(c.at)) continue;
-    const days = calendarDaysBetween(nowIso, c.at, atMidnight(zone));
+    const days = calendarDaysBetween(nowIso, c.at, day);
     if (days < 0 || days > aheadDays) continue;
-    ahead.push({ day: localDayKey(c.at, atMidnight(zone)), title: title(n), days });
+    ahead.push({ day: localDayKey(c.at, day), title: title(n), days });
   }
   ahead.sort((a, b) => a.days - b.days || (a.title < b.title ? -1 : 1));
 
   return {
-    day: localDayKey(nowIso, atMidnight(zone)),
+    day: localDayKey(nowIso, day),
     at: nowIso,
     head: up.head ? { title: title(up.head.node), why: up.head.words } : null,
     also: behind.slice(0, TODAY_CAP).map(i => title(i.node)),

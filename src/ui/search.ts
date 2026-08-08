@@ -10,6 +10,7 @@ import type { Session } from './session.ts';
 import type { NodeState } from '../fold.ts';
 import { searchHeld, searchReleased } from '../search.ts';
 import { heldStatus } from '../held.ts';
+import { boundaryOf } from '../day.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
   const n = document.createElement(tag);
@@ -64,7 +65,7 @@ export function mountSearch(session: Session, now: () => number, openDetail: (n:
       b.append(el('span', 'search-title', n.title || '(untitled)'));
       // Where it is now, in the same words the held list uses — so the answer to
       // "where did it go" is on the row before you even open it.
-      b.append(el('span', 'search-where', heldStatus(n, nowIso, session.zone)));
+      b.append(el('span', 'search-where', heldStatus(n, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) })));
       b.addEventListener('click', () => openDetail(n));
       li.append(b);
       return li;

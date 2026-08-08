@@ -27,7 +27,8 @@ import { ancestors, CONTAINER_KINDS } from './tree.ts';
 import { pressureOf } from './pressure.ts';
 import { replanIds } from './replan.ts';
 import { NOT_ACTIONABLE } from './kinds.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 import { dependencyView, dependencyWords } from './dependencies.ts';
 import { isHeld, isGone } from './fold.ts';
 
@@ -175,12 +176,12 @@ function isCandidate(n: NodeState, nowIso: string, zone: string): boolean {
 /** Held away on purpose, with the day not yet here. A park is the one clock that
  *  means "do not show me this yet", so it is the one clock that can outvote a
  *  cue (1.30.0). */
-const parkedAway = (n: NodeState, nowIso: string, zone: string): boolean => {
+const parkedAway = (n: NodeState, nowIso: string, day: DayShape): boolean => {
   const park = n.clocks.park;
-  return !!park && isValidIso(park.at) && calendarDaysBetween(nowIso, park.at, atMidnight(zone)) > 0;
+  return !!park && isValidIso(park.at) && calendarDaysBetween(nowIso, park.at, day) > 0;
 };
 
-const arrivedClock = (n: NodeState, nowIso: string, zone: string): boolean =>
+const arrivedClock = (n: NodeState, nowIso: string, day: DayShape): boolean =>
   Object.values(n.clocks).some(c =>
     c != null && c.kind !== 'park' && isValidIso(c.at) &&
     // A GATE CURE IS NOT A DEMAND. The comment two tiers below already knew cure
@@ -190,7 +191,7 @@ const arrivedClock = (n: NodeState, nowIso: string, zone: string): boolean =>
     // arithmetically correct and meant nothing. A cure exists so a node is not
     // silent; the reader never asked for anything by today.
     !isAppClock(c) &&
-    calendarDaysBetween(nowIso, c.at, atMidnight(zone)) <= 0);
+    calendarDaysBetween(nowIso, c.at, day) <= 0);
 
 /**
  * The nearest ancestor whose own demanding clock has come round, or null.
@@ -204,13 +205,13 @@ const arrivedClock = (n: NodeState, nowIso: string, zone: string): boolean =>
  * a gate cure still cannot make a horizon "arrive" and `park` is still excluded.
  */
 function arrivedAncestor(
-  state: State, n: NodeState, nowIso: string, zone: string,
+  state: State, n: NodeState, nowIso: string, day: DayShape,
 ): NodeState | null {
   const seen = new Set<string>([n.id]);
   let cur = n.parent ? state.nodes.get(n.parent) : undefined;
   while (cur && !seen.has(cur.id)) {
     seen.add(cur.id);
-    if (isHeld(cur) && arrivedClock(cur, nowIso, zone)) return cur;
+    if (isHeld(cur) && arrivedClock(cur, nowIso, day)) return cur;
     cur = cur.parent ? state.nodes.get(cur.parent) : undefined;
   }
   return null;
@@ -249,6 +250,9 @@ const hasHardDate = (n: NodeState): boolean => Boolean(n.clocks.due ?? n.clocks.
  * that cannot be trusted to have chosen.
  */
 export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpItem[] {
+  // Whose day decides what has ARRIVED — the same question the replan surface
+  // asks, and the work surface must not answer it differently.
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   const items: NextUpItem[] = [];
 
   for (const n of state.nodes.values()) {
@@ -266,7 +270,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     if (n.kind !== 'waiting-for' && n.kind !== 'upkeep' && underTrackedProject(state, n)) continue;
 
     const p = pressureOf(n, nowIso, zone);
-    const arrived = arrivedClock(n, nowIso, zone);
+    const arrived = arrivedClock(n, nowIso, day);
 
     // A hard date outranks everything, INCLUDING a resume card — the tier test
     // comes first for every kind. A resume card carrying an arrived due date was
@@ -292,7 +296,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // made about this very item, and an antecedent finishing early does not
     // overturn it — pulling a parked thing forward is the app not believing you,
     // which is the same rule the returned-park tier follows.
-    if (n.after && !parkedAway(n, nowIso, zone)) {
+    if (n.after && !parkedAway(n, nowIso, day)) {
       const a = state.nodes.get(n.after);
       if (a && a.lastDone && isHeld(a)) {
         items.push({
@@ -372,7 +376,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     for (const n of state.nodes.values()) {
       if (!isCandidate(n, nowIso, zone)) continue;
       if (n.kind !== 'waiting-for' && n.kind !== 'upkeep' && underTrackedProject(state, n)) continue;
-      const host = arrivedAncestor(state, n, nowIso, zone);
+      const host = arrivedAncestor(state, n, nowIso, day);
       if (!host) continue;
       items.push({
         node: n, reason: 'beneath', pressure: pressureOf(n, nowIso, zone),

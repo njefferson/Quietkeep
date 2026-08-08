@@ -20,7 +20,8 @@
 
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
-import { localDayKey, atMidnight} from './time.ts';
+import { localDayKey,  type DayShape} from './time.ts';
+import { boundaryOf } from './day.ts';
 import { isHeld } from './fold.ts';
 
 /** The module name in `State.modules`. */
@@ -53,7 +54,8 @@ export const choosable = (n: NodeState): boolean =>
  * choice first (the stamp order, so the set is stable across repaints).
  */
 export function composedFor(state: State, nowIso: string, zone: string): NodeState[] {
-  const today = localDayKey(nowIso, atMidnight(zone));
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
+  const today = localDayKey(nowIso, day);
   return heldNodes(state)
     .filter(n => n.todayFor === today && choosable(n))
     .sort((a, b) => {

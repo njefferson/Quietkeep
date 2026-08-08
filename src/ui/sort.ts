@@ -202,7 +202,7 @@ export function mountSort(
     }
     CARD.disabled = false;
     CARD.textContent = n.title || '(untitled)';
-    WHERE.textContent = heldStatus(n, nowIso(), session.zone);
+    WHERE.textContent = heldStatus(n, nowIso(), session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
     ACTIONS.replaceChildren(
       ...ROUTES.map(({ route, label, hint }) => {
         const b = el('button', 'route');

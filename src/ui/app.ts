@@ -40,6 +40,7 @@ import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
 import { markSyncEdition } from './edition.ts';
+import { boundaryOf } from '../day.ts';
 
 const now = () => Date.now();
 
@@ -172,7 +173,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // Every item states its own status in words — the text channel of B-01, so
       // nothing here depends on seeing a colour. A finished thing says "done"
       // rather than reporting the cure clock it happens to still carry.
-      when.textContent = heldStatus(node, nowIso, session.zone);
+      when.textContent = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
 
       open.append(title, when);
 

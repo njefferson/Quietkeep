@@ -216,7 +216,7 @@ test('the start clock: set groups it "not before", clearing it is CURED in the s
   s = write(s, setStartEvents(ctx(), 'D', '2026-08-04'));
   const n = s.nodes.get('D')!;
   assert.ok(n.clocks.start, 'the start clock landed');
-  assert.match(heldStatus(n, NOW, TZ), /^not before /, 'the status names the kind of date it is');
+  assert.match(heldStatus(n, NOW, TZ, atMidnight(TZ)), /^not before /, 'the status names the kind of date it is');
 
   // Clear it. clock.cleared is silent-risk; if the start was all that covered
   // it beyond the import cure, the gate must re-cover it in the same commit.
@@ -271,7 +271,7 @@ test('a due date at the same instant as the start keeps the DEADLINE wording', (
   s = imported(s, 'B', 'both dates, one day');
   s = write(s, setStartEvents(ctx(), 'B', '2026-08-04'));
   s = write(s, setDueEvents(ctx(), 'B', '2026-08-04'));
-  const words = heldStatus(s.nodes.get('B')!, NOW, TZ);
+  const words = heldStatus(s.nodes.get('B')!, NOW, TZ, atMidnight(TZ));
   assert.ok(!/^not before /.test(words), `an obligation must not read as a door opening (got "${words}")`);
   assert.match(words, /^in \d+ days$/, 'the generic demand words, naming the due clock');
 });
@@ -281,7 +281,7 @@ test('a PASSED start raises no replan card and reads ready', () => {
   s = imported(s, 'D', 'deferred thing');
   s = write(s, setStartEvents(ctx(), 'D', '2026-07-25'));   // four days behind NOW
   const n = s.nodes.get('D')!;
-  const words = heldStatus(n, NOW, TZ);
+  const words = heldStatus(n, NOW, TZ, atMidnight(TZ));
   assert.equal(words, 'ready now', `a passed start OPENS the thing (got "${words}")`);
 });
 
