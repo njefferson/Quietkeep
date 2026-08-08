@@ -232,6 +232,9 @@ const REGISTRY = {
   // The settled state (1.35.0) — the surface with nothing being asked. Its own
   // driven state, because it only exists after an act and nothing else on the
   // offer surface is on screen at the same time.
+  // Just one thing (1.36.0) — the minimum state. Driven with it actually ON,
+  // because the way out only exists then and the type sizes differ.
+  'one thing': ['#nextup-title', '#nextup-done', '#nextup-skip', '#nextup-plain-off'],
   'settled': ['#nextup-settled-what', '#nextup-settled-quiet', '#nextup-resume'],
   'weight': ['#detail-weight-group .detail-label', '#detail-weight-light',
     '#detail-weight-ordinary', '#detail-weight-heavy', '#detail-weight-clear',
@@ -1197,6 +1200,21 @@ try {
     await page.click('#nextup-resume');
     await page.waitForFunction(() =>
       document.querySelector('#nextup-settled')?.hidden === true);
+
+    // State 3c2: JUST ONE THING (1.36.0). The minimum state, driven ON, because
+    // the way out only exists then and the type sizes differ from the ordinary
+    // offer. Left again straight afterwards so every state below meets the
+    // ordinary surface.
+    await page.click('#nextup-plain');
+    await page.waitForSelector('#nextup-plain-bar:not([hidden])');
+    await auditContrast(page, 'one thing', theme);
+    await auditAxe(page, 'one thing', theme);
+    await auditNames(page, 'one thing', theme);
+    await auditTargets(page, 'one thing', theme);
+    await auditFocusRings(page, 'one thing', theme, ['#nextup-plain-off']);
+    await page.click('#nextup-plain-off');
+    await page.waitForFunction(() =>
+      document.querySelector('#nextup-plain-bar')?.hidden === true);
 
     // State 3d0: a first step has been named (1.24.0). Reached the way anybody
     // reaches it — type into the invitation on the card — and then UNDONE, so

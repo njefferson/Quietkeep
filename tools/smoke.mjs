@@ -4166,6 +4166,54 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/strip the old sealant is done/.test(unblockedWhy || ''), true,
     `and it says which thing it follows ("${unblockedWhy}")`);
 
+  // --- JUST ONE THING (1.36.0) ----------------------------------------------
+  //
+  // Fog is a THIRD failure mode, not a worse version of a low day. "Fewer
+  // things" and "less thinking" are different transformations and the app only
+  // had the first. On the day this is for, the offer's own furniture IS the load.
+  await tpage.click('#nextup-plain');
+  await tpage.waitForSelector('#nextup-plain-bar:not([hidden])');
+  const plainState = await tpage.evaluate(() => ({
+    title: (document.querySelector('#nextup-title')?.textContent || '').length,
+    why: document.querySelector('#nextup-why')?.hidden,
+    place: document.querySelector('#nextup-place')?.hidden,
+    behind: document.querySelector('#nextup-behind')?.hidden,
+    count: document.querySelector('#nextup-count')?.hidden,
+    upkeep: document.querySelector('#upkeep')?.hidden,
+    done: document.querySelector('#nextup-done')?.hidden,
+    skip: document.querySelector('#nextup-skip')?.hidden,
+    out: document.querySelector('#nextup-plain-off')?.hidden,
+    onBtn: document.querySelector('#nextup-plain')?.hidden,
+  }));
+  is(plainState.title > 0, true, 'there is still a thing to do, and it is named');
+  is(plainState.done === false && plainState.skip === false, true,
+    'and the two acts survive — a state with nothing to act on is a dead end, not a smaller view');
+  is([plainState.why, plainState.place, plainState.behind, plainState.count, plainState.upkeep]
+    .every(h => h === true), true,
+    `the furniture is gone: why ${plainState.why}, place ${plainState.place}, `
+    + `behind ${plainState.behind}, count ${plainState.count}, chips ${plainState.upkeep}`);
+  is(plainState.out, false, 'the way out is on screen — this is the burnout state, and a trap would be worse than nothing');
+  is(plainState.onBtn, true, 'and the way IN is gone, because it is already on');
+
+  // IT SURVIVES A RELOAD. A state you must re-enter every time the app reloads
+  // is one more thing to operate on the day you can least afford it.
+  await tpage.reload();
+  await tpage.waitForSelector('body[data-ready=true]');
+  is(await tpage.locator('#nextup-plain-bar').isHidden(), false,
+    'still on after a full reload');
+  is(await tpage.locator('#nextup-why').isHidden(), true, 'and still stripped');
+
+  // AND NOTHING WAS HIDDEN FROM THE STORE. The held list is untouched: this is a
+  // smaller view of the same store, not a smaller app.
+  is(await tpage.locator('#cards .card').count() > 1, true,
+    'everything you are holding is still on the list below');
+
+  await tpage.click('#nextup-plain-off');
+  await tpage.waitForFunction(() =>
+    document.querySelector('#nextup-plain-bar')?.hidden === true);
+  is(await tpage.locator('#nextup-why').isHidden(), false,
+    'and leaving it brings everything back in one act');
+
   // --- THE MOMENT AFTER (1.35.0) --------------------------------------------
   //
   // Whatever occupies the second after finishing something is what gets attached

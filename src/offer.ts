@@ -53,6 +53,7 @@ import { heldNodes } from './gate.ts';
 import { nextUpQueue, upkeepChips, type NextUpItem } from './nextup.ts';
 import { replanIds } from './replan.ts';
 import { loadNow, offerCapFor, weightOrderFor, type Load } from './load.ts';
+import { plainIsOn, PLAIN_OFFER_CAP } from './plain.ts';
 
 /**
  * How many pieces of WORK may be offered at once.
@@ -109,7 +110,17 @@ export function offerNow(state: State, nowIso: string, zone: string, cycle = 0):
   // never the gauge, never the held list, never Composed Today, and never below
   // one (src/load.ts).
   const load = loadNow(state);
-  const cap = offerCapFor(load, OFFER_CAP);
+  // JUST ONE THING (1.36.0), decided HERE rather than in the surface. The first
+  // version capped it in `work.ts`, which left the projection and the screen
+  // disagreeing about how many things were being offered — and every other
+  // reader of `offerNow` still seeing two. The offer's shape is this function's
+  // answer to give.
+  //
+  // NOT the same rule as `offerCapFor`, and the difference is who decided.
+  // Capacity is a fact somebody states about their day, and the app must never
+  // shorten the offer because of it (1.34.0). This is the person operating their
+  // own screen and asking for one thing.
+  const cap = plainIsOn(state) ? PLAIN_OFFER_CAP : offerCapFor(load, OFFER_CAP);
 
   // WHICH, NOT HOW MANY (1.34.0). Capacity consults the person's own weight
   // declaration to decide which of several equally-eligible things is put in

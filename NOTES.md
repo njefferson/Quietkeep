@@ -535,12 +535,63 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-**Fourteen releases are waiting on an on-device pass.** 1.24.0, 1.24.1 and 1.25.0
+**Fifteen releases are waiting on an on-device pass.** 1.24.0, 1.24.1 and 1.25.0
 were promoted together 2026-08-06. `staging` carries 1.26.0, 1.27.0, 1.27.1,
-1.28.0, 1.29.0, 1.30.0, 1.30.1, 1.30.2, 1.30.3, 1.31.0, 1.32.0, 1.33.0, 1.34.0 and now **1.35.0**.
+1.28.0, 1.29.0, 1.30.0, 1.30.1, 1.30.2, 1.30.3, 1.31.0, 1.32.0, 1.33.0, 1.34.0,
+1.35.0 and now **1.36.0**.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.35.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **1.36.0**
 - **https://quietkeep.pages.dev** — production, **1.25.0**
+
+**1.36.0 is stage 4's last item: fog is a THIRD failure mode.**
+
+*Fewer things* and *less thinking* are different transformations and the app had
+only the first. A low day is answered by reaching for lighter work (1.34.0); that
+answers nothing when the problem is not how much there is but how much the SCREEN
+is asking somebody to process. Two items to choose between, a reason line, where
+it sits, what it holds up, what was said about doing it, a list of what is
+behind, a count, a row of chips — every one earns its place on an ordinary day
+and every one is a thing to read on this one.
+
+**"Just one thing"** shows one piece of work, larger type, no motion, and drops
+the eleven selectors named in `PLAIN_HIDDEN`. The cap lives in the PROJECTION
+(`offer.ts`), not in the UI, so it is one number in one place rather than a rule
+the surface has to remember.
+
+**The head does not change.** It removes what is AROUND the offer; it does not
+reach into the ranking and choose differently, which would make it a second
+opinion about what somebody should do.
+
+**Never inferred and never prompted.** Detecting a foggy day means forming an
+opinion about a person from their logs, and there is no instrument here that
+could — the same rule that governs weight and capacity. It is invoked and it
+stays until it is left.
+
+**It is also the burnout state, and that decides the design**: the skill of
+operating the tool is one of the skills that has gone. So leaving it is ONE
+visible tap that is always on screen, and entering it needs no settings screen.
+
+**Not a capacity, and not a reduced app.** Capacity changes WHICH and never HOW
+MANY (1.34.0); this changes how many, and the difference is who decided — the app
+still never shortens the offer on its own. Nothing is deleted, nothing goes
+silent, every guarantee holds: it is a smaller VIEW of the same store, asserted
+by cycling to items that are still reachable behind the one being shown.
+
+**It rides `module.enabled`**, folded since 1.6.0, so it survives a reload at no
+cost to the closed vocabulary. A state you must re-enter on every reload is one
+more thing to operate on the day you can least afford it.
+
+**Named for the SCREEN, never for the person.** "Fog mode" would be a fact about
+you; "just one thing" is a fact about what is on the display. Asserted as a regex
+over the stored noun.
+
+**Two defects on the way, both mine, both found by the walk.** The strip ran
+BEFORE the things it hides were painted — `#upkeep` is re-shown by its own code
+later in `refresh` — and turning it off never restored anything, so `#nextup-why`
+(which has no other owner of its `hidden` flag) stayed hidden for ever. Now split
+into two halves at opposite ends of `refresh`: an unconditional restore first, so
+each element's own rule gets the last word on an ordinary pass, and the strip
+last, after everything that owns one of these has painted.
 
 **1.35.0 is stage 4's second item: the moment after, and the symmetric exit.**
 

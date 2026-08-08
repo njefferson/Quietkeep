@@ -398,6 +398,17 @@
            chosen for you: "Not this" only ever swapped one demand for another,
            so the only clean way out of the surface was to complete something. -->
       <button id="nextup-enough" type="button" class="ghost">That is enough for now</button>
+      <!-- JUST ONE THING (1.36.0) — the minimum state. "Fewer things" and "less
+           thinking" are different transformations and the app only had the
+           first. On the day this is for, the offer's own furniture IS the load:
+           two items to choose between, a reason, a place, what it holds up, what
+           you said about doing it, a list of what is behind, a count, a row of
+           chips. Every one earns its place on an ordinary day.
+
+           On the main surface and not in a settings screen, because this is also
+           the burnout state, where the skill of operating the tool is one of the
+           skills that has gone. -->
+      <button id="nextup-plain" type="button" class="ghost">Just one thing</button>
     </div>
     <!-- THE MOMENT AFTER (1.35.0). Whatever occupies the second after finishing
          something is what gets attached to finishing it — and what occupied it
@@ -410,6 +421,12 @@
 
          Not timed, deliberately. A pause that expires is the app choosing when
          you have had enough of a rest. -->
+    <!-- The way out, and it is ALWAYS visible while the state is on. Entering it
+         is a choice; being unable to leave it would be a trap, and the reader
+         who most needs this state is least able to go looking for the exit. -->
+    <div id="nextup-plain-bar" class="nextup-plain-bar" hidden>
+      <button id="nextup-plain-off" type="button" class="ghost">Show me everything again</button>
+    </div>
     <div id="nextup-settled" class="nextup-settled" hidden>
       <p id="nextup-settled-what" class="nextup-settled-what"></p>
       <p id="nextup-settled-quiet" class="nextup-settled-quiet"></p>

@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.36.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-08',
+    notes: [
+      '**There is now a “Just one thing” button on the offer.** Press it and the screen shows one thing to do and almost nothing else — no reason line, no where-it-sits, no what-it-holds-up, no list of what is behind, no counts, no chips. Larger type, and nothing moves.',
+      '**This is for the days when the problem is not how much there is.** Being offered easier work helps when the day is heavy. It helps not at all when the difficulty is reading the screen at all — when every true and useful line on it is one more thing to process. Those are different bad days and until now the app only had an answer for one of them.',
+      '**Leaving it is one visible tap**, in the same place, always on screen. That is the whole design: this is also what a screen should look like when operating an app is itself one of the things that has become hard, so the way out cannot be somewhere you have to find.',
+      '**Nothing turns it on for you and nothing suggests it.** Quietkeep does not work out what kind of day you are having — it has no way to know, and guessing would mean forming an opinion about you from what you have typed. You turn it on. It stays on until you turn it off, including after closing and reopening the app.',
+      '**Nothing is hidden from Quietkeep itself.** Everything you have is still held, still on its surface, still exactly where it was — this changes what the screen shows, not what the app is keeping. The full list, the search and the ⓘ are all still there.',
+      'Nothing counts how often you use it, and nothing is recorded about it beyond the fact that it is on.',
+    ],
+  },
+  {
     triplet: '1.35.0',
     kind: 'CAPABILITY',
     date: '2026-08-07',

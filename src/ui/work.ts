@@ -19,6 +19,7 @@ import { heldWork } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
+import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
@@ -231,6 +232,56 @@ export function mountWork(
     }
   };
 
+  /**
+   * JUST ONE THING — painted before anything else, because it decides what the
+   * rest of `refresh` is allowed to say.
+   *
+   * Everything it suppresses is true and useful on an ordinary day. On the day
+   * this is for, the offer's own furniture is the load, and information is the
+   * cost being cut.
+   */
+  /**
+   * TWO HALVES, and they run at opposite ends of `refresh`. The first version
+   * was one call at the top and was wrong in both directions.
+   *
+   * Hiding early does not work: almost everything in `PLAIN_HIDDEN` is painted
+   * LATER in the same pass by whatever owns it, so the chips were hidden and
+   * then shown again a few lines down. The strip has to be the last word.
+   *
+   * And hiding without a restore does not work either: `#nextup-why` has no
+   * other owner of its `hidden` flag, so once this had hidden it, leaving the
+   * state left it hidden for ever. The restore runs FIRST, before each element's
+   * own rule, so the ordinary pass decides what is visible and the strip only
+   * ever overrides it while the state is on.
+   */
+  const plainRestore = (): void => {
+    for (const sel of PLAIN_HIDDEN) {
+      const el = q<HTMLElement>(sel);
+      // Shown back unconditionally, then each element's own rule runs later in
+      // this same pass and hides it again if it should be hidden. This must not
+      // try to be clever about which ones have an owner: guessing that is how a
+      // control ends up permanently gone.
+      if (el) el.hidden = false;
+    }
+  };
+
+  const plainStrip = (): void => {
+    for (const sel of PLAIN_HIDDEN) {
+      const el = q<HTMLElement>(sel);
+      if (el) el.hidden = true;
+    }
+  };
+
+  const paintPlainChrome = (on: boolean): void => {
+    REGION.classList.toggle('nextup-plain', on);
+    const bar = q('#nextup-plain-bar');
+    if (bar) bar.hidden = !on;
+    // The way IN goes while it is on, because it is already on — a control that
+    // does nothing is worse than absent, and there is one fewer thing to read.
+    const onBtn = q<HTMLButtonElement>('#nextup-plain');
+    if (onBtn) onBtn.hidden = on;
+  };
+
   const markDone = async (): Promise<void> => {
     if (!current || busy) return;
     busy = true;
@@ -279,6 +330,23 @@ export function mountWork(
     restoreFocus();
   };
 
+  const setPlain = (on: boolean): void => {
+    void session.commit(ctx => [{
+      id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+      kind: on ? 'module.enabled' : 'module.disabled', node: null,
+      payload: { module: PLAIN_MODULE },
+    } as never])
+      .then(() => {
+        // Says what the SCREEN is doing. Never "for when things are hard", which
+        // would be the app naming a state of the person.
+        say(on ? 'One thing at a time. Everything is still here.' : 'Everything is back.');
+        onChange();
+        refresh();
+        restoreFocus();
+      })
+      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`, true); });
+  };
+
   const skip = (): void => {
     // Remember WHICH items were declined, not how many times. A numeric index
     // over a changing queue threw the user back to the top the moment anything
@@ -292,6 +360,8 @@ export function mountWork(
 
   doneBtn.addEventListener('click', () => void markDone());
   q<HTMLButtonElement>('#nextup-enough')?.addEventListener('click', enough);
+  q<HTMLButtonElement>('#nextup-plain')?.addEventListener('click', () => setPlain(true));
+  q<HTMLButtonElement>('#nextup-plain-off')?.addEventListener('click', () => setPlain(false));
   q<HTMLButtonElement>('#nextup-resume')?.addEventListener('click', resume);
   BITE_DONE?.addEventListener('click', () => void markBiteDone());
   skipBtn.addEventListener('click', skip);
@@ -359,6 +429,9 @@ export function mountWork(
     // to be UNALIKE — at most one item per reason, plus one thing off the Menu
     // that owes nothing. `offerNow` owns that rule; this file only renders it.
     const offer = offerNow(state, iso, session.zone, cycle);
+    // `offerNow` already applied the one-thing cap — the projection owns the
+    // offer's shape. This only needs to know whether to strip the furniture.
+    const plain = plainIsOn(state);
     // Prefer something not yet declined this session; if everything has been,
     // start again from the top rather than showing nothing.
     const fresh = offer.work.filter(i => !declined.has(i.node.id));
@@ -375,6 +448,10 @@ export function mountWork(
     //
     // `current` is cleared with it, so a stray keypress cannot act on an item
     // the reader cannot see.
+    paintPlainChrome(plain);
+    // Before anything else paints, so the ordinary rules get the last word on
+    // an ordinary pass and `plainStrip` gets it on a plain one.
+    if (!plain) plainRestore();
     paintSettled();
     if (settled !== null) {
       // Nothing is being asked, so `current` is cleared with the offer: a stray
@@ -575,6 +652,9 @@ export function mountWork(
     // at (audit, measured) — but one string is free, and a count that only
     // refreshes on open is a count that can be STALE the moment it is read,
     // which is worse than absent. Same `heldWork` set the rows come from.
+    // THE LAST WORD, after everything that owns one of these has painted.
+    if (plain) plainStrip();
+
     paintCoverageCount();
     if (!COVERAGE.hidden) buildCoverage();
     // The tree obeys the same rule, for the same measured reason.

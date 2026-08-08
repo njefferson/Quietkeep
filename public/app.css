@@ -637,6 +637,17 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * of the page. Inside a bordered card that reads as dead space above the title. */
 .replan > .section { margin-top: 0; }
 .replan-count { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
+/* JUST ONE THING (1.36.0) — the minimum state.
+   Larger type and more room, and NOTHING that moves: no transition, no
+   animation, nothing that redraws itself. Motion is processing, and processing
+   is the cost this state exists to cut. The palette is untouched, because a
+   different colour scheme would be a second thing to take in. */
+.nextup-plain #nextup-title { font-size: 1.5rem; line-height: 1.3; }
+.nextup-plain .nextup-actions { gap: 0.75rem; }
+.nextup-plain #nextup-done { font-size: 1.125rem; min-height: 3.5rem; }
+.nextup-plain * { transition: none !important; animation: none !important; }
+.nextup-plain-bar { margin: 0 0 0.75rem; }
+
 /* The settled state (1.35.0). Deliberately plain: the moment after finishing is
    not a place for a flourish, and a celebration is an opinion about the person.
    Same ink and paper as the offer it replaces, so nothing flashes. */
