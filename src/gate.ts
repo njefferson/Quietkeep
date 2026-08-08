@@ -18,7 +18,7 @@ import {
   type AppEvent, type EventKind, type NodeId, type NodeKind, type VaultId,
 } from './events.ts';
 import { applyEvent, cloneShell, compareEvents, compareOrdering, fold, type NodeState, type State } from './fold.ts';
-import { endOfLocalDay, isValidIso } from './time.ts';
+import { endOfLocalDay, isValidIso, atMidnight} from './time.ts';
 // Follows a merge chain to its living end. Lived here as a private
 // `mergeTarget` until 1.9.2, when the ledger needed the same walk — one
 // concept, one home. `merged.ts` imports `fold.ts` only, so there is no cycle.
@@ -255,7 +255,7 @@ export interface GateOptions {
  *  zone has to be supplied — end-of-UTC-day is end-of-local-day only in UTC, and
  *  anywhere else it lands a captured item up to a day late (V-13). */
 export const gateOptionsFor = (zone: string): GateOptions => ({
-  sameDayClockAt: e => endOfLocalDay(e.at, zone),
+  sameDayClockAt: e => endOfLocalDay(e.at, atMidnight(zone)),
 });
 
 /** UTC fallback, for callers with no device zone to offer (and the tests that

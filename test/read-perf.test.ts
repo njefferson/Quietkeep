@@ -40,7 +40,7 @@ import { notNowLedger } from '../src/requests.ts';
 import { loadNow } from '../src/load.ts';
 import { calendarCount } from '../src/ics.ts';
 import { reentryView } from '../src/reentry.ts';
-import { localParts, localDayKey } from '../src/time.ts';
+import { localParts, localDayKey, atMidnight} from '../src/time.ts';
 
 const TZ = 'America/Denver';
 const NOW = '2026-08-03T18:00:00.000Z';
@@ -83,7 +83,7 @@ test('read-perf: resolving an instant twice returns the SAME answer, not a secon
   // instant. A cache keyed on the instant alone would hand a traveller the
   // wrong day, which is worse than being slow.
   assert.notEqual(localParts(NOW, 'Pacific/Kiritimati'), a);
-  assert.notEqual(localDayKey(NOW, 'Pacific/Kiritimati'), localDayKey(NOW, TZ));
+  assert.notEqual(localDayKey(NOW, atMidnight('Pacific/Kiritimati')), localDayKey(NOW, atMidnight(TZ)));
 });
 
 test('read-perf: the shared answer is frozen, so one caller cannot change another\'s', () => {

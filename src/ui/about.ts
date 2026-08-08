@@ -36,7 +36,7 @@ import { badgeWords, badgeToggleLabel, isBadgeOn, setBadgeEnabled } from './badg
 import { importSummary, importWords, parseAnyExport, taskPaperEvents } from '../taskpaper.ts';
 import { deliverCopy, deliverDiagnostic, deliverGeneratedSet } from './export-copy.ts';
 import { eventWords, isCure } from '../log-words.ts';
-import { localDayKey, recordDayWords } from '../time.ts';
+import { localDayKey, recordDayWords, atMidnight} from '../time.ts';
 import { TODAY_MODULE, todayIsOn } from '../composed.ts';
 import { CLOCK_MODULE, clockIsOn } from '../clock.ts';
 import { enableModuleEvents, disableModuleEvents } from './detail-intents.ts';
@@ -993,7 +993,7 @@ export async function mountAbout(
       const titleOf = (id: string): string | null => st.nodes.get(id)?.title || null;
       const page = ordered.slice(shown, shown + PAGE);
       for (const e of page) {
-        const day = localDayKey(e.at, session.zone);
+        const day = localDayKey(e.at, atMidnight(session.zone));
         if (!lastDayEl || lastDayEl.day !== day) {
           const li = document.createElement('li');
           li.className = 'log-day';
@@ -1039,7 +1039,7 @@ export async function mountAbout(
         const all = await session.store.all();
         const byDay = new Map<string, AppEvent[]>();
         for (const e of all) {
-          const day = localDayKey(e.at, session.zone);
+          const day = localDayKey(e.at, atMidnight(session.zone));
           const bucket = byDay.get(day);
           if (bucket) bucket.push(e); else byDay.set(day, [e]);
         }

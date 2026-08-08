@@ -13,7 +13,7 @@ import type { AppEvent, NodeKind } from '../events.ts';
 import type { State } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { cleanTitle } from './detail-intents.ts';
-import { endOfLocalDay } from '../time.ts';
+import { endOfLocalDay, atMidnight} from '../time.ts';
 import { COMMS_FIELD, COMMS_INTERVAL_DAYS, COMMS_COMFORT_DAYS } from '../comms.ts';
 
 const base = (ctx: StampContext, kind: string, node: string | null, payload: unknown): AppEvent => ({
@@ -161,7 +161,7 @@ function resumeCardEvents(ctx: StampContext, forNode: string, cue: string | null
     // replan, the detail sheet). This one was the exception, and being the
     // exception is what made it fragile.
     base(ctx, 'clock.set', id, {
-      clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, 0), source: 'focus:resume',
+      clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), 0), source: 'focus:resume',
     }),
   ];
 }
@@ -198,7 +198,7 @@ export function startCommsSweepEvents(ctx: StampContext, node: string): AppEvent
     // Due when the interval says, not this evening. The gate would otherwise
     // cure the creation with a same-day clock — legal, and wrong.
     base(ctx, 'clock.set', node, {
-      clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, COMMS_INTERVAL_DAYS), source: 'comms:start',
+      clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), COMMS_INTERVAL_DAYS), source: 'comms:start',
     }),
     // THE RHYTHM STARTS NOW, and this is not a cosmetic choice.
     //

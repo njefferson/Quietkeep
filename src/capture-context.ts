@@ -27,7 +27,7 @@
 //
 // PURE. `zone` is an argument.
 
-import { localParts, calendarDaysBetween } from './time.ts';
+import { localParts, calendarDaysBetween, atMidnight} from './time.ts';
 
 /** Roughly when in the day, in the words somebody would use about their own
  *  morning. The boundaries are deliberately coarse — this is a memory aid, and
@@ -64,7 +64,7 @@ export function captureContextWords(atIso: string, zone: string, nowIso: string)
     // Calendar days, not elapsed hours: at 00:30 an item written at 23:00 is
     // yesterday, and any measure in hours calls it "today" for another 23 of
     // them. The same reason `calendarDaysBetween` exists at all.
-    days = calendarDaysBetween(nowIso, atIso, zone);
+    days = calendarDaysBetween(nowIso, atIso, atMidnight(zone));
     // A parse that silently produced nonsense rather than throwing.
     if (!Number.isFinite(days) || !Number.isFinite(p.hour)) return null;
   } catch {

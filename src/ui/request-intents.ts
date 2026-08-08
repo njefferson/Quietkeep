@@ -13,7 +13,7 @@ import type { AppEvent, NodeId } from '../events.ts';
 import type { NodeState, State } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { TIMER_CHOICES } from '../timer.ts';
-import { endOfLocalDay } from '../time.ts';
+import { endOfLocalDay, atMidnight} from '../time.ts';
 import { nextSlotOccurrence, parseSlot, slotOf, type SlotDay } from '../requests.ts';
 
 const base = (ctx: StampContext, kind: string, node: string | null, payload: unknown): AppEvent => ({
@@ -25,7 +25,7 @@ const base = (ctx: StampContext, kind: string, node: string | null, payload: unk
  *  the end of today — the same-day boundary every other cure uses. */
 const declineReturnAt = (ctx: StampContext, state: State): string => {
   const day = slotOf(state);
-  return day ? nextSlotOccurrence(day, ctx.at, ctx.zone) : endOfLocalDay(ctx.at, ctx.zone, 0);
+  return day ? nextSlotOccurrence(day, ctx.at, ctx.zone) : endOfLocalDay(ctx.at, atMidnight(ctx.zone), 0);
 };
 
 /** The one write shape for a decline: the record, then the deliberate park.

@@ -42,7 +42,7 @@ import type { AppEvent, ClarifyRoute, NodeId } from './events.ts';
 import { MENU_CATEGORIES } from './menu.ts';
 import { deriveKey, KDF_ITERATIONS } from './journal.ts';
 import { seal } from './seal.ts';
-import { endOfLocalDay, localDayKey } from './time.ts';
+import { endOfLocalDay, localDayKey, atMidnight} from './time.ts';
 
 /** Structurally the UI's `StampContext`, restated so this module does not import
  *  from `src/ui` and stays usable from a script and a test — the same shape
@@ -197,7 +197,7 @@ export async function bigSampleEvents(
   /** End of a local day, `days` from now. Clocks here are end-of-day instants
    *  (ADR-0009). Offsets reach far enough either side of today that a DST
    *  boundary is crossed whenever this is generated, which is deliberate. */
-  const day = (days: number): string => endOfLocalDay(nowIso, ctx.zone, days);
+  const day = (days: number): string => endOfLocalDay(nowIso, atMidnight(ctx.zone), days);
 
   const node = (nodeKind: string, title: string, parent?: NodeId): NodeId => {
     const id = ctx.id();
@@ -605,7 +605,7 @@ export async function bigSampleEvents(
   // the current local day and nothing else (ADR-0051), so a choice stamped for
   // any other day is invisible by design — which means a set that stamped
   // yesterday's would silently demonstrate nothing.
-  const today = localDayKey(nowIso, ctx.zone);
+  const today = localDayKey(nowIso, atMidnight(ctx.zone));
   for (const c of chain) stamp('today.chosen', c, { day: today });
   stamp('today.released', chain[2]!, { day: today });
 

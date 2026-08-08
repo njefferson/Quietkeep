@@ -17,7 +17,7 @@ import type { NodeState, State } from './fold.ts';
 import { decisionsFor } from './merged.ts';
 import { heldNodes } from './gate.ts';
 import { isOpenWaiting, withWhom, openDays } from './people.ts';
-import { calendarDaysBetween, daysWords, isValidIso, localDayKey } from './time.ts';
+import { calendarDaysBetween, daysWords, isValidIso, localDayKey, atMidnight} from './time.ts';
 import { isHeld } from './fold.ts';
 
 /**
@@ -217,9 +217,9 @@ export function statusReport(
     if (n.lastDone) continue;
     const c = n.clocks.due ?? n.clocks.suspense;
     if (!c || !isValidIso(c.at)) continue;
-    const days = calendarDaysBetween(nowIso, c.at, zone);
+    const days = calendarDaysBetween(nowIso, c.at, atMidnight(zone));
     if (days < 0 || days > aheadDays) continue;
-    ahead.push({ node: n, day: localDayKey(c.at, zone), days });
+    ahead.push({ node: n, day: localDayKey(c.at, atMidnight(zone)), days });
   }
   ahead.sort((a, b) => a.days - b.days || (a.node.id < b.node.id ? -1 : 1));
   return { ...r, ahead };
@@ -298,7 +298,7 @@ const mdTitle = (n: NodeState): string => mdSafe(title(n));
  *  far", which is what the first report of all genuinely is. */
 export function periodWords(since: string | null, zone: string): string {
   return since && isValidIso(since)
-    ? `Since ${localDayKey(since, zone)}`
+    ? `Since ${localDayKey(since, atMidnight(zone))}`
     : 'Everything so far';
 }
 

@@ -24,7 +24,7 @@ import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
 import { pressureWords } from '../pressure.ts';
-import { calendarDaysBetween } from '../time.ts';
+import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
@@ -411,7 +411,7 @@ export function mountWork(
   /** Plain words for when something returns — calendar days in the reader's
    *  zone, never a countdown and never a rebuke. */
   const returns = (iso: string): string => {
-    const d = calendarDaysBetween(nowIso(), iso, session.zone);
+    const d = calendarDaysBetween(nowIso(), iso, atMidnight(session.zone));
     if (d < 0) return 'ready now';
     if (d === 0) return 'today';
     if (d === 1) return 'tomorrow';

@@ -23,7 +23,7 @@ import type { LogStore, Snapshot } from './log-store.ts';
 import { fold } from './fold.ts';
 import { silentNodes, heldNodes, structuralRefusal } from './gate.ts';
 import { serialiseState } from './snapshot.ts';
-import { isValidIso, localDayKey, localParts } from './time.ts';
+import { isValidIso, localDayKey, localParts, atMidnight} from './time.ts';
 
 export interface ExportFile {
   format: 'planner-log';
@@ -90,7 +90,7 @@ export const exportFilename = (
   if (zone !== undefined && isValidIso(at)) {
     const p = localParts(at, zone);
     const two = (n: number): string => String(n).padStart(2, '0');
-    stamp = `${localDayKey(at, zone)}T${two(p.hour)}-${two(p.minute)}-${two(p.second)}`;
+    stamp = `${localDayKey(at, atMidnight(zone))}T${two(p.hour)}-${two(p.minute)}-${two(p.second)}`;
   }
   return `quietkeep-${scope}-${stamp}${encrypted ? '-encrypted' : ''}.${ext}`;
 };

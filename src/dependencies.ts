@@ -19,7 +19,7 @@
 // PURE. `now` and `zone` are arguments, like every other projection here.
 
 import type { NodeState, State } from './fold.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { isHeld, isGone } from './fold.ts';
 
 /** A downstream commitment, resolved to something a surface can say. */
@@ -77,7 +77,7 @@ export function dependencyView(state: State, n: NodeState, nowIso: string, zone:
     if (!isHeld(target) || target.lastDone) continue;
     const at = commitmentAt(target);
     if (!at) continue;
-    feeds.push({ node: target, at, daysLeft: calendarDaysBetween(nowIso, at, zone) });
+    feeds.push({ node: target, at, daysLeft: calendarDaysBetween(nowIso, at, atMidnight(zone)) });
   }
   // Soonest first, then by id so the order is total and a render never
   // reshuffles what it just showed.

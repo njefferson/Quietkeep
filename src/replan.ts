@@ -28,7 +28,7 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { NO_REPLAN_CARD } from './kinds.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { dependencyView, dependencyWords, type DependencyView } from './dependencies.ts';
 import type { ClockKind, NodeKind } from './events.ts';
 import { isGone } from './fold.ts';
@@ -92,7 +92,7 @@ export function passedHardClocks(n: NodeState, nowIso: string, zone: string): Pa
   for (const kind of HARD) {
     const c = n.clocks[kind];
     if (!c || !isValidIso(c.at)) continue;
-    const days = calendarDaysBetween(nowIso, c.at, zone);
+    const days = calendarDaysBetween(nowIso, c.at, atMidnight(zone));
     if (days >= 0) continue;                      // not passed yet
     out.push({ kind, at: c.at, daysAgo: -days });
   }
@@ -161,7 +161,7 @@ export function replanAll(state: State, nowIso: string, zone: string): ReplanCar
       daysAgo: passed.daysAgo,
       fed: depends.feeds.map(f => f.node),
       suspense,
-      daysLeft: suspense ? calendarDaysBetween(nowIso, suspense, zone) : null,
+      daysLeft: suspense ? calendarDaysBetween(nowIso, suspense, atMidnight(zone)) : null,
     });
   }
   // Longest-passed first, then by id so the order is total and a render never

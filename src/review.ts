@@ -38,7 +38,7 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { NOT_ACTIONABLE } from './kinds.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { CONTAINER_KINDS } from './tree.ts';
 import type { NodeKind } from './events.ts';
 import { isHeld, isGone } from './fold.ts';
@@ -256,5 +256,5 @@ export function idleDays(state: State, n: NodeState, nowIso: string, zone: strin
     const at = child.lastDone;
     if (at && isValidIso(at) && (!newest || at > newest)) newest = at;
   }
-  return newest ? calendarDaysBetween(newest, nowIso, zone) : null;
+  return newest ? calendarDaysBetween(newest, nowIso, atMidnight(zone)) : null;
 }

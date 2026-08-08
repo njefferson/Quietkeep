@@ -21,7 +21,7 @@ import { nextUp } from '../src/nextup.ts';
 import { waitingOnAnyone } from '../src/people.ts';
 import { menuGroups } from '../src/menu.ts';
 import { replanAll } from '../src/replan.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 
 const DENVER = 'America/Denver';
 const KIRITIMATI = 'Pacific/Kiritimati';
@@ -190,7 +190,7 @@ test('the thing it offers first is dated today in the local day, not in UTC', ()
   const up = nextUp(state, NOW, DENVER);
   const clock = up.head?.node.clocks.due ?? up.head?.node.clocks.start;
   assert.ok(clock);
-  assert.equal(localDayKey(clock.at, DENVER), localDayKey(NOW, DENVER));
+  assert.equal(localDayKey(clock.at, atMidnight(DENVER)), localDayKey(NOW, atMidnight(DENVER)));
 });
 
 // --- words ------------------------------------------------------------------

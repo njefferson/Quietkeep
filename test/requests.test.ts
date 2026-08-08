@@ -15,7 +15,7 @@ import {
 import {
   declineEvents, carryEvents, parkToSlotEvents, setSlotEvents,
 } from '../src/ui/request-intents.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
 
@@ -165,9 +165,9 @@ test('setting and clearing the slot folds LWW, and clearing is honest', () => {
 
 test('the next occurrence: today counts when today IS the slot day', () => {
   // NOW is a Wednesday in Denver.
-  assert.equal(localDayKey(nextSlotOccurrence('wed', NOW, TZ), TZ), '2026-07-29', 'tonight is the nearest slot');
-  assert.equal(localDayKey(nextSlotOccurrence('thu', NOW, TZ), TZ), '2026-07-30');
-  assert.equal(localDayKey(nextSlotOccurrence('tue', NOW, TZ), TZ), '2026-08-04', 'six days out, never eight');
+  assert.equal(localDayKey(nextSlotOccurrence('wed', NOW, TZ), atMidnight(TZ)), '2026-07-29', 'tonight is the nearest slot');
+  assert.equal(localDayKey(nextSlotOccurrence('thu', NOW, TZ), atMidnight(TZ)), '2026-07-30');
+  assert.equal(localDayKey(nextSlotOccurrence('tue', NOW, TZ), atMidnight(TZ)), '2026-08-04', 'six days out, never eight');
   for (const d of SLOT_DAYS) {
     const at = nextSlotOccurrence(d, NOW, TZ);
     assert.equal(Date.parse(at) > Date.parse(NOW), true, `${d} is in the future`);
@@ -180,7 +180,7 @@ test('the occurrence math survives hostile zones and the year-0099 trap', () => 
     assert.equal(Number.isNaN(Date.parse(at)), false, zone);
   }
   const ancient = nextSlotOccurrence('mon', '0099-08-04T12:00:00.000Z', TZ);
-  assert.match(localDayKey(ancient, TZ), /^0099-08-/, 'two-digit years stay in their century');
+  assert.match(localDayKey(ancient, atMidnight(TZ)), /^0099-08-/, 'two-digit years stay in their century');
 });
 
 test('a declined thing parks to the slot when one is set', () => {
@@ -188,7 +188,7 @@ test('a declined thing parks to the slot when one is set', () => {
   s = write(s, setSlotEvents(ctx(), 'fri'));
   s = write(s, declineEvents(ctx(), s, s.nodes.get('A')!));
   const park = s.nodes.get('A')!.clocks.park!;
-  assert.equal(localDayKey(park.at, TZ), '2026-07-31', 'it waits for Friday, not for tonight');
+  assert.equal(localDayKey(park.at, atMidnight(TZ)), '2026-07-31', 'it waits for Friday, not for tonight');
 });
 
 test('park-to-slot refuses without a slot — never offer what cannot land', () => {

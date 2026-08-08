@@ -28,7 +28,7 @@
 
 import type { State } from './fold.ts';
 import { heldNodes } from './gate.ts';
-import { localParts, endOfLocalDay, localDayKey } from './time.ts';
+import { localParts, endOfLocalDay, localDayKey, atMidnight} from './time.ts';
 import { CALENDAR_KINDS, exportsToCalendar } from './ics.ts';
 
 /** The opt-in Extra's id. `state.modules`, exactly like the Composed Today
@@ -78,7 +78,7 @@ export const handAngles = (f: ClockFace): { hour: number; minute: number } => ({
 export function minutesLeftOfDay(nowIso: string, zone: string): number {
   let end = NaN;
   try {
-    end = Date.parse(endOfLocalDay(nowIso, zone));
+    end = Date.parse(endOfLocalDay(nowIso, atMidnight(zone)));
   } catch {
     return 0;
   }
@@ -126,7 +126,7 @@ export function minutesLeftOfDay(nowIso: string, zone: string): number {
 export function datedTodayCount(state: State, nowIso: string, zone: string): number {
   let today: string;
   try {
-    today = localDayKey(nowIso, zone);
+    today = localDayKey(nowIso, atMidnight(zone));
   } catch {
     return 0;
   }
@@ -137,7 +137,7 @@ export function datedTodayCount(state: State, nowIso: string, zone: string): num
     for (const [kind, clock] of Object.entries(node.clocks)) {
       if (!clock || !CALENDAR_KINDS.has(kind)) continue;
       let key: string;
-      try { key = localDayKey(clock.at, zone); } catch { continue; }
+      try { key = localDayKey(clock.at, atMidnight(zone)); } catch { continue; }
       if (key === today) { n++; break; }
     }
   }

@@ -14,7 +14,7 @@ import { demandClocksOf, routeEvents } from '../src/ui/triage-intents.ts';
 import { openSession } from '../src/ui/session.ts';
 import { MemoryLogStore } from '../src/log-store.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 import { admit, gateOptionsFor, silentNodes, trashedNodes, heldNodes } from '../src/gate.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { Session, StampContext } from '../src/ui/session.ts';
@@ -316,7 +316,7 @@ test('a new date in bulk is the same resolution a person makes by hand', () => {
   // Asked in the READER'S day, not by slicing the UTC string. End of the local
   // 20th in a UTC-6 zone is the 21st in UTC, and a substring assertion would have
   // called correct behaviour a defect — the exact class V-13 exists for.
-  assert.equal(localDayKey(n.clocks['due']!.at, TZ), '2026-08-20', 'the new date landed');
+  assert.equal(localDayKey(n.clocks['due']!.at, atMidnight(TZ)), '2026-08-20', 'the new date landed');
   assert.equal(n.clocks['suspense'], undefined,
     'and the OTHER date that had gone by was retired too — resolving one of two resolves nothing');
   assert.equal(silentNodes(after).length, 0);
@@ -444,7 +444,7 @@ test('the same holds for a bulk new date — the verb that shipped broken', () =
       'this is the one that shipped skipping everything — Undo said 0 restored and meant it');
     assert.equal(undone.done, 3);
     for (const i of ids) {
-      assert.equal(localDayKey(session.state().nodes.get(i)!.clocks['due']!.at, TZ), '2026-07-01',
+      assert.equal(localDayKey(session.state().nodes.get(i)!.clocks['due']!.at, atMidnight(TZ)), '2026-07-01',
         'and the date it retired is back, exactly as it was');
     }
     assert.equal(silentNodes(session.state()).length, 0);

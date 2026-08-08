@@ -22,7 +22,7 @@
 
 import type { AppEvent, ClockKind, MenuCategory, NodeKind, ReplanChoice } from '../events.ts';
 import type { StampContext } from './session.ts';
-import { endOfLocalDay } from '../time.ts';
+import { endOfLocalDay, atMidnight} from '../time.ts';
 import { endOfDayKey } from './detail-intents.ts';
 
 const base = (ctx: StampContext, kind: string, node: string, payload: unknown): AppEvent => ({
@@ -101,7 +101,7 @@ export function replanEvents(
       // returned on the next render — a button that did nothing while announcing
       // "back today, smaller" (audit, found independently twice).
       return [r, ...retireOthers, base(ctx, 'clock.set', node, {
-        clockKind: 'due', at: endOfLocalDay(ctx.at, ctx.zone, 0), source: 'replan:compress',
+        clockKind: 'due', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), 0), source: 'replan:compress',
       })];
 
     case 'escalate':
@@ -117,7 +117,7 @@ export function replanEvents(
         // exactly this reason; this did not copy it across (audit).
         base(ctx, 'node.kind.changed', node, { from: fromKind, to: 'waiting-for' as NodeKind }),
         base(ctx, 'clock.set', node, {
-          clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, 3), source: 'replan:escalate',
+          clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), 3), source: 'replan:escalate',
         }),
       ];
 
@@ -126,7 +126,7 @@ export function replanEvents(
       // is the next action, so it returns tomorrow rather than vanishing until a
       // date nobody has agreed yet.
       return [r, ...retire(passedKinds), base(ctx, 'clock.set', node, {
-        clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, 1), source: 'replan:renegotiate',
+        clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), 1), source: 'replan:renegotiate',
       })];
 
     case 'new-date': {

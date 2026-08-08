@@ -17,7 +17,7 @@
 import type { Session } from './session.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS } from '../events.ts';
-import { everyDaysWords, localDayKey } from '../time.ts';
+import { everyDaysWords, localDayKey, atMidnight} from '../time.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
 import { isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo } from '../arrangement.ts';
 import {
@@ -356,7 +356,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     if (declinedBox) declinedBox.hidden = !declined;
     const words = q<HTMLElement>('#detail-declined-words');
     if (words && standing) {
-      const day = localDayKey(standing.at, session.zone);
+      const day = localDayKey(standing.at, atMidnight(session.zone));
       const who = standing.person ? (st.nodes.get(standing.person)?.title || null) : null;
       words.textContent = who
         ? `Declined ${day} — ${who} asked. It sits in the Not Now ledger.`
@@ -369,7 +369,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
       slotBtn.hidden = !offer;
       if (offer && day) {
         const back = localDayKey(
-          nextSlotOccurrence(day, new Date(now()).toISOString(), session.zone), session.zone);
+          nextSlotOccurrence(day, new Date(now()).toISOString(), session.zone), atMidnight(session.zone));
         slotBtn.textContent = `Park it until the request slot — back ${back} (${slotDayWords(day)})`;
       }
     }
@@ -433,7 +433,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     const words = pressureWords(p);
     if (words) bits.push(words);
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
-    if (clock) bits.push(`comes back ${localDayKey(clock.at, session.zone)}`);
+    if (clock) bits.push(`comes back ${localDayKey(clock.at, atMidnight(session.zone))}`);
     STATE.textContent = bits.length ? bits.join(' · ') : 'held';
 
     // Seed the date box with the date it already has, so "Set" is an edit rather
@@ -443,8 +443,8 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     // in-progress rename — in an app whose capture line persists a draft per
     // keystroke precisely because interruption is the expected case (audit).
     if (document.activeElement !== NAME || NAME.value.trim() === '') NAME.value = n.title;
-    DATE.value = n.clocks.due ? localDayKey(n.clocks.due.at, session.zone) : '';
-    if (startInput) startInput.value = n.clocks.start ? localDayKey(n.clocks.start.at, session.zone) : '';
+    DATE.value = n.clocks.due ? localDayKey(n.clocks.due.at, atMidnight(session.zone)) : '';
+    if (startInput) startInput.value = n.clocks.start ? localDayKey(n.clocks.start.at, atMidnight(session.zone)) : '';
     // The note rides the same no-clobber rule as the rename box: `render` runs
     // after every commit here, and prose is the costliest thing to eat.
     if (noteInput && document.activeElement !== noteInput) noteInput.value = noteOf(n) ?? '';
@@ -874,7 +874,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     show('#detail-track', container && n.role !== 'track');
     show('#detail-untrack', container && n.role === 'track');
     const susp = q<HTMLInputElement>('#detail-suspense');
-    if (susp && n.clocks.suspense) susp.value = localDayKey(n.clocks.suspense.at, session.zone);
+    if (susp && n.clocks.suspense) susp.value = localDayKey(n.clocks.suspense.at, atMidnight(session.zone));
   }
 
   /** A positive whole number, or null. A blank or nonsense box must not become

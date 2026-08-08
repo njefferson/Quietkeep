@@ -18,7 +18,7 @@ import { toCalendar, calendarCount, CALENDAR_KINDS } from '../src/ics.ts';
 import { routeEvents } from '../src/ui/triage-intents.ts';
 import { exportFilename } from '../src/portability.ts';
 import { heldGroups } from '../src/held.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 import type { AppEvent } from '../src/events.ts';
 
 const DENVER = 'America/Denver';
@@ -135,7 +135,7 @@ test('the all-day date is the day the READER would call it, in their own zone', 
     ev('clock.set', 'N', { clockKind: 'due', at, source: 't' }));
 
   const dDenver = unfold(toCalendar(s, NOW, DENVER)).find(l => l.startsWith('DTSTART'));
-  assert.equal(dDenver, `DTSTART;VALUE=DATE:${localDayKey(at, DENVER).replace(/-/g, '')}`);
+  assert.equal(dDenver, `DTSTART;VALUE=DATE:${localDayKey(at, atMidnight(DENVER)).replace(/-/g, '')}`);
   assert.equal(dDenver, 'DTSTART;VALUE=DATE:20260729', 'still the 29th in Denver');
 
   const dKiri = unfold(toCalendar(s, NOW, KIRITIMATI)).find(l => l.startsWith('DTSTART'));
@@ -242,7 +242,7 @@ test('a date that went by is the FIRST thing the calendar should carry', () => {
   assert.equal(lines.filter(l => l === 'BEGIN:VALARM').length, 1,
     'with an alarm — an export without one reminds nobody');
   // Dated today rather than in the past, or the alarm has already been and gone.
-  assert.ok(lines.includes(`DTSTART;VALUE=DATE:${localDayKey(NOW, DENVER).replace(/-/g, '')}`),
+  assert.ok(lines.includes(`DTSTART;VALUE=DATE:${localDayKey(NOW, atMidnight(DENVER)).replace(/-/g, '')}`),
     'and never dated in the past, which would fire nothing');
 });
 
@@ -373,7 +373,7 @@ test('a reminder is never dated in the past — it could not fire (audit)', () =
   const s = st(...item('OLD', 'a week ago', -7), ...item('TODAY', 'today', 0));
   const dates = unfold(toCalendar(s, NOW, DENVER))
     .filter(l => l.startsWith('DTSTART')).map(l => l.split(':')[1]!);
-  const today = localDayKey(NOW, DENVER).replace(/-/g, '');
+  const today = localDayKey(NOW, atMidnight(DENVER)).replace(/-/g, '');
   assert.equal(dates.length, 2);
   for (const d of dates) assert.ok(d >= today, `${d} is not before today (${today})`);
 });
@@ -433,7 +433,7 @@ test('an export names itself with the same day it says inside', () => {
   const inside = toCalendar(st(ev('node.created', 'n1', { nodeKind: 'action', title: 'x' })), evening, DENVER);
 
   const dayInName = (name.match(/(\d{4}-\d{2}-\d{2})/) ?? [])[1];
-  assert.equal(dayInName, localDayKey(evening, DENVER));
+  assert.equal(dayInName, localDayKey(evening, atMidnight(DENVER)));
   assert.equal(dayInName, '2026-07-29', 'the local day, which is what the reader is living in');
   assert.ok(inside.includes(`as of ${dayInName}`),
     `the file says "as of" a different day than its own name (${name})`);
@@ -447,7 +447,7 @@ test('and on the other side of the world, the same way', () => {
   const morning = '2026-07-29T18:00:00.000Z';        // the 30th in Kiritimati
   const name = exportFilename('calendar', morning, false, 'ics', KIRITIMATI);
   const dayInName = (name.match(/(\d{4}-\d{2}-\d{2})/) ?? [])[1];
-  assert.equal(dayInName, localDayKey(morning, KIRITIMATI));
+  assert.equal(dayInName, localDayKey(morning, atMidnight(KIRITIMATI)));
   assert.equal(dayInName, '2026-07-30');
   assert.ok(toCalendar(st(ev('node.created', 'n1', { nodeKind: 'action', title: 'x' })), morning, KIRITIMATI)
     .includes(`as of ${dayInName}`));

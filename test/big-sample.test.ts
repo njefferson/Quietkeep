@@ -47,7 +47,7 @@ import { open } from '../src/seal.ts';
 import { pressureOf, pressureWords } from '../src/pressure.ts';
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import { inspectExport, toJsonl } from '../src/portability.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 import type { AppEvent } from '../src/events.ts';
 
 const TZ = 'America/Denver';
@@ -344,7 +344,7 @@ test('big-sample: today is chosen for TODAY, or the strip shows nothing', async 
   assert.ok(state.modules.has('today'), 'the module is not on, so the strip cannot render');
   const chosen = composedFor(state, NOW, TZ);
   assert.ok(chosen.length >= 1, 'nothing is chosen for today');
-  for (const n of chosen) assert.equal(n.todayFor, localDayKey(NOW, TZ));
+  for (const n of chosen) assert.equal(n.todayFor, localDayKey(NOW, atMidnight(TZ)));
 });
 
 test('big-sample: the words beside it never call it a backup', async () => {

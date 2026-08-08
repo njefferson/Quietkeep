@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 
 import { admit, GateRejection, heldNodes, isSilent, silentNodes, coverageGauge } from '../src/gate.ts';
 import { endOfDayKey } from '../src/ui/detail-intents.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 import { fold, emptyState, compareEvents, type State } from '../src/fold.ts';
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import { MemoryLogStore } from '../src/log-store.ts';
@@ -239,7 +239,7 @@ test('date-0099: a typed year 0099 stays year 0099 — never silently 1999', () 
   const zone = 'America/Denver';
   const iso = endOfDayKey('0099-08-04', zone);
   assert.ok(!iso.startsWith('1999'), `did not collapse to 1999 (got ${iso})`);
-  assert.equal(localDayKey(iso, zone), '0099-08-04', 'the instant is the end of the day that was typed');
+  assert.equal(localDayKey(iso, atMidnight(zone)), '0099-08-04', 'the instant is the end of the day that was typed');
 });
 
 test('export-roundtrip: a faithful export re-imports cleanly and re-folds identically', async () => {

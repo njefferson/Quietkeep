@@ -21,7 +21,7 @@
 import type { AppEvent, ClarifyRoute, ClockKind, Heat, MenuCategory, NodeKind } from '../events.ts';
 import type { NodeState } from '../fold.ts';
 import type { StampContext } from './session.ts';
-import { calendarDaysBetween, endOfLocalDay, isValidIso } from '../time.ts';
+import { calendarDaysBetween, endOfLocalDay, isValidIso, atMidnight} from '../time.ts';
 import { createParentEvents, endOfDayKey } from './detail-intents.ts';
 import { isAppClock } from '../fold.ts';
 
@@ -38,7 +38,7 @@ const routed = (ctx: StampContext, node: string, route: ClarifyRoute): AppEvent 
 // counts calendar days, so a DST changeover in between does not move it an hour.
 const clockInDays = (ctx: StampContext, node: string, days: number, source: string): AppEvent =>
   base(ctx, 'clock.set', node, {
-    clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, days), source,
+    clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), days), source,
   });
 
 const menu = (ctx: StampContext, node: string): AppEvent =>
@@ -392,7 +392,7 @@ export function placeReturnDays(
   let best: number | null = null;
   for (const c of Object.values(place.clocks)) {
     if (!c || c.kind === 'park' || isAppClock(c) || !isValidIso(c.at)) continue;
-    const d = calendarDaysBetween(nowIso, c.at, zone);
+    const d = calendarDaysBetween(nowIso, c.at, atMidnight(zone));
     if (best === null || d < best) best = d;
   }
   return best;

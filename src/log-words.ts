@@ -22,7 +22,7 @@
 // PURE. The zone is an argument, like everywhere else (V-13).
 
 import type { AppEvent } from './events.ts';
-import { isValidIso, localDayKey } from './time.ts';
+import { isValidIso, localDayKey, atMidnight} from './time.ts';
 
 /** A gate cure — the app's own write, stamped with its cause's identity. */
 export const isCure = (e: AppEvent): boolean => e.id.includes('~cure~');
@@ -56,7 +56,7 @@ export function eventWords(
 ): string {
   const p = pl(e);
   const day = (v: unknown): string =>
-    typeof v === 'string' && isValidIso(v) ? localDayKey(v, zone) : '';
+    typeof v === 'string' && isValidIso(v) ? localDayKey(v, atMidnight(zone)) : '';
   const name = (v: unknown): string => {
     const id = str(v);
     const t = id ? titleOf?.(id) : null;

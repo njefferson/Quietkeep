@@ -19,7 +19,7 @@ import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { workSurface } from './nextup.ts';
 import { waitingOnAnyone, withWhom, waitingWords } from './people.ts';
-import { calendarDaysBetween, isValidIso, localDayKey } from './time.ts';
+import { calendarDaysBetween, isValidIso, localDayKey, atMidnight} from './time.ts';
 
 /** What one page can carry without becoming the pile. Deliberately the same
  *  order of magnitude as every other capped surface in this app. */
@@ -74,14 +74,14 @@ export function todayCard(state: State, nowIso: string, zone: string, aheadDays 
     if (n.lastDone) continue;
     const c = n.clocks.due ?? n.clocks.suspense;
     if (!c || !isValidIso(c.at)) continue;
-    const days = calendarDaysBetween(nowIso, c.at, zone);
+    const days = calendarDaysBetween(nowIso, c.at, atMidnight(zone));
     if (days < 0 || days > aheadDays) continue;
-    ahead.push({ day: localDayKey(c.at, zone), title: title(n), days });
+    ahead.push({ day: localDayKey(c.at, atMidnight(zone)), title: title(n), days });
   }
   ahead.sort((a, b) => a.days - b.days || (a.title < b.title ? -1 : 1));
 
   return {
-    day: localDayKey(nowIso, zone),
+    day: localDayKey(nowIso, atMidnight(zone)),
     at: nowIso,
     head: up.head ? { title: title(up.head.node), why: up.head.words } : null,
     also: behind.slice(0, TODAY_CAP).map(i => title(i.node)),

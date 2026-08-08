@@ -27,7 +27,7 @@ import { ancestors, CONTAINER_KINDS } from './tree.ts';
 import { pressureOf } from './pressure.ts';
 import { replanIds } from './replan.ts';
 import { NOT_ACTIONABLE } from './kinds.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { dependencyView, dependencyWords } from './dependencies.ts';
 import { isHeld, isGone } from './fold.ts';
 
@@ -177,7 +177,7 @@ function isCandidate(n: NodeState, nowIso: string, zone: string): boolean {
  *  cue (1.30.0). */
 const parkedAway = (n: NodeState, nowIso: string, zone: string): boolean => {
   const park = n.clocks.park;
-  return !!park && isValidIso(park.at) && calendarDaysBetween(nowIso, park.at, zone) > 0;
+  return !!park && isValidIso(park.at) && calendarDaysBetween(nowIso, park.at, atMidnight(zone)) > 0;
 };
 
 const arrivedClock = (n: NodeState, nowIso: string, zone: string): boolean =>
@@ -190,7 +190,7 @@ const arrivedClock = (n: NodeState, nowIso: string, zone: string): boolean =>
     // arithmetically correct and meant nothing. A cure exists so a node is not
     // silent; the reader never asked for anything by today.
     !isAppClock(c) &&
-    calendarDaysBetween(nowIso, c.at, zone) <= 0);
+    calendarDaysBetween(nowIso, c.at, atMidnight(zone)) <= 0);
 
 /**
  * The nearest ancestor whose own demanding clock has come round, or null.

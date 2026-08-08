@@ -21,7 +21,7 @@
 // PURE. `now` and `zone` are arguments.
 
 import type { State } from './fold.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { raisesReplanCard } from './replan.ts';
 import { heldNodes } from './gate.ts';
 
@@ -64,7 +64,7 @@ export function absenceDays(state: State, nowIso: string, zone: string): number 
   if (!at || !isValidIso(at) || !isValidIso(nowIso)) return null;
   // Never negative. A device whose clock moved backwards is not "away for -3
   // days", and a negative here would silently make `lapsed` false for ever.
-  return Math.max(0, calendarDaysBetween(at, nowIso, zone));
+  return Math.max(0, calendarDaysBetween(at, nowIso, atMidnight(zone)));
 }
 
 /**

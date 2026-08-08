@@ -21,7 +21,7 @@
 import type { Session } from './session.ts';
 import type { ReplanCard } from '../replan.ts';
 import { replanAll, replanWords, contextWords, REPLAN_CAP } from '../replan.ts';
-import { localDayKey } from '../time.ts';
+import { localDayKey, atMidnight} from '../time.ts';
 import { demandClocksOf } from './triage-intents.ts';
 import { replanEvents, canResolve, REPLAN_CHOICES } from './replan-intents.ts';
 import type { ReplanChoice } from '../events.ts';
@@ -168,7 +168,7 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
         // it is a date picker doing what date pickers do, not a judgement. If one
         // still gets through, the returning card says plainly that it went by —
         // which is true, so nothing is claimed that the data does not support.
-        input.min = localDayKey(nowIso(), session.zone);
+        input.min = localDayKey(nowIso(), atMidnight(session.zone));
         const set = el('button', 'replan-set', 'Set');
         set.type = 'button';
         set.addEventListener('click', () => void resolve('new-date', input.value));

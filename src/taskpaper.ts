@@ -51,7 +51,7 @@
 
 import type { AppEvent } from './events.ts';
 import { cleanNote } from './note.ts';
-import { endOfLocalDay, isValidIso, localDayKey, localParts, utcMs } from './time.ts';
+import { endOfLocalDay, isValidIso, localDayKey, localParts, utcMs, atMidnight} from './time.ts';
 
 export interface ImportContext {
   at: string;
@@ -223,7 +223,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
  * summary describing a different import.
  */
 export const isPastDay = (day: string, nowIso: string, zone: string): boolean =>
-  day < localDayKey(nowIso, zone);
+  day < localDayKey(nowIso, atMidnight(zone));
 
 export function taskPaperEvents(
   ctx: ImportContext,
@@ -365,7 +365,7 @@ function dayToInstant(day: string, zone: string): string {
   const drift = utcMs(p.year, p.month, p.day) - utcMs(
     Number(day.slice(0, 4)), Number(day.slice(5, 7)), Number(day.slice(8, 10)));
   const corrected = new Date(Date.parse(anchor) - drift).toISOString();
-  return endOfLocalDay(corrected, zone, 0);
+  return endOfLocalDay(corrected, atMidnight(zone), 0);
 }
 
 // --- CSV, because OmniFocus exports that too ---------------------------------

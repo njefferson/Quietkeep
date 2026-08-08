@@ -18,7 +18,7 @@ import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { CONTAINER_KINDS } from './tree.ts';
 import { isOpenWaiting, openDays, personName, stakeholderWords, stakeholdersOf } from './people.ts';
-import { calendarDaysBetween, isValidIso, localDayKey } from './time.ts';
+import { calendarDaysBetween, isValidIso, localDayKey, atMidnight} from './time.ts';
 import type { NodeKind } from './events.ts';
 
 /** The role a project carries. `execute` is the default and it is STATED rather
@@ -73,8 +73,8 @@ export function trackPortfolio(state: State, nowIso: string, zone: string): Trac
       node: n,
       opr: personName(state, n.opr),
       stakeholders: stakeholdersOf(state, n).map(p => p.title || '(unnamed)'),
-      suspense: hasDate ? localDayKey(s.at, zone) : null,
-      suspenseDays: hasDate ? calendarDaysBetween(nowIso, s.at, zone) : null,
+      suspense: hasDate ? localDayKey(s.at, atMidnight(zone)) : null,
+      suspenseDays: hasDate ? calendarDaysBetween(nowIso, s.at, atMidnight(zone)) : null,
       waiting: children.filter(isOpenWaiting)
         .map(w => ({ node: w, days: openDays(w, nowIso, zone) }))
         .sort((a, b) => (b.days ?? -1) - (a.days ?? -1) || (a.node.id < b.node.id ? -1 : 1)),
@@ -96,7 +96,7 @@ function lastMoved(children: NodeState[], nowIso: string, zone: string): number 
     const at = c.lastDone;
     if (at && isValidIso(at) && (!newest || at > newest)) newest = at;
   }
-  return newest ? calendarDaysBetween(newest, nowIso, zone) : null;
+  return newest ? calendarDaysBetween(newest, nowIso, atMidnight(zone)) : null;
 }
 
 /**

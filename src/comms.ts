@@ -26,7 +26,7 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { pressureOf } from './pressure.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { isHeld } from './fold.ts';
 
 /** The field that marks a node as the comms sweep. A field and not a kind: it
@@ -91,7 +91,7 @@ export function commsChip(
 export function sweptDaysAgo(n: NodeState, nowIso: string, zone: string): number | null {
   const at = n.lastDone;
   if (!at || !isValidIso(at)) return null;
-  return calendarDaysBetween(at, nowIso, zone);
+  return calendarDaysBetween(at, nowIso, atMidnight(zone));
 }
 
 /**

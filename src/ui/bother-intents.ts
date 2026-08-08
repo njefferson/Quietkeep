@@ -14,7 +14,7 @@
 import type { AppEvent, NodeKind, Ownership } from '../events.ts';
 import type { State } from '../fold.ts';
 import type { StampContext } from './session.ts';
-import { endOfLocalDay } from '../time.ts';
+import { endOfLocalDay, atMidnight} from '../time.ts';
 import { cleanTitle } from './detail-intents.ts';
 import { declinePair } from './request-intents.ts';
 
@@ -78,14 +78,14 @@ export function routeBotherEvents(
     // that already knows how to ask "what is the actual next step".
     out.push(base(ctx, 'node.kind.changed', node, { from: 'bother' as NodeKind, to: 'action' as NodeKind }));
     out.push(base(ctx, 'clock.set', node, {
-      clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, 0), source: 'bother:mine-to-solve',
+      clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), 0), source: 'bother:mine-to-solve',
     }));
     return out;
   }
   if (ownership === 'mine-to-track') {
     out.push(base(ctx, 'bother.routed', node, { park: true }));
     out.push(base(ctx, 'park.set', node, {
-      returnAt: endOfLocalDay(ctx.at, ctx.zone, 7), reason: 'bother:mine-to-track',
+      returnAt: endOfLocalDay(ctx.at, atMidnight(ctx.zone), 7), reason: 'bother:mine-to-track',
     }));
     return out;
   }

@@ -16,7 +16,7 @@
 
 import type { AppEvent, MenuCategory, NodeKind } from '../events.ts';
 import type { StampContext } from './session.ts';
-import { endOfLocalDay, localDayKey, utcMs } from '../time.ts';
+import { endOfLocalDay, localDayKey, utcMs, atMidnight} from '../time.ts';
 import { CONTAINER_DEFAULT } from '../tree.ts';
 
 const base = (ctx: StampContext, kind: string, node: string, payload: unknown): AppEvent => ({
@@ -47,8 +47,8 @@ const daysBetweenKeys = (from: string, to: string): number => {
 export function endOfDayKey(dayKey: string, zone: string): string {
   const [y, m, d] = dayKey.split('-').map(Number) as [number, number, number];
   const probe = new Date(utcMs(y, m, d, 12)).toISOString();
-  const drift = daysBetweenKeys(localDayKey(probe, zone), dayKey);
-  return endOfLocalDay(probe, zone, drift);
+  const drift = daysBetweenKeys(localDayKey(probe, atMidnight(zone)), dayKey);
+  return endOfLocalDay(probe, atMidnight(zone), drift);
 }
 
 /**
@@ -172,10 +172,10 @@ export const weightEvents = (ctx: StampContext, node: string, weight: string): A
  * choice adds no coverage and removes none.
  */
 export const chooseTodayEvents = (ctx: StampContext, node: string): AppEvent[] =>
-  [base(ctx, 'today.chosen', node, { day: localDayKey(ctx.at, ctx.zone) })];
+  [base(ctx, 'today.chosen', node, { day: localDayKey(ctx.at, atMidnight(ctx.zone)) })];
 
 export const releaseTodayEvents = (ctx: StampContext, node: string): AppEvent[] =>
-  [base(ctx, 'today.released', node, { day: localDayKey(ctx.at, ctx.zone) })];
+  [base(ctx, 'today.released', node, { day: localDayKey(ctx.at, atMidnight(ctx.zone)) })];
 
 /** Turn an optional module on or off (1.6.0 — the first emitters for two
  *  Phase-0 nouns). A decision, recorded; the log viewer already has the words. */
@@ -284,7 +284,7 @@ export function makeRepeatEvents(
   // the kind change with a same-day clock, which would bring a monthly thing
   // back this evening — legal, but wrong.
   out.push(base(ctx, 'clock.set', node, {
-    clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.zone, intervalDays), source: 'detail:repeat',
+    clockKind: 'review', at: endOfLocalDay(ctx.at, atMidnight(ctx.zone), intervalDays), source: 'detail:repeat',
   }));
   return out;
 }

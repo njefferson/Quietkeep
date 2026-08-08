@@ -24,7 +24,7 @@ import {
 } from '../src/taskpaper.ts';
 import { admit, gateOptionsFor, heldNodes, silentNodes } from '../src/gate.ts';
 import { fold, noteOf } from '../src/fold.ts';
-import { localDayKey } from '../src/time.ts';
+import { localDayKey, atMidnight} from '../src/time.ts';
 import { calendarCount } from '../src/ics.ts';
 import { replanAll } from '../src/replan.ts';
 
@@ -112,7 +112,7 @@ test('a due date lands on the day it displayed in the other planner', () => {
   const { state } = build('- Ring the plumber @due(2026-08-05)\n');
   const n = heldNodes(state)[0]!;
   assert.ok(n.clocks.due, 'it has a due clock');
-  assert.equal(localDayKey(n.clocks.due.at, DENVER), '2026-08-05');
+  assert.equal(localDayKey(n.clocks.due.at, atMidnight(DENVER)), '2026-08-05');
 });
 
 test('and on the other side of the world, the same day', () => {
@@ -120,7 +120,7 @@ test('and on the other side of the world, the same day', () => {
   // looks right, and it is wrong for everybody east or west of whoever tested it.
   const { state } = build('- Ring the plumber @due(2026-08-05)\n', KIRITIMATI);
   const n = heldNodes(state)[0]!;
-  assert.equal(localDayKey(n.clocks.due!.at, KIRITIMATI), '2026-08-05');
+  assert.equal(localDayKey(n.clocks.due!.at, atMidnight(KIRITIMATI)), '2026-08-05');
 });
 
 test('an imported date is a date somebody CHOSE, so a calendar may carry it', () => {
@@ -329,7 +329,7 @@ test('a date still ahead is untouched', () => {
 test('today itself still counts as a date, not as residue', () => {
   // The boundary. "Due today" is a live commitment and must not be discarded as
   // though it had gone.
-  const today = localDayKey(NOW, DENVER);
+  const today = localDayKey(NOW, atMidnight(DENVER));
   const { state } = build(`- Due today @due(${today})\n`);
   assert.ok(heldNodes(state)[0]!.clocks.due, `${today} is not past`);
 });

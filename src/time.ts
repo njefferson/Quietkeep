@@ -170,7 +170,7 @@ function offsetMsAt(instantMs: number, tz: string): number {
  *   on the far side of the jump, which is the first instant of the following
  *   local time — still inside the day it names, which is what callers rely on.
  */
-function instantFromWallTime(p: LocalParts, tz: string): string {
+export function instantFromWallTime(p: LocalParts, tz: string): string {
   const naive = utcMs(p.year, p.month, p.day, p.hour, p.minute, p.second);
   let ms = naive - offsetMsAt(naive, tz);
   ms = naive - offsetMsAt(ms, tz);
@@ -193,45 +193,99 @@ function instantFromWallTime(p: LocalParts, tz: string): string {
 }
 
 /**
- * The last instant of a local calendar day — the day containing `iso`, or
- * `plusDays` after it. This is the app's "comes back by" boundary: a clock at
- * this instant means "this should be back with you before the day is out."
+ * WHOSE DAY, and where it ends (V2 stage 5, `src/day.ts`).
+ *
+ * `zone` alone answers "what wall time is it"; it does not answer "which day am
+ * I in", because that depends on where the person's day ends and midnight is
+ * only one answer. Both facts travel together now, so a caller cannot take one
+ * and forget the other — which is what a bare `tz: string` parameter allowed for
+ * every clock in the app.
+ *
+ * `boundary` is 0–11, the hour at which today becomes tomorrow. Zero is midnight
+ * and reproduces every answer these functions gave before it existed, exactly.
+ */
+export interface DayShape {
+  zone: string;
+  boundary: number;
+}
+
+/** Midnight, as a shape — for the callers that genuinely have no person behind
+ *  them (an external file's dates, a calendar export, a fixture). Stated at each
+ *  site rather than defaulted, so choosing it is visible in the diff. */
+export const atMidnight = (zone: string): DayShape => ({ zone, boundary: 0 });
+
+/**
+ * The calendar day the person is IN at `iso` — as `[year, month, day]`.
+ *
+ * Pure wall-clock reasoning and no millisecond arithmetic: if the local hour is
+ * before the boundary, it is still the previous calendar day. Subtracting
+ * `boundary` hours in elapsed time would be wrong by an hour on the two DST days
+ * a year, and near a boundary is exactly where that matters.
+ */
+function dayParts(iso: string, day: DayShape): [number, number, number] {
+  const p = localParts(iso, day.zone);
+  if (p.hour >= day.boundary) return [p.year, p.month, p.day];
+  // Still last night. Roll back one calendar day through UTC arithmetic on the
+  // date parts only — no zone involved, so month/year/leap rollover is the
+  // calendar's, not a guess.
+  const back = new Date(utcMs(p.year, p.month, p.day - 1));
+  return [back.getUTCFullYear(), back.getUTCMonth() + 1, back.getUTCDate()];
+}
+
+/**
+ * The last instant of the person's day — the day containing `iso`, or `plusDays`
+ * after it. This is the app's "comes back by" boundary: a clock at this instant
+ * means "this should be back with you before the day is out."
+ *
+ * With a boundary of 3, a thing dated today comes due at 02:59:59 tomorrow
+ * morning, which is when that person's day actually ends. With the default
+ * midnight it is 23:59:59 today, exactly as before.
  *
  * `plusDays` counts CALENDAR days, so a DST changeover in between does not shift
  * the answer by an hour the way adding 86_400_000 ms would.
  */
-export function endOfLocalDay(iso: string, tz: string, plusDays = 0): string {
-  const p = localParts(iso, tz);
-  // Normalise through UTC arithmetic on the date parts only — no zone involved,
-  // so month/year/leap rollover is the calendar's, not a guess.
-  const shifted = new Date(utcMs(p.year, p.month, p.day + plusDays));
+export function endOfLocalDay(iso: string, day: DayShape, plusDays = 0): string {
+  const [y, m, d] = dayParts(iso, day);
+  // The edge is the last whole second BEFORE the boundary, named directly as a
+  // wall time rather than computed as "the boundary, less one second".
+  //
+  // That distinction is load-bearing and an existing test caught it: in Santiago
+  // the clocks go forward AT MIDNIGHT, so on such a day 00:00 does not exist,
+  // and asking for it lands in the gap an hour away from the true end of the
+  // day. Naming 23:59:59 instead asks for a time that does exist, which is what
+  // this function always did — so at a midnight boundary this is not merely
+  // equivalent to the old behaviour, it is character for character the same
+  // request.
+  const lastSecond = (day.boundary + 23) % 24;
+  const rollsOnward = day.boundary !== 0;
+  const shifted = new Date(utcMs(y, m, d + plusDays + (rollsOnward ? 1 : 0)));
   return instantFromWallTime({
     year: shifted.getUTCFullYear(), month: shifted.getUTCMonth() + 1, day: shifted.getUTCDate(),
-    hour: 23, minute: 59, second: 59,
-  }, tz);
+    hour: lastSecond, minute: 59, second: 59,
+  }, day.zone);
 }
 
-/** `YYYY-MM-DD` for the local day containing `iso`. Two instants share a local
- *  day exactly when their keys match — which is what "today" actually means. */
-export function localDayKey(iso: string, tz: string): string {
-  const p = localParts(iso, tz);
+/** `YYYY-MM-DD` for the day the person is IN at `iso`. Two instants share a day
+ *  exactly when their keys match — which is what "today" actually means. */
+export function localDayKey(iso: string, day: DayShape): string {
+  const [y, m, d] = dayParts(iso, day);
   const pad = (n: number): string => String(n).padStart(2, '0');
   // The year is padded too: Intl renders year 99 as "99", and an unpadded key
   // breaks the shape every consumer parses and compares ("0099-08-04").
-  return `${String(p.year).padStart(4, '0')}-${pad(p.month)}-${pad(p.day)}`;
+  return `${String(y).padStart(4, '0')}-${pad(m)}-${pad(d)}`;
 }
 
 /**
- * Whole CALENDAR days from one instant's local day to another's — 0 for today,
+ * Whole CALENDAR days from one instant's day to another's — 0 for today,
  * 1 for tomorrow, negative for the past.
  *
  * Not `(b - a) / 86_400_000`: that measures elapsed hours, so at 23:00 a clock
  * two hours away reads as "today" when it is plainly tomorrow, and any DST day
  * is off by an hour. Day keys have no such failure mode.
  */
-export function calendarDaysBetween(fromIso: string, toIso: string, tz: string): number {
-  const [fy, fm, fd] = localDayKey(fromIso, tz).split('-').map(Number) as [number, number, number];
-  const [ty, tm, td] = localDayKey(toIso, tz).split('-').map(Number) as [number, number, number];
+export function calendarDaysBetween(fromIso: string, toIso: string, day: DayShape): number {
+  const [fy, fm, fd] = localDayKey(fromIso, day).split('-').map(Number) as [number, number, number];
+  const [ty, tm, td] = localDayKey(toIso, day).split('-').map(Number) as [number, number, number];
   return Math.round((utcMs(ty, tm, td) - utcMs(fy, fm, fd)) / 86_400_000);
 }
 
@@ -248,7 +302,11 @@ export function calendarDaysBetween(fromIso: string, toIso: string, tz: string):
  * the rule in. en-GB day-month order, the house style of the record surfaces.
  */
 export function recordDayWords(atIso: string, tz: string, nowIso: string): string {
-  const days = calendarDaysBetween(nowIso, atIso, tz);
+  // Midnight on purpose, and it is not a shortcut: this distance is only ever
+  // compared against 365, to decide whether the year is ambiguous. Where the
+  // person's day ends cannot move a year-scale threshold, and threading a
+  // boundary in here would imply it could.
+  const days = calendarDaysBetween(nowIso, atIso, atMidnight(tz));
   return new Intl.DateTimeFormat('en-GB', {
     timeZone: tz, day: 'numeric', month: 'short',
     ...(Math.abs(days) >= 365 ? { year: 'numeric' } : {}),

@@ -13,7 +13,7 @@ import { admit, silentNodes, gateOptionsFor } from '../src/gate.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import { pressureOf } from '../src/pressure.ts';
 import { upkeepChips, nextUpQueue } from '../src/nextup.ts';
-import { localDayKey, calendarDaysBetween } from '../src/time.ts';
+import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
 import {
   endOfDayKey, setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
   undoneEvents, untrashEvents, promoteFromMenuEvents, toMenuEvents,
@@ -52,7 +52,7 @@ const captured = (id: string, text = 'a thing'): State => {
 
 test('a date from a date input means the END of that day, in the user’s zone', () => {
   const iso = endOfDayKey('2026-08-13', TZ);
-  assert.equal(localDayKey(iso, TZ), '2026-08-13', 'it is that day where the user is');
+  assert.equal(localDayKey(iso, atMidnight(TZ)), '2026-08-13', 'it is that day where the user is');
   assert.equal(iso, '2026-08-14T05:59:59.000Z', '23:59:59 Denver = 05:59:59Z the next morning');
 });
 
@@ -67,7 +67,7 @@ test('the date key resolves correctly in zones a naive UTC probe would get wrong
     ['UTC', '2026-08-13'],
     ['Pacific/Midway', '2026-08-13'],          // UTC-11, the other extreme
   ] as [string, string][]) {
-    assert.equal(localDayKey(endOfDayKey(key, tz), tz), key, `${tz} lands on ${key}`);
+    assert.equal(localDayKey(endOfDayKey(key, tz), atMidnight(tz)), key, `${tz} lands on ${key}`);
   }
 });
 
@@ -77,7 +77,7 @@ test('setting a date leaves a hard clock and nothing silent, and Next-up ranks i
   assert.equal(silentNodes(s).length, 0, 'nothing silent');
   const due = s.nodes.get('N')!.clocks.due;
   assert.ok(due, 'a due clock — the immovable kind');
-  assert.equal(localDayKey(due!.at, TZ), '2026-07-29', 'on the day asked for');
+  assert.equal(localDayKey(due!.at, atMidnight(TZ)), '2026-07-29', 'on the day asked for');
   const q = nextUpQueue(s, AT, TZ);
   assert.equal(q[0]!.node.id, 'N');
   assert.equal(q[0]!.reason, 'hard-date', 'a real date outranks everything computed');
@@ -122,7 +122,7 @@ test('a repeat comes back on ITS interval, not the gate’s same-day default', (
   let s = captured('M', 'monthly filing');
   s = write(s, makeRepeatEvents(ctx(), 'M', s.nodes.get('M')!.kind, 30, 5));
   const review = s.nodes.get('M')!.clocks.review!;
-  assert.equal(calendarDaysBetween(AT, review.at, TZ), 30, 'thirty days out, as asked');
+  assert.equal(calendarDaysBetween(AT, review.at, atMidnight(TZ)), 30, 'thirty days out, as asked');
 });
 
 test('a repeat appears among the Upkeep chips once it comes round — and not before', () => {

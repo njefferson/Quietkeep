@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { admit, silentNodes, gateOptionsFor } from '../src/gate.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
-import { localDayKey, calendarDaysBetween } from '../src/time.ts';
+import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
 import { unclarified, needsHeat, nextToClarify, inboxGauge } from '../src/triage.ts';
 import { heldGroups } from '../src/held.ts';
 import {
@@ -191,9 +191,9 @@ test('a do-now routed in the evening returns THAT evening, not the next day (V-1
   s = fold(admit(routeEvents(c, 'N', 'do-now', s.nodes.get('N')!.kind), s, gateOptionsFor(tz)), s);
 
   const clockAt = s.nodes.get('N')!.clocks.review!.at;
-  assert.equal(localDayKey(clockAt, tz), localDayKey(evening, tz),
+  assert.equal(localDayKey(clockAt, atMidnight(tz)), localDayKey(evening, atMidnight(tz)),
     'the clock is in the same LOCAL day the user routed it in');
-  assert.equal(calendarDaysBetween(evening, clockAt, tz), 0, 'which reads as "today"');
+  assert.equal(calendarDaysBetween(evening, clockAt, atMidnight(tz)), 0, 'which reads as "today"');
   // And the gate's own capture cure obeys the same zone.
   const cure = s.nodes.get('N')!.clocks.review!;
   assert.ok(cure.at <= '2026-07-29T06:00:00.000Z', 'end of the local day, not the end of the UTC day');

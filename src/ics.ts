@@ -21,7 +21,7 @@
 import type { NodeState, State } from './fold.ts';
 import { heldGroups } from './held.ts';
 import { standingDecline } from './requests.ts';
-import { localDayKey, isValidIso } from './time.ts';
+import { localDayKey, isValidIso, atMidnight} from './time.ts';
 
 /**
  * What the calendar leaves OUT: completed work, Menu items (demand-free by law
@@ -102,7 +102,7 @@ function fold(line: string): string {
 }
 
 /** `YYYYMMDD` for an all-day DATE value, resolved in the reader's zone. */
-const dateValue = (iso: string, zone: string): string => localDayKey(iso, zone).replace(/-/g, '');
+const dateValue = (iso: string, zone: string): string => localDayKey(iso, atMidnight(zone)).replace(/-/g, '');
 
 /** `YYYYMMDDTHHMMSSZ` — used only for DTSTAMP, which is a UTC instant by spec. */
 const stampValue = (iso: string): string =>
@@ -191,7 +191,7 @@ export function toCalendar(
   // parameter, so it is validated rather than trusted.
   const asked = opts.alarmHour ?? ALARM_AT_HOUR;
   const hour = Number.isSafeInteger(asked) && asked >= 0 && asked <= 23 ? asked : ALARM_AT_HOUR;
-  const madeOn = isValidIso(nowIso) ? localDayKey(nowIso, zone) : 'an earlier day';
+  const madeOn = isValidIso(nowIso) ? localDayKey(nowIso, atMidnight(zone)) : 'an earlier day';
   const stamp = isValidIso(nowIso) ? stampValue(nowIso) : '19700101T000000Z';
 
   const lines: string[] = [

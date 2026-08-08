@@ -24,7 +24,7 @@
 // PURE. `now`, the zone and the id/seq stamping are all injected.
 
 import type { AppEvent } from './events.ts';
-import { endOfLocalDay } from './time.ts';
+import { endOfLocalDay, atMidnight} from './time.ts';
 
 /** What a caller must provide to stamp events. Structurally the UI's
  *  `StampContext`, restated here so this module does not import from `src/ui`
@@ -68,7 +68,7 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   /** End of a local day, `days` from now. Clocks in this app are end-of-day
    *  instants (ADR-0009), and a sample set that used midday would look subtly
    *  wrong on every surface that renders one. */
-  const day = (days: number): string => endOfLocalDay(nowIso, ctx.zone, days);
+  const day = (days: number): string => endOfLocalDay(nowIso, atMidnight(ctx.zone), days);
 
   const node = (
     nodeKind: string,

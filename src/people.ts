@@ -14,7 +14,7 @@
 
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { isHeld } from './fold.ts';
 
 /** The vocabulary's closed relation set. */
@@ -95,7 +95,7 @@ export function personView(state: State, personId: string, nowIso: string, zone:
 export function openDays(n: NodeState, nowIso: string, zone: string): number | null {
   const since = n.waitingSince;
   if (!since || !isValidIso(since)) return null;
-  return calendarDaysBetween(since, nowIso, zone);
+  return calendarDaysBetween(since, nowIso, atMidnight(zone));
 }
 
 /**

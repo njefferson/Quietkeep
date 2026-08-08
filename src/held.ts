@@ -17,7 +17,7 @@ import { isAppClock, type NodeState, type State } from './fold.ts';
 import { heldWork } from './gate.ts';
 import { isReadyAgain, pressureOf } from './pressure.ts';
 import { raisesReplanCard } from './replan.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { isGone, isHeld } from './fold.ts';
 
 export type HeldGroupKey = 'unsorted' | 'replan' | 'ready' | 'soon' | 'later' | 'menu' | 'done';
@@ -71,7 +71,7 @@ function soonestDemand(n: NodeState, zone: string, nowIso: string): { days: numb
   // failure the Not Now ledger exists to prevent.
   const park = n.clocks.park;
   if (!park || !isValidIso(park.at)) return null;
-  const days = calendarDaysBetween(nowIso, park.at, zone);
+  const days = calendarDaysBetween(nowIso, park.at, atMidnight(zone));
   return days <= 0 ? { days, at: park.at } : null;
 }
 
@@ -116,7 +116,7 @@ export function soonestClock(
     if (!includeAppClocks && isAppClock(c)) continue;
     const ms = Date.parse(c.at);
     if (best === null || ms < best.ms) {
-      best = { days: calendarDaysBetween(nowIso, c.at, zone), at: c.at, ms };
+      best = { days: calendarDaysBetween(nowIso, c.at, atMidnight(zone)), at: c.at, ms };
     }
   }
   return best ? { days: best.days, at: best.at } : null;
@@ -249,7 +249,7 @@ export function heldStatus(n: NodeState, nowIso: string, zone: string): string {
   // precise word wins, in the same order-matters way as every guard above.
   {
     const park = parkedUntil(n);
-    if (park && calendarDaysBetween(nowIso, park, zone) <= 0
+    if (park && calendarDaysBetween(nowIso, park, atMidnight(zone)) <= 0
       && soonestClock(n, zone, nowIso, false, false) === null) return 'back now';
   }
   const soon = soonestDemand(n, zone, nowIso);
@@ -259,7 +259,7 @@ export function heldStatus(n: NodeState, nowIso: string, zone: string): string {
     // app knows.
     const park = parkedUntil(n);
     if (!park) return 'held';
-    const d = calendarDaysBetween(nowIso, park, zone);
+    const d = calendarDaysBetween(nowIso, park, atMidnight(zone));
     if (d <= 0) return 'back now';
     if (d === 1) return 'parked until tomorrow';
     return `parked until ${dateWords(park, zone, d)}`;

@@ -19,7 +19,20 @@ import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import {
   boundaryOf, boundaryWords, isBoundaryHour, MIDNIGHT, LATEST_BOUNDARY_HOUR,
 } from '../src/day.ts';
+import {
+  localDayKey, endOfLocalDay, atMidnight, localParts, instantFromWallTime,
+} from '../src/time.ts';
 import type { AppEvent } from '../src/events.ts';
+
+/** The day key exactly as it read before the boundary existed — the calendar day
+ *  containing the instant, with no shift. Reimplemented here rather than
+ *  imported, so the comparison is against the old BEHAVIOUR and not against the
+ *  new code wearing a default. */
+const oldLocalDayKey = (iso: string, tz: string): string => {
+  const p = localParts(iso, tz);
+  const pad = (n: number): string => String(n).padStart(2, '0');
+  return `${String(p.year).padStart(4, '0')}-${pad(p.month)}-${pad(p.day)}`;
+};
 
 const TZ = 'America/Denver';
 const AT = '2026-08-08T15:00:00.000Z';
@@ -111,6 +124,67 @@ test('what it says is about the DAY, never about the person', () => {
   assert.match(boundaryWords(MIDNIGHT), /midnight/i,
     'midnight gets the word, not "0" — the number is the implementation and the word is the fact');
   assert.match(boundaryWords(3), /3am/);
+});
+
+test('at half past midnight with a 3am boundary, it is still last night', () => {
+  // THE DEFECT, stated as an assertion. 00:30 local on the 9th, for somebody
+  // whose day ends at 3am, is the 8th — the day they are still sitting in.
+  // At midnight it is the 9th, which is what the app used to say to everybody.
+  const halfPastMidnight = '2026-08-09T06:30:00.000Z'; // 00:30 in Denver (UTC-6)
+  assert.equal(localDayKey(halfPastMidnight, { zone: TZ, boundary: 3 }), '2026-08-08');
+  assert.equal(localDayKey(halfPastMidnight, atMidnight(TZ)), '2026-08-09');
+  // And once the boundary has passed it is unambiguously the new day.
+  const fourAm = '2026-08-09T10:00:00.000Z'; // 04:00 in Denver
+  assert.equal(localDayKey(fourAm, { zone: TZ, boundary: 3 }), '2026-08-09');
+});
+
+test('the day ENDS at the boundary, so a thing dated today is not gone by at 00:01', () => {
+  // The other half of the same defect: law 3 turns a passed date into a replan
+  // card, so a day that ends at midnight manufactures that pile out of work
+  // somebody has not stopped doing.
+  const afternoon = '2026-08-08T20:00:00.000Z'; // 14:00 in Denver
+  const end = endOfLocalDay(afternoon, { zone: TZ, boundary: 3 });
+  // 02:59:59 the following morning, local.
+  assert.equal(end, '2026-08-09T08:59:59.000Z');
+  const halfPastMidnight = '2026-08-09T06:30:00.000Z';
+  assert.equal(Date.parse(halfPastMidnight) < Date.parse(end), true,
+    'half past midnight is still INSIDE the day that thing was dated for');
+  // At midnight it had already gone by, which is the behaviour being fixed.
+  assert.equal(Date.parse(halfPastMidnight) > Date.parse(endOfLocalDay(afternoon, atMidnight(TZ))), true);
+});
+
+test('a midnight boundary reproduces the old answer exactly, not merely equivalently', () => {
+  // The safety property the whole change rests on, and the only honest way to
+  // assert it is against the OLD implementation rather than against a shape I
+  // expect the answer to have. My first attempt asserted the result ended
+  // ":59:59Z" and failed on Chatham, which is UTC+12:45 — the assertion was
+  // wrong, not the code, and a weaker assertion would have hidden that.
+  const wasEndOfLocalDay = (iso: string, tz: string, plusDays = 0): string => {
+    const p = localParts(iso, tz);
+    const shifted = new Date(Date.UTC(p.year, p.month - 1, p.day + plusDays));
+    return instantFromWallTime({
+      year: shifted.getUTCFullYear(), month: shifted.getUTCMonth() + 1, day: shifted.getUTCDate(),
+      hour: 23, minute: 59, second: 59,
+    }, tz);
+  };
+  // Zones chosen for their edges: DST in both directions, a zone whose clocks
+  // move AT MIDNIGHT (Santiago — the case that broke the first implementation),
+  // a half-hour shift, and a 45-minute one.
+  for (const [zone, iso] of [
+    ['America/Denver', '2026-03-08T18:00:00.000Z'],
+    ['America/Denver', '2026-11-01T18:00:00.000Z'],
+    ['America/Santiago', '2026-09-05T18:00:00.000Z'],
+    ['Australia/Lord_Howe', '2026-10-04T02:00:00.000Z'],
+    ['Pacific/Chatham', '2026-04-05T02:00:00.000Z'],
+    ['Asia/Kolkata', '2026-08-08T18:00:00.000Z'],
+  ] as const) {
+    for (const plus of [0, 1, 7, 30]) {
+      assert.equal(endOfLocalDay(iso, atMidnight(zone), plus), wasEndOfLocalDay(iso, zone, plus),
+        `${zone} +${plus}: a midnight boundary must give the byte-identical old answer`);
+    }
+    assert.equal(localDayKey(iso, atMidnight(zone)), oldLocalDayKey(iso, zone),
+      `${zone}: and the day key is unchanged too`);
+  }
 });
 
 test('nothing observes it — there is no function here that reads a log and proposes an hour', () => {

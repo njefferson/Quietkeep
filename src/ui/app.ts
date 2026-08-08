@@ -38,7 +38,7 @@ import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { waitingOnAnyone, withWhom, waitingWords, peopleWords } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
-import { calendarDaysBetween, isValidIso } from '../time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
 import { markSyncEdition } from './edition.ts';
 
 const now = () => Date.now();
@@ -570,7 +570,7 @@ function friendly(iso: string, zone: string): string {
   // the harmless string "Invalid Date"; converting that degradation into a fatal
   // throw was a regression, and it killed capture (audit).
   if (!isValidIso(iso)) return 'held';
-  const days = calendarDaysBetween(new Date(now()).toISOString(), iso, zone);
+  const days = calendarDaysBetween(new Date(now()).toISOString(), iso, atMidnight(zone));
   if (days <= 0) return 'today';
   if (days === 1) return 'tomorrow';
   if (days < 7) return `in ${days} days`;

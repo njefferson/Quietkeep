@@ -24,7 +24,7 @@
 // PURE. `now` is an argument, like everywhere else.
 
 import type { NodeState } from './fold.ts';
-import { calendarDaysBetween, isValidIso } from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 
 /**
  * Continuous pressure for an item that carries the primitive, or `null` for one
@@ -69,7 +69,7 @@ export function pressureOf(n: NodeState, nowIso: string, zone: string): number |
 
   // Calendar days, not elapsed milliseconds: "every 7 days" means seven of the
   // user's days, and a DST changeover must not add an hour of pressure (V-13).
-  const elapsed = calendarDaysBetween(n.lastDone, nowIso, zone);
+  const elapsed = calendarDaysBetween(n.lastDone, nowIso, atMidnight(zone));
   return (elapsed - n.intervalDays!) / n.comfortWindowDays!;
 }
 

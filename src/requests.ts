@@ -16,7 +16,7 @@
 import type { NodeState, State } from './fold.ts';
 import { survivorOf } from './merged.ts';
 import { compareOrdering } from './fold.ts';
-import { endOfLocalDay, localParts, recordDayWords, utcMs } from './time.ts';
+import { endOfLocalDay, localParts, recordDayWords, utcMs, atMidnight} from './time.ts';
 
 /** The closed recurrence vocabulary: one slot, weekday granularity. Full
  *  RRULE is deliberately absent — the single consumer is "the end of the next
@@ -56,11 +56,11 @@ export function nextSlotOccurrence(day: SlotDay, nowIso: string, zone: string): 
   const p = localParts(nowIso, zone);
   for (let plus = 0; plus < 7; plus += 1) {
     const shifted = new Date(utcMs(p.year, p.month, p.day + plus));
-    if (shifted.getUTCDay() === DAY_INDEX[day]) return endOfLocalDay(nowIso, zone, plus);
+    if (shifted.getUTCDay() === DAY_INDEX[day]) return endOfLocalDay(nowIso, atMidnight(zone), plus);
   }
   // Unreachable — seven consecutive days contain every weekday — but a walk
   // that could in principle miss must still terminate somewhere honest.
-  return endOfLocalDay(nowIso, zone, 7);
+  return endOfLocalDay(nowIso, atMidnight(zone), 7);
 }
 
 /** "Thursday" — for the Extras control and the sheet button. */
