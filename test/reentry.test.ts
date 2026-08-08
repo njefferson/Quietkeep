@@ -10,6 +10,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { atMidnight } from '../src/time.ts';
 
 import { fold, type State } from '../src/fold.ts';
 import { admit } from '../src/gate.ts';
@@ -166,7 +167,7 @@ test('the amnesty marks nothing done and deletes nothing', () => {
     assert.equal(n.lastDone, null, `${id} was not marked done`);
     assert.equal(n.trashed, false, `${id} was not deleted`);
     assert.notEqual(n.onMenu, null, `${id} is on the Menu, where it makes no demand`);
-    assert.equal(raisesReplanCard(n, NOW, TZ), false, `${id} no longer asks`);
+    assert.equal(raisesReplanCard(n, NOW, atMidnight(TZ)), false, `${id} no longer asks`);
   }
   assert.equal(reentryView(s1, NOW, TZ).passedDates, 0);
 });
@@ -235,7 +236,7 @@ test('one awkward item does not take the whole amnesty down with it', () => {
     'all four moved, including the one that raised a suspense rather than a due');
   for (const id of ['a1', 'a2', 'a3', 'a4']) {
     assert.notEqual(s1.nodes.get(id)!.onMenu, null, `${id} landed on the Menu`);
-    assert.equal(raisesReplanCard(s1.nodes.get(id)!, NOW, TZ), false, `${id} no longer asks`);
+    assert.equal(raisesReplanCard(s1.nodes.get(id)!, NOW, atMidnight(TZ)), false, `${id} no longer asks`);
   }
 });
 

@@ -34,6 +34,7 @@ import { wouldParentCycle } from '../tree.ts';
 import { passedHardClocks, type Passed } from '../replan.ts';
 import { replanEvents } from './replan-intents.ts';
 import { isHeld, isGone } from '../fold.ts';
+import type { DayShape } from '../time.ts';
 
 export type BulkVerb = 'put-under' | 'to-menu' | 'park' | 'let-go' | 'bring-back' | 'new-date' | 'put-down';
 
@@ -65,7 +66,23 @@ export interface BulkParams {
    *  preview disagree about how many moved. */
   nowIso?: string;
   zone?: string;
+  /**
+   * Where the person's day ends (V2 stage 5), 0–11.
+   *
+   * It rides here for the same reason `nowIso` does: eligibility must be decided
+   * against the SAME day the preview counted, or the receipt and the preview
+   * disagree about how many moved. Reading it from live state at each of the
+   * three sites below would let a boundary changed mid-run split one range into
+   * two different days.
+   *
+   * Absent means midnight, which is what this surface did before it existed.
+   */
+  boundary?: number;
 }
+
+/** The day this range is being acted on, from the params it was planned with. */
+const dayOf = (params: BulkParams): DayShape =>
+  ({ zone: params.zone ?? 'UTC', boundary: params.boundary ?? 0 });
 
 /** One item's reversal facts, captured at act time. */
 interface UndoEntry {
@@ -131,7 +148,7 @@ export function eligible(verb: BulkVerb, n: NodeState | undefined, state: State,
     // to forty items at once because they happened to be in the range would be
     // the app overwriting decisions nobody asked it to touch.
     case 'new-date':
-      return sortable(n) && passedHardClocks(n, params.nowIso ?? '', params.zone ?? 'UTC').length > 0;
+      return sortable(n) && passedHardClocks(n, params.nowIso ?? '', dayOf(params)).length > 0;
     // PUT A WHOLE PLACE DOWN (V2 stage 3). One act instead of thirty.
     //
     // ADR-0082 says putting a place down does NOT sweep its contents, and this
@@ -205,7 +222,7 @@ export function bulkItemEvents(
       // implementation that drifts, and it drifted in the arguments.
       return replanEvents(
         ctx, n.id, 'new-date',
-        passedHardClocks(n, params.nowIso ?? '', params.zone ?? 'UTC').map((p: Passed) => p.kind),
+        passedHardClocks(n, params.nowIso ?? '', dayOf(params)).map((p: Passed) => p.kind),
         params.dayKey!,
         n.kind,
         demandClocksOf(n),
@@ -305,7 +322,7 @@ export async function runBulk(
         // Captured for `new-date` only; every other verb retires nothing, and an
         // empty array is the honest "there was nothing to put back".
         priorClocks: plan.verb === 'new-date'
-          ? passedHardClocks(n!, plan.params.nowIso ?? '', plan.params.zone ?? 'UTC')
+          ? passedHardClocks(n!, plan.params.nowIso ?? '', dayOf(plan.params))
             .map((pc: Passed) => {
               const c = n!.clocks[pc.kind];
               return { kind: pc.kind, at: pc.at, ...(c?.source ? { source: c.source } : {}) };

@@ -16,6 +16,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { atMidnight } from '../src/time.ts';
 
 import { fold, emptyState, type State } from '../src/fold.ts';
 import { admit, silentNodes, gateOptionsFor } from '../src/gate.ts';
@@ -310,7 +311,7 @@ test('the standing "dates that have gone by" range is the replan predicate, narr
   // the replan predicate ever widens, this range cannot start offering a bulk
   // verb the gate must then refuse. If these two ever disagree, one of them
   // changed and somebody has to decide which.
-  assert.equal(raisesReplanCard(s.nodes.get('PROJ')!, NOW, TZ), false,
+  assert.equal(raisesReplanCard(s.nodes.get('PROJ')!, NOW, atMidnight(TZ)), false,
     'a container raises no replan card — you never climb');
   assert.equal(ids.includes('PROJ'), false, 'and it is not in the bulk range either');
 });

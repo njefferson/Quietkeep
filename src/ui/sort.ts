@@ -38,6 +38,7 @@ import {
   planBulk, runBulk, undoBulk, verbsFor,
   type BulkParams, type BulkReceipt, type BulkVerb,
 } from './bulk-intents.ts';
+import { boundaryOf } from '../day.ts';
 
 const ROUTES: { route: ClarifyRoute; label: string; hint: string }[] = [
   { route: 'do-now', label: 'Do now', hint: 'this one is for today' },
@@ -425,6 +426,9 @@ export function mountSort(
     // the preview disagree about how many moved.
     nowIso: new Date(now()).toISOString(),
     zone: session.zone,
+    // And against the same DAY, for the same reason: a boundary read afresh at
+    // each of the three eligibility sites could split one range across two days.
+    boundary: boundaryOf(session.state()),
   });
 
   /** The sentence the user agrees to — stored verbatim in every receipt. */

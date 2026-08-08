@@ -23,6 +23,7 @@ import {
   localDayKey, endOfLocalDay, atMidnight, localParts, instantFromWallTime,
 } from '../src/time.ts';
 import { clockFace } from '../src/clock.ts';
+import { replanAll } from '../src/replan.ts';
 import type { AppEvent } from '../src/events.ts';
 
 /** The day key exactly as it read before the boundary existed — the calendar day
@@ -203,6 +204,35 @@ test('THE HEADER CLOCK: the remainder drains instead of resetting at midnight', 
   const theirs = clockFace(setHour(emptyState(), 3), halfPastMidnight, TZ);
   assert.equal(theirs.minutesLeft, 149, 'two hours twenty-nine, which is what is actually left of that evening');
   assert.equal(theirs.hour, 0, 'and the TIME is untouched — the clock still says what the clock says');
+});
+
+test('THE REPLAN PILE: work you have not stopped doing is not "gone by" at 00:01', () => {
+  // Law 3 converts a passed date into a replan card, with no archive to hide in.
+  // Under a midnight boundary that is a machine for manufacturing a pile out of
+  // work in progress: at 00:01 everything dated for the evening you are still
+  // sitting in has "gone by", and you are handed a wall of cards asking you to
+  // replan things you were in the middle of.
+  const halfPastMidnight = '2026-08-09T06:30:00.000Z'; // 00:30 in Denver
+
+  let s = write(emptyState(), [ev('capture.recorded', 'A', { text: 'ring the plumber' })]);
+  s = write(s, [ev('clarify.routed', 'A', { route: 'next-action' })]);
+  // Dated for the day they are still in — the last instant of it, as every
+  // writer in the app builds a date.
+  const dated = endOfLocalDay('2026-08-08T20:00:00.000Z', atMidnight(TZ));
+  s = write(s, [ev('clock.set', 'A', { clockKind: 'due', at: dated, source: 'detail:due' })]);
+
+  assert.equal(replanAll(s, halfPastMidnight, TZ).length, 1,
+    'at midnight the app has already decided that evening is over');
+
+  const theirs = setHour(s, 3);
+  assert.equal(replanAll(theirs, halfPastMidnight, TZ).length, 0,
+    'with a 3am boundary it is still tonight, and nothing is being asked to be replanned');
+
+  // And once their day HAS ended, it asks — the guarantee is not weakened, only
+  // moved to where the person's day actually is.
+  const fourAm = '2026-08-09T10:00:00.000Z';
+  assert.equal(replanAll(theirs, fourAm, TZ).length, 1,
+    'after their boundary it has genuinely gone by, and law 3 still holds');
 });
 
 test('nothing observes it — there is no function here that reads a log and proposes an hour', () => {

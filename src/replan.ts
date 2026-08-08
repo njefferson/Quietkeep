@@ -28,7 +28,8 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { NO_REPLAN_CARD } from './kinds.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 import { dependencyView, dependencyWords, type DependencyView } from './dependencies.ts';
 import type { ClockKind, NodeKind } from './events.ts';
 import { isGone } from './fold.ts';
@@ -87,12 +88,12 @@ export interface Passed { kind: ClockKind; at: string; daysAgo: number }
  * options. The caller needs the whole set; which one leads is a display
  * question, answered by taking the head.
  */
-export function passedHardClocks(n: NodeState, nowIso: string, zone: string): Passed[] {
+export function passedHardClocks(n: NodeState, nowIso: string, day: DayShape): Passed[] {
   const out: Passed[] = [];
   for (const kind of HARD) {
     const c = n.clocks[kind];
     if (!c || !isValidIso(c.at)) continue;
-    const days = calendarDaysBetween(nowIso, c.at, atMidnight(zone));
+    const days = calendarDaysBetween(nowIso, c.at, day);
     if (days >= 0) continue;                      // not passed yet
     out.push({ kind, at: c.at, daysAgo: -days });
   }
@@ -110,8 +111,8 @@ export function passedHardClocks(n: NodeState, nowIso: string, zone: string): Pa
  * and this surface a property of branch ORDER rather than of the definition. A
  * later change to that order would have broken it silently.
  */
-export const raisesReplanCard = (n: NodeState, nowIso: string, zone: string): boolean =>
-  eligible(n) && passedHardClocks(n, nowIso, zone).length > 0;
+export const raisesReplanCard = (n: NodeState, nowIso: string, day: DayShape): boolean =>
+  eligible(n) && passedHardClocks(n, nowIso, day).length > 0;
 
 /** Something that has already been dealt with raises nothing. A completed item,
  *  a trashed one, one on the Menu (demand-free, law 6) and one still in triage
@@ -140,10 +141,16 @@ function eligible(n: NodeState): boolean {
  * both show a few and say honestly how many there are.
  */
 export function replanAll(state: State, nowIso: string, zone: string): ReplanCard[] {
+  // WHOSE day decides what has passed. A date is "gone by" when the person's day
+  // containing it has ended — not when a calendar somewhere rolled over. Under a
+  // midnight boundary this surface manufactures a pile of cards at 00:01 out of
+  // work nobody has stopped doing, which is law 3 firing against the person it
+  // is meant to serve.
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   const cards: ReplanCard[] = [];
   for (const n of heldNodes(state)) {
     if (!eligible(n)) continue;
-    const all = passedHardClocks(n, nowIso, zone);
+    const all = passedHardClocks(n, nowIso, day);
     const passed = all[0];
     if (!passed) continue;
 
@@ -161,7 +168,7 @@ export function replanAll(state: State, nowIso: string, zone: string): ReplanCar
       daysAgo: passed.daysAgo,
       fed: depends.feeds.map(f => f.node),
       suspense,
-      daysLeft: suspense ? calendarDaysBetween(nowIso, suspense, atMidnight(zone)) : null,
+      daysLeft: suspense ? calendarDaysBetween(nowIso, suspense, day) : null,
     });
   }
   // Longest-passed first, then by id so the order is total and a render never

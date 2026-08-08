@@ -24,6 +24,8 @@ import type { State } from './fold.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { raisesReplanCard } from './replan.ts';
 import { heldNodes } from './gate.ts';
+import { boundaryOf } from './day.ts';
+import type { DayShape } from './time.ts';
 
 /** How long away counts as having been away. Seven days by default (NOTES.md,
  *  v1.5 scope). Under this, nothing is shown at all — a weekend is not a lapse
@@ -80,11 +82,12 @@ export function reentryView(state: State, nowIso: string, zone: string): Reentry
   const days = absenceDays(state, nowIso, zone);
   const lapsed = days !== null && days >= LAPSE_DAYS;
 
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   let waiting = 0;
   let passed = 0;
   for (const n of heldNodes(state)) {
     if (n.captured && n.route === null) waiting++;
-    if (raisesReplanCard(n, nowIso, zone)) passed++;
+    if (raisesReplanCard(n, nowIso, day)) passed++;
   }
   return {
     absenceDays: days,

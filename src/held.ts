@@ -17,7 +17,8 @@ import { isAppClock, type NodeState, type State } from './fold.ts';
 import { heldWork } from './gate.ts';
 import { isReadyAgain, pressureOf } from './pressure.ts';
 import { raisesReplanCard } from './replan.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 import { isGone, isHeld } from './fold.ts';
 
 export type HeldGroupKey = 'unsorted' | 'replan' | 'ready' | 'soon' | 'later' | 'menu' | 'done';
@@ -168,6 +169,9 @@ function dateWords(at: string, zone: string, days: number): string {
  *  - Then by when it comes back.
  */
 export function heldGroups(state: State, nowIso: string, zone: string): HeldGroup[] {
+  // Whose day decides what has passed — the same shape the replan surface builds,
+  // so the list and that surface cannot disagree about one item.
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   const buckets: Record<HeldGroupKey, NodeState[]> = {
     unsorted: [], replan: [], ready: [], soon: [], later: [], menu: [], done: [],
   };
@@ -194,7 +198,7 @@ export function heldGroups(state: State, nowIso: string, zone: string): HeldGrou
     // Asking only about the clock made this agree with the replan surface by
     // accident of branch order, and the branch above has just changed, which is
     // exactly how that kind of agreement breaks silently.
-    if (raisesReplanCard(n, nowIso, zone)) { buckets.replan.push(n); continue; }
+    if (raisesReplanCard(n, nowIso, day)) { buckets.replan.push(n); continue; }
     const soon = soonestDemand(n, zone, nowIso);
     if (soon === null) { buckets.later.push(n); continue; }   // held, but nothing asking
     if (soon.days <= 0) { buckets.ready.push(n); continue; }
@@ -226,7 +230,7 @@ export function heldGroups(state: State, nowIso: string, zone: string): HeldGrou
 /** The status line for one card, in words. Never a countdown, never a rebuke,
  *  and never a claim the data does not support — a finished thing says so
  *  instead of reporting the cure clock it happens to carry. */
-export function heldStatus(n: NodeState, nowIso: string, zone: string): string {
+export function heldStatus(n: NodeState, nowIso: string, zone: string, day: DayShape = atMidnight(zone)): string {
   // Same guard, same order, same reasons as `heldGroups` — the two must agree
   // node for node, and a status that disagreed with its own heading is the
   // defect ADR-0032 exists to have fixed.
@@ -240,7 +244,7 @@ export function heldStatus(n: NodeState, nowIso: string, zone: string): string {
   // predicate that raises the card, so the two surfaces cannot describe one item
   // differently — and it asks the WHOLE question rather than relying on the
   // branches above to have filtered first.
-  if (raisesReplanCard(n, nowIso, zone)) return 'needs a new plan';
+  if (raisesReplanCard(n, nowIso, day)) return 'needs a new plan';
   // A RETURNED PARK KEEPS ITS OWN WORD. `soonestDemand` now counts a park whose
   // day has arrived, so the row moves into "Ready now" where a person will see
   // it — but "ready now" is the wrong sentence about a thing you declined. It

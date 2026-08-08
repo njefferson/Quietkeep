@@ -25,6 +25,8 @@ import { isValidIso } from './time.ts';
 import { normalize, searchHeld } from './search.ts';
 import { raisesReplanCard } from './replan.ts';
 import { isHeld } from './fold.ts';
+import { boundaryOf } from './day.ts';
+import type { DayShape } from './time.ts';
 
 /** The kinds a sorting card may legally act on — runway work, nothing else. */
 const SORTABLE_KINDS: ReadonlySet<string> = new Set(['action', 'waiting-for', 'upkeep']);
@@ -131,11 +133,13 @@ export const parkedAndBack = (state: State, nowIso: string): NodeState[] =>
  *
  * The lapse-gated amnesty stays exactly as it is, for genuine returns.
  */
-export const datesGoneBy = (state: State, nowIso: string, zone: string): NodeState[] =>
-  heldNodes(state)
+export const datesGoneBy = (state: State, nowIso: string, zone: string): NodeState[] => {
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
+  return heldNodes(state)
     .filter(sortable)
-    .filter(n => raisesReplanCard(n, nowIso, zone))
+    .filter(n => raisesReplanCard(n, nowIso, day))
     .sort(oldestFirst);
+};
 
 /** "Matching [the user's own words]" — the search predicate, narrowed to what
  *  a sorting card may hold. */
