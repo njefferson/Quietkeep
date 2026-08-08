@@ -307,7 +307,12 @@ const REGISTRY = {
   'do now offered': ['.donow', '.donow-label', '.donow-done'],
   // Work mode. The "why" lines and the behind-list are the lowest-contrast text
   // on these surfaces, so they are named rather than left to axe alone.
-  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '.nextup-count',
+  // `#nextup-left` (V2 stage 5) is the one permitted number, and it sits with
+  // the other count lines on the work surface. It is HERE and not in the
+  // always-measured list because it is hidden once the day has run out — an
+  // entry in that list must match something on every state, and the first-run
+  // dialog proved it does not.
+  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '.nextup-count', '#nextup-left',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open',
     // When you cannot start (1.24.0). The invitation and the heavy control are
     // on the card whenever there is a head, so they belong in this state; the
@@ -342,6 +347,13 @@ const REGISTRY = {
     // 1.3.0's verbs: the defer date, the estimate, and the picker's filter.
     '#detail-start', '#detail-start-set', '#detail-estimate', '#detail-estimate-set',
     '#detail-parent-filter', { sel: '#detail-parent-filter', pseudo: '::placeholder' },
+    // `#detail-took` (V2 stage 5) is DELIBERATELY not listed on its own, and
+    // this note is here so nobody "fixes" that by adding it. It renders only
+    // when the item has been timed, so an entry would match nothing on this
+    // state and the gate would fail exactly as it did when it was first put in
+    // the always-measured list. It carries `.detail-hint`, which IS measured
+    // above, so its colours are held by that selector — what an entry would add
+    // is the appearance of coverage rather than coverage itself.
     // The dependency picker. A <select> and a number box are the two smallest
     // targets on the densest surface in the app.
     '#detail-feeds', '#detail-lead', '#detail-feeds-set',

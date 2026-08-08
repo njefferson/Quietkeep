@@ -28,6 +28,8 @@ import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
+import { timeLeftWords } from '../duration.ts';
+import { clockFace } from '../clock.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
   const n = document.createElement(tag);
@@ -91,6 +93,7 @@ export function mountWork(
   // sentence, and taking Next up down with it would cost the app's whole
   // purpose. Same containment every optional element on this surface gets.
   const LOADNOTE = document.querySelector<HTMLElement>('#nextup-load');
+  const LEFT = document.querySelector<HTMLElement>('#nextup-left');
   // The two things you can do when you cannot start (1.24.0). Soft-bound like
   // LOADNOTE and PLACE: a missing control costs that control, never the offer.
   const BITE = q('#nextup-bite');
@@ -548,6 +551,19 @@ export function mountWork(
         LOADNOTE.textContent = lw;
         LOADNOTE.hidden = lw === '';
       }
+      // THE ONE PERMITTED NUMBER (V2 stage 5). Arithmetic on the clock and the
+      // person's own day boundary — nothing about them, and nothing about what
+      // they have done. `clockFace` already asks whose day it is, so at 00:30
+      // under a 3am boundary this reads 2h 29m rather than 23h 59m.
+      //
+      // It is here rather than on the item because it is prospective: it exists
+      // to inform what somebody picks up, and the same number after the attempt
+      // is a verdict on it.
+      if (LEFT) {
+        const lw = timeLeftWords(clockFace(session.state(), nowIso(), session.zone).minutesLeft);
+        LEFT.textContent = lw ?? '';
+        LEFT.hidden = lw === null;
+      }
       // Doors, not words-in-a-paragraph (1.6.0): each row opens its sheet, on
       // the FRESH node — a row built at refresh time can be clicked later. What
       // sits here is now the REST OF THE OFFER rather than a queue tail: one
@@ -613,6 +629,7 @@ export function mountWork(
           : `${undated} things are here without a date. They are waiting on you to decide, not the other way round.`;
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
+        if (LEFT) { LEFT.textContent = ''; LEFT.hidden = true; }
       } else {
         REGION.hidden = true;
         TITLE.textContent = '';

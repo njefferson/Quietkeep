@@ -411,8 +411,24 @@ export async function bigSampleEvents(
   }
   // One sorted and then unsorted again — the undo somebody actually takes.
   stamp('clarify.reopened', captures[1]!, { from: 'next-action' });
-  // A do-now that was actually timed.
-  stamp('do-now.timed', captures[0]!, { startedAt: day(-1), endedAt: day(-1) });
+  // TWO do-nows that were actually timed, and they are REAL SPANS.
+  //
+  // It was one event whose start and end were the same instant, which is a span
+  // of zero — dropped by the fold, since "between 0 minutes and 4h" says nothing
+  // true about either end. So the set demonstrated the noun and nothing else,
+  // and the surface that shows what a thing has taken had nothing to render.
+  //
+  // Two of them, minutes apart in length, so the sample shows a RANGE rather
+  // than a single value — which is the whole point of the projection.
+  const timedStart = Date.parse(day(-1)) - 120 * 60_000;
+  stamp('do-now.timed', captures[0]!, {
+    startedAt: new Date(timedStart).toISOString(),
+    endedAt: new Date(timedStart + 25 * 60_000).toISOString(),
+  });
+  stamp('do-now.timed', captures[0]!, {
+    startedAt: new Date(timedStart + 40 * 60_000).toISOString(),
+    endedAt: new Date(timedStart + 95 * 60_000).toISOString(),
+  });
 
   // --- bothers, all three ownerships ----------------------------------------
   //

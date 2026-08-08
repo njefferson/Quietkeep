@@ -441,6 +441,13 @@
          caused the other. "Fewer, while…" names two facts about the same
          period. "Fewer, because…" would be the app explaining you to yourself. -->
     <p id="nextup-load" class="nextup-count" hidden></p>
+    <!-- THE ONE PERMITTED NUMBER (V2 stage 5). "About 2h 30m left today" —
+         arithmetic on the clock and the day boundary, two facts about the
+         world, read BEFORE an attempt where it can still change what somebody
+         picks up. No bar, no colour, no instruction, and nothing at all once
+         the day has run out: a countdown to zero at that hour is pressure
+         where it costs most. -->
+    <p id="nextup-left" class="nextup-count" hidden></p>
     <ul id="nextup-behind" class="nextup-behind"></ul>
     <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
@@ -727,9 +734,13 @@
       <button id="detail-estimate-set" type="button">Note it</button>
     </div>
     <p id="detail-estimate-hint" class="detail-hint">
-      A guess is fine and nothing checks up on it. It is kept so a later version
-      can learn how long things really take.
+      A guess is fine and nothing checks up on it.
     </p>
+    <!-- What actually happened, when this has been timed. The two ENDS and
+         never an average: durations have a long tail, so the mean sits where
+         almost nothing lands. No count of attempts, and no comparison with the
+         guess above — that comparison is an indictment dressed as data. -->
+    <p id="detail-took" class="detail-hint" hidden></p>
   </div>
 
   <!-- Composed Today's verb (1.6.0, ADR-0051): visible only when the module is

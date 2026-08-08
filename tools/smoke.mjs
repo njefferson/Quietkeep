@@ -665,6 +665,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(logLenAfterSearch, logLenBeforeSearch, 'searching and opening a result wrote nothing to the log');
   await fillSearch('');            // leave the box as we found it
 
+  console.log('\nHow long things take (V2 stage 5)');
+  // The two ENDS and never an average, and the ONE permitted number. Asserted
+  // on the built app because a projection nothing renders is the log lying
+  // rather than merely silent (ADR-0031) — src/duration.ts was written with no
+  // reader, which is exactly the defect this repo has already shipped once.
+  const leftLine = await tpage.evaluate(() => {
+    const el = document.querySelector('#nextup-left');
+    return { hidden: el?.hidden, text: el?.textContent ?? '' };
+  });
+  is(leftLine.hidden, false, 'the offer says how much of the day is left');
+  is(/left today/.test(leftLine.text), true,
+    `and says it in words ("${leftLine.text}")`);
+  is(/%|\bof\b.*\bdone\b|should|hurry|only|behind/i.test(leftLine.text), false,
+    'with no percentage, no instruction and no judgement in it');
+
   console.log('\nWhen your day ends (V2 stage 5)');
   // Everything meaning "today" asks this, and a preference you must restate
   // after every reload is not a preference — so the RELOAD is the assertion,

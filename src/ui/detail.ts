@@ -48,6 +48,7 @@ import { carryEvents, declineEvents, parkToSlotEvents } from './request-intents.
 import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../requests.ts';
 import { personView, stakeholdersOf, type PersonLine } from '../people.ts';
 import { logDecisionEvents, removeStakeholderEvents } from './detail-intents.ts';
+import { rangeWords, timedRange } from '../duration.ts';
 
 /** The relation words the sheet shows. The stored values are the vocabulary's
  *  closed set; these are what a person reads. */
@@ -687,6 +688,16 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     // can never be backfilled (audit).
     grp('#detail-estimate-group', !n.onMenu && !n.trashed
       && !['person', 'aspiration', 'pebble'].includes(n.kind));
+    // WHAT ACTUALLY HAPPENED, when it has been timed (V2 stage 5). The two ends
+    // and never an average — task durations are tau-heavy and the mean sits in
+    // the gap where almost nothing lands. Hidden entirely when there is nothing
+    // to say, rather than showing a zero or an empty range.
+    const took = q<HTMLElement>('#detail-took');
+    if (took) {
+      const words = rangeWords(timedRange(n));
+      took.textContent = words ?? '';
+      took.hidden = words === null;
+    }
     // A note is NOT a demand, so unlike the temporal groups it stays for Menu
     // items and people — anything you hold can carry words. Only a thing let
     // go loses the editor; "Keep it after all" is the door back.
