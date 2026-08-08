@@ -473,6 +473,25 @@ is a valid, unremarkable value, never nagged about.
     length outside the offer reads as the two-minute default — refused at read
     time, never guessed, because a length nobody was offered is a commitment
     nobody made.
+- **`day.boundary.set`** (V2 stage 5)
+  - Payload: `hour` — a whole number, 0–11, local. `node: null`.
+  - Silent risk: no
+  - **Unemitted, and deferred rather than reserved.** The noun, the fold and the
+    refusal ship first so the store can hold a boundary before anything reads
+    one; the control that writes it, and the readers that act on it, land in the
+    same stage. Nothing infers an hour in the meantime — there is no fallback
+    writer, and an unset boundary is midnight, which is what every clock already
+    did.
+  - Folds to `State.dayBoundaryHour` (state-level LWW, the `timerMinutes`
+    shape). An hour outside 0–11 is refused at the fold and reads as null —
+    never clamped, because clamping would have the app invent a boundary and
+    then run every "today" in the product off it.
+  - Null reads as midnight, which is what every clock did before this existed,
+    so an unset boundary changes no existing answer. It is STATED and never
+    observed: nothing watches when the last event of a day was written and
+    proposes an hour from it, on the rule that already governs weight and
+    capacity. It moves where the day's edge falls and adds no time-of-day to
+    any clock — clocks stay day-granular (ADR-0010).
 - **`request.slot.set`** (emitter 1.8.0, ADR-0056)
   - Payload: `recurrence` — `weekly:mon` … `weekly:sun`; `''` clears. `node: null`.
   - Silent risk: no

@@ -301,6 +301,14 @@ export type RequestSlotSet   = Ev<'request.slot.set',   { recurrence: string }>;
  *  preference about how you work, so it travels with the log like the request
  *  slot rather than sitting on one device. `node: null`. */
 export type TimerLengthSet   = Ev<'timer.length.set',   { minutes: number }>;
+/** The hour at which today becomes tomorrow, local (V2 stage 5). `node: null`.
+ *  0–11; 0 is midnight and is the behaviour every clock had before this
+ *  existed, so an unset boundary changes nothing. Outside the range it is
+ *  REFUSED at the fold, never clamped — the timer-length precedent: a number
+ *  nobody chose is worse than no number at all. Like the timer length and the
+ *  request slot it is a preference about how you work, so it travels with the
+ *  log rather than sitting on one device. */
+export type DayBoundarySet   = Ev<'day.boundary.set',   { hour: number }>;
 export type CommsSweepScheduled=Ev<'comms.sweep.scheduled',{ at: ISODateTime }>;
 export type CommsSweepRan    = Ev<'comms.sweep.ran',    { at: ISODateTime }>;
 
@@ -439,7 +447,7 @@ export type AppEvent =
   | AfterSet | AfterCleared | NodeReleased | NodeReclaimed
   | SuspenseSet | ProjectRoleSet | OprAssigned | StakeholderAdded | StakeholderRemoved
   | DecisionLogged | DeltaRecorded | StatusReportExported
-  | RequestDeclined | RequestSlotSet | TimerLengthSet | CommsSweepScheduled | CommsSweepRan
+  | RequestDeclined | RequestSlotSet | TimerLengthSet | DayBoundarySet | CommsSweepScheduled | CommsSweepRan
   | PebbleRaised | PebbleSettled | CapacityDeclared | WipLimitSet | EstimateRecorded
   | VaultCreated | VaultLocked | VaultUnlocked | DeviceRegistered
   | ModuleEnabled | ModuleDisabled | ConsentGranted | ConsentRevoked
@@ -466,7 +474,7 @@ export const EVENT_KINDS = [
   'after.set','after.cleared','node.released','node.reclaimed',
   'suspense.set','project.role.set','opr.assigned','stakeholder.added','stakeholder.removed',
   'decision.logged','delta.recorded','status.report.exported',
-  'request.declined','request.slot.set','timer.length.set','comms.sweep.scheduled','comms.sweep.ran',
+  'request.declined','request.slot.set','timer.length.set','day.boundary.set','comms.sweep.scheduled','comms.sweep.ran',
   'pebble.raised','pebble.settled','capacity.declared','wip.limit.set','estimate.recorded',
   'vault.created','vault.locked','vault.unlocked','device.registered',
   'module.enabled','module.disabled','consent.granted','consent.revoked',

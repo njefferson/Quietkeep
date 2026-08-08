@@ -141,6 +141,10 @@ export function eventWords(
     // never a word about how it ended: the event carries a span, not a verdict.
     case 'do-now.timed': return 'A timer ran on it.';
     case 'timer.length.set': return 'You chose how long a timer runs.';
+    // Where the day ends, and nothing about why. "You set a late boundary"
+    // would be the Log having an opinion about the reader's hours; this is the
+    // same fact stated about the day.
+    case 'day.boundary.set': return 'You said when your day ends.';
     case 'bother.received': return 'A bother arrived.';
     case 'bother.owned': return 'The bother was taken on.';
     case 'bother.routed': return 'The bother was sorted onward.';

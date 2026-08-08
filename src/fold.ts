@@ -12,6 +12,10 @@ import type {
 import { CAPACITIES } from './events.ts';
 import type { Capacity } from './events.ts';
 import { isValidIso } from './time.ts';
+// Value import, and it does NOT make a cycle: `day.ts` imports only `type State`
+// from here, which is erased at build. The predicate lives there because the
+// range is part of what a day boundary IS, not part of how the fold works.
+import { isBoundaryHour } from './day.ts';
 
 export interface Clock {
   kind: ClockKind;
@@ -344,6 +348,21 @@ export interface State {
   capacity: Capacity | null;
   /** Ordering of the last event that moved `capacity`, so it folds LWW. */
   capacityStamp: Ordering | null;
+  /**
+   * The hour at which today becomes tomorrow, local, or null if nobody has
+   * said (V2 stage 5, `src/day.ts`).
+   *
+   * Null reads as midnight everywhere, which is exactly what every clock did
+   * before this existed — so the feature cannot change a single answer for a
+   * person who has not asked for it. That is the only honest way to move
+   * something as load-bearing as what "today" means.
+   *
+   * A preference about how you work, like the timer length and the request
+   * slot, so it travels with the log rather than sitting on one device.
+   */
+  dayBoundaryHour: number | null;
+  /** Ordering of the last event that moved `dayBoundaryHour`, so it folds LWW. */
+  dayBoundaryStamp: Ordering | null;
 }
 
 /**
@@ -483,6 +502,8 @@ export const emptyState = (): State => ({
   timerMinutesStamp: null,
   capacity: null,
   capacityStamp: null,
+  dayBoundaryHour: null,
+  dayBoundaryStamp: null,
 });
 
 /** (at, device, seq) — `at` first, device as a deterministic tiebreak. */
@@ -622,6 +643,8 @@ export function cloneShell(base: State): State {
     timerMinutesStamp: base.timerMinutesStamp ? { ...base.timerMinutesStamp } : null,
     capacity: base.capacity,
     capacityStamp: base.capacityStamp ? { ...base.capacityStamp } : null,
+    dayBoundaryHour: base.dayBoundaryHour,
+    dayBoundaryStamp: base.dayBoundaryStamp ? { ...base.dayBoundaryStamp } : null,
   };
 }
 
@@ -1119,6 +1142,20 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
           const m = e.payload.minutes;
           s.timerMinutes = Number.isFinite(m) && m > 0 ? Math.floor(m) : null;
           s.timerMinutesStamp = o;
+        }
+        break;
+      }
+
+      // Where the person's day ENDS (V2 stage 5, src/day.ts). State-level LWW,
+      // the `timerMinutes` shape exactly — and refused the same way. An hour
+      // outside 0–11 becomes null rather than being clamped into range: clamping
+      // 14 to 11 would have the app invent a boundary and then run every "today"
+      // in the product off it, which is worse than having none.
+      case 'day.boundary.set': {
+        if (wins(s.dayBoundaryStamp ?? undefined, o)) {
+          const h = e.payload.hour;
+          s.dayBoundaryHour = isBoundaryHour(h) ? h : null;
+          s.dayBoundaryStamp = o;
         }
         break;
       }

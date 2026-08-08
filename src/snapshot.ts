@@ -34,6 +34,8 @@ export function serialiseState(s: State): unknown {
     timerMinutesStamp: s.timerMinutesStamp,
     capacity: s.capacity,
     capacityStamp: s.capacityStamp,
+    dayBoundaryHour: s.dayBoundaryHour,
+    dayBoundaryStamp: s.dayBoundaryStamp,
   });
 }
 
@@ -56,6 +58,8 @@ export function deserialiseState(raw: unknown): State {
     timerMinutesStamp?: State['timerMinutesStamp'];
     capacity?: State['capacity'];
     capacityStamp?: State['capacityStamp'];
+    dayBoundaryHour?: State['dayBoundaryHour'];
+    dayBoundaryStamp?: State['dayBoundaryStamp'];
   };
   return {
     // Backfill Phase-2 fields a pre-Phase-2 snapshot never stored. Without this,
@@ -168,6 +172,11 @@ export function deserialiseState(raw: unknown): State {
     // A pre-1.15.0 snapshot stored no capacity — nobody had been asked.
     capacity: r.capacity ?? null,
     capacityStamp: r.capacityStamp ? { ...r.capacityStamp } : null,
+    // A snapshot written before the day boundary existed stored no hour, and
+    // null reads as midnight — which is exactly the day that snapshot was
+    // written under. Restoring one therefore cannot move somebody's day.
+    dayBoundaryHour: r.dayBoundaryHour ?? null,
+    dayBoundaryStamp: r.dayBoundaryStamp ? { ...r.dayBoundaryStamp } : null,
   };
 }
 
