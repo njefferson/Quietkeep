@@ -22,6 +22,7 @@ import {
 import {
   localDayKey, endOfLocalDay, atMidnight, localParts, instantFromWallTime,
 } from '../src/time.ts';
+import { clockFace } from '../src/clock.ts';
 import type { AppEvent } from '../src/events.ts';
 
 /** The day key exactly as it read before the boundary existed — the calendar day
@@ -185,6 +186,23 @@ test('a midnight boundary reproduces the old answer exactly, not merely equivale
     assert.equal(localDayKey(iso, atMidnight(zone)), oldLocalDayKey(iso, zone),
       `${zone}: and the day key is unchanged too`);
   }
+});
+
+test('THE HEADER CLOCK: the remainder drains instead of resetting at midnight', () => {
+  // The surface where the defect is loudest. What gives a day weight is watching
+  // it drain — that is the whole argument for showing a remainder at all
+  // (src/clock.ts). Under a midnight boundary the number jumps from twelve
+  // minutes to twenty-four hours at the stroke, which is the reverse of the fact
+  // it exists to convey, and it does that while somebody is still working.
+  const halfPastMidnight = '2026-08-09T06:30:00.000Z'; // 00:30 in Denver
+
+  const midnightDay = clockFace(emptyState(), halfPastMidnight, TZ);
+  assert.equal(midnightDay.minutesLeft > 20 * 60, true,
+    `at 00:30 a midnight boundary claims most of a day is left (${midnightDay.minutesLeft} min)`);
+
+  const theirs = clockFace(setHour(emptyState(), 3), halfPastMidnight, TZ);
+  assert.equal(theirs.minutesLeft, 149, 'two hours twenty-nine, which is what is actually left of that evening');
+  assert.equal(theirs.hour, 0, 'and the TIME is untouched — the clock still says what the clock says');
 });
 
 test('nothing observes it — there is no function here that reads a log and proposes an hour', () => {

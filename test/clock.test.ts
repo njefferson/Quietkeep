@@ -6,6 +6,7 @@
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { atMidnight } from '../src/time.ts';
 
 import { fold, type State } from '../src/fold.ts';
 import { admit } from '../src/gate.ts';
@@ -64,13 +65,13 @@ test('the remainder is real minutes to the end of the LOCAL day', () => {
   // feature is wrong by six hours otherwise.
   // endOfLocalDay is 23:59:59, so the remainder FLOORS to 9h 39m. Flooring is
   // the honest direction: you do not have forty minutes, you have 39m59s.
-  assert.equal(minutesLeftOfDay(NOW, TZ), 9 * 60 + 39);
+  assert.equal(minutesLeftOfDay(NOW, atMidnight(TZ)), 9 * 60 + 39);
 });
 
 test('the last minute of the local day reads zero, and a finished day states no quantity', () => {
   // 23:59:30 local. `endOfLocalDay` is 23:59:59, so the remainder floors to 0 —
   // the reachable end of the day, not a contrived one.
-  assert.equal(minutesLeftOfDay('2026-08-06T05:59:30.000Z', TZ), 0);
+  assert.equal(minutesLeftOfDay('2026-08-06T05:59:30.000Z', atMidnight(TZ)), 0);
   // THE RULE, NOT THE SENTENCE (hub LESSONS §59). "The day is done." is one
   // correct wording of many; what must hold is that a day with nothing left
   // reports NO NUMBER. "0m left today" is arithmetically true and reads as a
@@ -88,9 +89,9 @@ test('THE EDGE THAT BREAKS CLOCKS: the day is the ZONE’s, not 24 hours minus t
   // not 24 hours long. `now + 86_400_000` passes every other day of the year and
   // is wrong by an hour on these two — in the one piece of chrome whose entire
   // job is to be believable about time.
-  const springForward = minutesLeftOfDay('2026-03-08T07:30:00.000Z', TZ);  // 23-hour day
-  const fallBack = minutesLeftOfDay('2026-11-01T06:30:00.000Z', TZ);       // 25-hour day
-  const ordinary = minutesLeftOfDay('2026-08-05T06:30:00.000Z', TZ);       // 24-hour day
+  const springForward = minutesLeftOfDay('2026-03-08T07:30:00.000Z', atMidnight(TZ));  // 23-hour day
+  const fallBack = minutesLeftOfDay('2026-11-01T06:30:00.000Z', atMidnight(TZ));       // 25-hour day
+  const ordinary = minutesLeftOfDay('2026-08-05T06:30:00.000Z', atMidnight(TZ));       // 24-hour day
   assert.equal(ordinary, 23 * 60 + 29);
   assert.equal(springForward, ordinary - 60, 'the short day is an hour shorter');
   assert.equal(fallBack, ordinary + 60, 'the long day is an hour longer');
@@ -100,8 +101,8 @@ test('an instant nothing can parse costs the clock, never the app', () => {
   // `endOfLocalDay` throws a RangeError on an unparseable instant, and this runs
   // inside the refresh chain that repaints every other surface — so a throw here
   // would take somebody's card list down with it. Both readers are total.
-  assert.equal(minutesLeftOfDay('not-a-date', TZ), 0);
-  assert.equal(datedTodayCount(fold([]), 'not-a-date', TZ), 0);
+  assert.equal(minutesLeftOfDay('not-a-date', atMidnight(TZ)), 0);
+  assert.equal(datedTodayCount(fold([]), 'not-a-date', atMidnight(TZ)), 0);
 
   // And one bad clock in the store does not stop the count. A shard folded in
   // from another device is the realistic source of one.
@@ -113,7 +114,7 @@ test('an instant nothing can parse costs the clock, never the app', () => {
   // Reach past the gate deliberately: the gate would refuse this, which is why
   // the only way it arrives is from somewhere the gate did not run.
   (broken.clocks as Record<string, { at: string }>)['start'] = { at: 'rubbish' };
-  assert.equal(datedTodayCount(s, NOW, TZ), 1);
+  assert.equal(datedTodayCount(s, NOW, atMidnight(TZ)), 1);
 });
 
 test('the remainder is a fact about the day, never a nudge about the person', () => {
@@ -150,7 +151,7 @@ test('it counts open things clocked today, and nothing else', () => {
     ev('clock.set', 'c', { clockKind: 'due', at: NOW, source: 't' }),
     ev('done.marked', 'c', { at: NOW }),
   ], fold([])));
-  assert.equal(datedTodayCount(s, NOW, TZ), 1, 'the open one only');
+  assert.equal(datedTodayCount(s, NOW, atMidnight(TZ)), 1, 'the open one only');
 });
 
 test('THE COUNT IS A BADGE, so it obeys what a badge may never be about', () => {
@@ -173,7 +174,7 @@ test('THE COUNT IS A BADGE, so it obeys what a badge may never be about', () => 
     ev('request.declined', 'd', { person: 'someone', what: 'a favour', reason: '' }),
     ev('clock.set', 'd', { clockKind: 'park', at: NOW, source: 't' }),
   ], fold([])));
-  assert.equal(datedTodayCount(s, NOW, TZ), 1, 'the worry and the decline are not today');
+  assert.equal(datedTodayCount(s, NOW, atMidnight(TZ)), 1, 'the worry and the decline are not today');
 });
 
 test('a thing with two clocks today is counted once', () => {
@@ -182,7 +183,7 @@ test('a thing with two clocks today is counted once', () => {
     ev('clock.set', 'a', { clockKind: 'due', at: NOW, source: 't' }),
     ev('clock.set', 'a', { clockKind: 'start', at: NOW, source: 't' }),
   ], fold([])));
-  assert.equal(datedTodayCount(s, NOW, TZ), 1);
+  assert.equal(datedTodayCount(s, NOW, atMidnight(TZ)), 1);
 });
 
 test('an empty day is an ordinary fact, not an achievement and not a reproach', () => {

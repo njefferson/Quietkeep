@@ -28,8 +28,9 @@
 
 import type { State } from './fold.ts';
 import { heldNodes } from './gate.ts';
-import { localParts, endOfLocalDay, localDayKey, atMidnight} from './time.ts';
+import { localParts, endOfLocalDay, localDayKey, type DayShape } from './time.ts';
 import { CALENDAR_KINDS, exportsToCalendar } from './ics.ts';
+import { boundaryOf } from './day.ts';
 
 /** The opt-in Extra's id. `state.modules`, exactly like the Composed Today
  *  module — no new event kind for a thing `module.enabled` already expresses. */
@@ -75,10 +76,10 @@ export const handAngles = (f: ClockFace): { hour: number; minute: number } => ({
  * runs inside the refresh chain that repaints every other surface, so a throw
  * here would take the card list down with it. It returns a number or nothing.
  */
-export function minutesLeftOfDay(nowIso: string, zone: string): number {
+export function minutesLeftOfDay(nowIso: string, day: DayShape): number {
   let end = NaN;
   try {
-    end = Date.parse(endOfLocalDay(nowIso, atMidnight(zone)));
+    end = Date.parse(endOfLocalDay(nowIso, day));
   } catch {
     return 0;
   }
@@ -123,10 +124,10 @@ export function minutesLeftOfDay(nowIso: string, zone: string): number {
  * otherwise throw out of the refresh chain and take every other surface with
  * it. A clock that cannot be read is skipped and the count carries on.
  */
-export function datedTodayCount(state: State, nowIso: string, zone: string): number {
+export function datedTodayCount(state: State, nowIso: string, day: DayShape): number {
   let today: string;
   try {
-    today = localDayKey(nowIso, atMidnight(zone));
+    today = localDayKey(nowIso, day);
   } catch {
     return 0;
   }
@@ -137,7 +138,7 @@ export function datedTodayCount(state: State, nowIso: string, zone: string): num
     for (const [kind, clock] of Object.entries(node.clocks)) {
       if (!clock || !CALENDAR_KINDS.has(kind)) continue;
       let key: string;
-      try { key = localDayKey(clock.at, atMidnight(zone)); } catch { continue; }
+      try { key = localDayKey(clock.at, day); } catch { continue; }
       if (key === today) { n++; break; }
     }
   }
@@ -146,11 +147,17 @@ export function datedTodayCount(state: State, nowIso: string, zone: string): num
 
 export function clockFace(state: State, nowIso: string, zone: string): ClockFace {
   const p = localParts(nowIso, zone);
+  // The remainder is of THE PERSON'S day, and this is the surface where the
+  // difference is loudest: at 00:30 under a midnight boundary the count jumps
+  // from "0h 12m left" to "23h 59m left", which is the reverse of the fact a
+  // draining remainder exists to convey. With a 3am boundary it reads 2h 29m,
+  // which is how much of that evening is actually left.
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   return {
     hour: p.hour,
     minute: p.minute,
-    minutesLeft: minutesLeftOfDay(nowIso, zone),
-    datedToday: datedTodayCount(state, nowIso, zone),
+    minutesLeft: minutesLeftOfDay(nowIso, day),
+    datedToday: datedTodayCount(state, nowIso, day),
   };
 }
 
