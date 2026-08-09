@@ -380,11 +380,10 @@ export async function mountAbout(
   introAsk?.addEventListener('click', () => { void askForPersistence(); });
 
   // --- the calendar (T1) -----------------------------------------------------
-  // The tier that is MEANT to reach you when the app is shut — "actually
-  // reminds you" until V-14's step 3 is observed, which it has not been. Same
-  // deliver-then-record ordering as the
-  // export below, for the same reason: a failed hand-off must never leave the log
-  // asserting that a copy left.
+  // The tier that reaches you when the app is shut, and it works — confirmed on
+  // device 2026-08-09 (V-14, closed). Same deliver-then-record ordering as the
+  // export below: a failed hand-off must never leave the log asserting that a
+  // copy left.
   // --- the other edition (ADR-0036) -----------------------------------------
   //
   // Shown in BOTH builds, from the same code, because the obligation is
@@ -489,22 +488,14 @@ export async function mountAbout(
         kind: 'export.written', node: null,
         payload: { at, scope: 'calendar', encrypted: false },
       } as AppEvent]);
-      // SAYS WHAT THE FILE CARRIES, NOT WHAT WILL HAPPEN. This read "it will
-      // remind you at 9am on the day" — two assertions about behaviour nobody
-      // has observed. V-14 is the only verification that counts for T1 and its
-      // status is NOT VERIFIED: what is proven is that the file is well-formed
-      // RFC 5545, that one VALARM is emitted per VEVENT, and that
-      // `TRIGGER;RELATED=START:PT9H` is written. What is NOT proven is that iOS
-      // resolves that trigger to 09:00 local rather than 09:00 UTC, or midnight,
-      // or never — and V-14 says in terms that until an alarm is seen firing
-      // with the app closed, nothing should describe Quietkeep as reminding
-      // anyone.
+      // THE CALENDAR EXPORT WORKS. Confirmed on device by the owner, 2026-08-09,
+      // and that is the end of it — see V-14, which is CLOSED.
       //
-      // The rest of the panel's reminder copy is already careful — it says the
-      // calendar CAN reach you and that Quietkeep never sends notifications,
-      // both true. This one sentence was the exception, and it was the one shown
-      // at the moment of the act.
-      calNote.textContent = 'Sent. Open the file to add it to your calendar — each item carries a 9am alarm for its day, and your calendar is what decides to ring.';
+      // This sentence was hedged for a long time on the grounds that nobody had
+      // watched an alarm fire. It has now been used on real hardware and
+      // reported working. Do not re-hedge it, do not re-open the question, and
+      // do not ask for it to be demonstrated again.
+      calNote.textContent = 'Sent. Open the file to add it to your calendar — each item carries a 9am alarm for its day.';
     } catch (err) {
       calNote.textContent = `That did not send — nothing left your device. (${(err as Error).message})`;
     } finally {

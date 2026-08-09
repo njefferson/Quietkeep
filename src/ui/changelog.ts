@@ -29,6 +29,14 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.38.3',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**The calendar hand-off says what it does, without hedging.** It was worded cautiously because nobody here had watched an alarm arrive. You have used it; it works. The caution is gone.',
+    ],
+  },
+  {
     triplet: '1.38.2',
     kind: 'ITERATION',
     date: '2026-08-09',

@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.3 — ITERATION
+
+*2026-08-09*
+
+- **The calendar hand-off says what it does, without hedging.** It was worded cautiously because nobody here had watched an alarm arrive. You have used it; it works. The caution is gone.
+
 ## 1.38.2 — ITERATION
 
 *2026-08-09*

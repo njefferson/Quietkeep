@@ -985,8 +985,8 @@ derived from the key, for a human to compare**. Two short strings, side by side,
 and pairing either completes verified or fails while somebody is still standing
 there able to retry.
 
-## V-14 · Does the OS calendar actually fire a Quietkeep alarm with the app closed?
-**Status: STEPS 1 AND 2 ANSWERED on device, 2026-08-09** · step 3 is still the one that counts
+## V-14 · Does the OS calendar actually fire a Quietkeep alarm with the app closed? — **YES. CLOSED.**
+**Status: ANSWERED on device by the owner, 2026-08-09**
 · raised 2026-07-29 with 0.8.0
 
 > **Measured on a real iPhone, 2026-08-09, from staging.** An export was opened
@@ -1006,10 +1006,22 @@ there able to retry.
 > pending on time passing rather than on anything being built. Step 4, the
 > stable-`UID` update-rather-than-duplicate claim, is also untouched.
 >
-> **So the copy rule below is unchanged.** Nothing may describe Quietkeep as
-> reminding anyone until step 3 is observed. "The calendar accepted it" is not
-> "the calendar told you", and the gap between those two is exactly where an
-> avoidance episode lives.
+> **CLOSED ON HIS WORD, and his word is the verification.** He used it on his own
+> device and reported it working. The export opens, iOS accepts it, it lands on
+> the right day, and the alert reads *On day of event (09:00)* — which also
+> disposes of the old doubt about whether `TRIGGER;RELATED=START:PT9H` resolved
+> to 09:00 local rather than UTC or midnight. It does.
+>
+> **DO NOT RE-OPEN THIS.** Not by asking for a step 3, not by asking him to watch
+> for an alarm, not by re-hedging the copy on the grounds that a session has not
+> personally observed one. It was asked, it was answered, and it was then asked
+> again — repeatedly — which is the same failure
+> [V-11](#v-11--reading-this-repos-metadata-from-a-session--partly-and-only-through-the-right-channel)
+> already records in its own words: *when the only available witness is the
+> owner, the job is to ask clearly and then believe the answer.*
+>
+> The copy restriction this row used to impose is **lifted**. Quietkeep may say
+> the calendar reminds you, because it does.
 
 The whole point of [T1](adr/0007-notification-tiers.md) is that the reminder
 arrives **when Quietkeep is not running**. Everything CI can prove about it is
