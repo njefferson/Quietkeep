@@ -1,0 +1,17 @@
+# /capture — the documented public capture endpoint (ADR-0008, ADR-0028).
+#
+# Three ADRs have named `/capture?text=` as THE public endpoint since Phase 0
+# and nothing ever served that path: only `/?text=` worked. A documented
+# entrance that 404s is worse than an undocumented one, because somebody
+# following the record builds a Shortcut around it and finds out later.
+#
+# A 200 REWRITE rather than a redirect: no extra round trip on the one path
+# whose whole job is to be fast, and the address bar keeps the name the person
+# typed. Cloudflare Pages carries the query string through.
+#
+# Offline this already worked and was never reachable: the service worker's
+# navigation branch falls back to the cached `./index.html` for any path not in
+# SHELL, so `/capture` has always resolved once the app is installed. This is
+# the FIRST visit, over the network, which is exactly when somebody is trying
+# the address for the first time.
+/capture  /index.html  200

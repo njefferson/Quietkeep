@@ -936,8 +936,16 @@ export async function handleUrlEntrances(session: Session, status: HTMLElement, 
   const params = new URLSearchParams(location.search);
   const clean = location.pathname + location.hash;
 
-  // The manifest shortcut: no capture, just land ready to type.
-  if (params.get('capture') === '1') {
+  // The manifest shortcut, and `/capture` with nothing after it: no capture,
+  // just land ready to type.
+  //
+  // `/capture` is the endpoint three ADRs have named since Phase 0, and until
+  // now nothing served it — the app answered `/?text=` only, so anybody
+  // following the record built a Shortcut around a path that 404'd. It is
+  // rewritten to the shell by `public/_redirects`; landing on it bare should do
+  // what its name says rather than nothing.
+  const bareCapture = /\/capture\/?$/.test(location.pathname) && !params.has('text');
+  if (params.get('capture') === '1' || bareCapture) {
     history.replaceState(null, '', clean);
     input.focus();
     return;

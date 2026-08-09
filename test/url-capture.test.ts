@@ -67,12 +67,12 @@ function harness(commit: 'lands' | 'refuses'): Harness {
  * covered the failure path could not have asserted the success one, and the
  * success assertion is what catches a careless fix.
  */
-function withQuery(search: string, fn: () => Promise<void>): Promise<void> {
+function withQuery(search: string, fn: () => Promise<void>, pathname = '/'): Promise<void> {
   const g = globalThis as unknown as {
     location?: unknown; history?: unknown; document?: unknown;
   };
   const prior = { location: g.location, history: g.history, document: g.document };
-  g.location = { search, pathname: '/', hash: '' };
+  g.location = { search, pathname, hash: '' };
   g.history = { replaceState() { /* the scrub */ } };
   g.document = {
     createElement: () => ({
@@ -146,6 +146,29 @@ test('an empty ?text= writes nothing at all', async () => {
     await handleUrlEntrances(h.session, fakeStatus(), fakeInput(), () => { /* no surface */ });
   });
   assert.equal(h.commits, 0, 'whitespace is not a thought');
+});
+
+test('/capture with nothing after it lands you ready to type — the path three ADRs named', async () => {
+  // `/capture?text=` has been THE documented public endpoint since Phase 0
+  // (ADR-0008, ADR-0028) and nothing ever served that path: the app answered
+  // `/?text=` only. A documented entrance that 404s is worse than an
+  // undocumented one, because somebody following the record builds a Shortcut
+  // around it and finds out later.
+  const h = harness('lands');
+  const input = fakeInput();
+  await withQuery('', async () => {
+    await handleUrlEntrances(h.session, fakeStatus(), input, () => { /* no surface */ });
+  }, '/capture');
+  assert.equal(h.commits, 0, 'a bare entrance captures nothing — there is nothing to capture');
+  assert.equal(input.focused, true, 'it does what its name says rather than nothing');
+});
+
+test('/capture?text= captures, exactly as the root endpoint does', async () => {
+  const h = harness('lands');
+  await withQuery('?text=ring%20the%20plumber', async () => {
+    await handleUrlEntrances(h.session, fakeStatus(), fakeInput(), () => { /* no surface */ });
+  }, '/capture');
+  assert.equal(h.commits, 1, 'the path is a name for the same entrance, not a second one');
 });
 
 test('the manifest shortcut captures NOTHING — it only lands you ready to type', async () => {

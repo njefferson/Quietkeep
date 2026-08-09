@@ -675,7 +675,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     address: document.querySelector('#capture-endpoint')?.textContent ?? '',
     origin: location.origin,
   }));
-  is(entrance.address, `${entrance.origin}/?text=`,
+  is(entrance.address, `${entrance.origin}/capture?text=`,
     `the panel states the real address for THIS copy of the app ("${entrance.address}")`);
   is(/undefined|null|localhost:0/.test(entrance.address), false,
     'and it is a usable address rather than a placeholder');

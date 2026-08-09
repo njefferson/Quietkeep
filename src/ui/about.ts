@@ -1383,7 +1383,12 @@ export async function mountAbout(
   const endpointCopy = document.querySelector<HTMLButtonElement>('#capture-endpoint-copy');
   const endpointNote = document.querySelector<HTMLElement>('#capture-endpoint-note');
   if (endpoint && endpointCopy && endpointNote) {
-    const address = `${location.origin}/?text=`;
+    // `/capture?text=` rather than `/?text=`: it is the endpoint ADR-0008 and
+    // ADR-0028 have named since Phase 0, it says what it is when somebody reads
+    // it back off a Shortcut months later, and `public/_redirects` now serves
+    // it. Both work and always will — the root form is what every log written
+    // before this records.
+    const address = `${location.origin}/capture?text=`;
     endpoint.textContent = address;
     endpointCopy.addEventListener('click', () => {
       // Clipboard first; selecting the text is the fallback, because on iPadOS a
