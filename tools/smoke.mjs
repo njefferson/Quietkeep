@@ -303,6 +303,76 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await page.locator('.card-title').first().textContent(), '<img src=x onerror="globalThis.__pwned=1">',
     'and shown verbatim');
 
+  // --- room for many lines (1.38.0) -----------------------------------------
+  //
+  // Walked in a real browser because every part of this only exists there: a
+  // single-line input STRIPS carriage returns and line feeds from anything set
+  // as its value, which is the whole reason the feature is needed, and no fake
+  // reproduces that. Asserting it against a stub would prove the stub obeys the
+  // stub.
+  console.log('\nRoom for many lines');
+  const beforeDump = await page.locator('.card').count();
+  await page.click('#capture-room');
+  is(await page.locator('#capture-many').isVisible(), true, 'the room opens');
+  is(await page.locator('#capture').isVisible(), false, 'and the one-line field steps aside');
+
+  await page.fill('#capture-many', 'ring the school\n\n  bins out  \nbook the car in');
+  // NOTHING IS HELD YET. This is the promise the feature is made of: a page you
+  // can leave half-written. If a keystroke committed anything, a dump would be
+  // impossible to abandon and the surface would be a trap.
+  is(await page.locator('.card').count(), beforeDump, 'nothing is held while you are still writing');
+
+  // And it survives being interrupted, which is the expected case here, not the
+  // edge case. The DRAFT decides the mode: a stored draft containing a newline
+  // can only have come from this field, so the shape comes back with the text.
+  await page.reload({ waitUntil: 'load' });
+  await ready();
+  is(await page.locator('#capture-many').isVisible(), true,
+    'an interrupted dump comes back with its room, not as one mangled line');
+  is(await page.inputValue('#capture-many'), 'ring the school\n\n  bins out  \nbook the car in',
+    'and with every line it had, whitespace and blanks included');
+
+  await page.click('#capture-form button[type=submit]');
+  await page.waitForFunction((n) => document.querySelectorAll('.card').length === n, beforeDump + 3);
+  is(await page.locator('.card').count(), beforeDump + 3,
+    'three items — the blank line is not a thing to do');
+  // NO COUNT. V2 stage 1 deleted the volume number from the gauge because a
+  // countable batch is what turns a good day's dump into a visible backlog, and
+  // this is the surface most able to bring it back. The sentence after forty is
+  // the same sentence as after one.
+  const dumpStatus = await page.locator('#status').textContent();
+  is(dumpStatus, 'Held. It will come back to you.', 'the same words for three as for one');
+  is(/\d/.test(dumpStatus ?? ''), false, 'and no digit anywhere in it');
+  is(await page.locator('#capture').isVisible(), true, 'and it hands the one-line field back');
+
+  // A MULTI-LINE PASTE INTO THE ONE-LINE FIELD.
+  //
+  // The newlines are never actually lost — they are lost from the ELEMENT. The
+  // clipboard still holds them, which is what the paste handler reads. Driven
+  // through a real ClipboardEvent with real DataTransfer, because the whole
+  // claim is about what the browser does with a paste.
+  const beforePaste = await page.locator('.card').count();
+  await page.evaluate(() => {
+    const dt = new DataTransfer();
+    dt.setData('text/plain', 'first line\nsecond line\nthird line');
+    document.querySelector('#capture').dispatchEvent(
+      new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true }));
+  });
+  is(await page.locator('#capture-many').isVisible(), true, 'a pasted list opens with room');
+  is(await page.inputValue('#capture-many'), 'first line\nsecond line\nthird line',
+    'with its line breaks intact — the defect this exists to fix');
+  is(await page.locator('.card').count(), beforePaste, 'and still nothing written');
+
+  // The other reading stays available. A pasted address really is one thing, so
+  // "many" can never be assumed — and neither can "one", which is what the box
+  // did by accident, badly, by running the lines together.
+  is(await page.locator('#capture-offer').isVisible(), true, 'it says what pressing the button will do');
+  await page.click('#capture-offer button');
+  is(await page.locator('#capture').isVisible(), true, 'and holding it as one thing is one press away');
+  is(await page.inputValue('#capture'), 'first line second line third line',
+    'joined visibly, on request — never silently');
+  await page.fill('#capture', '');
+
   console.log('\nURL capture endpoint (/capture?text=)');
   const before = await page.locator('.card').count();
   await page.goto(`${url}?text=${encodeURIComponent('from a hostile <img src=x> link')}`, { waitUntil: 'load' });

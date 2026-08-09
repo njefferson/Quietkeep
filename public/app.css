@@ -191,6 +191,35 @@ body {
 #capture::placeholder { color: var(--ink-soft); opacity: 1; }
 #capture:disabled { opacity: 1; background: var(--bg); }
 
+/* Room for many lines (1.38.0). Same tokens as #capture on purpose — it is the
+   same field with more of it, not a different one, so nothing about the way in
+   changes shape when it grows. `flex-basis: 100%` puts it on its own row so the
+   button sits under it rather than beside a ten-row box. */
+#capture-many {
+  flex: 1 1 100%;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  font-family: inherit;
+  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+#capture-many::placeholder { color: var(--ink-soft); opacity: 1; }
+
+/* The standing offer after a multi-line paste. Deliberately NOT a toast: it
+   waits until it is answered or the text changes, because the reader who looked
+   away is exactly the one it is for. */
+.capture-offer {
+  margin: 0.25rem 0 0;
+  color: var(--ink);
+  font-size: 0.9375rem;
+}
+.capture-offer button { margin-left: 0.25rem; }
+
 button {
   min-height: var(--target);
   min-width: var(--target);

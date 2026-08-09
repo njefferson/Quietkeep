@@ -66,8 +66,26 @@
     <input id="capture" name="capture" type="text" enterkeyhint="done"
            autocomplete="off" autocapitalize="sentences" spellcheck="true"
            placeholder="Put it down here" autofocus>
+    <!-- Room for a whole meeting's worth, one thing per line (1.38.0).
+         NOT a second surface: this is the same Dump, the same draft and the
+         same commit path, with many lines instead of one. ADR-0026 already
+         calls this screen Dump and ADR-0015 already calls a batch a "Dump
+         session"; a second thing called Dump would contradict both.
+         Nothing is written until the same button is pressed. -->
+    <label class="visually-hidden" for="capture-many">One thing per line</label>
+    <textarea id="capture-many" name="capture-many" rows="10" hidden
+              autocomplete="off" autocapitalize="sentences" spellcheck="true"
+              placeholder="One thing per line"></textarea>
     <button type="submit">Hold it</button>
+    <!-- Hidden when the text has more than one line, because collapsing back to
+         a single-line input would silently run the lines together — the exact
+         defect that makes pasting into it useless. A control that would destroy
+         what you wrote is not offered rather than refused. -->
+    <button type="button" id="capture-room" class="ghost">More room</button>
   </form>
+  <!-- Not a toast. Nothing meaningful is transient (V2 stage 3): the reader who
+       looked away is precisely the one this is for. -->
+  <p id="capture-offer" class="capture-offer" hidden></p>
 
   <!-- Naming a worry (v1.5). NOT a task, and deliberately not the same box:
        being told to enter "the thing with the roof" as a task is what makes

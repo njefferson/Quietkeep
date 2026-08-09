@@ -232,7 +232,11 @@ merely *lapsed* — that is a different case entirely, and it is `replan.raised`
 ### C · Capture and triage
 
 - **`capture.recorded`**
-  - Payload: `text, source: quick | share-target | url-endpoint | shortcut | focus-interrupt | sample, sourceTags[]`
+  - Payload: `text, source: quick | share-target | url-endpoint | shortcut | focus-interrupt | sample | dump, sourceTags[]`
+  - `dump` is one line of a many-line capture committed as a single batch — the
+    "Dump session" [ADR-0015](adr/0015-ai-never-blocks.md) already names. Each
+    line is its own `capture.recorded` and gets its own same-day cure, so a batch
+    is forty ordinary captures rather than one compound thing.
   - `sample` is the demonstration set (`src/sample.ts`), added 2026-07-30. Named
     rather than folded into `quick`, because a capture claiming it came from a
     keystroke when it came from a button labelled "sample work" is a small lie in

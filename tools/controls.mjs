@@ -112,7 +112,27 @@ function locate(id) {
   const tag = html.slice(tagAt, tagEnd + 1);
   const aria = tag.match(/aria-label="([^"]*)"/);
   let label = aria ? aria[1] : '';
-  if (!label) {
+
+  // A FIELD HAS NO TEXT OF ITS OWN, and pretending otherwise reads the
+  // NEIGHBOUR'S words (found 1.38.0).
+  //
+  // "The element's own text" is `slice(tagEnd, indexOf('</'))`, which for a
+  // `<button>` is exactly right and for an `<input>` is whatever markup happens
+  // to come next. `#capture` is an input, so its recorded label has been "Hold
+  // it" since this gate was written — the submit button's words, captured
+  // because `</button>` was the next close tag in the file. The value looked
+  // stable only because nothing had ever been added between the two.
+  //
+  // That is the false-receipt shape: a confident wrong value that nothing
+  // contradicts. It matters because this manifest is the baseline a MOVE is
+  // declared against, so a label that tracks the neighbourhood rather than the
+  // control turns an unrelated edit into a spurious rename — and, worse, would
+  // let a REAL rename hide behind one.
+  //
+  // Fields take their name from `<label for=>` (or `aria-label` above), which is
+  // what a screen reader announces and therefore what "its label" means.
+  const isField = /^<(input|textarea|select)\b/i.test(tag);
+  if (!label && !isField) {
     const closeAt = html.indexOf('</', tagEnd);
     const text = html.slice(tagEnd + 1, closeAt < 0 ? tagEnd + 1 : closeAt);
     label = text.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();

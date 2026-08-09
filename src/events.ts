@@ -72,7 +72,11 @@ export type ClarifyRoute = 'do-now' | 'next-action' | 'waiting-for' | 'someday' 
 // into `quick`, because a capture that says it came from a keystroke when it came
 // from a button labelled "sample work" is a small lie in the one place the app
 // keeps its history. Additive only, so every log already written stays readable.
-export type CaptureSource = 'quick' | 'share-target' | 'url-endpoint' | 'shortcut' | 'focus-interrupt' | 'sample';
+// `dump` is one line of a many-line capture — the batch ADR-0015 already calls a
+// "Dump session". Named rather than folded into `quick` for the same reason
+// `sample` is: forty items that arrived together in one paste did not arrive as
+// forty keystrokes, and the log is the one place this app keeps its history.
+export type CaptureSource = 'quick' | 'share-target' | 'url-endpoint' | 'shortcut' | 'focus-interrupt' | 'sample' | 'dump';
 export type Heat = 'hot' | 'cold';
 /** The closed set of capacities, as VALUES so the fold can refuse an
  *  unrecognised one rather than guess at it (1.15.0). Four words and no

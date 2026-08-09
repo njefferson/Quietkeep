@@ -607,7 +607,12 @@ export async function main(edition?: Edition): Promise<void> {
   const input = $<HTMLInputElement>('#capture');
   const status = $('#status');
 
-  input.value = await session.draft();
+  // Kept as its own binding because assigning it to the input DESTROYS the thing
+  // the many-line restore below has to read: setting a text input's value strips
+  // carriage returns and line feeds (the HTML value-sanitisation rule), so
+  // `input.value` can never contain a newline no matter what was stored.
+  const savedDraft = await session.draft();
+  input.value = savedDraft;
 
   // Every surface is mounted through a mutable holder that starts as a no-op, so
   // one failing surface cannot take the others — or capture — down with it, and
@@ -766,32 +771,144 @@ export async function main(edition?: Edition): Promise<void> {
   await handleUrlEntrances(session, status, input, rerender);
   triage.refresh();
 
+  // --- room for many lines (1.38.0) ------------------------------------------
+  //
+  // The same Dump, the same draft, the same commit path — many lines instead of
+  // one. NOT a second surface: ADR-0026 already calls this screen Dump and
+  // ADR-0015 already calls a batch a "Dump session", so a second thing called
+  // Dump would contradict both records.
+  //
+  // The DRAFT decides the mode, which is why there is no second storage key and
+  // no mode flag to keep in step with anything. A draft containing a newline can
+  // only have come from the many-line field, so an interrupted dump comes back
+  // in the shape it was left — after a reload, and after three weeks.
+  const many = $<HTMLTextAreaElement>('#capture-many');
+  const room = $<HTMLButtonElement>('#capture-room');
+  const offer = $('#capture-offer');
+
+  /** The live field, whichever is showing. One reader, so nothing can disagree. */
+  const draftText = () => (many.hidden ? input.value : many.value);
+  const lineCount = (s: string) => s.split('\n').filter((l) => l.trim() !== '').length;
+
+  const showRoom = (on: boolean, focus = true) => {
+    many.hidden = !on;
+    input.hidden = on;
+    room.textContent = on ? 'One line' : 'More room';
+    // Collapsing would have to join the lines, and joining is exactly the defect
+    // that makes pasting a document into a single-line box useless. So the way
+    // back is not offered while there is more than one line to lose — an absent
+    // control rather than a refusal to explain.
+    room.hidden = on && lineCount(many.value) > 1;
+    if (focus) (on ? many : input).focus();
+  };
+
+  const persist = () => { void session.setDraft(draftText()); };
+
   // Per keystroke. An interruption mid-capture is the EXPECTED case for this
   // audience, not the edge case (ADR-0008).
-  input.addEventListener('input', () => { void session.setDraft(input.value); });
+  input.addEventListener('input', () => { persist(); offer.hidden = true; });
+  many.addEventListener('input', () => {
+    persist();
+    offer.hidden = true;
+    // Re-evaluate the way back on every keystroke: deleting down to one line
+    // makes collapsing lossless again, and it should come back when it is.
+    room.hidden = lineCount(many.value) > 1;
+  });
+
+  room.addEventListener('click', () => {
+    if (many.hidden) { many.value = input.value; showRoom(true); }
+    else { input.value = many.value.trim(); showRoom(false); }
+    persist();
+  });
+
+  // A draft with a newline in it can only have come from the many-line field, so
+  // an interrupted dump comes back in the shape it was left — after a reload,
+  // and after three weeks. Read from `savedDraft`, never from `input.value`,
+  // which cannot hold a newline (see where it is loaded).
+  if (savedDraft.includes('\n')) { many.value = savedDraft; input.value = ''; showRoom(true, false); }
+
+  // A multi-line paste into the ONE-LINE field.
+  //
+  // `<input type="text">` strips carriage returns and line feeds from anything
+  // set as its value — that is the HTML value-sanitisation rule, and it is why
+  // pasting a written list here does not make many items and does not even make
+  // one readable line: every join runs together. But the newlines are not gone,
+  // they are only gone FROM THE ELEMENT. The clipboard still holds them, so this
+  // reads the clipboard rather than the box.
+  //
+  // NOTHING IS WRITTEN EITHER WAY, and both readings stay available. A pasted
+  // address, a recipe or a quote genuinely IS one thing, so "many" cannot be
+  // assumed — but neither can "one", which is what the box does today by
+  // accident, badly, by running the lines together. So it lands in the
+  // many-line field where the structure is visible and intact, and says plainly
+  // what pressing the button will do, with the other reading one press away.
+  input.addEventListener('paste', (e) => {
+    const text = (e as ClipboardEvent).clipboardData?.getData('text/plain') ?? '';
+    if (lineCount(text) < 2) return;
+    e.preventDefault();                     // else the element eats the newlines
+    many.value = text;
+    input.value = '';
+    showRoom(true);
+    persist();
+
+    offer.textContent = '';
+    const said = document.createElement('span');
+    // No count. A number here is the countable batch the gauge deliberately
+    // stopped showing (V2 stage 1) — the thing that turns a good day's dump into
+    // a visible backlog — and this is the surface most able to bring it back.
+    said.textContent = 'That will be held as one thing per line.';
+    const asOne = document.createElement('button');
+    asOne.type = 'button';
+    asOne.className = 'linklike';
+    asOne.textContent = 'Hold it as one thing';
+    asOne.addEventListener('click', () => {
+      // Joining is what the element would have done silently. Done here it is
+      // visible, asked for, and the text is on screen to check afterwards.
+      input.value = many.value.split('\n').map((l) => l.trim()).filter(Boolean).join(' ');
+      many.value = '';
+      showRoom(false);
+      persist();
+      offer.hidden = true;
+    });
+    offer.append(said, asOne);
+    offer.hidden = false;
+  });
 
   $<HTMLFormElement>('#capture-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const text = input.value.trim();
-    if (!text) return;
+    const roomOpen = !many.hidden;
+    const raw = roomOpen ? many.value : input.value;
+    // One item per non-blank line, each trimmed. No parsing, no structure
+    // detection, no routing on the way in: deciding while dumping stops the
+    // dumping (docs/planning-for-humans.md).
+    const lines = roomOpen ? dumpLines(raw) : [raw.trim()].filter(Boolean);
+    if (lines.length === 0) return;
 
     // Clear SYNCHRONOUSLY, never disable. Disabling blurred the field for the
     // whole commit window — dropping keystrokes and, on iPadOS, dismissing the
     // keyboard with no guaranteed return — and the un-cleared text made a
-    // double-tap capture the same thought twice (audit). With the input empty,
+    // double-tap capture the same thought twice (audit). With the field empty,
     // a second submit in the window reads '' and no-ops.
-    input.value = '';
+    if (roomOpen) many.value = ''; else input.value = '';
+    offer.hidden = true;
 
     let landed = false;
     try {
-      // Commit BEFORE the UI confirms (ADR-0008).
-      await session.commit(ctx => captureEvent(ctx, text, 'quick'));
+      // Commit BEFORE the UI confirms (ADR-0008). ONE transaction for the whole
+      // batch: each line is an ordinary `capture.recorded` and the gate gives
+      // each its own same-day cure in the same transaction, so a batch of forty
+      // is forty ordinary captures rather than one compound thing — and there is
+      // no window in which any of them is silent.
+      await session.commit(ctx => lines.flatMap(
+        (line) => captureEvent(ctx, line, roomOpen ? 'dump' : 'quick')));
       landed = true;
     } catch (err) {
-      // The write failed: give the thought back, and say so.
-      input.value = text;
+      // The write failed: give the thought back, and say so. All of it — a
+      // partial restore here would lose the lines it did not name, which is the
+      // one failure this app exists to prevent.
+      if (roomOpen) { many.value = raw; } else { input.value = raw; }
       status.textContent = `Not saved — ${(err as Error).message}`;
-      input.focus();
+      (roomOpen ? many : input).focus();
       return;
     }
 
@@ -800,7 +917,18 @@ export async function main(edition?: Edition): Promise<void> {
     // the user "Not saved" about a thought that was saved — who then retypes
     // it and gets a duplicate. Confirmation first, housekeeping after, each
     // failure contained.
+    // The SAME sentence for one line and for forty, and no number in it.
+    //
+    // A count is the countable batch V2 stage 1 deleted from the gauge: it is
+    // what turns a good day's dump into a visible backlog, and this is the
+    // surface most able to reintroduce it. Nor is it sold as relief — NOTES.md
+    // already refuses "capture quiets the mind" and the study behind it, so
+    // nothing here says a weight has moved. It says what is true: they are held,
+    // and they will come back.
     status.textContent = 'Held. It will come back to you.';
+    // Back to one line, ready for the next thought. The room is a thing you ask
+    // for, never a mode you get left in.
+    if (roomOpen) showRoom(false, false);
     void session.setDraft('').catch(() => { /* stale draft self-heals on next keystroke */ });
     try {
       refreshAll();
@@ -923,6 +1051,21 @@ export async function main(edition?: Edition): Promise<void> {
 function composeShared(title: string, text: string, url: string): string {
   return [title, text, url].map(s => s.trim()).filter(Boolean).join('\n').trim();
 }
+
+/**
+ * What a many-line capture becomes: one item per non-blank line, each trimmed.
+ *
+ * EXPORTED for its test, like `handleUrlEntrances` below — this is the whole
+ * rule for how a pasted document turns into items, and a rule that only exists
+ * inside an event handler cannot be held to anything.
+ *
+ * There is deliberately NO parsing here. No structure detection, no bullet
+ * stripping, no date lifting, no routing. Deciding while dumping stops the
+ * dumping (`docs/planning-for-humans.md`), and every one of those would be the
+ * app forming an opinion about text somebody has not finished writing.
+ */
+export const dumpLines = (raw: string): string[] =>
+  raw.split('\n').map((l) => l.trim()).filter(Boolean);
 
 /**
  * The three URL entrances. Captures at most once, offers an undo, and scrubs

@@ -260,6 +260,11 @@ const REGISTRY = {
   // own state rather than measured in a shape no reader ever meets.
   'put it down': ['#detail-release', '#detail-release-hint'],
   'picked back up': ['#detail-reclaim'],
+  // Room for many lines (1.38.0). The many-line field and the button that opens
+  // it. `#capture-room` is registered HERE rather than in the base state because
+  // its label CHANGES with the mode ("More room" / "One line") and it disappears
+  // entirely once there is more than one line to lose.
+  'more room': ['#capture-many'],
   'with cards': ['.card-title', '.card-when', '#status', '.group-head'],
   // Search results — only exist once you have typed, so a state of their own.
   // The summary is the quiet count; the "where" is the held status word, the
@@ -1067,6 +1072,26 @@ try {
     await auditTargets(page, 'empty store', theme);
     await auditFocusRings(page, 'empty store', theme,
       ['#capture', '#capture-form button[type=submit]', 'button.info', '.skip', '#restore-go']);
+
+    // State 2r: ROOM FOR MANY LINES (1.38.0). Driven with the room actually
+    // OPEN, because that is when the textarea exists to be measured at all and
+    // when `#capture` is hidden — measuring the collapsed form would report a
+    // field nobody has met and miss the one they typed a meeting into.
+    //
+    // `#capture-room` is deliberately NOT in the registry list for this state:
+    // it hides itself once there is more than one line, because collapsing back
+    // would join them. A registry entry matching nothing visible is the false
+    // receipt `#nextup-left` already cost a release for.
+    await page.click('#capture-room');
+    await page.fill('#capture-many', 'ring the school\nbins out\nbook the car in');
+    await auditContrast(page, 'more room', theme);
+    await auditAxe(page, 'more room', theme);
+    await auditNames(page, 'more room', theme);
+    await auditTargets(page, 'more room', theme);
+    await auditFocusRings(page, 'more room', theme,
+      ['#capture-many', '#capture-form button[type=submit]']);
+    await page.fill('#capture-many', '');
+    await page.click('#capture-room');
 
     // State 2u: the update strip's SECOND state — the one shown when the swap
     // does not take (1.20.2). The state above audits the strip's ordinary words;

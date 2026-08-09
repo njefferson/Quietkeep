@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.0 — CAPABILITY
+
+*2026-08-09*
+
+- **The Menu button is now the last control in the top row; it was the second to last.** One new button, *More room*, sits in the capture form ahead of it. Nothing else changed position.
+- **The capture box is exactly where it was, and its recorded name is now the question it asks — “What do you want to put down?”; it was “Hold it”.** That was the button’s words, kept against the box by mistake. Nothing you see or press has changed.
+- **Room for a whole meeting, one thing per line.** *More room* turns the capture line into a page you can write a list into. Nothing is held until you press the same button you always press — you can leave it half-written, close the app, and it will still be there next week, still unheld.
+- **And pasting a written list into the capture line now works.** It used to run every line together into one unreadable item, because a single-line box quietly deletes the line breaks in anything you paste. The lines are kept now: the paste opens with room, and says it will be held as one thing per line — with *Hold it as one thing* there if it was really one thing all along, like an address.
+- Still true, and deliberately: nothing is sorted, split or filed on the way in, and nothing is counted on the way out.
+
 ## 1.37.0 — CAPABILITY
 
 *2026-08-09*
