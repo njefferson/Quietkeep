@@ -101,14 +101,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   console.log('\nFirst run — the walkthrough, then the panel for the storage step');
   is(await page.locator('#tour').isVisible(), true, 'the walkthrough opens by itself on a fresh store');
-  is((await page.locator('#tour-progress').textContent())?.trim(), 'Step 1 of 4', 'it starts at the first step');
+  is((await page.locator('#tour-progress').textContent())?.trim(), 'Step 1 of 6', 'it starts at the first step');
   is(await page.locator('#tour-skip').isVisible(), true, 'Skip is present, so it is never a trap');
   // Step to the end. Back appears after the first step; the last step offers
   // "Get started", which hands off to the (i) panel for keeping your data.
   await page.click('#tour-next');
   is(await page.locator('#tour-back').isVisible(), true, 'Back appears once you have moved');
-  await page.click('#tour-next');
-  await page.click('#tour-next');
+  // Driven to the END rather than clicked a fixed number of times. It used to
+  // click three, which silently meant "there are four steps" — so adding two
+  // real ones turned the walkthrough into a failing gate instead of a longer
+  // walkthrough. A step count is content; the last step offering "Get started"
+  // is the guarantee.
+  for (let guard = 0; guard < 20; guard++) {
+    const label = (await page.locator('#tour-next').textContent())?.trim();
+    if (label === 'Get started') break;
+    await page.click('#tour-next');
+  }
   is((await page.locator('#tour-next').textContent())?.trim(), 'Get started', 'the last step offers to get started');
   await page.click('#tour-next');
   is(await page.locator('#tour').isVisible(), false, 'finishing closes the walkthrough');

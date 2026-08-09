@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.36.2',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**The walkthrough now teaches what actually happens each day.** It stopped at &ldquo;it hands you the thing worth doing&rdquo; and never said what that looks like or what to do with it — so the two halves people meet first, acting on an offer and having a bad day, were the two it left out.',
+      '**Two new steps.** One thing at a time: why each offer says why it is there, that *Not this* costs nothing and records nothing, and that finishing makes the screen settle and wait. And: not every day is the same — how heavy a thing is, how the day is going, and *Just one thing* for when the screen itself is too much.',
+      'Six steps now, still skippable, and still there whenever you want it under *How to use it*.',
+    ],
+  },
+  {
     triplet: '1.36.1',
     kind: 'ITERATION',
     date: '2026-08-09',

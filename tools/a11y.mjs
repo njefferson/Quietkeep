@@ -1021,10 +1021,15 @@ try {
     await auditTargets(page, 'walkthrough', theme);
     // Step to the end. The last step's "Get started" hands off to the (i) panel
     // for the storage step, which is exactly what State 1 audits.
-    await page.click('#tour-next');
-    await page.click('#tour-next');
-    await page.click('#tour-next');
-    await page.click('#tour-next');
+    // Driven to the END rather than clicked a fixed number of times. Four clicks
+    // silently meant "there are four steps", so adding two real ones timed the
+    // whole gate out instead of auditing a longer walkthrough. A step count is
+    // content; "Get started" is the guarantee.
+    for (let guard = 0; guard < 20; guard++) {
+      const label = (await page.locator('#tour-next').textContent())?.trim();
+      await page.click('#tour-next');
+      if (label === 'Get started') break;
+    }
 
     // State 1: the (i) panel as a new user reaches it (via the walkthrough).
     // The handoff unfolds Your data; the other groups arrive CLOSED — so this

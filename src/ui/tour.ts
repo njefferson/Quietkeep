@@ -56,6 +56,20 @@ const stepsNow = (): readonly Step[] => [
     ],
   },
   {
+    heading: 'One thing at a time',
+    body: [
+      'It offers you a small number of things — usually two, chosen to be unalike, so picking is a preference rather than a comparison. Each one says why it is here: a date arrived, something it was waiting on is done, a place it lives came round.',
+      'Not this moves past it, as often as you like, and records nothing at all. When you finish something the screen settles and waits — nothing new arrives until you ask for it. That gap is on purpose.',
+    ],
+  },
+  {
+    heading: 'Not every day is the same',
+    body: [
+      'You can say how heavy a thing is, and how the day is going. Neither shortens the list — they change which things come forward, because being handed less on a bad day is the app deciding what you can manage.',
+      'And when the screen itself is too much, Just one thing strips it back to a single item and almost nothing else. Nothing turns that on for you. The ⓘ explains all of it, whenever you want it.',
+    ],
+  },
+  {
     heading: 'It is yours, and it is all here',
     body: [
       isSyncEdition()
