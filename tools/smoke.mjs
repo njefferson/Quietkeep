@@ -4320,16 +4320,33 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // several. Cycled with the app's own "Not this", which records nothing.
   await tpage.locator('#cards .card:has-text("strip the old sealant") .card-done').click();
   await tpage.waitForTimeout(300);
+  // CYCLED UNTIL THE QUEUE REPEATS, not a fixed 25 times.
+  //
+  // This assertion FLAKED — it failed once and passed on an identical re-run, on
+  // the same commit. A bounded count is a guess about how long the queue is, and
+  // when the store grows past it the walk stops before reaching the item and
+  // reports the feature broken. A gate that fails at random is worse than no
+  // gate: it teaches everybody to re-run rather than to look.
+  //
+  // Seeing a title twice means the rotation has come all the way round, which is
+  // the real end of the search and is true whatever the queue length. The count
+  // is kept only as a runaway guard, never as the bound.
   let unblockedWhy = null;
-  for (let i = 0; i < 25 && unblockedWhy === null; i++) {
-    const title = await tpage.locator('#nextup-title').textContent();
-    if (/re-seal the frame/.test(title || '')) {
+  const seenTitles = new Set();
+  for (let guard = 0; guard < 200 && unblockedWhy === null; guard++) {
+    const title = (await tpage.locator('#nextup-title').textContent()) || '';
+    if (/re-seal the frame/.test(title)) {
       unblockedWhy = await tpage.locator('#nextup-why').textContent();
       break;
     }
+    if (seenTitles.has(title)) break;      // the whole queue, seen once
+    seenTitles.add(title);
     if (await tpage.locator('#nextup-skip').isHidden()) break;
     await tpage.click('#nextup-skip');
-    await tpage.waitForTimeout(100);
+    await tpage.waitForFunction(
+      (prev) => (document.querySelector('#nextup-title')?.textContent || '') !== prev,
+      title, { timeout: 2000 },
+    ).catch(() => { /* a queue of one never changes; the repeat check ends it */ });
   }
   is(unblockedWhy !== null, true,
     'finishing the first step offers the second — the completion IS the cue');
