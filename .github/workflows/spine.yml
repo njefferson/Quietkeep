@@ -171,6 +171,15 @@ jobs:
       - name: The shape is where it was, or the release says otherwise
         run: npm run controls:check
 
+      # The collision catalogue stays honest (V2 stage 7). It was a false receipt
+      # in both directions — five shipped proposals still marked as candidates,
+      # and replicated experimental findings written in the same voice as phrases
+      # somebody coined on a forum. Nothing checked it, which is why it drifted.
+      # This holds the SHAPE: every entry states how strong its evidence is and
+      # how it routes, both from closed sets.
+      - name: Every collision says what it is built on
+        run: npm run collisions:check
+
       # And every kind is DEMONSTRATED, or says why not (1.16.0, ADR-0067). The
       # sample set was written at 0.22.0 and sixteen releases later contained 8
       # of the 70 kinds the app emits — so every surface built after it had
