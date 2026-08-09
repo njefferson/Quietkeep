@@ -576,6 +576,31 @@ were promoted together 2026-08-06. `staging` carries 1.26.0, 1.27.0, 1.27.1,
 - **https://staging.quietkeep.pages.dev** — the candidate, **1.36.0**
 - **https://quietkeep.pages.dev** — production, **1.25.0**
 
+**1.36.1 — the ⓘ panel explains the half of the app it had gone quiet about.**
+
+Found by REVIEWING the finished thing rather than by reading the plan back. The
+panel had 28 sections and none of them covered weight, capacity, the situation
+line, the settle, or duration ranges; "Just one thing" got two passing mentions.
+Those are the newest and most distinctive behaviours in the app, and they are
+the ones a newcomer is most likely to read as a fault.
+
+**The settle is the one that mattered.** You finish something and nothing
+arrives. That is deliberate, and the screen says so at the time — but there was
+nowhere to go and check afterwards. A person who wonders *why did it do that*
+and finds no answer files it as broken, or stops trusting the rest.
+
+Seven sections, each with the "what it is not" caveat the house style uses:
+the offer and why each thing states its warrant, finishing and stopping, weight,
+capacity, the minimum state, the situation line, and duration as two ends rather
+than an average. Nothing about the app changed; what changed is that it can be
+looked up.
+
+**A correction to the review that produced this.** It also claimed the
+walkthrough could not be replayed. It can: `mountTour` wires `#tour-replay`
+BEFORE the seen-check, so the button in "How to use it" works and always has.
+What is true is narrower — the walkthrough is four steps that teach an older,
+smaller app, and never teaches the daily loop.
+
 **Stage 6 is in flight on `staging`, unreleased — the way in from outside.**
 
 **A FAILED URL CAPTURE DESTROYED THE TEXT.** `handleUrlEntrances` scrubs the

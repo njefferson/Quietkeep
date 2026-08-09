@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.36.1 — ITERATION
+
+*2026-08-09*
+
+- **Quietkeep now explains the half of itself it had gone quiet about.** Seven new entries in the ⓘ panel: how the offer chooses and why each thing says what it is doing there, what happens when you finish something, saying how heavy a thing is, saying how the day is going, *Just one thing*, the when-and-where line, and how long things take.
+- **The one most worth reading is the pause after finishing.** Nothing new arrives until you ask for it, and that gap is on purpose — but until now the only place that was said was on the screen at the time. If you wondered about it afterwards there was nowhere to go and check, which makes a deliberate thing look like a fault.
+- Everything described was already there and nothing about the app changed. What changed is that it can now be looked up.
+
 ## 1.36.0 — CAPABILITY
 
 *2026-08-08*
