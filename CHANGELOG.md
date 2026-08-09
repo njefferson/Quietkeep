@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.37.0 — CAPABILITY
+
+*2026-08-09*
+
+- **The one thing today that will not move, named on the main screen.** Not a countdown and not an alarm — your calendar holds those. Just the name of it, where you can catch it without going looking, because the hours before something fixed stop feeling like usable time when you cannot remember what it was.
+- **Nothing you capture from a link is sent anywhere now.** Opening a capture address put whatever it carried into the request to the server that hosts the app — fine for “buy milk”, wrong for the notes from a meeting, which is exactly what that entrance is for. It stays on your device. The first visit on a brand-new browser is still the old way round, and that is being fixed separately rather than quietly.
+- **This release also delivers a feature that was written but never reached you.** The fixed-thing line was built and pushed on 9 August without a version bump, so every installed copy kept serving the older app and had no way to know. It is here now, and the build refuses to repeat it.
+
 ## 1.36.2 — ITERATION
 
 *2026-08-09*

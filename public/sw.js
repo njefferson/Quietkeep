@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-1.36.2';
+const CACHE = 'quietkeep-1.37.0';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -91,8 +91,34 @@ self.addEventListener('fetch', (event) => {
     // so tapping "Planning for Humans" on a slow connection silently landed
     // on the main screen instead of the cached page it asked for.
     const pageKey = SHELL.includes(`.${url.pathname}`) ? `.${url.pathname}` : './index.html';
+
+    // THE QUERY NEVER GOES TO THE NETWORK (1.37.0).
+    //
+    // `/capture?text=…` is the documented public entrance — three ADRs name it
+    // and the ⓘ panel hands it out — so whatever somebody captures arrives here
+    // as a query string. `fetch(req)` would put that in the request line to the
+    // edge on EVERY online navigation, win or lose the race below. For "buy
+    // milk" that is small; for the meeting notes this endpoint exists to carry
+    // it is the no-telemetry promise breaking on the app's widest way in.
+    //
+    // The server has no use for it. `_redirects` rewrites `/capture` to the
+    // shell as a static file, and the app reads the text from `location`, which
+    // the browser set from the navigation itself — `respondWith` cannot change
+    // the document's URL, so stripping the query here is invisible to the page
+    // and takes the text off the wire. V-16 already established that a fragment
+    // is never transmitted by any browser — which is why the sync key rides in
+    // one; this gives the query the same property for anyone with the worker
+    // installed.
+    //
+    // Not a substitute for the fragment entrance: the FIRST visit, before this
+    // worker exists, still sends whatever it was given. That is why the private
+    // entrance is a separate piece of work and this is not the end of it.
+    const netReq = url.search
+      ? new Request(url.origin + url.pathname, { headers: req.headers, credentials: 'same-origin' })
+      : req;
+
     event.respondWith((async () => {
-      const freshen = fetch(req).then(async (fresh) => {
+      const freshen = fetch(netReq).then(async (fresh) => {
         if (fresh.ok) (await caches.open(CACHE)).put(pageKey, fresh.clone());
         return fresh;
       });

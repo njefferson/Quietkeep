@@ -669,6 +669,42 @@ being treated as one was a cache.
 
 ---
 
+## V-21 · Does a Shortcut's *Open URL* land in the installed app, or in Safari? — **NOT VERIFIED, and it decides whether the Shortcut route exists**
+· raised 2026-08-09, when the dump page and a private capture entrance were planned
+
+**Why it is asked now.** On the reference platform there is no entrance from outside
+the app: `share_target` and manifest shortcuts are Chromium-only. The one route that
+works is a Shortcut that opens `/capture?text=…`, and the ⓘ panel now hands people the
+recipe for it. Everything planned on top of that — a fragment entrance carrying a whole
+meeting's notes into a staged dump page — rests on the Shortcut reaching the app that
+holds the store.
+
+**What is believed and NOT verified:** that iOS honours the installed web app's scope
+for a URL opened by Shortcuts, rather than handing it to Safari.
+
+- By what: nothing. Stated from the shape of the platform, which is not evidence.
+- **This is the same risk already written down in
+  [V-16](#v-16--can-an-ipad-web-app-scan-a-qr-code-at-all--not-verified-and-it-decides-the-pairing-design)**
+  for the pairing link, where it was recorded that the flow "would appear to succeed
+  and then quietly not work". Storage is per origin *context*: Safari and the installed
+  app do not share an IndexedDB.
+- **The consequence here is worse than for pairing.** A pairing key that lands in the
+  wrong context fails visibly on the next step. A capture that lands in the wrong
+  context *succeeds* — the app says it held it — into a store nobody opens again. That
+  is the app's one unforgivable failure, dressed as a confirmation.
+
+**How to settle it, and it needs the owner's hands.** Build one Shortcut with a single
+*Open URL* action pointing at `https://quietkeep.pages.dev/capture?text=hello`, run it
+from the Home Screen, and look at which icon comes to the front. If Quietkeep opens,
+the route is real. If Safari opens, the whole Shortcut entrance is a trap and the
+recipe in the ⓘ panel needs to say so.
+
+**Until it is answered:** the fragment entrance and the Shortcut recipe for the dump
+page are NOT built. The existing `?text=` endpoint is untouched and keeps working
+either way — this question decides what may be *recommended*, not what exists.
+
+---
+
 ## V-20 · The relay's DELETE empties what KV *lists*, and KV `list` is eventually consistent — **UNDERSTOOD, and the gate no longer races it**
 · raised 2026-07-30 when Relay run 12 on `c706a64` went red at "Check it actually answers"
 

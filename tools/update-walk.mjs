@@ -64,7 +64,7 @@ if (nextSw === realSw) {
   process.exit(1);
 }
 
-const { server, url, overrides } = await serve(ROOT);
+const { server, url, overrides, seen } = await serve(ROOT);
 const browser = await chromium.launch(launchOpts);
 
 console.log('=== a real second worker · Doctrine §7h ===\n');
@@ -166,6 +166,41 @@ try {
   is(await p2.evaluate(() => document.querySelector('#update')?.checkVisibility() === true), false,
     '5. a first-ever visitor is never told an update is ready (§7h.3)');
   await fresh.close();
+
+  // --- what a capture puts on the wire (1.37.0) ------------------------------
+  //
+  // `/capture?text=…` is the documented public entrance, so whatever somebody
+  // captures arrives as a query string. Until 1.37.0 the worker fetched the
+  // request as given, which put that text in the request line to the host on
+  // every online navigation — the no-telemetry promise breaking on the app's
+  // widest way in.
+  //
+  // Asserted from the SERVER's side on purpose. Reading `sw.js` for the absence
+  // of `fetch(req)` would only prove the source says the right thing; this is
+  // the only vantage point that can say what actually left the browser. It runs
+  // here because this is the tool that already has a REAL worker controlling a
+  // REAL page — the same reason §7h is walked rather than mocked.
+  const CANARY = 'zzcanary-brief-with-the-board-about-the-thing';
+  const before = seen.length;
+  await page.goto(`${url}capture?text=${encodeURIComponent(CANARY)}`, { waitUntil: 'load' });
+  await page.waitForSelector('body[data-ready=true]');
+  const leaked = seen.slice(before).filter((r) => r.includes('zzcanary'));
+  is(leaked.length, 0, '6. what you capture from a link never reaches the host');
+  if (leaked.length) for (const r of leaked) console.log(`      leaked: ${r}`);
+
+  // And the strip is invisible to the app, which is the half that makes it a fix
+  // rather than a removal: `respondWith` cannot change the document's URL, so the
+  // page still reads the text out of `location` and captures it. Without this
+  // assertion the cheapest way to pass the one above would be to BREAK the
+  // entrance — losing the capture, which is the exact shape this repo already
+  // paid for once when a failed URL capture destroyed the only copy of it.
+  //
+  // Asserted on the app's own confirmation rather than on `location.search`:
+  // `handleUrlEntrances` scrubs the query the moment it has the text, so a
+  // refresh cannot fire the same capture twice. The address bar is empty by
+  // design a few milliseconds in.
+  is((await page.locator('#status').textContent())?.includes('Held from a link'), true,
+    '   and the app still captured it, so the entrance still works');
 } finally {
   await browser.close();
   server.close();

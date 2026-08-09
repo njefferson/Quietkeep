@@ -20,7 +20,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      # fetch-depth: 0 — `release:check` has to find the commit that introduced
+      # the current triplet, which a depth-1 clone cannot see. That gate fails
+      # loudly rather than skipping on a shallow clone, so this is load-bearing
+      # rather than an optimisation someone can tidy away.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
@@ -71,6 +77,15 @@ jobs:
       # name bump together. A rule someone has to remember, until it is a check.
       - name: Changelog and triplet
         run: npm run changelog:check
+
+      # And that the triplet has not stood still while the app moved. The check
+      # above compares the changelog head against the cache name — both can agree
+      # on a STALE number, which is exactly what happened on 9 August: a new
+      # surface shipped with no entry and no cache bump, so no worker installed
+      # and every already-installed reader kept the old bundle. Published, and
+      # unable to arrive.
+      - name: The shipped surface is not newer than the release
+        run: npm run release:check
 
       # The hosted "why it works this way" page is GENERATED from the rationale
       # doc (tools/thesis.mjs), so the two cannot drift — same rule as the

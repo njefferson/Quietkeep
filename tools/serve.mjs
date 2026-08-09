@@ -57,7 +57,15 @@ function parseHeaders(root) {
  */
 export function serve(root, port = 0, overrides = new Map()) {
   const extraHeaders = parseHeaders(root);
+  // Every raw request line this server was asked for, in order.
+  //
+  // It exists so a walk can assert what did NOT reach the wire. `/capture?text=`
+  // is the documented entrance and the service worker strips the query before
+  // fetching, so the only way to know that holds is to look from the server's
+  // side — reading the worker's source would only prove the source says so.
+  const seen = [];
   const server = createServer(async (req, res) => {
+    seen.push(req.url ?? '');
     try {
       const url = new URL(req.url ?? '/', 'http://localhost');
       let path = decodeURIComponent(url.pathname);
@@ -84,7 +92,7 @@ export function serve(root, port = 0, overrides = new Map()) {
   return new Promise((resolve) => {
     server.listen(port, '127.0.0.1', () => {
       resolve({
-        server, overrides,
+        server, overrides, seen,
         port: server.address().port,
         url: `http://127.0.0.1:${server.address().port}/`,
       });
