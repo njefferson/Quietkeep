@@ -665,6 +665,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(logLenAfterSearch, logLenBeforeSearch, 'searching and opening a result wrote nothing to the log');
   await fillSearch('');            // leave the box as we found it
 
+  console.log('\nThe way in from outside (V2 stage 6)');
+  // On the reference platform `?text=` is the ONLY entrance from outside the
+  // app, and it was documented nowhere. An entrance nobody can find is an
+  // entrance that does not exist.
+  await tpage.click('#open-about');
+  await expandGroups(tpage);
+  const entrance = await tpage.evaluate(() => ({
+    address: document.querySelector('#capture-endpoint')?.textContent ?? '',
+    origin: location.origin,
+  }));
+  is(entrance.address, `${entrance.origin}/?text=`,
+    `the panel states the real address for THIS copy of the app ("${entrance.address}")`);
+  is(/undefined|null|localhost:0/.test(entrance.address), false,
+    'and it is a usable address rather than a placeholder');
+  await tpage.click('#capture-endpoint-copy');
+  await tpage.waitForFunction(() =>
+    (document.querySelector('#capture-endpoint-note')?.textContent || '').length > 0);
+  is(true, true, 'and pressing copy says what happened rather than failing silently');
+  await tpage.click('#about-close');
+
   console.log('\nHow long things take (V2 stage 5)');
   // The two ENDS and never an average, and the ONE permitted number. Asserted
   // on the built app because a projection nothing renders is the log lying

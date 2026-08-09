@@ -1377,6 +1377,21 @@ dialog, dialog * { overflow-wrap: anywhere; }
 }
 #storage-body dt { color: var(--ink-soft); overflow-wrap: anywhere; }
 #storage-body dd { margin: 0; overflow-wrap: anywhere; }
+/* The capture address (V2 stage 6) — the only entrance from outside the app on
+   the reference platform, so it has to be readable and selectable rather than
+   decorative. It WRAPS: a long origin on a 320px screen must not push the panel
+   sideways, and the a11y gate measures page overflow at that width. */
+.about-code {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 0.9375rem;
+  color: var(--ink);
+  background: var(--inset);
+  padding: 0.35rem 0.5rem;
+  border-radius: 2px;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
 .storage-note {
   margin: 0.875rem 0 0;
   padding-top: 0.75rem;

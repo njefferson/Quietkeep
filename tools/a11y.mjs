@@ -191,6 +191,11 @@ const REGISTRY = {
   // When your day ends (V2 stage 5). A select and its button, in the panel where
   // the timer length is chosen — the same shape, set in the same calm place.
   'day boundary': ['#day-boundary', '#day-boundary-set', '#day-boundary-note'],
+  // The way in from outside (V2 stage 6). The address is a `<code>` block
+  // somebody has to READ off a screen and then trust, so it is measured like
+  // any other text — a monospace block on an inset background is exactly the
+  // pairing that quietly fails contrast.
+  'capture address': ['#capture-endpoint', '#capture-endpoint-copy', '#capture-endpoint-note'],
   // The clock itself, after the panel has been closed. `.clock-face` is an SVG
   // and the sampler reads an element's `color`, so this measures the dial only
   // because the strokes are `currentColor` — see the note in app.css. `.clock-rim`
@@ -1994,6 +1999,17 @@ try {
     await auditNames(page, 'clock opt-in', theme);
     await auditTargets(page, 'clock opt-in', theme);
     await auditFocusRings(page, 'clock opt-in', theme, ['#clock-on']);
+    // THE WAY IN FROM OUTSIDE (V2 stage 6). Driven with the copy actually
+    // pressed, so the note has words in it — a status line measured while empty
+    // measures nothing, which is the `situation field` lesson.
+    await page.click('#capture-endpoint-copy');
+    await page.waitForFunction(() =>
+      (document.querySelector('#capture-endpoint-note')?.textContent || '').length > 0);
+    await auditContrast(page, 'capture address', theme);
+    await auditNames(page, 'capture address', theme);
+    await auditTargets(page, 'capture address', theme);
+    await auditFocusRings(page, 'capture address', theme, ['#capture-endpoint-copy']);
+
     // WHEN YOUR DAY ENDS (V2 stage 5) — driven with a real choice made, because a
     // control measured in its default state measures the default and not the
     // control. A new surface joins this gate in the SAME commit (LESSONS §28).

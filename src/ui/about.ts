@@ -1370,6 +1370,41 @@ export async function mountAbout(
     });
   }
 
+  // THE WAY IN FROM OUTSIDE (V2 stage 6). On the reference platform there is no
+  // share target and no manifest shortcut — both are Chromium-only — so `?text=`
+  // is the ONLY entrance from outside the app, and until now it was documented
+  // nowhere. An entrance nobody can find is an entrance that does not exist.
+  //
+  // The address is built from the CURRENT origin rather than hardcoded, so the
+  // staging copy tells you about staging and the production copy about
+  // production. A panel that handed somebody the wrong host would be worse than
+  // silence, because it would look right.
+  const endpoint = document.querySelector<HTMLElement>('#capture-endpoint');
+  const endpointCopy = document.querySelector<HTMLButtonElement>('#capture-endpoint-copy');
+  const endpointNote = document.querySelector<HTMLElement>('#capture-endpoint-note');
+  if (endpoint && endpointCopy && endpointNote) {
+    const address = `${location.origin}/?text=`;
+    endpoint.textContent = address;
+    endpointCopy.addEventListener('click', () => {
+      // Clipboard first; selecting the text is the fallback, because on iPadOS a
+      // long-press copy is a real way to get it and a button that fails silently
+      // is not. Either way the note says what happened.
+      void (async () => {
+        try {
+          await navigator.clipboard.writeText(address);
+          endpointNote.textContent = 'Copied.';
+        } catch {
+          const range = document.createRange();
+          range.selectNodeContents(endpoint);
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+          endpointNote.textContent = 'Selected — copy it from here.';
+        }
+      })();
+    });
+  }
+
   // WHEN YOUR DAY ENDS (V2 stage 5). The timer-length shape, and set in the same
   // place for the same reason: calmly, and never at the moment it would matter.
   //

@@ -1682,6 +1682,36 @@
     does, quietly, when its day ends.
   </p>
 
+  <h3 class="about-section">Getting things in from somewhere else</h3>
+  <p class="about-p">
+    On an iPhone or iPad there is no share-sheet entrance to Quietkeep, and there
+    is not going to be one: Safari does not support it. That is a limit of the
+    browser rather than a decision here, and saying so is more useful than
+    leaving you to work out why the option never appears.
+  </p>
+  <p class="about-p">
+    What does work is an address. Anything you put after
+    <code>?text=</code> is captured as one item, exactly as if you had typed it
+    into the line at the top.
+  </p>
+  <div class="about-actions">
+    <code id="capture-endpoint" class="about-code"></code>
+    <button id="capture-endpoint-copy" type="button" class="ghost">Copy the address</button>
+  </div>
+  <p id="capture-endpoint-note" class="storage-note" role="status" aria-live="polite"></p>
+  <p class="about-p">
+    To put that on your share sheet, make a Shortcut: open the Shortcuts app,
+    make a new one, add <em>Get Contents of URL</em>, paste the address above and
+    put <em>Shortcut Input</em> after it, then turn on <em>Show in Share
+    Sheet</em>. Give it a name you will recognise in a hurry.
+  </p>
+  <p class="about-p about-caveat">
+    Whatever arrives that way lands as one unsorted item and nothing else. It
+    cannot set a date, finish anything, or delete anything &mdash; a link is a
+    public thing and it may only ever do the one act. You are told it arrived,
+    and there is an Undo beside it.
+  </p>
+
   <h3 class="about-section">When your day ends</h3>
   <p class="about-p">
     Everything in Quietkeep that means <em>today</em> asks this. A day that ends

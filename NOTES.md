@@ -543,7 +543,37 @@ were promoted together 2026-08-06. `staging` carries 1.26.0, 1.27.0, 1.27.1,
 - **https://staging.quietkeep.pages.dev** — the candidate, **1.36.0**
 - **https://quietkeep.pages.dev** — production, **1.25.0**
 
-**Stage 5 is in flight on `staging`, unreleased — the day the person is in.**
+**Stage 6 is in flight on `staging`, unreleased — the way in from outside.**
+
+**A FAILED URL CAPTURE DESTROYED THE TEXT.** `handleUrlEntrances` scrubs the
+query before committing, which is right — it is what stops a refresh firing the
+same capture twice — and it means the address bar stops holding the text a
+moment before anything else starts to. The catch then printed a message and
+returned. So a shared thought that failed to write was gone, and the person
+never typed it here, so there was nowhere for them to look for it. The manual
+capture path has always done this correctly ("the write failed: give the thought
+back, and say so"); this path is the one where giving it back matters MORE.
+
+It now hands the text to the capture line AND to the persisted draft, so it
+survives a reload as well as the failure, focuses the field, and says where the
+text went — "it failed" without that is the same as losing it.
+
+**THE ONLY ENTRANCE FROM OUTSIDE WAS DOCUMENTED NOWHERE.** `share_target` and
+manifest shortcuts are Chromium-only, so on the reference platform `?text=` is
+the whole of it, and an entrance nobody can find is an entrance that does not
+exist. The ⓘ panel now states plainly that Safari has no share-sheet entrance
+and that this is a browser limit rather than a decision here, gives the address
+built from the CURRENT origin (a panel handing somebody the wrong host would be
+worse than silence, because it would look right), and names the Shortcuts steps.
+
+`handleUrlEntrances` is EXPORTED for the test that holds the failure path
+honest — it takes its session, status line and input as arguments rather than
+reaching for them, so the whole thing runs against fakes. Five tests, and the
+one that catches a careless fix is the SUCCESS case: putting the text in the box
+unconditionally would leave a captured thought sitting in the capture line,
+where the obvious next act is to hold it twice.
+
+**Stage 5 shipped on `staging`, unreleased — the day the person is in.**
 
 Every clock here is day-granular and every writer builds it with
 `endOfLocalDay`, which means 23:59:59. So "today" ended at midnight for

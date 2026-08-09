@@ -924,9 +924,15 @@ function composeShared(title: string, text: string, url: string): string {
   return [title, text, url].map(s => s.trim()).filter(Boolean).join('\n').trim();
 }
 
-/** The three URL entrances. Captures at most once, offers an undo, and scrubs
- *  the query from the address bar so a refresh cannot re-fire it. */
-async function handleUrlEntrances(session: Session, status: HTMLElement, input: HTMLInputElement, rerender: () => void): Promise<void> {
+/**
+ * The three URL entrances. Captures at most once, offers an undo, and scrubs
+ * the query from the address bar so a refresh cannot re-fire it.
+ *
+ * EXPORTED for the test that holds the failure path honest. It takes its
+ * session, status line and input as arguments rather than reaching for them, so
+ * the whole thing runs against fakes.
+ */
+export async function handleUrlEntrances(session: Session, status: HTMLElement, input: HTMLInputElement, rerender: () => void): Promise<void> {
   const params = new URLSearchParams(location.search);
   const clean = location.pathname + location.hash;
 
@@ -956,7 +962,25 @@ async function handleUrlEntrances(session: Session, status: HTMLElement, input: 
       return events;
     });
   } catch (err) {
-    status.textContent = `Couldn’t hold that — ${(err as Error).message}`;
+    // THE TEXT MUST NOT DIE HERE, and it did.
+    //
+    // The query was scrubbed a moment ago so a refresh cannot fire this twice —
+    // which is right, and it means the address bar no longer holds the only
+    // copy. This catch was therefore the one thing standing between somebody's
+    // shared thought and nothing at all, and all it did was print a message.
+    // Sharing something into this app and watching it vanish is the precise
+    // failure the app exists to prevent.
+    //
+    // The manual capture path has always done this correctly — "the write
+    // failed: give the thought back, and say so" — and this path is the one
+    // where giving it back matters MORE, because the person never typed it here
+    // and has nowhere else to look for it.
+    input.value = text;
+    // And into the persisted draft, so it survives a reload as well as this
+    // failure. `setDraft` is what every keystroke in the capture line does.
+    try { await session.setDraft(text); } catch { /* the field still holds it */ }
+    input.focus();
+    status.textContent = `Couldn’t hold that — ${(err as Error).message}. It is in the box.`;
     return;
   }
 
