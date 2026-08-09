@@ -1,0 +1,27 @@
+{
+  "capture": {
+    "region": "document",
+    "ordinal": 5,
+    "label": "Hold it"
+  },
+  "open-about": {
+    "region": "document",
+    "ordinal": 1,
+    "label": "i"
+  },
+  "nextup-done": {
+    "region": "nextup",
+    "ordinal": 0,
+    "label": "Done with what is next up"
+  },
+  "nextup-skip": {
+    "region": "nextup",
+    "ordinal": 2,
+    "label": "Not this"
+  },
+  "menu-open": {
+    "region": "document",
+    "ordinal": 37,
+    "label": null
+  }
+}
