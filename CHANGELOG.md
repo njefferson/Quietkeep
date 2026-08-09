@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.4 — ITERATION
+
+*2026-08-09*
+
+- **Send to my calendar is now at the top of the ⓘ panel, under *Things you can do*; it was most of the way down, under “Reminders that reach you”.** Finding it meant scrolling and reading. The panel pointed at it four times with the word “below”, which is what you end up doing when a button is in the wrong place.
+- **And the panel is 848 words shorter.** Seven sections explaining features ran to over a thousand words of reasoning. They now say what the thing is and what it does, in a sentence or two. The reasoning has not been deleted — it lives in *Planning for Humans*, which is where reasoning belongs.
+- This is a first pass, not the end of it: the panel is still far longer than it should be.
+
 ## 1.38.3 — ITERATION
 
 *2026-08-09*

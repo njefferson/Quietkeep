@@ -1339,9 +1339,20 @@
     You never file anything or set reminders by hand. Dates, repeats and nudges
     are the app&rsquo;s job, not yours.
   </p>
+  <!-- THE THINGS YOU MIGHT ACTUALLY WANT TO DO, before any reading (1.39.0).
+       Everything under here folds; these do not. The panel had grown into a
+       reference document with its verbs scattered through it by topic, which is
+       how a document is organised and not how a person looks for a button. -->
+  <h3 class="about-section">Things you can do</h3>
   <div class="about-actions">
+    <button id="calendar" type="button">Send to my calendar</button>
     <button id="tour-replay" type="button" class="ghost">Show the walkthrough again</button>
   </div>
+  <p id="calendar-note" class="storage-note" role="status" aria-live="polite"></p>
+  <p class="about-p about-caveat">
+    Only days <em>you</em> set are sent. Your calendar runs when Quietkeep does not,
+    so it is the thing that can reach you.
+  </p>
 
   <!-- WHY IT DOES THAT (1.36.1). Folded, and the fold is the point: unfolded,
        these seven pushed the panel to 13,092px — 7.9 screens on a phone — and
@@ -1351,138 +1362,53 @@
        needs no code of its own. -->
   <h2 class="about-group"><button id="group-why-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-why">Why it does that</button></h2>
   <div id="group-why" hidden>
+  <!-- SHORT ANSWERS, NOT ESSAYS (1.39.0).
+       These seven sections were 1,126 words explaining features — the reasoning
+       behind each one, at the length the reasoning deserves in a design document
+       and nowhere near what a person wants when they are trying to find out what
+       a button does. The research that justifies them lives on the thesis page
+       and in the repo, which is where a justification belongs. What stays here
+       is what the thing IS and what it DOES. -->
   <h3 class="about-section">The one thing it offers you</h3>
   <p class="about-p">
-    Quietkeep shows you a small number of things &mdash; usually two, and never a
-    list. They are chosen to be <em>unalike</em>, so picking between them is a
-    preference rather than a comparison. Weighing twenty similar things against
-    each other is the act that fails when you are stuck, and a long list asks you
-    to do it before you can start anything.
-  </p>
-  <p class="about-p">
-    Each one says <strong>why it is here</strong> &mdash; a real date has arrived,
-    something it was waiting on is done, a place it lives came round. It also says
-    where it sits, so nothing arrives out of nowhere. <em>Not this</em> moves past
-    it as often as you like and records nothing at all.
-  </p>
-  <p class="about-p about-caveat">
-    The order is worked out the same way every time. It does not learn from you,
-    it does not rank by anything it has decided about you, and nothing you do
-    changes what it will offer tomorrow except the work itself.
+    Two things at a time, never a list, and never the same two by accident &mdash;
+    they are picked to be unalike so you can prefer one rather than compare them.
+    <em>Not this</em> costs nothing and records nothing.
   </p>
 
-  <h3 class="about-section">Finishing something, and stopping</h3>
+  <h3 class="about-section">Finishing, and stopping</h3>
   <p class="about-p">
-    When you finish something the screen <strong>settles</strong>. It says what you
-    finished, tells you nothing else is being asked, and waits. The next thing
-    arrives when you press <em>What is next</em> &mdash; not before.
-  </p>
-  <p class="about-p">
-    That gap is deliberate, and it is the part most likely to look like a fault.
-    Whatever is in front of you in the second after you finish something is what
-    your head attaches to finishing things; if the next demand arrives instantly,
-    completing one thing quietly signs you up for the next.
-  </p>
-  <p class="about-p">
-    <strong>There is also a way to stop that is not finishing.</strong> <em>That is
-    enough for now</em> reaches the same settled state having completed nothing.
-    Stopping had to be as clean an exit as finishing, or the screen has chosen for
-    you. Nothing is recorded about it &mdash; not that you did, not when, not how
-    often.
-  </p>
-  <p class="about-p about-caveat">
-    It is not on a timer. It stays settled until you ask for the next thing,
-    because a pause that runs out is the app deciding when you have had enough of
-    a rest.
+    Finish something and the screen settles: it names what you did and waits.
+    Nothing arrives until you ask for it. <em>That is enough for now</em> ends the
+    session the same way finishing does &mdash; stopping is not failing.
   </p>
 
-  <h3 class="about-section">Saying how heavy something is</h3>
+  <h3 class="about-section">How heavy, and how the day is going</h3>
   <p class="about-p">
-    Any item can be marked <strong>light, ordinary or heavy</strong>. Three words,
-    no number. On a low stretch the lighter things come forward; on a better day a
-    heavier one is allowed to lead.
-  </p>
-  <p class="about-p">
-    Nothing is worked out behind your back. Quietkeep will not guess how hard
-    something is from how long it has sat there or how often you have passed it
-    over &mdash; only you can say, and anything you have not marked is treated as
-    ordinary rather than as either extreme.
-  </p>
-  <p class="about-p about-caveat">
-    Nothing is hidden either. A heavy thing on a low day moves later in the order,
-    not out of it, and a real date that has arrived still leads whatever kind of
-    day it is &mdash; that is a promise to somebody else.
+    Mark anything light, ordinary or heavy, and tell Quietkeep the day is low,
+    steady or sharp. It changes <em>which</em> things come forward, never how many.
+    Nothing is counted and nothing is worked out about you from it.
   </p>
 
-  <h3 class="about-section">Saying how the day is going</h3>
+  <h3 class="about-section">When the screen is too much</h3>
   <p class="about-p">
-    You can tell Quietkeep the day is <strong>low, steady, sharp</strong> or that
-    you are <strong>not sure</strong>. Four words you could say out loud, and never
-    a number, because a number about yourself is a score.
-  </p>
-  <p class="about-p about-caveat">
-    It changes <em>which</em> things are offered and never <em>how many</em>. Being
-    handed less on a bad day is the app saying you can manage less today &mdash; and
-    for some people, on some kinds of bad day, being offered less is exactly what
-    makes the day worse. You are never asked how you are. It is only ever
-    something you volunteer.
-  </p>
-
-  <h3 class="about-section">When the screen itself is too much</h3>
-  <p class="about-p">
-    <strong>Just one thing</strong> strips the offer back to a single item and
-    almost nothing else &mdash; no reason line, no place, no counts, no chips.
-    Larger type, and nothing moves.
-  </p>
-  <p class="about-p">
-    This is for a different kind of bad day from the one above. Being offered
-    easier work helps when there is too much to do. It helps not at all when the
-    difficulty is reading the screen at all, and every true and useful line on it
-    is one more thing to process.
-  </p>
-  <p class="about-p about-caveat">
-    Leaving it is one tap, in the same place, always on screen. Nothing turns it
-    on for you and nothing suggests it &mdash; Quietkeep has no way of knowing what
-    kind of day you are having and would not be right to guess. It stays on until
-    you turn it off, including after closing and reopening the app. Nothing is
-    hidden from the app itself: everything you have is still held, still exactly
-    where it was.
+    <em>Just one thing</em> shows a single item in larger type with nothing else &mdash;
+    no reasons, no counts, nothing moving. You turn it on and off; it is never
+    turned on for you.
   </p>
 
   <h3 class="about-section">When and where you meant to do it</h3>
   <p class="about-p">
-    Any item can carry a line in your own words about when or where you meant to
-    do it &mdash; <em>after I put the kettle on</em>, <em>next time I am at the
-    desk</em>. It rides with the item to wherever it is offered, shown exactly as
-    you wrote it.
-  </p>
-  <p class="about-p about-caveat">
-    Optional, never checked, never counted, and you are never asked whether it
-    worked. A date is the hardest kind of thing to remember; something you will
-    actually notice is easier, and only you know what that is.
+    Any item can carry a line in your own words &mdash; <em>after I put the kettle
+    on</em> &mdash; shown back exactly as you wrote it. Never required, never checked.
   </p>
 
   <h3 class="about-section">How long things take</h3>
   <p class="about-p">
-    You can note roughly how long you think something will take. Where an item has
-    actually been timed, Quietkeep shows the <strong>two ends</strong> of what
-    happened &mdash; &ldquo;took between 25 minutes and 1h 35m before&rdquo;.
+    Note a rough guess if you want one. Where something has been timed, Quietkeep
+    shows the two ends of what actually happened, never an average, and never a
+    comparison with your guess.
   </p>
-  <p class="about-p">
-    Never an average. Most attempts land near the bottom and a few are enormous, so
-    the average sits in the gap where almost nothing actually happens &mdash; it
-    makes the quick ones look like flukes and the long ones look like failures.
-    Both ends are real; nothing in between is claimed, because nothing in between
-    is known.
-  </p>
-  <p class="about-p about-caveat">
-    Nothing counts how many times, and nothing compares what happened with what
-    you guessed. The offer also says roughly how much of the day is left, before
-    you pick something up rather than after &mdash; the same number afterwards
-    would be a verdict on what you just did.
-  </p>
-
-  </div>
 
   <h3 class="about-section">Add it to your home screen</h3>
   <div id="install-steps">
@@ -1499,29 +1425,15 @@
         address bar.</li>
     </ul>
     <p class="about-p">
-      <strong>The notification prompt, and why it appears.</strong> On iPhone and
-      iPad, adding Quietkeep asks you to allow notifications. Allow it: on Apple
-      devices that permission is the one thing that lets the browser keep your
-      planner instead of clearing it after a while &mdash; so allowing it is what
-      keeps your writing safe, and that is the only reason it is asked. It does
-      nothing else. <strong>Quietkeep itself never sends notifications</strong>
-      &mdash; it has no server to send them from and will not ping you. Reminders
-      work a different way: when you want to be reminded of something, use
-      <em>Send to my calendar</em> under &ldquo;Reminders that reach you&rdquo;
-      below. Your calendar keeps running when Quietkeep is closed, so it is the
-      thing that can actually reach you.
-    </p>
-    <p class="about-p about-caveat">
-      Nothing is uploaded when you install &mdash; it is the same app, given its
-      own icon.
+      Installing asks to allow notifications. <strong>Allow it</strong> &mdash; on
+      Apple devices that is what lets the browser keep your planner instead of
+      clearing it, and it is the only reason it is asked.
+      <strong>Quietkeep never sends notifications.</strong> Nothing is uploaded:
+      it is the same app with its own icon.
     </p>
   </div>
   <p id="install-done" class="about-p" hidden>
     Quietkeep is on your home screen &mdash; it opens on its own and works offline.
-    It does not send notifications; when you want to be reminded of something, use
-    <em>Send to my calendar</em> under &ldquo;Reminders that reach you&rdquo; below,
-    and your calendar &mdash; which runs when this app does not &mdash; is what
-    reaches you.
   </p>
 
   <!-- The folding groups (1.7.2, ADR-0055). The panel carries everything, and
@@ -1531,6 +1443,9 @@
        state remembered per device (a view preference, never an event). The
        opening (what Quietkeep is, how to use it) stays above the fold, and the
        Close control stays outside every group so the way out never folds. -->
+
+  </div>
+
   <h2 class="about-group"><button id="group-help-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-help">Help</button></h2>
   <div id="group-help" hidden>
   <p class="about-p">Short answers to the things people ask. Tap one to open it.</p>
@@ -1563,8 +1478,8 @@
   <details class="disclosure help-q">
     <summary>Will it remind me?</summary>
     <p class="about-p">Quietkeep does not send notifications. To be reminded at a set
-      time, send that item to your calendar with &ldquo;Send to my calendar&rdquo;
-      below &mdash; your calendar runs even when this app is closed, so it is the
+      time, send that item to your calendar with <em>Send to my calendar</em> at the top of
+      this panel &mdash; your calendar runs even when this app is closed, so it is the
       thing that can actually reach you.</p>
   </details>
   <details class="disclosure help-q">
@@ -2027,9 +1942,11 @@
     holding to your calendar and the calendar will tell you instead &mdash; it
     already runs when this app does not.
   </p>
-  <div class="about-actions">
-    <button id="calendar" type="button">Send to my calendar</button>
-  </div>
+  <!-- The button itself now lives at the TOP of the panel, with the other verbs.
+       It sat here, most of a 5,700-word document down, and the prose pointed at
+       it FOUR times with the word "below" — which is what a cross-reference is
+       for when a thing is in the wrong place. Reported: finding it took minutes
+       of scrolling and reading. -->
   <!-- A live region, like #status and the other surfaces. Without it, a
        keyboard or screen-reader user who pressed the button got no focus,
        no announcement and no sign anything had happened (audit).
@@ -2037,7 +1954,6 @@
        so the button is reached by scrolling — and the confirmation was
        rendering off-screen above the reader's eyes. It always worked; nobody
        could see it (found on device). -->
-  <p id="calendar-note" class="storage-note" role="status" aria-live="polite"></p>
   <p class="about-p">
     Only days <em>you</em> set go to a calendar. Quietkeep puts its own dates on
     things constantly &mdash; that is how it brings them back &mdash; and those are
