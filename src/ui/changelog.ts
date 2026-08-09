@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.38.7',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**There is now a limit on how much there is to read, and the build refuses to pass it.** The app had grown to 5,702 words without anything objecting, because every rule here says explain it and say why, and nothing was measuring the total. It is 3,104 now, and it cannot drift back without somebody deciding to raise the ceiling on purpose.',
+      'It measures three different ways of being too long: how many words, how far the ⓘ panel scrolls on a phone, and how many controls there are. The last one has not improved — 199, the same as before — and the build says so rather than quietly leaving it out.',
+    ],
+  },
+  {
     triplet: '1.38.6',
     kind: 'ITERATION',
     date: '2026-08-09',

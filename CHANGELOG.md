@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.7 — ITERATION
+
+*2026-08-09*
+
+- **There is now a limit on how much there is to read, and the build refuses to pass it.** The app had grown to 5,702 words without anything objecting, because every rule here says explain it and say why, and nothing was measuring the total. It is 3,104 now, and it cannot drift back without somebody deciding to raise the ceiling on purpose.
+- It measures three different ways of being too long: how many words, how far the ⓘ panel scrolls on a phone, and how many controls there are. The last one has not improved — 199, the same as before — and the build says so rather than quietly leaving it out.
+
 ## 1.38.6 — ITERATION
 
 *2026-08-09*

@@ -116,6 +116,14 @@ jobs:
       - name: Rendered accessibility
         run: npm run a11y
 
+      # HOW MUCH IS THERE TO GET THROUGH. Reported on a real device: finding one
+      # button took minutes of scrolling and reading. Every rule in the doctrine
+      # says explain it and say why; applied release by release they are each
+      # defensible, and nothing measured the SUM — so the shell reached 5,702
+      # words with every gate green. This is the gate that counts.
+      - name: Within the reading budget
+        run: npm run size:check
+
       # ADR-0036: the default build's guarantee is that the BROWSER refuses to
       # let it reach another host. That is one line of _headers, so it is gated —
       # it is exactly the kind of thing that erodes quietly.
