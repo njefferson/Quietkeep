@@ -665,6 +665,85 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(logLenAfterSearch, logLenBeforeSearch, 'searching and opening a result wrote nothing to the log');
   await fillSearch('');            // leave the box as we found it
 
+  console.log('\nTwo taps to capture, one tap to act (V2 stage 6)');
+  // The unit of cost here is the DECISION and the TAP, not the minute: raising
+  // the effort of setting a reminder reduces offloading at every memory load and
+  // abolishes its benefit at high load. So these are acceptance criteria rather
+  // than aspirations.
+  //
+  // Asserted STRUCTURALLY, and that distinction is the whole value of the block.
+  // Counting the clicks this script happens to make would prove only that this
+  // script makes two clicks. What can actually regress is a control moving
+  // BEHIND something — into a tab, a menu, a collapsed group, a dialog — and
+  // that is what these ask about: from a cold open, with nothing pressed, is the
+  // control already on screen?
+  await tpage.reload();
+  await tpage.waitForSelector('body[data-ready=true]');
+
+  const reach = await tpage.evaluate(() => {
+    // How many ancestors would have to be opened to get at this control? Any
+    // hidden ancestor, closed <details>, or unopened <dialog> is one more tap
+    // before the two the criterion allows.
+    const gatesAbove = (sel) => {
+      let el = document.querySelector(sel);
+      if (!el) return null;
+      let gates = 0;
+      for (let p = el; p; p = p.parentElement) {
+        if (p.hidden) gates++;
+        if (p.tagName === 'DETAILS' && !p.open) gates++;
+        if (p.tagName === 'DIALOG' && !p.open) gates++;
+        if (p instanceof HTMLElement && getComputedStyle(p).display === 'none') gates++;
+      }
+      return gates;
+    };
+    const visible = (sel) => {
+      const el = document.querySelector(sel);
+      if (!el) return false;
+      const r = el.getBoundingClientRect();
+      return r.width > 0 && r.height > 0;
+    };
+    return {
+      captureGates: gatesAbove('#capture'),
+      captureVisible: visible('#capture'),
+      submitVisible: visible('#capture-form button[type=submit]'),
+      doneGates: gatesAbove('#nextup-done'),
+      doneVisible: visible('#nextup-done'),
+      // Nothing may be covering the capture line on arrival either — a modal
+      // that greets you is a tap before the first tap.
+      modalOpen: Boolean(document.querySelector('dialog[open]')),
+    };
+  });
+
+  // THE INSTRUMENT ITSELF, checked before its readings are trusted. A counter
+  // that always returns 0 would make both criteria below pass for ever while
+  // measuring nothing — the shape of defect this repo keeps finding, most
+  // recently a registry entry that matched no element. `#day-boundary` lives
+  // inside a collapsed group in a closed dialog, so it MUST read above zero.
+  const gateProbe = await tpage.evaluate(() => {
+    let el = document.querySelector('#day-boundary');
+    if (!el) return -1;
+    let gates = 0;
+    for (let p = el; p; p = p.parentElement) {
+      if (p.hidden) gates++;
+      if (p.tagName === 'DETAILS' && !p.open) gates++;
+      if (p.tagName === 'DIALOG' && !p.open) gates++;
+      if (p instanceof HTMLElement && getComputedStyle(p).display === 'none') gates++;
+    }
+    return gates;
+  });
+  is(gateProbe > 0, true,
+    `the gate counter reads above zero for a control that IS behind something (${gateProbe})`);
+
+  is(reach.modalOpen, false, 'nothing greets you — the first tap is yours to spend');
+  is(reach.captureGates, 0,
+    `TWO TAPS TO CAPTURE: nothing has to be opened to reach the capture line (${reach.captureGates} gates above it)`);
+  is(reach.captureVisible && reach.submitVisible, true,
+    'and the line and its button are both on the surface you land on — tap the line, tap the button');
+  is(reach.doneGates, 0,
+    `ONE TAP TO ACT: nothing has to be opened to reach Done on the offered thing (${reach.doneGates} gates above it)`);
+  is(reach.doneVisible, true,
+    'and it is on screen, so acting on what is offered is one tap and no navigation');
+
   console.log('\nThe way in from outside (V2 stage 6)');
   // On the reference platform `?text=` is the ONLY entrance from outside the
   // app, and it was documented nowhere. An entrance nobody can find is an
