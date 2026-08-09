@@ -405,6 +405,16 @@ decided by a session.**
 
 ### Closed
 
+- **Q-14**
+  - Question, asked 2026-08-09: is there worth in distinguishing raw input from formed tasks, with a runway for execution, a projects level, an areas / goals / roles / lines-of-effort level, and a stratosphere for amorphous ideas that either get pulled down to where they can drive action or are allowed to disappear?
+  - **Answer: every one of those already exists, and the record already argues against adding more.** This was a question about a thing that is built, so the useful part of the answer is where each piece is.
+  - **The altitudes are `src/events.ts`'s node kinds.** `action`, `outcome`, `project`, `area`, `goal` — runway through thirty thousand feet. Raw input is already distinguished from formed work by the `unclarified` inbox state rather than by a kind, which is the better place for it: it is a state a thing leaves, not a floor it lives on.
+  - **The stratosphere is `aspiration`.** It sits on the Menu and **cannot carry a clock** (law 6) — which is exactly "amorphous, not driving action, not nagging you". Pulling one down to where it can drive action is ordinary parenting; there is no separate promotion machinery and there should not be.
+  - **"Allowed to disappear" shipped in 1.32.0** as `node.released` / `node.reclaimed` — an exit that is neither done nor deleted, reversible, leaving no browsable pile and no count. That was built precisely because law 1 otherwise guarantees perpetual return, and the only reset people actually reach for is deleting the app.
+  - **Roles and lines-of-effort have a settled SHAPE and are deliberately deferred** — see Q-13. A role crosses areas, and this tree is single-parent, so it is a cross-cutting link and never a container. The deferral is the same one, on the same grounds.
+  - **What is genuinely unbuilt is the projection, not the levels.** `docs/horizon-models.md` says so: the review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts` and **do not reach the surfacing layer**, and a runway card does not print what it serves even though 1.20.0's place line already walks lineage on a different edge. That is law 4's other half — higher horizons project *downward* — and it is the thing worth building.
+  - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theatre and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
+
 - **Q-10**
   - Question: Nothing in this app scopes a projection by vault. Should it?
   - Asked 2026-07-29: whether a second vault is for home tasks, and whether the app already separates work tasks some other way.
