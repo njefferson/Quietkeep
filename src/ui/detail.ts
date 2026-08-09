@@ -49,6 +49,7 @@ import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../re
 import { personView, stakeholdersOf, type PersonLine } from '../people.ts';
 import { logDecisionEvents, removeStakeholderEvents } from './detail-intents.ts';
 import { rangeWords, timedRange } from '../duration.ts';
+import { boundaryOf } from '../day.ts';
 
 /** The relation words the sheet shows. The stored values are the vocabulary's
  *  closed set; these are what a person reads. */
@@ -63,7 +64,22 @@ const RELATION_WORDS: Record<string, string> = {
 export interface DetailUI { open(node: NodeState): void }
 
 export function mountDetail(session: Session, now: () => number, onChange: () => void): DetailUI {
-  const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
+  /**
+ * The day this sheet is rendering in — the person's, not everybody's.
+ *
+ * THIS WAS A REAL BUG AND IT WAS VISIBLE ON DAY ONE. The write path was threaded
+ * in V2 stage 5, so a date set under a 3am boundary stores 02:59:59 the NEXT
+ * morning — correct, and the whole point. The sheet then rendered that instant
+ * back with `atMidnight`, so the date picker showed TOMORROW. Set a date for the
+ * 9th, reopen the sheet, read the 10th.
+ *
+ * A surface that cannot show back what somebody just told it is worse than one
+ * that never offered the control.
+ */
+const dayOf = (s: { zone: string; state: () => import('../fold.ts').State }): import('../time.ts').DayShape =>
+  ({ zone: s.zone, boundary: boundaryOf(s.state()) });
+
+const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
   const dlg = q<HTMLDialogElement>('#detail');
   const title = q('#detail-title');
   const state = q('#detail-state');
@@ -357,7 +373,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     if (declinedBox) declinedBox.hidden = !declined;
     const words = q<HTMLElement>('#detail-declined-words');
     if (words && standing) {
-      const day = localDayKey(standing.at, atMidnight(session.zone));
+      const day = localDayKey(standing.at, dayOf(session));
       const who = standing.person ? (st.nodes.get(standing.person)?.title || null) : null;
       words.textContent = who
         ? `Declined ${day} — ${who} asked. It sits in the Not Now ledger.`
@@ -370,7 +386,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
       slotBtn.hidden = !offer;
       if (offer && day) {
         const back = localDayKey(
-          nextSlotOccurrence(day, new Date(now()).toISOString(), session.zone), atMidnight(session.zone));
+          nextSlotOccurrence(day, new Date(now()).toISOString(), session.zone), dayOf(session));
         slotBtn.textContent = `Park it until the request slot — back ${back} (${slotDayWords(day)})`;
       }
     }
@@ -434,7 +450,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     const words = pressureWords(p);
     if (words) bits.push(words);
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
-    if (clock) bits.push(`comes back ${localDayKey(clock.at, atMidnight(session.zone))}`);
+    if (clock) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
     STATE.textContent = bits.length ? bits.join(' · ') : 'held';
 
     // Seed the date box with the date it already has, so "Set" is an edit rather
@@ -444,8 +460,8 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     // in-progress rename — in an app whose capture line persists a draft per
     // keystroke precisely because interruption is the expected case (audit).
     if (document.activeElement !== NAME || NAME.value.trim() === '') NAME.value = n.title;
-    DATE.value = n.clocks.due ? localDayKey(n.clocks.due.at, atMidnight(session.zone)) : '';
-    if (startInput) startInput.value = n.clocks.start ? localDayKey(n.clocks.start.at, atMidnight(session.zone)) : '';
+    DATE.value = n.clocks.due ? localDayKey(n.clocks.due.at, dayOf(session)) : '';
+    if (startInput) startInput.value = n.clocks.start ? localDayKey(n.clocks.start.at, dayOf(session)) : '';
     // The note rides the same no-clobber rule as the rename box: `render` runs
     // after every commit here, and prose is the costliest thing to eat.
     if (noteInput && document.activeElement !== noteInput) noteInput.value = noteOf(n) ?? '';
@@ -885,7 +901,7 @@ export function mountDetail(session: Session, now: () => number, onChange: () =>
     show('#detail-track', container && n.role !== 'track');
     show('#detail-untrack', container && n.role === 'track');
     const susp = q<HTMLInputElement>('#detail-suspense');
-    if (susp && n.clocks.suspense) susp.value = localDayKey(n.clocks.suspense.at, atMidnight(session.zone));
+    if (susp && n.clocks.suspense) susp.value = localDayKey(n.clocks.suspense.at, dayOf(session));
   }
 
   /** A positive whole number, or null. A blank or nonsense box must not become

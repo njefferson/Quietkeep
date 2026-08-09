@@ -309,6 +309,30 @@ test('EVERY SURFACE AGREES about the same item, because they all ask whose day i
     'whereas under midnight it is withheld — one item is never asked two different questions');
 });
 
+test('A DATE READS BACK AS THE DAY IT WAS SET — the round trip, which was broken', () => {
+  // FOUND IN REVIEW, and it was visible on day one. The WRITE path was threaded
+  // first, so a date set under a 3am boundary correctly stores 02:59:59 the next
+  // morning. Every surface that rendered that instant back still asked midnight,
+  // so the detail sheet's date picker showed TOMORROW: set the 9th, reopen the
+  // sheet, read the 10th.
+  //
+  // A surface that cannot show back what somebody just told it is worse than one
+  // that never offered the control — it makes the person doubt what they did.
+  const theirDay = { zone: TZ, boundary: 3 };
+  const nowIso = '2026-08-09T20:00:00.000Z';            // 14:00 on the 9th, local
+  const stored = endOfLocalDay(nowIso, theirDay, 0);    // what the intent writes
+
+  assert.equal(localDayKey(stored, theirDay), '2026-08-09',
+    'read back in the day it was written in, it is the day the person chose');
+  assert.equal(localDayKey(stored, atMidnight(TZ)), '2026-08-10',
+    'and read back at midnight it is the NEXT day — which is exactly what the sheet showed');
+
+  // The same instant, under the midnight default, round-trips either way. That is
+  // why this went unnoticed: it is invisible until somebody uses the feature.
+  const plainStored = endOfLocalDay(nowIso, atMidnight(TZ), 0);
+  assert.equal(localDayKey(plainStored, atMidnight(TZ)), '2026-08-09');
+});
+
 test('nothing observes it — there is no function here that reads a log and proposes an hour', () => {
   // The rule that governs weight and capacity governs this. Detecting somebody's
   // day boundary from when they last wrote something is forming an opinion about

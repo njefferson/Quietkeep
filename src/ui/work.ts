@@ -30,6 +30,7 @@ import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
 import { timeLeftWords } from '../duration.ts';
 import { clockFace } from '../clock.ts';
+import { boundaryOf } from '../day.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
   const n = document.createElement(tag);
@@ -414,7 +415,7 @@ export function mountWork(
   /** Plain words for when something returns — calendar days in the reader's
    *  zone, never a countdown and never a rebuke. */
   const returns = (iso: string): string => {
-    const d = calendarDaysBetween(nowIso(), iso, atMidnight(session.zone));
+    const d = calendarDaysBetween(nowIso(), iso, { zone: session.zone, boundary: boundaryOf(session.state()) });
     if (d < 0) return 'ready now';
     if (d === 0) return 'today';
     if (d === 1) return 'tomorrow';
