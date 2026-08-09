@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.38.6',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**The sheet you open on every item is 850 words shorter — 458 of them were hints under the controls.** Each control now says what it does in a line or less, where it said why it exists in a paragraph. The label was already telling you; the paragraph was telling you again.',
+      '**The panel said the same things three times** — what Quietkeep is, what each feature does, and how do I. The how-do-I answers won, because somebody arriving has a question rather than a curriculum. The other two are much shorter for it.',
+      '**5,702 words to 3,104 across four releases.** Just under half. Nothing was removed except explaining: every control, every field and everything the app says at the moment you press something is untouched.',
+    ],
+  },
+  {
     triplet: '1.38.5',
     kind: 'ITERATION',
     date: '2026-08-09',

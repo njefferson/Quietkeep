@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.6 — ITERATION
+
+*2026-08-09*
+
+- **The sheet you open on every item is 850 words shorter — 458 of them were hints under the controls.** Each control now says what it does in a line or less, where it said why it exists in a paragraph. The label was already telling you; the paragraph was telling you again.
+- **The panel said the same things three times** — what Quietkeep is, what each feature does, and how do I. The how-do-I answers won, because somebody arriving has a question rather than a curriculum. The other two are much shorter for it.
+- **5,702 words to 3,104 across four releases.** Just under half. Nothing was removed except explaining: every control, every field and everything the app says at the moment you press something is untouched.
+
 ## 1.38.5 — ITERATION
 
 *2026-08-09*
