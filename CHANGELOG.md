@@ -18,7 +18,7 @@ triplet and what it did for you.
 
 *2026-08-09*
 
-- **The walkthrough now teaches what actually happens each day.** It stopped at &ldquo;it hands you the thing worth doing&rdquo; and never said what that looks like or what to do with it — so the two halves people meet first, acting on an offer and having a bad day, were the two it left out.
+- **The walkthrough now teaches what actually happens each day.** It stopped at “it hands you the thing worth doing” and never said what that looks like or what to do with it — so the two halves people meet first, acting on an offer and having a bad day, were the two it left out.
 - **Two new steps.** One thing at a time: why each offer says why it is there, that *Not this* costs nothing and records nothing, and that finishing makes the screen settle and wait. And: not every day is the same — how heavy a thing is, how the day is going, and *Just one thing* for when the screen itself is too much.
 - Six steps now, still skippable, and still there whenever you want it under *How to use it*.
 

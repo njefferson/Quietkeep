@@ -317,6 +317,13 @@ const REGISTRY = {
   // always-measured list because it is hidden once the day has run out — an
   // entry in that list must match something on every state, and the first-run
   // dialog proved it does not.
+  // `#nextup-fixed` (the next fixed thing today, collisions 7 and 9) is
+  // DELIBERATELY not listed, and this note is here so nobody "fixes" that by
+  // adding it — `#nextup-left` was put in the always-measured list on exactly
+  // this reasoning and failed, because a selector that matches nothing is a
+  // failure rather than a pass. It renders only when something IS fixed today,
+  // and it carries `.nextup-count`, which is measured right here. An entry would
+  // add the appearance of coverage rather than coverage.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '.nextup-count', '#nextup-left',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open',
     // When you cannot start (1.24.0). The invitation and the heavy control are

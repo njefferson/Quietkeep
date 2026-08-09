@@ -29,7 +29,7 @@ import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
 import { timeLeftWords } from '../duration.ts';
-import { clockFace } from '../clock.ts';
+import { clockFace, nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
@@ -95,6 +95,7 @@ export function mountWork(
   // purpose. Same containment every optional element on this surface gets.
   const LOADNOTE = document.querySelector<HTMLElement>('#nextup-load');
   const LEFT = document.querySelector<HTMLElement>('#nextup-left');
+  const FIXED = document.querySelector<HTMLElement>('#nextup-fixed');
   // The two things you can do when you cannot start (1.24.0). Soft-bound like
   // LOADNOTE and PLACE: a missing control costs that control, never the offer.
   const BITE = q('#nextup-bite');
@@ -565,6 +566,16 @@ export function mountWork(
         LEFT.textContent = lw ?? '';
         LEFT.hidden = lw === null;
       }
+      // THE NEXT FIXED THING TODAY, by name (collisions 7 and 9). An absorbed
+      // person can catch this peripherally; somebody whose afternoon is being
+      // eaten by a 3pm appointment can see what it actually is. No countdown —
+      // the OS alarm is the guarantee and this is the ambient horizon.
+      if (FIXED) {
+        const fw = nextFixedWords(nextFixedToday(
+          session.state(), nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) }));
+        FIXED.textContent = fw ?? '';
+        FIXED.hidden = fw === null;
+      }
       // Doors, not words-in-a-paragraph (1.6.0): each row opens its sheet, on
       // the FRESH node — a row built at refresh time can be clicked later. What
       // sits here is now the REST OF THE OFFER rather than a queue tail: one
@@ -631,6 +642,7 @@ export function mountWork(
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
         if (LEFT) { LEFT.textContent = ''; LEFT.hidden = true; }
+        if (FIXED) { FIXED.textContent = ''; FIXED.hidden = true; }
       } else {
         REGION.hidden = true;
         TITLE.textContent = '';

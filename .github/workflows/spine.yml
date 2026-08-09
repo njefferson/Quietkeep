@@ -180,6 +180,16 @@ jobs:
       - name: Every collision says what it is built on
         run: npm run collisions:check
 
+      # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
+      # somebody who did not open the app, on a lock screen, possibly in front of
+      # other people, on a day they may be at their worst — and there is no
+      # version of "we will tighten the copy later", because the first bad one has
+      # already landed by the time anyone reads it. Nothing emits a notification
+      # today; this is armed so the commit that adds one cannot also be the commit
+      # that ships an unmeasured sentence.
+      - name: No sentence can reach a lock screen unmeasured
+        run: npm run notify:check
+
       # And every kind is DEMONSTRATED, or says why not (1.16.0, ADR-0067). The
       # sample set was written at 0.22.0 and sixteen releases later contained 8
       # of the 70 kinds the app emits — so every surface built after it had

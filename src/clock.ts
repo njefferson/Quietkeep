@@ -145,6 +145,67 @@ export function datedTodayCount(state: State, nowIso: string, day: DayShape): nu
   return n;
 }
 
+/**
+ * THE NEXT FIXED THING TODAY, by name — or null (V2 stage F, collisions 7 & 9).
+ *
+ * Two collisions want this same fact and neither had it.
+ *
+ * **Hyperfocus** (entry 7): the gift that eats the day. What an absorbed person
+ * can use is not an alarm — the OS calendar already holds that — but an ambient
+ * line they can catch peripherally, naming the one thing today that is not
+ * moveable. **Waiting mode** (entry 9): a 3pm appointment consumes the whole day,
+ * because the hours before it stop being usable time and become a countdown.
+ * Both are answered by naming the thing rather than counting down to it.
+ *
+ * NO COUNTDOWN, and that is a rule rather than an omission. A countdown is a
+ * deadline rendered continuously, and a shrinking number against an aversive
+ * thing adds aversion at the moment of approach (ADR-0059's own reasoning). The
+ * name is the fact; the OS alarm is the guarantee; the app says neither more.
+ *
+ * Same rules as the count beside it — `exportsToCalendar` and `CALENDAR_KINDS` —
+ * so the line and the count can never disagree about what a fixed thing IS. A
+ * cure clock is not one: nobody promised anybody anything by routing an item.
+ *
+ * PURE, like everything here.
+ */
+export function nextFixedToday(
+  state: State, nowIso: string, day: DayShape,
+): { title: string; at: string } | null {
+  let today: string;
+  try { today = localDayKey(nowIso, day); } catch { return null; }
+
+  let best: { title: string; at: string; ms: number } | null = null;
+  for (const node of heldNodes(state)) {
+    if (node.lastDone) continue;
+    if (!exportsToCalendar(node)) continue;
+    for (const [kind, clock] of Object.entries(node.clocks)) {
+      if (!clock || !CALENDAR_KINDS.has(kind)) continue;
+      let key: string;
+      try { key = localDayKey(clock.at, day); } catch { continue; }
+      if (key !== today) continue;
+      const ms = Date.parse(clock.at);
+      if (!Number.isFinite(ms)) continue;
+      // STILL AHEAD only. A thing whose instant has gone is not what is coming;
+      // naming it as the next fixed thing would be the app telling somebody
+      // absorbed in their work that they have already missed something, which is
+      // the one sentence this surface must never produce.
+      if (ms <= Date.parse(nowIso)) continue;
+      if (!best || ms < best.ms) best = { title: node.title, at: clock.at, ms };
+    }
+  }
+  return best ? { title: best.title, at: best.at } : null;
+}
+
+/**
+ * What the surface says about it. A NAME, never a remaining time.
+ *
+ * Clocks here are day-granular (ADR-0010), so there is no hour to state even if
+ * stating one were wise — "Dentist at 3" would be a fabricated number, which is
+ * exactly what ADR-0010 refuses.
+ */
+export const nextFixedWords = (next: { title: string } | null): string | null =>
+  next && next.title.trim() ? `Fixed today: ${next.title.trim()}.` : null;
+
 export function clockFace(state: State, nowIso: string, zone: string): ClockFace {
   const p = localParts(nowIso, zone);
   // The remainder is of THE PERSON'S day, and this is the surface where the
