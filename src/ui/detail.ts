@@ -133,6 +133,37 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
 
   const btn = (sel: string): HTMLButtonElement | null => q<HTMLButtonElement>(sel);
 
+  // --- a picked day is not a saved day (1.38.2) --------------------------------
+  //
+  // Found on a real device: the native picker fills a `<input type="date">` the
+  // instant a day is chosen, and a filled field looks exactly like a kept one.
+  // The Set button beside it is the only thing that writes, and nothing said so
+  // — so a date could be chosen, believed, and simply not be there.
+  //
+  // That is the worst shape a defect can take in this app. Everything here is
+  // built so you do not have to hold things in your head; a control that lets
+  // you believe something is scheduled when it is not takes that back with
+  // interest, and it does it quietly.
+  //
+  // NOT a warning, and deliberately not styled as one. Nothing is wrong while
+  // you are still deciding — this only names the difference between a field
+  // holding a proposal and a field holding a fact. It disappears the moment the
+  // two agree, so it can never nag about a date that IS set.
+  const unsaved = (inputSel: string, lineSel: string, stored: () => string): () => void => {
+    const field = q<HTMLInputElement>(inputSel);
+    const line = q(lineSel);
+    const paint = (): void => {
+      if (!field || !line) return;
+      const differs = field.value !== stored();
+      line.hidden = !differs;
+      line.textContent = differs ? 'Not kept yet — press Set.' : '';
+    };
+    field?.addEventListener('input', paint);
+    field?.addEventListener('change', paint);
+    return paint;
+  };
+
+
   /**
    * The parent picker, painted against the filter box (1.3.0). At 45 imported
    * projects a bare select was a scroll test; typing narrows it, each option
@@ -468,6 +499,9 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // Same in-progress-edit guard as the note: repainting under a cursor throws
     // away what somebody is halfway through typing.
     if (situationInput && document.activeElement !== situationInput) situationInput.value = situationOf(n) ?? '';
+    // The fields have just been set from the node, so nothing differs — this is
+    // what CLEARS the line after a successful Set, since `render` runs on commit.
+    refreshUnsaved();
     // The decision box obeys the same rule for the same reason — `render`
     // runs after every commit here, and prose is the costliest thing to eat.
     // It is cleared explicitly on a successful log, never by a repaint.
@@ -922,6 +956,21 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   NAME.addEventListener('keydown', (e) => {
     if ((e as KeyboardEvent).key === 'Enter') { e.preventDefault(); doRename(); }
   });
+
+
+  const storedDue = (): string =>
+    current?.clocks.due ? localDayKey(current.clocks.due.at, dayOf(session)) : '';
+  const storedStart = (): string =>
+    current?.clocks.start ? localDayKey(current.clocks.start.at, dayOf(session)) : '';
+  const storedSuspense = (): string =>
+    current?.clocks.suspense ? localDayKey(current.clocks.suspense.at, dayOf(session)) : '';
+
+  const paintUnsaved = [
+    unsaved('#detail-date', '#detail-date-unsaved', storedDue),
+    unsaved('#detail-start', '#detail-start-unsaved', storedStart),
+    unsaved('#detail-suspense', '#detail-suspense-unsaved', storedSuspense),
+  ];
+  const refreshUnsaved = (): void => { for (const p of paintUnsaved) p(); };
 
   btn('#detail-date-set')?.addEventListener('click', () => {
     const key = DATE.value;

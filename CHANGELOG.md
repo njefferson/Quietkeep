@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.2 — ITERATION
+
+*2026-08-09*
+
+- **A day you have picked but not kept now says so.** Choosing a date fills the field the moment you choose it, which looked exactly like a date that had been saved — and only *Set* actually saves it. So a date could be picked, believed, and simply not be there. It now reads “Not kept yet — press Set.” until the two agree, and then it goes.
+- **The same for a start day and for when an answer is owed** — all three worked this way and none of them said so.
+- **And when the browser refuses to keep your data, it tells you.** Pressing *Keep my data on this device* did nothing visible if the browser said no — no answer, no reason, a button that read as broken. It now says what happened: that nothing is lost either way, that your writing is on this device regardless, and that the browser has simply not promised to keep it if it runs short of room.
+
 ## 1.38.1 — ITERATION
 
 *2026-08-09*

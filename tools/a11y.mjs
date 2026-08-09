@@ -1328,11 +1328,20 @@ try {
     // State 3e: the detail sheet — the surface that makes this a planner.
     await page.click('#cards .card-open');
     await page.waitForSelector('#detail[open]');
+    // Driven with a day PICKED AND NOT KEPT (1.38.2), because that is the only
+    // state in which the "not kept yet" line exists to be measured. `.detail-hint`
+    // is already in the registry as a class, so the line is covered the moment it
+    // is visible — and left hidden it would be a registry entry matching nothing,
+    // which is the false receipt `#nextup-left` cost a release for.
+    await page.fill('#detail-date', '2027-03-04');
     await auditContrast(page, 'detail sheet', theme);
     await auditAxe(page, 'detail sheet', theme);
     await auditNames(page, 'detail sheet', theme);
     await auditTargets(page, 'detail sheet', theme);
     await auditFocusRings(page, 'detail sheet', theme, ['#detail-date-set', '#detail-close', '#detail-feeds']);
+    // Put the field back, so the states after this one meet an ordinary sheet
+    // rather than one carrying a half-made decision.
+    await page.fill('#detail-date', '');
 
     // State 3e-a: the arrangement controls. Reached the way a person reaches
     // them — give the thing a rhythm, which makes it an upkeep, and the group

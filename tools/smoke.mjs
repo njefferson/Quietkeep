@@ -1472,10 +1472,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const sheetTitle = await tpage.locator('#detail-title').textContent();
   is(typeof sheetTitle === 'string' && sheetTitle.length > 0, true, `the sheet names the item ("${sheetTitle}")`);
 
-  // A date.
+  // A PICKED DAY IS NOT A SAVED DAY, and it has to say so (1.38.2).
+  //
+  // Found on a real device, and it is the worst shape a defect can take here: the
+  // native picker fills this field the moment a day is chosen, a filled field
+  // looks exactly like a kept one, and only the Set button writes. So a date
+  // could be chosen, believed, and simply not be there — in an app whose whole
+  // promise is that you do not have to hold things in your head.
+  is(await tpage.locator('#detail-date-unsaved').isVisible(), false,
+    'nothing is said while the field agrees with what is stored');
   await tpage.fill('#detail-date', '2026-12-24');
+  is(await tpage.locator('#detail-date-unsaved').isVisible(), true,
+    'a picked day that is not kept yet says so');
+  is((await tpage.locator('#detail-date-unsaved').textContent())?.includes('press Set'), true,
+    'and names the control that finishes it');
+
   await tpage.click('#detail-date-set');
   await tpage.waitForTimeout(150);
+  is(await tpage.locator('#detail-date-unsaved').isVisible(), false,
+    'and the line goes as soon as the two agree — it can never nag about a date that IS set');
   const afterDate = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {

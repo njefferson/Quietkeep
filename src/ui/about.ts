@@ -318,6 +318,20 @@ export async function mountAbout(
 
   // ONE HANDLER, TWO BUTTONS. Both are disabled for the duration, because they
   // are the same act and a second press during the prompt would ask twice.
+  /** Both answer lines carry the same sentence — the button exists in two
+   *  places (the first-run block and the panel) and a reader who pressed one
+   *  must not have to find the other to learn what happened. */
+  const say = (words: string): void => {
+    for (const sel of ['#storage-answer', '#intro-answer']) {
+      const el = document.querySelector<HTMLElement>(sel);
+      if (!el) continue;
+      el.textContent = words;
+      el.hidden = false;
+    }
+  };
+
+  const supportsPersistence = (a: { supported: boolean }): boolean => a.supported;
+
   const askForPersistence = async (): Promise<void> => {
     ask.disabled = true;
     if (introAsk) introAsk.disabled = true;
@@ -329,7 +343,32 @@ export async function mountAbout(
       if ('Notification' in globalThis && Notification.permission === 'default') {
         await Notification.requestPermission();
       }
-      await requestPersistence();
+      // SAY WHAT THE BROWSER ANSWERED (1.38.2, found on device).
+      //
+      // This discarded the result. `requestPersistence()` returns it honestly —
+      // V-00 is emphatic that `false` is a real answer and the caller must not
+      // present durability it does not have — and then nothing looked at it, so
+      // a refusal repainted the identical row and the button read as broken.
+      // Reported in exactly those terms: it just refused, and nothing said why.
+      //
+      // A refusal is not a failure and must not be dressed as one. Nothing is
+      // lost by it: everything is already written to this device's database and
+      // stays there. What persistence buys is protection from being cleared out
+      // when the browser is short of room — so the honest sentence is about
+      // eviction, not about safety.
+      const answer = await requestPersistence();
+      const persistedNow = (await read()).persisted;
+      if (!supportsPersistence(answer)) {
+        say('This browser cannot be asked — it has no such setting. Your writing is still saved on this device.');
+      } else if (persistedNow) {
+        say('Kept. The browser has agreed not to clear it out to make room.');
+      } else {
+        // What is KNOWN, and nothing beyond it. V-00 recorded a grant on the
+        // deployed app with notification permission given first — that is the
+        // path observed to work, and it was never established to be required,
+        // so this says what happened rather than promising a remedy.
+        say('The browser said no, and it does not say why. Nothing is lost — your writing is on this device either way; the browser has just not promised to keep it if it runs short of room. It often answers differently once the app has been added to the Home Screen and used for a while, so it is worth asking again then.');
+      }
       await paintStorage();
     } finally {
       ask.disabled = false;

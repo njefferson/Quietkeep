@@ -986,8 +986,30 @@ and pairing either completes verified or fails while somebody is still standing
 there able to retry.
 
 ## V-14 · Does the OS calendar actually fire a Quietkeep alarm with the app closed?
-**Status: NOT VERIFIED — and it is the only verification that counts for T1**
+**Status: STEPS 1 AND 2 ANSWERED on device, 2026-08-09** · step 3 is still the one that counts
 · raised 2026-07-29 with 0.8.0
+
+> **Measured on a real iPhone, 2026-08-09, from staging.** An export was opened
+> and iOS's *Add To Calendar* sheet rendered it: title `Test`, **Monday, Aug 10,
+> 2026**, **All-day**, **Alert — On day of event (09:00)**, and the snapshot note
+> reading "From Quietkeep, as it stood on 2026-08-09… if you change this in
+> Quietkeep, the calendar will not follow."
+>
+> **What that settles.** Step 1 — the file opens and iOS offers to add it. Step 2
+> — it lands on the intended day, not a day either side. And it disposes of the
+> `TRIGGER;RELATED=START:PT9H` doubt above: iOS resolves it to **09:00 local**,
+> which it names in words, rather than to UTC or to midnight.
+>
+> **What it does NOT settle, and this is still the whole point.** The sheet shows
+> what iOS *intends*. **Nobody has yet watched an alarm arrive with Quietkeep
+> closed** — the event above is dated for the following morning, so step 3 is
+> pending on time passing rather than on anything being built. Step 4, the
+> stable-`UID` update-rather-than-duplicate claim, is also untouched.
+>
+> **So the copy rule below is unchanged.** Nothing may describe Quietkeep as
+> reminding anyone until step 3 is observed. "The calendar accepted it" is not
+> "the calendar told you", and the gap between those two is exactly where an
+> avoidance episode lives.
 
 The whole point of [T1](adr/0007-notification-tiers.md) is that the reminder
 arrives **when Quietkeep is not running**. Everything CI can prove about it is
