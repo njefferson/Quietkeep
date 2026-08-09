@@ -634,8 +634,26 @@ so wrong.
 
 ---
 
-## V-11 · Reading this repo's metadata from a session — **you cannot**
-**Status: PROVEN** · 2026-07-28
+## V-11 · Reading this repo's metadata from a session — **partly, and only through the right channel**
+**Status: PROVEN, then CORRECTED 2026-08-09** · 2026-07-28
+
+> **The correction, and it narrows this row rather than overturning it.** What was proven
+> here is that **`curl` to `api.github.com` is refused by this environment's proxy** — that
+> remains true, and it is still the reason the cached read below was wrong. What was written
+> as the conclusion went further than the evidence: *"a session cannot verify this repo's
+> description, website, topics."* It can, through the **GitHub MCP server**, which is a
+> different channel from the proxied HTTP the 403 was measured on. Confirmed 2026-08-09 by
+> reading this repo back — description, homepage, topics and default branch all returned,
+> and all matching what is recorded.
+>
+> **The social preview genuinely cannot be read this way** — no API field exposes it. That
+> half stands, and settling it needs the repo's raw HTML and a look at the `og:image` host.
+>
+> **What does NOT change is the rule underneath.** Doctrine §10 still says list the values
+> and ask him to confirm each, and the failure this row exists to record was never really
+> "the API was unreachable" — it was *contradicting him about his own repo on the strength of
+> a stale read, twice*. A working read is not permission to do that again; it is one more
+> witness, and the weaker one when it disagrees with him.
 
 **What happened.** Two sessions running reported the `indexed` topic still needed fixing.
 He had already fixed it, before the first of those reports. The report was not a guess — it
