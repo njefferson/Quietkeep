@@ -48,6 +48,35 @@ export const SOON_DAYS = 7;
  * purpose, so it must not make something "Ready now". It is reported separately.
  */
 function soonestDemand(n: NodeState, day: DayShape, nowIso: string): { days: number; at: string } | null {
+  // A LIVE DECLINE, STILL PARKED AHEAD, DEMANDS NOTHING.
+  //
+  // Reported from use, 2026-08-09: route something to waiting-for, open it,
+  // press "Not mine to carry" — and it stays in "Ready now" while the
+  // confirmation promises nothing will chase you. Two causes, and the park
+  // interval was only one. Routing CURES the node with a review clock, and a
+  // cure inherits the intent of the event it cured: `gate:clarify.routed` is a
+  // demand, because somebody did something. So the row stayed ready on the
+  // strength of a clock set before the decline existed, and the decline had no
+  // way to answer it.
+  //
+  // Answered here rather than by clearing clocks at the write site: clearing
+  // would destroy a real date somebody had set, which is a defect class this
+  // repo has already paid for. And a projection fix repairs everything ALREADY
+  // declined, where a write-site fix only helps the next one.
+  //
+  // ONLY WHILE THE PARK IS STILL AHEAD. Once it comes round, the existing rule
+  // takes over and the row reads as back with you — that is ADR-0056's "comes
+  // back on its own day", and 1.30.x has a test that says so. This quiets a
+  // decline; it does not make one permanent.
+  //
+  // `notNow` is the right marker because the fold clears it on
+  // `clock.cleared{park}` and `done.marked` — so "Carry it after all" undoes
+  // this in the same instant.
+  if (n.notNow) {
+    const p = n.clocks.park;
+    if (p && isValidIso(p.at) && calendarDaysBetween(nowIso, p.at, day) > 0) return null;
+  }
+
   // App clocks excluded too, and for the same reason `park` is: a gate cure is not
   // a demand. It exists so nothing goes silent, and reading it as "ready" made
   // every undated thing claim a place in today.

@@ -16,17 +16,40 @@ import { TIMER_CHOICES } from '../timer.ts';
 import { endOfLocalDay} from '../time.ts';
 import { nextSlotOccurrence, parseSlot, slotOf, type SlotDay } from '../requests.ts';
 import { isBoundaryHour } from '../day.ts';
+import { QUIET_DAYS } from '../review.ts';
 
 const base = (ctx: StampContext, kind: string, node: string | null, payload: unknown): AppEvent => ({
   id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
   kind, node, payload,
 } as AppEvent);
 
-/** Where a declined thing waits: the next request slot when one is set, else
- *  the end of today — the same-day boundary every other cure uses. */
+/**
+ * Where a declined thing waits: the next request slot when one is set, else a
+ * month.
+ *
+ * IT USED TO BE THE END OF TODAY, and that made the decline a no-op on the only
+ * path most people ever take. Reported from use, 2026-08-09: route something to
+ * waiting-for, open it, press "Not mine to carry", and it sits exactly where it
+ * was in "Ready now" while the confirmation promises nothing will chase you.
+ *
+ * A park to tonight has already arrived, and a park that has arrived is — quite
+ * rightly — filed as back with you (1.30.x, and there is a test that says so).
+ * So the decline parked the thing into the state it was already in. The rule was
+ * not wrong; the interval was. "Comes back on its own day, quietly" cannot mean
+ * a day that is already over.
+ *
+ * The slot is opt-in, so no slot is the DEFAULT rather than an edge — which is
+ * why this was not a corner case but the ordinary outcome.
+ *
+ * `QUIET_DAYS` is the repo's existing word for a thing having gone quiet, and it
+ * is reused rather than a fresh number invented here: a month is beyond
+ * `SOON_DAYS`, so a declined thing sits in the held list's Later group exactly as
+ * ADR-0056 says it should — held, visible where everything held is visible, and
+ * never asking.
+ */
 const declineReturnAt = (ctx: StampContext, state: State): string => {
   const day = slotOf(state);
-  return day ? nextSlotOccurrence(day, ctx.at, ctx.zone) : endOfLocalDay(ctx.at, ctx.day, 0);
+  return day ? nextSlotOccurrence(day, ctx.at, ctx.zone) : endOfLocalDay(ctx.at, ctx.day, QUIET_DAYS);
 };
 
 /** The one write shape for a decline: the record, then the deliberate park.

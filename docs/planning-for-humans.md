@@ -356,10 +356,22 @@ rejection, because a rejection log would eventually be shown to someone.
 (law 6) — and since 1.11.0 one thing from it rides in the offer on the main
 surface ([ADR-0060](adr/0060-a-few-things-you-could-pick-up.md)), carrying no
 date and no Done, so interest is *present* rather than merely permitted.
-→ **The RSD tag drives the voice more than any feature**: no rebukes, no
-disappointed copy, no red walls, no implied judgement in an empty state. This
-costs nothing if the construct is wrong, and matters a great deal if it is right —
-which is the correct way to design under this much uncertainty.
+→ **The voice rules — no rebukes, no disappointed copy, no red walls, no implied
+judgement in an empty state — are the app's answer here**, and they cost nothing
+if any particular account of the sensitivity is wrong.
+
+**Corrected 2026-08-09.** This paragraph used to say the RSD *tag* drove the
+voice. It no longer does, and RSD is now a named refusal: it has no separate
+diagnostic standing and no measure of its own, so nothing in the app may be
+designed *around it as an entity*. What is well evidenced is emotional
+dysregulation in adult ADHD, and it carries every one of these rules on its own.
+
+The rules are unchanged, which is the whole point. Designing them on a construct
+that later failed would have been the same design; the difference is whether the
+record can tell you why, and whether a feature built later inherits a warrant
+that does not hold. **The app must never form an opinion about why somebody feels
+what they feel** — that is law 7, and it is the reason a named feature for this
+was never the right shape regardless of the evidence.
 
 ---
 
@@ -421,11 +433,31 @@ mood repair) · Gollwitzer (implementation intentions) · D'Zurilla (problem-sol
 structure) · Borkovec (worry postponement / stimulus control) · Lally (habit
 timelines) · Wood & Neal (context cues) · Kahneman (planning fallacy; peak-end
 rule) · Goldratt (buffers, in operations research) · Bird & Cook (alexithymia) ·
-Raymaker (autistic burnout — qualitative) · choice overload *(direction
-established, magnitude contested)*
+Raymaker (autistic burnout — qualitative)
 
 **Emerging**
 Monotropism (Murray, Lesser, Lawson) · hyperfocus (Ashinoff & Abu-Akel)
+
+**Corrected 2026-08-09.** *Choice overload* used to sit in the Established list
+above, marked "direction established, magnitude contested". That was too kind to
+it: the classic demonstration replicates poorly and meta-analysis puts the
+average effect near zero, so the direction is not established either. It has
+moved here.
+
+**This changes nothing about the app, and that is the point of saying so.** The
+offer is still capped, and still at two unalike things. What holds it up is not
+choice overload as a general law but the cost of COMPARING at the moment you are
+stuck — a narrower and much better evidenced claim, and the one ADR-0060 argues
+from in its own words. A decision can be right while the reason written beside
+it is wrong, and the only way anyone finds that out is if the reason is written
+down where it can be checked.
+
+**Contested** choice overload *(classic result replicates poorly; meta-analytic
+average near zero — the app's cap rests on comparison cost at activation
+instead)* · demand avoidance as a distinct profile · rejection-sensitive
+dysphoria as a diagnostic entity *(now a named refusal — see NOTES.md; the
+emotional dysregulation underneath it is well evidenced and carries the voice
+rules on its own)*
 
 **Community-construct**
 Dodson (interest-based nervous system) · RSD · spoon theory (Miserandino) ·
