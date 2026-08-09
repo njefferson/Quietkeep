@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.38.5',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**Extras is now settings rather than reading.** Fifteen sections explained themselves at up to two hundred words each. Each one now says what it is and what it does, in a line, next to the control that does it. Nothing was removed except the explaining.',
+      '**The panel has gone from 5,702 words to 3,749** — a third of it, across this release and the last. It is still longer than it should be.',
+      'Where a thing can destroy something, it still explains itself in full — at the moment you press it, which is where that belongs, rather than in a paragraph you read weeks earlier.',
+    ],
+  },
+  {
     triplet: '1.38.4',
     kind: 'ITERATION',
     date: '2026-08-09',

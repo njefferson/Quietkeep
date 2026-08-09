@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.5 — ITERATION
+
+*2026-08-09*
+
+- **Extras is now settings rather than reading.** Fifteen sections explained themselves at up to two hundred words each. Each one now says what it is and what it does, in a line, next to the control that does it. Nothing was removed except the explaining.
+- **The panel has gone from 5,702 words to 3,749** — a third of it, across this release and the last. It is still longer than it should be.
+- Where a thing can destroy something, it still explains itself in full — at the moment you press it, which is where that belongs, rather than in a paragraph you read weeks earlier.
+
 ## 1.38.4 — ITERATION
 
 *2026-08-09*

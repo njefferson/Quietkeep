@@ -1704,65 +1704,41 @@
   <div id="group-extras" hidden>
   <h3 class="about-section">One pass through your messages</h3>
   <p class="about-p">
-    Messages arrive all day and attention does not divide. If you turn this on,
-    Quietkeep offers a single pass through them at the moment you come out of
-    working on something &mdash; when looking costs least &mdash; and never while
-    you are in the middle of anything.
+    Offers one pass through your messages when you come out of working on something. Off unless you ask for it.
   </p>
   <div class="about-actions">
     <button id="comms-start" type="button" class="ghost">Offer me a sweep</button>
     <button id="comms-stop" type="button" class="ghost">Stop offering it</button>
   </div>
   <p id="comms-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    It is off unless you ask for it, it counts nothing, and skipping one is not
-    a failure. Quietkeep cannot see your messages and never will.
-  </p>
 
   <h3 class="about-section">A clock in the header</h3>
   <p class="about-p">
-    A clock face at the top of every screen, with how much of today is left
-    beside it and how many things are dated today. The remainder is the point:
-    a day is easier to work with when you can see it going.
+    A clock at the top, with how much of today is left beside it.
   </p>
   <div class="about-actions">
     <button id="clock-on" type="button" class="ghost">Show me the clock</button>
     <button id="clock-off" type="button" class="ghost">Hide the clock</button>
   </div>
   <p id="clock-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    It cannot tell you when an appointment is &mdash; Quietkeep records days,
-    not times of day &mdash; and it will never invent one. For something that
-    rings while the app is shut, use &ldquo;Reminders that reach you&rdquo;
-    below: that file carries a real alarm and your device does the rest.
-  </p>
 
   <!-- Composed Today, opt-in (1.6.0, ADR-0051). required to be optional — off by default, the comms-sweep precedent. -->
   <h3 class="about-section">Composing your day, by hand</h3>
   <p class="about-p">
-    If you turn this on, anything you hold can be chosen for today from its own
-    sheet &mdash; up to five &mdash; and the chosen few sit quietly above Next
-    up. The app never picks for you, and Next up&rsquo;s own offer is unchanged.
+    Choose up to five things for today yourself. They sit above Next up, and the app never picks them for you.
   </p>
   <div class="about-actions">
     <button id="today-start" type="button" class="ghost">Let me compose my day</button>
     <button id="today-stop" type="button" class="ghost">Stop composing</button>
   </div>
   <p id="today-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    It is off unless you ask for it, it counts nothing, and an unfinished choice
-    is not a failure &mdash; at midnight the choosing simply lapses, with no
-    record of a miss.
-  </p>
 
   <!-- The request slot (1.8.0, ADR-0056). Stimulus control: a weekday where
        requests wait, so they are not evaluated at arrival. Setting a day IS
        the opt-in — no slot, no feature, nothing anywhere. -->
   <h3 class="about-section">A day for requests</h3>
   <p class="about-p">
-    If you choose a day, anything someone asks of you can be parked to wait for
-    it from its own sheet &mdash; so a request is dealt with on your day, not at
-    the moment it lands. Declining sends things to the same day.
+    Park what people ask of you until a day you choose, so a request is dealt with on your day rather than as it lands.
   </p>
   <div class="about-actions">
     <label class="detail-inline" for="slot-day">Requests wait for</label>
@@ -1779,49 +1755,20 @@
     <button id="slot-set" type="button" class="ghost">Set the day</button>
   </div>
   <p id="slot-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    It is off unless you choose a day, it counts nothing, and nothing arrives
-    on its own &mdash; a waiting request comes back the way any parked thing
-    does, quietly, when its day ends.
-  </p>
 
   <h3 class="about-section">Getting things in from somewhere else</h3>
   <p class="about-p">
-    On an iPhone or iPad there is no share-sheet entrance to Quietkeep, and there
-    is not going to be one: Safari does not support it. That is a limit of the
-    browser rather than a decision here, and saying so is more useful than
-    leaving you to work out why the option never appears.
-  </p>
-  <p class="about-p">
-    What does work is an address. Anything you put after <code>?text=</code> is
-    captured as one item, exactly as if you had typed it into the line at the
-    top. Opening it with nothing after it just lands you here with the cursor
-    ready.
+    Safari has no share sheet for web apps, so the way in from outside is a Shortcut that opens this address. That is a browser limit, not a decision here.
   </p>
   <div class="about-actions">
     <code id="capture-endpoint" class="about-code"></code>
     <button id="capture-endpoint-copy" type="button" class="ghost">Copy the address</button>
   </div>
   <p id="capture-endpoint-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p">
-    To put that on your share sheet, make a Shortcut: open the Shortcuts app,
-    make a new one, add <em>Get Contents of URL</em>, paste the address above and
-    put <em>Shortcut Input</em> after it, then turn on <em>Show in Share
-    Sheet</em>. Give it a name you will recognise in a hurry.
-  </p>
-  <p class="about-p about-caveat">
-    Whatever arrives that way lands as one unsorted item and nothing else. It
-    cannot set a date, finish anything, or delete anything &mdash; a link is a
-    public thing and it may only ever do the one act. You are told it arrived,
-    and there is an Undo beside it.
-  </p>
 
   <h3 class="about-section">When your day ends</h3>
   <p class="about-p">
-    Everything in Quietkeep that means <em>today</em> asks this. A day that ends
-    at midnight is the usual answer and it is not everybody&rsquo;s: if you are
-    still going at one in the morning, that is still tonight, and the app should
-    not have decided otherwise an hour ago.
+    Everything that means <em>today</em> asks this. Midnight is the usual answer and it is not everybody&rsquo;s.
   </p>
   <div class="about-actions">
     <label class="detail-inline" for="day-boundary">Today ends at</label>
@@ -1837,18 +1784,10 @@
     <button id="day-boundary-set" type="button" class="ghost">Set when the day ends</button>
   </div>
   <p id="day-boundary-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    This moves where the day&rsquo;s edge falls. It does not add a time of day to
-    anything &mdash; dates here are still whole days &mdash; and nothing works it
-    out from when you last used the app. Quietkeep has no way of knowing what
-    kind of hours you keep, and would not be right to guess.
-  </p>
 
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">
-    When you send something to <em>Do now</em> you can start a timer on it. This
-    is how long it runs. Choose it here, calmly &mdash; not in the moment you
-    are trying to start something.
+    How long the <em>Do now</em> timer runs. Set it here, calmly, rather than in the moment you are trying to start.
   </p>
   <div class="about-actions">
     <label class="detail-inline" for="timer-length">A timer runs for</label>
@@ -1862,34 +1801,18 @@
     <button id="timer-length-set" type="button" class="ghost">Set the length</button>
   </div>
   <p id="timer-length-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    The time is something you commit to, not something you are held to. While it
-    runs the app shows only that it <em>is</em> running &mdash; no countdown, no
-    bar filling up &mdash; because a shape that is part-way full is a way of
-    saying you stopped short. Leaving early records nothing at all, and when the
-    time is up the timer simply goes.
-  </p>
 
   <h3 class="about-section">Today, on paper</h3>
   <p class="about-p">
-    One page: the thing to do next, what else is ready, what is with other people,
-    and what is coming up. For a meeting where a screen is rude, or a day the
-    battery is going to lose.
+    One page to print: what is next, what else is ready, what is with other people, and what is coming.
   </p>
   <div class="about-actions">
     <button id="today-print" type="button">Print today</button>
   </div>
-  <p class="about-p about-caveat">
-    Paper cannot update. Ticking something off on the printout does not reach
-    Quietkeep &mdash; the app is still where things are true.
-  </p>
 
   <h3 class="about-section">Telling someone where things are</h3>
   <p class="about-p">
-    What has changed since the last time you told anyone &mdash; finished, come
-    back, now with someone else, and what was decided &mdash; plus what is still
-    outstanding and what is coming up. It is worked out from your own history,
-    so nothing has to be kept up to date for it to be right.
+    What has changed since you last told anyone, plus what is still outstanding. You choose what goes in it.
   </p>
   <div class="about-actions">
     <button id="report-copy" type="button" aria-label="Copy it — the weekly look">Copy it</button>
@@ -1898,10 +1821,6 @@
     <button id="report-print" type="button" class="ghost">Print it</button>
   </div>
   <p id="report-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    Nothing is sent anywhere. It is written for you to paste or hand over
-    yourself, and the next one starts from this moment.
-  </p>
 
   <!--
     Named periods (1.17.0, ADR-0068). Inside the report section deliberately: an
@@ -1909,12 +1828,6 @@
     section of its own would make it look like a thing to maintain.
   -->
   <h4 class="about-sub">Since when</h4>
-  <p class="about-p">
-    By default a report covers everything since the last one you handed over. If
-    you have a meeting that sets the rhythm &mdash; a staff call, a catch-up
-    &mdash; you can name it and say when it came round, and the report will cover
-    the time since then instead.
-  </p>
   <div class="about-actions">
     <label class="anchor-label" for="anchor-period">Report covers</label>
     <select id="anchor-period">
@@ -1929,18 +1842,11 @@
   </form>
   <ul id="anchor-list" class="anchor-list"></ul>
   <p id="anchor-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    Nothing here asks anything of you. A period is a name for a stretch of time,
-    not a thing to do &mdash; it takes no date, it never comes back at you, and
-    Quietkeep does not count how often you mark it.
-  </p>
   <pre id="report-preview" class="report-preview" hidden></pre>
 
   <h3 class="about-section">Reminders that reach you</h3>
   <p class="about-p">
-    Quietkeep can only bring something back while it is open. Send what you are
-    holding to your calendar and the calendar will tell you instead &mdash; it
-    already runs when this app does not.
+    Your calendar runs when Quietkeep does not, so it is the thing that can reach you. The button is at the top of this panel.
   </p>
   <!-- The button itself now lives at the TOP of the panel, with the other verbs.
        It sat here, most of a 5,700-word document down, and the prose pointed at
@@ -1954,18 +1860,9 @@
        so the button is reached by scrolling — and the confirmation was
        rendering off-screen above the reader's eyes. It always worked; nobody
        could see it (found on device). -->
-  <p class="about-p">
-    Only days <em>you</em> set go to a calendar. Quietkeep puts its own dates on
-    things constantly &mdash; that is how it brings them back &mdash; and those are
-    not appointments, so they stay here.
-  </p>
   <!-- This caveat is about the SENT COPY and must sit with the calendar's own
        story. It once rendered below the badge block, where its "It" read as
        the icon number (found on device, 1.7.1). -->
-  <p class="about-p about-caveat">
-    It is a snapshot of this moment. If you change a date here afterwards, the
-    calendar will not follow &mdash; send a fresh copy when it matters.
-  </p>
 
   <h3 class="about-section">The number on the app icon</h3>
   <p class="about-p" id="badge-explainer">
@@ -1980,20 +1877,12 @@
 
   <h3 class="about-section">Trying it out with something in it</h3>
   <p class="about-p">
-    An empty planner is hard to judge. This puts a small set of ordinary work in,
-    dated around today &mdash; a job with two steps in it, something whose date has
-    already gone by, something you are waiting on someone else for, a couple of
-    things nobody is asking you to do, and two notes not yet sorted.
+    Puts a small set of ordinary work in, dated around today, so there is something to judge.
   </p>
   <div class="about-actions">
     <button id="sample" type="button" class="ghost">Add some sample work</button>
   </div>
   <p id="sample-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    It goes in beside anything you already have and behaves exactly like your own
-    work &mdash; there is no button that takes only this back out again. Export a
-    copy first if what is already here matters.
-  </p>
 
   <!--
     The bigger set (1.16.0, ADR-0067). A DIFFERENT act from the one above, and the
@@ -2003,32 +1892,16 @@
   -->
   <h3 class="about-section">A whole invented life, to try things on</h3>
   <p class="about-p">
-    This makes a file &mdash; hundreds of invented things, dated around today, with
-    something of every kind the app has in it: jobs with steps under them, dates
-    that have gone by, people you are waiting on, things folded together as
-    duplicates, things you let go, weights, a sealed journal. It is for seeing how
-    the app behaves with a full life in it rather than an empty one.
+    Makes a file of hundreds of invented things &mdash; one of every kind the app has &mdash; to import and try things on.
   </p>
   <div class="about-actions">
     <button id="big-sample" type="button" class="ghost">Make a set to try things on</button>
   </div>
   <p id="big-sample-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    Nothing here changes what is on this device. The file only becomes real work
-    when you bring it back in with &ldquo;Bring a copy back&rdquo; above &mdash;
-    and for trying this set on, the door you want there is &ldquo;Replace
-    everything&rdquo;, which swaps this device&rsquo;s work for the file. The
-    other door, &ldquo;Take in what I don&rsquo;t have&rdquo;, <em>adds</em> the
-    invented things beside your real ones instead &mdash; and there is no button
-    that takes just those back out again. Take a copy of your own first, and
-    replace with that copy when you have finished looking.
-  </p>
 
   <h3 class="about-section">Bringing work in from another planner</h3>
   <p class="about-p">
-    An OmniFocus export &mdash; TaskPaper or CSV &mdash; or anything else
-    TaskPaper-shaped. Projects keep their contents, and dates you set over there
-    arrive as dates you set here.
+    Takes a TaskPaper or CSV export &mdash; OmniFocus, or anything TaskPaper-shaped. Projects keep their contents.
   </p>
   <label class="purge-label" for="other-file">Choose the file</label>
   <input id="other-file" type="file" accept=".taskpaper,.txt,.csv,text/plain,text/csv">
@@ -2036,17 +1909,12 @@
   <div id="other-actions" class="about-actions" hidden>
     <button id="other-go" type="button">Bring it in</button>
   </div>
-  <p class="about-p about-caveat">
-    It goes in <em>beside</em> whatever is already here. If you want a clean run at
-    it, save a copy and start again from empty first &mdash; both are just below.
-  </p>
 
   <h3 class="about-section">Clearing things out</h3>
-  <p id="purge-summary" class="about-p" role="status" aria-live="polite"></p>
   <p class="about-p">
-    Two different things, and they are not the same favour. Save a copy first
-    &mdash; it takes a second and it is the only way back.
+    Two different things, and not the same favour. Save a copy first &mdash; it is the only way back.
   </p>
+  <p id="purge-summary" class="about-p" role="status" aria-live="polite"></p>
   <div class="about-actions">
     <button id="purge-backup" type="button">Save a copy first</button>
   </div>
