@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.38.1 — ITERATION
+
+*2026-08-09*
+
+- **How things come round now follows the day you set, not the calendar’s.** If your day ends at 3am, a weekly thing used to come back at midnight — in the middle of an evening you had not finished — and start asking. It waits for your day to actually end.
+- **The same for how long you have been waiting on somebody**, how long a place has been quiet, and how long you have been away. All four counted in calendar days and none of them knew whose day they meant.
+- **Nothing moves for anybody who has not set a boundary.** An unset day still ends at midnight, so this changes nothing at all unless you asked for it — and it never changes how insistent something is, only when it starts.
+
 ## 1.38.0 — CAPABILITY
 
 *2026-08-09*

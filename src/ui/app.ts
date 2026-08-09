@@ -761,16 +761,6 @@ export async function main(edition?: Edition): Promise<void> {
   // it moves an item, and capture refreshes it (a new item joins the inbox).
   try { triage = mountTriage(session, refreshAll, n => detail.open(n)); } catch { /* a surface */ }
 
-  // Three URL entrances, all landing in the same capture (ADR-0008):
-  //  - ?capture=1     the manifest shortcut — just focus the empty line
-  //  - ?text=         the documented public endpoint (a hostile link can reach it)
-  //  - share target   ?title=&text=&url= from the OS share sheet (Chromium)
-  // Each is a public surface, so each does the ONE thing it may — create a single
-  // unclarified item — with a visible confirm and undo; none can set a clock,
-  // route, complete, or delete. Text is stored as text and shown with textContent.
-  await handleUrlEntrances(session, status, input, rerender);
-  triage.refresh();
-
   // --- room for many lines (1.38.0) ------------------------------------------
   //
   // The same Dump, the same draft, the same commit path — many lines instead of
@@ -826,6 +816,22 @@ export async function main(edition?: Edition): Promise<void> {
   // and after three weeks. Read from `savedDraft`, never from `input.value`,
   // which cannot hold a newline (see where it is loaded).
   if (savedDraft.includes('\n')) { many.value = savedDraft; input.value = ''; showRoom(true, false); }
+
+  // Three URL entrances, all landing in the same capture (ADR-0008):
+  //  - ?capture=1     the manifest shortcut — just focus the empty line
+  //  - ?text=         the documented public endpoint (a hostile link can reach it)
+  //  - share target   ?title=&text=&url= from the OS share sheet (Chromium)
+  // Each is a public surface, so each does the ONE thing it may — create a single
+  // unclarified item — with a visible confirm and undo; none can set a clock,
+  // route, complete, or delete. Text is stored as text and shown with textContent.
+  // The VISIBLE field, not `input`. A pending many-line draft hides `#capture`,
+  // and the shortcut's whole job is to land focused and ready to type — focusing
+  // a hidden element lands you on nothing, with no keyboard on a tablet. Found
+  // by the smoke walk going red intermittently on the shortcut check (1.38.1);
+  // the ordering above is the fix, this is the half that makes it complete.
+  await handleUrlEntrances(session, status, many.hidden ? input : many, rerender);
+  triage.refresh();
+
 
   // A multi-line paste into the ONE-LINE field.
   //
@@ -1075,7 +1081,7 @@ export const dumpLines = (raw: string): string[] =>
  * session, status line and input as arguments rather than reaching for them, so
  * the whole thing runs against fakes.
  */
-export async function handleUrlEntrances(session: Session, status: HTMLElement, input: HTMLInputElement, rerender: () => void): Promise<void> {
+export async function handleUrlEntrances(session: Session, status: HTMLElement, input: HTMLInputElement | HTMLTextAreaElement, rerender: () => void): Promise<void> {
   const params = new URLSearchParams(location.search);
   const clean = location.pathname + location.hash;
 

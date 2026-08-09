@@ -18,6 +18,7 @@ import { decisionsFor } from './merged.ts';
 import { heldNodes } from './gate.ts';
 import { isOpenWaiting, withWhom, openDays } from './people.ts';
 import { calendarDaysBetween, daysWords, isValidIso, localDayKey, atMidnight} from './time.ts';
+import { boundaryOf } from './day.ts';
 import { isHeld } from './fold.ts';
 
 /**
@@ -166,7 +167,7 @@ export function deltaBetween(
 
   const outstanding = [...heldNodes(after)]
     .filter(isOpenWaiting)
-    .map(n => ({ node: n, whom: withWhom(after, n), days: openDays(n, nowIso, zone) }))
+    .map(n => ({ node: n, whom: withWhom(after, n), days: openDays(n, nowIso, { zone, boundary: boundaryOf(after) }) }))
     .sort((a, b) => (b.days ?? -1) - (a.days ?? -1) || (a.node.id < b.node.id ? -1 : 1));
 
   // What was decided in the period (1.9.0). A decision the reader has already

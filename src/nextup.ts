@@ -175,7 +175,7 @@ export const approachOf = (state: State, n: NodeState, nowIso: string, zone: str
 /** Live, actionable, and not still sitting in the inbox. An unclarified capture
  *  belongs to triage — offering it here would be asking the same question twice,
  *  in a surface whose whole promise is that it has already decided for you. */
-function isCandidate(n: NodeState, nowIso: string, zone: string): boolean {
+function isCandidate(n: NodeState, nowIso: string, day: DayShape): boolean {
   if (isGone(n)) return false;
   if (NOT_ACTIONABLE.has(n.kind)) return false;
   // On the Menu is a surface, not a demand (law 1 clause c). Never volunteered.
@@ -195,7 +195,7 @@ function isCandidate(n: NodeState, nowIso: string, zone: string): boolean {
   // pressure was null, so it rode a stale cure clock in the `ready` tier for
   // ever and marking it done did nothing. An item that can be neither completed
   // nor dismissed is the exact failure this app exists to prevent.
-  const recurring = pressureOf(n, nowIso, zone) !== null;
+  const recurring = pressureOf(n, nowIso, day) !== null;
   if (n.lastDone != null && !recurring) return false;
   return true;
 }
@@ -295,7 +295,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
   const items: NextUpItem[] = [];
 
   for (const n of state.nodes.values()) {
-    if (!isCandidate(n, nowIso, zone)) continue;
+    if (!isCandidate(n, nowIso, day)) continue;
     // Work under a TRACKED project is not yours to do. The vocabulary has said
     // so since the first draft — "a `track` project emits no next actions, only
     // Waiting-Fors and Upkeep check-ins" — and nothing enforced it, because
@@ -308,7 +308,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // you are the one carrying it.
     if (n.kind !== 'waiting-for' && n.kind !== 'upkeep' && underTrackedProject(state, n)) continue;
 
-    const p = pressureOf(n, nowIso, zone);
+    const p = pressureOf(n, nowIso, day);
     const arrived = arrivedClock(n, nowIso, day);
 
     // A hard date outranks everything, INCLUDING a resume card — the tier test
@@ -411,12 +411,12 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
   // horizon. When anything else is asking, the horizon waits its turn.
   if (items.length === 0) {
     for (const n of state.nodes.values()) {
-      if (!isCandidate(n, nowIso, zone)) continue;
+      if (!isCandidate(n, nowIso, day)) continue;
       if (n.kind !== 'waiting-for' && n.kind !== 'upkeep' && underTrackedProject(state, n)) continue;
       const host = arrivedAncestor(state, n, nowIso, day);
       if (!host) continue;
       items.push({
-        node: n, reason: 'beneath', pressure: pressureOf(n, nowIso, zone),
+        node: n, reason: 'beneath', pressure: pressureOf(n, nowIso, day),
         words: REASON_WORDS.beneath({ horizon: host.title }),
         place: lineageOf(state, n),
         approach: approachOf(state, n, nowIso, zone),
@@ -488,9 +488,10 @@ export function nextUp(state: State, nowIso: string, zone: string, cycle = 0): N
  * the data; it is a hole in them.
  */
 export function upkeepChips(state: State, nowIso: string, zone: string, minPressure = 0): NextUpItem[] {
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   return [...state.nodes.values()]
-    .filter(n => n.kind === 'upkeep' && isCandidate(n, nowIso, zone))
-    .map(n => ({ node: n, pressure: pressureOf(n, nowIso, zone) }))
+    .filter(n => n.kind === 'upkeep' && isCandidate(n, nowIso, day))
+    .map(n => ({ node: n, pressure: pressureOf(n, nowIso, day) }))
     .filter((x): x is { node: NodeState; pressure: number } =>
       x.pressure !== null && Number.isFinite(x.pressure) && x.pressure >= minPressure)
     .sort((a, b) => b.pressure - a.pressure || (a.node.id < b.node.id ? -1 : 1))

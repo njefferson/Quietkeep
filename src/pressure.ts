@@ -24,7 +24,7 @@
 // PURE. `now` is an argument, like everywhere else.
 
 import type { NodeState } from './fold.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
 
 /**
  * Continuous pressure for an item that carries the primitive, or `null` for one
@@ -47,7 +47,7 @@ import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
  * mother do not share a tolerance, so the same lateness in days is not the same
  * pressure. That is exactly what dividing by the item's own window expresses.
  */
-export function pressureOf(n: NodeState, nowIso: string, zone: string): number | null {
+export function pressureOf(n: NodeState, nowIso: string, day: DayShape): number | null {
   // `Number.isFinite`, not `<= 0`: NaN passes every comparison (`NaN <= 0` is
   // false), so a malformed payload used to sail through the guard and produce a
   // NaN pressure — which then poisoned the sort comparators and fell through
@@ -69,7 +69,15 @@ export function pressureOf(n: NodeState, nowIso: string, zone: string): number |
 
   // Calendar days, not elapsed milliseconds: "every 7 days" means seven of the
   // user's days, and a DST changeover must not add an hour of pressure (V-13).
-  const elapsed = calendarDaysBetween(n.lastDone, nowIso, atMidnight(zone));
+  //
+  // And they are the READER'S days, not the calendar's (V2 stage 5, threaded
+  // 1.38.1). This took `zone` and assumed midnight, so for somebody whose day
+  // ends at 3am a weekly thing came round in the middle of the evening they were
+  // still working in — insistence appearing on a day they had not finished. The
+  // boundary is a fact about the person, and decay is the one primitive that
+  // runs everything temporal here, so it is the last place that should have been
+  // guessing at it.
+  const elapsed = calendarDaysBetween(n.lastDone, nowIso, day);
   return (elapsed - n.intervalDays!) / n.comfortWindowDays!;
 }
 

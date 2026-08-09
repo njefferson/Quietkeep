@@ -174,7 +174,7 @@ test('big-sample: NO PROJECTION RENDERS A BROKEN STRING', async () => {
   for (const g of heldGroups(state, NOW, TZ)) {
     said.push(say(`heldGroups.${g.key}.title`, g.title));
     for (const n of g.items) {
-      said.push(say(`held.${n.id}.pressure`, pressureWords(pressureOf(n, NOW, TZ))));
+      said.push(say(`held.${n.id}.pressure`, pressureWords(pressureOf(n, NOW, atMidnight(TZ)))));
       said.push(say(`held.${n.id}.place`, placeWords(n, state, new Map())));
       said.push(say(`held.${n.id}.withWhom`, withWhom(state, n)));
     }

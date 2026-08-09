@@ -9,6 +9,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { fold, emptyState, type State, type NodeState } from '../src/fold.ts';
+import { atMidnight } from '../src/time.ts';
 import { pressureOf, isReadyAgain, pressureWords } from '../src/pressure.ts';
 import { nextUp, nextUpQueue, upkeepChips, workSurface, BEHIND_CAP } from '../src/nextup.ts';
 import { coverageGauge, heldNodes } from '../src/gate.ts';
@@ -36,7 +37,7 @@ const upkeep = (id: string, intervalDays: number, comfortWindowDays: number, las
 test('pressure is continuous, signed, and unbounded — no stored threshold', () => {
   // interval 7, comfort window 2. Pressure = (elapsed - 7) / 2.
   const at = (lastDone: string): number =>
-    pressureOf(st(...upkeep('U', 7, 2, lastDone)).nodes.get('U')!, NOW, TZ)!;
+    pressureOf(st(...upkeep('U', 7, 2, lastDone)).nodes.get('U')!, NOW, atMidnight(TZ))!;
   assert.equal(at('2026-07-27T18:00:00.000Z'), -2.5, 'two days in: comfortably settled');
   assert.equal(at('2026-07-22T18:00:00.000Z'), 0, 'exactly seven days: ready again, pressure 0');
   assert.equal(at('2026-07-20T18:00:00.000Z'), 1, 'one comfort window past ready');
@@ -47,19 +48,19 @@ test('the comfort window is per item — the same lateness is not the same press
   // Both nine days since done; the plant minds, your mother does not.
   const plant = st(...upkeep('plant', 7, 1, '2026-07-20T18:00:00.000Z')).nodes.get('plant')!;
   const call = st(...upkeep('call', 7, 14, '2026-07-20T18:00:00.000Z')).nodes.get('call')!;
-  assert.equal(pressureOf(plant, NOW, TZ), 2, 'a one-day tolerance: two windows past');
-  assert.ok(pressureOf(call, NOW, TZ)! < 0.2, 'a fortnight of tolerance: barely anything');
+  assert.equal(pressureOf(plant, NOW, atMidnight(TZ)), 2, 'a one-day tolerance: two windows past');
+  assert.ok(pressureOf(call, NOW, atMidnight(TZ))! < 0.2, 'a fortnight of tolerance: barely anything');
 });
 
 test('never done is READY, not infinitely late — no shame surface for a new item', () => {
   const n = st(...upkeep('U', 7, 2, null)).nodes.get('U')!;
-  assert.equal(pressureOf(n, NOW, TZ), 0, 'a brand-new upkeep is simply available');
-  assert.equal(isReadyAgain(pressureOf(n, NOW, TZ)), true);
+  assert.equal(pressureOf(n, NOW, atMidnight(TZ)), 0, 'a brand-new upkeep is simply available');
+  assert.equal(isReadyAgain(pressureOf(n, NOW, atMidnight(TZ))), true);
 });
 
 test('pressure is null — not zero — for an item with no cadence', () => {
   const n = st(ev('node.created', 'A', { nodeKind: 'action', title: 'a one-off' })).nodes.get('A')!;
-  assert.equal(pressureOf(n, NOW, TZ), null, 'asking for a number would invent one');
+  assert.equal(pressureOf(n, NOW, atMidnight(TZ)), null, 'asking for a number would invent one');
   assert.equal(isReadyAgain(null), false, 'and null is never "ready again"');
 });
 
@@ -82,7 +83,7 @@ test('a hard date that has arrived outranks any amount of pressure', () => {
   const up = nextUp(s, NOW, TZ);
   assert.equal(up.head!.node.id, 'D', 'the appointment leads');
   assert.equal(up.head!.reason, 'hard-date');
-  assert.ok(pressureOf(s.nodes.get('U')!, NOW, TZ)! > 50, 'even against a very insistent upkeep');
+  assert.ok(pressureOf(s.nodes.get('U')!, NOW, atMidnight(TZ))! > 50, 'even against a very insistent upkeep');
 });
 
 test('a resume card outranks pressure but not a hard date', () => {
@@ -245,7 +246,7 @@ test('a NaN or infinite cadence yields no pressure and no words — never the lo
       ev('upkeep.interval.set', 'U', bad),
       ev('done.marked', 'U', { at: '2026-01-01T12:00:00.000Z' }),
     );
-    const p = pressureOf(s.nodes.get('U')!, NOW, TZ);
+    const p = pressureOf(s.nodes.get('U')!, NOW, atMidnight(TZ));
     assert.equal(p, null, `${JSON.stringify(bad)} has no pressure`);
     assert.equal(pressureWords(p), '', 'and says nothing, rather than "been a good while"');
   }

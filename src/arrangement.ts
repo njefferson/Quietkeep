@@ -45,7 +45,8 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { pressureOf } from './pressure.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, atMidnight, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 import { isHeld } from './fold.ts';
 
 /** Marks an upkeep node as an arrangement that runs without you. A field and
@@ -144,9 +145,10 @@ export function arrangementWords(days: number | null, depends: boolean): string 
 export function arrangementCards(
   state: State, nowIso: string, zone: string,
 ): readonly ArrangementCard[] {
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   const cards: ArrangementCard[] = [];
   for (const n of arrangementNodes(state)) {
-    const pressure = pressureOf(n, nowIso, zone);
+    const pressure = pressureOf(n, nowIso, day);
     if (pressure === null || !Number.isFinite(pressure)) continue;
     const days = confirmedDaysAgo(n, nowIso, zone);
     const depends = dependsOnOthers(n);

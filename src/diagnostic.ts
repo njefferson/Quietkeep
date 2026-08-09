@@ -62,7 +62,8 @@ import { menuCount } from './menu.ts';
 import { notNowLedger } from './requests.ts';
 import { loadNow } from './load.ts';
 import { isReadyAgain, pressureOf, pressureWords } from './pressure.ts';
-import { recordDayWords } from './time.ts';
+import { recordDayWords, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 
 /** What the UI has to go and find out. Every one of these is a fact about the
  *  DEVICE rather than about the data, which is why they arrive as arguments —
@@ -264,8 +265,9 @@ export function pressureBands(
 ): { bands: Record<string, number>; readyAgain: number; withClock: number; withoutClock: number } {
   const bands: Record<string, number> = Object.fromEntries(BANDS.map(b => [b, 0]));
   let readyAgain = 0, withClock = 0, withoutClock = 0;
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   for (const n of heldNodes(state)) {
-    const p = pressureOf(n, nowIso, zone);
+    const p = pressureOf(n, nowIso, day);
     // `null` is not a failure and not a zero: an item with no cadence ranks by
     // its own clock instead, and counting it as comfortable would overstate how
     // settled the store is (LESSONS §23 — "the source gave me null" is not the

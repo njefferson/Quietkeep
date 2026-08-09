@@ -325,6 +325,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // And it survives being interrupted, which is the expected case here, not the
   // edge case. The DRAFT decides the mode: a stored draft containing a newline
   // can only have come from this field, so the shape comes back with the text.
+  //
+  // WAIT FOR THE WRITE, do not race it. Every keystroke fires `setDraft` and
+  // nothing awaits it — correct for the app, since blocking the capture line on
+  // IndexedDB is the one thing it must never do — but it means a reload issued
+  // immediately after typing can beat the write to disk. This walk did exactly
+  // that and went red once in five runs. A gate that flakes is worse than none,
+  // and "re-run it" is how a real intermittent failure gets trained into noise,
+  // so this polls the store the app actually writes to rather than sleeping.
+  await page.waitForFunction(async () => {
+    const db = await new Promise((res, rej) => {
+      const r = indexedDB.open('quietkeep');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+    if (!db.objectStoreNames.contains('kv')) return false;
+    const row = await new Promise((res) => {
+      const q = db.transaction('kv').objectStore('kv').get('capture.draft');
+      q.onsuccess = () => res(q.result); q.onerror = () => res(null);
+    });
+    return typeof row?.value === 'string' && row.value.includes('\n');
+  }, null, { timeout: 10000 });
+
   await page.reload({ waitUntil: 'load' });
   await ready();
   is(await page.locator('#capture-many').isVisible(), true,
@@ -372,6 +393,59 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await page.inputValue('#capture'), 'first line second line third line',
     'joined visibly, on request — never silently');
   await page.fill('#capture', '');
+
+  // ARRIVING WITH A DUMP ALREADY OPEN, via the manifest shortcut.
+  //
+  // Asserted directly rather than left to chance. This shipped broken for the
+  // length of one build and the walk caught it only INTERMITTENTLY — the
+  // shortcut's focus check went red about one run in five, because whether a
+  // many-line draft was still pending depended on an unawaited write landing
+  // before a navigation. An intermittent failure that nobody can reproduce is
+  // how a real defect gets filed as a flake, so the condition is now created on
+  // purpose and the property is checked every run.
+  //
+  // The shortcut exists to land you focused and ready to type. A pending dump
+  // hides `#capture`, and focusing a hidden element focuses nothing at all — on
+  // a tablet that means arriving to no keyboard and no cursor, which is the
+  // opposite of what a capture shortcut is for.
+  await page.click('#capture-room');
+  await page.fill('#capture-many', 'still writing this\nand this');
+  await page.waitForFunction(async () => {
+    const db = await new Promise((res, rej) => {
+      const r = indexedDB.open('quietkeep');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+    if (!db.objectStoreNames.contains('kv')) return false;
+    const row = await new Promise((res) => {
+      const q = db.transaction('kv').objectStore('kv').get('capture.draft');
+      q.onsuccess = () => res(q.result); q.onerror = () => res(null);
+    });
+    return typeof row?.value === 'string' && row.value.includes('\n');
+  }, null, { timeout: 10000 });
+
+  await page.goto(`${url}?capture=1`, { waitUntil: 'load' });
+  await ready();
+  is(await page.evaluate(() => document.activeElement?.id), 'capture-many',
+    'the shortcut lands focused on the field that is actually showing');
+  is(await page.locator('#capture-many').isVisible(), true,
+    'and the half-written dump is still there, not replaced by an empty line');
+
+  // Clear it, and wait for THAT to land too — the next section asserts the
+  // shortcut focuses `#capture`, which is only true once no dump is pending.
+  await page.fill('#capture-many', '');
+  await page.click('#capture-room');
+  await page.waitForFunction(async () => {
+    const db = await new Promise((res, rej) => {
+      const r = indexedDB.open('quietkeep');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+    if (!db.objectStoreNames.contains('kv')) return false;
+    const row = await new Promise((res) => {
+      const q = db.transaction('kv').objectStore('kv').get('capture.draft');
+      q.onsuccess = () => res(q.result); q.onerror = () => res(null);
+    });
+    return typeof row?.value === 'string' && !row.value.includes('\n');
+  }, null, { timeout: 10000 });
 
   console.log('\nURL capture endpoint (/capture?text=)');
   const before = await page.locator('.card').count();

@@ -38,7 +38,8 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { NOT_ACTIONABLE } from './kinds.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso } from './time.ts';
+import { boundaryOf } from './day.ts';
 import { CONTAINER_KINDS } from './tree.ts';
 import type { NodeKind } from './events.ts';
 import { isHeld, isGone } from './fold.ts';
@@ -256,5 +257,12 @@ export function idleDays(state: State, n: NodeState, nowIso: string, zone: strin
     const at = child.lastDone;
     if (at && isValidIso(at) && (!newest || at > newest)) newest = at;
   }
-  return newest ? calendarDaysBetween(newest, nowIso, atMidnight(zone)) : null;
+  return newest
+  //
+  // The reader's day, not the calendar's (V2 stage 5, threaded 1.38.1). The
+  // boundary is read from the store here rather than taken as an argument,
+  // which is the convention the other entry points already use — a caller that
+  // has the state cannot pass a boundary that disagrees with it.
+    ? calendarDaysBetween(newest, nowIso, { zone, boundary: boundaryOf(state) })
+    : null;
 }

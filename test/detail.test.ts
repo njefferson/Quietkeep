@@ -105,7 +105,7 @@ test('clearing a date cannot lose the item — the gate hands it back today', ()
 test('"make it repeat" reaches the decay primitive, which had no UI path before', () => {
   let s = captured('N', 'water the plant');
   const before = s.nodes.get('N')!;
-  assert.equal(pressureOf(before, AT, TZ), null, 'no cadence yet, so no pressure');
+  assert.equal(pressureOf(before, AT, atMidnight(TZ)), null, 'no cadence yet, so no pressure');
 
   s = write(s, makeRepeatEvents(ctx(), 'N', before.kind, 7, 2));
   const n = s.nodes.get('N')!;
@@ -113,7 +113,7 @@ test('"make it repeat" reaches the decay primitive, which had no UI path before'
   assert.equal(n.intervalDays, 7);
   assert.equal(n.comfortWindowDays, 2);
   assert.equal(silentNodes(s).length, 0, 'and it is covered');
-  assert.equal(pressureOf(n, AT, TZ), 0, 'never done = ready, not late');
+  assert.equal(pressureOf(n, AT, atMidnight(TZ)), 0, 'never done = ready, not late');
 });
 
 test('a repeat comes back on ITS interval, not the gate’s same-day default', () => {
@@ -148,7 +148,7 @@ test('"stop repeating" removes the cadence without inventing a new event', () =>
   s = write(s, stopRepeatEvents(ctx(), 'U'));
   const n = s.nodes.get('U')!;
   assert.equal(n.kind, 'action', 'no longer an upkeep');
-  assert.equal(pressureOf(n, AT, TZ), null, 'and no longer carries a cadence');
+  assert.equal(pressureOf(n, AT, atMidnight(TZ)), null, 'and no longer carries a cadence');
   assert.equal(upkeepChips(s, '2026-09-30T18:00:00.000Z', TZ).length, 0, 'never returns as a chip');
   assert.equal(silentNodes(s).length, 0, 'still covered');
 });

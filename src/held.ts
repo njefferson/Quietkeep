@@ -212,7 +212,7 @@ export function heldGroups(state: State, nowIso: string, zone: string): HeldGrou
     // contradictory statements, which is the class this file's own header says
     // it exists to remove (audit). Asked of the same predicate `nextup.ts` uses,
     // so the list and the chip cannot disagree about whether a rhythm is over.
-    if (n.lastDone && !isReadyAgain(pressureOf(n, nowIso, zone))) { buckets.done.push(n); continue; }
+    if (n.lastDone && !isReadyAgain(pressureOf(n, nowIso, day))) { buckets.done.push(n); continue; }
     if (n.onMenu) { buckets.menu.push(n); continue; }
     if (n.captured && n.route === null) { buckets.unsorted.push(n); continue; }
     // A hard date that went by gets its OWN heading, and this is not cosmetic.
@@ -263,7 +263,7 @@ export function heldStatus(n: NodeState, nowIso: string, zone: string, day: DayS
   // Same guard, same order, same reasons as `heldGroups` — the two must agree
   // node for node, and a status that disagreed with its own heading is the
   // defect ADR-0032 exists to have fixed.
-  if (n.lastDone && !isReadyAgain(pressureOf(n, nowIso, zone))) return 'done';
+  if (n.lastDone && !isReadyAgain(pressureOf(n, nowIso, day))) return 'done';
   if (n.onMenu) return 'on the Menu';
   if (n.captured && n.route === null) return 'not sorted yet';
   // A hard date that went by is not "ready now" — that phrasing invites doing it

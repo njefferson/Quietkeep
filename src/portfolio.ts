@@ -19,6 +19,7 @@ import { heldNodes } from './gate.ts';
 import { CONTAINER_KINDS } from './tree.ts';
 import { isOpenWaiting, openDays, personName, stakeholderWords, stakeholdersOf } from './people.ts';
 import { calendarDaysBetween, isValidIso, localDayKey, atMidnight} from './time.ts';
+import { boundaryOf } from './day.ts';
 import type { NodeKind } from './events.ts';
 
 /** The role a project carries. `execute` is the default and it is STATED rather
@@ -76,7 +77,7 @@ export function trackPortfolio(state: State, nowIso: string, zone: string): Trac
       suspense: hasDate ? localDayKey(s.at, atMidnight(zone)) : null,
       suspenseDays: hasDate ? calendarDaysBetween(nowIso, s.at, atMidnight(zone)) : null,
       waiting: children.filter(isOpenWaiting)
-        .map(w => ({ node: w, days: openDays(w, nowIso, zone) }))
+        .map(w => ({ node: w, days: openDays(w, nowIso, { zone, boundary: boundaryOf(state) }) }))
         .sort((a, b) => (b.days ?? -1) - (a.days ?? -1) || (a.node.id < b.node.id ? -1 : 1)),
       lastMovedDays: lastMoved(children, nowIso, zone),
     });

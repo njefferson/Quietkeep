@@ -26,6 +26,7 @@ import { clockFace } from '../src/clock.ts';
 import { replanAll } from '../src/replan.ts';
 import { heldGroups } from '../src/held.ts';
 import { workSurface } from '../src/nextup.ts';
+import { pressureOf } from '../src/pressure.ts';
 import { routeEvents } from '../src/ui/triage-intents.ts';
 import type { StampContext } from '../src/ui/session.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -347,4 +348,58 @@ test('nothing observes it — there is no function here that reads a log and pro
     [ev('clarify.routed', 'A', { route: 'next-action' })]);
   assert.equal(boundaryOf(busy), MIDNIGHT,
     'a log full of late-night activity proposes nothing and changes nothing');
+});
+
+// --- decay follows the person's day, not the calendar's (1.38.1) -------------
+//
+// `pressureOf` is the one primitive that runs everything temporal here, and it
+// took a zone and assumed midnight for its whole life. For somebody whose day
+// ends at 3am that is not a rounding error: a weekly thing came round in the
+// middle of the evening they had not finished yet, and insistence arrived on a
+// day they were still working in.
+//
+// These are the assertions the rest of the suite cannot make, because every
+// other `pressureOf` test passes `atMidnight` — correctly, since it is asserting
+// what happens under the default. Behaviour-preserving under midnight is exactly
+// what makes the threading safe; it is also what makes it invisible, so the
+// non-midnight case needs saying out loud.
+
+test('at 1am, a 3am person has not started a new day — and decay agrees', () => {
+  // Done at 21:00 local on the 8th. It is now 01:00 local on the 9th.
+  const doneAt = '2026-08-09T03:00:00.000Z';   // 21:00 on the 8th, Denver
+  const nowIso = '2026-08-09T07:00:00.000Z';   // 01:00 on the 9th, Denver
+  const n = { intervalDays: 1, comfortWindowDays: 1, lastDone: doneAt } as never;
+
+  // Under midnight the calendar has ticked over, so a daily thing reads as due.
+  assert.equal(pressureOf(n, nowIso, atMidnight(TZ)), 0,
+    'midnight: one calendar day has passed, so it has come round');
+
+  // Under a 3am boundary it is still the same evening, and it has not.
+  assert.equal(pressureOf(n, nowIso, { zone: TZ, boundary: 3 }), -1,
+    'a 3am day: still the same day, so nothing is asked of you yet');
+});
+
+test('the boundary moves WHEN it comes round, never how insistent it gets', () => {
+  // Four days past a one-day window is four windows past, under either day. The
+  // boundary decides which day you are in; it must not scale the pressure, or a
+  // late sleeper would be told everything is worse than it is.
+  const n = { intervalDays: 1, comfortWindowDays: 1, lastDone: '2026-08-05T18:00:00.000Z' } as never;
+  const nowIso = '2026-08-09T18:00:00.000Z';   // midday both sides of the boundary
+  assert.equal(
+    pressureOf(n, nowIso, atMidnight(TZ)),
+    pressureOf(n, nowIso, { zone: TZ, boundary: 3 }),
+    'the same moment, well inside both days, reads the same either way',
+  );
+});
+
+test('an unset boundary cannot move a single existing answer', () => {
+  // `boundaryOf` on a store nobody has told reads 0, so every reader who has not
+  // asked for this keeps exactly the behaviour they had. That is the condition
+  // for shipping a change to the primitive underneath everything.
+  const n = { intervalDays: 7, comfortWindowDays: 2, lastDone: '2026-08-01T18:00:00.000Z' } as never;
+  const nowIso = '2026-08-09T07:00:00.000Z';
+  assert.equal(
+    pressureOf(n, nowIso, { zone: TZ, boundary: boundaryOf(emptyState()) }),
+    pressureOf(n, nowIso, atMidnight(TZ)),
+  );
 });

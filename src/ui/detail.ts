@@ -425,7 +425,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     TITLE.textContent = n.title || '(untitled)';
 
     // What is true about it now, in words — never a colour, never a badge.
-    const p = pressureOf(n, new Date(now()).toISOString(), session.zone);
+    const p = pressureOf(n, new Date(now()).toISOString(), dayOf(session));
     const bits: string[] = [];
     if (n.trashed) bits.push('let go');
     if (n.mergedInto) {
@@ -564,7 +564,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         li.className = 'detail-feed';
         const label = document.createElement('span');
         const whom = withWhom(st, n);
-        const how = waitingWords(openDays(n, new Date(now()).toISOString(), session.zone));
+        const how = waitingWords(openDays(n, new Date(now()).toISOString(), dayOf(session)));
         label.textContent = [whom ? `With ${whom}` : 'With someone', how].filter(Boolean).join(' ') + '.';
         const got = document.createElement('button');
         got.type = 'button';

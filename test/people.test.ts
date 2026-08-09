@@ -194,13 +194,13 @@ test('the count is a number of open threads, not a scorecard', () => {
 
 test('open days is reported only where it is knowable', () => {
   const none = st(mk('W', 'waiting-for'), clocked('W'));
-  assert.equal(openDays(none.nodes.get('W')!, NOW, TZ), null, 'nobody said when it started');
+  assert.equal(openDays(none.nodes.get('W')!, NOW, atMidnight(TZ)), null, 'nobody said when it started');
   const some = st(mk('W', 'waiting-for'), clocked('W'),
     ev('waiting.opened', 'W', { person: 'p1', forWhat: 'x', since: AGO(10) }));
-  assert.equal(openDays(some.nodes.get('W')!, NOW, TZ), 10);
+  assert.equal(openDays(some.nodes.get('W')!, NOW, atMidnight(TZ)), 10);
   const bad = st(mk('W', 'waiting-for'), clocked('W'),
     ev('waiting.opened', 'W', { person: 'p1', forWhat: 'x', since: 'not a date' }));
-  assert.equal(openDays(bad.nodes.get('W')!, NOW, TZ), null,
+  assert.equal(openDays(bad.nodes.get('W')!, NOW, atMidnight(TZ)), null,
     'a stored date that will not parse is silence, not a crash');
 });
 

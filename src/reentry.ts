@@ -21,7 +21,7 @@
 // PURE. `now` and `zone` are arguments.
 
 import type { State } from './fold.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso } from './time.ts';
 import { raisesReplanCard } from './replan.ts';
 import { heldNodes } from './gate.ts';
 import { boundaryOf } from './day.ts';
@@ -66,7 +66,12 @@ export function absenceDays(state: State, nowIso: string, zone: string): number 
   if (!at || !isValidIso(at) || !isValidIso(nowIso)) return null;
   // Never negative. A device whose clock moved backwards is not "away for -3
   // days", and a negative here would silently make `lapsed` false for ever.
-  return Math.max(0, calendarDaysBetween(at, nowIso, atMidnight(zone)));
+  //
+  // The reader's day, not the calendar's (V2 stage 5, threaded 1.38.1). The
+  // boundary is read from the store here rather than taken as an argument,
+  // which is the convention the other entry points already use — a caller that
+  // has the state cannot pass a boundary that disagrees with it.
+  return Math.max(0, calendarDaysBetween(at, nowIso, { zone, boundary: boundaryOf(state) }));
 }
 
 /**

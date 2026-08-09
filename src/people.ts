@@ -14,7 +14,8 @@
 
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
-import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
+import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
+import { boundaryOf } from './day.ts';
 import { isHeld } from './fold.ts';
 
 /** The vocabulary's closed relation set. */
@@ -67,13 +68,14 @@ export function personView(state: State, personId: string, nowIso: string, zone:
 
   const owes: PersonLine[] = [];
   const involves: PersonLine[] = [];
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
 
   for (const n of heldNodes(state)) {
     if (n.id === personId) continue;
     const links = n.people.filter(l => l.person === personId);
     const owed = isOpenWaiting(n) && (n.waitingOn === personId || links.some(l => l.relation === 'waiting-on'));
     if (owed) {
-      owes.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, zone) });
+      owes.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, day) });
       continue;
     }
     for (const l of links) {
@@ -92,10 +94,11 @@ export function personView(state: State, personId: string, nowIso: string, zone:
 
 /** How long a waiting-for has been open. Null when nobody said when it started —
  *  silence beats a number derived from nothing. */
-export function openDays(n: NodeState, nowIso: string, zone: string): number | null {
+export function openDays(n: NodeState, nowIso: string, day: DayShape): number | null {
   const since = n.waitingSince;
   if (!since || !isValidIso(since)) return null;
-  return calendarDaysBetween(since, nowIso, atMidnight(zone));
+  // The reader's day, not the calendar's (V2 stage 5, threaded 1.38.1).
+  return calendarDaysBetween(since, nowIso, day);
 }
 
 /**
@@ -107,9 +110,10 @@ export function openDays(n: NodeState, nowIso: string, zone: string): number | n
  */
 export function waitingOnAnyone(state: State, nowIso: string, zone: string): PersonLine[] {
   const out: PersonLine[] = [];
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
   for (const n of heldNodes(state)) {
     if (!isOpenWaiting(n)) continue;
-    out.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, zone) });
+    out.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, day) });
   }
   return out.sort((a, b) => (b.days ?? -1) - (a.days ?? -1) || (a.node.id < b.node.id ? -1 : 1));
 }
