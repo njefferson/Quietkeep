@@ -154,6 +154,14 @@ jobs:
       - name: Every noun accounts for itself
         run: npm run emitters:check
 
+      # The closed reason vocabulary (V2 stage 7). Determinism is the product:
+      # an offer with an unaccountable warrant cannot be refused on grounds, and
+      # a reader who cannot predict what the app says cannot tell a change they
+      # caused from one they did not. Seven push sites each wrote their own
+      # literal before this, and two had independently written the same one.
+      - name: Every offer says why, from one closed set with one author
+        run: npm run reasons:check
+
       # And every kind is DEMONSTRATED, or says why not (1.16.0, ADR-0067). The
       # sample set was written at 0.22.0 and sixteen releases later contained 8
       # of the 70 kinds the app emits — so every surface built after it had

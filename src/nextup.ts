@@ -36,6 +36,45 @@ import { isHeld, isGone } from './fold.ts';
  *  channel of B-01, and the honest answer to "why am I being shown this?". */
 export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | 'ready' | 'beneath';
 
+/**
+ * THE CLOSED REASON VOCABULARY (V2 stage 7).
+ *
+ * Every offer states its warrant in one sentence, and the sentence comes from
+ * HERE. Not because the words are precious, but because determinism is the
+ * product: an offer with an unaccountable warrant cannot be refused on grounds,
+ * and a reader who cannot predict what the app will say cannot tell a change
+ * they caused from one they did not. That detectability is the mechanism by
+ * which control is learned; a vocabulary that drifts destroys it quietly.
+ *
+ * TOTAL over `NextUpReason` — the compiler will not let a reason exist without
+ * words — and it is the ONE writer, which is the property `place` already has
+ * and the reason `place` has never disagreed with itself. Before this, seven
+ * push sites each wrote their own literal and two of them had independently
+ * written "ready again"; a third could have written "ready, again" and nothing
+ * would have noticed.
+ *
+ * Three of the six take a fact from the item, and that is the point rather than
+ * an exception: the shape is fixed forever and the contents change every time.
+ * What is closed is the SET of sentences, not the words inside a title
+ * somebody wrote.
+ */
+export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string }) => string> = {
+  'hard-date': () => 'a real date, and it is here',
+  // YOUR five words when there are five words. Nothing this app composes beats
+  // what you wrote at the moment you put it down.
+  resume: of => (of.cue ? `you were about to: ${of.cue}` : 'where you left off'),
+  unblocked: of => `${of.antecedent || 'the thing before it'} is done`,
+  // Names the horizon that asked, because an offer with no stated warrant is
+  // the anxiety this app exists to answer: you cannot check what you are not
+  // being shown, so the one thing shown has to say why it is here.
+  beneath: of => `${of.horizon || 'something'} came round`,
+  pressure: () => 'ready again',
+  // "Back with you today" was a falsehood for any clock older than today — and
+  // gate cure clocks never move, so that was the NORMAL case rather than an
+  // edge one (Doctrine §5: no copy the data does not support).
+  ready: () => 'this one is waiting',
+};
+
 export interface NextUpItem {
   node: NodeState;
   reason: NextUpReason;
@@ -276,7 +315,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // comes first for every kind. A resume card carrying an arrived due date was
     // previously misfiled as tier 2 purely because its branch ran first.
     if (arrived && hasHardDate(n)) {
-      items.push({ node: n, reason: 'hard-date', pressure: p, words: 'a real date, and it is here', place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
+      items.push({ node: n, reason: 'hard-date', pressure: p, words: REASON_WORDS['hard-date']({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
     // THE THING YOU JUST MADE POSSIBLE (1.30.0). An item anchored to another
@@ -301,7 +340,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       if (a && a.lastDone && isHeld(a)) {
         items.push({
           node: n, reason: 'unblocked', pressure: p,
-          words: `${a.title || 'the thing before it'} is done`,
+          words: REASON_WORDS.unblocked({ antecedent: a.title }),
           place: lineageOf(state, n),
           approach: approachOf(state, n, nowIso, zone),
           situation: situationOf(n),
@@ -328,9 +367,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       if (!isHeld(target) || target.lastDone) continue;
       items.push({
         node: n, reason: 'resume', pressure: p,
-        // YOUR five words when there are five words. Nothing this app composes
-        // beats what you wrote at the moment you put it down.
-        words: n.resumeCue ? `you were about to: ${n.resumeCue}` : 'where you left off',
+        words: REASON_WORDS.resume({ cue: n.resumeCue }),
         place: lineageOf(state, n),
         approach: approachOf(state, n, nowIso, zone),
         situation: situationOf(n),
@@ -338,14 +375,14 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       continue;
     }
     if (p !== null && p >= 0) {
-      items.push({ node: n, reason: 'pressure', pressure: p, words: 'ready again', place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
+      items.push({ node: n, reason: 'pressure', pressure: p, words: REASON_WORDS.pressure({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
     if (arrived) {
       // "Back with you today" was a falsehood for any clock older than today —
       // and gate cure clocks never move, so that was the NORMAL case, not an
       // edge one (Doctrine §5: no copy the data does not support).
-      items.push({ node: n, reason: 'ready', pressure: p, words: 'this one is waiting', place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
+      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
     // Not yet asking for anything. Correct outcome: it stays quiet.
@@ -380,10 +417,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       if (!host) continue;
       items.push({
         node: n, reason: 'beneath', pressure: pressureOf(n, nowIso, zone),
-        // Names the horizon that asked, because an offer with no stated warrant
-        // is the anxiety this app exists to answer: you cannot check what you
-        // are not being shown, so the one thing shown has to say why it is here.
-        words: `${host.title || 'something'} came round`,
+        words: REASON_WORDS.beneath({ horizon: host.title }),
         place: lineageOf(state, n),
         approach: approachOf(state, n, nowIso, zone),
         situation: situationOf(n),
@@ -460,7 +494,7 @@ export function upkeepChips(state: State, nowIso: string, zone: string, minPress
     .filter((x): x is { node: NodeState; pressure: number } =>
       x.pressure !== null && Number.isFinite(x.pressure) && x.pressure >= minPressure)
     .sort((a, b) => b.pressure - a.pressure || (a.node.id < b.node.id ? -1 : 1))
-    .map(x => ({ node: x.node, reason: 'pressure' as const, pressure: x.pressure, words: 'ready again', place: lineageOf(state, x.node), approach: approachOf(state, x.node, nowIso, zone), situation: situationOf(x.node) }));
+    .map(x => ({ node: x.node, reason: 'pressure' as const, pressure: x.pressure, words: REASON_WORDS.pressure({}), place: lineageOf(state, x.node), approach: approachOf(state, x.node, nowIso, zone), situation: situationOf(x.node) }));
 }
 
 /**

@@ -275,6 +275,39 @@ These are refusals, not backlog. Each one is a law above, made concrete:
 - Gamification, points, mascots, childlike voice
 - Social features, sharing-by-default, accounts
 
+**And these, because the evidence went the other way** (V2 stage 7). Each was
+either proposed for this app or is standard advice in the surrounding
+literature; each is refused on what was actually found rather than on taste, so
+that a later session meeting the idea again finds the reason and not just a no.
+
+- **RSD as a distinct entity to design around.** It has no separate diagnostic
+  standing and no measure of its own; what is real is emotional dysregulation,
+  which the product already answers structurally — no rebuke, no red walls, no
+  score. Building a named feature for it would mean the app forming an opinion
+  about why somebody feels what they feel, which law 7 forbids outright.
+- **"Capture quiets the mind", and the Zeigarnik story it rests on.** The
+  original effect is weak and has replicated poorly; the specific claim that
+  writing a thing down releases it is not supported. Capture earns its place
+  here for a different and defensible reason — the container's guarantee — and
+  the app must not promise relief it cannot produce. A promise that does not
+  land teaches the reader the app lies about its own effects.
+- **Dyslexia fonts.** Controlled comparisons do not find them better than
+  ordinary sans-serif faces at the same size and spacing; what helps is size,
+  spacing and line length, which are free and already the house style. Shipping
+  one would trade a real gain for a signal.
+- **"Vary your alarm sounds so they keep working."** Habituation to a cue is
+  not what fails here — delay-execute is — and rotating sounds makes the system
+  less predictable, which costs the anticipability the whole product rests on.
+- **Graded escalation** — nudges that get louder when ignored. Withdrawn from
+  clinical guidance for the analogous case (NICE NG206 dropped fixed
+  incremental escalation), and it is coercion by another name: the app may
+  never raise its own ceiling, and only a person may raise theirs.
+- **Mood check-ins of any form.** An introspective question is a demand at the
+  moment somebody has least to spend, its answer is the low-validity instrument
+  (Toplak/West/Stanovich: 24% of 286 correlations significant, median r = .19),
+  and storing it invites exactly the inference law 7 forbids. Capacity is
+  DECLARED in four words when the person chooses to, and never asked for.
+
 ### Carried forward across tiers
 
 **Duration estimates are logged from v1**, even though duration *learning* is
