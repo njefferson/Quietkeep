@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.40.3',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The walkthrough now hands you straight to the thing it promised.** Its last step opens the panel so you can ask the browser to keep your planner — and on a slow moment that block could arrive a beat after the panel did, so the one screen it exists to show you was the one screen it was late for.',
+      'Quietkeep now asks the browser that question when it starts, instead of when you open the panel, so the answer is already there when you get to it.',
+    ],
+  },
+  {
     triplet: '1.40.2',
     kind: 'ITERATION',
     date: '2026-08-10',

@@ -582,8 +582,30 @@ decided by a session.**
 `staging` were identical at that commit, so production and the candidate carried
 the same build for the first time since 1.25.0.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.2**
+- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.3**
 - **https://quietkeep.pages.dev** — production, **1.39.3**
+
+**1.40.3 — the handoff arrived before the thing it hands you to.** The
+walkthrough's last step opens the ⓘ to put the storage question in front of
+somebody, and whether that block showed depended on a question the app only
+asked when the panel opened. First open, no answer yet, block a beat late — on
+the one screen it exists for.
+
+**1.40.1 addressed the wrong half of this and the notes read as though it were
+closed.** It stopped `show()` re-hiding the block on every open, which is real,
+and left the first open untouched. The answer is now learned at BOOT — only
+`navigator.storage.persisted()`, not the full paint, which does a whole-log read
+that startup may not afford — so `show()` decides synchronously.
+
+**Found by CI red against local green, two releases running.** That is the
+pattern worth naming: a check that passes locally and fails on a loaded runner is
+reporting a race, and both times the race was in the app, not in the walk.
+
+**And one correction about the instrument.** The Spine job for 1.40.2 was
+reported by the GitHub API as `in_progress` for thirty minutes after it had
+already failed. It was read as a hang and watched as one. The status field is not
+evidence; the log is. Cancelling the run is what made the log readable and the
+failure visible.
 
 **1.40.2 — the capture link could not open, and it opens the wrong app.** Two
 findings on the same path, both from the iPad, and the second is the one that

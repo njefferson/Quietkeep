@@ -157,6 +157,29 @@ export async function mountAbout(
    *  door that bypassed the repaint would open a stale panel. */
   let showPanel: () => void = () => { /* replaced below */ };
 
+  /**
+   * HAS THE BROWSER PROMISED TO KEEP THE STORE? Learned at MOUNT, kept, and
+   * updated by every paint. `null` means not answered yet.
+   *
+   * The storage block's visibility depended on `paintStorage`, which only ran
+   * when the panel was OPENED — so on the very first open there was no answer
+   * yet and the block arrived a tick late. The walkthrough's handoff opens the
+   * panel precisely to show that block, so the one moment it must be right was
+   * the one moment nothing knew. It read as a flicker locally and as a failed
+   * gate on a loaded runner, which is the same defect wearing two costumes.
+   *
+   * Answered here instead, at boot: `navigator.storage.persisted()` and nothing
+   * else. The full `paintStorage` is deliberately NOT called at mount — it does
+   * a whole-log read for the copy row, and startup is the one place this app
+   * may not spend time. This asks the cheap question only.
+   *
+   * By the time anybody reaches the handoff they have pressed through six
+   * walkthrough steps, so the window went from microseconds to seconds.
+   */
+  let kept: boolean | null = null;
+  void read().then((r) => { kept = r.supported ? r.persisted : true; })
+    .catch(() => { /* stays null; `show` then leaves the block alone */ });
+
   /** EVERY SHEET REPAINTS ON OPEN, for exactly the reason `show` does.
    *
    *  Half of what these screens display is read from the log: the storage rows,
@@ -321,6 +344,7 @@ export async function mountAbout(
     // the button does — visible exactly while the browser has not promised to
     // keep the store, gone for good once it has. `show(true)` still forces it on
     // a genuine first run, when the state is not yet known.
+    kept = r.supported ? r.persisted : true;
     if (!r.persisted && r.supported) intro.hidden = false;
     else if (r.persisted) intro.hidden = true;
     if (introAsk) introAsk.hidden = ask.hidden;
@@ -1543,10 +1567,13 @@ export async function mountAbout(
     // 1.40.0, and a loaded runner lands on the other side of the same race
     // (LESSONS §71 — a timing failure is a defect reporting its rate).
     //
-    // A first run shows it at once, because there is no previous paint to
-    // preserve. Every later open leaves it exactly as the last paint left it,
-    // and the `paintStorage` on the next line is what decides.
-    if (firstRun) intro.hidden = false;
+    // A first run shows it at once. Otherwise the answer learned at mount
+    // decides, synchronously — visible while the browser has not promised to
+    // keep the store, gone once it has. `null` means the question has not come
+    // back yet, and then this leaves the block exactly as it was rather than
+    // hiding it and putting it back, which is the flicker 1.40.1 removed.
+    if (firstRun || kept === false) intro.hidden = false;
+    else if (kept === true) intro.hidden = true;
     dialog.showModal();
     void paintStorage();
     // The calendar count is recomputed on every open. It used to be painted once

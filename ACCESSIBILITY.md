@@ -1272,3 +1272,29 @@ shipped CSP rewrote the redirect to `https://127.0.0.1:<port>` and killed it wit
 an SSL error. The walk now redirects to a path nothing has ever fetched, and the
 server drops that one directive over http — inert in production, destructive
 locally.
+
+### B-43 · The handoff arrived before the thing it hands you to (1.40.3)
+
+The walkthrough's last step opens the ⓘ for one reason: to put the storage
+question in front of somebody while it still matters. Whether that block showed
+depended on `paintStorage`, which ran only when the panel was OPENED — so on the
+very first open the answer had not come back yet and the block arrived a beat
+late. The one screen it exists for was the one screen it was late for.
+
+- **It is a first-run defect specifically**, which is why it survived: every
+  later open had a previous paint to inherit, so the flicker was invisible to
+  anyone who had used the app before.
+- **1.40.1 addressed the wrong half.** It stopped `show()` re-hiding the block on
+  every open — real, and it left the first open exactly as it was. Recorded here
+  because the release notes for 1.40.1 read as though the problem was closed.
+- **The answer is now learned at boot** and kept: `navigator.storage.persisted()`
+  and nothing else, so `show()` decides synchronously. The full paint is
+  deliberately not moved to startup — it does a whole-log read, and startup is
+  the one place this app may not spend time.
+- **Nothing moved on screen and no words changed.** This is entirely about WHEN
+  a block that was always meant to be there becomes visible.
+
+**Found by CI going red where local ran green, for the second release running.**
+That is the signal being recorded: a check that passes locally and fails on a
+loaded runner is reporting a race, not a flake, and both times the race was in
+the app rather than in the walk.

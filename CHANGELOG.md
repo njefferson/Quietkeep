@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.40.3 — ITERATION
+
+*2026-08-10*
+
+- **The walkthrough now hands you straight to the thing it promised.** Its last step opens the panel so you can ask the browser to keep your planner — and on a slow moment that block could arrive a beat after the panel did, so the one screen it exists to show you was the one screen it was late for.
+- Quietkeep now asks the browser that question when it starts, instead of when you open the panel, so the answer is already there when you get to it.
+
 ## 1.40.2 — ITERATION
 
 *2026-08-10*
