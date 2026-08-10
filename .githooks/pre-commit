@@ -1,0 +1,37 @@
+#!/bin/sh
+# REFUSE A COMMIT ON THE WRONG BRANCH. Installed automatically — see the
+# `prepare` script in package.json, which points core.hooksPath here on every
+# `npm ci`, so a fresh clone is guarded without anybody remembering to do it.
+#
+# WHY THIS EXISTS. Product work lands on `staging` and waits for the owner's
+# on-device pass (CLAUDE.md, Doctrine §7). `main` is production. A session that
+# checks out `main` to promote and then does not switch back will commit the
+# NEXT release straight onto production — silently, because committing on the
+# wrong branch looks exactly like committing on the right one. It has happened
+# repeatedly and the only reason it has never shipped is that a push named the
+# other branch and moved nothing.
+#
+# An intention did not stop it. This does.
+#
+# The escape is deliberate and narrow: a promote is a real thing that must
+# commit on main, so it says so out loud.
+#
+#     QUIETKEEP_PROMOTE=1 git commit ...
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo '')
+
+if [ "$branch" = "main" ] && [ -z "$QUIETKEEP_PROMOTE" ]; then
+  echo "" >&2
+  echo "  REFUSED — you are on 'main', which is production." >&2
+  echo "" >&2
+  echo "  Product work lands on 'staging' and waits for the on-device pass." >&2
+  echo "  If you meant to promote, say so:" >&2
+  echo "" >&2
+  echo "      QUIETKEEP_PROMOTE=1 git commit ..." >&2
+  echo "" >&2
+  echo "  Otherwise move to staging and keep the work:" >&2
+  echo "" >&2
+  echo "      git stash && git checkout staging && git stash pop" >&2
+  echo "" >&2
+  exit 1
+fi
