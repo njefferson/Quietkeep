@@ -687,7 +687,7 @@ being treated as one was a cache.
 
 ---
 
-## V-21 · Does a Shortcut's *Open URL* land in the installed app, or in Safari? — **ANSWERED 2026-08-10, and the answer is SAFARI**
+## V-21 · Can a link open into the installed app at all, or only Safari? — **CLOSED 2026-08-10: ONLY SAFARI, and there is no scheme that changes it**
 · raised 2026-08-09 · settled on device, on the owner's iPad, by the only witness there is
 
 **The answer.** It opened **Safari**, not the installed app. The address bar read
@@ -762,10 +762,33 @@ clipboard, so it is one deliberate tap rather than an automatic write — which 
 repo would want anyway, since a silent write from the clipboard is a capture nobody
 asked for.
 
-**NOT BUILT, and not this session's call.** It needs the owner's word, and it needs
-`webapp://` verified on his device before anything is recommended — an undocumented
-scheme is a thing to test, not to trust. What is built is the warning in the ⓘ, which
-stays accurate under every finding above.
+**AND `webapp://` WAS TESTED ON THE DEVICE, WHICH CLOSES THIS ROW.** A tappable link
+to `webapp://quietkeep-sync.pages.dev`, from an unlisted page on the hub, produced:
+
+    Safari cannot open the page because the address is invalid.
+
+Safari does not recognise the scheme at all — not "opens the wrong thing", not
+"drops the query". There is nothing there. So the community reports do not hold on
+this device and this iOS version, whatever they hold elsewhere, and **the one
+mechanism that could have fixed the destination does not exist here.**
+
+**Therefore: there is no way to open a link into the installed app on the reference
+platform, and this row is closed rather than deferred.** No Shortcut action, no
+scheme, no in-scope URL. The warning in Things you can do is the permanent answer,
+and the clipboard design sketched above is moot — it depended on `webapp://` to
+arrive in the right place, and there is no arriving in the right place.
+
+**What is left, and it is a different question:** whether the app should offer a
+paste-on-arrival path for somebody who copies a note elsewhere and opens the app
+themselves. That needs no scheme and no link. It is a product question, unasked,
+and deliberately not answered here.
+
+**The control tap found something else, and it was worth more than the test.** An
+ordinary `https://…/capture?text=…` link — included only to prove the baseline —
+failed on production with *"Response served by service worker has redirections"*.
+That is the 1.40.2 defect, live on `quietkeep-sync.pages.dev`, reproducible on
+demand, and **not specific to Shortcuts**: any link into the capture entrance can
+hit it. See the 1.40.2 note in NOTES.md. The fix is on staging and unpromoted.
 
 ---
 
