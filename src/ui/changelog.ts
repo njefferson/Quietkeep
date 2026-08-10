@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.39.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-09',
+    notes: [
+      '**The capture box is now the second thing in the tab order; it was the first after the ⓘ.** A new *More* button sits in the top bar beside the ⓘ, so everything after it in the bar has shifted by one. Nothing moved on screen and nothing was renamed.',
+      '**The app has somewhere to go now, instead of something to read.** *More* lists six destinations — things you can do, settings, your data, help, how it works, and about — and lands you on the one you pick with the rest folded away.',
+      'Until now the ⓘ was the only door in the app: settings, your data, help, the reference and every verb behind one button, in a panel thirteen screens tall with everything open. Nothing was findable because nothing had an address.',
+      'It is not called Menu. On Quietkeep the Menu is a place things live, and using that word twice for two different things would be the app disagreeing with itself.',
+    ],
+  },
+  {
     triplet: '1.38.7',
     kind: 'ITERATION',
     date: '2026-08-09',

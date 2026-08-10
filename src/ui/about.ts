@@ -179,6 +179,50 @@ export async function mountAbout(
         persist();
       });
     }
+    // --- going somewhere, instead of reading to find it (1.39.0) -----------
+    //
+    // "More" in the bar lists the destinations and lands you on ONE of them, with
+    // the rest folded. The panel had become the only door in the app: settings,
+    // your data, help, the reference and the verbs all behind a single ⓘ, in a
+    // document thirteen screens tall with everything open. Nothing was findable
+    // because nothing had an address.
+    //
+    // This does not move the markup — every group already had an id, and the
+    // handlers are all bound globally by id, so the reader gets destinations
+    // without the DOM being restructured underneath working code.
+    const goTo = (target: string): void => {
+      for (const btn of toggles) {
+        setOpen(btn, btn.getAttribute('aria-controls') === target);
+      }
+      persist();
+      // Top of the panel, every time. Landing halfway down a document is the
+      // thing being fixed, so arriving somewhere must not itself require a scroll
+      // to work out where you are.
+      const scroller = document.querySelector<HTMLElement>('#about-body');
+      if (scroller) scroller.scrollTop = 0;
+    };
+
+    const more = document.querySelector<HTMLDialogElement>('#more');
+    document.querySelector<HTMLButtonElement>('#open-more')?.addEventListener('click', () => {
+      more?.showModal();
+    });
+    document.querySelector<HTMLButtonElement>('#more-close')?.addEventListener('click', () => {
+      more?.close();
+    });
+    for (const b of Array.from(document.querySelectorAll<HTMLButtonElement>('.more-go'))) {
+      b.addEventListener('click', () => {
+        const target = b.dataset.go ?? '';
+        more?.close();
+        dialog.showModal();
+        // "Things you can do" is not a group — it is the unfolded block at the
+        // top, so everything folds and the top of the panel IS the destination.
+        if (target === 'actions') { for (const t of toggles) setOpen(t, false); persist(); }
+        else goTo(target);
+        const scroller = document.querySelector<HTMLElement>('#about-body');
+        if (scroller) scroller.scrollTop = 0;
+      });
+    }
+
     void session.store.getKv<string[]>(GROUPS_KEY).then((openIds) => {
       if (!Array.isArray(openIds)) return;
       for (const btn of toggles) {

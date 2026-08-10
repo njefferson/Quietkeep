@@ -2961,6 +2961,30 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await expandGroups(tpage);
   await tpage.waitForSelector('#about-body');
 
+  // --- somewhere to GO, rather than something to read (1.39.0) --------------
+  //
+  // The ⓘ was the only door in the app, and everything was behind it. These
+  // assert the thing that fixes that: you pick a destination and you land on it,
+  // with the rest folded and the panel at the top. Landing halfway down a
+  // document is exactly the failure being removed, so "scrolled to top" is part
+  // of the claim rather than a nicety.
+  await tpage.evaluate(() => document.querySelector('#about')?.close());
+  await tpage.click('#open-more');
+  is(await tpage.locator('#more').isVisible(), true, 'More opens a list of places to go');
+  const dests = await tpage.locator('.more-go').count();
+  is(dests >= 5, true, `and it lists them (${dests})`);
+
+  await tpage.click('.more-go[data-go="group-data"]');
+  is(await tpage.locator('#more').isVisible(), false, 'picking one closes the list');
+  is(await tpage.locator('#about').isVisible(), true, 'and opens the panel');
+  is(await tpage.locator('#group-data').isVisible(), true, 'on the place you asked for');
+  is(await tpage.evaluate(() =>
+    Array.from(document.querySelectorAll('.about-group-toggle'))
+      .filter(b => b.getAttribute('aria-expanded') === 'true').length), 1,
+    'and only that one — you arrive somewhere, not in the middle of everything');
+  is(await tpage.evaluate(() => document.querySelector('#about-body')?.scrollTop), 0,
+    'at the top of it, so you can see where you have landed');
+
   is(await tpage.evaluate(() => {
     const d = document.querySelector('#about');
     return d.scrollHeight <= d.clientHeight + 1;

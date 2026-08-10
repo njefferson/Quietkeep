@@ -265,6 +265,9 @@ const REGISTRY = {
   // its label CHANGES with the mode ("More room" / "One line") and it disappears
   // entirely once there is more than one line to lose.
   'more room': ['#capture-many'],
+  // Where things are (1.39.0). The destination list is a new surface, and a new
+  // surface joins this gate in the same commit or it ships unmeasured.
+  'more': ['#more-title', '.more-go', '#more-close'],
   'with cards': ['.card-title', '.card-when', '#status', '.group-head'],
   // Search results — only exist once you have typed, so a state of their own.
   // The summary is the quiet count; the "where" is the held status word, the
@@ -1072,6 +1075,18 @@ try {
     await auditTargets(page, 'empty store', theme);
     await auditFocusRings(page, 'empty store', theme,
       ['#capture', '#capture-form button[type=submit]', 'button.info', '.skip', '#restore-go']);
+
+    // State 2m: MORE — the destination list (1.39.0). Its own driven state
+    // because it is a modal that nothing else is on screen with, and because
+    // it is the first navigation this app has ever had.
+    await page.click('#open-more');
+    await page.waitForSelector('#more[open]');
+    await auditContrast(page, 'more', theme);
+    await auditAxe(page, 'more', theme);
+    await auditNames(page, 'more', theme);
+    await auditTargets(page, 'more', theme);
+    await auditFocusRings(page, 'more', theme, ['.more-go', '#more-close']);
+    await page.click('#more-close');
 
     // State 2r: ROOM FOR MANY LINES (1.38.0). Driven with the room actually
     // OPEN, because that is when the textarea exists to be measured at all and

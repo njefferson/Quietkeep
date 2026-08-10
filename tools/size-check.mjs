@@ -48,7 +48,17 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const BUDGET = {
   words: 3300,
   panelPx: 9000,        // folded, which is the state a reader meets
-  controls: 205,
+  // 205 -> 210 on 2026-08-09, ONE COMMIT after this gate was written, because it
+  // caught its own author: adding navigation ("More", five destinations and a
+  // close) took the count from 199 to 207.
+  //
+  // Raised on purpose and with a reason, which is the whole contract. The trade
+  // is deliberate — eight controls that exist ONLY to make the other 199
+  // reachable are not the same as eight more things to do, and an app with no
+  // navigation is what put everything behind one button in the first place.
+  // If this ever needs raising for eight more FEATURES, that is a different
+  // argument and it should be a harder one to win.
+  controls: 210,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM
