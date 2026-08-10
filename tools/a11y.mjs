@@ -298,6 +298,10 @@ const REGISTRY = {
   'empty store': [
     '.wordmark', '#capture', { sel: '#capture', pseudo: '::placeholder' },
     '#capture-form button[type=submit]',
+    // Hold what I copied (1.41.0). It is revealed only where the browser can
+    // read a clipboard — Chromium can, so it is visible here and is audited on
+    // the state a reader meets first, beside the box it fills.
+    '#capture-paste',
     // Search is a tool that is always on screen even before anything is held,
     // so its input and placeholder are audited here where they first appear.
     '.search-input', { sel: '#search-input', pseudo: '::placeholder' },
@@ -1296,7 +1300,8 @@ try {
     await auditNames(page, 'empty store', theme);
     await auditTargets(page, 'empty store', theme);
     await auditFocusRings(page, 'empty store', theme,
-      ['#capture', '#capture-form button[type=submit]', 'button.info', '.skip', '#restore-go']);
+      ['#capture', '#capture-form button[type=submit]', '#capture-paste',
+        'button.info', '.skip', '#restore-go']);
 
     // State 2m: MORE — the destination list (1.39.0). Its own driven state
     // because it is a modal that nothing else is on screen with, and because

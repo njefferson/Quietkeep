@@ -92,6 +92,17 @@
          defect that makes pasting into it useless. A control that would destroy
          what you wrote is not offered rather than refused. -->
     <button type="button" id="capture-room" class="ghost">More room</button>
+    <!-- Hold what I copied (1.41.0). V-21 closed the other way in: on this
+         platform a link cannot open the installed app, so anything copied
+         elsewhere arrives only if somebody opens Quietkeep and puts it in.
+         Retyping what is already on the clipboard is the friction that decides
+         whether a thought is kept at all.
+
+         Ships HIDDEN and is revealed only where the browser can actually read a
+         clipboard — a control that cannot do its one job is worse than an absent
+         one. Nothing is written by it: the text lands in the field above, where
+         it can be seen, and the ordinary button commits it. -->
+    <button type="button" id="capture-paste" class="ghost" hidden>Hold what I copied</button>
   </form>
   <!-- Not a toast. Nothing meaningful is transient (V2 stage 3): the reader who
        looked away is precisely the one this is for. -->
