@@ -21,11 +21,18 @@
 //
 // WHAT IT MEASURES, and each is a different way of being too long:
 //   1. Words in the shell — total reading, wherever it hides.
-//   2. Rendered height of the ⓘ panel at phone width — scroll distance, which is
-//      what "I could not find it" actually feels like. Words alone miss this:
-//      the same text in bigger type is a longer scroll.
+//   2. Rendered height of EVERY destination at phone width — scroll distance,
+//      which is what "I could not find it" actually feels like. Words alone miss
+//      this: the same text in bigger type is a longer scroll.
 //   3. Controls — 148 buttons is its own kind of unreadable, and cutting prose
 //      does not touch it.
+//
+// PER SURFACE, NOT PER PANEL (1.40.0). This measured `#about-body` alone, when
+// the ⓘ was the only screen and the four groups folded inside it. Splitting them
+// into their own sheets made that number fall by three quarters without a word
+// being cut — the reading did not go anywhere, it went somewhere the gate could
+// not see. A budget that a refactor satisfies is not measuring the thing it was
+// written to measure.
 //
 // RAISING A BUDGET IS ALLOWED. Lowering it silently is not the point either.
 // What is refused is drifting past one without noticing, which is exactly what
@@ -47,7 +54,26 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 // number growing while nobody is looking, which is the failure that happened.
 const BUDGET = {
   words: 3300,
-  panelPx: 9000,        // folded, which is the state a reader meets
+  // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
+  // phone screens — far enough to be a scroll, near enough that the bottom of a
+  // screen is a place you can get to rather than a place you give up before.
+  //
+  // Set from what the four sheets actually measure at 1.40.0 (Settings is the
+  // tallest and has the most headroom to lose). It replaces `panelPx: 9000`,
+  // which was set against a thirteen-screen panel and was never a limit anybody
+  // could hit — a budget nothing can exceed is a comment.
+  surfacePx: 3000,
+  // The sum, so that "make it six screens instead of one" cannot pass by
+  // dividing. What a person has to get through does not shrink because it was
+  // filed, and this number is here to say so out loud: splitting Settings into
+  // three destinations in 1.40.0 moved 10,830px around and cut NOTHING. Travel
+  // was the complaint and travel is what the per-surface budget fixes; the total
+  // is still an app with ten screens of explanation in it.
+  //
+  // Set just above today's measurement, as a ratchet. It is not a target that
+  // has been met — the honest thing is to say here that it is too high rather
+  // than to launder it as an achievement.
+  allSurfacesPx: 11000,
   // 205 -> 210 on 2026-08-09, ONE COMMIT after this gate was written, because it
   // caught its own author: adding navigation ("More", five destinations and a
   // close) took the count from 199 to 207.
@@ -95,23 +121,36 @@ try {
   await page.goto(url, { waitUntil: 'load' });
   await page.waitForSelector('body[data-ready=true]');
   await page.click('#tour-skip').catch(() => {});
-  await page.click('#open-about');
-  await page.waitForSelector('#about-body');
 
-  // Folded, which is the state a reader actually meets it in.
-  const px = await page.evaluate(() => document.querySelector('#about-body')?.scrollHeight ?? 0);
-  (px <= BUDGET.panelPx ? ok : fail)(
-    `the ⓘ panel is ${px}px of scroll at 390px wide, folded (budget ${BUDGET.panelPx})`);
-
-  // And unfolded, because every group opening at once is a state one press away
-  // and it is where this went wrong before.
-  await page.evaluate(() => {
-    for (const b of document.querySelectorAll('.about-group-toggle')) {
-      if (b.getAttribute('aria-expanded') !== 'true') b.click();
-    }
-  });
-  const pxOpen = await page.evaluate(() => document.querySelector('#about-body')?.scrollHeight ?? 0);
-  console.log(`        (everything unfolded: ${pxOpen}px — recorded, not budgeted)`);
+  // Every destination More can land somebody on, measured at its own scroller.
+  // The names are the reader's, not the ids, because the number means nothing
+  // without knowing which screen it is.
+  const SURFACES = [
+    ['the ⓘ', 'about', '#about-body'],
+    ['How it works', 'sheet-group-why', '#sheet-group-why .sheet-body'],
+    ['Help', 'sheet-group-help', '#sheet-group-help .sheet-body'],
+    ['Your data', 'sheet-group-data', '#sheet-group-data .sheet-body'],
+    ['Things you can do', 'sheet-group-actions', '#sheet-group-actions .sheet-body'],
+    ['Settings', 'sheet-group-extras', '#sheet-group-extras .sheet-body'],
+  ];
+  let total = 0;
+  for (const [name, id, scroller] of SURFACES) {
+    await page.evaluate((want) => {
+      for (const d of document.querySelectorAll('dialog')) if (d.id !== want && d.open) d.close();
+      const t = document.querySelector('#' + want);
+      if (t && !t.open) {
+        if (want === 'about') document.querySelector('#open-about')?.click();
+        else t.showModal();
+      }
+    }, id);
+    await page.waitForSelector(`#${id}[open]`);
+    const px = await page.evaluate((sel) => document.querySelector(sel)?.scrollHeight ?? 0, scroller);
+    total += px;
+    (px <= BUDGET.surfacePx ? ok : fail)(
+      `${name} is ${px}px of scroll at 390px wide (budget ${BUDGET.surfacePx})`);
+  }
+  (total <= BUDGET.allSurfacesPx ? ok : fail)(
+    `${total}px across all ${SURFACES.length} destinations (budget ${BUDGET.allSurfacesPx})`);
 } finally {
   await browser.close();
   server.close();

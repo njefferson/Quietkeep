@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.40.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-10',
+    notes: [
+      '**Everything under *More* is now its own screen.** Things you can do, Settings, Your data, Help and How it works used to be five headings folded inside the ⓘ — picking one still left you in the same long document, one fold further down. Each opens on its own now, at its own first line.',
+      '**Settings holds switches. Things you can do holds verbs.** Sending something to your calendar, printing today, telling somebody where things are, the address for getting things in from outside, and trying it out with sample work are all in one place. Bringing work in from another planner, and clearing things out, are under Your data — they are things you do to your data.',
+      '**Nothing was renamed and nothing was removed.** Every button has the words it had yesterday; the ⓘ is where it was and still holds what the app is, what changed, and the report for when something is wrong.',
+      'Settings was four phone screens long. It is under two. Nothing was cut to do that — the reading moved rather than shrank, and there is still more of it than there should be.',
+    ],
+  },
+  {
     triplet: '1.39.3',
     kind: 'ITERATION',
     date: '2026-08-09',

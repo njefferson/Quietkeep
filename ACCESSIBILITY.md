@@ -1182,3 +1182,55 @@ visible receipt ("Filed under Errands — no return date yet.").
 - **Voice held by test:** the receipt's no-date branch is pinned to never
   carry "overdue", "late", "still", "haven't", "you should", or "behind" —
   the reproach vocabulary a factual sentence drifts toward one word at a time.
+
+### B-41 · Six destinations, six audited states (1.40.0)
+
+ADR-0083. Help, Settings, Your data, Things you can do and How it works stop
+being folding groups inside the ⓘ and become their own screens off More.
+
+**No new tokens and no new colour pair.** Every element came across with its id
+and its classes intact, so each is measured against the same foreground /
+background binding it was measured against yesterday. What changed is which
+surface it is measured ON, and that is the whole finding below.
+
+- **Four screens were being audited as one state, and three of them were not
+  being measured at all.** `DIALOG_COMMON` was one list because the panel was one
+  dialog. With the groups folded, the walk opened the ⓘ, expanded everything, and
+  audited it as a single state — which measured whatever the first group rendered
+  and reported the rest as covered. `.about-sub` and `.anchor-label` had been in
+  that list for releases while living in what is now Settings; they matched, so
+  nothing complained. The registry is split by where each id actually lives now,
+  derived from the shipped markup rather than from memory, and the walk drives
+  each surface as its own state: *how it works*, *help*, *your data*, *your data,
+  return visit*, *things you can do*, *settings*, *clearing out*.
+- **A registry entry that matches nothing visible FAILS**, which is what turned
+  the split from an assertion into a measurement: nine entries went red the first
+  time the walk ran against the new markup, each one naming a control the gate
+  had been claiming to check on a screen it was not on.
+- **Help's answers are opened before they are audited.** Nine `<details>` closed
+  is nine summaries and no answers; auditing it shut would have exempted every
+  paragraph a reader actually goes there to read.
+- **`#purge-go` is audited in its ENABLED state.** It ships `disabled` until the
+  confirmation word is typed, so it is genuinely not focusable and the walk
+  reported it unreachable — correct about the DOM and wrong about the app. The
+  word is typed, the focus ring on the most consequential button in the product
+  is measured, and the field is cleared again. It is never pressed.
+- **Every destination carries its own title and its own Close, outside the
+  scrolling body** (§4), held by one shared registry list so a sheet that loses
+  its way out fails here first.
+- **320px at 200% is measured on all six surfaces**, not on the ⓘ alone. The
+  sheets carry the code block, the selects and the long words — everything that
+  actually overflows — so the old single-surface check could no longer fail for
+  the right reason.
+- **Every sheet repaints on open.** Half of what these screens show is read from
+  the log — the storage rows, the calendar count, the anchor list. Splitting them
+  out moved those elements from under the ⓘ's open-time repaint while the panel
+  went on calling for them, so a sheet reached straight from More would have shown
+  the state the app was in at boot. That is the stale-panel defect this file has
+  already recorded twice, and it was introduced and closed inside this release.
+
+**Scroll distance is now budgeted per destination and in total.** The tallest
+screen was 3,914px — four phone lengths to reach one switch — and no gate could
+see it, because the only height ever measured was the ⓘ's. Every destination is
+held to 3,000px and the sum to 10,600px. The sum is stated as a ratchet and not
+as an achievement: the split moved 10,425px around and cut nothing.

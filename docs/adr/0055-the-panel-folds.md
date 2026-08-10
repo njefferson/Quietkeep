@@ -1,6 +1,13 @@
 # ADR-0055 · The panel folds: four groups, closed until asked
 
-**Status:** Accepted · **Date:** 2026-08-01
+**Status:** Superseded by [ADR-0083](0083-four-destinations.md) · **Date:** 2026-08-01
+
+> Superseded 2026-08-10 on the condition this decision named itself: *"If the
+> panel keeps growing past what four groups can hold, this decision is the one to
+> revisit."* It did. Help, Settings, Your data and How it works are their own
+> screens now, reached from More. Kept in full because the reasoning below is
+> still the reason a *second place for things to be* has to be defended, and
+> ADR-0083 answers it rather than ignoring it.
 
 ## Decision
 

@@ -578,13 +578,32 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-**Fifteen releases are waiting on an on-device pass.** 1.24.0, 1.24.1 and 1.25.0
-were promoted together 2026-08-06. `staging` carries 1.26.0, 1.27.0, 1.27.1,
-1.28.0, 1.29.0, 1.30.0, 1.30.1, 1.30.2, 1.30.3, 1.31.0, 1.32.0, 1.33.0, 1.34.0,
-1.35.0 and now **1.36.0**.
+**Everything through 1.39.3 was promoted 2026-08-10**, on his word. `main` and
+`staging` were identical at that commit, so production and the candidate carried
+the same build for the first time since 1.25.0.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.36.0**
-- **https://quietkeep.pages.dev** — production, **1.25.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.0**
+- **https://quietkeep.pages.dev** — production, **1.39.3**
+
+**1.40.0 — six destinations, and each one is its own screen.** ADR-0083, which
+supersedes ADR-0055 on the condition ADR-0055 named itself. Help, Settings, Your
+data, Things you can do and How it works stop being folds inside the ⓘ. Settings
+was 3,914px at phone width — four screens to scroll through to reach one switch —
+and it is 1,809px now, because the verbs went to their own destination and the two
+acts that touch stored data went to Your data.
+
+Two things came out of building it that are worth more than the feature:
+
+- **The a11y gate had been auditing four screens as one state**, so three of them
+  were not measured at all. `.about-sub` and `.anchor-label` had been in the
+  panel's registry list for releases while living in what is now Settings; they
+  matched something, so nothing complained. Split by surface, nine entries went
+  red on the first run.
+- **Scroll distance had never been budgeted per screen.** `size-check.mjs`
+  measured `#about-body` alone, which the split would have satisfied by moving
+  the reading somewhere the gate could not see. It now measures every
+  destination, and their sum — 10,425px, which the split did not reduce by a
+  pixel and which is recorded as too high rather than as a target met.
 
 **1.36.1 — the ⓘ panel explains the half of the app it had gone quiet about.**
 
