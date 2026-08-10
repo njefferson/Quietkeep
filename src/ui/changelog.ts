@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.42.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-10',
+    notes: [
+      '**The promise now shows its working.** Tapping what you are holding used to open a list of everything and when each one comes back. That answers *what is in here*. The question it exists for is *can I stop holding this myself* \u2014 so it now leads with the promise in a sentence, and how it knows: the reasons things come back, with how many under each.',
+      '**And it can tell you no.** If anything will not come back on its own, it is named there. A promise that can only ever say *fine* is asking you to take its word for it, which is the one thing this app is not for.',
+      'The full list is still underneath, for when the reasons are not enough.',
+    ],
+  },
+  {
     triplet: '1.41.0',
     kind: 'CAPABILITY',
     date: '2026-08-10',

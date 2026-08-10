@@ -495,7 +495,13 @@ const REGISTRY = {
   // an aggregate on the landing surface is a number that only rises — and into
   // the thing the gauge opens, where it answers a question the reader just
   // asked. New surface, registered in the same commit that created it.
-  'coverage open': ['#gauge', '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open'],
+  // The proof is registered with the inventory it now sits above (ADR-0084).
+  // `.proof-broken` and `.proof-exceptions` are deliberately ABSENT: they render
+  // only when the promise fails, and the walk's store is one the gate accepted,
+  // so it cannot fail. A registry entry matching nothing visible is the false
+  // receipt `#nextup-left` already cost a release for.
+  'coverage open': ['#gauge', '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
+    '.proof-holds', '.proof-count', '.proof-reason'],
   // The tree, open (1.6.0, ADR-0013/item 39): rows are doors, depth is
   // indentation, and the branch remainder is a real button.
   'tree open': ['#tree-open', '.tree-open-row', '.tree-title'],

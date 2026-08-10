@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.42.0 — CAPABILITY
+
+*2026-08-10*
+
+- **The promise now shows its working.** Tapping what you are holding used to open a list of everything and when each one comes back. That answers *what is in here*. The question it exists for is *can I stop holding this myself* — so it now leads with the promise in a sentence, and how it knows: the reasons things come back, with how many under each.
+- **And it can tell you no.** If anything will not come back on its own, it is named there. A promise that can only ever say *fine* is asking you to take its word for it, which is the one thing this app is not for.
+- The full list is still underneath, for when the reasons are not enough.
+
 ## 1.41.0 — CAPABILITY
 
 *2026-08-10*

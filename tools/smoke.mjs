@@ -850,6 +850,33 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(silentCount(await tpage.locator('#gauge').textContent()), 0,
     'law 1 holds across all six routes — the held gauge reads 0 silent');
 
+  // --- the claim OPENS into a proof, not an inventory (ADR-0084) ------------
+  //
+  // The thesis this app is built on says the failure is not forgetting, it is
+  // that coverage is unverifiable from the inside. A count cannot answer that
+  // and a list of items cannot either — a list shows what is IN the container,
+  // never whether the container holds. So opening the claim must lead with the
+  // REASONS things come back, which is checkable from the outside.
+  console.log('\nThe claim opens into a proof — how it knows, not what is in it');
+  await tpage.click('#gauge');
+  await tpage.waitForSelector('#coverage-proof:not([hidden])');
+  const holds = await tpage.locator('.proof-holds').textContent() || '';
+  is(/comes back to you on its own/.test(holds), true,
+    `it states the promise as a sentence ("${holds.trim()}")`);
+  const reasons = await tpage.locator('.proof-reason').allTextContents();
+  is(reasons.length > 0, true, `and how it knows, as reasons rather than items (${reasons.length})`);
+  // Every reason carries a count, and no count is zero — a proof is not a
+  // glossary of things that could in principle cover something.
+  const counts = (await tpage.locator('.proof-count').allTextContents()).map(Number);
+  is(counts.length, reasons.length, 'every reason carries its own count');
+  is(counts.every((n) => n > 0), true, `and none is zero (${counts.join(', ')})`);
+  // The words are the READER'S, not the schema's. If a reason ever renders as
+  // its internal key — 'clock', 'after' — the surface has started explaining
+  // itself in the vocabulary of the fold, which nobody outside this repo speaks.
+  is(reasons.some((r) => /^(clock|menu|parent|after|decided|demand-free)$/.test(r.trim())), false,
+    'and every reason is in words a reader uses, never the internal name');
+  await tpage.click('#gauge');
+
   console.log('\nUndo — a routed card can be taken straight back');
   // The complaint this answers: triage is fast, and fast felt like lost. Route a
   // fresh card away, then take it back in one tap. Made to FAIL if
