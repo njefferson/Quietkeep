@@ -412,8 +412,12 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // has to be. Placed below, an unrouted capture never reached this tier at
     // all: it came out as `ready`, saying "this one is waiting". That is because
     // its gate cure clock is read as an ARRIVED DEMAND — `arrivedClock` excludes
-    // app clocks, but `isAppClock` recognises only a couple of the many `gate:`
-    // sources, and `gate:capture.recorded` is not among them.
+    // app clocks, and `gate:capture.recorded` is deliberately NOT one: writing
+    // something down is somebody doing something, so the cure inherits that
+    // intent (2.0.1 classified all twenty-eight cured kinds; this one stayed a
+    // demand on purpose). Testing the STATE — captured, unrouted — rather than
+    // inferring it from the clock is what keeps this tier independent of that
+    // classification instead of hostage to it.
     //
     // The label was the visible half; the ranking was the half that mattered. As
     // `ready` these sort level with genuinely clocked work rather than behind

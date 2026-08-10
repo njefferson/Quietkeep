@@ -213,6 +213,131 @@
     <p id="reentry-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
 
+  <!-- Next up: one thing, chosen for you, with a short capped list behind it.
+       Hidden when nothing is asking — an empty morning says so. -->
+  <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
+    <h2 id="nextup-heading" class="section" tabindex="-1">Next up</h2>
+    <p id="nextup-title" class="nextup-title"></p>
+    <p id="nextup-why" class="nextup-why"></p>
+    <!-- WHERE it sits (V2 stage 1). Reuses .nextup-why's measured colour pair —
+         .nextup-place adds layout only, so the contrast registry's existing row
+         covers it and no unmeasured pair ships (LESSONS 28 kept the honest way:
+         same ink, same paper, one more line). -->
+    <p id="nextup-place" class="nextup-why nextup-place" hidden></p>
+    <!-- WHAT IT HOLDS UP (1.23.0). The third question the offer can answer, and
+         the one nobody can work out on demand: "it feeds 'Roster' — start it
+         within 3 days". Silent unless the item has both a declared downstream
+         and a lead estimate, because a term derived from a guess is the thing
+         ADR-0010 refuses. Same ink and same paper as the two lines above it, so
+         the contrast registry's existing row covers it. -->
+    <p id="nextup-approach" class="nextup-why nextup-place" hidden></p>
+    <!-- WHAT YOU SAID ABOUT DOING IT, in your words, unedited. An
+         implementation intention only works if the cue is present at the moment
+         of performance — a plan written once and never shown again is a noun in
+         a database. Reuses the registered .nextup-place pair; layout only. -->
+    <p id="nextup-situation" class="nextup-why nextup-place" hidden></p>
+    <!-- THE FIRST STEP, once you have named one (1.24.0). It is an ordinary
+         action under the offered item, riding its parent's clock — never a date
+         you did not choose. Its Done is named apart from the card's, because
+         two controls answering to one name is a §4 failure. -->
+    <p id="nextup-bite" class="nextup-bite" hidden></p>
+    <div class="nextup-actions">
+      <button id="nextup-done" type="button" aria-label="Done with what is next up">Done</button>
+      <button id="nextup-bite-done" type="button" aria-label="Done with the first step" hidden>Done with the first step</button>
+      <button id="nextup-skip" type="button" class="ghost">Not this</button>
+    </div>
+    <!-- WHEN IT IS TOO BIG TO BEGIN (1.24.0, docs/nd-collisions.md entry 1).
+         The same inline shape as the focus surface's interrupt line: one field,
+         a submit beside it, and you never leave where you are. Naming a first
+         physical action is the act, so the act lives where the stuckness is. -->
+    <form id="nextup-bite-form" class="nextup-bite-form" autocomplete="off">
+      <label class="visually-hidden" for="nextup-bite-input">A smaller first step</label>
+      <div class="detail-row">
+        <input id="nextup-bite-input" type="text" enterkeyhint="done" autocomplete="off"
+               autocapitalize="sentences" spellcheck="true"
+               placeholder="Start smaller — what is the first bit?"
+               aria-describedby="nextup-bite-hint">
+        <button type="submit">Put it under this</button>
+      </div>
+      <p id="nextup-bite-hint" class="detail-hint">
+        A first physical action, kept under this one. It takes no date of its own
+        and never comes back at you on its own &mdash; it is here to be small
+        enough to begin.
+      </p>
+    </form>
+    <!-- WHEN IT IS TOO HEAVY (1.24.0, entry 2). Not a second form: it opens the
+         one under the capture line with this item already attached, so the
+         weight is recorded exactly as it always has been and finally says what
+         it is about. -->
+    <div class="nextup-actions">
+      <button id="nextup-heavy" type="button" class="ghost">This one is heavy</button>
+      <!-- THE SYMMETRIC EXIT. Declining has to end the session as completely as
+           finishing does, or escape strictly dominates and the interface has
+           chosen for you: "Not this" only ever swapped one demand for another,
+           so the only clean way out of the surface was to complete something. -->
+      <button id="nextup-enough" type="button" class="ghost">That is enough for now</button>
+      <!-- JUST ONE THING (1.36.0) — the minimum state. "Fewer things" and "less
+           thinking" are different transformations and the app only had the
+           first. On the day this is for, the offer's own furniture IS the load:
+           two items to choose between, a reason, a place, what it holds up, what
+           you said about doing it, a list of what is behind, a count, a row of
+           chips. Every one earns its place on an ordinary day.
+
+           On the main surface and not in a settings screen, because this is also
+           the burnout state, where the skill of operating the tool is one of the
+           skills that has gone. -->
+      <button id="nextup-plain" type="button" class="ghost">Just one thing</button>
+    </div>
+    <!-- THE MOMENT AFTER (1.35.0). Whatever occupies the second after finishing
+         something is what gets attached to finishing it — and what occupied it
+         was the next-most-pressured thing sliding into the space just vacated.
+         Completing one thing enrolled you in the next, immediately, with no gap.
+
+         So the surface SETTLES: it says what you finished and asks nothing. The
+         next offer arrives when you ask for it and not before, because a surface
+         that fills its own silence has decided the moment belongs to it.
+
+         Not timed, deliberately. A pause that expires is the app choosing when
+         you have had enough of a rest. -->
+    <!-- The way out, and it is ALWAYS visible while the state is on. Entering it
+         is a choice; being unable to leave it would be a trap, and the reader
+         who most needs this state is least able to go looking for the exit. -->
+    <div id="nextup-plain-bar" class="nextup-plain-bar" hidden>
+      <button id="nextup-plain-off" type="button" class="ghost">Show me everything again</button>
+    </div>
+    <div id="nextup-settled" class="nextup-settled" hidden>
+      <p id="nextup-settled-what" class="nextup-settled-what"></p>
+      <p id="nextup-settled-quiet" class="nextup-settled-quiet"></p>
+      <div class="nextup-actions">
+        <button id="nextup-resume" type="button">What is next</button>
+      </div>
+    </div>
+    <p id="nextup-count" class="nextup-count"></p>
+    <!-- Why the offer is shorter, said as CO-OCCURRENCE and never as cause
+         (1.15.0, law 7). ADR-0014 asks that "a stretch of low capacity has a
+         visible reason"; the data constitution forbids claiming one thing
+         caused the other. "Fewer, while…" names two facts about the same
+         period. "Fewer, because…" would be the app explaining you to yourself. -->
+    <p id="nextup-load" class="nextup-count" hidden></p>
+    <!-- THE ONE PERMITTED NUMBER (V2 stage 5). "About 2h 30m left today" —
+         arithmetic on the clock and the day boundary, two facts about the
+         world, read BEFORE an attempt where it can still change what somebody
+         picks up. No bar, no colour, no instruction, and nothing at all once
+         the day has run out: a countdown to zero at that hour is pressure
+         where it costs most. -->
+    <p id="nextup-left" class="nextup-count" hidden></p>
+    <!-- The next fixed thing today, BY NAME (collisions 7 and 9). Hyperfocus
+         eats the day and waiting mode consumes the hours before an appointment;
+         both are answered by naming the one thing that is not moveable, so an
+         absorbed person can catch it peripherally. No countdown: a shrinking
+         number against an aversive thing adds aversion at the moment of
+         approach, and clocks here are day-granular so an hour would be
+         fabricated (ADR-0010). -->
+    <p id="nextup-fixed" class="nextup-count" hidden></p>
+    <ul id="nextup-behind" class="nextup-behind"></ul>
+    <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
+  </section>
+
   <!-- Triage: the heat pass and clarify. One card at a time; hidden when the
        inbox is clear. Announced in its own live region. -->
   <section id="triage" class="triage" aria-labelledby="triage-prompt" hidden>
@@ -379,130 +504,6 @@
       sheet. At midnight the choosing simply lapses &mdash; nothing is counted.</p>
   </section>
 
-  <!-- Next up: one thing, chosen for you, with a short capped list behind it.
-       Hidden when nothing is asking — an empty morning says so. -->
-  <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
-    <h2 id="nextup-heading" class="section" tabindex="-1">Next up</h2>
-    <p id="nextup-title" class="nextup-title"></p>
-    <p id="nextup-why" class="nextup-why"></p>
-    <!-- WHERE it sits (V2 stage 1). Reuses .nextup-why's measured colour pair —
-         .nextup-place adds layout only, so the contrast registry's existing row
-         covers it and no unmeasured pair ships (LESSONS 28 kept the honest way:
-         same ink, same paper, one more line). -->
-    <p id="nextup-place" class="nextup-why nextup-place" hidden></p>
-    <!-- WHAT IT HOLDS UP (1.23.0). The third question the offer can answer, and
-         the one nobody can work out on demand: "it feeds 'Roster' — start it
-         within 3 days". Silent unless the item has both a declared downstream
-         and a lead estimate, because a term derived from a guess is the thing
-         ADR-0010 refuses. Same ink and same paper as the two lines above it, so
-         the contrast registry's existing row covers it. -->
-    <p id="nextup-approach" class="nextup-why nextup-place" hidden></p>
-    <!-- WHAT YOU SAID ABOUT DOING IT, in your words, unedited. An
-         implementation intention only works if the cue is present at the moment
-         of performance — a plan written once and never shown again is a noun in
-         a database. Reuses the registered .nextup-place pair; layout only. -->
-    <p id="nextup-situation" class="nextup-why nextup-place" hidden></p>
-    <!-- THE FIRST STEP, once you have named one (1.24.0). It is an ordinary
-         action under the offered item, riding its parent's clock — never a date
-         you did not choose. Its Done is named apart from the card's, because
-         two controls answering to one name is a §4 failure. -->
-    <p id="nextup-bite" class="nextup-bite" hidden></p>
-    <div class="nextup-actions">
-      <button id="nextup-done" type="button" aria-label="Done with what is next up">Done</button>
-      <button id="nextup-bite-done" type="button" aria-label="Done with the first step" hidden>Done with the first step</button>
-      <button id="nextup-skip" type="button" class="ghost">Not this</button>
-    </div>
-    <!-- WHEN IT IS TOO BIG TO BEGIN (1.24.0, docs/nd-collisions.md entry 1).
-         The same inline shape as the focus surface's interrupt line: one field,
-         a submit beside it, and you never leave where you are. Naming a first
-         physical action is the act, so the act lives where the stuckness is. -->
-    <form id="nextup-bite-form" class="nextup-bite-form" autocomplete="off">
-      <label class="visually-hidden" for="nextup-bite-input">A smaller first step</label>
-      <div class="detail-row">
-        <input id="nextup-bite-input" type="text" enterkeyhint="done" autocomplete="off"
-               autocapitalize="sentences" spellcheck="true"
-               placeholder="Start smaller — what is the first bit?"
-               aria-describedby="nextup-bite-hint">
-        <button type="submit">Put it under this</button>
-      </div>
-      <p id="nextup-bite-hint" class="detail-hint">
-        A first physical action, kept under this one. It takes no date of its own
-        and never comes back at you on its own &mdash; it is here to be small
-        enough to begin.
-      </p>
-    </form>
-    <!-- WHEN IT IS TOO HEAVY (1.24.0, entry 2). Not a second form: it opens the
-         one under the capture line with this item already attached, so the
-         weight is recorded exactly as it always has been and finally says what
-         it is about. -->
-    <div class="nextup-actions">
-      <button id="nextup-heavy" type="button" class="ghost">This one is heavy</button>
-      <!-- THE SYMMETRIC EXIT. Declining has to end the session as completely as
-           finishing does, or escape strictly dominates and the interface has
-           chosen for you: "Not this" only ever swapped one demand for another,
-           so the only clean way out of the surface was to complete something. -->
-      <button id="nextup-enough" type="button" class="ghost">That is enough for now</button>
-      <!-- JUST ONE THING (1.36.0) — the minimum state. "Fewer things" and "less
-           thinking" are different transformations and the app only had the
-           first. On the day this is for, the offer's own furniture IS the load:
-           two items to choose between, a reason, a place, what it holds up, what
-           you said about doing it, a list of what is behind, a count, a row of
-           chips. Every one earns its place on an ordinary day.
-
-           On the main surface and not in a settings screen, because this is also
-           the burnout state, where the skill of operating the tool is one of the
-           skills that has gone. -->
-      <button id="nextup-plain" type="button" class="ghost">Just one thing</button>
-    </div>
-    <!-- THE MOMENT AFTER (1.35.0). Whatever occupies the second after finishing
-         something is what gets attached to finishing it — and what occupied it
-         was the next-most-pressured thing sliding into the space just vacated.
-         Completing one thing enrolled you in the next, immediately, with no gap.
-
-         So the surface SETTLES: it says what you finished and asks nothing. The
-         next offer arrives when you ask for it and not before, because a surface
-         that fills its own silence has decided the moment belongs to it.
-
-         Not timed, deliberately. A pause that expires is the app choosing when
-         you have had enough of a rest. -->
-    <!-- The way out, and it is ALWAYS visible while the state is on. Entering it
-         is a choice; being unable to leave it would be a trap, and the reader
-         who most needs this state is least able to go looking for the exit. -->
-    <div id="nextup-plain-bar" class="nextup-plain-bar" hidden>
-      <button id="nextup-plain-off" type="button" class="ghost">Show me everything again</button>
-    </div>
-    <div id="nextup-settled" class="nextup-settled" hidden>
-      <p id="nextup-settled-what" class="nextup-settled-what"></p>
-      <p id="nextup-settled-quiet" class="nextup-settled-quiet"></p>
-      <div class="nextup-actions">
-        <button id="nextup-resume" type="button">What is next</button>
-      </div>
-    </div>
-    <p id="nextup-count" class="nextup-count"></p>
-    <!-- Why the offer is shorter, said as CO-OCCURRENCE and never as cause
-         (1.15.0, law 7). ADR-0014 asks that "a stretch of low capacity has a
-         visible reason"; the data constitution forbids claiming one thing
-         caused the other. "Fewer, while…" names two facts about the same
-         period. "Fewer, because…" would be the app explaining you to yourself. -->
-    <p id="nextup-load" class="nextup-count" hidden></p>
-    <!-- THE ONE PERMITTED NUMBER (V2 stage 5). "About 2h 30m left today" —
-         arithmetic on the clock and the day boundary, two facts about the
-         world, read BEFORE an attempt where it can still change what somebody
-         picks up. No bar, no colour, no instruction, and nothing at all once
-         the day has run out: a countdown to zero at that hour is pressure
-         where it costs most. -->
-    <p id="nextup-left" class="nextup-count" hidden></p>
-    <!-- The next fixed thing today, BY NAME (collisions 7 and 9). Hyperfocus
-         eats the day and waiting mode consumes the hours before an appointment;
-         both are answered by naming the one thing that is not moveable, so an
-         absorbed person can catch it peripherally. No countdown: a shrinking
-         number against an aversive thing adds aversion at the moment of
-         approach, and clocks here are day-granular so an hour would be
-         fabricated (ADR-0010). -->
-    <p id="nextup-fixed" class="nextup-count" hidden></p>
-    <ul id="nextup-behind" class="nextup-behind"></ul>
-    <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
-  </section>
 
   <!-- Upkeep: the small repeating things that have come round. Never a failure
        to have not done one yet. -->

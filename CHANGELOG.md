@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.0.2 — ITERATION
+
+*2026-08-10*
+
+- **The screen leads with what you could do.** The one thing chosen for you used to sit below the sorting, and below everything else — so opening the app showed you tidying first and the answer last. It is near the top now, where the question you opened the app to ask gets answered.
+- Nothing was renamed, removed, or given a new home. Only the order changed.
+
 ## 2.0.1 — ITERATION
 
 *2026-08-10*
