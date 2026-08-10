@@ -805,6 +805,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and it is the right one');
   await tpage.click('#search-results .search-open');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail[open]').count(), 1, 'tapping a result opens its detail sheet');
   await tpage.click('#detail-close');
   const logLenAfterSearch = await tpage.evaluate(async () => {
@@ -1063,6 +1064,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /a timed two-minute job/ }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-done');
   await tpage.waitForTimeout(300);
   await tpage.click('#detail-close');
@@ -1468,6 +1470,19 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('body[data-ready=true]');
   await tpage.click('#cards .card-open');
   await tpage.waitForSelector('#detail[open]');
+  // THE SHEET OPENS SMALL (1.39.1). Twenty-four groups and sixty-eight controls
+  // used to sit on every item whether or not any of it applied. Four stay out;
+  // the rest are one press away. Asserted BEFORE anything unfolds it, because
+  // the default is the whole claim — and asserted as a count, so a group added
+  // later cannot quietly rejoin the always-visible set.
+  is(await tpage.locator('#detail-rest').isVisible(), false,
+    'an item opens with the rare half folded away');
+  is(await tpage.evaluate(() => Array.from(
+      document.querySelectorAll('#detail button, #detail input, #detail select, #detail textarea'))
+    .filter(el => el.checkVisibility()).length) < 22, true,
+    'so what faces you is a handful of controls, not sixty-eight');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+  is(await tpage.locator('#detail-rest').isVisible(), true, 'and one press brings the rest back');
   is(await tpage.locator('#detail').isVisible(), true, 'tapping something you hold opens its sheet');
   const sheetTitle = await tpage.locator('#detail-title').textContent();
   is(typeof sheetTitle === 'string' && sheetTitle.length > 0, true, `the sheet names the item ("${sheetTitle}")`);
@@ -1656,6 +1671,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nThe todo list — rename fixes what you wrote');
   await tpage.click('#cards .card-open');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-name', 'renamed by the smoke walk');
   await tpage.click('#detail-rename');
   await tpage.waitForTimeout(180);
@@ -1680,6 +1696,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#cards .card-open');
   await tpage.click('#cards .card-open');
   await tpage.waitForSelector('#detail[open]', { timeout: 3000 }).catch(() => {});
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail').isVisible(), true,
     'a card opens its sheet even after a URL capture re-rendered the list');
   await tpage.click('#detail-close');
@@ -1708,6 +1725,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     lapsedTitles.push(t);
     await tpage.locator('#cards .card:has(.card-done) .card-open').nth(nth).click();
     await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     const key = await tpage.evaluate(d =>
       new Date(Date.now() - d * 86400000).toISOString().slice(0, 10), 5 + nth * 4);
     await tpage.fill('#detail-date', key);
@@ -2255,6 +2273,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   await tpage.locator('#cards .card:has-text("brief the boss") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-date', sixDays);
   await tpage.click('#detail-date-set');
   await tpage.waitForTimeout(200);
@@ -2262,6 +2281,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.locator('#cards .card:has-text("draft the brief") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   // The picker offers only what can LEGALLY be fed. Offering an illegal option
   // and refusing it afterwards is a control that lies about what it does.
   const options = await tpage.locator('#detail-feeds option').allTextContents();
@@ -2350,6 +2370,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.locator('#cards .card:has-text("the quarterly report") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   // Before it is a container there is nothing in this app to put anything under,
   // and the picker says exactly that rather than inviting a choice it cannot honour.
   const emptyPicker = await tpage.locator('#detail-parent option').allTextContents();
@@ -2388,6 +2409,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // surface leave. An exceptions list that cannot reach zero is a nag.
   await tpage.locator('#cards .card:has-text("draft the brief") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   const parentOptions = await tpage.locator('#detail-parent option').allTextContents();
   is(parentOptions.includes('the quarterly report'), true,
     `the container is offered as a parent (${parentOptions.join(', ')})`);
@@ -2463,6 +2485,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.locator('#cards .card:has-text("the migration") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-track-row').isVisible(), false,
     'a plain action has no role to set — a role with nothing under it is a label');
   await tpage.click('#detail-make-project');
@@ -2479,6 +2502,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.locator('#cards .card:has-text("write the script") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.selectOption('#detail-parent', { label: 'the migration' });
   await tpage.click('#detail-parent-set');
   await tpage.waitForTimeout(300);
@@ -2599,6 +2623,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /the signed form/ }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-person', 'Priya');
   await tpage.selectOption('#detail-relation', 'waiting-on');
   await tpage.click('#detail-person-set');
@@ -2626,6 +2651,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.locator('#cards .card:has-text("the signed form") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-person', 'Sam');
   await tpage.selectOption('#detail-relation', 'waiting-on');
   await tpage.click('#detail-person-set');
@@ -2649,6 +2675,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('body[data-ready=true]');
   await tpage.locator('#cards .card:has-text("the numbers") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-person', 'sam');            // lower case, same human
   await tpage.click('#detail-person-set');
   await tpage.waitForTimeout(350);
@@ -2674,6 +2701,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const owedBefore = await tpage.locator('.people-open').count();
   await tpage.locator('#cards .card:has-text("the signed form") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-waiting-close');
   await tpage.waitForTimeout(350);
   await tpage.click('#detail-close');
@@ -3495,6 +3523,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // A save-for carries two numbers, by hand, and no bar.
   await tpage.locator('#menu .menu-item', { hasText: 'a decent tripod' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-savefor-group').isVisible(), false,
     'a "someday" is not a thing you are saving for, so there are no numbers to set');
   await tpage.click('#detail-close');
@@ -3525,6 +3554,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openMenu();
   await tpage.locator('#menu .menu-item', { hasText: 'a decent tripod' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-savefor-group').isVisible(), true,
     'now it offers the two numbers');
   await tpage.fill('#detail-save-target', '300');
@@ -3548,6 +3578,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // An empty box means "not said", not zero.
   await tpage.locator('#menu .menu-item', { hasText: 'a decent tripod' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-save-target', '');
   await tpage.click('#detail-save-set');
   await tpage.waitForTimeout(350);
@@ -4101,6 +4132,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // estimate that could never be backfilled.
   await tpage.click('#sort-card');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-start', '2026-12-01');
   await tpage.click('#detail-start-set');
   await tpage.waitForTimeout(150);
@@ -4136,6 +4168,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { window.__staleRoute = document.querySelector('#sort-actions .route'); });
   await tpage.click('#sort-card');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-trash');
   await tpage.waitForTimeout(200);
   await tpage.click('#detail-close');
@@ -4210,6 +4243,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-title').textContent(), triageShows,
     `tapping the triage card opens the sheet on THAT item ("${triageShows}") — rename and dates mid-triage`);
   await tpage.click('#detail-close');
@@ -4304,6 +4338,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#sort-card-region:not([hidden])');
   await tpage.click('#sort-card');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-note').inputValue(), 'ask about the crown',
     'the imported note is on the sheet — the loss the audit found is over');
 
@@ -4353,6 +4388,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#sort-card-region:not([hidden])');
   await tpage.click('#sort-card');
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-note').inputValue(), 'ask about the crown\nand the bill',
     'the edited note survives a full reload, newlines intact');
   // The situation reached the LOG, not just the box: this sheet was built from
@@ -4382,6 +4418,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: offeredTitle }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-situation', situation);
   await tpage.click('#detail-situation-set');
   await tpage.waitForTimeout(200);
@@ -4445,6 +4482,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.waitForSelector('#search-results .search-open');
     await tpage.locator('#search-results .search-open', { hasText: title }).first().click();
     await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     const state = await tpage.locator('#detail-state').textContent();
     is(!/not sorted yet/.test(state || ''), true,
       `“${title}” is out of the inbox — its sheet reads ${JSON.stringify(state)}`);
@@ -4475,6 +4513,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.locator('#cards .card:has-text("re-seal the frame") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-after-filter', 'strip the old sealant');
   await tpage.waitForFunction(() =>
     [...document.querySelectorAll('#detail-after option')].some(o => /strip the old sealant/.test(o.textContent || '')));
@@ -4672,6 +4711,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: 'learn the tenor recorder' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-release');
   await tpage.waitForTimeout(250);
   await tpage.click('#detail-close');
@@ -4695,6 +4735,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // AND THE WAY BACK WORKS, through the app's own control.
   await tpage.locator('#search-results .search-open', { hasText: 'learn the tenor recorder' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-reclaim');
   await tpage.waitForTimeout(250);
   await tpage.click('#detail-close');
@@ -4966,6 +5007,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'the trash states its true count');
   await tpage.locator('#trash-list .trash-row', { hasText: 'Bulk me one' }).click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-untrash').isVisible(), true,
     '"Keep it after all" is reachable after the sheet once closed — the standing defect is over');
   await tpage.click('#detail-untrash');
@@ -4994,6 +5036,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(treeDepths.some(d => d > 0), true, 'children indent under their containers');
   await tpage.locator('#tree .tree-open-row', { hasText: 'Sorted pile' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-title').textContent(), 'Sorted pile',
     'a tree row is a door to the sheet — the one verb it carries');
   await tpage.click('#detail-close');
@@ -5005,6 +5048,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const firstCovered = await tpage.locator('#coverage .coverage-open .coverage-title').first().textContent();
   await tpage.locator('#coverage .coverage-open').first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-title').textContent(), firstCovered,
     'a coverage row is a door to that very item');
   await tpage.click('#detail-close');
@@ -5026,6 +5070,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.waitForSelector('#search-results .search-open');
     await tpage.locator('#search-results .search-open', { hasText: title }).first().click();
     await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await tpage.waitForSelector('#detail-today-add:not([hidden])');
     await tpage.click('#detail-today-add');
     await tpage.waitForFunction(() => /Chosen for today/.test(
@@ -5044,6 +5089,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // A composed row is a door; the sheet offers the release.
   await tpage.locator('#composed-list .composed-open', { hasText: 'Noted thing' }).click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.waitForSelector('#detail-today-remove:not([hidden])');
   await tpage.click('#detail-today-remove');
   await tpage.waitForFunction(() => /Out of today/.test(
@@ -5097,6 +5143,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /Polish the samovar/ }).click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   // The box is cleared after the sheet closes — a fill cannot reach an
   // element the modal has made inert.
   is(await tpage.locator('#detail-merge-group').isVisible(), true,
@@ -5131,6 +5178,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(samovarHits, 1, 'the folded twin is off every surface — search shows one samovar');
   await tpage.locator('#search-results .search-open', { hasText: /SAMOVAR/ }).click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.waitForSelector('#detail-merged-group:not([hidden])');
   is(/Polish the samovar/.test(await tpage.locator('#detail-merged-list').textContent() || ''), true,
     'the survivor names what folded into it');
@@ -5190,6 +5238,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /^Rewire the shed light/ }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.waitForSelector('#detail-decision-group:not([hidden])');
   await tpage.fill('#detail-decision', 'use the armoured cable');
   await tpage.click('#detail-decision-set');
@@ -5215,6 +5264,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /SHED/ }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   const survivorDecisions = await tpage.locator('#detail-decision-list').textContent() || '';
   is(/armoured cable/.test(survivorDecisions), true,
     'the survivor surfaces what was decided about the thing folded into it');
@@ -5275,6 +5325,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: 'fielding review' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await fillSearch('');
   await tpage.click('#detail-make-project');
   await tpage.waitForTimeout(250);
@@ -5313,6 +5364,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: 'fielding review' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await fillSearch('');
   is(/Priya/.test(await tpage.locator('#detail-stakeholder-list').textContent() || ''), true,
     'who cares survives a reload');
@@ -5429,6 +5481,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /staff call/ }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-date-group').isHidden(), true,
     'no date controls on a named period — the gate would refuse the verb');
   is(await tpage.locator('#detail-start-group').isHidden(), true, 'no "not before" either');
@@ -5439,6 +5492,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: /Priya/ }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-date-group').isHidden(), true,
     'no date controls on a person either');
   await tpage.click('#detail-close');
@@ -5454,6 +5508,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: 'newsletter' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await fillSearch('');
   is(await tpage.locator('#detail-request-group').isVisible(), true,
     'the sheet offers the decline');
@@ -5474,6 +5529,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'the new decline stands beside the earlier one');
   await tpage.locator('#notnow-list .trash-row', { hasText: 'newsletter' }).click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.waitForSelector('#detail-declined:not([hidden])');
   await tpage.click('#detail-carry');
   await tpage.waitForFunction(() => /Carried after all/.test(
@@ -5497,6 +5553,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#search-results .search-open');
   await tpage.locator('#search-results .search-open', { hasText: 'newsletter' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await fillSearch('');
   await tpage.waitForSelector('#detail-slot-park:not([hidden])');
   const slotBtnWords = await tpage.locator('#detail-slot-park').textContent() || '';

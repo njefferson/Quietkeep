@@ -361,7 +361,11 @@ const REGISTRY = {
   'today opt-in': ['#today-start', '.about-caveat'],
   // The detail sheet. The hint and the inline labels are the lowest-contrast
   // text on it, and the number inputs are the smallest targets.
-  'detail sheet': ['#detail-title', '.detail-state', '.detail-label', '.detail-inline',
+  // `#detail-more` (1.39.1) folds the rare two-thirds of the sheet away. Added to
+  // THIS entry rather than a second 'detail sheet' key — a duplicate key in an
+  // object literal silently wins, so the registry would have shrunk to one
+  // selector while still reporting a pass.
+  'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
     '.detail-hint', '#detail-name', '#detail-date', '#detail-every', '#detail-rename',
     '#detail-date-set', '#detail-close',
     // 1.3.0's verbs: the defer date, the estimate, and the picker's filter.
@@ -1343,6 +1347,7 @@ try {
     // State 3e: the detail sheet — the surface that makes this a planner.
     await page.click('#cards .card-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     // Driven with a day PICKED AND NOT KEPT (1.38.2), because that is the only
     // state in which the "not kept yet" line exists to be measured. `.detail-hint`
     // is already in the registry as a class, so the line is covered the moment it
@@ -1602,6 +1607,7 @@ try {
     // then say somebody else is doing it.
     await page.click('#cards .card-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.click('#detail-make-project');
     await page.waitForTimeout(250);
     await page.click('#detail-track');
@@ -1654,6 +1660,7 @@ try {
     // which the linked-people list renders at all.
     await page.locator('.people-open').first().click();
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.fill('#detail-person', 'Sam');
     await page.click('#detail-person-set');
     await page.waitForTimeout(300);
@@ -1747,6 +1754,7 @@ try {
 
     await page.click('#cards .card-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.click('#detail-make-project');
     await page.waitForTimeout(250);
     await page.click('#detail-close');
@@ -1766,6 +1774,7 @@ try {
     // reported the state as unauditable, which is the guard below working.
     await page.locator('#cards .card-open').nth(1).click();
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     const canParent = await page.locator('#detail-parent option').count();
     if (canParent > 1) {
       await page.selectOption('#detail-parent', { index: 1 });
@@ -1853,6 +1862,7 @@ try {
     for (let i = 0; i < Math.min(cards, 8) && !anchored; i++) {
       await page.locator('#cards .card-open').nth(i).click();
       await page.waitForSelector('#detail[open]');
+      await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
       const usable = await page.evaluate(() => {
         const g = document.querySelector('#detail-after-group');
         const opts = document.querySelectorAll('#detail-after option').length;
@@ -1911,6 +1921,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.selectOption('#detail-parent', { index: 1 });
     await page.click('#detail-parent-set');
     await page.waitForTimeout(250);
@@ -2026,6 +2037,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.waitForSelector('#detail-today-add:not([hidden])');
     await page.click('#detail-today-add');
     await page.waitForFunction(() => /Chosen for today/.test(
@@ -2122,6 +2134,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.click('#detail-trash');
     await page.waitForSelector('#detail-untrash:not([hidden])');
     await page.click('#detail-close');
@@ -2141,6 +2154,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.locator('#search-results .search-open', { hasText: /the same errand twice/ }).click();
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     // The search box is cleared AFTER the sheet closes, not here — a fill
     // cannot reach an element the modal has made inert.
     await page.fill('#detail-merge-filter', 'same errand');
@@ -2163,6 +2177,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');   // the merged one is off search
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.waitForSelector('#detail-merged-group:not([hidden])');
     await auditContrast(page, 'detail sheet, survivor', theme);
     await auditAxe(page, 'detail sheet, survivor', theme);
@@ -2179,6 +2194,7 @@ try {
     // audit both groups in the state a person meets them in.
     await page.locator('#cards .card-open').first().click();
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     if (await page.locator('#detail-make-project').isVisible()) {
       await page.click('#detail-make-project');
       await page.waitForTimeout(250);
@@ -2230,6 +2246,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.waitForSelector('#detail-decline:not([hidden])');
     await page.click('#detail-decline');
     await page.waitForSelector('#detail-declined:not([hidden])');
@@ -2307,6 +2324,7 @@ try {
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');
     await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     // The declined thing shows Carry, not the slot button — carry it first so
     // the slot offer renders, which also audits the way back working.
     await page.click('#detail-carry');

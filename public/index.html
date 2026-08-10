@@ -740,7 +740,19 @@
               aria-describedby="detail-date-unsaved">Set</button>
       <button id="detail-date-clear" type="button" class="ghost">No date</button>
     </div>
-    <!-- A PICKED DAY IS NOT A SAVED DAY, and the markup alone cannot show the
+    <div class="detail-group" id="detail-note-group">
+    <label class="detail-label" for="detail-note">Anything to keep with it?</label>
+    <textarea id="detail-note" rows="3" autocomplete="off" spellcheck="true"
+              aria-describedby="detail-note-hint"></textarea>
+    <div class="detail-row">
+      <button id="detail-note-set" type="button">Keep the note</button>
+    </div>
+    <p id="detail-note-hint" class="detail-hint">
+      Stays with the item and shows only here.
+    </p>
+  </div>
+
+  <!-- A PICKED DAY IS NOT A SAVED DAY, and the markup alone cannot show the
          difference (1.38.2, found on device). The native picker fills this field
          the instant a day is chosen, which looks exactly like a date that has
          been kept. Not a warning — nothing is wrong, and you may still be
@@ -754,6 +766,17 @@
        it: it stays out of the way until the day, comes back as ready on it, and
        a passed start is never a card demanding a new plan — that is what makes
        it different from a due date, and why it gets its own words. -->
+  <!-- MOST OF AN ITEM IS NOT MOST ITEMS (1.39.1).
+       Twenty-four groups and sixty-eight controls sat on the sheet for every
+       item, whether or not any of it applied — the same accumulation as the ⓘ
+       panel, in control form rather than in prose. Folding is not hiding: every
+       one of these is one press away and none of them moved.
+       What stays out: what it says, its date, a note, and where it lives. -->
+  <div class="detail-group">
+    <button id="detail-more" type="button" class="ghost"
+            aria-expanded="false" aria-controls="detail-rest">More about this</button>
+  </div>
+  <div id="detail-rest" hidden>
   <div class="detail-group" id="detail-start-group">
     <label class="detail-label" for="detail-start">Not before</label>
     <div class="detail-row">
@@ -873,18 +896,6 @@
     <p id="detail-after-now" class="detail-hint" hidden></p>
     <p id="detail-after-hint" class="detail-hint">
       Waits until that one is done, then comes straight back. It is not a date.
-    </p>
-  </div>
-
-  <div class="detail-group" id="detail-note-group">
-    <label class="detail-label" for="detail-note">Anything to keep with it?</label>
-    <textarea id="detail-note" rows="3" autocomplete="off" spellcheck="true"
-              aria-describedby="detail-note-hint"></textarea>
-    <div class="detail-row">
-      <button id="detail-note-set" type="button">Keep the note</button>
-    </div>
-    <p id="detail-note-hint" class="detail-hint">
-      Stays with the item and shows only here.
     </p>
   </div>
 
@@ -1121,6 +1132,8 @@
     <p id="detail-savefor-hint" class="detail-hint">
       Either can be left empty.
     </p>
+  </div>
+
   </div>
 
   <!-- Per-node history (1.4.0): the log filtered to this one thing, in plain

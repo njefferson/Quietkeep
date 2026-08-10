@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.39.1',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**An item now opens with four things on it, not twenty-four.** Its name, its date, a note and where it lives. Everything else — repeats, weight, what it waits for, who it is with, what was decided, what it holds up — is behind *More about this*, one press away.',
+      'Sixty-eight controls sat on the sheet for every item whether or not any of it applied. Nothing has been removed and nothing has moved; the rare two thirds are just folded until you ask.',
+      '**It folds back when you open a different item**, on purpose: a sheet that opens differently depending on what you did last is a sheet you cannot learn. The one exception is tapping somebody’s name, because their sheet *is* the folded half.',
+    ],
+  },
+  {
     triplet: '1.39.0',
     kind: 'CAPABILITY',
     date: '2026-08-09',

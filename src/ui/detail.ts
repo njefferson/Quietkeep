@@ -452,7 +452,10 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   };
 
   function render(n: NodeState): void {
+    const changed = current?.id !== n.id;
     current = n;
+    // A new item opens in the shape every item opens in.
+    if (changed) setRest(false);
     TITLE.textContent = n.title || '(untitled)';
 
     // What is true about it now, in words — never a colour, never a badge.
@@ -534,7 +537,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         b.textContent = `${who} — ${RELATION_WORDS[l.relation] ?? l.relation}`;
         b.addEventListener('click', () => {
           const person = session.state().nodes.get(l.person);
-          if (person) showNode(person);
+          if (!person) return;
+          showNode(person);
+          // A person's sheet is almost entirely the folded half — "what is with
+          // them" lives there. Opening a new item folds it back by design, so
+          // this navigation has to say it wants it open, or tapping a name lands
+          // you on a sheet whose whole point is out of sight (1.39.1).
+          setRest(true);
         });
         li.append(b);
         return li;
@@ -971,6 +980,25 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     unsaved('#detail-suspense', '#detail-suspense-unsaved', storedSuspense),
   ];
   const refreshUnsaved = (): void => { for (const p of paintUnsaved) p(); };
+
+  // "More about this" (1.39.1). Twenty-four groups sat open on every item; four
+  // of them are what most items need. The rest fold, and folding is not hiding —
+  // one press, nothing moved, nothing removed.
+  //
+  // NOT remembered between items on purpose. A sheet that opens differently
+  // depending on what you did to the last thing is a sheet you cannot learn, and
+  // this app's whole bargain is that the shape never changes.
+  const moreBtn = btn('#detail-more');
+  const rest = q('#detail-rest');
+  const setRest = (open: boolean): void => {
+    if (!rest || !moreBtn) return;
+    rest.hidden = !open;
+    moreBtn.setAttribute('aria-expanded', String(open));
+    moreBtn.textContent = open ? 'Less about this' : 'More about this';
+  };
+  moreBtn?.addEventListener('click', () => {
+    setRest(moreBtn.getAttribute('aria-expanded') !== 'true');
+  });
 
   btn('#detail-date-set')?.addEventListener('click', () => {
     const key = DATE.value;
