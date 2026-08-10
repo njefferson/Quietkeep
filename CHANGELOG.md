@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.40.1 — ITERATION
+
+*2026-08-10*
+
+- **The ⓘ no longer grows a paragraph after you have started reading it.** While the browser has not agreed to keep your planner, the panel carries a short explanation of why to ask it — and that block was being hidden every time the panel opened and put back a moment later. On a slow moment you saw the panel settle, then move.
+- Nothing about what it says has changed, only when it appears: it is there as the panel opens, or it is not there at all.
+
 ## 1.40.0 — CAPABILITY
 
 *2026-08-10*

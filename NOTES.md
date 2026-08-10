@@ -582,8 +582,22 @@ decided by a session.**
 `staging` were identical at that commit, so production and the candidate carried
 the same build for the first time since 1.25.0.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.1**
 - **https://quietkeep.pages.dev** — production, **1.39.3**
+
+**1.40.1 — the ⓘ stops growing a paragraph after you have started reading it.**
+
+Found by CI going red on a commit that was green locally, and it is a product
+defect rather than an instrument one. `show()` re-hid `#about-intro` on every
+open and `paintStorage` put it back a tick later — so while the browser has not
+agreed to keep the store, which is the exact state that block explains, the panel
+opened *without* it and grew it a moment on. Invisible on a fast machine, which
+is why eighteen releases carried it.
+
+`show()` no longer fights the painter: a first run shows the block at once,
+every later open leaves it as the last paint left it. The walk also waits for
+the paint rather than racing it — not a weakened check, because if the block
+genuinely never shows the wait times out and the same three entries fail.
 
 **1.40.0 — six destinations, and each one is its own screen.** ADR-0083, which
 supersedes ADR-0055 on the condition ADR-0055 named itself. Help, Settings, Your

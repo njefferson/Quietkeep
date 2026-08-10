@@ -1529,7 +1529,24 @@ export async function mountAbout(
     // hides it the moment persistence is granted. It also puts the ask on the
     // surface somebody lands on: the only other caller of `requestPersistence()`
     // is a button on the Your data sheet, one destination away.
-    intro.hidden = !firstRun;
+    // `paintStorage` OWNS this block's visibility, and `show` must not fight it.
+    //
+    // This was `intro.hidden = !firstRun`, which re-hid it on EVERY open. On a
+    // store the browser has not agreed to keep — the exact state the block
+    // describes — the panel therefore opened without it and grew it a tick
+    // later, every single time. Content arriving under a reader who has already
+    // started is the one thing this app exists not to do, and it was invisible
+    // here because the tick is short on a fast machine.
+    //
+    // Found by the a11y gate going red in CI and green locally on the same
+    // commit: the walk audits this state further into a longer walk since
+    // 1.40.0, and a loaded runner lands on the other side of the same race
+    // (LESSONS §71 — a timing failure is a defect reporting its rate).
+    //
+    // A first run shows it at once, because there is no previous paint to
+    // preserve. Every later open leaves it exactly as the last paint left it,
+    // and the `paintStorage` on the next line is what decides.
+    if (firstRun) intro.hidden = false;
     dialog.showModal();
     void paintStorage();
     // The calendar count is recomputed on every open. It used to be painted once

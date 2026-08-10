@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.40.1',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The ⓘ no longer grows a paragraph after you have started reading it.** While the browser has not agreed to keep your planner, the panel carries a short explanation of why to ask it — and that block was being hidden every time the panel opened and put back a moment later. On a slow moment you saw the panel settle, then move.',
+      'Nothing about what it says has changed, only when it appears: it is there as the panel opens, or it is not there at all.',
+    ],
+  },
+  {
     triplet: '1.40.0',
     kind: 'CAPABILITY',
     date: '2026-08-10',

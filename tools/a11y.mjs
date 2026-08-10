@@ -1266,7 +1266,24 @@ try {
 
     // And the ⓘ itself, which keeps what the app IS — the intro, the release
     // notes, the diagnostic and the way to the calendar.
+    //
+    // WAIT FOR THE PAINT, DO NOT RACE IT. `show()` hides `#about-intro`
+    // synchronously and `paintStorage` un-hides it a tick later, when the
+    // browser has answered about persistence. This audit used to run
+    // immediately after the panel opened, so the gap was small enough never to
+    // lose; the four sheets now walked before it changed nothing about the race
+    // and everything about which side of it a loaded runner lands on. It passed
+    // locally and failed in CI on all three intro entries — a timing-dependent
+    // failure, which is a defect that has told you its reproduction rate
+    // (LESSONS §71), so the condition is waited for rather than the run retried.
+    //
+    // Not a weakened check: if the intro genuinely never shows, the wait times
+    // out and the three registry entries fail exactly as they did here.
     await openSurface(page, 'about');
+    await page.waitForFunction(
+      () => document.querySelector('#about-intro')?.checkVisibility() === true,
+      null, { timeout: 5000 },
+    ).catch(() => { /* the audits below say what happened */ });
     await auditContrast(page, 'first-run dialog', theme);
     await auditAxe(page, 'first-run dialog', theme);
     await auditNames(page, 'first-run dialog', theme);
