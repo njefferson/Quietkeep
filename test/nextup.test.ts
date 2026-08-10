@@ -134,8 +134,35 @@ test('nothing belonging to another surface is ever offered as work', () => {
     ev('clock.set', 'T', { clockKind: 'due', at: NOW, source: 'test' }),
     ev('node.trashed', 'T', {}),
   );
-  assert.deepEqual(nextUpQueue(s, NOW, TZ).map(i => i.node.id), [],
-    'inbox, waiting-for, Menu, pebble and trashed are all somebody else’s business');
+  // SPLIT IN 2.0.0, and the split is the point. This was one assertion covering
+  // five unrelated exclusions, so it went green while any subset of them worked
+  // and could not say which one had moved. Four of them still hold exactly as
+  // they did; the fifth is the thing 2.0.0 changes on purpose.
+  assert.deepEqual(nextUpQueue(s, NOW, TZ).map(i => i.node.id).filter(id => id !== 'INBOX'), [],
+    'waiting-for, Menu, pebble and trashed are all still somebody else’s business');
+
+  // AND THE INBOX IS NOT. A thing is a task the moment it exists: an unrouted
+  // capture is offered as work, with a reason that states the only fact there
+  // is about it. Sorting refines the offer; it has never been what creates one.
+  const offered = nextUpQueue(s, NOW, TZ);
+  assert.deepEqual(offered.map(i => i.node.id), ['INBOX'],
+    'a captured thing nobody has sorted is offered as work');
+  assert.equal(offered[0]?.reason, 'unsorted');
+  assert.equal(offered[0]?.words, 'you put this down',
+    'and says why, as a fact about the world rather than about the person');
+});
+
+test('an unsorted capture is offered LAST, behind everything with a real warrant', () => {
+  // The restraint that makes the above safe. A dump must never outrank a date,
+  // and arrival order must be the tiebreak — deterministic, no inference.
+  const s = st(
+    ev('capture.recorded', 'C1', { text: 'first down', source: 'quick', sourceTags: [] }),
+    ev('capture.recorded', 'C2', { text: 'second down', source: 'quick', sourceTags: [] }),
+    ev('node.created', 'D', { nodeKind: 'action', title: 'a real date' }),
+    ev('clock.set', 'D', { clockKind: 'due', at: NOW, source: 'test' }),
+  );
+  assert.deepEqual(nextUpQueue(s, NOW, TZ).map(i => i.node.id), ['D', 'C1', 'C2'],
+    'the dated thing leads; the captures follow in the order they arrived');
 });
 
 test('a completed one-off stops being offered; a completed upkeep comes back on its own schedule', () => {
@@ -339,8 +366,25 @@ test('the chips obey the same exclusions as Next-up (law 1 clause c)', () => {
     ev('node.kind.changed', 'C', { from: 'action', to: 'upkeep' }),
     ev('upkeep.interval.set', 'C', { intervalDays: 1, comfortWindowDays: 1 }),
   );
-  assert.deepEqual(upkeepChips(inbox, NOW, TZ).map(c => c.node.id), [],
-    'an unclarified item still belongs to triage');
+  // CHANGED IN 2.0.0, consistently with Next-up rather than as an exception.
+  // Chips share `isCandidate`, so "a thing is a task the moment it exists"
+  // reaches here too — and it should: this node is a recurring thing whose time
+  // has come, and not having been routed says nothing about whether it is due.
+  //
+  // The set stays small by construction. A chip requires an upkeep interval,
+  // which nothing sets by accident, so an ordinary capture is not a chip — only
+  // one somebody deliberately made recurring.
+  assert.deepEqual(upkeepChips(inbox, NOW, TZ).map(c => c.node.id), ['C'],
+    'a recurring thing is due whether or not anybody has sorted it');
+
+  // The Menu exclusion above is untouched, and that separation is the point:
+  // law 1 clause c is about a SURFACE that is not a demand, which is a different
+  // claim from "it has not been sorted yet".
+  const plain = st(
+    ev('capture.recorded', 'P', { text: 'just a thought', source: 'quick', sourceTags: [] }),
+  );
+  assert.deepEqual(upkeepChips(plain, NOW, TZ).map(c => c.node.id), [],
+    'an ordinary capture is not a chip — a chip is for something recurring');
 });
 
 test('the work surface never shows the same thing twice', () => {

@@ -378,6 +378,21 @@ button.ghost {
   cursor: pointer;
 }
 
+/* THE PROOF (ADR-0084). Read before the inventory below it, so it carries the
+   reading weight: the promise as a sentence, then how it knows. A count here is
+   a fact to check, never a score — nothing about it may look like a target. */
+.coverage-proof { margin: 0 0 0.9rem; }
+.proof-holds, .proof-broken { margin: 0 0 0.6rem; font-weight: 600; }
+/* The broken state does not shout. It is bad news the reader needs, not an
+   alarm — no red wall, and pressure never rides on hue anywhere in this app. */
+.proof-broken { color: var(--ink); }
+.proof-why, .proof-exceptions {
+  margin: 0 0 0.6rem; padding: 0; list-style: none; color: var(--ink-soft);
+}
+.proof-why li, .proof-exceptions li { margin: 0 0 0.25rem; }
+.proof-count { display: inline-block; min-width: 1.6em; font-weight: 700; color: var(--ink); }
+.proof-exceptions li::before { content: "\2014\00A0"; }
+
 .coverage {
   list-style: none;
   margin: 0 0 1rem;

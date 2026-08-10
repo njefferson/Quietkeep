@@ -237,6 +237,90 @@ export const trashedNodes = (state: State): NodeState[] =>
  *  and is counted over EVERY node — a proof that skips a kind proves nothing.
  *  `total` is the work you are holding, because that is the number the list
  *  under it itemises and the two must be the same claim. */
+/**
+ * WHY each held thing is covered, aggregated — the proof behind the promise
+ * (ADR-0084).
+ *
+ * `coverageGauge` answers "is anything silent" with a number, and a number is
+ * the wrong shape for the question this app exists to answer. `0 silent` looks
+ * identical whether the app is watching everything or watching nothing, and this
+ * repo has already shipped a green gauge over items nothing would ever surface —
+ * *a clock nobody reads is silence with paperwork*.
+ *
+ * A REASON is checkable. Somebody holding forty things who sees them accounted
+ * for under four named reasons can tell whether those reasons cover what they
+ * actually put in. That is a container guarantee verified from the outside,
+ * which is the only kind that helps: the condition being addressed is precisely
+ * not being able to trust an assurance from the inside.
+ *
+ * The reasons ARE `isSilent`'s clauses, in its order, so this cannot disagree
+ * with the gate that enforces them. If a clause is added there and not here, the
+ * proof under-reports and `test/coverage-proof.test.ts` fails.
+ */
+export type CoverReason = 'decided' | 'clock' | 'menu' | 'demand-free' | 'parent' | 'after';
+
+/** Which clause covers this node, or null if NOTHING does — which is the answer
+ *  the whole surface exists to be able to give. */
+export const whyCovered = (
+  node: NodeState, state: State, visited: Set<NodeId> = new Set(),
+): CoverReason | null => {
+  if (node.trashed || node.released) return 'decided';
+  if (node.mergedInto) {
+    const target = survivorOf(state, node);
+    return target ? whyCovered(target, state, visited) : null;
+  }
+  if (Object.keys(node.clocks).length > 0) return 'clock';
+  if (node.onMenu !== null) return 'menu';
+  if (isDemandFree(node.kind)) return 'demand-free';
+  if (node.parent) {
+    const seen = new Set<NodeId>();
+    let cur = state.nodes.get(node.parent);
+    while (cur && !seen.has(cur.id)) {
+      seen.add(cur.id);
+      if (cur.trashed || cur.mergedInto || cur.released) break;
+      if (Object.keys(cur.clocks).length > 0) return 'parent';
+      if (!cur.parent) break;
+      cur = state.nodes.get(cur.parent);
+    }
+  }
+  if (node.after && !visited.has(node.id)) {
+    visited.add(node.id);
+    const a = state.nodes.get(node.after);
+    if (a && !a.trashed && !a.mergedInto && !a.lastDone && !isSilent(a, state, visited)) return 'after';
+  }
+  return null;
+};
+
+export interface CoverageProof {
+  /** True when the promise holds for everything. The one thing a reader is
+   *  actually asking, and it must be able to be false. */
+  holds: boolean;
+  /** Reasons with a count, biggest first. Reasons covering nothing are omitted —
+   *  a proof is not a glossary. */
+  reasons: { reason: CoverReason; count: number }[];
+  /** What the app CANNOT guarantee, named. A guarantee with no failure mode is
+   *  not checkable, and an app that can only say "fine" is asking for the exact
+   *  faith the reader does not have. */
+  exceptions: NodeState[];
+}
+
+export const coverageProof = (state: State): CoverageProof => {
+  const counts = new Map<CoverReason, number>();
+  const exceptions: NodeState[] = [];
+  for (const n of heldWork(state)) {
+    const why = whyCovered(n, state);
+    if (why === null) { exceptions.push(n); continue; }
+    counts.set(why, (counts.get(why) ?? 0) + 1);
+  }
+  return {
+    holds: exceptions.length === 0,
+    reasons: [...counts.entries()]
+      .map(([reason, count]) => ({ reason, count }))
+      .sort((a, b) => b.count - a.count || a.reason.localeCompare(b.reason)),
+    exceptions,
+  };
+};
+
 export const coverageGauge = (state: State): { silent: number; total: number } => ({
   silent: silentNodes(state).length,
   total: heldWork(state).length,

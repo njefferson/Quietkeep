@@ -86,6 +86,13 @@ the list is the thing that overwhelms. Triage never shows the list; it shows one
 item and asks one question. Forced choice (six real destinations, no "skip to
 later" that silently rebuilds the pile) is what actually drains an inbox.
 
+> **Refined by [ADR-0085](0085-sorting-is-not-the-corridor.md).** The forced
+> choice is unchanged *once you are here*, and the surface still shows one card
+> and asks one question. What changed is how you arrive: this surface used to put
+> itself on screen, so the forced choice was also the price of opening the app.
+> It is now reached only through its own door. "Forced choice drains an inbox" is
+> a claim about the sorting, not a licence to start it for somebody.
+
 **The do-now timer is an affordance, not a gate.** Routing to do-now clocks and
 routes the node *first*; the 2-minute countdown is a nudge for the small thing in
 front of you, recorded separately as `do-now.timed` when it completes or is

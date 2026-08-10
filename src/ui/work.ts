@@ -15,7 +15,7 @@
 import type { Session } from './session.ts';
 import type { AppEvent } from '../events.ts';
 import type { NodeState } from '../fold.ts';
-import { heldWork } from '../gate.ts';
+import { coverageProof, heldWork } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
@@ -78,6 +78,7 @@ export function mountWork(
   // Optional, like every other handle here: a missing element costs the panel
   // nothing rather than taking the surface down.
   const coverageCount = q('#coverage-count');
+  const coverageProofEl = q('#coverage-proof');
   if (!region || !heading || !title || !why || !doneBtn || !skipBtn || !count ||
       !behind || !live || !upkeepRegion || !chips || !gauge || !coverage) {
     return { refresh() {} };
@@ -408,9 +409,10 @@ export function mountWork(
     const open = COVERAGE.hidden;
     COVERAGE.hidden = !open;
     if (coverageCount) coverageCount.hidden = !open;
+    if (coverageProofEl) coverageProofEl.hidden = !open;
     GAUGE.setAttribute('aria-expanded', String(open));
     // Built at the moment of opening, not before — see buildCoverage.
-    if (open) buildCoverage();
+    if (open) { buildProof(); buildCoverage(); }
   });
 
   /** Plain words for when something returns — calendar days in the reader's
@@ -686,7 +688,7 @@ export function mountWork(
     if (plain) plainStrip();
 
     paintCoverageCount();
-    if (!COVERAGE.hidden) buildCoverage();
+    if (!COVERAGE.hidden) { buildProof(); buildCoverage(); }
     // The tree obeys the same rule, for the same measured reason.
     if (treeList && !treeList.hidden) buildTree();
   }
@@ -700,6 +702,70 @@ export function mountWork(
     coverageCount.textContent = n === 1
       ? 'One thing, and when it comes back:'
       : `${n} things, and when each comes back:`;
+  }
+
+  /**
+   * HOW IT KNOWS — the proof behind the claim (ADR-0084).
+   *
+   * The thesis this app is built on says the failure is not forgetting, it is
+   * that your coverage is unverifiable from the inside. A count cannot answer
+   * that: `0 silent` reads the same whether the app is watching everything or
+   * watching nothing, and this repo has already shipped a green gauge over items
+   * nothing would ever surface. A list of items cannot answer it either — a list
+   * shows what is IN the container, never whether the container holds.
+   *
+   * A REASON can. Somebody holding forty things who sees them accounted for
+   * under four named reasons can check those reasons against what they actually
+   * put in, from the outside, in one look.
+   *
+   * And it must be able to say NO. The exceptions are named, because a guarantee
+   * with no failure mode is not checkable, and an app that can only ever say
+   * "fine" is asking for the exact faith the reader does not have.
+   */
+  const REASON_WORDS: Record<string, string> = {
+    clock: 'have a day they come back to you',
+    menu: 'are on the Menu — no clock, because you said so',
+    parent: 'come back with something they are part of',
+    after: 'are waiting on something that will be shown to you first',
+    'demand-free': 'are not work, and have a place of their own',
+    decided: 'you have already put down or let go',
+  };
+
+  function buildProof(): void {
+    if (!coverageProofEl) return;
+    const proof = coverageProof(session.state());
+    const parts: HTMLElement[] = [];
+
+    // The promise, in one sentence, and it is allowed to be bad news.
+    const promise = el('p', proof.holds ? 'proof-holds' : 'proof-broken');
+    promise.textContent = proof.holds
+      ? 'Everything here comes back to you on its own. You are not the one remembering.'
+      : proof.exceptions.length === 1
+        ? 'One thing here will not come back on its own.'
+        : `${proof.exceptions.length} things here will not come back on their own.`;
+    parts.push(promise);
+
+    // How it knows. No total — the sum of a container's reasons is not a score,
+    // and `N held` was removed from the gauge on purpose (V2 stage 1).
+    const why = el('ul', 'proof-why');
+    for (const r of proof.reasons) {
+      const li = el('li');
+      li.append(el('span', 'proof-count', String(r.count)));
+      li.append(el('span', 'proof-reason', REASON_WORDS[r.reason] ?? r.reason));
+      why.append(li);
+    }
+    if (proof.reasons.length > 0) parts.push(why);
+
+    // What it cannot promise, named. Never a count on its own: a number here
+    // would be a thing to feel about rather than a thing to act on.
+    if (proof.exceptions.length > 0) {
+      const bad = el('ul', 'proof-exceptions');
+      for (const n of proof.exceptions) {
+        bad.append(el('li', undefined, n.title || '(untitled)'));
+      }
+      parts.push(bad);
+    }
+    coverageProofEl.replaceChildren(...parts);
   }
 
   /** The gauge's claim, itemised and checkable. Reads `heldWork` — the same

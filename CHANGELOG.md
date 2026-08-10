@@ -14,6 +14,38 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.0.0 — VERSION
+
+*2026-08-10*
+
+- **Anything you put down is a task straight away.** It used to have to be sorted first — until you said what kind of thing it was, it came back only as something else to sort, never as something to do. Now it comes back as work the moment you write it, in the words you typed.
+- **Sorting is no longer the toll.** A date, a place, or the thing it follows changes *when* and *where* something comes back. It never decided *whether*, and now it does not pretend to.
+- **And it cannot bury you.** Things you have sorted are offered first; what you only put down waits behind them, in the order it arrived. One at a time, never more than five lined up.
+
+## 1.42.2 — ITERATION
+
+*2026-08-10*
+
+- **The end of the walkthrough now lands on a finished screen.** It hands you to the part about keeping your data on this device — and the button for it was arriving a moment after the rest of the screen, so on a slow or busy device you could be looking at the question with nothing there to answer it. It is there when you arrive now.
+- Nothing about what it asks, or what it does, has changed.
+
+## 1.42.1 — ITERATION
+
+*2026-08-10*
+
+- **Opening the app no longer asks you to sort anything.** Arriving with things in the inbox used to put a card in front of you and ask what to do with it, before the app had said what you could be getting on with. Now it says there is sorting to do, and waits to be asked. The button is there the whole time.
+- **Nothing you have put down is at risk while it sits there.** It is held from the moment you press the button — sorting decides *where* it comes back, not *whether*. The app now says that, where it used to show a running total instead.
+- **And that total is gone.** A number that only goes up as you put things down makes a good day look like a debt. Nothing on the way in counts what you have given it.
+- Sorting itself is unchanged — the same routes, the same quick hot-or-cold pass when there is a pile worth sweeping.
+
+## 1.42.0 — CAPABILITY
+
+*2026-08-10*
+
+- **The promise now shows its working.** Tapping what you are holding used to open a list of everything and when each one comes back. That answers *what is in here*. The question it exists for is *can I stop holding this myself* — so it now leads with the promise in a sentence, and how it knows: the reasons things come back, with how many under each.
+- **And it can tell you no.** If anything will not come back on its own, it is named there. A promise that can only ever say *fine* is asking you to take its word for it, which is the one thing this app is not for.
+- The full list is still underneath, for when the reasons are not enough.
+
 ## 1.41.0 — CAPABILITY
 
 *2026-08-10*

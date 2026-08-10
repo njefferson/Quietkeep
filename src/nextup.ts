@@ -34,7 +34,7 @@ import { isHeld, isGone } from './fold.ts';
 
 /** Why an item is being offered. Carried so the surface can SAY it — the text
  *  channel of B-01, and the honest answer to "why am I being shown this?". */
-export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | 'ready' | 'beneath';
+export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | 'ready' | 'beneath' | 'unsorted';
 
 /**
  * THE CLOSED REASON VOCABULARY (V2 stage 7).
@@ -73,6 +73,11 @@ export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?
   // gate cure clocks never move, so that was the NORMAL case rather than an
   // edge one (Doctrine §5: no copy the data does not support).
   ready: () => 'this one is waiting',
+  // A FACT ABOUT THE WORLD, and the smallest true one there is: you wrote this
+  // down and have not said anything else about it. Not "unclassified", not
+  // "needs attention", not a count of how many others are like it — the schema
+  // word never reaches a surface and the state is not a reproach.
+  unsorted: () => 'you put this down',
 };
 
 export interface NextUpItem {
@@ -172,16 +177,39 @@ export const approachOf = (state: State, n: NodeState, nowIso: string, zone: str
 // and review while Next up silently kept offering it: the refused-on-one-
 // surface, offered-on-another class kinds.ts was created to prevent.
 
-/** Live, actionable, and not still sitting in the inbox. An unclarified capture
- *  belongs to triage — offering it here would be asking the same question twice,
- *  in a surface whose whole promise is that it has already decided for you. */
+/** Live and actionable. **A thing is a task the moment it exists** (2.0.0).
+ *
+ *  This used to end "...and not still sitting in the inbox", excluding any
+ *  capture that had not been routed, on the ground that offering one here would
+ *  be *asking the same question twice, in a surface whose whole promise is that
+ *  it has already decided for you*.
+ *
+ *  That reason was written down, which makes it worth answering rather than
+ *  deleting. It holds only if offering an unrouted item means asking the ROUTING
+ *  question about it. It does not. Offering it means handing back the words
+ *  somebody typed, with Done and Not this — the routing question is not asked at
+ *  all. And this surface's promise is that it decided WHAT TO SHOW YOU, not that
+ *  every item has been classified. Handing back "buy milk" in the order it
+ *  arrived is this surface deciding.
+ *
+ *  What the exclusion actually did was make sorting the price of an item ever
+ *  being offered. The guarantee the code enforced was *everything carries a
+ *  clock*; the guarantee a reader reads is *it will come back to me as something
+ *  I can act on*. For a capture those came apart: clocked in the same
+ *  transaction, counted as covered by the proof, and never once offered as work
+ *  — it came back only as more sorting. That is this repo's own "a clock nobody
+ *  reads is silence with paperwork", one level up.
+ *
+ *  So: capture makes a task. Refinement — a date, an anchor, a parent, a route —
+ *  makes the offer smarter, and never decides whether there is one. Skipping it
+ *  costs precision, not existence. Without details this is a task list; with
+ *  them it is the same list, better ordered. `docs/what-it-should-be.md`. */
 function isCandidate(n: NodeState, nowIso: string, day: DayShape): boolean {
   if (isGone(n)) return false;
   if (NOT_ACTIONABLE.has(n.kind)) return false;
   // On the Menu is a surface, not a demand (law 1 clause c). Never volunteered.
   if (n.onMenu) return false;
-  // Captured but not yet routed = triage's, not ours.
-  if (n.captured && n.route === null) return false;
+  // (The exclusion of captured-but-unrouted items stood here. See the docblock.)
   // A spent or expired resume card is a thread already picked up, or one that
   // went cold. Either way it is not still waiting for you.
   if (n.resumeSpent) return false;
@@ -378,6 +406,43 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       items.push({ node: n, reason: 'pressure', pressure: p, words: REASON_WORDS.pressure({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
+    // A THING YOU PUT DOWN AND HAVE NOT TOUCHED SINCE (2.0.0).
+    //
+    // ABOVE the `ready` branch on purpose, and the smoke walk is what proved it
+    // has to be. Placed below, an unrouted capture never reached this tier at
+    // all: it came out as `ready`, saying "this one is waiting". That is because
+    // its gate cure clock is read as an ARRIVED DEMAND — `arrivedClock` excludes
+    // app clocks, but `isAppClock` recognises only a couple of the many `gate:`
+    // sources, and `gate:capture.recorded` is not among them.
+    //
+    // The label was the visible half; the ranking was the half that mattered. As
+    // `ready` these sort level with genuinely clocked work rather than behind
+    // it, so a day's captures would displace things somebody had actually asked
+    // for. Testing the state directly instead of inferring it from a clock makes
+    // this independent of that gap rather than hostage to it.
+    //
+    // Removing the inbox exclusion in `isCandidate` is still not enough on its
+    // own — with no clock at all a capture has no pressure and never arrives, so
+    // it would fall past every tier and out of the bottom of this loop, covered
+    // and counted and never offered. The exclusion was load-bearing twice.
+    //
+    // LAST AMONG THE ORDINARY TIERS. Anything with a real warrant — a date, an
+    // unblocked antecedent, a thread to resume, rising pressure — is offered
+    // first, and those branches all run above this one. Within the tier it is
+    // arrival order: deterministic, no inference, one sentence to explain.
+    //
+    // A DUMP CANNOT FLOOD THIS. The queue caps at five (ADR-0030), real demands
+    // outrank these, and the offer is one thing at a time — so forty captured
+    // lines cost at most a few "Not this", never a wall. That was the objection
+    // to offering them at all, and the cap is what answers it.
+    if (n.captured && n.route === null) {
+      items.push({
+        node: n, reason: 'unsorted', pressure: p, words: REASON_WORDS.unsorted({}),
+        place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone),
+        situation: situationOf(n),
+      });
+      continue;
+    }
     if (arrived) {
       // "Back with you today" was a falsehood for any clock older than today —
       // and gate cure clocks never move, so that was the NORMAL case, not an
@@ -385,6 +450,27 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
+    // A THING YOU PUT DOWN AND HAVE NOT TOUCHED SINCE (2.0.0).
+    //
+    // Removing the inbox exclusion above is NOT enough on its own, and checking
+    // that before writing this saved shipping a change that did nothing: an
+    // unrouted capture's only clock is the gate's same-day cure, `arrivedClock`
+    // deliberately refuses to read a cure as a demand (a cure exists so a node
+    // is not silent; the reader never asked for anything by today), and it has
+    // no pressure because it has never been done. So it would fall straight
+    // past every tier above and out of the bottom of this loop — covered,
+    // counted, and still never offered. The exclusion was load-bearing twice.
+    //
+    // LAST AMONG THE ORDINARY TIERS, and that is the whole restraint. Anything
+    // with a real warrant — a date, an unblocked antecedent, a thread to resume,
+    // rising pressure, an arrived clock — is offered first. These sort behind
+    // all of it, in the order they arrived, which is deterministic, needs no
+    // inference, and is explainable in one sentence.
+    //
+    // A DUMP CANNOT FLOOD THIS. The queue caps at five (ADR-0030), real demands
+    // outrank these, and the offer is one thing at a time — so forty captured
+    // lines cost at most a few "Not this", never a wall. That was the objection
+    // to offering them at all, and the cap is what answers it.
     // Not yet asking for anything. Correct outcome: it stays quiet.
   }
 
@@ -431,8 +517,10 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
   // front of the very next thing, which is the cheapest moment this app will
   // ever get. A real date that is HERE still outranks it — that is a promise to
   // somebody, and the chain will still be there in an hour.
+  // `unsorted` sits behind every real warrant and ahead of `beneath` only
+  // because `beneath` is a fallback computed when nothing else asked at all.
   const RANK: Record<NextUpReason, number> =
-    { 'hard-date': 0, unblocked: 1, resume: 2, pressure: 3, ready: 4, beneath: 5 };
+    { 'hard-date': 0, unblocked: 1, resume: 2, pressure: 3, ready: 4, unsorted: 5, beneath: 6 };
   return items.sort((a, b) => {
     const r = RANK[a.reason] - RANK[b.reason];
     if (r !== 0) return r;
