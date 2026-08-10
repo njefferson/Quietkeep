@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.1',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**Things you never asked for stopped saying they were waiting for you.** When something loses its date — you clear it, or you throw away the project it was filed under — the app quietly gives it a new one so it cannot go missing. That safety net was being read as *you* asking for it, so days later it would come back saying "this one is waiting". It was never true.',
+      '**Everything you actually did ask for still comes back exactly as it did.** Something you promoted off the Menu, a thread you were pulled away from, a date you set, a thing that just became possible — all unchanged. The difference is only ever about who asked.',
+    ],
+  },
+  {
     triplet: '2.0.0',
     kind: 'VERSION',
     date: '2026-08-10',

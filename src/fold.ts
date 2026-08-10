@@ -47,8 +47,12 @@ export interface Clock {
  * - `gate:clarify.routed`, `gate:replan.resolved`, `gate:menu.item.promoted`,
  *   `gate:capture.recorded`, `gate:resume.card.created` — somebody DID something,
  *   and the cure is how that choice becomes "now". These are demands.
- * - `gate:node.created` — a node exists and nobody said when. That is the only cure
- *   with no intent behind it.
+ * - `gate:node.created` — a node exists and nobody said when. The clearest case,
+ *   and for a long time the only one recognised. **It is not the only one**: see
+ *   `NO_INTENT_CURES` below, which classifies every kind the gate cures and is
+ *   held total by `test/cure-intent.test.ts`. This line used to end "that is the
+ *   only cure with no intent behind it", which read as a finding and was really
+ *   an omission — twenty-six kinds had never been considered either way.
  *
  * I first wrote this as "any `gate:` source", which is the tempting reading and is
  * wrong twice over: it made a deliberately promoted Menu item vanish from Next up,
@@ -60,17 +64,74 @@ export interface Clock {
  * every log written before this field existed behaves exactly as it did, and it errs
  * towards showing work rather than quieting it.
  */
+/**
+ * THE NO-INTENT CURES, NAMED ONE BY ONE (2.0.1).
+ *
+ * This was two sources. The gate cures twenty-eight event kinds, so twenty-six
+ * of them were read as somebody asking for something, and that was measurable
+ * rather than theoretical — folded through the real gate:
+ *
+ * - Clear the only date on something. Days later it is offered as "this one is
+ *   waiting". You said there was no date; the app asks anyway.
+ * - Trash a project. Its child, cured as a BYSTANDER so it would not go silent,
+ *   is offered as "this one is waiting". Nobody asked for it.
+ *
+ * Both sentences are claims about the reader's intent, and both are false. That
+ * is the same class as the audit's 1,012-of-1,429 "ready" — an arithmetically
+ * correct number that meant nothing.
+ *
+ * WHY A NAMED SET AND NOT "any gate:". Because "any gate:" is the tempting
+ * reading and the docblock above records what it cost: a deliberately promoted
+ * Menu item vanished from Next up, and a resume card stopped coming back after
+ * an interruption. Both are cures, and both are how a decision takes effect.
+ * The distinction is not "did the gate write it" but **did the event it cured
+ * express an intent about WHEN**. So every kind is classified, by hand, once.
+ *
+ * The set is asserted TOTAL over the gate's cured kinds by a test, so adding a
+ * cure without deciding which side it falls on is a build failure rather than a
+ * silent new demand. That totality is the point: this predicate drifted for
+ * twenty-six kinds precisely because nothing made the omission visible.
+ */
+const NO_INTENT_CURES: ReadonlySet<string> = new Set([
+  // A node exists and nobody said when. The original, and the clearest case.
+  'gate:node.created',
+  // A worry ENTERING carries no intent about when — its surface asks "whose is
+  // this?" before anything else (1.17.3, the seam audit).
+  'gate:bother.received',
+  // You REMOVED the date. A cure that then asks today contradicts the very act
+  // it is curing, which is the plainest form of this defect.
+  'gate:clock.cleared',
+  // You FINISHED it. The re-clock exists so completed work is not silent (law 1
+  // does not exempt it), and it must not be read as the work asking again.
+  'gate:done.marked',
+  // Cures BYSTANDERS — children whose only coverage was an ancestor that just
+  // left the world (ADR-0011). They did not ask for anything; something was
+  // done to their parent.
+  'gate:node.trashed',
+  // Structure, not timing. Re-homing, merging, splitting, changing what kind of
+  // thing something is, or what role a project plays — none of it says when.
+  'gate:node.parented',
+  'gate:node.unparented',
+  'gate:node.merged',
+  'gate:node.unmerged',
+  'gate:node.kind.changed',
+  'gate:project.role.set',
+  // You let it go (1.32.0's exit that is neither done nor deleted). A cure that
+  // makes it ask is the app not believing you.
+  'gate:node.released',
+  // You declined it. Same shape.
+  'gate:request.declined',
+  // You just said it waits for something ELSE. Asking now defeats the anchor —
+  // and the `unblocked` tier is what speaks when the antecedent finishes.
+  'gate:after.set',
+]);
+
 export const isAppClock = (c: Clock | undefined | null): boolean =>
-  // `gate:bother.received` joined in 1.17.3 (the seam audit), by this
-  // predicate's own doctrine: a cure inherits the intent of the event it cured,
-  // and a worry ENTERING carries no intent about when — its surface is the
-  // bother flow, which asks "whose is this?" before anything else
-  // (src/bother.ts: "not a task, has no next action"). Without this, every
-  // worry was offered on the work surface as "this one is waiting" with a Done
-  // button the same day, and a routed one kept asking for ever. The demand
-  // cures in the list above stay demands — this adds one no-intent case, it
-  // does not reopen the "any gate:" mistake the comment records.
-  c != null && (c.source === 'gate:node.created' || c.source === 'gate:bother.received');
+  c != null && c.source != null && NO_INTENT_CURES.has(c.source);
+
+/** Exported so a test can assert the classification stays TOTAL over the gate's
+ *  cured kinds — see `NO_INTENT_CURES`. Not read by any surface. */
+export const noIntentCures = NO_INTENT_CURES;
 
 /** One line of a node's decision log. `meeting` is folded and rendered when
  *  present, and written by nothing in 1.9.0 — nothing resolves a meeting
