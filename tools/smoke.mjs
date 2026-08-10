@@ -270,6 +270,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   const writeStart = Date.now();
   await page.click('#capture-form button[type=submit]');
+  await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
   await page.waitForSelector('.card');
   const writeMs = Date.now() - writeStart;
   is(await page.locator('.card').count(), 1, 'one card after capture');
@@ -298,6 +299,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nText is text, never interpreted');
   await page.fill('#capture', '<img src=x onerror="globalThis.__pwned=1">');
   await page.click('#capture-form button[type=submit]');
+  await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
   await page.waitForFunction(() => document.querySelectorAll('.card').length === 2);
   is(await page.evaluate(() => globalThis.__pwned), undefined, 'a hostile capture is stored as text');
   is(await page.locator('.card-title').first().textContent(), '<img src=x onerror="globalThis.__pwned=1">',
@@ -354,6 +356,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and with every line it had, whitespace and blanks included');
 
   await page.click('#capture-form button[type=submit]');
+  await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
   await page.waitForFunction((n) => document.querySelectorAll('.card').length === n, beforeDump + 3);
   is(await page.locator('.card').count(), beforeDump + 3,
     'three items — the blank line is not a thing to do');
@@ -586,8 +589,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'maybe one day', 'keep for reference', 'not a thing after all']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
+    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   }
   await tpage.waitForFunction(() => document.querySelectorAll('.card').length === 6);
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden])');
   is((await tpage.locator('#triage-gauge').textContent())?.includes('6 to clarify'), true,
     'the inbox gauge counts every unclarified item');
@@ -757,6 +762,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // clarify.reopened stops returning the card to the inbox.
   await tpage.fill('#capture', 'routed then reclaimed');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   await tpage.click('#triage-actions .route');                   // Hot
   await tpage.waitForSelector('#triage-actions .route .route-hint');
@@ -974,6 +980,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // completing it here would quietly hollow that check out into a tautology.
   await tpage.fill('#capture', 'a timed two-minute job');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   await tpage.click('#triage-actions .route');                   // Hot
   await tpage.waitForSelector('#triage-actions .route .route-hint');
@@ -1086,6 +1093,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['second thing asking', 'third thing asking']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
+    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await tpage.waitForSelector('#triage:not([hidden]) .route');
     await tpage.click('#triage-actions .route');                       // Hot
     await tpage.waitForSelector('#triage-actions .route .route-hint');
@@ -2178,6 +2186,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'written after the backup was taken');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForTimeout(250);
   const heldAfterExtra = await tpage.locator('#cards .card').count();
   is(heldAfterExtra, heldBefore + 1, 'the store now differs from the file');
@@ -2257,6 +2266,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['draft the brief', 'brief the boss']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
+    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await routeOne('Next action');
   }
   await tpage.reload({ waitUntil: 'load' });
@@ -2364,6 +2374,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.fill('#capture', 'the quarterly report');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Next action');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -2476,9 +2487,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.fill('#capture', 'the migration');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Next action');
   await tpage.fill('#capture', 'write the script');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Next action');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -2560,6 +2573,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'something after the report');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForTimeout(300);
   await tpage.click('#open-about');
   await expandGroups(tpage);
@@ -2599,6 +2613,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.fill('#capture', 'the signed form');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Waiting for');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -2670,6 +2685,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // two rows for ever.
   await tpage.fill('#capture', 'the numbers');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Waiting for');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -3496,6 +3512,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'a decent tripod');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Someday');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -4239,6 +4256,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // sheet opens on that very item.
   await tpage.fill('#capture', 'open me from triage');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden])');
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
@@ -4258,6 +4277,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // gate was purely in what the surface chose to show.
   await tpage.fill('#capture', 'a thing to sort without heat');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   const countHeats = () => tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -4504,10 +4524,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'strip the old sealant');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeUntilOut('strip the old sealant');
   await assertRouted('strip the old sealant');
   await tpage.fill('#capture', 're-seal the frame');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeUntilOut('re-seal the frame');
   await assertRouted('re-seal the frame');
 
@@ -4706,6 +4728,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // that makes putting a thing down cheap enough to actually do.
   await tpage.fill('#capture', 'learn the tenor recorder');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeUntilOut('learn the tenor recorder');
   await fillSearch('tenor recorder');
   await tpage.waitForSelector('#search-results .search-open');
@@ -5126,6 +5149,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['Polish the samovar', 'polish the SAMOVAR', 'Polish the banister']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
+    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await tpage.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
   }
   is(await twinsCount(), twinsBefore + 2,
@@ -5320,6 +5344,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // group — NOT twice — and on the portfolio row.
   await tpage.fill('#capture', 'the fielding review');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
   await fillSearch('fielding review');
   await tpage.waitForSelector('#search-results .search-open');
@@ -5503,6 +5528,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // back, a door away in the ledger.
   await tpage.fill('#capture', 'Take on the newsletter for Dana');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
   await fillSearch('newsletter');
   await tpage.waitForSelector('#search-results .search-open');
@@ -5791,6 +5817,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // cannot litter.
   await tpage.fill('#capture', 'the thing in the shed');
   await tpage.click('#capture-form button[type=submit]');
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   for (let i = 0; i < 12; i++) {
     const prompt = await tpage.locator('#triage-prompt').textContent();

@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.39.2 — ITERATION
+
+*2026-08-09*
+
+- **Putting something down no longer gets you asked a question about it.** Capture used to bring the sorting surface straight up — you typed one thing and were immediately asked whether it was hot or cold. Ten things in a row meant ten interruptions, on the one path that has to stay clear.
+- **It offers a door instead: *Sort what you have put down*.** Press it when you have a moment. Nothing is hidden and nothing waits any longer than it did — and when you come back to the app, it still shows you what is waiting, as it always has.
+- **The Menu button is now the last control in the top row; it was second to last.** That door sits ahead of it. Nothing else changed position.
+
 ## 1.39.1 — ITERATION
 
 *2026-08-09*

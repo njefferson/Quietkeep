@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.39.2',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**Putting something down no longer gets you asked a question about it.** Capture used to bring the sorting surface straight up — you typed one thing and were immediately asked whether it was hot or cold. Ten things in a row meant ten interruptions, on the one path that has to stay clear.',
+      '**It offers a door instead: *Sort what you have put down*.** Press it when you have a moment. Nothing is hidden and nothing waits any longer than it did — and when you come back to the app, it still shows you what is waiting, as it always has.',
+      '**The Menu button is now the last control in the top row; it was second to last.** That door sits ahead of it. Nothing else changed position.',
+    ],
+  },
+  {
     triplet: '1.39.1',
     kind: 'ITERATION',
     date: '2026-08-09',

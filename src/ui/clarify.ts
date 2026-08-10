@@ -41,7 +41,9 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: 
 };
 
 export interface TriageUI {
-  refresh(): void;
+  /** `after: 'capture'` refreshes the contents WITHOUT letting the surface
+   *  reveal itself — see `suppressed`. */
+  refresh(after?: 'capture' | 'ask'): void;
   /** Re-word an on-screen do-now offer after the timer length changes (1.10.0).
    *  Separate from `refresh` on purpose — see the note at its definition. */
   relabelTimer(): void;
@@ -73,6 +75,14 @@ export function mountTriage(
   // the whole section, and the way to take that route back must not vanish with
   // it. Optional, so older markup without it simply has no undo.
   const undoRegion = document.querySelector<HTMLElement>('#triage-undo');
+  const openBtn = document.querySelector<HTMLButtonElement>('#triage-open');
+
+  /** Whether this surface may put itself on screen (1.39.2).
+   *
+   *  False from the first capture of a visit until the reader asks for the inbox
+   *  or returns to the app. Not a timer and not remembered anywhere: a fresh
+   *  arrival is a fresh decision, so coming back always shows you what waited. */
+  let suppressed = false;
 
   /**
    * WHEN IT WAS WRITTEN (1.23.0) — the one thing triage has never been able to
@@ -744,7 +754,12 @@ export function mountTriage(
     ACTIONS.append(skipControl(nodeId));
   };
 
-  function refresh(): void {
+  openBtn?.addEventListener('click', () => { refresh('ask'); });
+
+  function refresh(after?: 'capture' | 'ask'): void {
+    // A capture closes the door for this visit; asking for the inbox opens it.
+    if (after === 'capture') suppressed = true;
+    if (after === 'ask') suppressed = false;
     const st = session.state();
     // Two scans, not four: the heads and the gauge all derive from these.
     const inbox = unclarified(st);
@@ -784,11 +799,49 @@ export function mountTriage(
     const heatItem = askedFor ? null : fresh(heatQueue.filter(n => !straightToSort.has(n.id)));
     const clarifyItem = askedFor ?? fresh(inbox);
 
-    if (heatItem) {
+    // DECIDING WHILE DUMPING STOPS THE DUMPING (1.39.2).
+    //
+    // This surface used to reveal itself the moment an unclarified capture
+    // existed — so putting one thing down was answered by "Hot or cold?" about
+    // the thing you had just put down, before you had finished thinking. Ten
+    // things in a row meant ten interruptions, on the one path the whole app is
+    // built to keep frictionless.
+    //
+    // `docs/planning-for-humans.md` says it in terms, and the many-line capture
+    // work was built on it: nothing is sorted, split or filed on the way in. The
+    // main screen was the exception nobody had looked at.
+    //
+    // So a capture may CHANGE what is shown here; it may not TURN IT ON. It
+    // appears when you arrive with things waiting, and when you ask for it —
+    // never as an answer to your own typing.
+    // Suppressed, but something IS waiting: show the door rather than nothing.
+    // Hiding the surface outright would strand the inbox for the rest of the
+    // visit, which is a worse failure than the interruption being removed.
+    const waiting = Boolean(heatItem ?? clarifyItem);
+    if (openBtn) openBtn.hidden = !(suppressed && waiting);
+    if (suppressed && waiting) {
       REGION.hidden = false;
+      CARD.hidden = true;
+      CARD.textContent = '';
+      // HIDDEN, not emptied. `#triage-prompt` is a heading, and a heading with no
+      // text is an axe `empty-heading` violation — caught by the a11y walk the
+      // moment this state was given one of its own to be measured in.
+      PROMPT.hidden = true;
+      PROMPT.textContent = '';
+      ACTIONS.replaceChildren();
+      paintContext(null);
+      showing = null;
+      return;
+    }
+    CARD.hidden = false;
+    PROMPT.hidden = false;
+
+    const mayReveal = !suppressed;
+    if (heatItem) {
+      if (mayReveal) REGION.hidden = false;
       renderHeat(heatItem.id, heatItem.title);
     } else if (clarifyItem) {
-      REGION.hidden = false;
+      if (mayReveal) REGION.hidden = false;
       renderClarify(clarifyItem.id, clarifyItem.title, clarifyItem.kind, clarifyItem.heat);
     } else {
       REGION.hidden = true;

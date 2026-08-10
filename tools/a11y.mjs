@@ -268,7 +268,18 @@ const REGISTRY = {
   // Where things are (1.39.0). The destination list is a new surface, and a new
   // surface joins this gate in the same commit or it ships unmeasured.
   'more': ['#more-title', '.more-go', '#more-close'],
+  // `#triage-open` (1.39.2) is the door onto the inbox — it exists only while
+  // something is waiting and the surface is suppressed, which is the state right
+  // after a capture. Added to THIS entry rather than a second 'with cards' key:
+  // a duplicate key in an object literal silently wins, and the registry would
+  // have shrunk to one selector while still reporting a pass.
   'with cards': ['.card-title', '.card-when', '#status', '.group-head'],
+  // The door onto the inbox (1.39.2), which exists ONLY between a capture and
+  // the moment somebody asks to sort — the app no longer answers your typing
+  // with a question about it. Its own driven state, because that window is the
+  // only place it is on screen, and a registry entry matching nothing visible
+  // is the false receipt `#nextup-left` already cost a release for.
+  'the door onto the inbox': ['#triage-open'],
   // Search results — only exist once you have typed, so a state of their own.
   // The summary is the quiet count; the "where" is the held status word, the
   // lowest-contrast text on the row and the whole point of showing it.
@@ -1140,6 +1151,17 @@ try {
     // State 3: with a card on the surface.
     await page.fill('#capture', 'a held thought');
     await page.click('#capture-form button[type=submit]');
+
+    // State 3-i: the door, measured BEFORE it is pressed — the state a person is
+    // in the instant after putting something down (1.39.2).
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).catch(() => {});
+    await auditContrast(page, 'the door onto the inbox', theme);
+    await auditAxe(page, 'the door onto the inbox', theme);
+    await auditNames(page, 'the door onto the inbox', theme);
+    await auditTargets(page, 'the door onto the inbox', theme);
+    await auditFocusRings(page, 'the door onto the inbox', theme, ['#triage-open']);
+
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForSelector('.card');
     await auditContrast(page, 'with cards', theme);
     await auditAxe(page, 'with cards', theme);
@@ -1482,6 +1504,7 @@ try {
     // only way anything gets there.
     await page.fill('#capture', 'a book to read');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForSelector('#triage:not([hidden]) .route');
     for (let i = 0; i < 12; i++) {
       // WHICH PASS, asked of the PROMPT (1.25.0). This read "break once a hint
@@ -1635,6 +1658,7 @@ try {
     // something to "Waiting for", which is the only way to be owed anything.
     await page.fill('#capture', 'the signed form');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForSelector('#triage:not([hidden]) .route');
     for (let i = 0; i < 12; i++) {
       // WHICH PASS, asked of the PROMPT (1.25.0). This read "break once a hint
@@ -1737,6 +1761,7 @@ try {
     // for something that was never going to exist.
     await page.fill('#capture', 'a bigger piece of work');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForSelector('#triage:not([hidden]) .route');
     for (let i = 0; i < 12; i++) {
       // WHICH PASS, asked of the PROMPT (1.25.0). This read "break once a hint
@@ -1901,6 +1926,7 @@ try {
     // list row is which).
     await page.fill('#capture', 'a sortable thing under something');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForSelector('#triage:not([hidden]) .route');
     // Drive heat -> clarify -> route with IN-PAGE clicks under a polling wait.
     // Locator clicks lost a race on the 2-core CI runner: every queued commit
@@ -2130,6 +2156,7 @@ try {
     // let it go through its own sheet — the app's real path, no seeding.
     await page.fill('#capture', 'a thing let go');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await fillSearch('thing let go');
     await page.waitForSelector('#search-results .search-open');
     await page.click('#search-results .search-open');
@@ -2146,9 +2173,11 @@ try {
     // back out so later states see the store holding what it held.
     await page.fill('#capture', 'the same errand twice');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
     await page.fill('#capture', 'The same errand TWICE');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
     await fillSearch('same errand');
     await page.waitForSelector('#search-results .search-open');
@@ -2241,6 +2270,7 @@ try {
     // the states a person actually meets, in the order they meet them.
     await page.fill('#capture', 'a thing asked of me');
     await page.click('#capture-form button[type=submit]');
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
     await fillSearch('asked of me');
     await page.waitForSelector('#search-results .search-open');

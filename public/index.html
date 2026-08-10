@@ -205,6 +205,11 @@
   <!-- Triage: the heat pass and clarify. One card at a time; hidden when the
        inbox is clear. Announced in its own live region. -->
   <section id="triage" class="triage" aria-labelledby="triage-prompt" hidden>
+    <!-- THE DOOR, not the question (1.39.2). After you have put something down,
+         this surface offers to sort rather than asking about the thing you just
+         typed. Deciding while dumping stops the dumping; ten captures in a row
+         used to mean ten interruptions on the one path that must stay clear. -->
+    <button id="triage-open" type="button" class="ghost" hidden>Sort what you have put down</button>
     <p id="triage-gauge" class="triage-gauge"></p>
     <!-- tabindex=-1 so focus can land here after a card is replaced: activating a
          route removes the button, and focus must not fall to <body> (WCAG 2.4.3). -->

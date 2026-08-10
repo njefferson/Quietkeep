@@ -629,7 +629,7 @@ export async function main(edition?: Edition): Promise<void> {
   let search: { refresh(): void } = { refresh() {} };
   let sort: { refresh(): void } = { refresh() {} };
   let work: { refresh(): void } = { refresh() {} };
-  let triage: { refresh(): void; relabelTimer(): void } = { refresh() {}, relabelTimer() {} };
+  let triage: import('./clarify.ts').TriageUI = { refresh() {}, relabelTimer() {} };
   let replan: { refresh(): void } = { refresh() {} };
   let focus: FocusUI = { refresh() {}, start() {} };
   let reentry: { refresh(): void } = { refresh() {} };
@@ -938,7 +938,9 @@ export async function main(edition?: Edition): Promise<void> {
     void session.setDraft('').catch(() => { /* stale draft self-heals on next keystroke */ });
     try {
       refreshAll();
-      triage.refresh();
+      // 'capture' — refresh the contents, but do not let the inbox put itself in
+      // front of somebody who is still putting things down (1.39.2).
+      triage.refresh('capture');
     } catch {
       // A render bug must not contradict a landed write; the card appears on
       // next load. landed stays the truth.
