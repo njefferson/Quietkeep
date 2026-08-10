@@ -692,6 +692,58 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#tour-skip');                   // dismiss the first-run walkthrough
   await tpage.waitForSelector('body[data-intro-dismissed=true]');
 
+  // A THING IS A TASK THE MOMENT IT EXISTS (2.0.0) — the headline claim, gated.
+  //
+  // This walk PASSED UNCHANGED when the offer gate came out, which is the whole
+  // reason this block exists: nothing here was asserting the behaviour either
+  // way, so the biggest change the app has had would have shipped ungated and a
+  // silent revert would have gone green. A change nobody's test can see is a
+  // change nobody's test is holding.
+  //
+  // One capture, on a store where nothing has been sorted and nothing has been
+  // given a date, a route, a parent or an anchor. It must come back as WORK —
+  // not as a sorting card — with the reason stated in the closed vocabulary.
+  console.log('\nA captured thing is a task at once — no sorting required');
+  // ITS OWN CONTEXT, ITS OWN STORE. The first version of this block ran on the
+  // shared triage page and left its node behind — the very next section waits
+  // for exactly six cards, got seven, and the walk died thirty seconds later
+  // with a timeout that said nothing about the cause. The rule was already
+  // written down two hundred lines below ("leave the surface as you found it")
+  // and this is what ignoring it costs.
+  //
+  // A fresh store is also the honest condition for the claim: nothing sorted,
+  // nothing dated, nothing parented, nothing anchored.
+  const uctx = await browser.newContext({ timezoneId: 'America/Denver', locale: 'en-US' });
+  const upage = await uctx.newPage();
+  await upage.goto(url, { waitUntil: 'load' });
+  await upage.waitForSelector('body[data-ready=true]');
+  await upage.click('#tour-skip');
+  await upage.waitForSelector('body[data-intro-dismissed=true]');
+
+  await upage.fill('#capture', 'just a thought, unsorted');
+  await upage.click('#capture-form button[type=submit]');
+  await upage.waitForSelector('#nextup:not([hidden])', { timeout: 4000 });
+  is(await upage.locator('#nextup-title').textContent(), 'just a thought, unsorted',
+    'something captured and never sorted is offered as work, in the words that were typed');
+  is(await upage.locator('#nextup-why').textContent(), 'you put this down',
+    'and says why, as a fact about the world rather than about the person');
+  // Offered WITHOUT having been routed — it is still sitting in the inbox, so
+  // the offer cannot be an artefact of triage having quietly run.
+  is(await upage.evaluate(() => Number(document.querySelector('#triage-gauge')?.dataset.waiting ?? 0)), 1,
+    'and it is still sitting unsorted — being offered did not sort it');
+  // AND NOTHING PUT A DECISION IN FRONT OF IT (1.42.1 still holds under 2.0.0).
+  is(await upage.locator('#triage-actions .route').count(), 0,
+    'and no forced choice was raised about it — capture covers, sorting is optional');
+  // Doing it needs no decision about what kind of thing it is.
+  is(await upage.locator('#nextup-done').isVisible(), true,
+    'and it can simply be done, with no route chosen first');
+  await upage.click('#nextup-done');
+  await upage.waitForFunction(() =>
+    document.querySelector('#nextup-title')?.textContent !== 'just a thought, unsorted');
+  is((await upage.locator('#nextup-title').textContent()) !== 'just a thought, unsorted', true,
+    'finishing it takes it off the offer, exactly like anything else');
+  await uctx.close();
+
   console.log('\nTriage — capture fills the inbox');
   for (const t of ['do a two-minute thing', 'a real next step', 'someone owes me this',
     'maybe one day', 'keep for reference', 'not a thing after all']) {

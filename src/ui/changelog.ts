@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.0',
+    kind: 'VERSION',
+    date: '2026-08-10',
+    notes: [
+      '**Anything you put down is a task straight away.** It used to have to be sorted first — until you said what kind of thing it was, it came back only as something else to sort, never as something to do. Now it comes back as work the moment you write it, in the words you typed.',
+      '**Sorting is no longer the toll.** A date, a place, or the thing it follows changes *when* and *where* something comes back. It never decided *whether*, and now it does not pretend to.',
+      '**And it cannot bury you.** Things you have sorted are offered first; what you only put down waits behind them, in the order it arrived. One at a time, never more than five lined up.',
+    ],
+  },
+  {
     triplet: '1.42.2',
     kind: 'ITERATION',
     date: '2026-08-10',
