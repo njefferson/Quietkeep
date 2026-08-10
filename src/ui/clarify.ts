@@ -77,12 +77,29 @@ export function mountTriage(
   const undoRegion = document.querySelector<HTMLElement>('#triage-undo');
   const openBtn = document.querySelector<HTMLButtonElement>('#triage-open');
 
-  /** Whether this surface may put itself on screen (1.39.2).
+  /** Whether this surface may put itself on screen (1.39.2; inverted 1.43.0).
    *
-   *  False from the first capture of a visit until the reader asks for the inbox
-   *  or returns to the app. Not a timer and not remembered anywhere: a fresh
-   *  arrival is a fresh decision, so coming back always shows you what waited. */
-  let suppressed = false;
+   *  TRUE UNTIL ASKED. Sorting is a place you go, never a place you are sent.
+   *
+   *  1.39.2 stopped a capture from turning this on, which fixed the ten-captures-
+   *  ten-interruptions path. It left the other door open: arriving with anything
+   *  unsorted put a forced choice on screen before the one thing you could do —
+   *  `#triage` is markup order 218 and `#nextup` is 384, so the eight-way
+   *  decision was literally above the answer to "what now".
+   *
+   *  The old value was defended on the grounds that a fresh arrival is a fresh
+   *  decision, so coming back should show what waited. That reasoning assumed
+   *  the reveal was protecting the items. It is not: `cureFor` gives every
+   *  `capture.recorded` a same-day clock IN THE SAME TRANSACTION (gate.ts), so
+   *  an unsorted capture is covered the instant it is written, `whyCovered`
+   *  returns 'clock' for it, and it is counted in the proof like everything
+   *  else. Nothing is at risk of going quiet while it sits here.
+   *
+   *  So what the reveal actually did was charge a decision for arriving. That is
+   *  the corridor ADR-0084 named and ADR-0085 removes. The door below is how the
+   *  inbox is reached, and it is always there while anything waits — reachable,
+   *  never in front. */
+  let suppressed = true;
 
   /** Whether a hot/cold sweep is under way (1.39.3).
    *
@@ -774,9 +791,34 @@ export function mountTriage(
     // Two scans, not four: the heads and the gauge all derive from these.
     const inbox = unclarified(st);
     const heatQueue = needsHeat(st);
+    // NO COUNT (1.43.0). The reader is told what is TRUE of these things, not
+    // how many of them there are.
+    //
+    // `12 to clarify` is the countable batch V2 stage 1 deleted from the
+    // coverage gauge, reintroduced on the surface best placed to do damage with
+    // it: a number that only goes up as you put things down, sitting on the
+    // screen you arrive at. It converts a good day's capture into a visible
+    // debt, which is the mechanism `docs/planning-for-humans.md` says stops the
+    // dumping — and the dumping is the one path this app cannot afford friction
+    // on. The capture confirmation already refuses a count for this reason, and
+    // so does the dump commit; this was the last place still keeping score.
+    //
+    // What replaces it is the fact the count was obscuring. These items are
+    // covered — the gate clocked each one as it was written — so sorting is not
+    // what rescues them. It decides WHERE they come back. Saying so makes the
+    // step optional in words as well as in fact (ADR-0029, ADR-0085).
     GAUGE.textContent = inbox.length === 0
-      ? 'Inbox clear.'
-      : `${inbox.length} to clarify${heatQueue.length ? ` · ${heatQueue.length} not yet hot/cold` : ''}`;
+      ? 'Nothing here is waiting to be sorted.'
+      : 'These are held either way. Sorting decides where they come back, not whether.';
+    // The count still exists for the WALKS, which need to watch a queue drain
+    // and cannot read a sentence that deliberately does not change. A data
+    // attribute is not a reader surface: `tools/a11y.mjs` measures what is
+    // rendered, and the smoke walk asserts the visible text carries no digit at
+    // all. Keeping the number here rather than in a hidden element is on
+    // purpose — a visually-hidden count is still a count to a screen-reader
+    // user, and they are owed the same freedom from the tally as anybody else.
+    GAUGE.dataset.waiting = String(inbox.length);
+    GAUGE.dataset.unheated = String(heatQueue.length);
 
     // Heat pass first while there is anything unheated; then clarify. Both are
     // one card; the surface hides itself when the inbox is clear. A running

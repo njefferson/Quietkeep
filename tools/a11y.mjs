@@ -1498,7 +1498,7 @@ try {
     // behind to confuse the state that audits one.
     for (let i = 0; i < 12; i++) {
       const left = await page.evaluate(() =>
-        Number(/^(\d+)/.exec(document.querySelector('#triage-gauge')?.textContent ?? '')?.[1] ?? 0));
+        Number(document.querySelector('#triage-gauge')?.dataset.waiting ?? 0));
       if (left <= 1) break;
       await page.locator('#triage-actions .route', { hasText: 'Next action' }).first().click();
       await page.waitForTimeout(60);

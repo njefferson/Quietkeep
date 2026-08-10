@@ -688,8 +688,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForFunction(() => document.querySelectorAll('.card').length === 6);
   await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden])');
-  is((await tpage.locator('#triage-gauge').textContent())?.includes('6 to clarify'), true,
-    'the inbox gauge counts every unclarified item');
+  // THE GAUGE SAYS WHAT IS TRUE OF THESE THINGS, AND NEVER HOW MANY (1.43.0).
+  //
+  // A number that only rises as you put things down turns a good day's capture
+  // into a visible debt. Stage 1 deleted exactly that string from the coverage
+  // gauge; this asserts it cannot come back on the screen you arrive at. The
+  // count lives on in a data attribute for this walk — a test hook is not a
+  // reader surface — so both halves are checked here: no digit in the words,
+  // and the real number still observable.
+  is(/\d/.test((await tpage.locator('#triage-gauge').textContent()) ?? ''), false,
+    'the inbox gauge carries no digit at all — the batch is never counted at the reader');
+  is((await tpage.locator('#triage-gauge').textContent()), 'These are held either way. Sorting decides where they come back, not whether.',
+    'it says the items are held either way, and that sorting decides where rather than whether');
+  is(await tpage.locator('#triage-gauge').getAttribute('data-waiting'), '6',
+    'and the count is still there for the walk, off the reader surface');
   is((await tpage.locator('#triage-prompt').textContent()), 'Hot or cold?',
     'the heat pass leads, before clarify');
 
@@ -721,7 +733,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       tx.onsuccess = () => res(tx.result);
     });
   });
-  const gaugeBeforeSkip = await tpage.locator('#triage-gauge').textContent();
+  const gaugeBeforeSkip = await tpage.locator('#triage-gauge').getAttribute('data-waiting');
   await tpage.locator('#triage-actions button', { hasText: 'Not this one' }).click();
   await tpage.waitForTimeout(200);
   const afterSkipCard = await tpage.locator('#triage-card').textContent();
@@ -742,7 +754,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `and appends NOTHING to the log (${logBeforeSkip} events before and after)`);
   // And the count is untouched: it says what is in the inbox, not what was
   // avoided. A number that shrank on a skip would be a score.
-  is(await tpage.locator('#triage-gauge').textContent(), gaugeBeforeSkip,
+  is(await tpage.locator('#triage-gauge').getAttribute('data-waiting'), gaugeBeforeSkip,
     'and the count still says what is in the inbox, not what was passed over');
 
   // IT DOES NOT SURVIVE A RELOAD, and proving that also puts the surface back
@@ -752,6 +764,33 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // it; leave the surface as you found it.)
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
+
+  // SORTING IS SOMEWHERE YOU GO, NEVER SOMEWHERE YOU ARE SENT (1.43.0).
+  //
+  // This is the corridor ADR-0084 named and ADR-0085 removes, and this reload is
+  // exactly the arrival that used to walk you into it: six things waiting, and
+  // the app answering with "Hot or cold?" about one of them before it answered
+  // "what now". `#triage` is markup order 218 and `#nextup` is 384, so the
+  // forced choice was above the offer on the page as well as in the sequence.
+  //
+  // Asserted as an absence, which is the only way to assert a corridor is gone:
+  // arriving with a full inbox puts NO route button and NO card on screen. The
+  // door is there and the gauge is there; the decision is not.
+  // TOLERANT WAIT, DELIBERATELY. A bare `waitForSelector` here was planted
+  // against and it did catch the regression — by hanging for thirty seconds and
+  // dying with a stack trace, which says "the walk broke" rather than "the
+  // corridor is back". The three assertions below say which of the three
+  // properties failed, in four seconds, in words. A gate that fails by crashing
+  // costs the next person the diagnosis it already had.
+  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).catch(() => {});
+  is(await tpage.locator('#triage-actions .route').count(), 0,
+    'arriving with a full inbox offers NO forced choice — sorting is a door, not a corridor');
+  is(await tpage.locator('#triage-card').isVisible(), false,
+    'and no card is put in front of you before you have asked for one');
+  is(await tpage.locator('#triage-open').isVisible(), true,
+    'the way in is on screen the whole time, so nothing is stranded by not being shown');
+
+  await tpage.click('#triage-open');
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   is(await tpage.locator('#triage-card').textContent(), beforeSkip,
     'a reload brings it back to the top — nothing about the skip was kept');
@@ -778,12 +817,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // The clarify buttons are label+hint; match by their visible label. Route in
   // the capture order the queue presents (oldest first).
   const routeByLabel = async (label) => {
-    const before = Number((await tpage.locator('#triage-gauge').textContent() || '').match(/(\d+) to clarify/)?.[1] ?? 'NaN');
+    const before = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting') ?? 'NaN');
     await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
-    // Either the gauge drops by one, or the inbox goes clear.
+    // The queue drops by one. Read from the data attribute since 1.43.0 — the
+    // words no longer change as it drains, on purpose.
     await tpage.waitForFunction((n) => {
-      const g = document.querySelector('#triage-gauge')?.textContent || '';
-      return g.includes('Inbox clear') || Number(g.match(/(\d+) to clarify/)?.[1]) === n - 1;
+      const g = document.querySelector('#triage-gauge');
+      return Number(g?.dataset.waiting ?? 'NaN') === n - 1;
     }, before);
   };
 
@@ -812,7 +852,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await routeByLabel('Trash');
 
   await tpage.waitForSelector('#triage', { state: 'hidden' });
-  is((await tpage.locator('#triage-gauge').textContent()), 'Inbox clear.',
+  is((await tpage.locator('#triage-gauge').textContent()), 'Nothing here is waiting to be sorted.',
     'the inbox clears and the surface hides itself');
   is(await tpage.locator('.card').count(), 5, 'trash removed exactly its own node; the other five remain held');
   // With the surface gone, focus returns to the capture line, not <body>.
@@ -897,8 +937,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // It is back: the clarify queue shows again, and the log carries a
   // clarify.reopened — the return is an event, not a deletion.
   await tpage.waitForFunction(() => {
-    const g = document.querySelector('#triage-gauge')?.textContent || '';
-    return !document.querySelector('#triage')?.hidden && /1 to clarify/.test(g);
+    const g = document.querySelector('#triage-gauge');
+    return !document.querySelector('#triage')?.hidden && g?.dataset.waiting === '1';
   });
   is((await tpage.locator('#triage-card').textContent()), 'routed then reclaimed',
     'and the very card is back in the inbox, ready to route again');
@@ -2367,7 +2407,19 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Drain whatever is already in the inbox first, then add these two. Earlier
   // sections leave items behind, and a heat card queued ahead of ours made the
   // wait for a clarify hint time out.
+  // THE INBOX IS BEHIND A DOOR SINCE 1.43.0, so anything that wants to sort has
+  // to open it — the surface no longer shows itself on arrival, on reload, or
+  // after a capture (ADR-0085). Idempotent, like `openMenu` further down and for
+  // the same reason: a second click would close what the last step opened.
+  const openInbox = async () => {
+    if (await tpage.locator('#triage-actions .route').count() > 0) return;
+    if (!(await tpage.locator('#triage-open').isVisible())) return;
+    await tpage.click('#triage-open');
+    await tpage.waitForSelector('#triage:not([hidden]) .route');
+  };
+
   const routeOne = async (label) => {
+    await openInbox();
     await tpage.waitForSelector('#triage:not([hidden]) .route');
     // WHICH PASS IS SHOWING, asked of the PROMPT rather than inferred.
     //
@@ -2387,6 +2439,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
     await tpage.waitForTimeout(150);
   };
+  await openInbox();
   while (await tpage.locator('#triage:not([hidden]) .route').count() > 0) {
     await routeOne('Next action');
   }
@@ -3577,6 +3630,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // queued the roof was genuinely in the inbox and simply not the card on
   // screen — the assertion below is about the surface, so the surface has to be
   // showing the thing it is about.
+  await openInbox();
   while (await tpage.locator('#triage:not([hidden]) .route').count() > 0) {
     await routeOne('Next action');
   }
@@ -3589,6 +3643,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#bother').isVisible(), false, 'the flow ends');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
+  // Behind the door since 1.43.0 \u2014 the reload no longer walks you into sorting,
+  // so the walk asks for it. The claim being checked is unchanged: the bother
+  // question came first and the next-step question comes second, once asked for.
+  await openInbox();
   const triageText = await tpage.evaluate(() => document.querySelector('#triage')?.innerText ?? '');
   is(triageText.includes('the thing with the roof'), true,
     'and NOW it is asked what the next step is \u2014 which is the second question, not the first');
@@ -3612,6 +3670,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // sections leave items in the inbox — so "capture then routeOne" sent somebody
   // else's item to Someday and the tripod was never on the Menu at all, which is
   // what the walk then failed to find.
+  await openInbox();
   while (await tpage.locator('#triage:not([hidden]) .route').count() > 0) {
     await routeOne('Next action');
   }

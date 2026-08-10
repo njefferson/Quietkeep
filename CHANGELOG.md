@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.42.1 — ITERATION
+
+*2026-08-10*
+
+- **Opening the app no longer asks you to sort anything.** Arriving with things in the inbox used to put a card in front of you and ask what to do with it, before the app had said what you could be getting on with. Now it says there is sorting to do, and waits to be asked. The button is there the whole time.
+- **Nothing you have put down is at risk while it sits there.** It is held from the moment you press the button — sorting decides *where* it comes back, not *whether*. The app now says that, where it used to show a running total instead.
+- **And that total is gone.** A number that only goes up as you put things down makes a good day look like a debt. Nothing on the way in counts what you have given it.
+- Sorting itself is unchanged — the same routes, the same quick hot-or-cold pass when there is a pile worth sweeping.
+
 ## 1.42.0 — CAPABILITY
 
 *2026-08-10*
