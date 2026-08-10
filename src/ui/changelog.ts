@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.42.2',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The end of the walkthrough now lands on a finished screen.** It hands you to the part about keeping your data on this device — and the button for it was arriving a moment after the rest of the screen, so on a slow or busy device you could be looking at the question with nothing there to answer it. It is there when you arrive now.',
+      'Nothing about what it asks, or what it does, has changed.',
+    ],
+  },
+  {
     triplet: '1.42.1',
     kind: 'ITERATION',
     date: '2026-08-10',

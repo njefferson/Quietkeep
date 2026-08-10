@@ -1574,6 +1574,27 @@ export async function mountAbout(
     // hiding it and putting it back, which is the flicker 1.40.1 removed.
     if (firstRun || kept === false) intro.hidden = false;
     else if (kept === true) intro.hidden = true;
+    // ...AND THE BUTTON INSIDE IT, from the same answer, at the same moment
+    // (1.42.2). The block above was moved off `paintStorage` precisely so the
+    // handoff would not land on a surface that grows a tick later. `#intro-ask`
+    // was left behind: it ships `hidden` in the markup and was unhidden ONLY
+    // inside the async `paintStorage` below, so the panel opened with the block
+    // present and its one control missing until a store read came back.
+    //
+    // Same defect, one element deeper — a fix aimed at a container does not
+    // reach the control in it, and nothing failed locally because the tick is
+    // short on an unloaded machine. It failed in CI on a commit that changed no
+    // application code at all, which is what a timing defect looks like when it
+    // is reporting its rate rather than its presence.
+    //
+    // `kept` IS `ask.hidden`: paintStorage sets `ask.hidden = r.persisted ||
+    // !r.supported` and `kept = r.supported ? r.persisted : true`, which agree
+    // in both branches. So this is the same value arriving earlier, never a
+    // second opinion that could disagree with the paint below.
+    //
+    // `null` means the question has not come back; the button then stays as it
+    // is rather than being shown for a promise that may already have been made.
+    if (kept !== null && introAsk) introAsk.hidden = kept;
     dialog.showModal();
     void paintStorage();
     // The calendar count is recomputed on every open. It used to be painted once

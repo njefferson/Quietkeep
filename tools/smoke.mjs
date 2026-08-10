@@ -155,8 +155,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await page.click('#tour-next');
   is(await page.locator('#tour').isVisible(), false, 'finishing closes the walkthrough');
   is(await page.locator('#about').isVisible(), true, 'and opens the panel for the storage step');
+  // READ IMMEDIATELY, WITH NO SETTLE, ON PURPOSE (1.42.2). The claim is that
+  // the handoff lands on a COMPLETE surface — not that it becomes complete
+  // shortly afterwards. Awaiting anything here, or retrying, would convert a
+  // real defect into a green check: this exact assertion failed in CI on a
+  // commit containing no application change, because the button was unhidden
+  // only by an async store read and a loaded runner landed on the other side of
+  // it. A wait would have "fixed" that by measuring later than the reader does.
   is(await page.locator('#intro-ask').isVisible(), true,
     'the handoff lands on the ask itself — "keeping your data safe" is kept, not filed');
+  // And it is still there once the store read has come back: the synchronous
+  // set above and the paint below must AGREE, or the control appears and then
+  // vanishes under somebody who has just arrived — which is the flicker the
+  // block's own fix existed to remove, reintroduced by its control.
+  await page.waitForTimeout(250);
+  is(await page.locator('#intro-ask').isVisible(), true,
+    'and it is still there after the store answers — it does not appear and then vanish');
   is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras']
     .every(id => !document.querySelector('#' + id)?.open)), true,
     'and no other surface opened itself — you arrive at one place (1.40.0)');

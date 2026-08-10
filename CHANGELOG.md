@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.42.2 — ITERATION
+
+*2026-08-10*
+
+- **The end of the walkthrough now lands on a finished screen.** It hands you to the part about keeping your data on this device — and the button for it was arriving a moment after the rest of the screen, so on a slow or busy device you could be looking at the question with nothing there to answer it. It is there when you arrive now.
+- Nothing about what it asks, or what it does, has changed.
+
 ## 1.42.1 — ITERATION
 
 *2026-08-10*
