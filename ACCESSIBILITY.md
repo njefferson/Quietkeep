@@ -1182,3 +1182,119 @@ visible receipt ("Filed under Errands — no return date yet.").
 - **Voice held by test:** the receipt's no-date branch is pinned to never
   carry "overdue", "late", "still", "haven't", "you should", or "behind" —
   the reproach vocabulary a factual sentence drifts toward one word at a time.
+
+### B-41 · Six destinations, six audited states (1.40.0)
+
+ADR-0083. Help, Settings, Your data, Things you can do and How it works stop
+being folding groups inside the ⓘ and become their own screens off More.
+
+**No new tokens and no new colour pair.** Every element came across with its id
+and its classes intact, so each is measured against the same foreground /
+background binding it was measured against yesterday. What changed is which
+surface it is measured ON, and that is the whole finding below.
+
+- **Four screens were being audited as one state, and three of them were not
+  being measured at all.** `DIALOG_COMMON` was one list because the panel was one
+  dialog. With the groups folded, the walk opened the ⓘ, expanded everything, and
+  audited it as a single state — which measured whatever the first group rendered
+  and reported the rest as covered. `.about-sub` and `.anchor-label` had been in
+  that list for releases while living in what is now Settings; they matched, so
+  nothing complained. The registry is split by where each id actually lives now,
+  derived from the shipped markup rather than from memory, and the walk drives
+  each surface as its own state: *how it works*, *help*, *your data*, *your data,
+  return visit*, *things you can do*, *settings*, *clearing out*.
+- **A registry entry that matches nothing visible FAILS**, which is what turned
+  the split from an assertion into a measurement: nine entries went red the first
+  time the walk ran against the new markup, each one naming a control the gate
+  had been claiming to check on a screen it was not on.
+- **Help's answers are opened before they are audited.** Nine `<details>` closed
+  is nine summaries and no answers; auditing it shut would have exempted every
+  paragraph a reader actually goes there to read.
+- **`#purge-go` is audited in its ENABLED state.** It ships `disabled` until the
+  confirmation word is typed, so it is genuinely not focusable and the walk
+  reported it unreachable — correct about the DOM and wrong about the app. The
+  word is typed, the focus ring on the most consequential button in the product
+  is measured, and the field is cleared again. It is never pressed.
+- **Every destination carries its own title and its own Close, outside the
+  scrolling body** (§4), held by one shared registry list so a sheet that loses
+  its way out fails here first.
+- **320px at 200% is measured on all six surfaces**, not on the ⓘ alone. The
+  sheets carry the code block, the selects and the long words — everything that
+  actually overflows — so the old single-surface check could no longer fail for
+  the right reason.
+- **Every sheet repaints on open.** Half of what these screens show is read from
+  the log — the storage rows, the calendar count, the anchor list. Splitting them
+  out moved those elements from under the ⓘ's open-time repaint while the panel
+  went on calling for them, so a sheet reached straight from More would have shown
+  the state the app was in at boot. That is the stale-panel defect this file has
+  already recorded twice, and it was introduced and closed inside this release.
+
+**Scroll distance is now budgeted per destination and in total.** The tallest
+screen was 3,914px — four phone lengths to reach one switch — and no gate could
+see it, because the only height ever measured was the ⓘ's. Every destination is
+held to 3,000px and the sum to 10,600px. The sum is stated as a ratchet and not
+as an achievement: the split moved 10,425px around and cut nothing.
+
+### B-42 · The link that could not open, and the link that opens the wrong app (1.40.2)
+
+Two findings on the same path — the capture link — reported from an iPad. Neither
+is a colour or a name; both are the same class of failure as an unreachable
+control, which is why they are recorded here rather than only in the changelog.
+
+- **The entrance could fail outright**, and the browser named it: *"Safari can't
+  open the page. The error was: Response served by service worker has
+  redirections."* A redirected response is a network error when it answers a
+  navigation, and every engine enforces it — Chromium reports the same condition
+  as `ERR_FAILED`. The worker's query-strip built a fresh request whose default
+  `redirect: "follow"` chased a 3xx the original navigation would have handed
+  back untouched. It affected navigations carrying a query and nothing else,
+  which is the capture entrance and nothing else.
+- **The link may open the wrong app, and say it worked.** V-21, answered on
+  device: a Shortcut's *Open URL* opened Safari rather than the installed app.
+  The capture succeeded there — *"Held from a link"* — into a separate store the
+  installed app never shows. A silent wrong destination is the accessibility
+  failure this app can least afford, because the whole promise is that nothing
+  is lost. The ⓘ now states what was observed, names what to look at, and
+  promises no remedy that has not been seen to work. The caveat rides
+  `.about-caveat`, already registered on that surface, so it is measured by the
+  same commit that introduces it.
+
+**Why eleven green gates missed a breakage every engine agrees on**, recorded
+because the answer is not the flattering one: the local server answered every
+path 200 or 404. It could not redirect, so the one edge behaviour that triggers
+this was the one behaviour no walk ever had. Not an engine difference — a hole in
+the rig. `serve.mjs` can now redirect, and the §7h walk drives one.
+
+**Two false trails on the way, both of which looked exactly like "the fix does
+not work":** redirecting to `/index.html` proved nothing, because the browser's
+own HTTP cache answered without a request; and `upgrade-insecure-requests` in the
+shipped CSP rewrote the redirect to `https://127.0.0.1:<port>` and killed it with
+an SSL error. The walk now redirects to a path nothing has ever fetched, and the
+server drops that one directive over http — inert in production, destructive
+locally.
+
+### B-43 · The handoff arrived before the thing it hands you to (1.40.3)
+
+The walkthrough's last step opens the ⓘ for one reason: to put the storage
+question in front of somebody while it still matters. Whether that block showed
+depended on `paintStorage`, which ran only when the panel was OPENED — so on the
+very first open the answer had not come back yet and the block arrived a beat
+late. The one screen it exists for was the one screen it was late for.
+
+- **It is a first-run defect specifically**, which is why it survived: every
+  later open had a previous paint to inherit, so the flicker was invisible to
+  anyone who had used the app before.
+- **1.40.1 addressed the wrong half.** It stopped `show()` re-hiding the block on
+  every open — real, and it left the first open exactly as it was. Recorded here
+  because the release notes for 1.40.1 read as though the problem was closed.
+- **The answer is now learned at boot** and kept: `navigator.storage.persisted()`
+  and nothing else, so `show()` decides synchronously. The full paint is
+  deliberately not moved to startup — it does a whole-log read, and startup is
+  the one place this app may not spend time.
+- **Nothing moved on screen and no words changed.** This is entirely about WHEN
+  a block that was always meant to be there becomes visible.
+
+**Found by CI going red where local ran green, for the second release running.**
+That is the signal being recorded: a check that passes locally and fails on a
+loaded runner is reporting a race, not a flake, and both times the race was in
+the app rather than in the walk.

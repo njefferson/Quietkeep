@@ -83,14 +83,45 @@ try {
   // Wait for the APP, not for `load`. The module is still awaiting IndexedDB
   // when `load` fires, so asserting at that moment tests the gap, not the app.
   
-// The folding groups (1.7.2, ADR-0055): the panel opens with every group
-// closed. The walk's business lives inside them, so each open expands all —
-// the default-closed contract itself is pinned once, at the tour handoff.
-const expandGroups = async (pg) => {
-  await pg.waitForSelector('#about[open]');
-  await pg.evaluate(() =>
-    document.querySelectorAll('#about .about-group-toggle[aria-expanded="false"]')
-      .forEach(b => b.click()));
+// ONE SURFACE AT A TIME (1.40.0).
+//
+// Help, Settings, Your data and How it works are their own sheets now, not folds
+// inside the ⓘ. Two open dialogs overlap and the top one eats the other's taps,
+// so a walk cannot read them all at once — and should not want to, because that
+// is not a state a reader is ever in.
+//
+// Each call site NAMES the surface it is about to touch. Those names were
+// derived from the shipped markup rather than typed: every id was mapped to the
+// dialog that now contains it. Guessing across thirty-odd sites by hand is how
+// a walk ends up measuring the wrong screen and passing.
+//
+// Sheets are shown directly; the PANEL goes through its own control, because
+// opening it is where it repaints.
+const openSurface = async (pg, id) => {
+  // THROUGH THE REAL DOOR (1.40.0). A sheet reached with `showModal()` skips
+  // `openSheet`, and `openSheet` is where each sheet's open-time repaint runs —
+  // so a walk that opened them directly could not have caught the stale-panel
+  // defect this release introduced and closed. More itself is opened
+  // programmatically: it has no repaint of its own, and `click('#open-more')`
+  // was observed resolving without the dialog opening (a11y only, cause never
+  // found), which is a flake in the instrument and not a claim about the app.
+  await pg.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  if (id === 'about') {
+    // PROGRAMMATIC, not a real click. A mouse click focuses the button, and a
+    // native dialog hands focus back to its invoker on close — which would make
+    // 'closing the panel returns you to capture' pass or fail on how the WALK
+    // opened it rather than on what the app does.
+    await pg.evaluate(() => document.querySelector('#open-about')?.click());
+  } else if (id === 'more') {
+    await pg.evaluate(() => document.querySelector('#more')?.showModal());
+  } else {
+    await pg.evaluate(() => document.querySelector('#more')?.showModal());
+    await pg.waitForSelector('#more[open]');
+    await pg.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
+  }
+  await pg.waitForSelector(`#${id}[open]`);
 };
 const ready = () => page.waitForSelector('body[data-ready=true]');
 
@@ -121,15 +152,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await page.click('#tour-next');
   is(await page.locator('#tour').isVisible(), false, 'finishing closes the walkthrough');
   is(await page.locator('#about').isVisible(), true, 'and opens the panel for the storage step');
-  is(await page.locator('#group-data').isVisible(), true,
-    'the handoff unfolds Your data — "keeping your data safe" is kept, not folded');
-  is(await page.locator('#group-extras').isHidden(), true,
-    'and every other group starts closed (ADR-0055)');
-  await expandGroups(page);
+  is(await page.locator('#intro-ask').isVisible(), true,
+    'the handoff lands on the ask itself — "keeping your data safe" is kept, not filed');
+  is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras']
+    .every(id => !document.querySelector('#' + id)?.open)), true,
+    'and no other surface opened itself — you arrive at one place (1.40.0)');
+  await openSurface(page, 'about');
   is((await page.locator('#version').textContent())?.trim(), CURRENT.triplet,
     'version is the bare triplet — releases do not have names');
   is(await page.locator('.note-triplet').first().textContent(), CURRENT.triplet,
     'patch notes lead with the current release');
+  await openSurface(page, 'sheet-group-data');
   await page.waitForSelector('#storage-body dt');
   const storageRows = await page.locator('#storage-body dt').allTextContents();
   is(storageRows.includes('Keeping your data'), true, 'the storage answer is reported');
@@ -146,6 +179,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // THE STORAGE QUESTION IS REACHABLE WITHOUT UNFOLDING ANYTHING.
   //
+  // On the ⓘ, which is where the intro lives — it is what the app IS, and the
+  // one block written for somebody who has not set storage up yet.
+  await openSurface(page, 'about');
   // `#about-intro` explains why the browser should be asked to keep the store,
   // and it had ONE caller — inside the branch the walkthrough's Skip made
   // unreachable — so it was dead markup nobody had seen and no walk asserted.
@@ -156,21 +192,28 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // store, which is the state it describes, and carries its own ask above every
   // fold. Asserted on the RENDERED page rather than on the flag, because the
   // defect was precisely that the markup existed and never showed.
+  // `paintStorage` is what un-hides it, and it is async — so this waits for the
+  // paint rather than racing it. A wait-then-assert is not a weakened check: if
+  // the block genuinely never shows, the wait times out and the assertion still
+  // fails, with the same words.
+  await page.waitForFunction(
+    () => document.querySelector('#about-intro')?.checkVisibility() === true,
+    null, { timeout: 5000 },
+  ).catch(() => { /* the assertion below says what happened */ });
   is(await page.locator('#about-intro').isVisible(), true,
     'the panel does not explain the storage question while the store is unkept');
   is(await page.locator('#intro-ask').isVisible(), true,
     'the only ask above the fold is missing — persistence is a collapsed group away again');
-  // Structural, not positional: this walk arrives via the completed-tour
-  // handoff, which unfolds "Your data" on purpose, so asserting that the group
-  // is shut would be a claim about where the walk is standing rather than about
-  // the app. What must hold everywhere is that the intro's ask comes BEFORE the
-  // group in the document, so it is reached without unfolding anything.
+  // Restated for the shape the app now has (1.40.0): the ask is reachable with
+  // NOTHING else open. It used to be "the intro's ask comes before the collapsed
+  // group in the document", which was right when both lived in one panel and is
+  // meaningless now — a stale assertion that would have passed by accident.
   is(await page.evaluate(() => {
-    const a = document.querySelector('#intro-ask');
-    const g = document.querySelector('#group-data');
-    if (!a || !g) return false;
-    return (a.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0;
-  }), true, 'the ask sits after the collapsed group — it is a fold away again');
+    const shut = ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
+      'sheet-group-actions', 'sheet-group-extras', 'more']
+      .every(id => !document.querySelector('#' + id)?.open);
+    return shut && document.querySelector('#intro-ask')?.checkVisibility() === true;
+  }), true, 'and it is reachable with no other surface open at all');
 
   // PRESS IT, per hub LESSON 63 — "a page that RENDERS correctly can be a page
   // that DOES nothing, and no rendering check will tell you". Visible, named,
@@ -243,13 +286,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/Files app/i.test(await page.locator('.restore-note').textContent() || ''), true,
     'and says where the copy that survives a clearing actually is');
   await page.click('#restore-go');
-  await page.waitForSelector('#about[open]');
-  is(await page.locator('#group-data').isVisible(), true,
-    'one tap unfolds Your data rather than leaving it to be hunted for');
+  await page.waitForSelector('#sheet-group-data[open]');
+  is(await page.locator('#sheet-group-data').isVisible(), true,
+    'one tap opens Your data rather than leaving it to be hunted for');
   is(await page.evaluate(() => document.activeElement?.id), 'import-file',
     'and lands on the file picker itself — the tap is the picker, per ADR-0004');
-  await page.click('#about-close');
-  await page.waitForFunction(() => !document.querySelector('#about[open]'));
+  await page.click('#sheet-group-data-close');
+  await page.waitForFunction(() => !document.querySelector('#sheet-group-data[open]'));
   // Planning for Humans is a real page the panel links to (1.7.2): the SW
   // used to answer ANY slow navigation with the app shell — tapping the link
   // landed back on the main screen — and cached every navigation's body under
@@ -495,9 +538,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await ready();
 
   console.log('\nExport — the way out');
-  await page.click('#open-about');
-  await expandGroups(page);
+  await openSurface(page, 'about');
   is(await page.locator('#about').isVisible(), true, 'the (i) opens on request');
+  await openSurface(page, 'sheet-group-data');   // a switch is a statement, not an argument
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.click('#export'),
@@ -521,6 +564,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const kinds2 = parsed2.logJsonl.split('\n').filter(Boolean).map((l) => JSON.parse(l).kind);
   is(kinds2.filter((k) => k === 'export.written').length, 1,
     'the next export carries the previous export.written — the log explains everything');
+  await openSurface(page, 'about');
   await page.click('#about-close');
   is(await page.locator('#about').isVisible(), false, 'dialog closes');
 
@@ -733,8 +777,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
 
   console.log('\nTriage — every route left its terminal event in the log');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   const [tdl] = await Promise.all([tpage.waitForEvent('download'), tpage.click('#export')]);
   const tlog = JSON.parse(readFileSync(await tdl.path(), 'utf8')).logJsonl
     .split('\n').filter(Boolean).map((l) => JSON.parse(l));
@@ -750,6 +793,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(kindCount('menu.item.added'), 2, 'someday and reference each landed on the Menu');
   is(tlog.filter((e) => e.kind === 'clock.set').length >= 3, true,
     'do-now, next-action and waiting-for each set a clock');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   // The load-bearing invariant on the real write path, read from the app's own
   // projection: after routing every way, nothing the UI touched is silent.
@@ -879,7 +923,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // that always returns 0 would make both criteria below pass for ever while
   // measuring nothing — the shape of defect this repo keeps finding, most
   // recently a registry entry that matched no element. `#day-boundary` lives
-  // inside a collapsed group in a closed dialog, so it MUST read above zero.
+  // inside a CLOSED sheet, so it MUST read above zero — which means this probe
+  // needs everything shut, stated rather than assumed (1.40.0).
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
   const gateProbe = await tpage.evaluate(() => {
     let el = document.querySelector('#day-boundary');
     if (!el) return -1;
@@ -909,8 +957,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // On the reference platform `?text=` is the ONLY entrance from outside the
   // app, and it was documented nowhere. An entrance nobody can find is an
   // entrance that does not exist.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   const entrance = await tpage.evaluate(() => ({
     address: document.querySelector('#capture-endpoint')?.textContent ?? '',
     origin: location.origin,
@@ -923,6 +970,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForFunction(() =>
     (document.querySelector('#capture-endpoint-note')?.textContent || '').length > 0);
   is(true, true, 'and pressing copy says what happened rather than failing silently');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   console.log('\nHow long things take (V2 stage 5)');
@@ -949,17 +997,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Do-now flow, where the reload wiped the offer a later line was waiting on
   // and timed out the whole walk. A block that reloads the page belongs where
   // nothing in flight depends on what was on screen.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-extras');
   await tpage.selectOption('#day-boundary', '3');
   await tpage.click('#day-boundary-set');
   await tpage.waitForFunction(() => /3am/.test(
     document.querySelector('#day-boundary-note')?.textContent ?? ''));
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   await tpage.reload();
   await tpage.waitForSelector('body[data-ready=true]');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-extras');
   const keptBoundary = await tpage.evaluate(() => ({
     value: document.querySelector('#day-boundary')?.value,
     note: document.querySelector('#day-boundary-note')?.textContent ?? '',
@@ -974,6 +1021,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#day-boundary-set');
   await tpage.waitForFunction(() => /midnight/i.test(
     document.querySelector('#day-boundary-note')?.textContent ?? ''));
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   console.log('\nDo now — the timer asks, it does not assume');
@@ -993,12 +1041,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // THE LENGTH IS CHOSEN (1.10.0). Set it in Extras and the offer's button has
   // to name what it will actually start — a button saying "two minutes" that
   // runs twenty is the class of lie 1.7.2 was spent correcting.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-extras');
   await tpage.selectOption('#timer-length', '5');
   await tpage.click('#timer-length-set');
   await tpage.waitForFunction(() => /Five minutes/.test(
     document.querySelector('#timer-length-note')?.textContent ?? ''));
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   await tpage.waitForFunction(() => [...document.querySelectorAll('.donow button')]
     .some(b => /Start five minutes/.test(b.textContent ?? '')));
@@ -1847,8 +1895,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // with all eight gates green. Asserted BEFORE the cards are resolved away.
   const calPromised = await tpage.evaluate(() =>
     document.querySelector('#calendar-note')?.textContent ?? '');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   await tpage.waitForSelector('#calendar');
   const [preIcal] = await Promise.all([
     tpage.waitForEvent('download'),
@@ -1857,7 +1904,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const preIcs = readFileSync(await preIcal.path(), 'utf8').replace(/\r\n[ \t]/g, '');
   is(preIcs.includes(`SUMMARY:${lapsedTitle}`), true,
     `a date that went by is exactly what a reminder is for ("${lapsedTitle}") ${calPromised}`);
-  await tpage.click('#about-close');
+  await tpage.click('#sheet-group-actions-close');
 
   // The options. Five, forward-facing, and none of them files a failure.
   const topCard = await tpage.locator('.replan-card-title').first().textContent();
@@ -1987,8 +2034,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       tx.onsuccess = () => res(tx.result.filter(e => e.kind === 'export.written' && e.payload?.scope === 'calendar').length);
     });
   });
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   await tpage.waitForSelector('#calendar');
   const calNote = await tpage.locator('#calendar-note').textContent();
   // The NUMBER, not a regex that matched the zero-state too: `/…|nothing to send/`
@@ -2057,7 +2103,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // written after both.
   is((await tpage.locator('#calendar-note').textContent())?.startsWith('Sent.'), true,
     'and the surface confirms only after the file was handed over');
-  await tpage.click('#about-close');
+  await tpage.click('#sheet-group-actions-close');
 
   // --- Bringing a copy back -------------------------------------------------
   // The app could export a whole log and had no way to read one back, so a new
@@ -2066,8 +2112,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // taken from this store, a hostile file refused, and a replacement that
   // actually lands and survives a reload.
   console.log('\nBringing a copy back — the way in, which the way out needed');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.waitForSelector('#import-file');
   is(await tpage.locator('#import-actions').isVisible(), false,
     'nothing destructive is reachable before a file has been read');
@@ -2186,6 +2231,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Now REPLACE, with a file that differs from the current store, so "it landed"
   // is distinguishable from "nothing happened" — the check that would otherwise
   // pass on an import that did nothing at all.
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'written after the backup was taken');
   await tpage.click('#capture-form button[type=submit]');
@@ -2194,16 +2240,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const heldAfterExtra = await tpage.locator('#cards .card').count();
   is(heldAfterExtra, heldBefore + 1, 'the store now differs from the file');
 
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.waitForSelector('#import-file');
   await tpage.setInputFiles('#import-file', backupPath);
   await tpage.waitForTimeout(250);
   // A REGRESSION GUARD, and it earned its place immediately. `<input type=file>`
   // fires a bubbling `cancel` when its chooser is dismissed, so an Esc handler
   // on the dialog closed the whole panel the moment a file was chosen.
+  await openSurface(tpage, 'about');
   is(await tpage.evaluate(() => document.querySelector('#about').open), true,
     'choosing a file does not close the panel out from under you');
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#import-go');
   // The surface reloads itself, because every projection was built from a store
   // that no longer exists.
@@ -2545,8 +2592,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // The status report. Computed from the log, so nothing has to be kept up to
   // date for it to be right.
   console.log('\nThe report \u2014 what has changed since you last told anyone');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   await tpage.waitForSelector('#report-markdown');
   const [reportFile] = await Promise.all([
     tpage.waitForEvent('download'),
@@ -2573,13 +2619,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // THE MARK MOVED. A second report covers the period since the first, not
   // everything all over again.
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'something after the report');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForTimeout(300);
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   const [second] = await Promise.all([
     tpage.waitForEvent('download'),
     tpage.click('#report-markdown'),
@@ -2597,6 +2643,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and does not repeat a change it already told you about');
   is(/### Coming up[\s\S]*the migration/.test(secondText), true,
     'though an upcoming date is still stated — hiding it would be worse than repeating it');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // Leave the inbox as this section found it. The capture above is still
@@ -2872,14 +2919,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#comms').isVisible(), false,
     'nobody asked for a sweep, so there is none');
 
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-extras');
   await tpage.waitForSelector('#comms-start');
   is(await tpage.locator('#comms-stop').isHidden(), true,
     'and nothing to stop, because nothing is running');
   await tpage.click('#comms-start');
   await tpage.waitForTimeout(400);
   is(await tpage.locator('#comms-start').isHidden(), true, 'on');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // THE ONE THAT MATTERS. Turning it on must not immediately interrupt you for
@@ -3004,8 +3051,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nThe way out of the panel \u2014 reachable from anywhere in it');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about-body');
 
   // --- somewhere to GO, rather than something to read (1.39.0) --------------
@@ -3023,20 +3069,19 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.click('.more-go[data-go="group-data"]');
   is(await tpage.locator('#more').isVisible(), false, 'picking one closes the list');
-  is(await tpage.locator('#about').isVisible(), true, 'and opens the panel');
-  is(await tpage.locator('#group-data').isVisible(), true, 'on the place you asked for');
-  is(await tpage.evaluate(() =>
-    Array.from(document.querySelectorAll('.about-group-toggle'))
-      .filter(b => b.getAttribute('aria-expanded') === 'true').length), 1,
-    'and only that one — you arrive somewhere, not in the middle of everything');
-  is(await tpage.evaluate(() => document.querySelector('#about-body')?.scrollTop), 0,
-    'at the top of it, so you can see where you have landed');
+  is(await tpage.locator('#sheet-group-data').isVisible(), true,
+    'and opens Your data — its own surface since 1.40.0, not a fold in the panel');
+  is(await tpage.evaluate(() => Array.from(document.querySelectorAll('dialog'))
+    .filter(d => d.open).map(d => d.id).join(',')), 'sheet-group-data',
+    'and it is the ONLY thing open — you arrive at one place, not on a stack');
 
   is(await tpage.evaluate(() => {
     const d = document.querySelector('#about');
     return d.scrollHeight <= d.clientHeight + 1;
   }), true, 'the dialog itself does not scroll \u2014 only its body does');
 
+  // Back to the panel: the reach test below is about ITS way out.
+  await openSurface(tpage, 'about');
   // Scroll to the very bottom and check the X is STILL where a thumb can reach.
   const xReach = await tpage.evaluate(() => {
     const body = document.querySelector('#about-body');
@@ -3072,90 +3117,70 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and focus comes back to capture');
 
   // The other way out, at the bottom, still works too.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about-body');
   await tpage.click('#about-close');
   await tpage.waitForTimeout(200);
   is(await tpage.evaluate(() => document.querySelector('#about').checkVisibility()), false,
     'and so does the one at the bottom');
 
-  // The panel is no longer thousands of pixels tall, which is why the way out
-  // was ever far from a thumb.
+  // HOW TALL EACH DESTINATION IS, IS `size-check.mjs`'S JOB NOW (1.40.0).
   //
-  // THE BOUND MOVED FROM 9000 TO 12000 IN 1.22.0, AND THAT IS THE POINT OF THE
-  // NUMBER, so it is written down rather than left as a constant somebody has
-  // to reverse-engineer.
+  // This used to hold two numbers: the panel with every group forced open,
+  // bounded at 15,000px, and the folded phone panel at 3,600px. Both measured a
+  // single dialog because there was a single dialog. Neither survives the split
+  // honestly — "every group forced open" is a state that no longer exists, and
+  // a per-panel budget is satisfied by moving reading to another panel, which is
+  // exactly what this release did.
   //
-  // This measures the panel with EVERY GROUP FORCED OPEN — a state no reader is
-  // in, since all four open folded. What it exists to catch is the real defect:
-  // the panel once rendered every release inline and stood 17,000–25,000px tall,
-  // which is why a way out was ever far from a thumb. 12,000 still catches any
-  // return to that, with room for the app to gain sections.
+  // Scroll distance is measured per destination and in total by `npm run
+  // size:check`, at 390px, against the shipped markup. What is asserted HERE is
+  // the property that number exists to protect and that a budget cannot state:
+  // wherever you are in the panel, the way out is under your thumb. That is
+  // checked above, at the bottom of a scrolled panel, on the real element.
   //
-  // 9,000 did not have that room. At 1.21.0 this measured 8,907 — NINETY-THREE
-  // pixels of headroom for every future release of the app — and a feature that
-  // adds a heading, a paragraph, two buttons, a status line and a caveat cannot
-  // fit in 93px. So 1.22.0 met it at 9,275 and the response was to start cutting
-  // sentences out of patch notes: five notes to three, then shorter notes, then
-  // shorter panel prose, arriving at 9,003 with the content visibly worse. Three
-  // pixels.
-  //
-  // That is the THIRD time notes have been shortened against this number, and
-  // the correction was already written down — see the comment below, and
-  // ADR-0072. A budget that costs the product honesty every time it binds is
-  // measuring the wrong thing, and this one was measuring a state nobody reads
-  // in. The tight budget belongs on the folded phone panel, which is what a
-  // reader actually meets, and it is unchanged at 3,600.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
-  await tpage.waitForSelector('#about-body');
-  const panelH = await tpage.evaluate(() => document.querySelector('#about-body').scrollHeight);
-  // RAISED TO 15,000 AT 1.36.1, AND THIS IS THE FOURTH TIME IT HAS BOUND. The
-  // three above cost the product sentences; this one would have cost it seven
-  // explanations added precisely because a review found the app had gone quiet
-  // about half of itself — weight, capacity, the situation line, the pause after
-  // finishing, how long things take. Cutting those to satisfy a number measured
-  // in a state nobody reads in would be the same mistake a fourth time, and the
-  // comment above already says so in its own words.
-  //
-  // The guard that matters is UNCHANGED and has real headroom: the folded phone
-  // panel, which is what a reader actually meets, is asserted below at 3,600 and
-  // measures 3,104 with all seven sections in. This ceiling stays only as a
-  // backstop against the panel becoming a document.
-  is(panelH < 15000, true, `the panel is readable rather than a scroll of history (${panelH}px)`);
+  // The one number kept is the one that is about CONTENT rather than layout.
   is(await tpage.locator('.note-older').count(), 1,
     'older releases are one tap away, not removed');
 
-  // AND THE PANEL A READER ACTUALLY MEETS, ON A PHONE.
-  //
-  // Everything above measures the panel with every group forced OPEN, which is
-  // a worth-having worst case and is NOT the reading experience: it opens with
-  // all groups folded. Conflating the two sent two releases' notes to be
-  // shortened for a budget nobody was near (ADR-0072 carries the correction).
-  //
-  // The width matters and not the way it first appears. The content column caps
-  // at 600px, so every viewport from 600 to 1280 measures identically — the
-  // iPad included, in both orientations, which is why the assertion above is
-  // exact for the reference platform rather than flattering. Below 600px prose
-  // reflows taller, and that is the only case the numbers above do not cover.
-  // So this one is measured where it is genuinely different.
+  // AND ON A PHONE, WHICH IS THE HARD CASE. Not a height — `size-check.mjs`
+  // owns that — but the same reachability claim at the width where prose
+  // reflows tallest. The content column caps at 600px, so every viewport from
+  // 600 to 1280 measures identically, the iPad included; below 600 is the only
+  // genuinely different case, so it is the only one walked separately.
   const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const ppage = await phone.newPage();
   await ppage.goto(url, { waitUntil: 'load' });
   await ppage.waitForSelector('body[data-ready=true]');
   await ppage.click('#tour-skip').catch(() => {});
-  await ppage.click('#open-about');
+  await ppage.evaluate(() => document.querySelector('#open-about')?.click());
   await ppage.waitForSelector('#about-body');
   await ppage.waitForTimeout(250);
-  const phonePanelH = await ppage.evaluate(() => document.querySelector('#about-body').scrollHeight);
-  is(phonePanelH < 3600, true,
-    `on a 390px phone the panel a reader MEETS is ${phonePanelH}px (${(phonePanelH / 844).toFixed(1)} screens), folded`);
-  // The way out is reachable there too, which is the reason a height budget
-  // exists at all (§4 — a control is hard to reach mostly because the container
-  // got long while nobody was looking).
   is(await ppage.evaluate(() => document.querySelector('#about-close')?.checkVisibility() === true), true,
-    'and its way out is on screen without expanding anything');
+    'on a 390px phone the panel’s way out is on screen without expanding anything');
+  // And every destination's, at the bottom of its own scroll — the way out is a
+  // §4 obligation per SURFACE, and five of them are new in this release.
+  for (const id of ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
+    'sheet-group-actions', 'sheet-group-extras']) {
+    await ppage.evaluate((want) => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+      document.querySelector('#more')?.showModal();
+    }, id);
+    await ppage.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
+    await ppage.waitForSelector(`#${id}[open]`);
+    const out = await ppage.evaluate((want) => {
+      const body = document.querySelector(`#${want} .sheet-body`);
+      body.scrollTop = 999999;
+      const x = document.querySelector(`#${want}-close`);
+      const r = x.getBoundingClientRect();
+      const hit = document.elementFromPoint(
+        Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2));
+      return { onScreen: r.top >= 0 && r.bottom <= window.innerHeight,
+        hit: hit ? (hit.id || hit.tagName) : 'NONE' };
+    }, id);
+    is(out.onScreen && out.hit === `${id}-close`, true,
+      `${id}: scrolled to the bottom, its Close is still on screen and unobstructed`);
+  }
   await phone.close();
 
   // --- the §7e baseline, and §7f's report (1.18.0, ADR-0071) ---------------
@@ -3166,6 +3191,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // its name says what it opens, and the two items this app was missing are
   // there.
   console.log('\nThe information surface carries what §7e requires');
+  await openSurface(tpage, 'about');
   const infoName = await tpage.evaluate(() => {
     const b = document.querySelector('#open-about');
     return b ? (b.getAttribute('aria-label') || b.textContent || '').trim() : null;
@@ -3272,8 +3298,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       window.__printed.push(a ? a.innerText : '');
     };
   });
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   await tpage.waitForSelector('#today-print');
   await tpage.click('#today-print');
   await tpage.waitForTimeout(200);
@@ -3298,6 +3323,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/Quietkeep — status/.test(printedReport), true, 'the report prints as the report');
   is(/Export a copy|Bringing a copy back/.test(printedReport), false,
     'and it too leaves the dialog behind');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // --- Bothers: the thing that is not a task -------------------------------
@@ -3370,8 +3396,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'a declined worry is never sent to triage');
 
   // And the decision is FINDABLE: the Not Now ledger, behind the (i).
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#notnow-open');
   await tpage.waitForSelector('#notnow-view:not([hidden])');
   is(/brother/.test(await tpage.locator('#notnow-list').textContent() || ''), true,
@@ -3423,8 +3448,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#journal-open');
   await tpage.waitForSelector('#journal-locked:not([hidden])');
   is(await tpage.locator('#journal-unlocked').isHidden(), true, 'a reload starts closed');
@@ -3446,6 +3470,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(true, true, 'and the right one brings the entry back after a reload');
   await tpage.click('#journal-lock');
   await tpage.click('#journal-open');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // A journal entry is on NO work surface — the whole point of the kind.
@@ -3751,8 +3776,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await other.click('#capture-form button[type=submit]');
     await other.waitForTimeout(150);
   }
-  await other.click('#open-about');
-  await expandGroups(other);
+  await openSurface(other, 'sheet-group-data');
   const [otherExport] = await Promise.all([
     other.waitForEvent('download'),
     other.click('#export'),
@@ -3765,8 +3789,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('body[data-ready=true]');
   const beforeUnion = await tpage.locator('#cards .card').count();
   const mineBefore = await tpage.locator('#cards .card-title').allTextContents();
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#import-file', otherFile);
   await tpage.waitForTimeout(350);
   is(await tpage.locator('#import-union').isVisible(), true,
@@ -3788,8 +3811,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // Doing it again is the ordinary case: you are not sure whether you already
   // did. It must cost nothing and must not throw on the unique-id index.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#import-file', otherFile);
   await tpage.waitForTimeout(350);
   await tpage.click('#import-union');
@@ -3806,6 +3828,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   is(folded, 1, 'and exactly one shard.folded is recorded — the one that took something');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   console.log('\nSample work — an empty planner is hard to judge');
@@ -3813,8 +3836,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // or that adds rows the app would refuse, is worse than no demonstration, and
   // only the real store can say which happened.
   const beforeSample = await tpage.locator('#cards .card').count();
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
 
   // --- a whole invented life, as a file (1.16.0, ADR-0067) -----------------
@@ -3834,12 +3856,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const copiesBefore = logBefore.filter(e => e.kind === 'export.written').length;
+  await openSurface(tpage, 'sheet-group-actions');
   const [bigDl] = await Promise.all([
     tpage.waitForEvent('download', { timeout: 120000 }),
     tpage.click('#big-sample'),
   ]);
   await tpage.waitForFunction(() => /invented things/.test(
     document.querySelector('#big-sample-note')?.textContent ?? ''), null, { timeout: 120000 });
+  await openSurface(tpage, 'sheet-group-actions');
   const bigSaid = await tpage.locator('#big-sample-note').textContent() || '';
   is(/\d+ invented things/.test(bigSaid), true,
     `it says how many it made ("${bigSaid.slice(0, 60)}")`);
@@ -3915,13 +3939,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `the main screen shows a bare triplet ("${shownBuild}")`);
   is(await tpage.locator('#about').evaluate(d => d.hasAttribute('open')), false,
     'and it is readable with the panel shut');
+  await openSurface(tpage, 'about');
   is((shownBuild || '').trim(), (await tpage.locator('#version').textContent() || '').trim(),
     'and it is the same build the panel claims');
 
   console.log('\nThe number on the icon is optional');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-extras');
   is(await tpage.locator('#badge-toggle').getAttribute('aria-pressed'), 'true', 'on by default');
   is(/Stop showing/.test(await tpage.locator('#badge-toggle').textContent() || ''), true,
     'and the label says what pressing it DOES, not what the state is');
@@ -3941,6 +3966,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#badge-toggle');
   await tpage.waitForTimeout(200);
   is(await tpage.locator('#badge-toggle').getAttribute('aria-pressed'), 'true', 'and back on again');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   console.log('\nThe other edition — and the link that must NOT be invented');
@@ -3949,8 +3975,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // link is derived rather than written down is that a hardcoded URL would
   // appear HERE too, and on every device, pointing at a host nobody confirmed.
   // The unit tests prove the derivation; this proves the built app obeys it.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
   const sib_hidden = await tpage.evaluate(() => {
     const p = document.querySelector('#sibling');
@@ -3971,11 +3996,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   console.log('\nWork from another planner — TaskPaper and CSV');
   const beforeImport = await tpage.locator('#cards .card').count();
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
   // A real file, through the real picker: this is the path somebody actually uses,
   // and a parser test cannot tell you the button is wired.
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#other-file', {
     name: 'omnifocus.taskpaper',
     mimeType: 'text/plain',
@@ -4034,11 +4059,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // one heading. The dedicated replan surface has cap_capped at three since it existed;
   // the held list had no cap at all, which nobody noticed while the fixtures held
   // eight things. Asserted through the REAL import path at a size past the cap.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
   const cap_many = ['Big import:'];
   for (let i = 0; i < 60; i++) cap_many.push(`\t- Imported thing ${i}`);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#other-file', {
     name: 'big.taskpaper', mimeType: 'text/plain', buffer: Buffer.from(cap_many.join('\n') + '\n'),
   });
@@ -4073,8 +4098,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const cap_rowsAfter = await tpage.locator('#cards li.card:not(.card-more)').count();
   is(cap_rowsAfter - cap_rowsBefore, cap_promised,
     `showing them produced exactly the number it promised (${cap_rowsBefore} -> ${cap_rowsAfter}, promised ${cap_promised})`);
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
   await tpage.click('#about-close');
 
@@ -4083,9 +4107,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // never reach, because the captured latch bars anything arriving by
   // node.created. This is a real store's 1,222, at fixture scale.
   const gaugeBeforeLoose = await tpage.locator('#triage-gauge').textContent().catch(() => '') || '';
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#other-file', {
     name: 'loose.taskpaper', mimeType: 'text/plain',
     buffer: Buffer.from('- Sort me one\n- Sort me two\n- Sort me three\n'),
@@ -4337,9 +4361,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nWhat a thing carries, and what the app did (1.4.0)');
   // Import the exact CSV shape that once lost every note, and read the note
   // back off the item's own sheet.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#other-file', {
     name: 'noted.csv', mimeType: 'text/csv',
     buffer: Buffer.from('Task ID,Type,Name,Status,Project,Notes\n1,Action,Noted thing,,,ask about the crown\n'),
@@ -4775,9 +4799,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await fillSearch('');
 
   // The record itself: day-grouped, plain words, true totals, honest reveal.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#log-open');
   // The container unhides synchronously; the CONTENT lands after the async
   // store read. Waiting on the container read an empty total on the 2-core CI
@@ -4805,14 +4829,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Reading changed nothing: the log is the same size it said it was.
   const logDbCount = await sortCount();
   is(logDbCount, logTotalN, 'the stated total IS the store count — read-only, no drift');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   console.log('\nWholesale — bulk acts on a named range (1.5.0)');
   // Six loose rows, one carrying a real future due date — the batch shape, at
   // fixture scale, with the date that must be SHED on a Menu landing.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#other-file', {
     name: 'bulk.taskpaper', mimeType: 'text/plain',
     buffer: Buffer.from('- Bulk me one\n- Bulk me two @due(2026-12-01)\n- Bulk me three\n- Bulk me four\n- Bulk me five\n- Bulk me six\n'),
@@ -5024,9 +5049,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#sort-close');
 
   // THINGS YOU LET GO: the promise "keep it after all" is finally true.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#trash-open');
   await tpage.waitForSelector('#trash-view:not([hidden])');
   is(/6 things|things/.test(await tpage.locator('#trash-total').textContent() || ''), true,
@@ -5047,6 +5072,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForFunction(() => !/Bulk me one/.test(
     document.querySelector('#trash-list')?.textContent ?? ''));
   is(true, true, 'kept after all — and the trash view no longer lists it');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   console.log('\nSeeing and choosing (1.6.0)');
@@ -5082,12 +5108,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // COMPOSED TODAY, optional and off by default: nothing anywhere until asked.
   is(await tpage.locator('#composed').isVisible(), false, 'off by default — nothing renders');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-extras');
   await tpage.click('#today-start');
   await tpage.waitForFunction(() => /^On\./.test(
     document.querySelector('#today-note')?.textContent ?? ''));
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // Choose two things from their own sheets, via search — the verb's one home.
@@ -5125,12 +5152,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     document.querySelectorAll('#composed-list .composed-open').length === 1);
 
   // Turning the module OFF removes every surface of it; the record stays.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-extras');
   await tpage.click('#today-stop');
   await tpage.waitForFunction(() => /^Off\./.test(
     document.querySelector('#today-note')?.textContent ?? ''));
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   is(await tpage.locator('#composed').isVisible(), false, 'optional means gone when off');
   const todayLog = await sortCount();
@@ -5247,8 +5275,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Two projects rather than two captures, because the decision log is offered
   // on containers (and on anything that already carries one).
   console.log('\nWhat a fold takes with it (1.9.2)');
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#other-file', {
     name: 'twins.taskpaper',
     mimeType: 'text/plain',
@@ -5304,8 +5331,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await fillSearch('');
 
   // The ledger keeps the row and says where it lives now.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#notnow-open');
   await tpage.waitForSelector('#notnow-view:not([hidden])');
   const foldedLedger = await tpage.locator('#notnow-list').textContent() || '';
@@ -5315,6 +5341,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/%|\d+\s*(times|of|\/)\s*\d*|remaining/.test(await tpage.locator('#notnow-view').textContent() || ''),
     false, 'still a name and a date and a place — never a count');
   await tpage.click('#notnow-open');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // THE LENS: a filter over what you are LOOKING at, never what is held.
@@ -5414,8 +5441,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // THE REPORT, walked for the first time. It lives under Extras, which
   // ADR-0055 folds closed — unfold before reaching for it.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-actions');
   // Capture what the clipboard is handed — the primary path. (The visible
   // preview only appears when the clipboard is REFUSED, which is its own
   // fallback and not what a working device does.)
@@ -5488,6 +5514,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/overdue|streak|missed/i.test(anchorReport), false, 'and carries no shame vocabulary');
   // Back to the default, so nothing later in the walk inherits the choice.
   await tpage.selectOption('#anchor-period', '');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
   // --- membership at the sheet (1.17.2, ADR-0070) ---------------------------
@@ -5550,8 +5577,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#detail-close');
 
   // The ledger's row is a DOOR, and "Carry it after all" is one tap behind it.
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'sheet-group-data');
   await tpage.click('#notnow-open');
   await tpage.waitForSelector('#notnow-view:not([hidden])');
   is(/newsletter/.test(await tpage.locator('#notnow-list').textContent() || ''), true,
@@ -5571,12 +5597,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(true, true, 'carried after all — and the ledger no longer lists it');
 
   // The slot: set a day, and the sheet's park button names the REAL day.
+  await openSurface(tpage, 'sheet-group-extras');
   await tpage.selectOption('#slot-day', 'fri');
   await tpage.click('#slot-set');
   await tpage.waitForFunction(() => /^On\./.test(
     document.querySelector('#slot-note')?.textContent ?? ''));
   is(/Friday/.test(await tpage.locator('#slot-note').textContent() || ''), true,
     'the note states the day that was chosen');
+  await openSurface(tpage, 'about');
   await tpage.click('#about-close');
   await fillSearch('newsletter');
   await tpage.waitForSelector('#search-results .search-open');
@@ -5607,9 +5635,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   const beforeRows = await purgeRows();
   const beforeLog = await logCount();
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
   is(/\d+ thing/.test(await tpage.locator('#purge-summary').textContent() || ''), true,
     'it says how many things are on the surfaces');
 
@@ -5691,15 +5719,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       ? /\b0 ready now\b/.test(badgeGauge) || /nothing held yet/.test(badgeGauge)
       : new RegExp(`\\b${iconNumber} ready now\\b`).test(badgeGauge), true,
     `the gauge states the icon's own number ("${badgeGauge}" vs icon ${JSON.stringify(iconNumber ?? 'clear')})`);
-  await tpage.click('#open-about');
-  await expandGroups(tpage);
+  await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-extras');
   is(/number on the app icon/i.test(await tpage.locator('#badge-explainer').textContent() || ''), true,
     'and the panel says what the number on the icon means');
   // The patch notes are rendered with textContent, so any entity name or **
   // mark in the strings prints AS the markup (found on device, 1.7.1). Pin:
   // no entity-shaped token and no ** anywhere in the rendered notes, and the
   // lead of a note is a real <strong>, not asterisks.
+  await openSurface(tpage, 'about');
   const notesText = await tpage.locator('#patch-notes').textContent() || '';
   is(/&[a-z]+;|&#\d+;|\*\*/.test(notesText), false,
     'the patch notes print words, never markup');

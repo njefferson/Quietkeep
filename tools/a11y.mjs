@@ -27,6 +27,34 @@ import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { serve } from './serve.mjs';
 
+/** ONE SURFACE AT A TIME (1.40.0) — see the note in tools/smoke.mjs. */
+const openSurface = async (pg, id) => {
+  // THROUGH THE REAL DOOR (1.40.0). A sheet reached with `showModal()` skips
+  // `openSheet`, and `openSheet` is where each sheet's open-time repaint runs —
+  // so a walk that opened them directly could not have caught the stale-panel
+  // defect this release introduced and closed. More itself is opened
+  // programmatically: it has no repaint of its own, and `click('#open-more')`
+  // was observed resolving without the dialog opening (a11y only, cause never
+  // found), which is a flake in the instrument and not a claim about the app.
+  await pg.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  if (id === 'about') {
+    // PROGRAMMATIC, not a real click. A mouse click focuses the button, and a
+    // native dialog hands focus back to its invoker on close — which would make
+    // 'closing the panel returns you to capture' pass or fail on how the WALK
+    // opened it rather than on what the app does.
+    await pg.evaluate(() => document.querySelector('#open-about')?.click());
+  } else if (id === 'more') {
+    await pg.evaluate(() => document.querySelector('#more')?.showModal());
+  } else {
+    await pg.evaluate(() => document.querySelector('#more')?.showModal());
+    await pg.waitForSelector('#more[open]');
+    await pg.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
+  }
+  await pg.waitForSelector(`#${id}[open]`);
+};
+
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const AXE = join(ROOT, 'node_modules', 'axe-core', 'axe.min.js');
 if (!existsSync(join(ROOT, 'public', 'app.js'))) {
@@ -97,35 +125,122 @@ const pass = (m) => console.log(`  ok    ${m}`);
 
 // Entries: 'sel' or {sel, pseudo}. Every VISIBLE match is audited; the worst
 // ratio is what gets judged. A selector matching nothing visible FAILS.
+// THE REGISTRY FOLLOWS THE SURFACES (1.40.0).
+//
+// DIALOG_COMMON was one list because the panel was one dialog. Help, Settings,
+// Your data and How it works are their own sheets now, so a single list spans
+// four screens and can never all be visible at once — every entry would report
+// "matches nothing visible" on three states out of four. Split by where each id
+// actually lives, derived from the shipped markup.
 const DIALOG_COMMON = [
-  '#about-title', '.version', '.about-section',
-  '#storage-body dt', '#storage-body dd', '#storage-note',
-  '#export', '#about-close', '#storage-ask', '#calendar', '#calendar-note', '.about-caveat',
-  '#sample', '#sample-note', '#badge-explainer', '#badge-toggle', '#badge-note',
-  // The bigger set (1.16.0). Its note is a status region that only fills after a
-  // press, so it is driven in the walk rather than measured empty.
-  '#big-sample', '#big-sample-note',
-  // Named periods (1.17.0). The list is built on open from the log, so the
-  // registry sees rows only after the walk has named one — the driver does.
-  '.about-sub', '.anchor-label', '#anchor-name', '#anchor-recurrence',
-  '#anchor-period', '#anchor-note',
-  '#other-file', 'label[for="other-file"]', '#other-note',
-  '#purge-summary', '#purge-backup', '#purge-pick-clear', '#purge-pick-erase',
-  '#purge-note', '#purge-backup-note', '.purge-label', '#purge-word', '#purge-go',
-  '#purge-cancel', '#purge-consequence',
-  // 1.8.0: the ledger's door and the request-slot control (ADR-0056).
-  '#notnow-open', '#slot-day', '#slot-set',
-  // The always-reachable way out. This panel is thousands of pixels tall, so a
-  // close button only at the bottom meant scrolling the entire release history
-  // to shut it (found on device).
+  '#about-title',
+  '.version',
+  '.about-section',
+  '#about-close',
   '#about-dismiss',
-  // Bringing a copy back. The label and the picker are always there; the note
-  // and the two actions only appear once a file has been read, so they get
-  // their own state below rather than being registered here where they would
-  // match nothing visible.
-  '#import-file', 'label[for="import-file"]',
-  '.note-triplet', '.note-kind', '.note-list li', '.about-p', '.about-p a',
+  '.note-triplet',
+  '.note-kind',
+  '.note-list li',
+  '.about-p',
+  '.about-p a',
 ];
+
+// Every sheet carries the same three things — its own title, its body text and
+// its way out — so they are held once rather than repeated four times. A sheet
+// that loses its Close is the §4 failure, and it would fail here first.
+const SHEET_CHROME = (id) => [`#${id}-title`, '.about-p', `#${id}-close`];
+
+const DATA_SHEET = [
+  ...SHEET_CHROME('sheet-group-data'),
+  '.about-section',
+  '#storage-body dt',
+  '#storage-body dd',
+  '#storage-note',
+  '#export',
+  '#storage-ask',
+  '#notnow-open',
+  '#import-file',
+  'label[for="import-file"]',
+  // The two data ACTS joined Your data in 1.40.0 — bringing work in from another
+  // planner, and clearing out. Both are things you do TO your data, and both had
+  // been filed under Settings on the grounds that neither is the main screen.
+  '#other-file',
+  'label[for="other-file"]',
+  '#other-note',
+  '#purge-summary',
+  '#purge-backup',
+  '#purge-pick-clear',
+  '#purge-pick-erase',
+  '#purge-note',
+  '#purge-backup-note',
+];
+
+// THE VERBS LEFT (1.40.0). Settings holds switches: things set once and then
+// obeyed. Everything you DO — send to the calendar, print, tell somebody where
+// things are, try it with something in it — is its own destination now.
+const EXTRAS_SHEET = [
+  ...SHEET_CHROME('sheet-group-extras'),
+  '.about-section',
+  '#badge-explainer',
+  '#badge-toggle',
+  '#badge-note',
+  '#slot-day',
+  '#slot-set',
+  '#day-boundary',
+  '#day-boundary-set',
+  '#timer-length',
+  '#timer-length-set',
+];
+
+const ACTIONS_SHEET = [
+  ...SHEET_CHROME('sheet-group-actions'),
+  '.about-section',
+  '.about-sub',
+  '.about-caveat',
+  '.anchor-label',
+  '#calendar',
+  '#tour-replay',
+  '#today-print',
+  '#report-copy',
+  '#report-markdown',
+  '#report-csv',
+  '#report-print',
+  '#anchor-name',
+  '#anchor-recurrence',
+  '#anchor-period',
+  '#capture-endpoint',
+  '#capture-endpoint-copy',
+  '#sample',
+  '#sample-note',
+  '#big-sample',
+  '#big-sample-note',
+];
+
+const WHY_SHEET = [
+  ...SHEET_CHROME('sheet-group-why'),
+  '.about-section',
+  '.about-list li',
+  '.about-list strong',
+];
+
+// Help is nine disclosures and nothing else. The SUMMARY is the control and the
+// answer inside it is text nobody sees until they open one, so both are held —
+// a closed `<details>` matches nothing visible, which is why the driver opens
+// them before this state is audited.
+const HELP_SHEET = [
+  ...SHEET_CHROME('sheet-group-help'),
+  '.help-q summary',
+  '.about-p a',
+];
+
+const CLEARING_OUT = [
+  '.purge-label',
+  '#purge-word',
+  '#purge-go',
+  '#purge-cancel',
+  '#purge-consequence',
+];
+
 // The stuck-update paragraph, taken from the SOURCE rather than copied here.
 // A copy would drift, and the whole point of auditing this state is that the
 // real words are long enough to change how the strip lays out. If the constant
@@ -154,15 +269,32 @@ const REGISTRY = {
   // agreed to keep the store, which is the state it describes, and it carries
   // the only persistence control that is not inside a collapsed group.
   'first-run dialog': [...DIALOG_COMMON, '.intro p', '.intro-aside', '#intro-ask'],
-  // 1.14.0: the copy note is hidden when there is nothing to say, and at the
-  // first-run state there genuinely is not — an empty store with no copy is not
-  // told it is behind. By the return visit the walk has a real history and no
-  // export, so it renders, which is why it is registered here and not in
-  // DIALOG_COMMON where it would match nothing visible.
-  'dialog, return visit': [...DIALOG_COMMON, '#copy-note'],
-  // The folding groups (1.7.2, ADR-0055): the header is the control, audited
-  // in the collapsed state a new user actually meets.
-  'panel groups': ['.about-group-toggle'],
+  // The ⓘ as every return visit meets it. Identical to the first-run list minus
+  // the intro, which is the whole difference between the two states: the intro
+  // shows only while the browser has not agreed to keep the store.
+  'dialog, return visit': DIALOG_COMMON,
+  // THE FOUR SHEETS (1.40.0). Help, Settings, Your data and How it works were
+  // folding groups inside the ⓘ and are their own destinations now, reached from
+  // More. Each is audited as its own state, which is what "a new surface joins
+  // the gate in the same commit" means when the surface is a screen rather than
+  // a control: a state the gate never opens is a state nothing measures
+  // (LESSONS §28), and four groups audited as one dialog measured the FIRST
+  // group's contrast and nothing below it.
+  'how it works': WHY_SHEET,
+  'help': HELP_SHEET,
+  'your data': DATA_SHEET,
+  // 1.14.0: the copy note is hidden when there is nothing to say, and on a first
+  // run there genuinely is not — an empty store with no export is not told it is
+  // behind. It renders from the return visit onward, so it is a second state
+  // rather than an entry in the first, where it would match nothing visible.
+  'your data, return visit': [...DATA_SHEET, '#copy-note'],
+  'settings': EXTRAS_SHEET,
+  'things you can do': ACTIONS_SHEET,
+  // Clearing out is inside Settings and only exists once a mode is chosen, so it
+  // is driven rather than assumed — it is the one surface standing between a
+  // person and their history, and it would be exempt from every audit if the
+  // walk stopped at the sheet that contains it.
+  'clearing out': CLEARING_OUT,
   'empty store': [
     '.wordmark', '#capture', { sel: '#capture', pseudo: '::placeholder' },
     '#capture-form button[type=submit]',
@@ -187,7 +319,7 @@ const REGISTRY = {
   // The header clock, opt-in (1.22.0). Two states, because the switch and the
   // thing it switches on are never on screen together — the toggle is in a
   // modal and the clock is in the header behind it.
-  'clock opt-in': ['#clock-on', '.about-caveat'],
+  'clock opt-in': ['#clock-on'],
   // When your day ends (V2 stage 5). A select and its button, in the panel where
   // the timer length is chosen — the same shape, set in the same calm place.
   'day boundary': ['#day-boundary', '#day-boundary-set', '#day-boundary-note'],
@@ -369,7 +501,7 @@ const REGISTRY = {
   'close strip': ['#close-heading', '#close-win', '#close-gauge', '#close-ok'],
   // Composed Today's opt-in Extra (1.6.0) — the comms opt-in's shape. The
   // status note is audited via the dialog pass once it carries words.
-  'today opt-in': ['#today-start', '.about-caveat'],
+  'today opt-in': ['#today-start'],
   // The detail sheet. The hint and the inline labels are the lowest-contrast
   // text on it, and the number inputs are the smallest targets.
   // `#detail-more` (1.39.1) folds the rare two-thirds of the sheet away. Added to
@@ -479,7 +611,7 @@ const REGISTRY = {
   // check, and that absence is the point (law 3, ADR-0034).
   // Today on paper. The control lives in the panel; the card itself is never on
   // screen, so what is audited here is the button and the honesty line beside it.
-  'today on paper': ['#today-print', '.about-section', '.about-p', '.about-caveat'],
+  'today on paper': ['#today-print', '.about-section', '.about-p'],
   // The bother flow. The choice hints are the lowest-contrast text and they are
   // load-bearing: they say what each answer will DO, and a forced choice with
   // unlabelled consequences is a guess. All three choices are styled identically
@@ -514,7 +646,7 @@ const REGISTRY = {
   // an aside — and there is no badge, no count and no colour anywhere on it.
   'comms ramp': ['#comms-heading', '.comms-words', '#comms-done', '#comms-later'],
   // Its opt-in, in the panel. Off until asked for.
-  'comms opt-in': ['#comms-start', '.about-p', '.about-caveat', '.about-section'],
+  'comms opt-in': ['#comms-start', '.about-p', '.about-section'],
   // The track portfolio. The facts line is the lowest-contrast text and it is the
   // whole content of the row — who, when an answer is owed, what is outstanding.
   // There is no colour here that means "at risk" and there will not be one: a hue
@@ -531,7 +663,7 @@ const REGISTRY = {
   // The status report's controls, in the panel that talks about handing things
   // over. Four buttons and the line that confirms one worked.
   'report controls': ['#report-copy', '#report-markdown', '#report-csv', '#report-print',
-    '.about-p', '.about-caveat', '.about-section'],
+    '.about-p', '.about-section'],
   // The person lens. How long something has been with someone is the
   // lowest-contrast text here and it is load-bearing — it is the fact you use to
   // decide whether to mention it. Same ink tokens as everything else: there is
@@ -1004,14 +1136,6 @@ try {
     // landing when a commit-triggered refresh is in flight — rarely, and only
     // on loaded runners. Verifying keeps the check honest: a lost fill
     // retries; a genuinely broken search still fails, with the observed value.
-    // The folding groups (1.7.2, ADR-0055): audits reach into every group, so
-    // each open expands all. The collapsed default is audited in State 1.
-    const expandGroups = async () => {
-      await page.waitForSelector('#about[open]');
-      await page.evaluate(() =>
-        document.querySelectorAll('#about .about-group-toggle[aria-expanded="false"]')
-          .forEach(b => b.click()));
-    };
     const fillSearch = async (text) => {
       for (let tries = 0; ; tries++) {
         // The mechanism, finally caught: filling while a modal dialog is open
@@ -1061,22 +1185,105 @@ try {
       if (label === 'Get started') break;
     }
 
-    // State 1: the (i) panel as a new user reaches it (via the walkthrough).
-    // The handoff unfolds Your data; the other groups arrive CLOSED — so this
-    // is where the group toggles are audited in the state people meet them.
+    // State 1: THE FOUR DESTINATIONS, each walked as its own screen (1.40.0).
+    //
+    // These were folding groups inside one dialog and the gate audited them as
+    // one state. That measured whatever the first open group happened to show
+    // and reported the other three as covered — the same false receipt shape as
+    // a registry entry matching nothing. Four screens, four states, driven.
+    //
+    // The walkthrough's last step hands off to Your data, because that is where
+    // the storage question is answered, so this starts where a new person lands.
+    await openSurface(page, 'sheet-group-data');
     await page.waitForSelector('#storage-body dt');
-    await auditContrast(page, 'panel groups', theme);
-    await auditAxe(page, 'panel groups', theme);
-    await auditNames(page, 'panel groups', theme);
-    await auditTargets(page, 'panel groups', theme);
-    await auditFocusRings(page, 'panel groups', theme, ['.about-group-toggle']);
-    await expandGroups();
+    await auditContrast(page, 'your data', theme);
+    await auditAxe(page, 'your data', theme);
+    await auditNames(page, 'your data', theme);
+    await auditTargets(page, 'your data', theme);
+    await auditFocusRings(page, 'your data', theme,
+      ['#export', '#storage-ask', '#notnow-open', '#sheet-group-data-close']);
+
+    // Help is nine closed disclosures. Opened first: a `<details>` nobody has
+    // pressed matches nothing visible, so auditing it shut would measure the
+    // summaries and silently exempt every answer under them.
+    await openSurface(page, 'sheet-group-help');
+    await page.evaluate(() =>
+      document.querySelectorAll('#sheet-group-help details').forEach((d) => { d.open = true; }));
+    await auditContrast(page, 'help', theme);
+    await auditAxe(page, 'help', theme);
+    await auditNames(page, 'help', theme);
+    await auditTargets(page, 'help', theme);
+    await auditFocusRings(page, 'help', theme, ['.help-q summary', '#sheet-group-help-close']);
+
+    await openSurface(page, 'sheet-group-why');
+    await auditContrast(page, 'how it works', theme);
+    await auditAxe(page, 'how it works', theme);
+    await auditNames(page, 'how it works', theme);
+    await auditTargets(page, 'how it works', theme);
+    await auditFocusRings(page, 'how it works', theme, ['#sheet-group-why-close']);
+
+    await openSurface(page, 'sheet-group-actions');
+    await auditContrast(page, 'things you can do', theme);
+    await auditAxe(page, 'things you can do', theme);
+    await auditNames(page, 'things you can do', theme);
+    await auditTargets(page, 'things you can do', theme);
+    await auditFocusRings(page, 'things you can do', theme,
+      ['#calendar', '#today-print', '#sample', '#sheet-group-actions-close']);
+
+    await openSurface(page, 'sheet-group-extras');
+    await auditContrast(page, 'settings', theme);
+    await auditAxe(page, 'settings', theme);
+    await auditNames(page, 'settings', theme);
+    await auditTargets(page, 'settings', theme);
+    await auditFocusRings(page, 'settings', theme,
+      ['#badge-toggle', '#day-boundary-set', '#sheet-group-extras-close']);
+
     // The clearing confirmation is revealed by choosing a mode, so it is opened
     // here: a control that only exists after a click is still a control somebody
     // reads, and leaving it out of the audit would exempt the typed-word box —
     // the one surface in the app standing between a person and their history.
+    // It lives under Your data since 1.40.0 — clearing your data is a thing you
+    // do TO your data, not a preference.
+    await openSurface(page, 'sheet-group-data');
     await page.click('#purge-pick-clear');
     await page.waitForSelector('#purge-confirm:not([hidden])');
+    await auditContrast(page, 'clearing out', theme);
+    await auditAxe(page, 'clearing out', theme);
+    await auditNames(page, 'clearing out', theme);
+    await auditTargets(page, 'clearing out', theme);
+    // `#purge-go` ships DISABLED and stays that way until the word is typed, so
+    // it is genuinely not focusable and auditing it as-is would report a defect
+    // about a control behaving exactly as designed. The word is typed to reach
+    // the enabled state — the ring on THE most consequential button in the app
+    // is worth the two lines — and cleared again immediately. It is never
+    // pressed: the walk's whole store is on the other side of it.
+    await page.fill('#purge-word',
+      (await page.locator('#purge-word-required').textContent()) ?? '');
+    await page.waitForSelector('#purge-go:not([disabled])');
+    await auditFocusRings(page, 'clearing out', theme, ['#purge-word', '#purge-go', '#purge-cancel']);
+    await page.fill('#purge-word', '');
+    await page.click('#purge-cancel');
+
+    // And the ⓘ itself, which keeps what the app IS — the intro, the release
+    // notes, the diagnostic and the way to the calendar.
+    //
+    // WAIT FOR THE PAINT, DO NOT RACE IT. `show()` hides `#about-intro`
+    // synchronously and `paintStorage` un-hides it a tick later, when the
+    // browser has answered about persistence. This audit used to run
+    // immediately after the panel opened, so the gap was small enough never to
+    // lose; the four sheets now walked before it changed nothing about the race
+    // and everything about which side of it a loaded runner lands on. It passed
+    // locally and failed in CI on all three intro entries — a timing-dependent
+    // failure, which is a defect that has told you its reproduction rate
+    // (LESSONS §71), so the condition is waited for rather than the run retried.
+    //
+    // Not a weakened check: if the intro genuinely never shows, the wait times
+    // out and the three registry entries fail exactly as they did here.
+    await openSurface(page, 'about');
+    await page.waitForFunction(
+      () => document.querySelector('#about-intro')?.checkVisibility() === true,
+      null, { timeout: 5000 },
+    ).catch(() => { /* the audits below say what happened */ });
     await auditContrast(page, 'first-run dialog', theme);
     await auditAxe(page, 'first-run dialog', theme);
     await auditNames(page, 'first-run dialog', theme);
@@ -1094,8 +1301,16 @@ try {
     // State 2m: MORE — the destination list (1.39.0). Its own driven state
     // because it is a modal that nothing else is on screen with, and because
     // it is the first navigation this app has ever had.
-    await page.click('#open-more');
-    await page.waitForSelector('#more[open]');
+    //
+    // Driven through `openSurface` rather than `page.click('#open-more')`. The
+    // click was observed here, in this walk only, resolving without the dialog
+    // opening — nothing overlapped it, nothing was inert, no page error, and a
+    // programmatic `.click()` on the same element in the same state opened it.
+    // The cause was never found; what IS known is that this walk has been
+    // through fifteen dialogs by the time it arrives, and every other state is
+    // driven the same way. An intermittent failure is a defect that has told you
+    // its reproduction rate, so it is written down rather than retried.
+    await openSurface(page, 'more');
     await auditContrast(page, 'more', theme);
     await auditAxe(page, 'more', theme);
     await auditNames(page, 'more', theme);
@@ -1615,8 +1830,7 @@ try {
     // State 3f-: the comms sweep. Turned on through the panel, made due the way
     // the smoke walk does it, then reached the only way it can be reached — by
     // coming out of a focus session.
-    await page.click('#open-about');
-    await expandGroups();
+    await openSurface(page, 'sheet-group-extras');
     await page.waitForSelector('#comms-start:not([hidden])');
     await auditContrast(page, 'comms opt-in', theme);
     await auditNames(page, 'comms opt-in', theme);
@@ -1624,6 +1838,7 @@ try {
     await auditFocusRings(page, 'comms opt-in', theme, ['#comms-start']);
     await page.click('#comms-start');
     await page.waitForTimeout(350);
+    await openSurface(page, 'about');
     await page.click('#about-close');
     await page.evaluate(async () => {
       const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -2078,8 +2293,7 @@ try {
     // Composed Today (1.6.0, ADR-0051): audit the opt-in Extra OFF (its resting
     // state), turn it on, choose one staged thing from its sheet, audit the
     // strip, then turn it off again so every later state is unchanged.
-    await page.click('#open-about');
-    await expandGroups();
+    await openSurface(page, 'sheet-group-extras');
     await page.waitForSelector('#today-start:not([hidden])');
     await auditContrast(page, 'today opt-in', theme);
     await auditNames(page, 'today opt-in', theme);
@@ -2088,6 +2302,7 @@ try {
     await page.click('#today-start');
     await page.waitForFunction(() => /^On\./.test(
       document.querySelector('#today-note')?.textContent ?? ''));
+    await openSurface(page, 'about');
     await page.click('#about-close');
     await fillSearch('sortable thing');
     await page.waitForSelector('#search-results .search-open');
@@ -2106,12 +2321,11 @@ try {
     await auditNames(page, 'composed strip', theme);
     await auditTargets(page, 'composed strip', theme);
     await auditFocusRings(page, 'composed strip', theme, ['.composed-open']);
-    await page.click('#open-about');
-    await expandGroups();
-    await page.waitForSelector('#about[open]');
+    await openSurface(page, 'sheet-group-extras');
     await page.click('#today-stop');
     await page.waitForFunction(() => /^Off\./.test(
       document.querySelector('#today-note')?.textContent ?? ''));
+    await openSurface(page, 'about');
     await page.click('#about-close');
 
     // The header clock (1.22.0): audit the switch, turn it on, close the panel
@@ -2121,8 +2335,7 @@ try {
     // It goes through the panel rather than being seeded, because the point of
     // the state is the rendered chrome and the only way anybody gets it is this
     // one. A clock nobody can reach is measured but not shipped.
-    await page.click('#open-about');
-    await expandGroups();
+    await openSurface(page, 'sheet-group-extras');
     await page.waitForSelector('#clock-on:not([hidden])');
     await auditContrast(page, 'clock opt-in', theme);
     await auditNames(page, 'clock opt-in', theme);
@@ -2130,7 +2343,9 @@ try {
     await auditFocusRings(page, 'clock opt-in', theme, ['#clock-on']);
     // THE WAY IN FROM OUTSIDE (V2 stage 6). Driven with the copy actually
     // pressed, so the note has words in it — a status line measured while empty
-    // measures nothing, which is the `situation field` lesson.
+    // measures nothing, which is the `situation field` lesson. On Things you can
+    // do since 1.40.0: an address you copy is a verb, not a switch.
+    await openSurface(page, 'sheet-group-actions');
     await page.click('#capture-endpoint-copy');
     await page.waitForFunction(() =>
       (document.querySelector('#capture-endpoint-note')?.textContent || '').length > 0);
@@ -2142,6 +2357,7 @@ try {
     // WHEN YOUR DAY ENDS (V2 stage 5) — driven with a real choice made, because a
     // control measured in its default state measures the default and not the
     // control. A new surface joins this gate in the SAME commit (LESSONS §28).
+    await openSurface(page, 'sheet-group-extras');
     await page.selectOption('#day-boundary', '3');
     await page.click('#day-boundary-set');
     await page.waitForFunction(() =>
@@ -2162,6 +2378,7 @@ try {
     // reword of a status line hang a walk for a reason that is not a defect.
     // The pair of buttons swapping IS the thing that happened.
     await page.waitForSelector('#clock-off:not([hidden])');
+    await openSurface(page, 'about');
     await page.click('#about-close');
     await page.waitForSelector('#clock:not([hidden])');
     // The words must actually be there before they are measured. An empty
@@ -2174,11 +2391,10 @@ try {
     await auditAxe(page, 'clock on', theme);
     await auditNames(page, 'clock on', theme);
     await auditTargets(page, 'clock on', theme);
-    await page.click('#open-about');
-    await expandGroups();
-    await page.waitForSelector('#about[open]');
+    await openSurface(page, 'sheet-group-extras');
     await page.click('#clock-off');
     await page.waitForSelector('#clock-on:not([hidden])');
+    await openSurface(page, 'about');
     await page.click('#about-close');
     await page.waitForSelector('#clock', { state: 'hidden' });
 
@@ -2317,8 +2533,7 @@ try {
     await auditFocusRings(page, 'detail sheet, declined', theme, ['#detail-carry']);
     await page.click('#detail-close');
     await fillSearch('');
-    await page.click('#open-about');
-    await expandGroups();
+    await openSurface(page, 'sheet-group-data');
     await page.click('#notnow-open');
     await page.waitForSelector('#notnow-view:not([hidden])');
     await page.waitForSelector('#notnow-list .trash-row');
@@ -2330,9 +2545,10 @@ try {
     // exists once somebody asks for it, so a state registered without taking
     // one would match nothing and pass for the wrong reason.
     //
-    // No group toggle here — `expandGroups()` above has already opened every
-    // group, and clicking the About toggle CLOSED it, which is how the first
-    // version of this block timed out on a button it could see but not reach.
+    // `openSurface` rather than a click, because the diagnostic lives on the ⓘ
+    // and the ledger above is on Your data — two sheets that are never open
+    // together (1.40.0), so this has to close one before the other exists.
+    await openSurface(page, 'about');
     await page.click('#diagnostic-show');
     await page.waitForSelector('#diagnostic-text:not([hidden])');
     await page.click('#diagnostic-copy');
@@ -2343,6 +2559,7 @@ try {
     await auditTargets(page, 'diagnostic taken', theme);
     await auditFocusRings(page, 'diagnostic taken', theme, ['#diagnostic-show', '#diagnostic-copy']);
     // The journal's three states, walked in the order a person meets them.
+    await openSurface(page, 'sheet-group-data');
     await page.click('#journal-open');
     await page.waitForSelector('#journal-view:not([hidden])');
     await auditContrast(page, 'journal, no passphrase', theme);
@@ -2375,10 +2592,12 @@ try {
     await page.click('#notnow-open');
     // The slot: set a day, audit the sheet's offer, then clear it so every
     // later state sees the resting default.
+    await openSurface(page, 'sheet-group-extras');
     await page.selectOption('#slot-day', 'fri');
     await page.click('#slot-set');
     await page.waitForFunction(() => /^On\./.test(
       document.querySelector('#slot-note')?.textContent ?? ''));
+    await openSurface(page, 'about');
     await page.click('#about-close');
     await fillSearch('asked of me');
     await page.waitForSelector('#search-results .search-open');
@@ -2396,31 +2615,55 @@ try {
     await auditFocusRings(page, 'detail sheet, slot offered', theme, ['#detail-slot-park']);
     await page.click('#detail-close');
     await fillSearch('');
-    await page.click('#open-about');
-    await expandGroups();
+    await openSurface(page, 'sheet-group-extras');
     await page.selectOption('#slot-day', '');
     await page.click('#slot-set');
     await page.waitForFunction(() =>
       (document.querySelector('#slot-note')?.textContent ?? 'x') === '');
+    await openSurface(page, 'about');
     await page.click('#about-close');
 
-    // State 4: the dialog as every RETURN visit sees it — the state real users
-    // live in, which the first gate structurally could not audit.
-    await page.click('#open-about');
-    await expandGroups();
+    // State 4: the surfaces as every RETURN visit sees them — the state real
+    // users live in, which the first gate structurally could not audit. Each
+    // sheet is re-walked here with a store that has a real history behind it,
+    // because half of what these screens show is computed from it: the copy
+    // note, the record's day count, the ledger's rows.
+    await openSurface(page, 'sheet-group-data');
     await page.waitForSelector('#storage-body dt');
-    await page.click('#purge-pick-clear');
-    await page.waitForSelector('#purge-confirm:not([hidden])');
+    await page.waitForSelector('#copy-note:not([hidden])');
+    await auditContrast(page, 'your data, return visit', theme);
+    await auditAxe(page, 'your data, return visit', theme);
+    await auditNames(page, 'your data, return visit', theme);
+    await auditTargets(page, 'your data, return visit', theme);
+    await auditFocusRings(page, 'your data, return visit', theme, ['#export', '#notnow-open']);
+
+    await openSurface(page, 'sheet-group-extras');
+    await auditContrast(page, 'settings', theme);
+    await auditAxe(page, 'settings', theme);
+    await auditNames(page, 'settings', theme);
+    await auditTargets(page, 'settings', theme);
+
+    await openSurface(page, 'sheet-group-actions');
+    await auditContrast(page, 'things you can do', theme);
+    await auditAxe(page, 'things you can do', theme);
+    await auditNames(page, 'things you can do', theme);
+    await auditTargets(page, 'things you can do', theme);
+    await auditFocusRings(page, 'things you can do', theme,
+      ['#calendar', '#report-copy', '#sheet-group-actions-close']);
+
+    await openSurface(page, 'about');
     await auditContrast(page, 'dialog, return visit', theme);
     await auditAxe(page, 'dialog, return visit', theme);
     await auditNames(page, 'dialog, return visit', theme);
     await auditTargets(page, 'dialog, return visit', theme);
-    await auditFocusRings(page, 'dialog, return visit', theme, ['#about-close', '#export', '#calendar', '#sample', '#purge-pick-clear', '#badge-toggle']);
+    await auditFocusRings(page, 'dialog, return visit', theme,
+      ['#about-close', '#diagnostic-show']);
 
     // The record itself, open (1.4.0, ADR-0048). The store holds a real
     // history by this point in the walk, so days, lines, and the total all
     // have something to render. Collapsed again after, so the 320px dialog
     // overflow check below measures the panel as a return visit sees it.
+    await openSurface(page, 'sheet-group-data');
     await page.click('#log-open');
     await page.waitForSelector('#log-view:not([hidden])');
     await page.waitForFunction(() =>
@@ -2446,13 +2689,14 @@ try {
     await page.click('#trash-open');
     await page.waitForSelector('#trash-view', { state: 'hidden' });
 
-    // Today on paper, in the same panel.
+    // Today on paper, on the Settings sheet that carries it.
+    await openSurface(page, 'sheet-group-actions');
     await auditContrast(page, 'today on paper', theme);
     await auditNames(page, 'today on paper', theme);
     await auditTargets(page, 'today on paper', theme);
     await auditFocusRings(page, 'today on paper', theme, ['#today-print']);
 
-    // The report controls, in the panel that is already open.
+    // The report controls, on the sheet that is already open.
     await auditContrast(page, 'report controls', theme);
     await auditNames(page, 'report controls', theme);
     await auditTargets(page, 'report controls', theme);
@@ -2471,6 +2715,7 @@ try {
       format: 'planner-log', version: 1, at: new Date().toISOString(),
       scope: 'all', encrypted: false, logJsonl: '', snapshot: null,
     }));
+    await openSurface(page, 'sheet-group-data');
     await page.setInputFiles('#import-file', validExport);
     await page.waitForSelector('#import-actions:not([hidden])');
     await auditContrast(page, 'import, file chosen', theme);
@@ -2480,17 +2725,28 @@ try {
     await auditFocusRings(page, 'import, file chosen', theme, ['#import-file', '#import-union', '#import-backup', '#import-go']);
     rmSync(validExport, { force: true });
 
-    // State 5: B-04's hardest case — 320px at 200% text — WITH the dialog
-    // open. The dialog is its own scroll container, so page-level overflow
-    // stays 0 while content escapes sideways inside it; both get checked.
+    // State 5: B-04's hardest case — 320px at 200% text — WITH a dialog open.
+    // A dialog is its own scroll container, so page-level overflow stays 0 while
+    // content escapes sideways inside it; both get checked.
+    //
+    // EVERY surface, not just the ⓘ (1.40.0). This measured `#about` alone back
+    // when the ⓘ was the only screen. The four sheets carry the code blocks, the
+    // selects and the long words — which is to say they carry everything that
+    // actually overflows — so measuring the one screen that no longer holds them
+    // is a check that cannot fail for the right reason.
     await page.setViewportSize({ width: 320, height: 568 });
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
-    const dlgOverflow = await page.evaluate(() => {
-      const d = document.querySelector('#about');
-      return d.scrollWidth - d.clientWidth;
-    });
-    (dlgOverflow <= 1 ? pass : fail)(
-      `${theme}/320px @ 200%: dialog horizontal overflow ${dlgOverflow}px (must be ≤1)`);
+    for (const id of ['about', 'sheet-group-why', 'sheet-group-help',
+      'sheet-group-data', 'sheet-group-extras', 'more']) {
+      await openSurface(page, id);
+      const over = await page.evaluate((want) => {
+        const d = document.querySelector('#' + want);
+        return d.scrollWidth - d.clientWidth;
+      }, id);
+      (over <= 1 ? pass : fail)(
+        `${theme}/320px @ 200%: #${id} horizontal overflow ${over}px (must be ≤1)`);
+    }
+    await openSurface(page, 'about');
     await auditContrast(page, 'dialog @ 320/200', theme, 'dialog, return visit');
     await auditAxe(page, 'dialog @ 320/200', theme);
     await page.click('#about-close');

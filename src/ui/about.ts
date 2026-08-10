@@ -113,11 +113,11 @@ export async function mountAbout(
   const intro = document.querySelector<HTMLElement>('#about-intro');
   const body = document.querySelector<HTMLElement>('#storage-body');
   const ask = document.querySelector<HTMLButtonElement>('#storage-ask');
-  // The SECOND caller of the storage request, and the one that is reachable.
-  // `#storage-ask` lives inside the "Your data" group, which ships collapsed —
-  // so before this the only route to persistence was press ⓘ, unfold a group,
-  // find a button. Optional in the query so a missing element costs the panel
-  // nothing, like every other control here.
+  // The SECOND caller of the storage request, and the one on the surface a new
+  // person actually arrives at. `#storage-ask` is on the Your data sheet — one
+  // destination away since 1.40.0, and before that inside a group that shipped
+  // collapsed. Either way it is not where somebody lands. Optional in the query
+  // so a missing element costs the panel nothing, like every other control here.
   const introAsk = document.querySelector<HTMLButtonElement>('#intro-ask');
   const exp = document.querySelector<HTMLButtonElement>('#export');
   const noteOut = document.querySelector<HTMLElement>('#storage-note');
@@ -153,82 +153,102 @@ export async function mountAbout(
 
   if (!open || !intro || !body || !ask || !exp || !notes || !version || !noteOut) return;
 
-  // The folding groups (1.7.2, ADR-0055). Closed by default; which ones you
-  // opened is remembered per device — a view preference on the badge/lens
-  // pattern (kv, fire-and-forget, never an event). The toggle's label is the
-  // group's name, so the caret carries the state (CSS ::before on
-  // aria-expanded) rather than the label changing under the reader.
+  /** Set once `show` exists, below — the navigation is wired before it, and a
+   *  door that bypassed the repaint would open a stale panel. */
+  let showPanel: () => void = () => { /* replaced below */ };
+
+  /**
+   * HAS THE BROWSER PROMISED TO KEEP THE STORE? Learned at MOUNT, kept, and
+   * updated by every paint. `null` means not answered yet.
+   *
+   * The storage block's visibility depended on `paintStorage`, which only ran
+   * when the panel was OPENED — so on the very first open there was no answer
+   * yet and the block arrived a tick late. The walkthrough's handoff opens the
+   * panel precisely to show that block, so the one moment it must be right was
+   * the one moment nothing knew. It read as a flicker locally and as a failed
+   * gate on a loaded runner, which is the same defect wearing two costumes.
+   *
+   * Answered here instead, at boot: `navigator.storage.persisted()` and nothing
+   * else. The full `paintStorage` is deliberately NOT called at mount — it does
+   * a whole-log read for the copy row, and startup is the one place this app
+   * may not spend time. This asks the cheap question only.
+   *
+   * By the time anybody reaches the handoff they have pressed through six
+   * walkthrough steps, so the window went from microseconds to seconds.
+   */
+  let kept: boolean | null = null;
+  void read().then((r) => { kept = r.supported ? r.persisted : true; })
+    .catch(() => { /* stays null; `show` then leaves the block alone */ });
+
+  /** EVERY SHEET REPAINTS ON OPEN, for exactly the reason `show` does.
+   *
+   *  Half of what these screens display is read from the log: the storage rows,
+   *  the calendar's count, the anchor list and its picker. When they were folds
+   *  inside the ⓘ, opening the ⓘ repainted all of it and there was one door to
+   *  remember. Splitting them into their own sheets moved the elements out from
+   *  under that repaint while leaving `show()` still calling for them — so a
+   *  sheet opened straight from More would have shown the state the app was in
+   *  when it started, not the state it is in now.
+   *
+   *  That is the stale-panel defect this file has already fixed twice, once for
+   *  the calendar count and once for the anchors, and both comments say plainly
+   *  that painting at mount is what caused it. Set below, where the painters
+   *  exist. */
+  let repaintSheet: (id: string) => void = () => { /* replaced below */ };
+
+  /** Go to a destination the way More does — one surface, repainted. Set in the
+   *  navigation block below, and used by the two deep links that land somebody
+   *  inside a sheet: the footer's build stamp and the empty store's way back. */
+  let goToSheet: (target: string) => void = () => { /* replaced below */ };
+
+  // WHERE THINGS ARE (1.40.0, ADR-0083). Things you can do, Settings, Your data,
+  // Help and How it works are their own sheets, opened from "More". They were
+  // folded groups inside this panel, which is how the ⓘ became the only door in
+  // the app: pick a destination and you still landed in the same document, one
+  // fold deeper.
+  //
+  // Every id came across unchanged and every handler in this file binds
+  // globally by id, so nothing else had to learn where its element moved to.
   {
-    const GROUPS_KEY = 'about.groups';
-    const toggles = Array.from(document.querySelectorAll<HTMLButtonElement>('.about-group-toggle'));
-    const setOpen = (btn: HTMLButtonElement, isOpen: boolean): void => {
-      const id = btn.getAttribute('aria-controls');
-      const target = id ? document.getElementById(id) : null;
-      if (!target) return;
-      target.hidden = !isOpen;
-      btn.setAttribute('aria-expanded', String(isOpen));
-    };
-    const persist = (): void => {
-      const openNow = toggles.filter(b => b.getAttribute('aria-expanded') === 'true')
-        .map(b => b.getAttribute('aria-controls') ?? '');
-      void session.store.setKv(GROUPS_KEY, openNow).catch(() => { /* view pref only */ });
-    };
-    for (const btn of toggles) {
-      btn.addEventListener('click', () => {
-        setOpen(btn, btn.getAttribute('aria-expanded') !== 'true');
-        persist();
-      });
+    const SHEETS = ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
+      'sheet-group-actions', 'sheet-group-extras'];
+    for (const id of SHEETS) {
+      document.querySelector<HTMLButtonElement>(`#${id}-close`)
+        ?.addEventListener('click', () => document.querySelector<HTMLDialogElement>(`#${id}`)?.close());
     }
-    // --- going somewhere, instead of reading to find it (1.39.0) -----------
-    //
-    // "More" in the bar lists the destinations and lands you on ONE of them, with
-    // the rest folded. The panel had become the only door in the app: settings,
-    // your data, help, the reference and the verbs all behind a single ⓘ, in a
-    // document thirteen screens tall with everything open. Nothing was findable
-    // because nothing had an address.
-    //
-    // This does not move the markup — every group already had an id, and the
-    // handlers are all bound globally by id, so the reader gets destinations
-    // without the DOM being restructured underneath working code.
-    const goTo = (target: string): void => {
-      for (const btn of toggles) {
-        setOpen(btn, btn.getAttribute('aria-controls') === target);
-      }
-      persist();
-      // Top of the panel, every time. Landing halfway down a document is the
-      // thing being fixed, so arriving somewhere must not itself require a scroll
-      // to work out where you are.
-      const scroller = document.querySelector<HTMLElement>('#about-body');
-      if (scroller) scroller.scrollTop = 0;
+    /** One surface at a time. Two open dialogs overlap and the top one eats the
+     *  other's taps — and "somewhere to go" means arriving at ONE place. */
+    const openSheet = (target: string): boolean => {
+      const sheet = document.querySelector<HTMLDialogElement>(`#sheet-${target}`);
+      if (!sheet) return false;
+      for (const id of SHEETS) document.querySelector<HTMLDialogElement>(`#${id}`)?.close();
+      dialog.close();
+      sheet.showModal();
+      repaintSheet(sheet.id);
+      return true;
     };
+    goToSheet = (target) => { openSheet(target); };
 
     const more = document.querySelector<HTMLDialogElement>('#more');
-    document.querySelector<HTMLButtonElement>('#open-more')?.addEventListener('click', () => {
-      more?.showModal();
-    });
-    document.querySelector<HTMLButtonElement>('#more-close')?.addEventListener('click', () => {
-      more?.close();
-    });
+    document.querySelector<HTMLButtonElement>('#open-more')
+      ?.addEventListener('click', () => more?.showModal());
+    document.querySelector<HTMLButtonElement>('#more-close')
+      ?.addEventListener('click', () => more?.close());
     for (const b of Array.from(document.querySelectorAll<HTMLButtonElement>('.more-go'))) {
       b.addEventListener('click', () => {
         const target = b.dataset.go ?? '';
         more?.close();
-        dialog.showModal();
-        // "Things you can do" is not a group — it is the unfolded block at the
-        // top, so everything folds and the top of the panel IS the destination.
-        if (target === 'actions') { for (const t of toggles) setOpen(t, false); persist(); }
-        else goTo(target);
+        if (openSheet(target)) return;
+        // "About Quietkeep" is the panel itself — opened through `show()`, NOT
+        // showModal(), because `show()` is where it repaints (the storage rows,
+        // the calendar count, the anchors). A new door into the same room must
+        // not reintroduce the stale-panel defect the comment inside `show()`
+        // records having already been fixed once.
+        showPanel();
         const scroller = document.querySelector<HTMLElement>('#about-body');
         if (scroller) scroller.scrollTop = 0;
       });
     }
-
-    void session.store.getKv<string[]>(GROUPS_KEY).then((openIds) => {
-      if (!Array.isArray(openIds)) return;
-      for (const btn of toggles) {
-        if (openIds.includes(btn.getAttribute('aria-controls') ?? '')) setOpen(btn, true);
-      }
-    }).catch(() => { /* closed is the calm default */ });
   }
 
   version.textContent = CURRENT.triplet;
@@ -324,6 +344,7 @@ export async function mountAbout(
     // the button does — visible exactly while the browser has not promised to
     // keep the store, gone for good once it has. `show(true)` still forces it on
     // a genuine first run, when the state is not yet known.
+    kept = r.supported ? r.persisted : true;
     if (!r.persisted && r.supported) intro.hidden = false;
     else if (r.persisted) intro.hidden = true;
     if (introAsk) introAsk.hidden = ask.hidden;
@@ -1529,10 +1550,30 @@ export async function mountAbout(
     // It is now shown whenever the browser has NOT agreed to keep the store,
     // which is the state it describes. That is not a standing nag — it is a
     // state that resolves and then never appears again, and `paintStorage`
-    // hides it the moment persistence is granted. It also puts the ask ABOVE
-    // every fold: the only other caller of `requestPersistence()` is a button
-    // inside a group that ships collapsed.
-    intro.hidden = !firstRun;
+    // hides it the moment persistence is granted. It also puts the ask on the
+    // surface somebody lands on: the only other caller of `requestPersistence()`
+    // is a button on the Your data sheet, one destination away.
+    // `paintStorage` OWNS this block's visibility, and `show` must not fight it.
+    //
+    // This was `intro.hidden = !firstRun`, which re-hid it on EVERY open. On a
+    // store the browser has not agreed to keep — the exact state the block
+    // describes — the panel therefore opened without it and grew it a tick
+    // later, every single time. Content arriving under a reader who has already
+    // started is the one thing this app exists not to do, and it was invisible
+    // here because the tick is short on a fast machine.
+    //
+    // Found by the a11y gate going red in CI and green locally on the same
+    // commit: the walk audits this state further into a longer walk since
+    // 1.40.0, and a loaded runner lands on the other side of the same race
+    // (LESSONS §71 — a timing failure is a defect reporting its rate).
+    //
+    // A first run shows it at once. Otherwise the answer learned at mount
+    // decides, synchronously — visible while the browser has not promised to
+    // keep the store, gone once it has. `null` means the question has not come
+    // back yet, and then this leaves the block exactly as it was rather than
+    // hiding it and putting it back, which is the flicker 1.40.1 removed.
+    if (firstRun || kept === false) intro.hidden = false;
+    else if (kept === true) intro.hidden = true;
     dialog.showModal();
     void paintStorage();
     // The calendar count is recomputed on every open. It used to be painted once
@@ -1543,6 +1584,19 @@ export async function mountAbout(
     // for the same reason — a panel that paints once at mount shows the state
     // the app was in when it started, not the state it is in now (1.17.0).
     void paintAnchors().catch(() => { /* the next open repaints it */ });
+  };
+  showPanel = () => show(false);
+
+  // The other half of the repaint, now that the ⓘ is not the only door. Each
+  // sheet asks for exactly what it holds — an unconditional repaint-everything
+  // would work and would also make "which screen owns this" unanswerable the
+  // next time something moves.
+  repaintSheet = (id) => {
+    if (id === 'sheet-group-data') void paintStorage();
+    if (id === 'sheet-group-actions') {
+      paintCalendar();
+      void paintAnchors().catch(() => { /* the next open repaints it */ });
+    }
   };
 
   // --- sample work ---------------------------------------------------------
@@ -1974,10 +2028,27 @@ export async function mountAbout(
 
   open.addEventListener('click', () => show(false));
 
+  // THE WALKTHROUGH'S HANDOFF IS A FIRST RUN BY DEFINITION, and says so (1.40.4).
+  //
+  // Its last step opens this panel for exactly one reason — to put the storage
+  // ask in front of somebody — and it did that by clicking `#open-about`, which
+  // is `show(false)`. So whether the ask was visible came down to an async
+  // `navigator.storage.persisted()` landing before the assertion did. Two
+  // releases tried to widen that window (1.40.1 stopped `show` re-hiding the
+  // block; 1.40.3 asked the question at boot) and neither closed it, because a
+  // window is not a fix — a promise cannot resolve synchronously and no amount
+  // of head start makes it deterministic.
+  //
+  // `show(true)` sets the block visible on the same tick, with no question
+  // asked, which is correct: somebody arriving from the walkthrough has not set
+  // storage up, and that is what "first run" means. An event rather than an
+  // exported function because `tour.ts` mounts separately and neither module
+  // imports the other.
+  document.addEventListener('quietkeep:about-first-run', () => show(true));
+
   // The build stamp in the footer is the diagnostic's other door (§7f: "the
-  // version stamp is a good home"). Same shape as `#restore-go` below: open the
-  // panel, unfold the group through its own toggle so the choice is remembered
-  // the way every other unfold is, then scroll and focus.
+  // version stamp is a good home"). Same shape as `#restore-go` below: land on
+  // the surface that holds it, then scroll and focus.
   //
   // IT PRESSES THE BUTTON (1.24.1). It used to open the panel, unfold the
   // group, scroll to `#diagnostic-show` and focus it — and stop there. So a
@@ -1991,9 +2062,9 @@ export async function mountAbout(
   // because the report is the thing that was asked for. `#diagnostic-text`
   // carries tabindex="0" already, so it can take focus and be read.
   document.querySelector<HTMLButtonElement>('#build-version')?.addEventListener('click', () => {
+    // The diagnostic is in the panel itself now — About is no longer a fold
+    // inside it, because the ⓘ IS about (1.40.0).
     show(false);
-    const toggle = document.querySelector<HTMLButtonElement>('#group-about-open');
-    if (toggle && toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
     const btn = document.querySelector<HTMLButtonElement>('#diagnostic-show');
     if (!btn) return;
     const out = document.querySelector<HTMLElement>('#diagnostic-text');
@@ -2032,18 +2103,19 @@ export async function mountAbout(
   // and it deliberately does NOT put a second file input on the main page. The
   // note beside `#import-file` is load-bearing: on iPadOS the hidden-input trick
   // loses the Files app entry point, so there is exactly one real input in this
-  // app and this control delivers you to it — panel open, group unfolded, focus
-  // on the input itself. A second one would be a second chance to reintroduce
-  // the trap that comment exists to record.
+  // app and this control delivers you to it — Your data open, focus on the input
+  // itself. A second one would be a second chance to reintroduce the trap that
+  // comment exists to record.
   //
-  // The unfold goes through the group's own toggle rather than reaching into the
-  // element, so the choice is remembered the same way every other unfold is.
+  // THROUGH `goToSheet`, which is what More presses (1.40.0). The first version
+  // of this after the split opened the ⓘ and then `showModal()`d the sheet on
+  // top of it — two dialogs stacked, which is the overlap `openSheet` exists to
+  // prevent, and no repaint, so the storage rows behind the input would have
+  // shown whatever they held at boot.
   document.querySelector<HTMLButtonElement>('#restore-go')?.addEventListener('click', () => {
-    show(false);
-    const toggle = document.querySelector<HTMLButtonElement>('#group-data-open');
-    if (toggle && toggle.getAttribute('aria-expanded') !== 'true') toggle.click();
+    goToSheet('group-data');
     const input = document.querySelector<HTMLInputElement>('#import-file');
-    // Scroll first, then focus: `#about-body` is the sole scroll container and
+    // Scroll first, then focus: the sheet body is the sole scroll container and
     // the import section sits well down it, so focusing alone would leave the
     // label — which says what to choose — above the fold.
     input?.scrollIntoView({ block: 'center' });

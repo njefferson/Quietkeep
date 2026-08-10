@@ -687,39 +687,125 @@ being treated as one was a cache.
 
 ---
 
-## V-21 · Does a Shortcut's *Open URL* land in the installed app, or in Safari? — **NOT VERIFIED, and it decides whether the Shortcut route exists**
-· raised 2026-08-09, when the dump page and a private capture entrance were planned
+## V-21 · Can a link open into the installed app at all, or only Safari? — **CLOSED 2026-08-10: ONLY SAFARI, and there is no scheme that changes it**
+· raised 2026-08-09 · settled on device, on the owner's iPad, by the only witness there is
 
-**Why it is asked now.** On the reference platform there is no entrance from outside
-the app: `share_target` and manifest shortcuts are Chromium-only. The one route that
-works is a Shortcut that opens `/capture?text=…`, and the ⓘ panel now hands people the
-recipe for it. Everything planned on top of that — a fragment entrance carrying a whole
-meeting's notes into a staged dump page — rests on the Shortcut reaching the app that
-holds the store.
+**The answer.** It opened **Safari**, not the installed app. The address bar read
+`quietkeep-sync.pages.dev`, the app rendered inside a Safari tab, and the capture
+landed — *"Held from a link. Undo"*, with `helloworld` sitting on the clarify card.
+It worked, into the wrong store, exactly as this row predicted.
 
-**What is believed and NOT verified:** that iOS honours the installed web app's scope
-for a URL opened by Shortcuts, rather than handing it to Safari.
+Not always, either: sometimes it opened Safari, and sometimes the navigation failed
+outright with a service-worker error, which turned out to be a separate defect and
+is written up as its own fix in 1.40.2 below.
 
-- By what: nothing. Stated from the shape of the platform, which is not evidence.
-- **This is the same risk already written down in
-  [V-16](#v-16--can-an-ipad-web-app-scan-a-qr-code-at-all--not-verified-and-it-decides-the-pairing-design)**
-  for the pairing link, where it was recorded that the flow "would appear to succeed
-  and then quietly not work". Storage is per origin *context*: Safari and the installed
-  app do not share an IndexedDB.
-- **The consequence here is worse than for pairing.** A pairing key that lands in the
-  wrong context fails visibly on the next step. A capture that lands in the wrong
-  context *succeeds* — the app says it held it — into a store nobody opens again. That
-  is the app's one unforgivable failure, dressed as a confirmation.
+**So the prediction here was right, and it is the bad outcome.** This row already
+said it: *"A capture that lands in the wrong context succeeds — the app says it held
+it — into a store nobody opens again. That is the app's one unforgivable failure,
+dressed as a confirmation."* That is now an observation rather than a worry.
 
-**How to settle it, and it needs the owner's hands.** Build one Shortcut with a single
-*Open URL* action pointing at `https://quietkeep.pages.dev/capture?text=hello`, run it
-from the Home Screen, and look at which icon comes to the front. If Quietkeep opens,
-the route is real. If Safari opens, the whole Shortcut entrance is a trap and the
-recipe in the ⓘ panel needs to say so.
+**What it decides.**
 
-**Until it is answered:** the fragment entrance and the Shortcut recipe for the dump
-page are NOT built. The existing `?text=` endpoint is untouched and keeps working
-either way — this question decides what may be *recommended*, not what exists.
+- **The Shortcut route may not be recommended as it stands.** A recipe that reliably
+  captures into a store the person does not open is worse than no recipe, because it
+  is silent. The ⓘ's copy has to say what actually happens.
+- **The fragment entrance and the staged dump page do not rescue it.** `#text=` keeps
+  the content off the wire, which is a different and real property, but a fragment
+  landing in Safari lands in Safari's IndexedDB just the same. Privacy and
+  destination are independent problems and only one of them was ever in hand.
+- **`?text=` is untouched and keeps working.** Somebody who opens the app itself and
+  captures is unaffected; this is about links arriving from outside.
+
+**What is still NOT known**, and is not assumed here:
+
+- Whether a Shortcut can be made to land in the installed app at all — via a
+  different action, a scoped URL, or a Home Screen shortcut rather than *Open URL*.
+  Nothing in this row is evidence either way.
+- Whether the behaviour differs on iPhone versus iPad, or by iOS version. One
+  device, one run of one Shortcut, on iPadOS, on 2026-08-10.
+- Whether the two symptoms shared a cause. The service-worker redirect defect is
+  fixed and would have produced its own failure regardless of which app opened.
+
+**RESEARCHED 2026-08-10, rather than tested around.** The question "can a link open
+into an installed home-screen web app at all" had never been asked; a warning and a
+gate were built on top of an assumption instead. What the record actually says:
+
+- **iOS has no link capturing. An `https://` link opens in Safari, always** — whether
+  or not it falls inside an installed web app's manifest `scope`. This is the
+  platform behaviour, not a Shortcuts quirk, and it is the documented difference from
+  Android, where an in-scope URL opens the installed PWA by default. The observation
+  above is the platform working as designed.
+- **Push notifications are the one long-standing exception** (iOS 16.4+): a
+  notification tap can open the installed web app. Even there the URL is unreliable —
+  with the app killed it opens at `start_url` and discards the requested one. Not
+  usable here regardless: this app sends no notifications, by design.
+- **There IS a scheme that lands in the installed app: `webapp://`.** Community
+  reported, widely used from Shortcuts, **and absent from Apple's documentation** —
+  which is a real risk to weigh, not a footnote. `webapp://host/path` opens the web
+  app that was added to the Home Screen for that URL, rather than Safari.
+- **And it discards the path and query.** The reported behaviour is that only `/`
+  renders: the app is launched at its start URL whatever was asked for. Sources
+  disagree on which iOS versions carry it (16.4+ in one account, discovered in the
+  iOS 26 betas in another), and that is left unresolved here rather than guessed.
+
+**So the obvious fix is worse than the defect.** Swapping the recipe to
+`webapp://…/capture?text=…` would land in the right app and arrive with **nothing**,
+because the text rides in the part that gets dropped. Today's failure at least leaves
+the note existing somewhere recoverable; that one would lose it silently, which is the
+single thing this app may never do.
+
+**What survives both facts, and it is a design rather than a discovery:** carry the
+text OUT OF BAND and use the scheme only to arrive. A Shortcut that copies the note to
+the clipboard and then opens `webapp://<host>` lands in the installed app; the app,
+on arrival, offers to hold what was copied. iOS requires a gesture to read the
+clipboard, so it is one deliberate tap rather than an automatic write — which this
+repo would want anyway, since a silent write from the clipboard is a capture nobody
+asked for.
+
+**AND `webapp://` WAS TESTED ON THE DEVICE, WHICH CLOSES THIS ROW.** A tappable link
+to `webapp://quietkeep-sync.pages.dev`, from an unlisted page on the hub, produced:
+
+    Safari cannot open the page because the address is invalid.
+
+Safari does not recognise the scheme at all — not "opens the wrong thing", not
+"drops the query". There is nothing there. So the community reports do not hold on
+this device and this iOS version, whatever they hold elsewhere, and **the one
+mechanism that could have fixed the destination does not exist here.**
+
+**Therefore: there is no way to open a link into the installed app on the reference
+platform, and this row is closed rather than deferred.** No Shortcut action, no
+scheme, no in-scope URL. The warning in Things you can do is the permanent answer,
+and the clipboard design sketched above is moot — it depended on `webapp://` to
+arrive in the right place, and there is no arriving in the right place.
+
+**What is left, and it is a different question:** whether the app should offer a
+paste-on-arrival path for somebody who copies a note elsewhere and opens the app
+themselves. That needs no scheme and no link. It is a product question, unasked,
+and deliberately not answered here.
+
+**The control tap found something else, and it was worth more than the test.** An
+ordinary `https://…/capture?text=…` link — included only to prove the baseline —
+failed on production with *"Response served by service worker has redirections"*.
+That is the 1.40.2 defect, live on `quietkeep-sync.pages.dev`, reproducible on
+demand, and **not specific to Shortcuts**: any link into the capture entrance can
+hit it.
+
+**AND THE FIX IS NOW CONFIRMED ON THE DEVICE, which is what closes it.** The same
+link on staging failed too at first — reading as "the fix does not work" — and did
+not: the iPad was still being served by an OLD worker, because a new one waits for
+the reader's press by design (§7h). After taking the update, the same link loaded
+and held its text. Observed, not inferred.
+
+**The lesson in that is worth more than the fix.** A service-worker defect cannot
+ship its own cure: the broken worker is the thing that decides whether to accept
+the new one, and until somebody presses update, a deployed fix is not a delivered
+one. Every gate here can be green, the deploy can be green, and the device can
+still be broken. **"Is it deployed" and "is it running on the device that reported
+it" are different questions**, and only the second one closes a bug report.
+
+**Production is unfixed as of this row.** `quietkeep.pages.dev` and
+`quietkeep-sync.pages.dev` carry 1.39.3, in which every `/capture?text=` link
+fails this way. Promoting is the owner's call and has not been made.
 
 ---
 

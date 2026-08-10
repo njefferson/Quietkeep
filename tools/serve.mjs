@@ -38,6 +38,29 @@ function parseHeaders(root) {
     const i = line.indexOf(':');
     if (i > 0) out[line.slice(0, i).trim()] = line.slice(i + 1).trim();
   }
+  // `upgrade-insecure-requests` IS DROPPED HERE, AND ONLY HERE (1.40.2).
+  //
+  // This server is http:// by necessity — a local TLS cert is not a thing worth
+  // owning for a walk — and production is https:// throughout, so the directive
+  // is a no-op in the only place it ships. Locally it is not a no-op: it
+  // rewrites every http URL the page is sent to into https, so a REDIRECT the
+  // server issues is chased to `https://127.0.0.1:<port>` and dies with
+  // ERR_SSL_PROTOCOL_ERROR.
+  //
+  // That cost an hour, presenting as "the fix does not work": the redirect walk
+  // added for the Safari defect could not follow its own redirect, so the
+  // assertion failed with the fix correctly in place — the instrument being
+  // wrong while looking exactly like the product being wrong (LESSONS §24).
+  //
+  // Nothing is lost by dropping it. Over http there is no mixed content for it
+  // to upgrade; every other directive in the file still binds, which is what
+  // "the walks run under the shipped policy" was ever able to mean here.
+  if (out['Content-Security-Policy']) {
+    out['Content-Security-Policy'] = out['Content-Security-Policy']
+      .split(';').map((d) => d.trim())
+      .filter((d) => d !== 'upgrade-insecure-requests')
+      .join('; ');
+  }
   return out;
 }
 
@@ -54,8 +77,14 @@ function parseHeaders(root) {
  *
  * `overrides` is a `Map` of request path -> string body. It is read per request,
  * so `overrides.set('/sw.js', …)` takes effect on the next fetch.
+ *
+ * `redirects` is a `Map` of request path -> location, answered as a 302. It
+ * exists because a redirect is a thing the EDGE can do that this server never
+ * did, and the difference was invisible until Safari refused a navigation the
+ * worker had answered with a redirected response. A production behaviour no
+ * local server reproduces is a production behaviour no gate can see.
  */
-export function serve(root, port = 0, overrides = new Map()) {
+export function serve(root, port = 0, overrides = new Map(), redirects = new Map()) {
   const extraHeaders = parseHeaders(root);
   // Every raw request line this server was asked for, in order.
   //
@@ -69,6 +98,8 @@ export function serve(root, port = 0, overrides = new Map()) {
     try {
       const url = new URL(req.url ?? '/', 'http://localhost');
       let path = decodeURIComponent(url.pathname);
+      const to = redirects.get(path);
+      if (to !== undefined) { res.writeHead(302, { location: to }).end(); return; }
       if (path.endsWith('/')) path += 'index.html';
       const override = overrides.get(path);
       if (override !== undefined) {
@@ -92,7 +123,7 @@ export function serve(root, port = 0, overrides = new Map()) {
   return new Promise((resolve) => {
     server.listen(port, '127.0.0.1', () => {
       resolve({
-        server, overrides, seen,
+        server, overrides, redirects, seen,
         port: server.address().port,
         url: `http://127.0.0.1:${server.address().port}/`,
       });

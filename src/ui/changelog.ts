@@ -29,6 +29,62 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.40.5',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**Another go at the capture link that would not open.** 1.40.2 repaired the answer the address gave back; this asks a different address instead \u2014 the app\u2019s own front page, which is a real file and cannot answer with a diversion. The repair is still underneath it.',
+      '**If a capture link is still failing for you, the app on your device has not taken this yet.** A new version waits for you to press it, on purpose \u2014 which is a poor arrangement when the broken part is what carries the fix. Open Quietkeep normally, take the update it offers, then try the link again.',
+    ],
+  },
+  {
+    triplet: '1.40.4',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The walkthrough\u2019s last step now opens the panel with the storage question already showing.** It could arrive a moment after the panel did \u2014 on the one screen that step exists to show you.',
+      'Two earlier attempts at this made the gap smaller without closing it. This one stops asking a question the panel has to wait for: coming out of the walkthrough means you have not set storage up yet, so it simply says so.',
+    ],
+  },
+  {
+    triplet: '1.40.3',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The walkthrough now hands you straight to the thing it promised.** Its last step opens the panel so you can ask the browser to keep your planner — and on a slow moment that block could arrive a beat after the panel did, so the one screen it exists to show you was the one screen it was late for.',
+      'Quietkeep now asks the browser that question when it starts, instead of when you open the panel, so the answer is already there when you get to it.',
+    ],
+  },
+  {
+    triplet: '1.40.2',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**Opening a capture link no longer fails with “Safari can’t open the page”.** Depending on how the address was answered, the link that carries a note into Quietkeep could stop dead before the app loaded. It was Quietkeep’s fault, not Safari’s, and it only ever affected links carrying text.',
+      '**And a warning that had to be written: a capture link run from a Shortcut may open Safari instead of the app on your Home Screen.** It will say it held your note — and it will have held it in Safari, in a separate copy the installed app never shows you. *Getting things in from somewhere else* now says so. Until there is a way in that lands in the right place, the box at the top of the app is the one that always does.',
+    ],
+  },
+  {
+    triplet: '1.40.1',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The ⓘ no longer grows a paragraph after you have started reading it.** While the browser has not agreed to keep your planner, the panel carries a short explanation of why to ask it — and that block was being hidden every time the panel opened and put back a moment later. On a slow moment you saw the panel settle, then move.',
+      'Nothing about what it says has changed, only when it appears: it is there as the panel opens, or it is not there at all.',
+    ],
+  },
+  {
+    triplet: '1.40.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-10',
+    notes: [
+      '**Everything under *More* is now its own screen.** Things you can do, Settings, Your data, Help and How it works used to be five headings folded inside the ⓘ — picking one still left you in the same long document, one fold further down. Each opens on its own now, at its own first line.',
+      '**Settings holds switches. Things you can do holds verbs.** Sending something to your calendar, printing today, telling somebody where things are, the address for getting things in from outside, and trying it out with sample work are all in one place. Bringing work in from another planner, and clearing things out, are under Your data — they are things you do to your data.',
+      '**Nothing was renamed and nothing was removed.** Every button has the words it had yesterday; the ⓘ is where it was and still holds what the app is, what changed, and the report for when something is wrong.',
+      'Settings was four phone screens long. It is under two. Nothing was cut to do that — the reading moved rather than shrank, and there is still more of it than there should be.',
+    ],
+  },
+  {
     triplet: '1.39.3',
     kind: 'ITERATION',
     date: '2026-08-09',

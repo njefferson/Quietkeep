@@ -1239,13 +1239,18 @@
 </dialog>
 
 <!-- WHERE THINGS ARE, rather than a document you read to find them (1.39.0).
-     Five destinations, each opening the panel showing only what was asked for.
-     A reader arriving here has somewhere to go; before this they had something
-     to read. -->
+     Six destinations. In 1.39.0 they all opened the same panel scrolled to a
+     different place; since 1.40.0 (ADR-0083) five of them are their own screen
+     and arrive at their own top. A reader here has somewhere to go; before this
+     they had something to read.
+
+     THE LIST IS THE BUDGET. It is worth having because it fits in one look — a
+     More that scrolls is the panel again, and the answer to that is fewer
+     destinations, not a second More. -->
 <dialog id="more" aria-labelledby="more-title">
   <h2 id="more-title" class="section">More</h2>
   <div class="more-list">
-    <button type="button" class="more-go" data-go="actions">Things you can do</button>
+    <button type="button" class="more-go" data-go="group-actions">Things you can do</button>
     <button type="button" class="more-go" data-go="group-extras">Settings</button>
     <button type="button" class="more-go" data-go="group-data">Your data</button>
     <button type="button" class="more-go" data-go="group-help">Help</button>
@@ -1255,110 +1260,15 @@
   <button id="more-close" type="button" class="ghost">Close</button>
 </dialog>
 
-<dialog id="about" aria-labelledby="about-title">
-  <!-- A close that is ALWAYS reachable. This panel carries every release's
-       patch notes, so it grew past ten thousand pixels tall and the only way
-       out was at the bottom of all of them — you had to scroll the whole
-       history to shut it (found on device). Sticky, so it stays where your
-       thumb is, whatever you have scrolled past. -->
-  <div class="about-bar">
-    <h2 id="about-title">Quietkeep <span id="version" class="version"></span></h2>
-    <!-- Two ways out of this panel is Doctrine §4, and both being called
-         "Close" is §4's other rule broken: "activate Close" with two answers is
-         a coin toss for anyone driving by voice. The names differ; the job does
-         not. (The × is decorative — see the note on #open-about.) -->
-    <button id="about-dismiss" type="button" class="about-x"
-            aria-label="Close this panel">&times;</button>
-  </div>
+<dialog id="sheet-group-why" aria-labelledby="sheet-group-why-title">
+  <h2 id="sheet-group-why-title" class="section">How it works</h2>
+  <!-- `tabindex="0"` because this body is the ONE destination that is entirely
+       prose. A scrolling region with no focusable thing inside it cannot be
+       scrolled from a keyboard at all (WCAG 2.1.1), and every other sheet is
+       saved from that by accident — by holding a button or a disclosure. Found
+       by the a11y gate the first time this screen existed as its own state. -->
+  <div class="sheet-body" tabindex="0">
 
-  <!-- THE SCROLL CONTAINER. The panel used to scroll as a whole with a
-       `position: sticky` header riding along, and on a real iPad the header
-       went with it — so both ways out ended up at the extremes of a panel
-       thousands of pixels tall (found on device, twice).
-
-       Now the dialog is a flex column that does not scroll at all: the bar is
-       a fixed-size row and THIS is the only thing that moves. It needs no
-       sticky support from anybody — the header cannot scroll away because it
-       is not inside the scrolling box. -->
-  <div id="about-body" class="about-body">
-
-  <!-- Shown only on the first run. Everything below it is always here. -->
-  <div id="about-intro" class="intro" hidden>
-    <p><strong>Quietkeep holds what you put down, and brings it back.</strong>
-       You do not have to remember to look.</p>
-    <p>There is one thing worth setting up now: ask this browser to <em>keep</em>
-       your writing rather than treat it as disposable.</p>
-    <p class="intro-aside">On iPad it will ask to <strong>allow
-       notifications</strong>. Allow it &mdash; that is what lets the browser keep
-       your planner instead of clearing it, and it is the only reason it is asked.
-       <strong>Quietkeep never sends notifications.</strong></p>
-    <p class="intro-aside">You can skip this and do it later, under the
-       <strong>i</strong> at the top.</p>
-    <!-- THE ASK, BESIDE THE SENTENCE THAT EXPLAINS IT. The other one lives in
-         "Your data", which ships collapsed, so this is the only route to
-         persistence that does not require unfolding a group to find. Adjacency
-         is the point: a control and its explanation in one place costs less to
-         read than a control that refers you elsewhere. Hidden by the same rule
-         as its twin — present exactly while the browser has not promised to
-         keep the store. -->
-    <div class="about-actions">
-      <button id="intro-ask" type="button" aria-describedby="intro-answer" hidden>Keep my data on this device</button>
-      <p id="intro-answer" class="detail-hint" hidden></p>
-    </div>
-  </div>
-
-  <!-- LEAD WITH UNDERSTANDING, not diagnostics. This panel used to open on the
-       storage stats, so the first thing a returning person saw was a table of
-       megabytes, and the explanation of what the app even is sat dead last under
-       ten tool sections, as required. What it is, how you use it, and how to keep it
-       come first now; the tools are grouped below. -->
-  <h3 class="about-section">What Quietkeep is</h3>
-  <p class="about-p" data-edition="default">
-    A planner that holds what you put down and brings it back on its own, so you
-    do not have to remember to look. It lives entirely on this device: no account,
-    no sign-in, no server.
-  </p>
-  <p class="about-p" data-edition="sync" hidden>
-    A planner that holds what you put down and brings it back on its own, so you
-    do not have to remember to look. It lives on your devices, and what they trade
-    is sealed with a key only they hold.
-  </p>
-
-  <!-- §7e item 2: the limits, stated as plainly as the capabilities, WHERE A
-       READER IS. They existed only in the thesis, which a person using the app
-       never opens. -->
-  <h3 class="about-section">What it is not</h3>
-  <p class="about-p">
-    It is <strong>not a medical or therapeutic tool</strong>, and nothing in it
-    is advice. It never scores you. It cannot reach you on its own, so reminders
-    go through your calendar. It holds only what you put in.
-  </p>
-
-  <!-- "How to use it" was here and is gone (1.39.0). It said, at ninety-eight
-       words, what Help already answers as the three questions people actually
-       ask: how do I get something out of my head, what happens to it, and how
-       does it decide what to show me next. Three registers of the same content —
-       what it is, what it does, how do I — is how this panel got to 5,700 words.
-       The questions win: somebody arriving has a question, not a curriculum. -->
-  <h3 class="about-section">Things you can do</h3>
-  <div class="about-actions">
-    <button id="calendar" type="button">Send to my calendar</button>
-    <button id="tour-replay" type="button" class="ghost">Show the walkthrough again</button>
-  </div>
-  <p id="calendar-note" class="storage-note" role="status" aria-live="polite"></p>
-  <p class="about-p about-caveat">
-    Only days <em>you</em> set are sent. Your calendar runs when Quietkeep does not,
-    so it is the thing that can reach you.
-  </p>
-
-  <!-- WHY IT DOES THAT (1.36.1). Folded, and the fold is the point: unfolded,
-       these seven pushed the panel to 13,092px — 7.9 screens on a phone — and
-       the walk failed it on length. A reference nobody can get through is the
-       same as no reference, and the panel is READ by somebody looking for one
-       answer, not from the top. The toggle wiring is generic, so this group
-       needs no code of its own. -->
-  <h2 class="about-group"><button id="group-why-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-why">Why it does that</button></h2>
-  <div id="group-why" hidden>
   <!-- SHORT ANSWERS, NOT ESSAYS (1.39.0).
        These seven sections were 1,126 words explaining features — the reasoning
        behind each one, at the length the reasoning deserves in a design document
@@ -1433,18 +1343,14 @@
     Quietkeep is on your home screen &mdash; it opens on its own and works offline.
   </p>
 
-  <!-- The folding groups (1.7.2, ADR-0055). The panel carries everything, and
-       everything at once was too much to stand in front of (found on device):
-       accent rules separated small things while nothing separated the big ones.
-       Each group folds behind its own header now — closed by default, opened
-       state remembered per device (a view preference, never an event). The
-       opening (what Quietkeep is, how to use it) stays above the fold, and the
-       Close control stays outside every group so the way out never folds. -->
-
   </div>
+  <button id="sheet-group-why-close" type="button" class="ghost">Close</button>
+</dialog>
 
-  <h2 class="about-group"><button id="group-help-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-help">Help</button></h2>
-  <div id="group-help" hidden>
+<dialog id="sheet-group-help" aria-labelledby="sheet-group-help-title">
+  <h2 id="sheet-group-help-title" class="section">Help</h2>
+  <div class="sheet-body">
+
   <p class="about-p">Short answers to the things people ask. Tap one to open it.</p>
   <details class="disclosure help-q">
     <summary>How do I get something out of my head?</summary>
@@ -1464,7 +1370,7 @@
     </details>
   <details class="disclosure help-q">
     <summary>Will it remind me?</summary>
-    <p class="about-p">Not by itself — it sends nothing. Send the item to your calendar with the button at the top of this panel, and the calendar reaches you.</p>
+    <p class="about-p">Not by itself — it sends nothing. Send the item to your calendar &mdash; <em>Send to my calendar</em>, under <em>Things you can do</em> &mdash; and the calendar reaches you.</p>
     </details>
   <details class="disclosure help-q">
     <summary>Is my writing private? Where does it live?</summary>
@@ -1495,10 +1401,14 @@
     <p class="about-p">Every choice here comes from research on memory, attention and motivation. The full reasoning, with sources, is in <a href="/why.html">Planning for Humans</a>.</p>
     </details>
 
-  </div>
+    </div>
+  <button id="sheet-group-help-close" type="button" class="ghost">Close</button>
+</dialog>
 
-  <h2 class="about-group"><button id="group-data-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-data">Your data</button></h2>
-  <div id="group-data" hidden>
+<dialog id="sheet-group-data" aria-labelledby="sheet-group-data-title">
+  <h2 id="sheet-group-data-title" class="section">Your data</h2>
+  <div class="sheet-body">
+
   <h3 class="about-section">Storage on this device</h3>
   <dl id="storage-body"></dl>
   <p id="storage-note" class="storage-note"></p>
@@ -1669,10 +1579,166 @@
     </div>
   </div>
 
+      <h3 class="about-section">Bringing work in from another planner</h3>
+  <p class="about-p">
+    Takes a TaskPaper or CSV export &mdash; OmniFocus, or anything TaskPaper-shaped. Projects keep their contents.
+  </p>
+  <label class="purge-label" for="other-file">Choose the file</label>
+  <input id="other-file" type="file" accept=".taskpaper,.txt,.csv,text/plain,text/csv">
+  <p id="other-note" class="storage-note" role="status" aria-live="polite"></p>
+  <div id="other-actions" class="about-actions" hidden>
+    <button id="other-go" type="button">Bring it in</button>
   </div>
 
-  <h2 class="about-group"><button id="group-extras-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-extras">Extras</button></h2>
-  <div id="group-extras" hidden>
+  <h3 class="about-section">Clearing things out</h3>
+  <p class="about-p">
+    Two different things, and not the same favour. Save a copy first &mdash; it is the only way back.
+  </p>
+  <p id="purge-summary" class="about-p" role="status" aria-live="polite"></p>
+  <div class="about-actions">
+    <button id="purge-backup" type="button">Save a copy first</button>
+  </div>
+  <p id="purge-backup-note" class="storage-note" role="status" aria-live="polite"></p>
+  <div class="about-actions">
+    <button id="purge-pick-clear" type="button" class="ghost">Clear what I&rsquo;m holding</button>
+    <button id="purge-pick-erase" type="button" class="ghost">Start again from empty</button>
+  </div>
+  <div id="purge-confirm" hidden>
+    <p id="purge-consequence" class="about-p"></p>
+    <label class="purge-label" for="purge-word">
+      Type <strong id="purge-word-required"></strong> to go ahead
+    </label>
+    <input id="purge-word" type="text" autocomplete="off" autocapitalize="off"
+           spellcheck="false" inputmode="text">
+    <div class="about-actions">
+      <button id="purge-go" type="button" disabled>Go ahead</button>
+      <button id="purge-cancel" type="button" class="ghost">Leave it alone</button>
+    </div>
+  </div>
+  <p id="purge-note" class="storage-note" role="status" aria-live="polite"></p>
+
+</div>
+  <button id="sheet-group-data-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- THINGS YOU CAN DO (1.40.0). The verbs, in one place, separate from the
+     switches. Settings had both and ran to 3,914px — four phone screens to
+     scroll through to reach one toggle — because "a thing you set once" and "a
+     thing you do" had been filed together on the grounds that neither is the
+     main screen. They are not the same kind of thing and they are not looked
+     for at the same moment. -->
+<dialog id="sheet-group-actions" aria-labelledby="sheet-group-actions-title">
+  <h2 id="sheet-group-actions-title" class="section">Things you can do</h2>
+  <div class="sheet-body">
+
+  <h3 class="about-section">Things you can do</h3>
+  <div class="about-actions">
+    <button id="calendar" type="button">Send to my calendar</button>
+    <button id="tour-replay" type="button" class="ghost">Show the walkthrough again</button>
+  </div>
+  <p id="calendar-note" class="storage-note" role="status" aria-live="polite"></p>
+  <p class="about-p about-caveat">
+    Only days <em>you</em> set are sent. Your calendar runs when Quietkeep does not,
+    so it is the thing that can reach you.
+  </p>
+
+  <h3 class="about-section">Today, on paper</h3>
+  <p class="about-p">
+    One page to print: what is next, what else is ready, what is with other people, and what is coming.
+  </p>
+  <div class="about-actions">
+    <button id="today-print" type="button">Print today</button>
+  </div>
+
+  <h3 class="about-section">Telling someone where things are</h3>
+  <p class="about-p">
+    What has changed since you last told anyone, plus what is still outstanding. You choose what goes in it.
+  </p>
+  <div class="about-actions">
+    <button id="report-copy" type="button" aria-label="Copy it — the weekly look">Copy it</button>
+    <button id="report-markdown" type="button" class="ghost">Save as Markdown</button>
+    <button id="report-csv" type="button" class="ghost">Save as a spreadsheet</button>
+    <button id="report-print" type="button" class="ghost">Print it</button>
+  </div>
+  <p id="report-note" class="storage-note" role="status" aria-live="polite"></p>
+
+  <!--
+    Named periods (1.17.0, ADR-0068). Inside the report section deliberately: an
+    anchor exists to answer "since when", and it has no other job. Giving it a
+    section of its own would make it look like a thing to maintain.
+  -->
+  <h4 class="about-sub">Since when</h4>
+  <div class="about-actions">
+    <label class="anchor-label" for="anchor-period">Report covers</label>
+    <select id="anchor-period">
+      <option value="">Since your last report</option>
+    </select>
+  </div>
+  <form id="anchor-form" class="about-actions">
+    <label class="anchor-label" for="anchor-name">Name a period</label>
+    <input id="anchor-name" type="text" autocomplete="off" placeholder="the staff call">
+    <input id="anchor-recurrence" type="text" autocomplete="off" placeholder="Thursdays (optional)">
+    <button type="submit" class="ghost">Name it</button>
+  </form>
+  <ul id="anchor-list" class="anchor-list"></ul>
+  <p id="anchor-note" class="storage-note" role="status" aria-live="polite"></p>
+  <pre id="report-preview" class="report-preview" hidden></pre>
+
+  <h3 class="about-section">Getting things in from somewhere else</h3>
+  <p class="about-p">
+    Safari has no share sheet for web apps, so the way in from outside is a Shortcut that opens this address. That is a browser limit, not a decision here.
+  </p>
+  <!-- SAY WHAT WAS OBSERVED, not what was hoped (V-21, answered on device
+       2026-08-10). A Shortcut's Open URL landed in Safari rather than the
+       installed app, and the capture succeeded there — into a separate store,
+       reporting success. A silent wrong destination is worse than a refusal,
+       and this app does not get to hand somebody a recipe for it without
+       saying so. Stated as the limit it is, with the thing to check named,
+       and with no remedy promised that has not been observed to work. -->
+  <p class="about-p about-caveat">
+    <strong>Check where it opens.</strong> On an iPad, running this from a Shortcut
+    has been seen to open <em>Safari</em> rather than the app on your Home Screen.
+    It will say it held your note, and it will have held it in Safari &mdash;
+    a separate copy your installed app never shows you. If Safari comes to the
+    front, use the box at the top of the app instead until this is sorted.
+  </p>
+  <div class="about-actions">
+    <code id="capture-endpoint" class="about-code"></code>
+    <button id="capture-endpoint-copy" type="button" class="ghost">Copy the address</button>
+  </div>
+  <p id="capture-endpoint-note" class="storage-note" role="status" aria-live="polite"></p>
+
+  <h3 class="about-section">Trying it out with something in it</h3>
+  <p class="about-p">
+    Puts a small set of ordinary work in, dated around today, so there is something to judge.
+  </p>
+  <div class="about-actions">
+    <button id="sample" type="button" class="ghost">Add some sample work</button>
+  </div>
+  <p id="sample-note" class="storage-note" role="status" aria-live="polite"></p>
+
+  <!--
+    The bigger set (1.16.0, ADR-0067). A DIFFERENT act from the one above, and the
+    markup says so with its own heading rather than a second button under the same
+    words: that one adds a little to your store, this one makes a file of a whole
+    invented life. It does not touch the store at all.
+  -->
+  <h3 class="about-section">A whole invented life, to try things on</h3>
+  <p class="about-p">
+    Makes a file of hundreds of invented things &mdash; one of every kind the app has &mdash; to import and try things on.
+  </p>
+  <div class="about-actions">
+    <button id="big-sample" type="button" class="ghost">Make a set to try things on</button>
+  </div>
+  <p id="big-sample-note" class="storage-note" role="status" aria-live="polite"></p>
+
+  </div>
+  <button id="sheet-group-actions-close" type="button" class="ghost">Close</button>
+</dialog>
+<dialog id="sheet-group-extras" aria-labelledby="sheet-group-extras-title">
+  <h2 id="sheet-group-extras-title" class="section">Settings</h2>
+  <div class="sheet-body">
+
   <h3 class="about-section">One pass through your messages</h3>
   <p class="about-p">
     Offers one pass through your messages when you come out of working on something. Off unless you ask for it.
@@ -1727,15 +1793,6 @@
   </div>
   <p id="slot-note" class="storage-note" role="status" aria-live="polite"></p>
 
-  <h3 class="about-section">Getting things in from somewhere else</h3>
-  <p class="about-p">
-    Safari has no share sheet for web apps, so the way in from outside is a Shortcut that opens this address. That is a browser limit, not a decision here.
-  </p>
-  <div class="about-actions">
-    <code id="capture-endpoint" class="about-code"></code>
-    <button id="capture-endpoint-copy" type="button" class="ghost">Copy the address</button>
-  </div>
-  <p id="capture-endpoint-note" class="storage-note" role="status" aria-live="polite"></p>
 
   <h3 class="about-section">When your day ends</h3>
   <p class="about-p">
@@ -1773,51 +1830,11 @@
   </div>
   <p id="timer-length-note" class="storage-note" role="status" aria-live="polite"></p>
 
-  <h3 class="about-section">Today, on paper</h3>
-  <p class="about-p">
-    One page to print: what is next, what else is ready, what is with other people, and what is coming.
-  </p>
-  <div class="about-actions">
-    <button id="today-print" type="button">Print today</button>
-  </div>
 
-  <h3 class="about-section">Telling someone where things are</h3>
-  <p class="about-p">
-    What has changed since you last told anyone, plus what is still outstanding. You choose what goes in it.
-  </p>
-  <div class="about-actions">
-    <button id="report-copy" type="button" aria-label="Copy it — the weekly look">Copy it</button>
-    <button id="report-markdown" type="button" class="ghost">Save as Markdown</button>
-    <button id="report-csv" type="button" class="ghost">Save as a spreadsheet</button>
-    <button id="report-print" type="button" class="ghost">Print it</button>
-  </div>
-  <p id="report-note" class="storage-note" role="status" aria-live="polite"></p>
-
-  <!--
-    Named periods (1.17.0, ADR-0068). Inside the report section deliberately: an
-    anchor exists to answer "since when", and it has no other job. Giving it a
-    section of its own would make it look like a thing to maintain.
-  -->
-  <h4 class="about-sub">Since when</h4>
-  <div class="about-actions">
-    <label class="anchor-label" for="anchor-period">Report covers</label>
-    <select id="anchor-period">
-      <option value="">Since your last report</option>
-    </select>
-  </div>
-  <form id="anchor-form" class="about-actions">
-    <label class="anchor-label" for="anchor-name">Name a period</label>
-    <input id="anchor-name" type="text" autocomplete="off" placeholder="the staff call">
-    <input id="anchor-recurrence" type="text" autocomplete="off" placeholder="Thursdays (optional)">
-    <button type="submit" class="ghost">Name it</button>
-  </form>
-  <ul id="anchor-list" class="anchor-list"></ul>
-  <p id="anchor-note" class="storage-note" role="status" aria-live="polite"></p>
-  <pre id="report-preview" class="report-preview" hidden></pre>
 
   <h3 class="about-section">Reminders that reach you</h3>
   <p class="about-p">
-    Your calendar runs when Quietkeep does not, so it is the thing that can reach you. The button is at the top of this panel.
+    Your calendar runs when Quietkeep does not, so it is the thing that can reach you. The button is <em>Send to my calendar</em>, under <em>Things you can do</em>.
   </p>
   <!-- The button itself now lives at the TOP of the panel, with the other verbs.
        It sat here, most of a 5,700-word document down, and the prose pointed at
@@ -1846,72 +1863,100 @@
   </div>
   <p id="badge-note" class="storage-note" role="status" aria-live="polite"></p>
 
-  <h3 class="about-section">Trying it out with something in it</h3>
-  <p class="about-p">
-    Puts a small set of ordinary work in, dated around today, so there is something to judge.
-  </p>
-  <div class="about-actions">
-    <button id="sample" type="button" class="ghost">Add some sample work</button>
-  </div>
-  <p id="sample-note" class="storage-note" role="status" aria-live="polite"></p>
 
-  <!--
-    The bigger set (1.16.0, ADR-0067). A DIFFERENT act from the one above, and the
-    markup says so with its own heading rather than a second button under the same
-    words: that one adds a little to your store, this one makes a file of a whole
-    invented life. It does not touch the store at all.
-  -->
-  <h3 class="about-section">A whole invented life, to try things on</h3>
-  <p class="about-p">
-    Makes a file of hundreds of invented things &mdash; one of every kind the app has &mdash; to import and try things on.
-  </p>
-  <div class="about-actions">
-    <button id="big-sample" type="button" class="ghost">Make a set to try things on</button>
-  </div>
-  <p id="big-sample-note" class="storage-note" role="status" aria-live="polite"></p>
 
-  <h3 class="about-section">Bringing work in from another planner</h3>
-  <p class="about-p">
-    Takes a TaskPaper or CSV export &mdash; OmniFocus, or anything TaskPaper-shaped. Projects keep their contents.
-  </p>
-  <label class="purge-label" for="other-file">Choose the file</label>
-  <input id="other-file" type="file" accept=".taskpaper,.txt,.csv,text/plain,text/csv">
-  <p id="other-note" class="storage-note" role="status" aria-live="polite"></p>
-  <div id="other-actions" class="about-actions" hidden>
-    <button id="other-go" type="button">Bring it in</button>
+
+
+    </div>
+  <button id="sheet-group-extras-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<dialog id="about" aria-labelledby="about-title">
+  <!-- A close that is ALWAYS reachable. This panel carries every release's
+       patch notes, so it grew past ten thousand pixels tall and the only way
+       out was at the bottom of all of them — you had to scroll the whole
+       history to shut it (found on device). Sticky, so it stays where your
+       thumb is, whatever you have scrolled past. -->
+  <div class="about-bar">
+    <h2 id="about-title">Quietkeep <span id="version" class="version"></span></h2>
+    <!-- Two ways out of this panel is Doctrine §4, and both being called
+         "Close" is §4's other rule broken: "activate Close" with two answers is
+         a coin toss for anyone driving by voice. The names differ; the job does
+         not. (The × is decorative — see the note on #open-about.) -->
+    <button id="about-dismiss" type="button" class="about-x"
+            aria-label="Close this panel">&times;</button>
   </div>
 
-  <h3 class="about-section">Clearing things out</h3>
-  <p class="about-p">
-    Two different things, and not the same favour. Save a copy first &mdash; it is the only way back.
-  </p>
-  <p id="purge-summary" class="about-p" role="status" aria-live="polite"></p>
-  <div class="about-actions">
-    <button id="purge-backup" type="button">Save a copy first</button>
-  </div>
-  <p id="purge-backup-note" class="storage-note" role="status" aria-live="polite"></p>
-  <div class="about-actions">
-    <button id="purge-pick-clear" type="button" class="ghost">Clear what I&rsquo;m holding</button>
-    <button id="purge-pick-erase" type="button" class="ghost">Start again from empty</button>
-  </div>
-  <div id="purge-confirm" hidden>
-    <p id="purge-consequence" class="about-p"></p>
-    <label class="purge-label" for="purge-word">
-      Type <strong id="purge-word-required"></strong> to go ahead
-    </label>
-    <input id="purge-word" type="text" autocomplete="off" autocapitalize="off"
-           spellcheck="false" inputmode="text">
+  <!-- THE SCROLL CONTAINER. The panel used to scroll as a whole with a
+       `position: sticky` header riding along, and on a real iPad the header
+       went with it — so both ways out ended up at the extremes of a panel
+       thousands of pixels tall (found on device, twice).
+
+       Now the dialog is a flex column that does not scroll at all: the bar is
+       a fixed-size row and THIS is the only thing that moves. It needs no
+       sticky support from anybody — the header cannot scroll away because it
+       is not inside the scrolling box. -->
+  <div id="about-body" class="about-body">
+
+  <!-- Shown only on the first run. Everything below it is always here. -->
+  <div id="about-intro" class="intro" hidden>
+    <p><strong>Quietkeep holds what you put down, and brings it back.</strong>
+       You do not have to remember to look.</p>
+    <p>There is one thing worth setting up now: ask this browser to <em>keep</em>
+       your writing rather than treat it as disposable.</p>
+    <p class="intro-aside">On iPad it will ask to <strong>allow
+       notifications</strong>. Allow it &mdash; that is what lets the browser keep
+       your planner instead of clearing it, and it is the only reason it is asked.
+       <strong>Quietkeep never sends notifications.</strong></p>
+    <p class="intro-aside">You can skip this and do it later, under the
+       <strong>i</strong> at the top.</p>
+    <!-- THE ASK, BESIDE THE SENTENCE THAT EXPLAINS IT. The other one lives in
+         "Your data", which ships collapsed, so this is the only route to
+         persistence that does not require unfolding a group to find. Adjacency
+         is the point: a control and its explanation in one place costs less to
+         read than a control that refers you elsewhere. Hidden by the same rule
+         as its twin — present exactly while the browser has not promised to
+         keep the store. -->
     <div class="about-actions">
-      <button id="purge-go" type="button" disabled>Go ahead</button>
-      <button id="purge-cancel" type="button" class="ghost">Leave it alone</button>
+      <button id="intro-ask" type="button" aria-describedby="intro-answer" hidden>Keep my data on this device</button>
+      <p id="intro-answer" class="detail-hint" hidden></p>
     </div>
   </div>
-  <p id="purge-note" class="storage-note" role="status" aria-live="polite"></p>
 
-  </div>
+  <!-- LEAD WITH UNDERSTANDING, not diagnostics. This panel used to open on the
+       storage stats, so the first thing a returning person saw was a table of
+       megabytes, and the explanation of what the app even is sat dead last under
+       ten tool sections, as required. What it is, how you use it, and how to keep it
+       come first now; the tools are grouped below. -->
+  <h3 class="about-section">What Quietkeep is</h3>
+  <p class="about-p" data-edition="default">
+    A planner that holds what you put down and brings it back on its own, so you
+    do not have to remember to look. It lives entirely on this device: no account,
+    no sign-in, no server.
+  </p>
+  <p class="about-p" data-edition="sync" hidden>
+    A planner that holds what you put down and brings it back on its own, so you
+    do not have to remember to look. It lives on your devices, and what they trade
+    is sealed with a key only they hold.
+  </p>
 
-  <h2 class="about-group"><button id="group-about-open" type="button" class="about-group-toggle" aria-expanded="false" aria-controls="group-about">About</button></h2>
-  <div id="group-about" hidden>
+  <!-- §7e item 2: the limits, stated as plainly as the capabilities, WHERE A
+       READER IS. They existed only in the thesis, which a person using the app
+       never opens. -->
+  <h3 class="about-section">What it is not</h3>
+  <p class="about-p">
+    It is <strong>not a medical or therapeutic tool</strong>, and nothing in it
+    is advice. It never scores you. It cannot reach you on its own, so reminders
+    go through your calendar. It holds only what you put in.
+  </p>
+
+  <!-- "How to use it" was here and is gone (1.39.0). It said, at ninety-eight
+       words, what Help already answers as the three questions people actually
+       ask: how do I get something out of my head, what happens to it, and how
+       does it decide what to show me next. Three registers of the same content —
+       what it is, what it does, how do I — is how this panel got to 5,700 words.
+       The questions win: somebody arriving has a question, not a curriculum. -->
+
   <h3 class="about-section">What&rsquo;s new</h3>
   <div id="patch-notes"></div>
 
@@ -1956,7 +2001,6 @@
 
   <div class="about-actions">
     <button id="about-close" type="button" class="ghost">Close</button>
-  </div>
   </div>
 </dialog>
 

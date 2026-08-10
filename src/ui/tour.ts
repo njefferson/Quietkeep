@@ -139,11 +139,11 @@ export function showTour(session: Session, onFinish?: () => void): void {
 
     // BOTH FLAGS, ON EITHER EXIT — and this is deliberate rather than left
     // alone. Skipping the walkthrough used to lose the storage question for
-    // good: only the completed path calls `onFinish`, which opens the panel and
-    // unfolds *Your data*, so Skip (and Escape, treated as Skip) marked the ⓘ
-    // intro seen without it ever being shown, and `requestPersistence()` had
-    // exactly one caller — a button inside a group that ships collapsed. Skip
-    // once and the app ran evictable for the life of the install, silently.
+    // good: only the completed path calls `onFinish`, which opens the panel, so
+    // Skip (and Escape, treated as Skip) marked the ⓘ intro seen without it ever
+    // being shown, and `requestPersistence()` had exactly one caller — a button
+    // that at the time sat inside a group shipping collapsed. Skip once and the
+    // app ran evictable for the life of the install, silently.
     //
     // The obvious fix is to leave `about.seen` unset here so the panel's own
     // auto-open takes over. It was tried and it is wrong: `mountAbout` resolves
@@ -194,11 +194,24 @@ export async function mountTour(session: Session): Promise<void> {
 }
 
 /** Open the ⓘ panel by its real control, so the storage step and its wiring run
- *  exactly as they do for any other open — and unfold Your data, because the
- *  handoff's whole promise is "keeping your data safe is the first thing you
- *  do", and a promise behind a fold is not kept (ADR-0055). */
+ *  exactly as they do for any other open. The handoff's whole promise is
+ *  "keeping your data safe is the first thing you do", and the panel's own
+ *  first-run block carries that ask above everything else on it. */
 function openAbout(): void {
-  document.querySelector<HTMLButtonElement>('#open-about')?.click();
-  const data = document.querySelector<HTMLButtonElement>('#group-data-open[aria-expanded="false"]');
-  data?.click();
+  // The panel's own first-run block carries the storage ask above everything, so
+  // opening the panel IS the handoff. It used to also unfold a "Your data" group;
+  // that is its own sheet since 1.40.0, and opening it here would stack a modal
+  // over the very ask this hands somebody to.
+  //
+  // ASKED FOR AS A FIRST RUN (1.40.4). Clicking `#open-about` opens the panel in
+  // its ordinary state, where the storage block's visibility waits on an async
+  // read — so the one screen this handoff exists to show could arrive after it.
+  // The event says which kind of open this is; `about.ts` answers it with
+  // `show(true)`, which is synchronous.
+  document.dispatchEvent(new CustomEvent('quietkeep:about-first-run'));
+  // And a way through if the panel never mounted — the event has no listener
+  // then, and a handoff that opens nothing is worse than one that opens late.
+  if (!document.querySelector<HTMLDialogElement>('#about')?.open) {
+    document.querySelector<HTMLButtonElement>('#open-about')?.click();
+  }
 }

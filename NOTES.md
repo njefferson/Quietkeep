@@ -578,13 +578,96 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-**Fifteen releases are waiting on an on-device pass.** 1.24.0, 1.24.1 and 1.25.0
-were promoted together 2026-08-06. `staging` carries 1.26.0, 1.27.0, 1.27.1,
-1.28.0, 1.29.0, 1.30.0, 1.30.1, 1.30.2, 1.30.3, 1.31.0, 1.32.0, 1.33.0, 1.34.0,
-1.35.0 and now **1.36.0**.
+**Everything through 1.39.3 was promoted 2026-08-10**, on his word. `main` and
+`staging` were identical at that commit, so production and the candidate carried
+the same build for the first time since 1.25.0.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.36.0**
-- **https://quietkeep.pages.dev** — production, **1.25.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.3**
+- **https://quietkeep.pages.dev** — production, **1.39.3**
+
+**1.40.3 — the handoff arrived before the thing it hands you to.** The
+walkthrough's last step opens the ⓘ to put the storage question in front of
+somebody, and whether that block showed depended on a question the app only
+asked when the panel opened. First open, no answer yet, block a beat late — on
+the one screen it exists for.
+
+**1.40.1 addressed the wrong half of this and the notes read as though it were
+closed.** It stopped `show()` re-hiding the block on every open, which is real,
+and left the first open untouched. The answer is now learned at BOOT — only
+`navigator.storage.persisted()`, not the full paint, which does a whole-log read
+that startup may not afford — so `show()` decides synchronously.
+
+**Found by CI red against local green, two releases running.** That is the
+pattern worth naming: a check that passes locally and fails on a loaded runner is
+reporting a race, and both times the race was in the app, not in the walk.
+
+**And one correction about the instrument.** The Spine job for 1.40.2 was
+reported by the GitHub API as `in_progress` for thirty minutes after it had
+already failed. It was read as a hang and watched as one. The status field is not
+evidence; the log is. Cancelling the run is what made the log readable and the
+failure visible.
+
+**1.40.2 — the capture link could not open, and it opens the wrong app.** Two
+findings on the same path, both from the iPad, and the second is the one that
+matters.
+
+The first: `Response served by service worker has redirections`. The 1.37.0 query
+strip built a fresh request, and a fresh request defaults to `redirect: "follow"`
+where a navigation carries `redirect: "manual"` — so the worker chased a 3xx and
+answered a navigation with a redirected response, which every engine refuses.
+Only on navigations carrying a query, which is the capture entrance and nothing
+else. Fixed by rebuilding the response without the flag, which also unblocked a
+silent second failure: `cache.put` refuses a redirected response, so the shell had
+stopped being freshened on that path too.
+
+**Why no gate caught it: the local server could not redirect.** It answered every
+path 200 or 404, so the one edge behaviour that triggers this was the one
+behaviour no walk ever had. Not an engine difference — a hole in the rig.
+`serve.mjs` redirects now and the §7h walk drives one, planted red first.
+
+The second is **V-21, answered, and the answer is the bad one.** A Shortcut's
+*Open URL* opened **Safari**, not the installed app, and the capture succeeded
+there — into a store the installed app never shows. The row predicted exactly
+this: *a capture that lands in the wrong context succeeds, dressed as a
+confirmation.* The ⓘ now states what was observed, names what to look at, and
+promises no remedy that has not been seen to work. The fragment entrance does not
+rescue it — `#text=` keeps content off the wire, which is a different property
+from landing in the right app — so the private entrance stays unbuilt, and
+whether ANY Shortcut action can reach the installed app is an open question.
+
+**1.40.1 — the ⓘ stops growing a paragraph after you have started reading it.**
+
+Found by CI going red on a commit that was green locally, and it is a product
+defect rather than an instrument one. `show()` re-hid `#about-intro` on every
+open and `paintStorage` put it back a tick later — so while the browser has not
+agreed to keep the store, which is the exact state that block explains, the panel
+opened *without* it and grew it a moment on. Invisible on a fast machine, which
+is why eighteen releases carried it.
+
+`show()` no longer fights the painter: a first run shows the block at once,
+every later open leaves it as the last paint left it. The walk also waits for
+the paint rather than racing it — not a weakened check, because if the block
+genuinely never shows the wait times out and the same three entries fail.
+
+**1.40.0 — six destinations, and each one is its own screen.** ADR-0083, which
+supersedes ADR-0055 on the condition ADR-0055 named itself. Help, Settings, Your
+data, Things you can do and How it works stop being folds inside the ⓘ. Settings
+was 3,914px at phone width — four screens to scroll through to reach one switch —
+and it is 1,809px now, because the verbs went to their own destination and the two
+acts that touch stored data went to Your data.
+
+Two things came out of building it that are worth more than the feature:
+
+- **The a11y gate had been auditing four screens as one state**, so three of them
+  were not measured at all. `.about-sub` and `.anchor-label` had been in the
+  panel's registry list for releases while living in what is now Settings; they
+  matched something, so nothing complained. Split by surface, nine entries went
+  red on the first run.
+- **Scroll distance had never been budgeted per screen.** `size-check.mjs`
+  measured `#about-body` alone, which the split would have satisfied by moving
+  the reading somewhere the gate could not see. It now measures every
+  destination, and their sum — 10,425px, which the split did not reduce by a
+  pixel and which is recorded as too high rather than as a target met.
 
 **1.36.1 — the ⓘ panel explains the half of the app it had gone quiet about.**
 
