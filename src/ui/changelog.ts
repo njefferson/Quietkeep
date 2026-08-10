@@ -29,6 +29,24 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.40.5',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**Another go at the capture link that would not open.** 1.40.2 repaired the answer the address gave back; this asks a different address instead \u2014 the app\u2019s own front page, which is a real file and cannot answer with a diversion. The repair is still underneath it.',
+      '**If a capture link is still failing for you, the app on your device has not taken this yet.** A new version waits for you to press it, on purpose \u2014 which is a poor arrangement when the broken part is what carries the fix. Open Quietkeep normally, take the update it offers, then try the link again.',
+    ],
+  },
+  {
+    triplet: '1.40.4',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The walkthrough\u2019s last step now opens the panel with the storage question already showing.** It could arrive a moment after the panel did \u2014 on the one screen that step exists to show you.',
+      'Two earlier attempts at this made the gap smaller without closing it. This one stops asking a question the panel has to wait for: coming out of the walkthrough means you have not set storage up yet, so it simply says so.',
+    ],
+  },
+  {
     triplet: '1.40.3',
     kind: 'ITERATION',
     date: '2026-08-10',

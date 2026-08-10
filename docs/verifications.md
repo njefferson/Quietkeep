@@ -788,7 +788,24 @@ ordinary `https://…/capture?text=…` link — included only to prove the base
 failed on production with *"Response served by service worker has redirections"*.
 That is the 1.40.2 defect, live on `quietkeep-sync.pages.dev`, reproducible on
 demand, and **not specific to Shortcuts**: any link into the capture entrance can
-hit it. See the 1.40.2 note in NOTES.md. The fix is on staging and unpromoted.
+hit it.
+
+**AND THE FIX IS NOW CONFIRMED ON THE DEVICE, which is what closes it.** The same
+link on staging failed too at first — reading as "the fix does not work" — and did
+not: the iPad was still being served by an OLD worker, because a new one waits for
+the reader's press by design (§7h). After taking the update, the same link loaded
+and held its text. Observed, not inferred.
+
+**The lesson in that is worth more than the fix.** A service-worker defect cannot
+ship its own cure: the broken worker is the thing that decides whether to accept
+the new one, and until somebody presses update, a deployed fix is not a delivered
+one. Every gate here can be green, the deploy can be green, and the device can
+still be broken. **"Is it deployed" and "is it running on the device that reported
+it" are different questions**, and only the second one closes a bug report.
+
+**Production is unfixed as of this row.** `quietkeep.pages.dev` and
+`quietkeep-sync.pages.dev` carry 1.39.3, in which every `/capture?text=` link
+fails this way. Promoting is the owner's call and has not been made.
 
 ---
 

@@ -14,6 +14,20 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.40.5 — ITERATION
+
+*2026-08-10*
+
+- **Another go at the capture link that would not open.** 1.40.2 repaired the answer the address gave back; this asks a different address instead — the app’s own front page, which is a real file and cannot answer with a diversion. The repair is still underneath it.
+- **If a capture link is still failing for you, the app on your device has not taken this yet.** A new version waits for you to press it, on purpose — which is a poor arrangement when the broken part is what carries the fix. Open Quietkeep normally, take the update it offers, then try the link again.
+
+## 1.40.4 — ITERATION
+
+*2026-08-10*
+
+- **The walkthrough’s last step now opens the panel with the storage question already showing.** It could arrive a moment after the panel did — on the one screen that step exists to show you.
+- Two earlier attempts at this made the gap smaller without closing it. This one stops asking a question the panel has to wait for: coming out of the walkthrough means you have not set storage up yet, so it simply says so.
+
 ## 1.40.3 — ITERATION
 
 *2026-08-10*

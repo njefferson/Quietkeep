@@ -2028,6 +2028,24 @@ export async function mountAbout(
 
   open.addEventListener('click', () => show(false));
 
+  // THE WALKTHROUGH'S HANDOFF IS A FIRST RUN BY DEFINITION, and says so (1.40.4).
+  //
+  // Its last step opens this panel for exactly one reason — to put the storage
+  // ask in front of somebody — and it did that by clicking `#open-about`, which
+  // is `show(false)`. So whether the ask was visible came down to an async
+  // `navigator.storage.persisted()` landing before the assertion did. Two
+  // releases tried to widen that window (1.40.1 stopped `show` re-hiding the
+  // block; 1.40.3 asked the question at boot) and neither closed it, because a
+  // window is not a fix — a promise cannot resolve synchronously and no amount
+  // of head start makes it deterministic.
+  //
+  // `show(true)` sets the block visible on the same tick, with no question
+  // asked, which is correct: somebody arriving from the walkthrough has not set
+  // storage up, and that is what "first run" means. An event rather than an
+  // exported function because `tour.ts` mounts separately and neither module
+  // imports the other.
+  document.addEventListener('quietkeep:about-first-run', () => show(true));
+
   // The build stamp in the footer is the diagnostic's other door (§7f: "the
   // version stamp is a good home"). Same shape as `#restore-go` below: land on
   // the surface that holds it, then scroll and focus.

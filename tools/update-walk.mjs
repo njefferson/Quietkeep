@@ -248,7 +248,14 @@ try {
   // redirect without a request, so the canary could never appear and the check
   // failed identically whether the fix was present or not.
   overrides.set('/shell-probe.html', realShell.replace('</body>', `${SHELL_CANARY}</body>`));
+  // BOTH PATHS REDIRECT, and that is deliberate (1.40.5). The worker no longer
+  // asks for `/capture` at all — it asks for the shell — so a plant on `/capture`
+  // alone would now pass by never being reached, which is the fix working and
+  // the repair going unmeasured. Redirecting the shell too keeps `unredirect`
+  // under test: it is the layer that catches an edge which redirects something
+  // the worker DOES ask for.
   redirects.set('/capture', '/shell-probe.html');
+  redirects.set('/index.html', '/shell-probe.html');
 
   // Caught rather than thrown, so the defect reports itself as a named failure
   // instead of a stack trace. An uncaught goto here says "Error" and leaves the
@@ -281,6 +288,7 @@ try {
     '   and the shell reached the cache — a redirected response is refused by cache.put');
 
   redirects.delete('/capture');
+  redirects.delete('/index.html');
   overrides.delete('/shell-probe.html');
 } finally {
   await browser.close();

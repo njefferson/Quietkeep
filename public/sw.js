@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-1.40.3';
+const CACHE = 'quietkeep-1.40.5';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -113,8 +113,33 @@ self.addEventListener('fetch', (event) => {
     // Not a substitute for the fragment entrance: the FIRST visit, before this
     // worker exists, still sends whatever it was given. That is why the private
     // entrance is a separate piece of work and this is not the end of it.
+    // ASK FOR THE SHELL, NOT THE PATH (1.40.5).
+    //
+    // This fetched `url.pathname` with the query removed — so a navigation to
+    // `/capture?text=…` went to the network as `/capture`. That is a path whose
+    // only existence is a `_redirects` rule, and asking the edge for it invites
+    // exactly the answer that cannot serve a navigation: a redirect.
+    //
+    // The page being served here is ALWAYS the shell. `pageKey` already worked
+    // that out, and for anything that is not itself a shell page it is
+    // `./index.html`. So ask for the shell by the name the cache knows it by,
+    // resolved against this worker's scope. It is a real file, it is in SHELL,
+    // it is precached, and it is the one URL on this origin least likely to be
+    // answered with anything but 200.
+    //
+    // Three things this gets at once: the query still never reaches the wire
+    // (1.37.0's whole point), the redirect that broke Safari is not requested in
+    // the first place rather than repaired afterwards, and the body fetched is
+    // the body that gets cached under `pageKey` — previously those could differ.
+    //
+    // WHY NOT JUST KEEP THE REPAIR BELOW. Because the repair only handles a
+    // response that arrives flagged `redirected`, and this session could not
+    // observe what the edge actually answers — outbound to the deployed host is
+    // blocked from here. Not requesting a redirectable path removes the class;
+    // the repair stays underneath it for anything that redirects anyway.
     const netReq = url.search
-      ? new Request(url.origin + url.pathname, { headers: req.headers, credentials: 'same-origin' })
+      ? new Request(new URL(pageKey, self.location.href).href,
+        { headers: req.headers, credentials: 'same-origin' })
       : req;
 
     // A REDIRECTED RESPONSE CANNOT ANSWER A NAVIGATION (found on device, 1.40.2

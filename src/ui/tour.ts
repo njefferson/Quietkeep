@@ -202,5 +202,16 @@ function openAbout(): void {
   // opening the panel IS the handoff. It used to also unfold a "Your data" group;
   // that is its own sheet since 1.40.0, and opening it here would stack a modal
   // over the very ask this hands somebody to.
-  document.querySelector<HTMLButtonElement>('#open-about')?.click();
+  //
+  // ASKED FOR AS A FIRST RUN (1.40.4). Clicking `#open-about` opens the panel in
+  // its ordinary state, where the storage block's visibility waits on an async
+  // read — so the one screen this handoff exists to show could arrive after it.
+  // The event says which kind of open this is; `about.ts` answers it with
+  // `show(true)`, which is synchronous.
+  document.dispatchEvent(new CustomEvent('quietkeep:about-first-run'));
+  // And a way through if the panel never mounted — the event has no listener
+  // then, and a handoff that opens nothing is worse than one that opens late.
+  if (!document.querySelector<HTMLDialogElement>('#about')?.open) {
+    document.querySelector<HTMLButtonElement>('#open-about')?.click();
+  }
 }
