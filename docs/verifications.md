@@ -687,39 +687,48 @@ being treated as one was a cache.
 
 ---
 
-## V-21 · Does a Shortcut's *Open URL* land in the installed app, or in Safari? — **NOT VERIFIED, and it decides whether the Shortcut route exists**
-· raised 2026-08-09, when the dump page and a private capture entrance were planned
+## V-21 · Does a Shortcut's *Open URL* land in the installed app, or in Safari? — **ANSWERED 2026-08-10, and the answer is SAFARI**
+· raised 2026-08-09 · settled on device, on the owner's iPad, by the only witness there is
 
-**Why it is asked now.** On the reference platform there is no entrance from outside
-the app: `share_target` and manifest shortcuts are Chromium-only. The one route that
-works is a Shortcut that opens `/capture?text=…`, and the ⓘ panel now hands people the
-recipe for it. Everything planned on top of that — a fragment entrance carrying a whole
-meeting's notes into a staged dump page — rests on the Shortcut reaching the app that
-holds the store.
+**The answer.** It opened **Safari**, not the installed app. The address bar read
+`quietkeep-sync.pages.dev`, the app rendered inside a Safari tab, and the capture
+landed — *"Held from a link. Undo"*, with `helloworld` sitting on the clarify card.
+It worked, into the wrong store, exactly as this row predicted.
 
-**What is believed and NOT verified:** that iOS honours the installed web app's scope
-for a URL opened by Shortcuts, rather than handing it to Safari.
+Not always, either: sometimes it opened Safari, and sometimes the navigation failed
+outright with a service-worker error, which turned out to be a separate defect and
+is written up as its own fix in 1.40.2 below.
 
-- By what: nothing. Stated from the shape of the platform, which is not evidence.
-- **This is the same risk already written down in
-  [V-16](#v-16--can-an-ipad-web-app-scan-a-qr-code-at-all--not-verified-and-it-decides-the-pairing-design)**
-  for the pairing link, where it was recorded that the flow "would appear to succeed
-  and then quietly not work". Storage is per origin *context*: Safari and the installed
-  app do not share an IndexedDB.
-- **The consequence here is worse than for pairing.** A pairing key that lands in the
-  wrong context fails visibly on the next step. A capture that lands in the wrong
-  context *succeeds* — the app says it held it — into a store nobody opens again. That
-  is the app's one unforgivable failure, dressed as a confirmation.
+**So the prediction here was right, and it is the bad outcome.** This row already
+said it: *"A capture that lands in the wrong context succeeds — the app says it held
+it — into a store nobody opens again. That is the app's one unforgivable failure,
+dressed as a confirmation."* That is now an observation rather than a worry.
 
-**How to settle it, and it needs the owner's hands.** Build one Shortcut with a single
-*Open URL* action pointing at `https://quietkeep.pages.dev/capture?text=hello`, run it
-from the Home Screen, and look at which icon comes to the front. If Quietkeep opens,
-the route is real. If Safari opens, the whole Shortcut entrance is a trap and the
-recipe in the ⓘ panel needs to say so.
+**What it decides.**
 
-**Until it is answered:** the fragment entrance and the Shortcut recipe for the dump
-page are NOT built. The existing `?text=` endpoint is untouched and keeps working
-either way — this question decides what may be *recommended*, not what exists.
+- **The Shortcut route may not be recommended as it stands.** A recipe that reliably
+  captures into a store the person does not open is worse than no recipe, because it
+  is silent. The ⓘ's copy has to say what actually happens.
+- **The fragment entrance and the staged dump page do not rescue it.** `#text=` keeps
+  the content off the wire, which is a different and real property, but a fragment
+  landing in Safari lands in Safari's IndexedDB just the same. Privacy and
+  destination are independent problems and only one of them was ever in hand.
+- **`?text=` is untouched and keeps working.** Somebody who opens the app itself and
+  captures is unaffected; this is about links arriving from outside.
+
+**What is still NOT known**, and is not assumed here:
+
+- Whether a Shortcut can be made to land in the installed app at all — via a
+  different action, a scoped URL, or a Home Screen shortcut rather than *Open URL*.
+  Nothing in this row is evidence either way.
+- Whether the behaviour differs on iPhone versus iPad, or by iOS version. One
+  device, one run of one Shortcut, on iPadOS, on 2026-08-10.
+- Whether the two symptoms shared a cause. The service-worker redirect defect is
+  fixed and would have produced its own failure regardless of which app opened.
+
+**Next, and deliberately not decided by this session:** either find an action that
+lands in the installed app, or state the limitation in the ⓘ and stop presenting the
+Shortcut as the way in. That is a product call, not a verification.
 
 ---
 

@@ -1688,6 +1688,20 @@
   <p class="about-p">
     Safari has no share sheet for web apps, so the way in from outside is a Shortcut that opens this address. That is a browser limit, not a decision here.
   </p>
+  <!-- SAY WHAT WAS OBSERVED, not what was hoped (V-21, answered on device
+       2026-08-10). A Shortcut's Open URL landed in Safari rather than the
+       installed app, and the capture succeeded there — into a separate store,
+       reporting success. A silent wrong destination is worse than a refusal,
+       and this app does not get to hand somebody a recipe for it without
+       saying so. Stated as the limit it is, with the thing to check named,
+       and with no remedy promised that has not been observed to work. -->
+  <p class="about-p about-caveat">
+    <strong>Check where it opens.</strong> On an iPad, running this from a Shortcut
+    has been seen to open <em>Safari</em> rather than the app on your Home Screen.
+    It will say it held your note, and it will have held it in Safari &mdash;
+    a separate copy your installed app never shows you. If Safari comes to the
+    front, use the box at the top of the app instead until this is sorted.
+  </p>
   <div class="about-actions">
     <code id="capture-endpoint" class="about-code"></code>
     <button id="capture-endpoint-copy" type="button" class="ghost">Copy the address</button>

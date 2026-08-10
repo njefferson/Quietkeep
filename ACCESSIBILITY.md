@@ -1234,3 +1234,41 @@ screen was 3,914px — four phone lengths to reach one switch — and no gate co
 see it, because the only height ever measured was the ⓘ's. Every destination is
 held to 3,000px and the sum to 10,600px. The sum is stated as a ratchet and not
 as an achievement: the split moved 10,425px around and cut nothing.
+
+### B-42 · The link that could not open, and the link that opens the wrong app (1.40.2)
+
+Two findings on the same path — the capture link — reported from an iPad. Neither
+is a colour or a name; both are the same class of failure as an unreachable
+control, which is why they are recorded here rather than only in the changelog.
+
+- **The entrance could fail outright**, and the browser named it: *"Safari can't
+  open the page. The error was: Response served by service worker has
+  redirections."* A redirected response is a network error when it answers a
+  navigation, and every engine enforces it — Chromium reports the same condition
+  as `ERR_FAILED`. The worker's query-strip built a fresh request whose default
+  `redirect: "follow"` chased a 3xx the original navigation would have handed
+  back untouched. It affected navigations carrying a query and nothing else,
+  which is the capture entrance and nothing else.
+- **The link may open the wrong app, and say it worked.** V-21, answered on
+  device: a Shortcut's *Open URL* opened Safari rather than the installed app.
+  The capture succeeded there — *"Held from a link"* — into a separate store the
+  installed app never shows. A silent wrong destination is the accessibility
+  failure this app can least afford, because the whole promise is that nothing
+  is lost. The ⓘ now states what was observed, names what to look at, and
+  promises no remedy that has not been seen to work. The caveat rides
+  `.about-caveat`, already registered on that surface, so it is measured by the
+  same commit that introduces it.
+
+**Why eleven green gates missed a breakage every engine agrees on**, recorded
+because the answer is not the flattering one: the local server answered every
+path 200 or 404. It could not redirect, so the one edge behaviour that triggers
+this was the one behaviour no walk ever had. Not an engine difference — a hole in
+the rig. `serve.mjs` can now redirect, and the §7h walk drives one.
+
+**Two false trails on the way, both of which looked exactly like "the fix does
+not work":** redirecting to `/index.html` proved nothing, because the browser's
+own HTTP cache answered without a request; and `upgrade-insecure-requests` in the
+shipped CSP rewrote the redirect to `https://127.0.0.1:<port>` and killed it with
+an SSL error. The walk now redirects to a path nothing has ever fetched, and the
+server drops that one directive over http — inert in production, destructive
+locally.

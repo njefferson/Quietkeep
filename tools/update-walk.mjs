@@ -64,7 +64,7 @@ if (nextSw === realSw) {
   process.exit(1);
 }
 
-const { server, url, overrides, seen } = await serve(ROOT);
+const { server, url, overrides, redirects, seen } = await serve(ROOT);
 const browser = await chromium.launch(launchOpts);
 
 console.log('=== a real second worker · Doctrine §7h ===\n');
@@ -201,6 +201,87 @@ try {
   // design a few milliseconds in.
   is((await page.locator('#status').textContent())?.includes('Held from a link'), true,
     '   and the app still captured it, so the entrance still works');
+
+  // --- 7 · and it survives an edge that REDIRECTS (1.40.2) -------------------
+  //
+  // Reported from an iPad, on the Shortcut path, in the browser's own words:
+  //
+  //   Safari can't open the page.
+  //   The error was: "Response served by service worker has redirections".
+  //
+  // A redirected response is a network error when it answers a navigation — the
+  // document's URL and the response's URL would disagree. Every engine enforces
+  // it; Chromium reports the same thing as ERR_FAILED.
+  //
+  // The query strip is what exposed it. A real navigation request carries
+  // `redirect: "manual"`, so a 3xx comes back as an opaqueredirect the browser
+  // follows itself; the constructed request that replaces it defaults to
+  // `redirect: "follow"`, so fetch chases the 3xx and returns a response
+  // flagged `redirected`. Only on a navigation carrying a query — the capture
+  // entrance and nothing else.
+  //
+  // WHY ELEVEN GREEN GATES MISSED A BREAKAGE EVERY ENGINE AGREES ON: this
+  // server answered every path 200 or 404. It had no way to redirect, so the
+  // one edge behaviour that triggers this was the one behaviour no local run
+  // had. It was never an engine difference — it was a hole in the rig, which is
+  // the more embarrassing answer and the more useful one.
+  //
+  // Two false trails on the way, both worth the lines because both looked
+  // exactly like "the fix does not work":
+  //   - Redirecting to `/index.html` proved nothing. The browser's own HTTP
+  //     cache answered the redirect with no request, so the canary could never
+  //     appear and the check failed with the fix correctly in place. It points
+  //     at a path nothing has ever fetched.
+  //   - `upgrade-insecure-requests` in the shipped CSP rewrote the redirect to
+  //     `https://127.0.0.1:<port>` and killed it with ERR_SSL_PROTOCOL_ERROR.
+  //     `serve.mjs` now drops that one directive over http, where it is inert in
+  //     production and destructive locally; the comment there says why.
+  //
+  // PLANTED RED FIRST, both halves: with `unredirect` removed from sw.js the
+  // navigation itself fails with ERR_FAILED, and the shell never reaches the
+  // cache because `cache.put` refuses a redirected response.
+  const REDIRECT_CANARY = 'zzredirect-the-thing-i-said-in-the-meeting';
+  const SHELL_CANARY = '<!--zzshell-canary-->';
+  const realShell = readFileSync(`${ROOT}/index.html`, 'utf8');
+  // Redirected to a path NEVER FETCHED BEFORE, on purpose. Pointing it at
+  // `/index.html` proved nothing: the browser's own HTTP cache answered the
+  // redirect without a request, so the canary could never appear and the check
+  // failed identically whether the fix was present or not.
+  overrides.set('/shell-probe.html', realShell.replace('</body>', `${SHELL_CANARY}</body>`));
+  redirects.set('/capture', '/shell-probe.html');
+
+  // Caught rather than thrown, so the defect reports itself as a named failure
+  // instead of a stack trace. An uncaught goto here says "Error" and leaves the
+  // next reader to work out which of eleven checks was running.
+  let navError = null;
+  await page.goto(`${url}capture?text=${encodeURIComponent(REDIRECT_CANARY)}`, { waitUntil: 'load' })
+    .catch((e) => { navError = String(e.message).split('\n')[0]; });
+  is(navError, null, '7. a redirecting edge does not break the capture entrance');
+  await page.waitForSelector('body[data-ready=true]', { timeout: 15000 }).catch(() => {});
+  is((await page.locator('#status').textContent())?.includes('Held from a link'), true,
+    '   and the capture still lands');
+  // The strip still holds on this path — a redirect must not become a way for
+  // the text to reach the host by the back door.
+  is(seen.filter((r) => r.includes('zzredirect')).length, 0,
+    '   with the text still off the wire, redirect or no redirect');
+  // And the shell WAS written. This is the assertion that fails on the defect.
+  // Whichever quietkeep cache is live, NOT the running release's name: by this
+  // point the walk has promoted the second worker, so the cache in play is the
+  // one NEXT built. Naming the release here read an empty cache and failed for
+  // the wrong reason — the assertion agreeing with the defect by accident.
+  const cachedShell = await page.evaluate(async () => {
+    for (const name of await caches.keys()) {
+      if (!name.startsWith('quietkeep')) continue;
+      const hit = await (await caches.open(name)).match('./index.html');
+      if (hit) return await hit.text();
+    }
+    return null;
+  });
+  is(typeof cachedShell === 'string' && cachedShell.includes(SHELL_CANARY), true,
+    '   and the shell reached the cache — a redirected response is refused by cache.put');
+
+  redirects.delete('/capture');
+  overrides.delete('/shell-probe.html');
 } finally {
   await browser.close();
   server.close();

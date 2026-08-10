@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-1.40.1';
+const CACHE = 'quietkeep-1.40.2';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -117,8 +117,41 @@ self.addEventListener('fetch', (event) => {
       ? new Request(url.origin + url.pathname, { headers: req.headers, credentials: 'same-origin' })
       : req;
 
+    // A REDIRECTED RESPONSE CANNOT ANSWER A NAVIGATION (found on device, 1.40.2
+    // — reported by Safari, which was right, and is not alone).
+    //
+    //   Safari can't open the page.
+    //   The error was: "Response served by service worker has redirections".
+    //
+    // The Service Worker spec makes a redirected response a network error when
+    // it answers a navigation, because the document's URL and the response's
+    // URL would disagree and nothing can reconcile them. EVERY engine enforces
+    // it — Chromium calls the same thing ERR_FAILED — so this was never a
+    // Safari quirk. It went unseen because no local server ever issued a
+    // redirect for the walk to follow.
+    //
+    // The strip above is what exposed it. A real navigation request carries
+    // `redirect: "manual"`, so `fetch(req)` hands a 3xx back as an
+    // opaqueredirect for the browser to follow itself — safe, and what every
+    // other navigation here still does. `new Request(url)` does NOT inherit
+    // that: it defaults to `redirect: "follow"`, so fetch chases the 3xx and
+    // returns a response flagged `redirected`. Fatal, and ONLY on a navigation
+    // carrying a query — which is the capture entrance and nothing else.
+    //
+    // Rebuilt rather than re-requested. The bytes are correct and already here;
+    // what is wrong is a flag about how they were obtained, and a fresh
+    // Response carries the body without the history. This also fixes a second,
+    // silent failure: `cache.put` REJECTS a redirected response, so the freshen
+    // was throwing and the shell was never being updated on this path either.
+    const unredirect = (res) => res.redirected
+      ? new Response(res.body, {
+        status: res.status, statusText: res.statusText, headers: res.headers,
+      })
+      : res;
+
     event.respondWith((async () => {
-      const freshen = fetch(netReq).then(async (fresh) => {
+      const freshen = fetch(netReq).then(async (raw) => {
+        const fresh = unredirect(raw);
         if (fresh.ok) (await caches.open(CACHE)).put(pageKey, fresh.clone());
         return fresh;
       });

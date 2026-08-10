@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.40.2 — ITERATION
+
+*2026-08-10*
+
+- **Opening a capture link no longer fails with “Safari can’t open the page”.** Depending on how the address was answered, the link that carries a note into Quietkeep could stop dead before the app loaded. It was Quietkeep’s fault, not Safari’s, and it only ever affected links carrying text.
+- **And a warning that had to be written: a capture link run from a Shortcut may open Safari instead of the app on your Home Screen.** It will say it held your note — and it will have held it in Safari, in a separate copy the installed app never shows you. *Getting things in from somewhere else* now says so. Until there is a way in that lands in the right place, the box at the top of the app is the one that always does.
+
 ## 1.40.1 — ITERATION
 
 *2026-08-10*

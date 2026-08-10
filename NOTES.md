@@ -582,8 +582,36 @@ decided by a session.**
 `staging` were identical at that commit, so production and the candidate carried
 the same build for the first time since 1.25.0.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.1**
+- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.2**
 - **https://quietkeep.pages.dev** — production, **1.39.3**
+
+**1.40.2 — the capture link could not open, and it opens the wrong app.** Two
+findings on the same path, both from the iPad, and the second is the one that
+matters.
+
+The first: `Response served by service worker has redirections`. The 1.37.0 query
+strip built a fresh request, and a fresh request defaults to `redirect: "follow"`
+where a navigation carries `redirect: "manual"` — so the worker chased a 3xx and
+answered a navigation with a redirected response, which every engine refuses.
+Only on navigations carrying a query, which is the capture entrance and nothing
+else. Fixed by rebuilding the response without the flag, which also unblocked a
+silent second failure: `cache.put` refuses a redirected response, so the shell had
+stopped being freshened on that path too.
+
+**Why no gate caught it: the local server could not redirect.** It answered every
+path 200 or 404, so the one edge behaviour that triggers this was the one
+behaviour no walk ever had. Not an engine difference — a hole in the rig.
+`serve.mjs` redirects now and the §7h walk drives one, planted red first.
+
+The second is **V-21, answered, and the answer is the bad one.** A Shortcut's
+*Open URL* opened **Safari**, not the installed app, and the capture succeeded
+there — into a store the installed app never shows. The row predicted exactly
+this: *a capture that lands in the wrong context succeeds, dressed as a
+confirmation.* The ⓘ now states what was observed, names what to look at, and
+promises no remedy that has not been seen to work. The fragment entrance does not
+rescue it — `#text=` keeps content off the wire, which is a different property
+from landing in the right app — so the private entrance stays unbuilt, and
+whether ANY Shortcut action can reach the installed app is an open question.
 
 **1.40.1 — the ⓘ stops growing a paragraph after you have started reading it.**
 
