@@ -848,10 +848,23 @@ export async function main(edition?: Edition): Promise<void> {
   // accident, badly, by running the lines together. So it lands in the
   // many-line field where the structure is visible and intact, and says plainly
   // what pressing the button will do, with the other reading one press away.
-  input.addEventListener('paste', (e) => {
-    const text = (e as ClipboardEvent).clipboardData?.getData('text/plain') ?? '';
-    if (lineCount(text) < 2) return;
-    e.preventDefault();                     // else the element eats the newlines
+  /**
+   * TAKE TEXT INTO THE CAPTURE SURFACE, without writing anything.
+   *
+   * One function, two doors: a paste into the field, and "Hold what I copied"
+   * below it. They must behave identically — the same reading of one line
+   * versus many, the same offer, the same draft — and the only way to be sure
+   * of that is for there to be one of them.
+   */
+  const takeText = (text: string) => {
+    if (lineCount(text) < 2) {
+      input.value = text.trim();
+      many.value = '';
+      showRoom(false);
+      persist();
+      offer.hidden = true;
+      return;
+    }
     many.value = text;
     input.value = '';
     showRoom(true);
@@ -878,6 +891,56 @@ export async function main(edition?: Edition): Promise<void> {
     });
     offer.append(said, asOne);
     offer.hidden = false;
+  };
+
+  input.addEventListener('paste', (e) => {
+    const text = (e as ClipboardEvent).clipboardData?.getData('text/plain') ?? '';
+    if (lineCount(text) < 2) return;
+    e.preventDefault();                     // else the element eats the newlines
+    takeText(text);
+  });
+
+  // HOLD WHAT I COPIED (1.41.0).
+  //
+  // V-21 closed the other way in: on this platform a link cannot open the
+  // installed app, so anything copied elsewhere arrives only if the person opens
+  // Quietkeep themselves and puts it in. Retyping what is already on the
+  // clipboard is the friction that decides whether a thought is kept at all, and
+  // it is the friction this removes.
+  //
+  // NOTHING IS WRITTEN. The text lands in the field, visible, and the ordinary
+  // button commits it — the same two taps the capture criteria already assert,
+  // with no typing. A silent clipboard write would be a capture nobody asked
+  // for, and the clipboard is exactly the place a password or somebody else's
+  // message is most likely to be sitting.
+  //
+  // Hidden unless the browser has the API, because a control that cannot do its
+  // one job is worse than an absent one. iOS asks the reader to confirm the
+  // paste, which is the gesture the platform requires and is also the right
+  // shape: the app never reads the clipboard without being told to, twice.
+  const pasteIn = $<HTMLButtonElement>('#capture-paste');
+  if (typeof navigator.clipboard?.readText === 'function') pasteIn.hidden = false;
+  pasteIn.addEventListener('click', () => {
+    void (async () => {
+      let text = '';
+      try {
+        text = await navigator.clipboard.readText();
+      } catch {
+        // Declined, or the browser refused. Not an error and not framed as one:
+        // the reader either changed their mind or the platform said no, and
+        // neither is something they did wrong.
+        offer.textContent = 'Nothing was taken from the clipboard.';
+        offer.hidden = false;
+        return;
+      }
+      if (text.trim() === '') {
+        offer.textContent = 'There is nothing copied to hold.';
+        offer.hidden = false;
+        return;
+      }
+      takeText(text);
+      (many.hidden ? input : many).focus();
+    })();
   });
 
   $<HTMLFormElement>('#capture-form').addEventListener('submit', async (e) => {

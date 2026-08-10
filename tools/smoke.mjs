@@ -73,6 +73,9 @@ try {
     timezoneId: 'America/Denver',
     locale: 'en-US',
     acceptDownloads: true,
+    // Granted so "Hold what I copied" can be walked at all (1.41.0). On a real
+    // device the reader confirms the paste; here the confirmation is the grant.
+    permissions: ['clipboard-read', 'clipboard-write'],
   });
   const page = await ctx.newPage();
 
@@ -454,6 +457,53 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // hides `#capture`, and focusing a hidden element focuses nothing at all — on
   // a tablet that means arriving to no keyboard and no cursor, which is the
   // opposite of what a capture shortcut is for.
+  // --- Hold what I copied (1.41.0) ------------------------------------------
+  //
+  // V-21 closed the other way in: a link cannot open the installed app on the
+  // reference platform, so anything copied elsewhere arrives only if somebody
+  // opens Quietkeep and puts it in. This is that door, and the thing it must
+  // never do is write.
+  console.log('\nHold what I copied — a way in that lands in the right place');
+  const countEvents = async () => page.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').count();
+      tx.onsuccess = () => res(tx.result);
+    });
+  });
+  const clipBefore = await countEvents();
+  await page.evaluate(() => navigator.clipboard.writeText(
+    'ring the school\nbins out\nbook the car in'));
+  await page.click('#capture-paste');
+  await page.waitForSelector('#capture-many:not([hidden])');
+  await page.waitForFunction(() =>
+    (document.querySelector('#capture-many')?.value ?? '').includes('bins out'));
+  is((await page.locator('#capture-many').inputValue()).split('\n').length, 3,
+    'what was copied arrives intact, one line per line');
+  is(await countEvents(), clipBefore,
+    'and NOTHING is written by pressing it — the button fills the box, it does not capture');
+  is(await page.locator('#capture-offer').isVisible(), true,
+    'it says what pressing Hold it will do, rather than deciding for you');
+  // A single line is the other reading, and must not open the room.
+  await page.fill('#capture-many', '');
+  await page.click('#capture-room');
+  await page.evaluate(() => navigator.clipboard.writeText('one thing only'));
+  await page.click('#capture-paste');
+  // The handler is async — the click returns when it is DISPATCHED, not when the
+  // clipboard read resolves. Asserting straight after read an empty box and
+  // reported a defect in working code.
+  await page.waitForFunction(() =>
+    document.querySelector('#capture')?.value === 'one thing only');
+  is(await page.locator('#capture').inputValue(), 'one thing only',
+    'one copied line stays one thing, in the ordinary box');
+  is(await countEvents(), clipBefore, 'still nothing written');
+  // Left exactly as found: an empty box, room collapsed, nothing pending. The
+  // first version of this block ran mid-way through the shortcut section and
+  // ate the half-written dump that section depends on — a test that breaks the
+  // NEXT test is indistinguishable from a product defect in the log.
+  await page.fill('#capture', '');
+  await page.waitForFunction(() => document.querySelector('#capture')?.value === '');
+
   await page.click('#capture-room');
   await page.fill('#capture-many', 'still writing this\nand this');
   await page.waitForFunction(async () => {

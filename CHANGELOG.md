@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 1.41.0 — CAPABILITY
+
+*2026-08-10*
+
+- **Hold what I copied.** Copy anything anywhere — a line from a message, a note from a meeting — open Quietkeep, and press it. What you copied lands in the box, where you can see it, and the ordinary button holds it. Many lines become many things, exactly as pasting already does.
+- **Nothing is taken without you asking.** It reads the clipboard only when you press it, your device asks you to confirm, and nothing is written until you press Hold it. If the button is not there, this browser does not let an app read the clipboard at all.
+- **Menu is now the last control in the top area; it was one before that.** The new button sits ahead of it. Nothing else moved and nothing was renamed.
+- This exists because a link cannot open Quietkeep on an iPad — it opens Safari, into a separate copy you never see. Until that changes, opening the app yourself and pressing one button is the way in that always lands in the right place.
+
 ## 1.40.5 — ITERATION
 
 *2026-08-10*

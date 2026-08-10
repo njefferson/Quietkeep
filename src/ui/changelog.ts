@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.41.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-10',
+    notes: [
+      '**Hold what I copied.** Copy anything anywhere \u2014 a line from a message, a note from a meeting \u2014 open Quietkeep, and press it. What you copied lands in the box, where you can see it, and the ordinary button holds it. Many lines become many things, exactly as pasting already does.',
+      '**Nothing is taken without you asking.** It reads the clipboard only when you press it, your device asks you to confirm, and nothing is written until you press Hold it. If the button is not there, this browser does not let an app read the clipboard at all.',
+      '**Menu is now the last control in the top area; it was one before that.** The new button sits ahead of it. Nothing else moved and nothing was renamed.',
+      'This exists because a link cannot open Quietkeep on an iPad \u2014 it opens Safari, into a separate copy you never see. Until that changes, opening the app yourself and pressing one button is the way in that always lands in the right place.',
+    ],
+  },
+  {
     triplet: '1.40.5',
     kind: 'ITERATION',
     date: '2026-08-10',
