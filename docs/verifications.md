@@ -726,9 +726,46 @@ dressed as a confirmation."* That is now an observation rather than a worry.
 - Whether the two symptoms shared a cause. The service-worker redirect defect is
   fixed and would have produced its own failure regardless of which app opened.
 
-**Next, and deliberately not decided by this session:** either find an action that
-lands in the installed app, or state the limitation in the ⓘ and stop presenting the
-Shortcut as the way in. That is a product call, not a verification.
+**RESEARCHED 2026-08-10, rather than tested around.** The question "can a link open
+into an installed home-screen web app at all" had never been asked; a warning and a
+gate were built on top of an assumption instead. What the record actually says:
+
+- **iOS has no link capturing. An `https://` link opens in Safari, always** — whether
+  or not it falls inside an installed web app's manifest `scope`. This is the
+  platform behaviour, not a Shortcuts quirk, and it is the documented difference from
+  Android, where an in-scope URL opens the installed PWA by default. The observation
+  above is the platform working as designed.
+- **Push notifications are the one long-standing exception** (iOS 16.4+): a
+  notification tap can open the installed web app. Even there the URL is unreliable —
+  with the app killed it opens at `start_url` and discards the requested one. Not
+  usable here regardless: this app sends no notifications, by design.
+- **There IS a scheme that lands in the installed app: `webapp://`.** Community
+  reported, widely used from Shortcuts, **and absent from Apple's documentation** —
+  which is a real risk to weigh, not a footnote. `webapp://host/path` opens the web
+  app that was added to the Home Screen for that URL, rather than Safari.
+- **And it discards the path and query.** The reported behaviour is that only `/`
+  renders: the app is launched at its start URL whatever was asked for. Sources
+  disagree on which iOS versions carry it (16.4+ in one account, discovered in the
+  iOS 26 betas in another), and that is left unresolved here rather than guessed.
+
+**So the obvious fix is worse than the defect.** Swapping the recipe to
+`webapp://…/capture?text=…` would land in the right app and arrive with **nothing**,
+because the text rides in the part that gets dropped. Today's failure at least leaves
+the note existing somewhere recoverable; that one would lose it silently, which is the
+single thing this app may never do.
+
+**What survives both facts, and it is a design rather than a discovery:** carry the
+text OUT OF BAND and use the scheme only to arrive. A Shortcut that copies the note to
+the clipboard and then opens `webapp://<host>` lands in the installed app; the app,
+on arrival, offers to hold what was copied. iOS requires a gesture to read the
+clipboard, so it is one deliberate tap rather than an automatic write — which this
+repo would want anyway, since a silent write from the clipboard is a capture nobody
+asked for.
+
+**NOT BUILT, and not this session's call.** It needs the owner's word, and it needs
+`webapp://` verified on his device before anything is recommended — an undocumented
+scheme is a thing to test, not to trust. What is built is the warning in the ⓘ, which
+stays accurate under every finding above.
 
 ---
 
