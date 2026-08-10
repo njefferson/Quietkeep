@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '1.39.3',
+    kind: 'ITERATION',
+    date: '2026-08-09',
+    notes: [
+      '**Sorting one thing is now one screen, not two.** It used to ask “hot or cold?” first, every time — a question that routes nothing and only tints the next one. For a single thought that meant two screens and twelve choices to put one thing away.',
+      '**The hot/cold sweep still leads when there is a pile**, which is what it was for: a quick pass across a handful is easier than a run of full decisions. Below that it gets out of the way, and anything can still be marked hot or cold from its own sheet.',
+      '**And once a sweep starts it finishes.** It will not drop you into a different question halfway through because the pile got shorter.',
+    ],
+  },
+  {
     triplet: '1.39.2',
     kind: 'ITERATION',
     date: '2026-08-09',

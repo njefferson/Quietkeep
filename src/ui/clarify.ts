@@ -84,6 +84,16 @@ export function mountTriage(
    *  arrival is a fresh decision, so coming back always shows you what waited. */
   let suppressed = false;
 
+  /** Whether a hot/cold sweep is under way (1.39.3).
+   *
+   *  The threshold decides whether to BEGIN one, never whether to carry on. A
+   *  sweep that abandoned you at item four of six — because the queue had
+   *  dropped under the bar it started above — would be worse than never offering
+   *  one: you would be halfway through a rhythm and dropped into a different
+   *  question with no warning. Latched on when it starts, off when the queue is
+   *  empty, and nowhere else. */
+  let sweepUnderWay = false;
+
   /**
    * WHEN IT WAS WRITTEN (1.23.0) — the one thing triage has never been able to
    * tell you about a card.
@@ -795,8 +805,29 @@ export function mountTriage(
     // reader had just asked to sort was nowhere. The walk caught it saying
     // exactly that. "Just sort it" is a request about THIS item, so it has to
     // put THIS item in front of you.
+    // THE SWEEP IS FOR A PILE, and a pile is what it was designed against
+    // (1.39.3). ADR-0029 calls heat "an optional, lighter-weight first pass"
+    // whose whole value is that a cheap hot/cold run across many items is easier
+    // than a run of six-route decisions — and that skipping it "costs nothing
+    // but a little of clarify's context".
+    //
+    // But it LED, always. For one captured thought that meant two screens and
+    // twelve choices to put one thing away: a four-choice question that routes
+    // nothing, then the eight that actually decide. An optional step you have to
+    // decline on every single item is not optional, it is a toll with a bypass.
+    //
+    // So it leads when there is a pile to sweep, and gets out of the way when
+    // there is not. Nothing is removed: below the threshold the heat question is
+    // simply not the first thing, and every item can still be marked hot or cold
+    // from its own sheet.
+    const SWEEP_WORTH_IT = 4;
+    if (heatQueue.length === 0) sweepUnderWay = false;
+    else if (heatQueue.length >= SWEEP_WORTH_IT) sweepUnderWay = true;
+    const sweeping = sweepUnderWay;
     const askedFor = inbox.find(n => straightToSort.has(n.id) && !passed.has(n.id));
-    const heatItem = askedFor ? null : fresh(heatQueue.filter(n => !straightToSort.has(n.id)));
+    const heatItem = (askedFor || !sweeping)
+      ? null
+      : fresh(heatQueue.filter(n => !straightToSort.has(n.id)));
     const clarifyItem = askedFor ?? fresh(inbox);
 
     // DECIDING WHILE DUMPING STOPS THE DUMPING (1.39.2).

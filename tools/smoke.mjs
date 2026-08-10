@@ -764,7 +764,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
-  await tpage.click('#triage-actions .route');                   // Hot
+  // ONE item goes straight to clarify since 1.39.3 — the hot/cold sweep leads
+  // only when there is a pile worth sweeping, so there is no heat step to clear
+  // here any more.
   await tpage.waitForSelector('#triage-actions .route .route-hint');
   await tpage.locator('#triage-actions .route', { hasText: 'Waiting for' }).first().click();
   await tpage.waitForSelector('#triage-undo .triage-undo-btn');
@@ -982,7 +984,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
-  await tpage.click('#triage-actions .route');                   // Hot
+  // No heat step for a single item since 1.39.3 — the sweep leads only when
+  // there is a pile worth sweeping.
   await tpage.waitForSelector('#triage-actions .route .route-hint');
   await tpage.locator('#triage-actions .route', { hasText: 'Do now' }).first().click();
   await tpage.waitForSelector('.donow-done');
@@ -1095,7 +1098,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.click('#capture-form button[type=submit]');
     await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await tpage.waitForSelector('#triage:not([hidden]) .route');
-    await tpage.click('#triage-actions .route');                       // Hot
+    // One at a time, so clarify leads — no heat step to clear (1.39.3).
     await tpage.waitForSelector('#triage-actions .route .route-hint');
     await tpage.locator('#triage-actions .route', { hasText: 'Do now' }).first().click();
     await tpage.waitForTimeout(80);

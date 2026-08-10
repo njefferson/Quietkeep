@@ -1186,9 +1186,18 @@ try {
     await fillSearch('');          // leave the box as we found it
     await page.waitForSelector('#search-results .search-open', { state: 'detached' });
 
-    // State 3b: the triage surface. Capturing a card left an unrouted node, so
-    // the heat pass is already showing. Audit it, then take the heat tap to
-    // reveal the six clarify routes and audit those too.
+    // State 3b: the triage surface.
+    //
+    // A PILE HAS TO BE MADE FOR IT NOW (1.39.3). The hot/cold sweep leads only
+    // when there are enough items to be worth sweeping — one capture goes
+    // straight to clarify — so this walk captures a handful first, or it would
+    // measure the clarify state twice and call one of them the heat pass.
+    for (const t of ['sweep one', 'sweep two', 'sweep three']) {
+      await page.fill('#capture', t);
+      await page.click('#capture-form button[type=submit]');
+      await page.waitForTimeout(60);
+    }
+    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
     await page.waitForSelector('#triage:not([hidden]) .route');
     await auditContrast(page, 'heat pass', theme);
     await auditAxe(page, 'heat pass', theme);
@@ -1196,7 +1205,16 @@ try {
     await auditTargets(page, 'heat pass', theme);
     await auditFocusRings(page, 'heat pass', theme, ['#triage-actions .route']);
 
-    await page.click('#triage-actions .route');   // Hot — advances to clarify
+    // Drain the sweep — every item hot — which is what ends it and hands the
+    // surface to clarify. The sweep does not abandon you partway (1.39.3), so
+    // this runs until the prompt actually changes rather than a fixed count.
+    for (let i = 0; i < 12; i++) {
+      const heat = await page.evaluate(() =>
+        document.querySelector('#triage-prompt')?.textContent?.startsWith('Hot') === true);
+      if (!heat) break;
+      await page.click('#triage-actions .route');
+      await page.waitForTimeout(60);
+    }
     await page.waitForSelector('#triage-actions .route .route-hint');
     // WHEN IT WAS WRITTEN (1.23.0) fills in AFTER the card, from the log, on
     // purpose — so the walk waits for it rather than measuring an element that
@@ -1247,6 +1265,18 @@ try {
     await page.waitForSelector('#triage-place-new');
     await page.evaluate(() => document.querySelector('#triage-actions .route')?.click()); // Back
     await page.waitForSelector('#triage-actions .route .route-hint');
+
+    // Back down to ONE card. The sweep above needed a pile, and the assertion
+    // below is about the LAST card being routed — so the pile is cleared here,
+    // through "Next action" rather than "Do now" so it leaves no timed offer
+    // behind to confuse the state that audits one.
+    for (let i = 0; i < 12; i++) {
+      const left = await page.evaluate(() =>
+        Number(/^(\d+)/.exec(document.querySelector('#triage-gauge')?.textContent ?? '')?.[1] ?? 0));
+      if (left <= 1) break;
+      await page.locator('#triage-actions .route', { hasText: 'Next action' }).first().click();
+      await page.waitForTimeout(60);
+    }
 
     // State 3c: route it, which both clears the inbox — so focus must return to
     // capture rather than fall to <body> (A-5/F-05) — and gives Work mode
