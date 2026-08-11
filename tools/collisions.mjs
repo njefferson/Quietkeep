@@ -89,6 +89,39 @@ for (const g of STRENGTHS) {
 }
 if (!failed) ok('and the header defines every grade it uses');
 
+// THE FILE MUST AGREE WITH ITSELF ABOUT WHAT IS BUILT (2026-08-10).
+//
+// The gate above holds every ENTRY honest and never looked at the TOP 5 list at
+// the bottom — a ranking of what to build next, written once and never revised.
+// Four of its five had shipped, each recorded as `SINCE WRITTEN — SHIPPED` in
+// the very entry the list points at. **One document, two answers, and only one
+// half was gated.**
+//
+// This does NOT decide what shipped — the note at the top of this file is right
+// that a gate pretending to know would be the same false receipt. It checks
+// something a script CAN know: that two statements of the same fact, in one
+// file, do not contradict each other. That is the general cure for this class,
+// and it needs no knowledge of the app at all.
+const top5 = doc.slice(doc.indexOf('## TOP 5 ROUTING PROPOSALS'));
+const shipped = new Set();
+for (const m of doc.matchAll(/^### (\d+)\./gm)) {
+  const body = doc.slice(m.index, doc.indexOf('\n### ', m.index + 1) + 1 || undefined);
+  if (/\*\*SINCE WRITTEN\*\* — \*\*SHIPPED/.test(body)) shipped.add(m[1]);
+}
+let disagreed = 0;
+for (const m of top5.matchAll(/\(entry (\d+)\)\*\* — \*\*([^*]+)\*\*/g)) {
+  const [, entry, claim] = m;
+  const listSaysShipped = /SHIPPED/.test(claim);
+  const entrySaysShipped = shipped.has(entry);
+  if (listSaysShipped !== entrySaysShipped) {
+    fail(`the TOP 5 list and entry ${entry} disagree about whether it shipped `
+      + `(list: ${listSaysShipped ? 'SHIPPED' : 'not shipped'}, `
+      + `entry: ${entrySaysShipped ? 'SHIPPED' : 'not shipped'})`);
+    disagreed++;
+  }
+}
+if (!disagreed) ok('the TOP 5 list agrees with every entry it points at about what shipped');
+
 console.log(failed
   ? `\n${failed} failure(s). The catalogue is claiming more than it can back.\n`
   : '\nEvery entry states what it is built on and how it routes.\n');

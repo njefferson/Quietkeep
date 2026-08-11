@@ -14,6 +14,22 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.0.4 — ITERATION
+
+*2026-08-10*
+
+- **The invented sample is now data somebody could actually have.** It was built by pairing lists at random, so it produced things like “Photograph the meter” inside “Plan the trip north”, and lines reading “in Get the bike serviced · under Reading”. Every step now sits in a project it belongs to, and every project under an area that makes sense of it.
+- **Most of what people write down is a fragment** — “order the part”, “ring them back”. Those read properly when the thing above them supplies the missing word, so a wrong parent is worse than none at all: the app confidently shows you a context that is not true. Anything in the sample with nothing above it now says what it is about on its own.
+- **This only ever affected the invented sample.** Nothing you wrote yourself was touched, and nothing about how your own things are shown has changed.
+
+## 2.0.3 — ITERATION
+
+*2026-08-10*
+
+- **The offer now says when you wrote it.** A lot of what people write down is a fragment — “take the old one to the tip”, “ring them back”, “order the part”. Under a project that reads fine, and the card names the project underneath. With nothing above it, the card was a bare instruction with no subject anywhere on the screen.
+- The sorting card has said when something was written since 1.29.0. The card you actually meet work on never did. It does now, from the same words, and it still never tells you how long ago — an age is the same fact wearing an accusation.
+- **It still cannot tell you what you meant.** If a fragment was written with no project and no note, when you wrote it is all there is, and that may not be enough. Adding a place or a note to it is what fixes that, and the app will not pretend otherwise.
+
 ## 2.0.2 — ITERATION
 
 *2026-08-10*
