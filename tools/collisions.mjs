@@ -51,6 +51,10 @@ if (marks.length < 20) {
 
 let noEvidence = 0;
 let noRouting = 0;
+// Tracked separately from `noRouting` so the summary line cannot print `ok`
+// beside its own FAIL — a missing mark and an unrecognised mark are both
+// reasons the claim "every entry says how it routes" is false.
+let badRoute = 0;
 let badStrength = 0;
 
 for (let i = 0; i < marks.length; i++) {
@@ -69,17 +73,34 @@ for (let i = 0; i < marks.length; i++) {
     badStrength++;
   }
 
+  // THE MARK IS READ FROM THE LEADING BOLD SPAN, not from the whole line.
+  //
+  // This used to search the entire sentence, and the entire sentence is prose.
+  // Entry 9's correction says the app has no way to compute "later today" — and
+  // that phrase contains `later`, so the gate accepted a paragraph with no
+  // routing mark in it at all and reported the catalogue honest. It is the same
+  // shape the EVIDENCE check above already avoids by requiring `**Grade`: a
+  // substring test over prose is satisfiable by coincidence, and a check
+  // satisfiable by coincidence reports coverage it does not have.
+  //
+  // Every entry already writes the mark first and in bold. That convention is
+  // now the rule rather than a habit.
   const rt = body.match(/^- \*\*ROUTING PROPOSAL\*\* — (.*)$/m);
+  const lead = rt?.[1].match(/^\*\*([^*]+)\*\*/)?.[1];
   if (!rt) {
     fail(`entry ${n} (${title}) states no ROUTING PROPOSAL`);
     noRouting++;
-  } else if (!ROUTES.some(r => rt[1].includes(r))) {
-    fail(`entry ${n} (${title}) routes itself outside the closed set: ${rt[1].slice(0, 50)}`);
+  } else if (!lead) {
+    fail(`entry ${n} (${title}) does not state its routing mark first, in bold: ${rt[1].slice(0, 50)}`);
+    badRoute++;
+  } else if (!ROUTES.some(r => lead.includes(r))) {
+    fail(`entry ${n} (${title}) routes itself outside the closed set: ${lead.slice(0, 50)}`);
+    badRoute++;
   }
 }
 
 if (!noEvidence && !badStrength) ok('every entry says how strong its evidence is, from the closed set');
-if (!noRouting) ok('every entry says how it routes, from the closed set');
+if (!noRouting && !badRoute) ok('every entry says how it routes, from the closed set');
 
 // The scale itself has to be in the file, or the marks are private notation.
 for (const g of STRENGTHS) {
