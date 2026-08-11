@@ -20,8 +20,8 @@ wrong.
 **And the doctrine made it a rule the same day.** Universal App Doctrine §7f:
 *"ask for the DIAGNOSTIC, never for a screenshot… a session that asks the owner to
 photograph his screen is asking him to do worse work on its behalf."* Every
-outstanding verification in this repo is his, on an iPad — V-14, V-16/V-17,
-V-00 step 2, V-20, build-plan 42 — and the dogfood gate that decides whether
+outstanding verification in this repo is his, on an iPad — V-14 *(closed
+2026-08-09, answered YES)*, V-16/V-17, V-00 step 2, V-20, build-plan 42 — and the dogfood gate that decides whether
 any of this is good has been running the whole time and resetting daily,
 because the app cannot survive a day (corrected 2026-08-03 on the owner's word — an
 earlier draft of this paragraph said it "has not started", which read an absent
