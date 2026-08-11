@@ -734,6 +734,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // AND NOTHING PUT A DECISION IN FRONT OF IT (1.42.1 still holds under 2.0.0).
   is(await upage.locator('#triage-actions .route').count(), 0,
     'and no forced choice was raised about it — capture covers, sorting is optional');
+  // THE ANSWER COMES BEFORE THE TIDYING (2.0.2), as a fact about the document
+  // rather than about what happens to be visible. The offer used to be the
+  // TWELFTH section, below the sorting door and ten others, so the screen led
+  // with "sort something" and buried "here is what you could do". Nothing
+  // guarded that order — it was decided once by the order things were built in.
+  is(await upage.evaluate(() => {
+    const up = document.querySelector('#nextup'), tri = document.querySelector('#triage');
+    if (!up || !tri) return 'a section is missing';
+    // DOCUMENT_POSITION_FOLLOWING === 4: triage comes after nextup.
+    return (up.compareDocumentPosition(tri) & 4) === 4;
+  }), true, 'the offer precedes the sorting door in the document — the screen leads with the answer');
   // Doing it needs no decision about what kind of thing it is.
   is(await upage.locator('#nextup-done').isVisible(), true,
     'and it can simply be done, with no route chosen first');

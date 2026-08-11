@@ -101,6 +101,21 @@ else's move. A Menu item is a surface, not a demand (law 1 clause c). The
 demand-free kinds refuse clocks by law and must not be dressed as demands here
 either.
 
+> **The unrouted-capture clause is REVERSED by
+> [ADR-0086](0086-a-thing-is-a-task-the-moment-it-exists.md) (2.0.0).** The rest
+> of this paragraph stands exactly as written — a waiting-for, a Menu item and
+> the demand-free kinds are still not offered here.
+>
+> The reason above holds only if offering an unrouted item means asking the
+> ROUTING question about it. It does not: offering it hands back the words
+> somebody typed, with Done and Not this. And this surface's promise is that it
+> decided *what to show you*, not that everything has been classified.
+>
+> What the clause actually did was make sorting the price of an item ever being
+> offered — so a capture was clocked, counted as covered by the proof, and came
+> back only as more sorting. ADR-0086 has the full account, including why
+> removing the clause alone would have shipped as a no-op.
+
 ## Consequences
 
 - `test/nextup.test.ts` and `test/time.test.ts` hold the properties: pressure is

@@ -129,9 +129,11 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 - ~~**Stalled/orphan detection** (the exceptions-first Review surface).~~ **Done, 0.13.0** — and it needed *containment* built first: the parent field had existed since the first fold with no control able to set one, so nothing in the app could stall. [ADR-0038](docs/adr/0038-containment-and-exceptions-review.md).
 - ~~**T0 + T1 notifications.**~~ **Done, 0.8.0** (badge 0.11.0). Permission +
   badge + glance surfaces; `.ics` export with `RRULE`/`VALARM` so the OS calendar
-  does the notifying. **[V-14](docs/verifications.md) is still open and only the owner
-  can close it:** whether an exported `.ics` actually fires an alarm on the iPad
-  with the app shut. Nothing in CI can prove that.
+  does the notifying. **[V-14](docs/verifications.md) is CLOSED — answered YES on
+  device, 2026-08-09.** An exported `.ics` really is picked up by the OS: iOS
+  rendered it on the intended day, all-day, with the alert resolved to **09:00
+  local** and named in words. Nothing in CI could ever have proved that, which is
+  why it stayed open for eleven days and not because anybody forgot.
 
 > **Every item on this list is now built, as of 0.17.0 on `staging`.**
 >
@@ -142,8 +144,8 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 > do not propose `1.0.0`, and this line is not a proposal.
 >
 > What is left before that judgement is his to make, not code: the on-device pass
-> (Doctrine §7), and **V-14**, which is the one claim in the whole app that no
-> gate here can settle.
+> (Doctrine §7). **V-14 is no longer among them — it was answered YES on device
+> on 2026-08-09** and is closed.
 
 > **CI caught what I did not, 2026-07-29.** Spine runs 67 and 68 (0.15.0, 0.16.0)
 > went **red on the banned-vocabulary gate** after I reported all nine gates green
@@ -1229,10 +1231,13 @@ writing, the explanation and the button are at the top rather than folded away.
 Then *Send to my calendar* — the confirmation no longer promises a reminder
 nobody has watched arrive.
 
-**Still owed by hand, and it now outranks the rest:** V-14. Nobody has ever seen
-an exported alarm fire with Quietkeep closed. The research sweep found that
-during an avoidance episode the calendar export is the only part of the app
-still running, so it carries the whole promise at the moment nothing else does.
+**~~Still owed by hand, and it now outranks the rest: V-14.~~ CLOSED — answered
+YES on device, 2026-08-09.** The exported alarm was seen: the intended day,
+all-day, alert resolved to 09:00 local. The reason it mattered stands and is
+worth keeping — the research sweep found that during an avoidance episode the
+calendar export is the only part of the app still running, so it carries the
+whole promise at the moment nothing else does. It is now a promise that has been
+watched working rather than asserted.
 
 **1.27.0 finishes the sentence 1.19.0 started.** A place that comes round now
 says what it is holding — the first few by name, then how many more. "7 under
@@ -3942,6 +3947,10 @@ and the register classifies each one.
   been running since this day and resetting daily. See the gate's own definition above.)**
   **The owner starts using the app today** and will give feedback as he finds things. V-14 remains
   the one claim no gate here can settle.
+  **(Corrected 2026-08-10: V-14 was ANSWERED YES on device on 2026-08-09 and is
+  closed. Every later line still calling it owed is stale — see
+  `docs/verifications.md`, which is the record; this log entry is a snapshot of
+  what was true on its own date.)**
 
 - **2026-07-30** — **The QR encoder, and the boundary I drew in the wrong place.**
   Asked why there was still nothing about QR codes. Rightly: it was recorded

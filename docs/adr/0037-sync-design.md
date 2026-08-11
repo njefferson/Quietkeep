@@ -22,7 +22,10 @@
    want to think about it. That reason is about **his data being current wherever
    he picks up**, which exchange-on-open delivers completely. Push is a different
    want (*a reminder reaching him when Quietkeep is shut*), it is still the job
-   the calendar export does today, and **V-14 remains unverified** for it.
+   the calendar export does today, and ~~**V-14 remains unverified** for it~~ —
+   **V-14 was answered YES on device on 2026-08-09 and is closed**, so the
+   calendar route is now a verified delivery mechanism rather than an assumed
+   one. That strengthens this argument rather than weakening it.
 3. **NOT a version.** *"No version until I've ensured it actually all works."*
    Consistent with his v1 ruling. Sessions do not number this.
 
