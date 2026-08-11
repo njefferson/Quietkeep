@@ -525,6 +525,8 @@ decided by a session.**
   **`CLOUDFLARE_API_KEY`** (the workflow accepts either that or `CLOUDFLARE_API_TOKEN` and
   logs which name it found). `main` → `quietkeep.pages.dev`, `staging` →
   `staging.quietkeep.pages.dev`. Both have deployed successfully from CI.
+  The versions on each are stated once, under **Staged and waiting on the owner**
+  below — not here as well.
 - **PRODUCTION HAS BEEN READ — [V-15](docs/verifications.md) is CLOSED,
   2026-08-04.** The owner's §7f diagnostic, taken on the instance installed on his
   home screen and confirmed by him to be the plain production sync host, reported
@@ -580,12 +582,24 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-**Everything through 1.39.3 was promoted 2026-08-10**, on his word. `main` and
-`staging` were identical at that commit, so production and the candidate carried
-the same build for the first time since 1.25.0.
+**Everything through 2.0.4 was promoted 2026-08-11**, on his word.
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **1.40.3**
-- **https://quietkeep.pages.dev** — production, **1.39.3**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.4**
+- **https://quietkeep.pages.dev** — production, **2.0.4**
+
+**Both carry the same build, and the promote that made them equal changed nothing
+a reader can see.** What went to `main` on 11 August was tests, a research
+correction, two gates and a permission rule — not one byte under `src/` or
+`public/`. A promote is allowed to change nothing on screen; what it must never
+do is leave this block saying otherwise.
+
+**These two lines said 1.40.3 and 1.39.3 while the app was on 2.0.4** — nine
+releases and the largest change the app has had, all after the last time anybody
+edited them. The handoff gate has read this block since it was written and says,
+in its own words, that a candidate note which does not name the build cannot be
+acted on; it went red on exactly that, and the first fix was to add the version
+somewhere ELSE in the file, which would have left two answers here and made the
+stale one harder to find rather than easier. One place states it. This one.
 
 **1.40.3 — the handoff arrived before the thing it hands you to.** The
 walkthrough's last step opens the ⓘ to put the storage question in front of
