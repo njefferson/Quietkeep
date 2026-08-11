@@ -1609,6 +1609,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#sheet-coverage-close');
   await tpage.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
   is(await tpage.locator('#coverage').isVisible(), false, 'and its Close puts it away again');
+  // THE FOURTH PROPERTY (hub LESSONS §73): when a surface becomes several, the
+  // way out, the repaint and the overflow rule each have to be re-asserted on
+  // every new one — and so does WHERE FOCUS LANDS. A dialog hands focus back to
+  // its invoker natively, which is exactly the kind of correct-by-accident that
+  // stops being true the moment something opens the sheet a different way.
+  is(await tpage.evaluate(() => document.activeElement?.id), 'gauge',
+    'and closing it puts you back on the control you pressed');
+  // Escape is the other way out of a native dialog, and it is the one a
+  // keyboard reader reaches for first.
+  await tpage.click('#gauge');
+  await tpage.waitForSelector('#sheet-coverage[open]');
+  await tpage.keyboard.press('Escape');
+  await tpage.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
+  is(await tpage.evaluate(() => document.activeElement?.id), 'gauge',
+    'and Escape does the same, not only the Close button');
 
   console.log('\nWork mode — no "overdue" anywhere on the surface (law 5)');
   const surfaceText = await tpage.evaluate(() => document.body.innerText);
@@ -5371,6 +5386,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#sheet-tree').evaluate(d => d.open), false,
     'and walking through it closed the tree — never two surfaces at once');
   await tpage.click('#detail-close');
+  // The tree's own focus return, asserted like the claim's (hub LESSONS §73).
+  // Opened and closed WITHOUT walking through a row, because the walk-through
+  // above deliberately lands you somewhere else.
+  await tpage.click('#tree-open');
+  await tpage.waitForSelector('#sheet-tree[open]');
+  await tpage.click('#sheet-tree-close');
+  await tpage.waitForSelector('#sheet-tree[open]', { state: 'detached' });
+  is(await tpage.evaluate(() => document.activeElement?.id), 'tree-open',
+    'closing the tree puts you back on the control you pressed');
 
   // DOORS: the coverage rows open sheets now.
   await tpage.click('#gauge');
