@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.5',
+    kind: 'ITERATION',
+    date: '2026-08-11',
+    notes: [
+      '**The claim above your list, and “How it hangs together”, now open as their own screen.** Both used to unfold in the middle of the page, above the list you were already looking at — on a full planner, tens of screens of it, and getting back meant scrolling past the lot. Both controls are where they were and say what they said; only where their contents land has changed.',
+      '**Still one scroll otherwise.** With a lot on, the sections above your list still stack up in front of it. This took out the two biggest pieces — the ones you opened yourself. The rest is a separate question and is not answered yet.',
+    ],
+  },
+  {
     triplet: '2.0.4',
     kind: 'ITERATION',
     date: '2026-08-10',

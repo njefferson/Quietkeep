@@ -1001,7 +1001,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // REASONS things come back, which is checkable from the outside.
   console.log('\nThe claim opens into a proof — how it knows, not what is in it');
   await tpage.click('#gauge');
-  await tpage.waitForSelector('#coverage-proof:not([hidden])');
+  await tpage.waitForSelector('#sheet-coverage[open]');
   const holds = await tpage.locator('.proof-holds').textContent() || '';
   is(/comes back to you on its own/.test(holds), true,
     `it states the promise as a sentence ("${holds.trim()}")`);
@@ -1017,7 +1017,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // itself in the vocabulary of the fold, which nobody outside this repo speaks.
   is(reasons.some((r) => /^(clock|menu|parent|after|decided|demand-free)$/.test(r.trim())), false,
     'and every reason is in words a reader uses, never the internal name');
-  await tpage.click('#gauge');
+  await tpage.click('#sheet-coverage-close');
 
   console.log('\nUndo — a routed card can be taken straight back');
   // The complaint this answers: triage is fast, and fast felt like lost. Route a
@@ -1579,11 +1579,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(gaugeHeldAfter, gaugeHeldBefore - 1, `and what is ready now actually fell (${gaugeHeldBefore} -> ${gaugeHeldAfter})`);
 
   console.log('\nWork mode — the gauge is a claim you can open');
+  // A SHEET, NOT A FOLD (2.0.5, ADR-0088). The claim used to unfold under the
+  // gauge and push the held list down by up to 26,031px; it is a place now, so
+  // what is asserted is that it is not on the workspace until it is asked for,
+  // and that the control is not pretending to be a disclosure.
   is(await tpage.locator('#coverage').isVisible(), false, 'the coverage list starts closed');
-  is(await tpage.getAttribute('#gauge', 'aria-expanded'), 'false', 'and says so to assistive tech');
+  is(await tpage.getAttribute('#gauge', 'aria-expanded'), null,
+    'and the gauge does not claim to be a disclosure — it opens a surface');
   await tpage.click('#gauge');
-  await tpage.waitForSelector('#coverage:not([hidden])');
-  is(await tpage.getAttribute('#gauge', 'aria-expanded'), 'true', 'tapping opens it');
+  await tpage.waitForSelector('#sheet-coverage[open]');
   // NOT `rows > 0` — that passed with the list truncated to a single item
   // (audit: THEATER). The gauge makes a NUMERIC claim and this list is that
   // claim opened, so the two must agree exactly. This is the check that catches
@@ -1598,6 +1602,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(rows, claimed, `the list itemises exactly what the gauge claims ("${gaugeText}" -> ${rows} rows)`);
   is((await tpage.locator('.coverage-when').first().textContent())?.length > 0, true,
     'and each row states its return in words');
+  // ITS OWN CLOSE, AND THE WAY OUT IS THE WAY OUT (2.0.5). Everything below
+  // reads the landing surface or presses something in the header, and a modal
+  // sheet makes the header inert — so leaving is part of the walk, not tidying
+  // up after it. A Close that did not work would strand the reader here.
+  await tpage.click('#sheet-coverage-close');
+  await tpage.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
+  is(await tpage.locator('#coverage').isVisible(), false, 'and its Close puts it away again');
 
   console.log('\nWork mode — no "overdue" anywhere on the surface (law 5)');
   const surfaceText = await tpage.evaluate(() => document.body.innerText);
@@ -1705,17 +1716,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // is asserted elsewhere in this walk too, but only ever with a store that had
   // no journal entry and no pebble in it. Run it here, with a pebble ON, so it
   // is a real check.
-  // The gauge is a toggle and earlier sections leave it in either state, so open
-  // it only if it is closed and put it back the way it was found.
-  const gaugeWasOpen = await tpage.locator('#coverage').isVisible();
-  if (!gaugeWasOpen) { await tpage.click('#gauge'); await tpage.waitForSelector('#coverage:not([hidden])'); }
+  // The claim is a sheet since 2.0.5, so it is never left open by an earlier
+  // section: open it, read it, close it. The "put it back as you found it"
+  // dance the toggle needed is gone with the toggle.
+  await tpage.click('#gauge');
+  await tpage.waitForSelector('#sheet-coverage[open]');
   const loadRows = await tpage.locator('.coverage-item').count();
   const loadGauge = await tpage.locator('#gauge').textContent();
   is(loadRows, claimedTotal(await tpage.locator('#coverage-count').textContent()),
     `the list still itemises exactly what the gauge claims, with a weight on ("${loadGauge}")`);
   is((await tpage.locator('#coverage').textContent() || '').includes('the thing with the roof'), false,
     'and the weight is not one of the rows');
-  if (!gaugeWasOpen) await tpage.click('#gauge');
+  await tpage.click('#sheet-coverage-close');
 
   // It survives a reload like everything else, and then comes off.
   await tpage.reload({ waitUntil: 'load' });
@@ -3392,13 +3404,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'on a 390px phone the panel’s way out is on screen without expanding anything');
   // And every destination's, at the bottom of its own scroll — the way out is a
   // §4 obligation per SURFACE, and five of them are new in this release.
-  for (const id of ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
-    'sheet-group-actions', 'sheet-group-extras']) {
-    await ppage.evaluate((want) => {
+  //
+  // The two opened from the workspace (2.0.5, ADR-0088) are here too, and they
+  // are NOT reached through More — ADR-0083 caps More at six destinations, so
+  // they keep the controls that always stated them. Hence an opener per sheet
+  // rather than one loop that assumed a `.more-go`.
+  const SHEETS_AND_DOORS = [
+    ['sheet-group-why', null], ['sheet-group-help', null], ['sheet-group-data', null],
+    ['sheet-group-actions', null], ['sheet-group-extras', null],
+    ['sheet-coverage', '#gauge'], ['sheet-tree', '#tree-open'],
+  ];
+  for (const [id, door] of SHEETS_AND_DOORS) {
+    await ppage.evaluate(() => {
       for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
-      document.querySelector('#more')?.showModal();
-    }, id);
-    await ppage.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
+    });
+    if (door) {
+      await ppage.click(door);
+    } else {
+      await ppage.evaluate(() => document.querySelector('#more')?.showModal());
+      await ppage.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
+    }
     await ppage.waitForSelector(`#${id}[open]`);
     const out = await ppage.evaluate((want) => {
       const body = document.querySelector(`#${want} .sheet-body`);
@@ -3408,10 +3433,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       const hit = document.elementFromPoint(
         Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2));
       return { onScreen: r.top >= 0 && r.bottom <= window.innerHeight,
-        hit: hit ? (hit.id || hit.tagName) : 'NONE' };
+        hit: hit ? (hit.id || hit.tagName) : 'NONE',
+        // STRUCTURAL, because the scroll check above cannot fail for the right
+        // reason on a sheet whose body is short. This store is empty, so the
+        // coverage and tree bodies hold one sentence each — and a Close that
+        // had slipped inside the scroller would sit on screen anyway and report
+        // green. What actually makes the way out permanent is that it is a
+        // child of the dialog and outside `.sheet-body`; that is true at any
+        // content length, which is the point.
+        outsideScroller: !body.contains(x) && x.parentElement?.id === want };
     }, id);
     is(out.onScreen && out.hit === `${id}-close`, true,
       `${id}: scrolled to the bottom, its Close is still on screen and unobstructed`);
+    is(out.outsideScroller, true,
+      `${id}: and its Close is outside the scrolling body, so it cannot scroll away when the body grows`);
   }
   await phone.close();
 
@@ -3716,8 +3751,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // "(untitled) — held", one row per private entry, in the one list the gauge
   // invites you to open. The check above covered `#cards` and `#nextup` and
   // missed the more prominent surface of the two.
-  const jWasOpen = await tpage.locator('#coverage').isVisible();
-  if (!jWasOpen) { await tpage.click('#gauge'); await tpage.waitForSelector('#coverage:not([hidden])'); }
+  await tpage.click('#gauge');
+  await tpage.waitForSelector('#sheet-coverage[open]');
   const coverText = await tpage.locator('#coverage').textContent() || '';
   is(/\(untitled\)/.test(coverText), false,
     'nor as a row in the claim the gauge invites you to open');
@@ -3725,7 +3760,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const jGauge = await tpage.locator('#gauge').textContent();
   is(jRows, claimedTotal(await tpage.locator('#coverage-count').textContent()),
     `and the number still equals its own list with an entry written ("${jGauge}")`);
-  if (!jWasOpen) await tpage.click('#gauge');
+  await tpage.click('#sheet-coverage-close');
 
   // "Mine to do something about" becomes ordinary work and joins the inbox.
   // DRAIN FIRST: triage shows one card at a time, so with earlier items still
@@ -5314,10 +5349,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
 
   console.log('\nSeeing and choosing (1.6.0)');
-  // THE TREE, on request and never the landing view: hidden until asked.
+  // THE TREE, on request and never the landing view: a place now, not a fold
+  // above the held list (2.0.5, ADR-0088).
   is(await tpage.locator('#tree').isVisible(), false, 'the tree is not the landing view');
   await tpage.click('#tree-open');
-  await tpage.waitForSelector('#tree:not([hidden])');
+  await tpage.waitForSelector('#sheet-tree[open]');
   const treeText = await tpage.locator('#tree').textContent() || '';
   is(/Sorted pile/.test(treeText), true, 'containers hang in the tree');
   const treeDepths = await tpage.evaluate(() =>
@@ -5329,20 +5365,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-title').textContent(), 'Sorted pile',
     'a tree row is a door to the sheet — the one verb it carries');
+  // ONE SURFACE AT A TIME, asserted rather than assumed (2.0.5). A door inside
+  // a sheet that left its sheet open would be two stacked modals, which is the
+  // overlap ADR-0083 forbids and the top one eats the other's taps.
+  is(await tpage.locator('#sheet-tree').evaluate(d => d.open), false,
+    'and walking through it closed the tree — never two surfaces at once');
   await tpage.click('#detail-close');
-  await tpage.click('#tree-open');   // collapse again
 
   // DOORS: the coverage rows open sheets now.
   await tpage.click('#gauge');
-  await tpage.waitForSelector('#coverage:not([hidden])');
+  await tpage.waitForSelector('#sheet-coverage[open]');
   const firstCovered = await tpage.locator('#coverage .coverage-open .coverage-title').first().textContent();
   await tpage.locator('#coverage .coverage-open').first().click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-title').textContent(), firstCovered,
     'a coverage row is a door to that very item');
+  is(await tpage.locator('#sheet-coverage').evaluate(d => d.open), false,
+    'and it closed the claim behind it, the same way');
   await tpage.click('#detail-close');
-  await tpage.click('#gauge');       // collapse
 
   // COMPOSED TODAY, optional and off by default: nothing anywhere until asked.
   is(await tpage.locator('#composed').isVisible(), false, 'off by default — nothing renders');

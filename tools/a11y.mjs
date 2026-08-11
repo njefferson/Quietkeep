@@ -39,6 +39,15 @@ const openSurface = async (pg, id) => {
   await pg.evaluate(() => {
     for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
   });
+  // The two sheets opened from the workspace (2.0.5, ADR-0088) are not in More
+  // — ADR-0083 caps it at six destinations — so they are reached the way a
+  // reader reaches them: by pressing the control that states the claim.
+  const WORKSPACE_DOORS = { 'sheet-coverage': '#gauge', 'sheet-tree': '#tree-open' };
+  if (WORKSPACE_DOORS[id]) {
+    await pg.evaluate((sel) => document.querySelector(sel)?.click(), WORKSPACE_DOORS[id]);
+    await pg.waitForSelector(`#${id}[open]`);
+    return;
+  }
   if (id === 'about') {
     // PROGRAMMATIC, not a real click. A mouse click focuses the button, and a
     // native dialog hands focus back to its invoker on close — which would make
@@ -504,11 +513,19 @@ const REGISTRY = {
   // only when the promise fails, and the walk's store is one the gate accepted,
   // so it cannot fail. A registry entry matching nothing visible is the false
   // receipt `#nextup-left` already cost a release for.
-  'coverage open': ['#gauge', '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
+  //
+  // `#gauge` LEFT this state in 2.0.5 (ADR-0088). The claim is a sheet now, and
+  // the gauge is on the surface underneath — which a modal makes inert. Keeping
+  // it here would have measured a control nobody can reach from this state,
+  // which is the false receipt this file already pays for twice below. It is
+  // still measured, in 'next up', where a reader can actually press it.
+  'coverage open': ['#sheet-coverage-title', '#sheet-coverage-close',
+    '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
     '.proof-holds', '.proof-count', '.proof-reason'],
   // The tree, open (1.6.0, ADR-0013/item 39): rows are doors, depth is
-  // indentation, and the branch remainder is a real button.
-  'tree open': ['#tree-open', '.tree-open-row', '.tree-title'],
+  // indentation, and the branch remainder is a real button. Its own sheet since
+  // 2.0.5, so `#tree-open` left for the same reason `#gauge` did.
+  'tree open': ['#sheet-tree-title', '#sheet-tree-close', '.tree-open-row', '.tree-title'],
   // Composed Today's strip (1.6.0, ADR-0051): quiet doors above Next up.
   'composed strip': ['#composed-heading', '.composed-open', '#composed .detail-hint'],
   // The session close (1.6.0, ADR-0052): the words are the whole surface.
@@ -1619,12 +1636,21 @@ try {
     await page.waitForSelector('#nextup-load', { state: 'hidden' });
     await page.click('#load-summary');
 
+    // The claim, opened — ITS OWN SHEET since 2.0.5 (ADR-0088), so this is a
+    // dialog state now and is measured as one: the sheet's Close is chrome
+    // outside the scrolling body, and both belong to this state rather than to
+    // the surface underneath.
     await page.click('#gauge');
-    await page.waitForSelector('#coverage:not([hidden])');
+    await page.waitForSelector('#sheet-coverage[open]');
     await auditContrast(page, 'coverage open', theme);
     await auditAxe(page, 'coverage open', theme);
     await auditNames(page, 'coverage open', theme);
     await auditTargets(page, 'coverage open', theme);
+    await auditFocusRings(page, 'coverage open', theme, ['.coverage-open', '#sheet-coverage-close']);
+    // Left as it was found: everything below this reads the surface underneath,
+    // and a modal sheet makes it inert.
+    await page.click('#sheet-coverage-close');
+    await page.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
 
     // State 3e: the detail sheet — the surface that makes this a planner.
     await page.click('#cards .card-open');
@@ -2279,17 +2305,21 @@ try {
     await page.click('#sort-close');
 
     // The tree, open (1.6.0, ADR-0013): the sort staging filed things under a
-    // real container, so the rows measured are real ones. On request only.
+    // real container, so the rows measured are real ones. On request only, and
+    // ITS OWN SHEET since 2.0.5 (ADR-0088) — a dialog state, measured as one.
+    // `#tree-open` moved out of this state's focus list with it: the control is
+    // on the surface underneath, which a modal makes inert, so focusing it here
+    // would measure a ring nobody can reach from this state.
     await page.click('#tree-open');
-    await page.waitForSelector('#tree:not([hidden])');
+    await page.waitForSelector('#sheet-tree[open]');
     await page.waitForSelector('.tree-open-row');
     await auditContrast(page, 'tree open', theme);
     await auditAxe(page, 'tree open', theme);
     await auditNames(page, 'tree open', theme);
     await auditTargets(page, 'tree open', theme);
-    await auditFocusRings(page, 'tree open', theme, ['.tree-open-row', '#tree-open']);
-    await page.click('#tree-open');
-    await page.waitForSelector('#tree', { state: 'hidden' });
+    await auditFocusRings(page, 'tree open', theme, ['.tree-open-row', '#sheet-tree-close']);
+    await page.click('#sheet-tree-close');
+    await page.waitForSelector('#sheet-tree[open]', { state: 'detached' });
 
     // The lens (1.7.0, ADR-0054): containers exist by now, so the row is
     // offered. Audited ACTIVE — the law-1 line renders only while a lens is
@@ -2752,7 +2782,12 @@ try {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     for (const id of ['about', 'sheet-group-why', 'sheet-group-help',
-      'sheet-group-data', 'sheet-group-extras', 'more']) {
+      'sheet-group-data', 'sheet-group-extras', 'more',
+      // 2.0.5 (ADR-0088): a sheet that overflows sideways at 320px @ 200% is a
+      // sheet whose content escapes where the page-level check cannot see it,
+      // and the coverage rows carry the longest strings in the app — a title
+      // and a return date on one line.
+      'sheet-coverage', 'sheet-tree']) {
       await openSurface(page, id);
       const over = await page.evaluate((want) => {
         const d = document.querySelector('#' + want);

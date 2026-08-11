@@ -1214,9 +1214,15 @@ dialog h2 { margin: 0 0 0.75rem; font-size: 1.25rem; }
  *
  * Caught by the smoke walk asserting the property per surface rather than for
  * the ⓘ alone: scroll each sheet to its end, then ask the browser whether its
- * Close is on screen and whether anything is sitting on top of it. */
+ * Close is on screen and whether anything is sitting on top of it.
+ *
+ * The prefix is `sheet-` and not `sheet-group-` (2.0.5, ADR-0088): "group" named
+ * the folds ADR-0083 retired, and the two sheets added since were never folds.
+ * A sheet that missed this rule would be a sheet whose Close scrolls away —
+ * which is the defect above, reintroduced by a naming accident. `#replan-sheet`
+ * and `#focus-sheet` END with the word and are correctly untouched. */
 #about[open],
-dialog[id^="sheet-group-"][open] {
+dialog[id^="sheet-"][open] {
   display: flex;
   flex-direction: column;
   overflow: hidden;          /* the BODY scrolls, never the dialog */
@@ -1255,11 +1261,11 @@ dialog[id^="sheet-group-"][open] {
 /* The sheets' chrome is the same shape without the ⓘ's two-control bar: a title
  * above the scroller and a Close below it, both `flex: none` so neither is ever
  * inside the box that moves. */
-dialog[id^="sheet-group-"][open] > h2,
-dialog[id^="sheet-group-"][open] > button {
+dialog[id^="sheet-"][open] > h2,
+dialog[id^="sheet-"][open] > button {
   flex: none;
 }
-dialog[id^="sheet-group-"][open] > button {
+dialog[id^="sheet-"][open] > button {
   margin-top: 0.9rem;
   align-self: flex-start;
 }
@@ -1284,7 +1290,7 @@ dialog[id^="sheet-group-"][open] > button {
 #about :is(button, a, input, label, h3, dt, dd) { scroll-margin-top: 5rem; }
 /* Same obligation on the sheets, whose title is a plain <h2> above the scroller
  * rather than a bar — smaller, so a smaller clearance. */
-dialog[id^="sheet-group-"] :is(button, a, input, label, summary, h3, dt, dd) { scroll-margin-top: 3rem; }
+dialog[id^="sheet-"] :is(button, a, input, label, summary, h3, dt, dd) { scroll-margin-top: 3rem; }
 /* At 200% text on a small screen the title wraps and the bar grew to 99% of the
  * dialog — the way out eating the thing it was meant to let you leave. Measured,
  * not guessed. Compact here, and the text still says everything it said. */
@@ -1299,7 +1305,7 @@ dialog[id^="sheet-group-"] :is(button, a, input, label, summary, h3, dt, dd) { s
      every word rather than truncating any of them. */
   .about-bar h2 { font-size: 0.95rem; line-height: 1.15; }
   #about :is(button, a, input, label, h3, dt, dd) { scroll-margin-top: 3.5rem; }
-  dialog[id^="sheet-group-"] :is(button, a, input, label, summary, h3, dt, dd) { scroll-margin-top: 2.5rem; }
+  dialog[id^="sheet-"] :is(button, a, input, label, summary, h3, dt, dd) { scroll-margin-top: 2.5rem; }
 }
 .about-x {
   flex: none;

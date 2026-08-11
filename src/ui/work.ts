@@ -32,6 +32,7 @@ import { treeRows } from '../tree-view.ts';
 import { timeLeftWords } from '../duration.ts';
 import { clockFace, nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
+import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
   const n = document.createElement(tag);
@@ -443,15 +444,21 @@ export function mountWork(
     attachLoad(current.node.id, current.node.title || '(untitled)');
   });
 
-  GAUGE.addEventListener('click', () => {
-    const open = COVERAGE.hidden;
-    COVERAGE.hidden = !open;
-    if (coverageCount) coverageCount.hidden = !open;
-    if (coverageProofEl) coverageProofEl.hidden = !open;
-    GAUGE.setAttribute('aria-expanded', String(open));
-    // Built at the moment of opening, not before — see buildCoverage.
-    if (open) { buildProof(); buildCoverage(); }
-  });
+  // THE CLAIM IS A PLACE, NOT A FOLD (2.0.5, ADR-0088).
+  //
+  // This unfolded under the gauge, directly above the held list. At 523 held
+  // things that is 26,031px — twenty-two screens of claim inserted between the
+  // reader and the list they were looking at, measured at 820x1180. The rows
+  // still build on open and only on open, for the reason `buildCoverage` gives;
+  // what changed is that "open" now means a surface arrived at rather than a
+  // fold pushing the workspace down.
+  //
+  // Registered rather than called: `openSheet` runs the repaint, so the sheet
+  // cannot be reached by any other door — a deep link, the walk — and show the
+  // state the app was in when it started.
+  onSheetOpen('sheet-coverage', () => { buildProof(); buildCoverage(); });
+  wireSheetClose('sheet-coverage');
+  GAUGE.addEventListener('click', () => { openSheet('sheet-coverage'); });
 
   /** Plain words for when something returns — calendar days in the reader's
    *  zone, never a countdown and never a rebuke. */
@@ -748,9 +755,12 @@ export function mountWork(
     if (plain) plainStrip();
 
     paintCoverageCount();
-    if (!COVERAGE.hidden) { buildProof(); buildCoverage(); }
+    // WHILE IT IS BEING LOOKED AT — which is now "its sheet is open" rather than
+    // "its list is not hidden" (2.0.5). Same rule, same measured reason: rebuild
+    // the rows only for a reader who is actually on the surface.
+    if (sheetOpen('sheet-coverage')) { buildProof(); buildCoverage(); }
     // The tree obeys the same rule, for the same measured reason.
-    if (treeList && !treeList.hidden) buildTree();
+    if (treeList && sheetOpen('sheet-tree')) buildTree();
   }
 
   /** How many the claim holds, stated where the reader asked for it. The gauge
@@ -849,7 +859,10 @@ export function mountWork(
         clock ? `returns ${returns(clock.at)}` : n.onMenu ? 'on the Menu' : 'held'));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(n.id);
-        if (fresh) openDetail(fresh);
+        if (!fresh) return;
+        // The tree row's rule, for the same reason (2.0.5, ADR-0088).
+        closeSheet('sheet-coverage');
+        openDetail(fresh);
       });
       li.append(b);
       return li;
@@ -885,7 +898,17 @@ export function mountWork(
       b.append(el('span', 'tree-title', entry.node.title || '(untitled)'));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(entry.node.id);
-        if (fresh) openDetail(fresh);
+        if (!fresh) return;
+        // THE INSPECTION SURFACE STEPS ASIDE (2.0.5, ADR-0088). A dialog opened
+        // over a dialog is the overlap ADR-0083 forbids — the top one eats the
+        // other's taps — so the tree closes as you walk through it.
+        //
+        // Closed HERE and not inside the detail sheet: `showNode` is also how
+        // the sort conveyor hands you a card, and sort is a surface you come
+        // BACK to. A blanket close there ends the sitting. Only an inspection
+        // mode has nothing to come back to, so only an inspection mode closes.
+        closeSheet('sheet-tree');
+        openDetail(fresh);
       });
       li.append(b);
       return li;
@@ -895,14 +918,13 @@ export function mountWork(
         'Nothing has a place inside anything else yet — the tree appears as things are filed.'));
     }
   }
-  treeOpen?.addEventListener('click', () => {
-    if (!treeList) return;
-    const open = treeList.hidden;
-    treeList.hidden = !open;
-    treeOpen.setAttribute('aria-expanded', String(open));
-    // Built at the moment of opening, not before — the coverage list's rule.
-    if (open) buildTree();
-  });
+  // AN INSPECTION MODE THAT STOPPED UNFOLDING INTO THE WORKSPACE (2.0.5,
+  // ADR-0088). ADR-0013 called this "never the landing view; an inspection mode,
+  // not a workspace" on the day it shipped, and it then expanded inline above
+  // the held list for thirty-four releases — 17,246px of it on a full store.
+  onSheetOpen('sheet-tree', buildTree);
+  wireSheetClose('sheet-tree');
+  treeOpen?.addEventListener('click', () => { openSheet('sheet-tree'); });
 
   refresh();
   return { refresh };

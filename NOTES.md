@@ -582,16 +582,32 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-**Everything through 2.0.4 was promoted 2026-08-11**, on his word.
-
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.4**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.5**
 - **https://quietkeep.pages.dev** — production, **2.0.4**
 
-**Both carry the same build, and the promote that made them equal changed nothing
-a reader can see.** What went to `main` on 11 August was tests, a research
-correction, two gates and a permission rule — not one byte under `src/` or
-`public/`. A promote is allowed to change nothing on screen; what it must never
-do is leave this block saying otherwise.
+**2.0.5 — the claim and the tree stopped unfolding into the workspace**
+(ADR-0088). Both controls are where they were and say what they said; their
+contents open as sheets instead of pushing the held list down. Measured at
+820×1180 on the invented life (566 things, 523 held): with the claim open the
+page was 43,808px and is 17,777px; with the tree open it was 35,023px and is
+17,777px; the claim-plus-tree-plus-Menu case went from 63,906px to 20,386px.
+The workspace with nothing opened is unchanged at 17,777px, which is the point
+— that surface was not the target and was not touched.
+
+**What to look at on the device:** press the line above your list, and press
+"How it hangs together". Each should arrive at its own screen with a Close that
+stays put however far you scroll, and closing it should put you back exactly
+where you were. Walking from a tree row into a thing's own sheet should close
+the tree rather than stack the two.
+
+**What it does not fix, and must not be read as fixing:** the workspace is still
+one scroll. On a full store nine sections stack to 2,715px above the held list.
+That is a separate decision and it is not made.
+
+**Everything through 2.0.4 was promoted 2026-08-11**, on his word. What went to
+`main` that day was tests, a research correction, two gates and a permission
+rule — not one byte under `src/` or `public/`. A promote is allowed to change
+nothing on screen; what it must never do is leave this block saying otherwise.
 
 **These two lines said 1.40.3 and 1.39.3 while the app was on 2.0.4** — nine
 releases and the largest change the app has had, all after the last time anybody
