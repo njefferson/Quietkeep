@@ -370,5 +370,41 @@ test('focus: started, interrupted, and ended — the resume card comes back', ()
     { label: 'interrupted — something else arrives', events: ({ ev }) => [
       ev('interrupt.captured', 'I', { text: 'the roof people rang', source: 'focus', sourceTags: [] })] },
     { label: 'focus ended', events: ({ ev }) => [ev('focus.ended', 'F', { at: NOW })] },
+    // A resume card written by an interruption, then let go rather than picked
+    // up — `dropResumeEvents`. The last of the folded kinds no test drove.
+    { label: 'a resume card, let go', events: ({ ev }) => [
+      ev('node.created', 'RC', { nodeKind: 'resume-card', title: 'where you left off' }),
+      ev('clock.set', 'RC', { clockKind: 'review', at: NOW, source: 'focus' }),
+      ev('resume.card.expired', 'RC', { toReviewQuestion: false })] },
+  ]);
+});
+
+test('the two events the app really writes that nothing folds', () => {
+  // The paths audit found 21 event kinds named in no test. Measuring properly
+  // showed most of that number was not a gap: FIFTEEN are reserved nouns —
+  // declared in the vocabulary, read only by `log-words.ts` so a log line can be
+  // put into words, and emitted by nothing at all. Reserving a noun additively
+  // is law 9 and deliberate, so there is nothing there to test; testing them
+  // would be testing a type declaration.
+  //
+  // Two are real: the app writes them on paths a person can take, and no test
+  // had ever put them through the write boundary. Neither is folded, so the risk
+  // is not what they change — it is that the gate REFUSES one, or the fold
+  // throws on it, at the moment somebody presses the button.
+  walk('an anchor that came round', [
+    { label: 'an anchor exists', events: ({ ev }) => [
+      ev('node.created', 'AN', { nodeKind: 'anchor', title: 'the Monday meeting' })] },
+    // `fireAnchorEvents` — firing is always an act; nothing fires on a schedule.
+    { label: 'it fired', events: ({ ev }) => [
+      ev('anchor.fired', 'AN', { at: NOW, reportedBefore: { d: 1 } })] },
+  ]);
+
+  walk('the lapse ritual ran', [
+    { label: 'something to come back to', events: ({ ev }) => [
+      ev('node.created', 'L', { nodeKind: 'action', title: 'Chase the delivery' }),
+      ev('clock.set', 'L', { clockKind: 'due', at: day(-9), source: 'user' })] },
+    // Node-less, like every ritual record: it describes the session, not a thing.
+    { label: 'the ritual is recorded', events: ({ ev }) => [
+      ev('lapse.migration.ran', null, { absenceDays: 30, itemsTriaged: 12 })] },
   ]);
 });
