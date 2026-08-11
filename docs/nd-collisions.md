@@ -136,9 +136,11 @@ model.
 - **EVIDENCE** — **Community.** Waiting mode is near-universally described and essentially unstudied. The routing proposal is a filter over facts the app already holds, which is what makes it safe to build on a community account.
 - **HOW CONVENTIONAL SYSTEMS MAKE IT WORSE** — Calendars show the block but say nothing about the gap, and task lists keep offering two-hour work at 1:40 — reinforcing that nothing is startable, so nothing is started.
 - **WHAT QUIETKEEP ALREADY DOES** — The honest half, and it ships: the header clock states how much of the local day is left and how many open things are dated today — a count, never a list, and only clocks a PERSON set. Duration estimates have been logged since v1 so a later feature would not start empty-handed, and the `.ics` alarm holds the vigilance from outside the app, which is the part that makes a gap usable at all.
-- **ROUTING PROPOSAL** — **later**, and blocked on a decision rather than on effort — this entry proposed something unbuildable for as long as it has existed. The proposal read: prefer items whose estimate fits the gap, and say "About an hour before Dentist." **The app does not know when anything happens.** Every clock is day-granular — `clock.set` takes a datetime and every writer in the app builds it with `endOfLocalDay`, and there is no time input anywhere in the markup — so both halves of that sentence are fabricated numbers, which is the one thing ADR-0010 exists to refuse. There is no "later today" to compute a gap against and no "next" among today's dated things to name, because with a day-granular clock they are all equally today.
+- **ROUTING PROPOSAL** — **refuse** the time-of-day model this proposal needs, and with it the proposal — decided by the evidence in this file, not by the owner. It proposed something unbuildable for as long as it has existed. The proposal read: prefer items whose estimate fits the gap, and say "About an hour before Dentist." **The app does not know when anything happens.** Every clock is day-granular — `clock.set` takes a datetime and every writer in the app builds it with `endOfLocalDay`, and there is no time input anywhere in the markup — so both halves of that sentence are fabricated numbers, which is the one thing ADR-0010 exists to refuse. There is no "later today" to compute a gap against and no "next" among today's dated things to name, because with a day-granular clock they are all equally today.
   - **ADR-0075 already recorded this, about itself**: a release planned the same countdown, could not build it, and wrote down that "a capability was designed before the data model it needed was checked". This entry is that mistake a second time, in a different file, surviving because a research document proposes and an architecture record decides — and nothing held the two to each other.
-  - **The dependency is a decision, not effort.** Whether the clock model gains a time of day at all is its own capability (ADR-0075, ADR-0076): it touches `clock.set`, every date control, the `.ics` export and the replan path, and it belongs to the owner. Until it is taken, the correct build here is nothing, and the honest surface is the one already shipped.
+  - **And the evidence in this catalogue decides the dependency against itself.** A time of day on a clock means a time field on every date control — which raises the effort of setting a cue, on every dating act in the app. Entry 6 grades that cost **Strong** and calls itself "the best-evidenced entry in the catalogue and it is the thesis": Gilbert's offloading studies make the cost of raising cue-setting effort *measurable*, and at high load it abolishes the benefit of offloading entirely. Waiting mode, the only thing the time would serve, is graded **Community** — near-universally described and essentially unstudied. **Strong evidence against, community evidence for.** That is not a close question and it is not a matter of taste.
+  - **It was already decided once, in the release most likely to have added one.** The person-set day boundary moved where the day's edge falls and `docs/event-vocabulary.md` records, in the same breath, that it "adds no time-of-day to any clock — clocks stay day-granular (ADR-0010)".
+  - **So this was never the owner's to decide, and putting it in his column was the defect** — the same one the status record already names: a question answered by the evidence, handed over as a preference. What remains true is only the cost note from ADR-0075/0076 (it would touch `clock.set`, every date control, the `.ics` export and the replan path), and cost is not the reason. The correct build here is nothing, and the honest surface already ships.
 
 ### 10. Spoon budgeting — capacity is finite, variable, and invisible to the plan
 
@@ -265,11 +267,15 @@ the gate held the ENTRIES honest and never looked here. It does now
 3. **The "smaller bite" verb on the offer (entry 1)** — **SHIPPED, 1.28.0.**
    `#nextup-bite` writes an ordinary child under the offered item, and the offer
    then holds the bite.
-4. **The pocket offer for waiting mode (entry 9)** — **NOT BUILT.** The only one
-   of the five still outstanding: when a hard date sits later today, prefer offer
-   items whose logged duration estimate fits the gap and say so as a fact. Both
-   inputs exist; nothing folds `estimate.recorded` yet, so this needs a fold
-   field before it needs a surface.
+4. **The pocket offer for waiting mode (entry 9)** — **REFUSED, and this line was
+   wrong in its own way.** It said "both inputs exist" and named the missing
+   piece as a fold field for `estimate.recorded`. Both halves are false: the app
+   has no time of day at all, so there is no gap to fit a duration into and no
+   "later today" to measure one against. Entry 9 now carries the refusal and the
+   evidence behind it — strong against, community for. **Two statements of one
+   fact, in one file, both wrong and wrong differently**, which is exactly the
+   failure the header above describes and the reason the entry gate exists; this
+   list is the half that keeps finding new ways to say the wrong thing.
 5. **"This one is heavy" from the detail sheet (entry 2)** — **SHIPPED as WEIGHT
    rather than as a pebble, 1.34.0.** The shape changed on the way in, which is
    why the entry says so rather than claiming the proposal landed unaltered.
