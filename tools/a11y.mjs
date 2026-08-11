@@ -479,7 +479,11 @@ const REGISTRY = {
   // failure rather than a pass. It renders only when something IS fixed today,
   // and it carries `.nextup-count`, which is measured right here. An entry would
   // add the appearance of coverage rather than coverage.
-  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '.nextup-count', '#nextup-left',
+  // `#nextup-written` (2.0.3) carries `.nextup-why` and would be measured by that
+  // class alone — named anyway, because "it happens to match a selector already
+  // in the list" is how a surface ends up unmeasured the moment its class
+  // changes (hub LESSONS 28: a new surface joins this list in the SAME commit).
+  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open',
     // When you cannot start (1.24.0). The invitation and the heavy control are
     // on the card whenever there is a head, so they belong in this state; the

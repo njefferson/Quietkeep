@@ -720,10 +720,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await upage.click('#tour-skip');
   await upage.waitForSelector('body[data-intro-dismissed=true]');
 
-  await upage.fill('#capture', 'just a thought, unsorted');
+  await upage.fill('#capture', 'Take the old one to the tip');
   await upage.click('#capture-form button[type=submit]');
   await upage.waitForSelector('#nextup:not([hidden])', { timeout: 4000 });
-  is(await upage.locator('#nextup-title').textContent(), 'just a thought, unsorted',
+  is(await upage.locator('#nextup-title').textContent(), 'Take the old one to the tip',
     'something captured and never sorted is offered as work, in the words that were typed');
   is(await upage.locator('#nextup-why').textContent(), 'you put this down',
     'and says why, as a fact about the world rather than about the person');
@@ -745,14 +745,39 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // DOCUMENT_POSITION_FOLLOWING === 4: triage comes after nextup.
     return (up.compareDocumentPosition(tri) & 4) === 4;
   }), true, 'the offer precedes the sorting door in the document — the screen leads with the answer');
+  // A FRAGMENT WITH NO PARENT STILL SAYS WHERE IT CAME FROM (2.0.3).
+  //
+  // This exact title, found on device: the offer read "Take the old one to the
+  // tip" with a real date and nothing else on the screen. Old what? The tip of
+  // what? Under a project that reads fine and the place line names the project;
+  // with no parent there was no place line and no subject anywhere. The triage
+  // card has carried "Written …" since 1.29.0 and THIS card never did — the same
+  // fix, one surface only.
+  //
+  // Asserted on a loose item on purpose: with a parent there is a place line to
+  // lean on, so the state that needs this is the one with no place at all.
+  is(await upage.locator('#nextup-place').isVisible(), false,
+    'precondition: no parent, so there is no place line to explain it');
+  await upage.waitForSelector('#nextup-written:not([hidden])', { timeout: 4000 });
+  const written = (await upage.locator('#nextup-written').textContent()) || '';
+  is(/^Written /.test(written), true,
+    `a fragment with no place still says when it was written ("${written}")`);
+  // NEVER AN AGE, the rule the triage line already follows. "3 weeks old" is the
+  // same fact wearing an accusation, and this is where somebody meets work.
+  is(/\b(ago|old|still|overdue)\b/i.test(written), false,
+    'and never how long ago, in any form');
+  is(/\d+\s*(day|week|month|year)s?\b/i.test(written), false,
+    'and never counts');
+
   // Doing it needs no decision about what kind of thing it is.
   is(await upage.locator('#nextup-done').isVisible(), true,
     'and it can simply be done, with no route chosen first');
   await upage.click('#nextup-done');
   await upage.waitForFunction(() =>
-    document.querySelector('#nextup-title')?.textContent !== 'just a thought, unsorted');
-  is((await upage.locator('#nextup-title').textContent()) !== 'just a thought, unsorted', true,
+    document.querySelector('#nextup-title')?.textContent !== 'Take the old one to the tip');
+  is((await upage.locator('#nextup-title').textContent()) !== 'Take the old one to the tip', true,
     'finishing it takes it off the offer, exactly like anything else');
+
   await uctx.close();
 
   console.log('\nTriage — capture fills the inbox');

@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.3',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The offer now says when you wrote it.** A lot of what people write down is a fragment — “take the old one to the tip”, “ring them back”, “order the part”. Under a project that reads fine, and the card names the project underneath. With nothing above it, the card was a bare instruction with no subject anywhere on the screen.',
+      'The sorting card has said when something was written since 1.29.0. The card you actually meet work on never did. It does now, from the same words, and it still never tells you how long ago — an age is the same fact wearing an accusation.',
+      '**It still cannot tell you what you meant.** If a fragment was written with no project and no note, when you wrote it is all there is, and that may not be enough. Adding a place or a note to it is what fixes that, and the app will not pretend otherwise.',
+    ],
+  },
+  {
     triplet: '2.0.2',
     kind: 'ITERATION',
     date: '2026-08-10',

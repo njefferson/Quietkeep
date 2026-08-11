@@ -24,6 +24,7 @@ import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
 import { pressureWords } from '../pressure.ts';
+import { captureContextWords } from '../capture-context.ts';
 import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
@@ -89,6 +90,43 @@ export function mountWork(
   // Soft, like LOADNOTE below: a missing place line costs one line of lineage,
   // never the work surface.
   const PLACE = q('#nextup-place');
+  const WRITTEN = q('#nextup-written');
+
+  /** Which node WRITTEN currently describes, so a repaint for the SAME card
+   *  does not blank a correct line — the defect 1.35.0 fixed on the triage
+   *  side, avoided here rather than rediscovered. */
+  let writtenFor: string | null = null;
+
+  /**
+   * WHEN THIS ONE WAS WRITTEN, filled from the log after the card renders.
+   *
+   * Never blocks: the card is painted from state, synchronously, and this
+   * arrives afterwards or not at all (ADR-0001 — nothing on the path to a first
+   * capture waits on a store read). A store that is slow or broken costs a line
+   * of grey text, never the item somebody was deciding about.
+   *
+   * The identity guard is the other half: a lookup resolving after the offer has
+   * moved on would attach one item's history to another item's title, which is
+   * worse than saying nothing.
+   */
+  const paintWritten = (nodeId: string | null): void => {
+    if (!WRITTEN) return;
+    if (nodeId !== writtenFor) {
+      WRITTEN.textContent = '';
+      WRITTEN.hidden = true;
+      writtenFor = nodeId;
+    }
+    if (!nodeId) return;
+    void session.store.firstEventFor(nodeId)
+      .then((first) => {
+        if (!first || writtenFor !== nodeId || !WRITTEN) return;
+        const words = captureContextWords(first.at, session.zone, new Date().toISOString());
+        if (!words) return;
+        WRITTEN.textContent = words;
+        WRITTEN.hidden = false;
+      })
+      .catch(() => { /* a line of context, never the card */ });
+  };
   const APPROACH = q('#nextup-approach');
   const SITUATION = q('#nextup-situation');
   // NOT in the hard guard above, deliberately: a missing load note costs one
@@ -467,6 +505,7 @@ export function mountWork(
       TITLE.textContent = '';
       WHY.textContent = '';
       if (PLACE) PLACE.hidden = true;
+      paintWritten(null);
       if (APPROACH) APPROACH.hidden = true;
       if (SITUATION) SITUATION.hidden = true;
       // The first-step line and its form are demands too, and were left on
@@ -516,6 +555,26 @@ export function mountWork(
         PLACE.textContent = up.head.place ?? '';
         PLACE.hidden = !up.head.place;
       }
+      // WHEN IT WAS WRITTEN (2.0.3) — the triage card has said this since
+      // 1.29.0 and this card never did.
+      //
+      // A title is very often a FRAGMENT: "take the old one to the tip", "ring
+      // them back", "order the part". Under a project that reads perfectly and
+      // PLACE above says which project. With no parent there is no place line,
+      // and the card was then a bare imperative with no subject anywhere on the
+      // screen — found on device, offered with a real date and nothing else to
+      // go on. `docs/nd-collisions.md` entry 17 is exactly this: the context
+      // that made a fragment meaningful lives in working memory and is gone
+      // within hours.
+      //
+      // The information already existed and was already computed — it was shown
+      // on ONE surface. Same one writer, same words, so two surfaces cannot
+      // describe the same fact two ways.
+      //
+      // NEVER BLOCKS, and never how long ago. It fills in from the log after
+      // the card renders, exactly as the triage line does, and `captureContextWords`
+      // refuses an age: "3 weeks old" is the same fact wearing an accusation.
+      paintWritten(up.head.node.id);
       // WHAT IT HOLDS UP, under where it sits (1.23.0). The head only: the
       // behind-rows already carry a why and a place, and a third line on each
       // turns the rest-of-offer from a glance into a paragraph — which is the
@@ -633,6 +692,7 @@ export function mountWork(
         REGION.hidden = false;
         TITLE.textContent = 'Nothing is asking today.';
         if (PLACE) { PLACE.textContent = ''; PLACE.hidden = true; }
+        paintWritten(null);
         // Cleared beside PLACE, for its reason: this branch reuses the same
         // elements with a different sentence, so a line left over from the last
         // head would attach a previous item's downstream to "Nothing is asking".
