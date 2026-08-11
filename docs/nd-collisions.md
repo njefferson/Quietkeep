@@ -245,15 +245,32 @@ model.
 
 ---
 
-## TOP 5 ROUTING PROPOSALS
+## TOP 5 ROUTING PROPOSALS — **four of these five have since SHIPPED**
 
-Ranked by value to the owner as he has described his days, multiplied by fit with machinery that already exists.
+**Read the status line before the ranking.** This list was written once, as a
+ranking of what to build next, and was never revised as its items were built —
+while each entry above recorded its own `SINCE WRITTEN — SHIPPED` line the whole
+time. One document, two answers, and this was the half nobody maintained. That is
+the same defect the file's own header describes and the gate was built to stop;
+the gate held the ENTRIES honest and never looked here. It does now
+(`tools/collisions.mjs`), so a shipped proposal cannot sit in this list again.
 
-1. **Place-return-with-contents (entry 3):** when a filed place's review comes round, its return card shows a law-8-capped view of what it holds — the exact "still owed" question the 1.19.0 log entry says to put to the owner after use, and the missing half of the feature that answers his stated day-ender.
-2. **Capture context on the triage card (entry 17):** state when an item was written and what was in focus at the time, as a pure projection over data already in the log — highest leverage on the 1,173-item backlog he is triaging right now, at zero vocabulary cost.
-3. **The "smaller bite" verb on the offer (entry 1):** split a first physical action out of the offered item without leaving the surface, the 1.19.0 pattern applied to initiation — the half the azimuth check itself names as thin.
-4. **The pocket offer for waiting mode (entry 9):** when a hard date sits later today, prefer offer items whose logged duration estimate fits the gap and say so as a fact — both inputs already exist, and it converts his most-wasted hours.
-5. **"This one is heavy" from the detail sheet (entry 2):** raise a pebble whose `affects` names a work item, routing the wall of awful through load machinery that already narrows the offer — one emitter away from complete.
+1. **Place-return-with-contents (entry 3)** — **SHIPPED, 1.27.0.** A place that
+   comes round names what it is holding rather than counting it. Asserted by the
+   smoke walk.
+2. **Capture context on the triage card (entry 17)** — **SHIPPED, 1.29.0.** The
+   card says when the item was written, and never how long ago.
+3. **The "smaller bite" verb on the offer (entry 1)** — **SHIPPED, 1.28.0.**
+   `#nextup-bite` writes an ordinary child under the offered item, and the offer
+   then holds the bite.
+4. **The pocket offer for waiting mode (entry 9)** — **NOT BUILT.** The only one
+   of the five still outstanding: when a hard date sits later today, prefer offer
+   items whose logged duration estimate fits the gap and say so as a fact. Both
+   inputs exist; nothing folds `estimate.recorded` yet, so this needs a fold
+   field before it needs a surface.
+5. **"This one is heavy" from the detail sheet (entry 2)** — **SHIPPED as WEIGHT
+   rather than as a pebble, 1.34.0.** The shape changed on the way in, which is
+   why the entry says so rather than claiming the proposal landed unaltered.
 
 Deliberately absent from this list: every interest-signal and ranking proposal (entries 5, 13, 20), because Q-11 is asked and not answered, and the repo's own rule — *do not build past this on a guess* — outranks any ranking here.
 
