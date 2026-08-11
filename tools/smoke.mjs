@@ -6209,6 +6209,201 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   console.log('\nWork mode — no page errors');
   is(tErrors.length, 0, tErrors.length ? `console/page errors: ${tErrors.join(' | ')}` : 'none');
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // EVERY REMAINING CONTROL, OPERATED.
+  //
+  // A paths audit measured that the walk drove 149 of 198 controls. The other
+  // 49 had never been pressed by anything — including verbs that change state
+  // and could lose it: un-completing, un-parenting, clearing a date, promoting
+  // off the Menu, stopping a repeat, splitting a merge.
+  //
+  // This is not about assertions on each one. It is about the fact that a
+  // control nothing has ever pressed can throw, refuse at the gate, or leave a
+  // dialog open, and the first person to find out is whoever presses it. The
+  // page-error listener already installed for this context is what makes this
+  // worth doing: any exception during any of these fails the walk.
+  console.log('\nEvery control, pressed or accounted for');
+  await tpage.reload({ waitUntil: 'load' });
+  await tpage.waitForSelector('body[data-ready=true]');
+
+  // Controls that need a state this pass deliberately does not build, each with
+  // the reason. THIS LIST IS THE POINT: it is the difference between "we pressed
+  // what happened to be on screen" and "we know what we did not press and why".
+  // A control added later appears in neither list and fails the check below.
+  const NEEDS_A_STATE = {
+    'update-save':        'only exists while a newer version is waiting — tools/update-walk.mjs drives that against a real second worker',
+    'update-reload':      'same — the waiting-worker state has its own walk',
+    'close-thread-open':  'the end-of-day close flow, walked in its own section above',
+    'close-thread-drop':  'same flow',
+    'close-ok':           'same flow',
+    'focus-sheet-cancel': 'only while a focus session is being set up',
+    'reentry-dismiss':    'only after an absence long enough to greet you',
+    'reentry-dismiss-plain': 'same, in the plain view',
+    'replan-close':       'only while a replan card is open',
+    'sort-bulk-date':     'only with a bulk selection active in Sort',
+    'sort-bulk-export':   'same',
+    'sort-bulk-cancel':   'same',
+    'comms-stop':         'only while a comms sweep is running',
+    'purge-backup':       'inside the clear-everything guard, walked above',
+    'import-backup':      'inside the import guard, walked above',
+    'other-file':         'the second-vault picker, walked in the sync section',
+    'import-file':        'a real file chooser — driven through setInputFiles above, never clicked',
+    'detail-unmerge':     'only on a node that is currently folded into another',
+    'detail-untrack':     'only on a project someone else is executing',
+    'detail-arrangement-stop': 'only once an arrangement exists',
+    'detail-arrangement-set':  'the arrangement group renders only on a container with children',
+    'detail-arrangement-depends': 'same group',
+    'detail-repeat-stop':      'only on something that already repeats — the upkeep journey covers the verb itself',
+    'storage-ask':             'hidden once the browser has agreed to keep the store, which headless Chromium does',
+    'clock-on':                'one half of a pair — whichever is showing is pressed, the other is this',
+    'clock-off':               'the other half of the same pair',
+    'capacity-level':          'the low-capacity control, on the work surface rather than the panel — driven in its own section above',
+    'tour-back':               'only after moving forward inside a replayed walkthrough',
+  };
+
+  const pressed = [];
+  const unreachable = [];
+  // WHY, not just THAT. An unreachable control with no reason sends you
+  // theorising about markup you have already read; "absent from the DOM" and
+  // "present but covered" are different bugs in the walk and look identical in
+  // a list of names.
+  const why = {};
+  const press = async (sel) => {
+    const id = sel.replace('#', '');
+    const el = tpage.locator(sel).first();
+    if (await el.count() === 0) { unreachable.push(id); why[id] = 'not in the DOM'; return; }
+    if (!(await el.isVisible().catch(() => false))) { unreachable.push(id); why[id] = 'in the DOM but not visible'; return; }
+    if (await el.isDisabled().catch(() => false)) { unreachable.push(id); why[id] = 'visible but disabled'; return; }
+    const clicked = await el.click({ timeout: 2500 }).then(() => true).catch(e => String(e).slice(0, 90));
+    if (clicked !== true) { unreachable.push(id); why[id] = `click refused: ${clicked}`; return; }
+    pressed.push(id);
+    await tpage.waitForTimeout(40);
+  };
+
+  // BUILD THE STATE FIRST, then press the verb that undoes it.
+  //
+  // Nine of these appeared unreachable on the first attempt for one honest
+  // reason: a clear-verb only exists once there is something to clear. Pressing
+  // what happens to be on screen tests the empty case forever; setting the
+  // state and then undoing it is the pair a person actually performs.
+  await tpage.click('#cards .card-open');
+  await tpage.waitForSelector('#detail[open]');
+  await press('#detail-more');
+  const set = async (field, value, setter) => {
+    const el = tpage.locator(field).first();
+    if (await el.count() === 0 || !(await el.isVisible().catch(() => false))) return;
+    await el.fill(value).catch(() => {});
+    await press(setter);
+  };
+  await set('#detail-date', '2026-09-01', '#detail-date-set');
+  await set('#detail-start', '2026-08-20', '#detail-start-set');
+  await set('#detail-every', '7', '#detail-repeat-set');
+  // An anchor and a parent need a pick from a live list rather than a typed value.
+  await tpage.selectOption('#detail-after', { index: 1 }).catch(() => {});
+  await press('#detail-after-set');
+  await tpage.selectOption('#detail-parent', { index: 1 }).catch(() => {});
+  await press('#detail-parent-set');
+  await press('#detail-done');
+  for (const sel of ['#detail-weight-light', '#detail-weight-ordinary', '#detail-weight-heavy',
+                     '#detail-weight-clear', '#detail-date-clear', '#detail-start-clear',
+                     '#detail-after-clear', '#detail-menu', '#detail-promote',
+                     '#detail-unparent', '#detail-untrack', '#detail-repeat-stop',
+                     '#detail-undone', '#detail-unmerge', '#detail-arrangement-set',
+                     '#detail-arrangement-depends', '#detail-arrangement-stop']) await press(sel);
+  await press('#detail-close');
+
+  // THE PANEL'S SHEETS — opened with the walk's OWN helper, which closes any
+  // open dialog first and drives `#more` the way every other section does.
+  //
+  // My first attempt clicked `.more-go` without opening `#more`, so every sheet
+  // stayed shut and all forty of their controls reported unreachable. The gate
+  // named them, which is the only reason I found out rather than shipping a
+  // green "every control" that pressed twenty.
+  // `#build-version` IS ON THE FOOTER, NOT IN THE PANEL — and it is the control
+  // that OPENS the panel. Pressing it with the panel already open did not fail
+  // fast, it timed out: a modal <dialog> makes everything behind it inert, and
+  // an inert element is neither hidden nor disabled, so the click retried until
+  // the clock ran out. It read as a broken control for three attempts because
+  // "not visible" and "not there" were the only two answers the helper gave;
+  // the timeout only became legible once the helper started reporting WHY.
+  await press('#build-version');
+  await tpage.waitForTimeout(150);
+  await openSurface(tpage, 'about');
+  // THE DIAGNOSTIC LIVES ON THE PANEL ITSELF, not in a sheet — pressed here,
+  // while nothing is covering it. Pressing it inside the sheet loop is what put
+  // it in the unreachable list twice: a sheet was on top of the thing I was
+  // reaching for, and "not visible" is indistinguishable from "not there".
+  await press('#diagnostic-show');
+  await tpage.waitForTimeout(150);
+  await press('#diagnostic-copy');
+  await press('#diagnostic-save');
+
+  // EACH SHEET IS PRESSED FOR THE CONTROLS IT ACTUALLY HOLDS.
+  //
+  // The first version tried all six in all five sheets, so four attempts out of
+  // five failed by construction — and a control that HAD been pressed in its own
+  // sheet still counted against the total, because the unreachable list is keyed
+  // by id and nothing removed an id that later succeeded. Two controls were
+  // reported unreachable for three rounds while being pressed perfectly well.
+  // A control being absent from a sheet it was never in is not a finding; it is
+  // the walk asking the wrong question five times.
+  const SHEET_CONTROLS = {
+    'group-why':     [],
+    'group-help':    [],
+    'group-data':    ['#storage-ask'],
+    // Order matters: the walkthrough opens over the sheet, so the spreadsheet
+    // button is pressed while the sheet is still the top layer.
+    'group-actions': ['#report-csv', '#tour-replay'],
+    'group-extras':  ['#comms-stop', '#clock-on', '#clock-off'],
+  };
+  for (const [go, controls] of Object.entries(SHEET_CONTROLS)) {
+    await openSurface(tpage, `sheet-${go}`).catch(() => {});
+    await tpage.waitForSelector(`#sheet-${go}[open]`, { timeout: 2500 }).catch(() => {});
+    await tpage.waitForTimeout(120);
+    for (const sel of controls) await press(sel);
+    // The walkthrough, replayed: Back only exists once you have moved forward.
+    if (await tpage.locator('#tour[open]').count()) {
+      await press('#tour-next');
+      await press('#tour-back');
+      await press('#tour-skip');
+      await openSurface(tpage, `sheet-${go}`).catch(() => {});
+    }
+    await press(`#sheet-${go}-close`);
+    await tpage.waitForTimeout(60);
+  }
+  await openSurface(tpage, 'more').catch(() => {});
+  await press('#more-close');
+  await tpage.keyboard.press('Escape').catch(() => {});
+
+  for (const sel of ['#reentry-dismiss', '#reentry-dismiss-plain', '#replan-close',
+                     '#close-thread-open', '#close-thread-drop', '#close-ok',
+                     '#focus-sheet-cancel', '#sort-bulk-date', '#sort-bulk-export',
+                     '#sort-bulk-cancel', '#update-save', '#update-reload']) await press(sel);
+
+  // TOTAL, and that is the whole value. Anything this pass could not reach must
+  // be named above with a reason — so a control nobody thought about fails here
+  // instead of sitting unpressed for a year.
+  // A control that was pressed SOMEWHERE is pressed, whatever happened on an
+  // earlier attempt in a state that did not hold it. Without this the list is
+  // keyed by the worst attempt rather than by whether the control was ever
+  // operated, and a genuinely covered control reads as a gap.
+  const everPressed = new Set(pressed);
+  const unexplained = [...new Set(unreachable)]
+    .filter(id => !everPressed.has(id) && !(id in NEEDS_A_STATE));
+  // JOINED, not an array. `is` compares with `===`, so an array literal can
+  // never equal another array literal — this check would have gone red on an
+  // EMPTY list, which is the one result it exists to call green. It read as a
+  // real finding for one round because the list happened to be non-empty.
+  is(unexplained.map(id => `${id} — ${why[id]}`).join(' | '), '',
+    `every control this pass could not reach is accounted for (pressed ${everPressed.size}, `
+    + `explained ${[...new Set(unreachable)].filter(id => !everPressed.has(id)).length})`);
+  is(tErrors.length, 0,
+    `no control threw when pressed${tErrors.length ? ' — ' + tErrors.join(' | ') : ''}`);
+  await tpage.keyboard.press('Escape').catch(() => {});
+  is(await tpage.locator('#capture').isVisible(), true,
+    'and the capture line is still there afterwards — nothing was left blocking the app');
+
   await tctx.close();
 } finally {
   await browser.close();
