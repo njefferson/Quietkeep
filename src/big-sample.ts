@@ -99,21 +99,118 @@ const AREAS = [
   'The flat', 'Work', 'Health appointments', 'Photography', 'Reading',
 ];
 
-const PROJECTS = [
-  'Get the kitchen tap fixed', 'Sort the loft out', 'Renew the insurance',
-  'Plan the trip north', 'Repaint the back door', 'Set up the new printer',
-  'Clear the guttering', 'Find a new dentist', 'Rebuild the compost bin',
-  'Get the bike serviced', 'Sort out the recycling collection',
-  'Replace the bathroom light', 'Fix the fence panel', 'Book the boiler service',
+// PROJECTS, EACH WITH THE STEPS THAT ACTUALLY BELONG TO IT (2.0.4).
+//
+// This was two flat lists — fourteen project names and twenty action names —
+// and the generator paired them AT RANDOM. So the sample produced things like
+// "Photograph the meter" under "Plan the trip north" and "Take the old one to
+// the tip" under "Find a new dentist": grammatical, plausible in isolation, and
+// meaningless together.
+//
+// That is not a cosmetic problem in test data. Every step of every action title
+// here is a FRAGMENT — "order the part", "ring them back", "take the old one to
+// the tip" — because that is how people actually write things down. A fragment
+// is legible exactly when the thing above it supplies the missing noun. Pair it
+// with an unrelated project and the card is worse than a bare fragment, because
+// now the app is confidently showing you a wrong context.
+//
+// So a project owns its steps. Nothing is paired by chance.
+export const PROJECTS: { title: string; area: string; steps: string[] }[] = [
+  { title: 'Get the kitchen tap fixed', area: 'The flat', steps: [
+    'Ring the plumber back', 'Measure the gap under the sink',
+    'Find the receipt for the tap', 'Take the old tap to the tip',
+    'Clear everything out from under the sink'] },
+  { title: 'Sort the loft out', area: 'The flat', steps: [
+    'Buy more of the big storage boxes', 'Take the old cot to the charity shop',
+    'Find the spare key',
+    'Check the loft hatch ladder is safe', 'Label the boxes that are staying'] },
+  { title: 'Renew the house insurance', area: 'Money', steps: [
+    'Compare the two insurance quotes', 'Read the buildings cover properly',
+    'Photograph the meter for the reading', 'Cancel the old policy'] },
+  { title: 'Plan the trip north', area: 'Family', steps: [
+    'Book the room for the Friday night', 'Check what time the ferry runs',
+    'Ask Sam whether the dates still work', 'Print the walking map'] },
+  { title: 'Repaint the back door', area: 'The flat', steps: [
+    'Buy the exterior primer', 'Sand the old paint back',
+    'Take the door furniture off', 'Check the weather for a dry run of days'] },
+  { title: 'Set up the new printer', area: 'Work', steps: [
+    'Find where the network password is written down',
+    'Order the right ink cartridges', 'Recycle the old printer',
+    'Test it prints from the phone'] },
+  { title: 'Clear the guttering', area: 'The flat', steps: [
+    'Borrow the long ladder', 'Check the downpipe at the back is clear',
+    'Book someone if the ladder will not reach'] },
+  { title: 'Find a new dentist', area: 'Health appointments', steps: [
+    'Ask which practices are taking people on',
+    'Get the notes moved from the old dentist', 'Book the first appointment'] },
+  { title: 'Rebuild the compost bin', area: 'The garden', steps: [
+    'Order the timber', 'Take the broken panels to the tip',
+    'Move the compost that is already there'] },
+  { title: 'Get the bike serviced', area: 'The car', steps: [
+    'Ring the bike shop about a slot', 'Find the spare inner tubes',
+    'Ask what the lead time is on the brake pads'] },
+  { title: 'Sort out the recycling collection', area: 'Household paperwork', steps: [
+    'Ring the council about the bin collection',
+    'Order a replacement blue box', 'Check which week the garden waste goes'] },
+  { title: 'Replace the bathroom light', area: 'The flat', steps: [
+    'Order the part for the bathroom light',
+    'Check the warranty on the old fitting', 'Take the old one to the tip'] },
+  { title: 'Fix the fence panel', area: 'The garden', steps: [
+    'Measure the gap where the panel was', 'Order the new panel',
+    'Ask next door before starting'] },
+  { title: 'Replace the broken window', area: 'The flat', steps: [
+    'Get the measurements signed off', 'Order the glass', 'Book the fitter',
+    'Confirm the access arrangements', 'Tape the crack until it is done',
+    'Chase the quote for the glazing'] },
+  { title: 'Get the survey done', area: 'Household paperwork', steps: [
+    'Ring the surveyor back', 'Call the surveyor', 'Surveyor — ring back',
+    'Chase the surveyor’s invoice', 'Read the survey when it comes',
+    'Find the spare key'] },
+  { title: 'Reseal the bathroom', area: 'The flat', steps: [
+    'Strip the old sealant', 'Buy the sealant gun', 'Let it dry properly before using it'] },
+  { title: 'Book the boiler service', area: 'Household paperwork', steps: [
+    'Find the service record from last year', 'Ring them back about a date',
+    'Move the stuff out of the airing cupboard'] },
 ];
 
-const ACTIONS = [
-  'Ring them back', 'Measure the gap', 'Compare the two quotes', 'Order the part',
-  'Post the form', 'Take the old one to the tip', 'Check the warranty',
-  'Ask what the lead time is', 'Read the terms properly', 'Photograph the meter',
-  'Find the receipt', 'Email the confirmation', 'Sort the box in the hall',
-  'Chase the delivery', 'Write down the serial number', 'Cancel the old one',
-  'Book the slot', 'Print the label', 'Return the packaging', 'Test it once more',
+// EVERYTHING TO DO WITH THE MOVE — the deliberately over-cap container, with
+// steps that belong to a move rather than a numbered list of unrelated verbs.
+// It used to read "Photograph the meter — 7 of the move list", which counted
+// something nobody can act on.
+export const MOVE_STEPS = [
+  'Book the van', 'Get boxes from the shop on the corner', 'Tell the bank the new address',
+  'Redirect the post', 'Take the curtains down', 'Read the electricity meter on the day',
+  'Cancel the milk', 'Give the spare keys back', 'Defrost the freezer',
+  'Ring the council about the council tax', 'Pack the kitchen last',
+  'Label the boxes by room', 'Find the loft insurance documents',
+  'Take the garden pots to the new place', 'Book the cleaner for the last day',
+  'Change the address on the driving licence', 'Tell the vet the new address',
+  'Sort out the broadband for the new place', 'Empty the shed',
+  'Take the old sofa to the tip', 'Check the meter readings match the bill',
+  'Ask the neighbours to take a parcel', 'Put the plants somewhere safe',
+  'Find the spare curtain hooks', 'Wrap the mirrors properly',
+  'Photograph the room before handing the keys back', 'Return the parking permit',
+  'Take a copy of the tenancy paperwork', 'Ring the removal firm to confirm',
+  'Check nothing is left in the loft', 'Post the keys through the letterbox',
+];
+
+// STANDS ON ITS OWN — for anything with NO parent.
+//
+// A loose item has nothing above it to supply the missing noun, so a fragment
+// there is unreadable no matter how good the rest of the sample is. These read
+// the way somebody writes when there is no project to lean on: they carry their
+// own subject. Real stores are full of these, and since 2.0.0 an unsorted
+// capture is offered as work, so this is the pool the offer surface meets most.
+export const STANDALONE = [
+  'Put the recycling out', 'Water the plants in the back room',
+  'Take the blue coat to the dry cleaner', 'Change the batteries in the smoke alarm',
+  'Send Priya the photos from the weekend', 'Descale the kettle',
+  'Renew the library books', 'Move the winter coats up to the loft',
+  'Get a spare key cut', 'Top up the windscreen washer',
+  'Sew the button back on the grey shirt', 'Clean out the fridge shelves',
+  'Take the glass to the bottle bank', 'Back up the photos off the phone',
+  'Sharpen the kitchen knives', 'Book the car in for its MOT',
+  'Return the library DVD', 'Wash the car mats',
 ];
 
 const PEOPLE = [
@@ -158,7 +255,7 @@ const NOTES = [
  * and nothing outside a unit test has ever handed it one, and a title at exactly
  * the cap is what finds a card that assumes titles are short.
  */
-const AWKWARD_TITLES = [
+export const AWKWARD_TITLES = [
   'Ask the council whether the pavement outside the shop is theirs or the landlord’s, because the last two people I asked each said it was the other one and the crack is getting wider every week now',
   'Café — the piñata for Zoë’s birthday (漢字 too)',
   '=1+1 and a leading equals, which a spreadsheet would run',
@@ -236,10 +333,27 @@ export async function bigSampleEvents(
 
   const projects: NodeId[] = [];
   for (let i = 0; i < PROJECTS.length; i++) {
-    const p = node('project', PROJECTS[i]!, areas[i % areas.length]);
+    // UNDER THE AREA IT BELONGS TO, not by index. This was
+    // `areas[i % areas.length]`, which put "Rebuild the compost bin" under
+    // Photography and "Get the bike serviced" under Reading — the same
+    // random-pairing defect as the titles, one level up, and just as visible
+    // on a card: the place line reads "in Get the bike serviced · under
+    // Reading".
+    const p = node('project', PROJECTS[i]!.title, areas[AREAS.indexOf(PROJECTS[i]!.area)]);
     clock(p, 'review', int(5, 30));
     projects.push(p);
   }
+  // NAME THE PROJECT, NEVER THE INDEX. `projects[5]` is whatever happens to be
+  // fifth in a list somebody will reorder, and every fixture below used one —
+  // which is how a glazing chain ended up under "Set up the new printer" and
+  // four surveyor calls under "Find a new dentist". The place line renders that
+  // to the reader as fact.
+  const proj = (title: string): NodeId => {
+    const i = PROJECTS.findIndex(p => p.title === title);
+    if (i < 0) throw new Error(`sample: no project named ${title}`);
+    return projects[i]!;
+  };
+
   // Roles: an execute project and a tracked one, because the portfolio line
   // reads differently for each and only one of them has ever had data.
   stamp('project.role.set', projects[0]!, { role: 'execute' });
@@ -250,7 +364,7 @@ export async function bigSampleEvents(
   const big = node('project', 'Everything to do with the move', areas[0]);
   clock(big, 'review', 14);
   for (let i = 0; i < 31; i++) {
-    const c = node('action', `${pick(ACTIONS)} — ${i + 1} of the move list`, big);
+    const c = node('action', MOVE_STEPS[i % MOVE_STEPS.length]!, big);
     clock(c, i % 3 === 0 ? 'due' : 'start', int(-4, 60));
   }
 
@@ -259,8 +373,13 @@ export async function bigSampleEvents(
   // decision.
   const made = () => out.filter(e => e.kind === 'node.created' || e.kind === 'capture.recorded').length;
   while (made() < BIG_SAMPLE_SIZE) {
-    const parent = rand() < 0.75 ? pick(projects) : undefined;
-    const a = node('action', pick(ACTIONS), parent);
+    // A PROJECT'S OWN STEP, or a title that stands alone. Never a fragment
+    // under something it has nothing to do with, and never a fragment loose.
+    const pi = Math.floor(rand() * PROJECTS.length);
+    const parented = rand() < 0.75;
+    const a = parented
+      ? node('action', pick(PROJECTS[pi]!.steps), projects[pi])
+      : node('action', pick(STANDALONE));
     const roll = rand();
     if (roll < 0.15) clock(a, 'due', int(-14, -1));        // passed: a replan card
     else if (roll < 0.45) clock(a, 'due', int(0, 21));
@@ -293,9 +412,14 @@ export async function bigSampleEvents(
   clock(promotedKind, 'due', 30);
   stamp('node.kind.changed', promotedKind, { from: 'action', to: 'project' });
 
-  const moved = node('action', 'Find the spare key', projects[2]);
+  const moved = node('action', 'Find the spare key', proj('Sort the loft out'));
   clock(moved, 'due', 6);
-  stamp('node.parented', moved, { parent: projects[3]!, priorParent: projects[2]! });
+  // BOTH ENDS NAMED. This moved to `projects[3]` from `projects[2]` — indices,
+  // so the fixture demonstrated a move by putting "Find the spare key" under
+  // "Plan the trip north". A move has to land somewhere the title still reads,
+  // or the fixture proves the mechanism and breaks the data.
+  stamp('node.parented', moved, {
+    parent: proj('Get the survey done'), priorParent: proj('Sort the loft out') });
   const loosed = node('action', 'Decide about the shed', projects[4]);
   clock(loosed, 'due', 9);
   stamp('node.unparented', loosed, { priorParent: projects[4]! });
@@ -343,17 +467,22 @@ export async function bigSampleEvents(
   stamp('status.report.exported', null, { format: 'markdown', scope: 'everything' });
 
   // --- dependencies, deep enough for the arithmetic to be real --------------
+  // BY NAME, not by index. These three are a glazing sequence and `projects[5]`
+  // was whatever happened to be fifth in the list — "Set up the new printer" at
+  // the time this was found, so the dependency arithmetic was demonstrated on a
+  // chain filed under something it had nothing to do with.
+  const glazing = proj('Replace the broken window');
   const chain = [
-    node('action', 'Get the measurements signed off', projects[5]),
-    node('action', 'Order the glass', projects[5]),
-    node('action', 'Book the fitter', projects[5]),
+    node('action', 'Get the measurements signed off', glazing),
+    node('action', 'Order the glass', glazing),
+    node('action', 'Book the fitter', glazing),
   ];
   for (const c of chain) clock(c, 'due', int(10, 40));
   // No `suspense` in these payloads (1.17.4): the field was only ever noise —
   // no fold case reads it — and nothing writes it any more.
   stamp('dependency.declared', chain[0]!, { feeds: chain[1]!, leadEstimateDays: 5 });
   stamp('dependency.declared', chain[1]!, { feeds: chain[2]!, leadEstimateDays: 7 });
-  const released = node('action', 'Confirm the access arrangements', projects[5]);
+  const released = node('action', 'Confirm the access arrangements', glazing);
   clock(released, 'due', 15);
   stamp('dependency.declared', released, { feeds: chain[2]!, leadEstimateDays: 2 });
   stamp('dependency.released', released, { feeds: chain[2]! });
@@ -368,7 +497,7 @@ export async function bigSampleEvents(
   // exercised against, so the clause has to be represented by a real node whose
   // coverage would vanish if the clause were removed.
   const routine = [
-    node('action', 'Strip the old sealant', projects[3]),
+    node('action', 'Strip the old sealant', proj('Reseal the bathroom')),
     node('action', 'Let the frame dry out'),
     node('action', 'Re-seal the frame'),
   ];
@@ -377,7 +506,7 @@ export async function bigSampleEvents(
   stamp('after.set', routine[2]!, { after: routine[1]! });
   // And one that was set and then thought better of — the anchor cut, the gate
   // giving it a clock of its own, which is the whole of `after.cleared`.
-  const unanchored = node('action', 'Chase the quote for the glazing', projects[5]);
+  const unanchored = node('action', 'Chase the quote for the glazing', proj('Replace the broken window'));
   stamp('after.set', unanchored, { after: chain[0]! });
   stamp('after.cleared', unanchored, {});
 
@@ -386,9 +515,9 @@ export async function bigSampleEvents(
   // The exit that is neither done nor deleted. One that stayed down and one that
   // came back, because the way back is the half that makes the verb usable and a
   // set with only the one-way case would exercise half the machinery.
-  const putDown = node('action', 'Learn the tenor recorder', projects[2]);
+  const putDown = node('action', 'Learn the tenor recorder');
   stamp('node.released', putDown, { at: day(-40) });
-  const backUp = node('action', 'Repaint the hallway', projects[2]);
+  const backUp = node('action', 'Repaint the hallway');
   stamp('node.released', backUp, { at: day(-60) });
   stamp('node.reclaimed', backUp, {});
 
@@ -399,7 +528,7 @@ export async function bigSampleEvents(
   const captures: NodeId[] = [];
   for (let i = 0; i < 24; i++) {
     const id = ctx.id();
-    stamp('capture.recorded', id, { text: `${pick(ACTIONS)} (${pick(['from the post', 'off the noticeboard', 'somebody mentioned it', 'saw it in passing'])})`, source: 'sample' });
+    stamp('capture.recorded', id, { text: `${pick(STANDALONE)} (${pick(['from the post', 'off the noticeboard', 'somebody mentioned it', 'saw it in passing'])})`, source: 'sample' });
     captures.push(id);
   }
   const ROUTES: ClarifyRoute[] = ['do-now', 'next-action', 'waiting-for', 'someday', 'reference', 'trash'];
@@ -555,25 +684,25 @@ export async function bigSampleEvents(
   }
 
   // --- duplicates, folded — including the case 1.9.2 was written for --------
-  const dupA = node('action', 'Ring the surveyor back', projects[7]);
+  const dupA = node('action', 'Ring the surveyor back', proj('Get the survey done'));
   clock(dupA, 'due', 7);
-  const dupB = node('action', 'Call the surveyor', projects[7]);
+  const dupB = node('action', 'Call the surveyor', proj('Get the survey done'));
   clock(dupB, 'due', 11);
   stamp('decision.logged', dupB, { text: 'Agreed the survey happens before the offer, not after', at: day(-6) });
   stamp('node.merged', dupB, { into: dupA });
   // Three deep, so the chain-following reader has something to follow.
-  const dupC = node('action', 'Surveyor — ring back', projects[7]);
+  const dupC = node('action', 'Surveyor — ring back', proj('Get the survey done'));
   clock(dupC, 'due', 13);
   stamp('node.merged', dupC, { into: dupB });
   // And one folded then split back out, because unmerge has never had data.
-  const dupD = node('action', 'Chase the surveyor’s invoice', projects[7]);
+  const dupD = node('action', 'Chase the surveyor’s invoice', proj('Get the survey done'));
   clock(dupD, 'due', 17);
   stamp('node.merged', dupD, { into: dupA });
   stamp('node.unmerged', dupD, {});
 
   // --- things let go, past the trash view's cap ----------------------------
   for (let i = 0; i < 27; i++) {
-    const t = node('action', `${pick(ACTIONS)} — decided against`);
+    const t = node('action', `${pick(STANDALONE)} — decided against`);
     clock(t, 'due', int(1, 20));
     stamp('node.trashed', t, { reason: 'let-go' });
   }

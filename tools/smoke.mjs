@@ -5586,7 +5586,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#lens-row:not([hidden])');
   const preLensCards = await tpage.locator('#cards .card').count();
   const preLensGauge = await tpage.locator('#gauge').textContent() || '';
-  const preLensNext = await tpage.locator('#nextup').textContent() || '';
+  // A LIVE CLOCK IS NOT PART OF THE CLAIM (2.0.4).
+  //
+  // This compares the whole offer region before and after a lens, to assert the
+  // lens does not touch it. The region also carries "About 3h 6m left today" —
+  // the one permitted number (V2 stage 5) — which ticks. So the check failed on
+  // a run where a minute passed between the two reads: "3h 6m" vs "3h 5m", with
+  // a several-thousand-character diff whose only difference was a digit.
+  //
+  // That is a defect in the ASSERTION, not in the app: the claim is that a lens
+  // never narrows the offer, and a countdown has nothing to do with it. Left
+  // alone it would fail on roughly one run in however many minutes the section
+  // takes — a rate, not a state, which is the worst kind of red because it
+  // teaches everyone to re-run.
+  const stripClock = (t) => (t || '').replace(/About [^.]*left today\./, 'About <clock> left today.');
+  const preLensNext = stripClock(await tpage.locator('#nextup').textContent());
   await tpage.selectOption('#lens', { label: 'Sorted pile' });
   await tpage.waitForSelector('#lens-note:not([hidden])');
   const lensNoteWords = await tpage.locator('#lens-note').textContent() || '';
@@ -5598,7 +5612,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `the list narrowed to the lens (${preLensCards} -> ${lensCards})`);
   is(await tpage.locator('#gauge').textContent(), preLensGauge,
     'the gauge counts the WHOLE of what is held — a lens never touches it');
-  is(await tpage.locator('#nextup').textContent(), preLensNext,
+  is(stripClock(await tpage.locator('#nextup').textContent()), preLensNext,
     'Next up is one thing across a whole life — never lensed');
   await tpage.selectOption('#lens', { label: 'everything' });
   await tpage.waitForSelector('#lens-note[hidden]', { state: 'attached' });

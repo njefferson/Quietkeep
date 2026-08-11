@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.4',
+    kind: 'ITERATION',
+    date: '2026-08-10',
+    notes: [
+      '**The invented sample is now data somebody could actually have.** It was built by pairing lists at random, so it produced things like “Photograph the meter” inside “Plan the trip north”, and lines reading “in Get the bike serviced · under Reading”. Every step now sits in a project it belongs to, and every project under an area that makes sense of it.',
+      '**Most of what people write down is a fragment** — “order the part”, “ring them back”. Those read properly when the thing above them supplies the missing word, so a wrong parent is worse than none at all: the app confidently shows you a context that is not true. Anything in the sample with nothing above it now says what it is about on its own.',
+      '**This only ever affected the invented sample.** Nothing you wrote yourself was touched, and nothing about how your own things are shown has changed.',
+    ],
+  },
+  {
     triplet: '2.0.3',
     kind: 'ITERATION',
     date: '2026-08-10',
