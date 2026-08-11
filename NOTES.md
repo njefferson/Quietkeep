@@ -1099,12 +1099,28 @@ Both filing paths carry it. `fileUnderNewEvents` does not call
 `fileUnderEvents`, so a filter in one of them would have meant the same act
 having two answers, decided by whether the folder happened to exist yet.
 
-**Still owed in stage 3:** someday/reference shedding a date is unavoidable (the
-Menu is demand-free by law 6) but must be SAID rather than done silently; undo
-does not restore what a route cleared; the standing passed-dates range; the
-record-nothing "Not this one" on the replan card; persistent, never-timed undo;
-a release verb that is neither done nor deleted; and putting a whole place down
-at once.
+**~~Still owed in stage 3:~~ NOTHING — all seven closed, checked one at a time
+against the code on 2026-08-11 rather than read off this list.**
+
+- *someday/reference shedding a date must be SAID, not done silently* — said.
+  `clarify.ts` counts what a route will shed and states it before it commits.
+- *undo does not restore what a route cleared* — it does now.
+  `undoRouteEvents` takes what the route shed, captured before it committed, and
+  puts each one back — Menu-removal first, because the law-6 belt refuses a clock
+  on something still on the Menu. An undo that returns less than it took is not
+  an undo, and on an append-only log there was no other way back.
+- *the standing passed-dates range* — built, and no longer gated on an absence:
+  sixty-nine of them three at a time was not a way through.
+- *the record-nothing "Not this one" on the replan card* — `replan-skip`.
+- *persistent, never-timed undo* — no timer anywhere near it. A five-second
+  toast is a time limit and the interrupted reader is exactly who misses it.
+- *a release verb that is neither done nor deleted* — 1.32.0, `node.released`.
+- *putting a whole place down at once* — one act, thirty things.
+
+**This paragraph said all seven were owed until the day somebody checked.** Six
+of them had shipped and been written up in the patch notes the app itself shows
+you. A "still owed" line is the easiest kind of prose to leave behind, because
+nothing fails when it goes stale and it keeps reading like diligence.
 
 **1.30.1 is the first item of stage 3: the amnesty moved zero of four.**
 
@@ -1178,8 +1194,11 @@ and is why it is safe to write one onto the thing being offered right now.
 somewhere to put an alternate for when the plan breaks, since the deficit at that
 moment is generating options rather than choosing between them.
 
-**Still owed in stage 2:** an item anchored to another item's completion rather
-than to a clock, which needs a fifth coverage clause in the write gate.
+**~~Still owed in stage 2:~~ NOTHING — closed 2026-08-11.** The one item was an
+item anchored to another item's completion rather than to a clock, needing a
+fifth coverage clause in the write gate. It **shipped in 1.30.0**: `after.set` is
+in the gate, `unblocked` is a reason the offer states, and the walk drives it.
+The line stayed as though owed for eleven releases after the thing was built.
 
 **1.28.0 is stage 1 of the V2 plan: making "nothing has gone quiet" mean
 "and you will be shown it".**

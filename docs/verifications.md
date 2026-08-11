@@ -809,8 +809,22 @@ fails this way. Promoting is the owner's call and has not been made.
 
 ---
 
-## V-20 · The relay's DELETE empties what KV *lists*, and KV `list` is eventually consistent — **UNDERSTOOD, and the gate no longer races it**
+## V-22 · The relay's DELETE empties what KV *lists*, and KV `list` is eventually consistent — **UNDERSTOOD, and the gate no longer races it**
 · raised 2026-07-30 when Relay run 12 on `c706a64` went red at "Check it actually answers"
+
+> **Renumbered from V-20 on 2026-08-11, because two different rows carried that
+> number.** The other one — does clearing the browser's website data take a Home
+> Screen app's store — is the one every reference in this repo means: four in
+> NOTES.md, three in the ADRs, one in `src/ui/about.ts`, and the companion link
+> at the top of this file. Nothing pointed here, so this row is the one that
+> moved and no citation breaks.
+>
+> **In the file whose whole job is being the authority on what has been checked,
+> an identifier that resolves to two things is the defect it exists to prevent.**
+> An anchor link lands on whichever heading comes first, which is this one — so
+> a reader following the companion link about website data arrived at a settled
+> note about eventual consistency in a key-value store and had no way to tell
+> they were in the wrong place.
 
 **What happened.** The deploy succeeded, `/status` was live, GET and OPTIONS
 passed, DELETE answered 200 — and the very next GET showed a chunk still present:
