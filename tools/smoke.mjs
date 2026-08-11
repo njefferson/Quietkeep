@@ -6362,6 +6362,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.waitForSelector(`#sheet-${go}[open]`, { timeout: 2500 }).catch(() => {});
     await tpage.waitForTimeout(120);
     for (const sel of controls) await press(sel);
+
+    // THE WALKTHROUGH REALLY REOPENS — asserted, because the record said it
+    // could not. A review wrote down that the first-run walkthrough "runs once,
+    // ever, gated on a flag" and that nothing could reopen it. The control has
+    // existed since the walkthrough shipped and `showTour` deliberately does not
+    // consult the seen-flag, so the finding was wrong on the day it was written
+    // and stayed in the record because nothing measured it either way.
+    //
+    // A claim about the app is now a check on the app. The step count is
+    // asserted too — the same review called it four steps; it is six.
+    if (go === 'group-actions') {
+      is(await tpage.locator('#tour[open]').count(), 1,
+        'the walkthrough reopens on demand — it is not once-ever');
+      const steps = await tpage.locator('#tour-progress').textContent().catch(() => '');
+      is(/^Step 1 of (\d+)$/.test((steps || '').trim()), true,
+        `and it says where you are in it ("${steps}")`);
+    }
+
     // The walkthrough, replayed: Back only exists once you have moved forward.
     if (await tpage.locator('#tour[open]').count()) {
       await press('#tour-next');
