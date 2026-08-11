@@ -281,3 +281,94 @@ test('every kind the app has can be created and reach an end without stranding',
     ]);
   }
 });
+
+test('done, then "Back on the list" — and the date you set survives it', () => {
+  // `#detail-undone` is one of the controls no walk operated. Un-completing is
+  // where getting it wrong loses state: the gate re-clocks a `done.marked` so
+  // finished work is not silent, and that cure writes a REVIEW clock — the same
+  // kind somebody may already have set by hand. If it overwrote theirs, the
+  // date would be gone and undoing would not bring it back, which "data is
+  // never lost" forbids.
+  walk('done and undone', [
+    { label: 'a step with a real date', events: ({ ev }) => [
+      ev('node.created', 'A', { nodeKind: 'action', title: 'Order the timber' }),
+      ev('clock.set', 'A', { clockKind: 'due', at: NOW, source: 'user' })] },
+    { label: 'done', events: ({ ev }) => [ev('done.marked', 'A', { at: NOW })] },
+    { label: 'back on the list', events: ({ ev }) => [ev('done.unmarked', 'A', {})] },
+  ]);
+
+  // And the specific claim the button makes, checked rather than implied.
+  let seq = 0;
+  const ev = (kind: string, node: string, payload: unknown): AppEvent => ({
+    id: `u${++seq}`, kind, node, payload, at: NOW, device: 'u', seq, vault: 'main',
+  } as unknown as AppEvent);
+  const SOON = '2026-08-25T18:00:00.000Z';
+  let log: AppEvent[] = [];
+  const push = (...es: AppEvent[]) => {
+    for (const e of es) log = [...log, ...admit([e], fold(log), gateOptionsFor(TZ))];
+  };
+  push(ev('node.created', 'B', { nodeKind: 'action', title: 'Chase the delivery' }),
+       ev('clock.set', 'B', { clockKind: 'review', at: SOON, source: 'user' }));
+  push(ev('done.marked', 'B', { at: NOW }));
+  push(ev('done.unmarked', 'B', {}));
+  const b = fold(log).nodes.get('B')!;
+  assert.equal(b.lastDone, null, 'undoing a completion really un-completes it');
+  assert.equal(b.clocks.review?.at, SOON,
+    'the date YOU set is still there — the completion cure did not overwrite it');
+  assert.equal(b.clocks.review?.source, 'user',
+    'and it is still yours, not the gate\'s');
+
+  // The one with an arrived date is offered again, which is what the button says.
+  const back = nextUpQueue(fold(log), NOW, TZ);
+  assert.equal(back.some(i => i.node.id === 'B'), false,
+    'this one is dated for the 25th, so it is scheduled rather than offered today');
+});
+
+test('the four other verbs no walk operated', () => {
+  // `detail-date-clear`, `detail-unparent`, `detail-promote`, `detail-repeat-stop`
+  // — each named by neither walk. Payloads taken from detail-intents.ts rather
+  // than invented, so this drives what the buttons actually write.
+  walk('taking a date off', [
+    { label: 'a dated step', events: ({ ev }) => [
+      ev('node.created', 'D', { nodeKind: 'action', title: 'Post the form' }),
+      ev('clock.set', 'D', { clockKind: 'due', at: NOW, source: 'user' })] },
+    { label: 'date cleared', events: ({ ev }) => [ev('clock.cleared', 'D', { clockKind: 'due' })] },
+  ]);
+
+  walk('pulling something out of a project', [
+    { label: 'a step inside a project', events: ({ ev }) => [
+      ev('node.created', 'P', { nodeKind: 'project', title: 'Clear the guttering' }),
+      ev('clock.set', 'P', { clockKind: 'review', at: day(2), source: 'user' }),
+      ev('node.created', 'S', { nodeKind: 'action', title: 'Borrow the long ladder' }),
+      ev('node.parented', 'S', { parent: 'P' }),
+      ev('clock.set', 'S', { clockKind: 'due', at: NOW, source: 'user' })] },
+    { label: 'pulled out', events: ({ ev }) => [ev('node.unparented', 'S', { priorParent: 'P' })] },
+  ]);
+
+  walk('a repeat, stopped', [
+    { label: 'something that repeats', events: ({ ev }) => [
+      ev('node.created', 'U', { nodeKind: 'upkeep', title: 'Descale the kettle' }),
+      ev('upkeep.interval.set', 'U', { intervalDays: 7, comfortWindowDays: 2 }),
+      ev('done.marked', 'U', { at: day(-30) })] },
+    // Exactly what `stopRepeatEvents` writes, in its order.
+    { label: 'stop repeating', events: ({ ev }) => [
+      ev('upkeep.interval.set', 'U', { intervalDays: 0, comfortWindowDays: 0 }),
+      ev('node.kind.changed', 'U', { from: 'upkeep', to: 'action' }),
+      ev('done.unmarked', 'U', {})] },
+  ]);
+});
+
+test('focus: started, interrupted, and ended — the resume card comes back', () => {
+  // focus.started / focus.ended / resume.card.* are all named in no test. The
+  // resume card is the app's answer to being pulled away mid-thing, so a
+  // journey through it is the one that matters.
+  walk('focus', [
+    { label: 'a thing to sit down with', events: ({ ev }) => [
+      ev('node.created', 'F', { nodeKind: 'action', title: 'Read the terms properly' }),
+      ev('clock.set', 'F', { clockKind: 'due', at: NOW, source: 'user' })] },
+    { label: 'focus started', events: ({ ev }) => [ev('focus.started', 'F', { at: NOW })] },
+    { label: 'interrupted — something else arrives', events: ({ ev }) => [
+      ev('interrupt.captured', 'I', { text: 'the roof people rang', source: 'focus', sourceTags: [] })] },
+    { label: 'focus ended', events: ({ ev }) => [ev('focus.ended', 'F', { at: NOW })] },
+  ]);
+});
