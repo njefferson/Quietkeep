@@ -26,6 +26,7 @@ import type { NodeState } from '../fold.ts';
 import type { ExportFile } from '../portability.ts';
 import type { AppEvent } from '../events.ts';
 import { RELEASES, CURRENT } from './changelog.ts';
+import { marked } from './marks.ts';
 import { diagnosticReport, type DeviceReading } from '../diagnostic.ts';
 import type { Session } from './session.ts';
 import { sampleEvents, sampleSummary, sampleWords } from '../sample.ts';
@@ -269,18 +270,14 @@ export async function mountAbout(
   // panel — “&ldquo;” as seven characters (found on device, 1.7.1). The
   // strings now carry real Unicode punctuation; only the bold marks need
   // translating, and an unpaired ** is rendered as the text it is.
+  // The splitter itself now lives in `marks.ts` and serves the walkthrough too,
+  // which needed the same thing with a different marker and a different tag.
+  // Two copies of it would not have been "one file, two answers" — they state no
+  // fact — but a repo that has spent this long removing duplicated logic should
+  // not add a second one for the sake of ten lines.
   const noteLine = (text: string): HTMLLIElement => {
     const li = el('li');
-    const parts = text.split('**');
-    if (parts.length % 2 === 0) {            // an unpaired ** is just text
-      li.textContent = text;
-      return li;
-    }
-    parts.forEach((part, i) => {
-      if (!part) return;
-      if (i % 2 === 1) li.append(el('strong', undefined, part));
-      else li.append(document.createTextNode(part));
-    });
+    li.append(...marked(text, '**', 'strong'));
     return li;
   };
   const noteBlock = (r: typeof RELEASES[number]): HTMLElement[] => {

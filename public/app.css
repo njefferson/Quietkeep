@@ -1233,8 +1233,23 @@ dialog[id^="sheet-"][open] {
   min-height: 0;             /* without this a flex child refuses to shrink */
   overflow-y: auto;
   /* The dialog's own padding moved here so the scrollbar sits at the edge and
-     the bar spans the full width. */
-  margin: 0 -1.25rem -1.25rem;
+     the bar spans the full width.
+   *
+   * THE BOTTOM ONE IS GONE (reported from a device): the Close button was
+   * showing the panel's text through itself. `-1.25rem` at the bottom pulled
+   * this box's painted area 20px past where the layout put it, while the Close
+   * sits 0.9rem below — so a band about 5px tall of whatever you had scrolled
+   * to was painted underneath the way out, and `button.ghost` is
+   * `background: transparent`, so you read it straight through the button.
+   *
+   * Measured before it was touched, at two viewport sizes, because a 5px band
+   * described from a photograph is a guess: 4px on the ⓘ, 6px on the sheets,
+   * identical at 390px and at 834px — a constant, which is what a margin
+   * arithmetic bug looks like and what a rendering quirk does not.
+   *
+   * The horizontal ones stay; they are what make the scrollbar sit at the edge
+   * and the shading span the full width, and neither was implicated. */
+  margin: 0 -1.25rem 0;
   padding: 0 1.25rem 1.25rem;
 
   /* IT HAS TO LOOK SCROLLABLE (1.24.1). Reported from a phone: nothing in the
@@ -1268,6 +1283,50 @@ dialog[id^="sheet-"][open] > button {
 dialog[id^="sheet-"][open] > button {
   margin-top: 0.9rem;
   align-self: flex-start;
+}
+
+/* THE WAY OUT IS OPAQUE, AND PAINTS ABOVE THE SCROLLER.
+ *
+ * The margin fix above removes the overlap that caused this, so on its own this
+ * rule changes nothing you can see. It is here because the overlap was invisible
+ * to every check the repo had, and belt-and-braces is cheap where detection is
+ * not: `button.ghost` sets `background: transparent`, so ANY future overlap —
+ * a padding change, a new element in the chrome — shows the panel's text
+ * straight through the way out, and nothing goes red.
+ *
+ * `--surface` is the dialog's own background, so this is not a new colour: the
+ * accent/surface pair is already in the contrast gate at 3:1 and the button was
+ * already sitting visually on that colour. No new pair, nothing for
+ * ACCESSIBILITY.md B-08 to register.
+ *
+ * WHY THE EXISTING CHECK COULD NOT SEE IT. The walk already scrolls each sheet
+ * to its end and asks whether the Close is on screen and whether anything is on
+ * top of it — a hit test. A transparent button IS the topmost thing at its own
+ * centre; `elementFromPoint` returns the button and the check passes. "You can
+ * see through it" and "something is over it" are different questions, and only
+ * one of them was ever asked. The walk now measures the rectangles instead. */
+/* THE BUTTON ITSELF, not only the bar around it. The first version of this rule
+ * gave the background to `.about-actions` — the ⓘ's bar — and to the sheets'
+ * Close, which is a direct child. So five surfaces were opaque and the sixth had
+ * an opaque bar with a transparent button sitting in it, which is the same
+ * defect with an extra step. Caught because the new check measures the BUTTON's
+ * computed background rather than assuming the fix landed where it was aimed. */
+/* `sheet-`, NOT `sheet-group-`. This rule was written against the five group
+ * sheets because those were all that existed when it was written, and two more
+ * (`sheet-coverage`, `sheet-tree`) landed the same day from another line of
+ * work — carrying the same chrome, the same `.sheet-body`, the same ghost
+ * Close, and none of this fix. Every other rule in this file had already been
+ * generalised to `sheet-`; mine was the one still naming a subset.
+ *
+ * That is hub LESSONS §93 in one selector: an argument accepted for one surface
+ * does not travel to the others by itself. The fix was right and its SCOPE was
+ * whatever happened to be on screen when it was written. */
+#about[open] > .about-actions,
+#about[open] > .about-actions > button,
+dialog[id^="sheet-"][open] > button {
+  position: relative;
+  z-index: 1;
+  background: var(--surface);
 }
 .about-bar {
   flex: none;

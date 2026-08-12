@@ -16,6 +16,7 @@
 
 import type { Session } from './session.ts';
 import { editionName, isSyncEdition } from './edition.ts';
+import { namedControls } from './marks.ts';
 
 /** Written when the walkthrough is finished OR skipped: seeing it once is the
  *  contract, and skipping IS seeing it. Its own key, separate from the ⓘ intro. */
@@ -44,7 +45,7 @@ const stepsNow = (): readonly Step[] => [
   {
     heading: 'Start with the box',
     body: [
-      'The box at the top is where everything begins. Type whatever is on your mind and press Hold it.',
+      'The box at the top is where everything begins. Type whatever is on your mind and press *Hold it*.',
       'One line, nothing to fill in, no folder to choose. Get it out of your head first; the sorting comes later.',
     ],
   },
@@ -59,14 +60,14 @@ const stepsNow = (): readonly Step[] => [
     heading: 'One thing at a time',
     body: [
       'It offers you a small number of things — usually two, chosen to be unalike, so picking is a preference rather than a comparison. Each one says why it is here: a date arrived, something it was waiting on is done, a place it lives came round.',
-      'Not this moves past it, as often as you like, and records nothing at all. When you finish something the screen settles and waits — nothing new arrives until you ask for it. That gap is on purpose.',
+      '*Not this* moves past it, as often as you like, and records nothing at all. When you finish something the screen settles and waits — nothing new arrives until you ask for it. That gap is on purpose.',
     ],
   },
   {
     heading: 'Not every day is the same',
     body: [
       'You can say how heavy a thing is, and how the day is going. Neither shortens the list — they change which things come forward, because being handed less on a bad day is the app deciding what you can manage.',
-      'And when the screen itself is too much, Just one thing strips it back to a single item and almost nothing else. Nothing turns that on for you. The ⓘ explains all of it, whenever you want it.',
+      'And when the screen itself is too much, *Just one thing* strips it back to a single item and almost nothing else. Nothing turns that on for you. The ⓘ explains all of it, whenever you want it.',
     ],
   },
   {
@@ -75,7 +76,7 @@ const stepsNow = (): readonly Step[] => [
       isSyncEdition()
         ? 'Everything stays on your devices — no account, no sign-in. What they trade to stay in step is sealed with a key only they hold.'
         : 'Everything stays on your device — no account, no sign-in, no server holding your writing.',
-      'The ⓘ at the top has how to install it, how to keep your data safe, and this walkthrough again whenever you want it. Get started opens that panel, so keeping your data safe is the first thing you do.',
+      'The ⓘ at the top has how to install it, how to keep your data safe, and this walkthrough again whenever you want it. *Get started* opens that panel, so keeping your data safe is the first thing you do.',
       // Added in 1.14.0. NOT written for the returning reader specifically —
       // the empty screen behind this dialog now offers them the way back, and a
       // sentence here about data they may never have had would land oddly on
@@ -113,12 +114,20 @@ export function showTour(session: Session, onFinish?: () => void): void {
     const step = STEPS[i]!;
     progress.textContent = `Step ${i + 1} of ${STEPS.length}`;
     heading.textContent = step.heading;
-    // Rebuilt with textContent nodes only — innerHTML is banned here, and a
+    // Rebuilt with text nodes only — innerHTML is banned here, and a
     // walkthrough of "it is only our own strings" is exactly where that erodes.
+    //
+    // A CONTROL'S NAME IS SET IN `<em>`, which is what the ⓘ panel has always
+    // done in its own markup. Reported from a device: the walkthrough's
+    // references to buttons read as ordinary words — "Not this moves past it"
+    // and "Just one thing strips it back" are sentences about two controls, and
+    // nothing on screen said which words were the controls. It was the one
+    // surface not following the app's own convention, on the screen where a
+    // reader knows least about the app.
     bodyEl.replaceChildren(...step.body.map(text => {
       const p = document.createElement('p');
       p.className = 'tour-p';
-      p.textContent = text;
+      p.append(...namedControls(text));
       return p;
     }));
     // Dots are decorative; the live "Step N of M" is the real announcement.

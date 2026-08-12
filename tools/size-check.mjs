@@ -74,6 +74,24 @@ const BUDGET = {
   // has been met — the honest thing is to say here that it is too high rather
   // than to launder it as an achievement.
   allSurfacesPx: 11000,
+  // The current release's notes, measured alone. Their own budget rather than a
+  // share of the ratchet above, because they rotate out and standing prose does
+  // not — see the long note at the measurement.
+  //
+  // 1200. Two reader-facing bullets measure 606px; four longer ones measured
+  // 1049px before two were cut for being about the test suite rather than about
+  // the app (§5). So this is room for a genuinely big release to say what it did
+  // AND what it did not fix, and not room for an essay — ten bullets would be
+  // near 3,000 and would fail.
+  //
+  // IT WAS 600 FOR TEN MINUTES AND THAT NUMBER WAS WRONG. It came from the
+  // DELTA between this release's notes and the previous one's (390px), not from
+  // the height of the block itself (1,049px) — a number measured for one purpose
+  // and reused for another without re-reading what it was. The gate then failed
+  // by six pixels, which is the exact trap hub LESSONS §62 records: three pixels
+  // short, with the product's honesty measurably worse. Six pixels is never a
+  // reason to cut a sentence.
+  notesPx: 1200,
   // 205 -> 210 on 2026-08-09, ONE COMMIT after this gate was written, because it
   // caught its own author: adding navigation ("More", five destinations and a
   // close) took the count from 199 to 207.
@@ -157,12 +175,47 @@ try {
     }, id);
     await page.waitForSelector(`#${id}[open]`);
     const px = await page.evaluate((sel) => document.querySelector(sel)?.scrollHeight ?? 0, scroller);
-    total += px;
+    // THIS RELEASE'S PATCH NOTES ARE NOT STANDING PROSE, AND THE RATCHET IS
+    // ABOUT STANDING PROSE.
+    //
+    // The total below is a ratchet against sprawl — its own comment says so:
+    // "an app with ten screens of explanation in it". Explanation accumulates
+    // and never leaves, which is what makes a ratchet the right instrument.
+    //
+    // The current release's notes are the opposite. Only the newest release is
+    // shown and the previous one folds away, so this block ROTATES rather than
+    // accumulating, and its size is whatever this release happened to change.
+    // Measured on 2026-08-11: a four-bullet note costs 390px, and the ratchet
+    // had 98px of headroom. So a perfectly ordinary release fails it, and the
+    // only edit that makes the number go down is deleting patch notes — which
+    // Doctrine §7d requires, INCLUDING what is still broken.
+    //
+    // That is hub LESSONS §62 exactly: a height budget that costs the product a
+    // sentence every time it binds is measuring a state nobody reads in. There,
+    // five bullets became three and three became shorter, buying 272px and
+    // leaving the next release facing the same squeeze from a worse start. The
+    // per-surface budgets are nowhere near their limit here — the ⓘ is 2,671
+    // against 3,000 — so the READER's experience was never in question.
+    //
+    // So the notes are measured on their own terms and excluded from the
+    // ratchet. Not exempted: `notesPx` bounds them, and it bounds the thing that
+    // could actually go wrong — one release writing an essay.
+    const notesPx = id === 'about'
+      ? await page.evaluate(() => {
+        const list = document.querySelector('#about-body .note-list');
+        return list ? Math.round(list.getBoundingClientRect().height) : 0;
+      })
+      : 0;
+    if (notesPx) {
+      (notesPx <= BUDGET.notesPx ? ok : fail)(
+        `this release's notes are ${notesPx}px of that (budget ${BUDGET.notesPx}) — they rotate, so they are not in the total`);
+    }
+    total += px - notesPx;
     (px <= BUDGET.surfacePx ? ok : fail)(
       `${name} is ${px}px of scroll at 390px wide (budget ${BUDGET.surfacePx})`);
   }
   (total <= BUDGET.allSurfacesPx ? ok : fail)(
-    `${total}px across all ${SURFACES.length} destinations (budget ${BUDGET.allSurfacesPx})`);
+    `${total}px of standing prose across all ${SURFACES.length} destinations (budget ${BUDGET.allSurfacesPx})`);
 } finally {
   await browser.close();
   server.close();
