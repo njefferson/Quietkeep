@@ -582,8 +582,42 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.5**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.6**
 - **https://quietkeep.pages.dev** — production, **2.0.5**
+
+**2.0.6 is staged and waiting on your on-device pass.** Production is on 2.0.5.
+
+**2.0.6 — two things reported from a device, and one of them nothing here could
+have caught.** The Close button was showing the panel's own text through itself:
+the scrolling body's painted box reached about five pixels past where the layout
+put it, and `button.ghost` has no fill, so a sliver of whatever you had scrolled
+to read straight through the way out. Measured at two viewport sizes before
+anything was touched — 4px on the ⓘ, 6px on the sheets, identical at 390px and
+834px, which is what margin arithmetic looks like and what a rendering quirk does
+not.
+
+**The walk already tested the way out and could not see this.** It scrolls each
+sheet to the end and asks whether the Close is on screen and whether anything is
+on top of it — a hit test. A transparent button IS the topmost thing at its own
+centre, so `elementFromPoint` returns it and the check passes. *Something is over
+it* and *you can see through it* are different questions and only the first was
+ever asked. It measures rectangles now, on all six surfaces, and asserts the
+button is not transparent even though the overlap is gone.
+
+**And the walkthrough named controls in the same plain text as everything else.**
+"Not this moves past it", "Just one thing strips it back" — sentences about two
+buttons with nothing marking which words were the buttons. The ⓘ panel has
+always set a control's name in `<em>` in its own markup; the walkthrough was the
+one surface not following the app's own convention, on the screen where a reader
+knows least. The splitter that did it for patch notes now lives in `marks.ts` and
+serves both, parse split from render so the part that can be wrong is pure and
+tested in Node.
+
+**Both carry the same build, and the promote that made them equal changed nothing
+a reader can see.** What went to `main` on 11 August was tests, a research
+correction, two gates and a permission rule — not one byte under `src/` or
+`public/`. A promote is allowed to change nothing on screen; what it must never
+do is leave this block saying otherwise.
 
 **Nothing is waiting.** Both carry the same build. 2.0.5 was promoted on his
 word, 2026-08-12, and this is the first entry in this block written after the

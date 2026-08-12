@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.0.6 — ITERATION
+
+*2026-08-11*
+
+- **The Close button was showing the panel’s own text through itself.** The ⓘ and the five screens behind it scroll their contents inside a fixed frame, and the frame was drawing about five pixels further down than it should — so a sliver of whatever you had scrolled to was painted underneath the way out. The button has no fill of its own, so you read it straight through.
+- **The walkthrough now shows you which words are buttons.** It says things like “Not this moves past it” and “Just one thing strips it back” — sentences about two controls, set in the same plain text as the words around them. The ⓘ panel has always set a control’s name apart; the walkthrough was the one screen not doing it, on the screen where you know least about the app.
+- **Both were reported from a device, and neither was something the app could catch on its own.** It already checked that the way out stays on screen and that nothing sits on top of it — and a see-through button passes both of those. It measures the shapes now, on all six screens.
+
 ## 2.0.5 — ITERATION
 
 *2026-08-11*

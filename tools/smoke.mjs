@@ -3359,6 +3359,107 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(xReach.onScreen, true, `and the way out is still on screen (top ${xReach.top}px)`);
   is(xReach.hit, 'about-dismiss', 'and nothing is sitting on top of it');
 
+  // --- AND YOU CANNOT SEE THROUGH IT (reported from a device) ---------------
+  //
+  // The hit test above is the check this repo already had, and it CANNOT see the
+  // defect that was reported: the Close button was showing the panel's text
+  // through itself. `button.ghost` sets `background: transparent`, so the button
+  // is the topmost thing at its own centre — `elementFromPoint` returns it and
+  // the assertion passes — while whatever you had scrolled to paints underneath
+  // and reads straight through.
+  //
+  // "Something is over it" and "you can see through it" are different questions.
+  // Only the first was ever asked, on any surface, which is why a 5px band of
+  // overlap survived every gate here for as long as the sheets have existed.
+  //
+  // So this measures RECTANGLES rather than hit-testing, and it asks both
+  // halves: the scrolling body must not reach into the way out, and the way out
+  // must not be transparent even if it someday does.
+  // DERIVED FROM THE MARKUP, never hand-listed.
+  //
+  // This WAS a hand-written list of six, and it was stale within the hour: two
+  // more sheets landed the same day from another line of work, carrying the same
+  // chrome and the same ghost Close, and a named list cannot fail on a screen it
+  // has never heard of (hub LESSONS §22 and §28). Asking the document which
+  // dialogs have a scrolling body and a way out means a new surface is covered
+  // on the day it exists rather than on the day somebody remembers this check.
+  const SURFACES_WITH_A_WAY_OUT = await tpage.evaluate(() =>
+    [...document.querySelectorAll('dialog')]
+      .map(d => {
+        const body = d.querySelector('.sheet-body, .about-body');
+        const close = d.querySelector('[id$="-close"]');
+        return body && close ? [d.id, `#${d.id} .sheet-body, #${d.id} .about-body`, `#${close.id}`] : null;
+      })
+      .filter(Boolean));
+  is(SURFACES_WITH_A_WAY_OUT.length >= 7, true,
+    `every scrolling surface with a way out is discovered, not listed (${SURFACES_WITH_A_WAY_OUT.length} found)`);
+  const seeThrough = [];
+  for (const [surface, bodySel, closeSel] of SURFACES_WITH_A_WAY_OUT) {
+    await openSurface(tpage, surface).catch(() => {});
+    await tpage.waitForTimeout(90);
+    const m = await tpage.evaluate(([b, c]) => {
+      const body = document.querySelector(b);
+      const btn = document.querySelector(c);
+      if (!body || !btn) return { missing: true };
+      body.scrollTop = body.scrollHeight;
+      const br = body.getBoundingClientRect();
+      const cr = btn.getBoundingClientRect();
+      const bg = getComputedStyle(btn).backgroundColor;
+      return {
+        // How far the scroller's painted box reaches past the top of the way out.
+        overlap: Math.round(Math.max(0, br.bottom - cr.top)),
+        // rgba(…, 0) is the transparent the ghost style sets.
+        transparent: /,\s*0\s*\)$/.test(bg) || bg === 'transparent',
+      };
+    }, [bodySel, closeSel]);
+    if (m.missing) { seeThrough.push(`${surface} — no body or no way out found`); continue; }
+    if (m.overlap > 0) seeThrough.push(`${surface} — the scroller reaches ${m.overlap}px into the way out`);
+    if (m.transparent) seeThrough.push(`${surface} — the way out is transparent`);
+  }
+  is(seeThrough.join(' | '), '',
+    `no surface can show its own text through the way out (${SURFACES_WITH_A_WAY_OUT.length} checked)`);
+  await tpage.keyboard.press('Escape').catch(() => {});
+
+  // --- THE WALKTHROUGH NAMES ITS CONTROLS AS CONTROLS -----------------------
+  //
+  // Reported from a device: the walkthrough's references to buttons read as
+  // ordinary words — "Not this moves past it", "Just one thing strips it back".
+  // The ⓘ panel has always set a control's name in <em>; the walkthrough was the
+  // one surface not doing it, on the screen where a reader knows least.
+  //
+  // Asserted on the RENDERED step rather than on the source string, because the
+  // source could carry the marks perfectly while the renderer prints them.
+  await openSurface(tpage, 'sheet-group-actions').catch(() => {});
+  await tpage.locator('#tour-replay').click().catch(() => {});
+  await tpage.waitForSelector('#tour[open]', { timeout: 2500 }).catch(() => {});
+  const emphasised = [];
+  for (let tourStep = 0; tourStep < 6; tourStep += 1) {
+    const s = await tpage.evaluate(() => ({
+      text: document.querySelector('#tour-body')?.textContent ?? '',
+      ems: [...document.querySelectorAll('#tour-body em')].map(e => e.textContent),
+    }));
+    if (s.ems.length) emphasised.push(...s.ems);
+    // No asterisk may ever reach the reader — that is the failure the patch
+    // notes already hit once, printing its own markers on screen.
+    is(s.text.includes('*'), false, `walkthrough step ${tourStep + 1} shows no raw marker to the reader`);
+    await tpage.locator('#tour-next').click().catch(() => {});
+    await tpage.waitForTimeout(60);
+  }
+  is(emphasised.length >= 4, true,
+    `the walkthrough sets its control names apart from the prose (${emphasised.join(', ')})`);
+  await tpage.keyboard.press('Escape').catch(() => {});
+  await tpage.waitForTimeout(120);
+
+  // PUT BACK THE STATE THE NEXT SECTION EXPECTS. These two blocks borrow the
+  // panel, walk through five sheets and replay the walkthrough, and the check
+  // immediately below has always opened by pressing the ⓘ's own dismiss — which
+  // needs the panel open. Adding a section in the middle of a walk means
+  // inheriting an obligation to hand the app back as it was found; the first
+  // version of this did not, and the next assertion timed out for thirty
+  // seconds against a button that was simply not on screen.
+  await openSurface(tpage, 'about').catch(() => {});
+  await tpage.waitForSelector('#about[open]', { timeout: 2500 }).catch(() => {});
+
   // AND IT ACTUALLY CLOSES. `close()` succeeding is not the same as the panel
   // going away: `#about { display: flex }` beats the UA's `dialog:not([open])
   // { display: none }` on specificity, so the dialog closed and stayed on
