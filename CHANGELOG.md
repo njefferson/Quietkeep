@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.0.9 — ITERATION
+
+*2026-08-12*
+
+- **Nothing on screen has changed in this one.** It carries a single invisible attribute in the page, which exists so a new check can hold the app to a rule: anything that only a keyboard can reach has to say how a finger reaches the same place. The check now runs on every push.
+- It gets a release of its own because of how the app updates: files are kept in a store named after the version, so a change that does not move the version never reaches a device that already has the app. Publishing it without this would have meant publishing it nowhere.
+
 ## 2.0.8 — ITERATION
 
 *2026-08-12*

@@ -582,11 +582,23 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.8**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.9**
 - **https://quietkeep.pages.dev** — production, **2.0.6**
 
-**2.0.7 and 2.0.8 are both staged and waiting on your on-device pass.**
+**2.0.7, 2.0.8 and 2.0.9 are all staged and waiting on your on-device pass.**
 Production is on 2.0.6.
+
+**2.0.9 — one invisible attribute, and it needed a release of its own.** The
+touch gate reads `data-touch-partner` off the markup, so declaring it changed a
+shipped file. `release-check.mjs` went red in CI on exactly that: the service
+worker caches by triplet, so a shipped file that changes without the triplet
+moving never reaches a device that already has the app. The change would have
+been published and unable to arrive — the fauxplane shape, caught by a gate this
+time instead of by somebody noticing a missing feature four releases later.
+
+**The miss was mine and it is worth recording:** the gates were run, then a
+shipped file was edited, then it was committed. Running the suite before the
+last edit is the same as not running it.
 
 **2.0.8 — the way past the stack, reachable by finger** (ADR-0090). `.skip` has
 said "Skip to what you are holding" since the first release, at `left:-9999px`
