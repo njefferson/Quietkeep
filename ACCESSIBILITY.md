@@ -1298,3 +1298,49 @@ late. The one screen it exists for was the one screen it was late for.
 That is the signal being recorded: a check that passes locally and fails on a
 loaded runner is reporting a race, not a flake, and both times the race was in
 the app rather than in the walk.
+
+---
+
+## 2.0.8 — a route that conformed and could not be taken
+
+The app has carried `<a class="skip" href="#cards">Skip to what you are
+holding</a>` since its first commit — the WCAG 2.4.1 bypass-blocks pattern,
+positioned `left:-9999px` and revealed on `:focus`. That implementation is
+correct and it is the conventional one.
+
+**In the same commit, `#capture` gained `autofocus`.** That places the document's
+focus *after* the link, so it was never in the forward tab order either:
+reaching it takes three Shift+Tab presses backwards. By finger it was not
+reachable at all.
+
+**It shipped that way for 142 releases.** What it was the only route to: on a
+full store the held list begins **3.0 screens down at 820×1180 and 4.9 at
+390×844**, behind up to nine live sections.
+
+**Every accessibility gate here was green throughout, and correctly.** Contrast
+computed per state, focus rings focused-and-measured, target sizes in both
+dimensions, axe per state and at the stressed viewport, both themes. Each of
+those asks whether the app CONFORMS. Conformance is specified for input methods
+in general, so a keyboard-only route satisfies all of it. This register exists to
+record what was actually checked rather than what looks checked, so it records
+this: **the suite was measuring the standard, and this app is used on a tablet,
+by touch.**
+
+**What changed.** `#to-held` — *Go to what you are holding* — is a visible
+control under the offer, rendered only when a section is live above the list and
+the list has rows. It scrolls to `#cards` and moves focus there, so a keyboard or
+screen-reader user continues from the list rather than from where they pressed.
+
+**The skip link stays**, unchanged in behaviour and still first in the document:
+it is the right pattern for a keyboard, and removing it would trade one input
+method for another. It now carries `data-touch-partner="#to-held"`.
+
+**Held by a gate, not by this note.** `tools/touch-check.mjs` fails when an
+interactive element parked off-canvas does not name a touch-reachable partner,
+or when the partner does not exist, is off-canvas itself, is under the 44px
+floor, or goes somewhere else. It was watched red on the real defect before the
+fix, and on three planted variants.
+
+**New pairs measured in the same commit:** `#to-held` at 6.48:1 (light) and
+9.13:1 (dark) against the surface, focus ring 8.92:1 and 9.45:1, both above the
+4.5:1 and 3:1 floors.

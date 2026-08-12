@@ -582,10 +582,87 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.6**
-- **https://quietkeep.pages.dev** — production, **2.0.5**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.9**
+- **https://quietkeep.pages.dev** — production, **2.0.6**
 
-**2.0.6 is staged and waiting on your on-device pass.** Production is on 2.0.5.
+**2.0.7, 2.0.8 and 2.0.9 are all staged and waiting on your on-device pass.**
+Production is on 2.0.6.
+
+**2.0.9 — one invisible attribute, and it needed a release of its own.** The
+touch gate reads `data-touch-partner` off the markup, so declaring it changed a
+shipped file. `release-check.mjs` went red in CI on exactly that: the service
+worker caches by triplet, so a shipped file that changes without the triplet
+moving never reaches a device that already has the app. The change would have
+been published and unable to arrive — the fauxplane shape, caught by a gate this
+time instead of by somebody noticing a missing feature four releases later.
+
+**The miss was mine and it is worth recording:** the gates were run, then a
+shipped file was edited, then it was committed. Running the suite before the
+last edit is the same as not running it.
+
+**2.0.8 — the way past the stack, reachable by finger** (ADR-0090). `.skip` has
+said "Skip to what you are holding" since the first release, at `left:-9999px`
+until focused — and `#capture` carries `autofocus`, so it is not in the forward
+tab order either: reaching it takes three Shift+Tabs BACKWARDS. It has served a
+keyboard and a screen reader and nobody else. On an iPad, by finger, the app's
+own decision did not exist.
+
+Measured on a full store: the held list begins 3.0 screens down at 820×1180 and
+4.9 at 390×844. One tap now lands on it with focus. The control itself sits 0.86
+screens down on an iPad — on the first screen — and 1.57 on a phone, because the
+offer is 980px tall there. That second number is stated in the release notes
+rather than rounded away: it is a way past four more screens, not past all of
+them.
+
+**What the research found, and one correction to the catalogue.** The cost of
+the section stack is not choice overload — entry 16 marks that Contested, and
+ADR-0060 already established the right variable ("not how many things are shown
+— whether choosing requires a comparison"). It is FOCALITY. Entry 3 rates itself
+Strong on Einstein & McDaniel and reads "visible is the only kind of
+remembered"; the same authors' multiprocess framework says visibility is not
+sufficiency — a focal cue fires spontaneously, a non-focal one needs monitoring,
+and monitoring costs the task in hand. A section is focal for whoever came for
+it and non-focal for everyone else. `docs/nd-collisions.md` entry 3 should carry
+that correction the way entry 16 already carries its own.
+
+**What to look at:** with a busy store, the line under Next up. It should not be
+there on a quiet day or an empty one.
+
+**Still not fixed:** the work surface is one scroll and nothing was hidden or
+reordered. This is a way past the sections, not fewer of them. Whether the
+everyday surface should show that much at once is still undecided, and Q-11
+gates the version of it that involves ranking.
+
+**These two lines said candidate 2.0.6 / production 2.0.5 while 2.0.6 was
+already live**, on both branches, from the promote until now. Verified before
+correcting rather than assumed: `6795ead`, Deploy green on main, the deploy step
+run rather than skipped. The promote moved the code and left the record behind —
+which is the failure the paragraph further down this block already describes
+happening at 1.40.3, one release later and in the same file. **A promote is not
+finished when the deploy is green; it is finished when this block says what the
+deploy did.**
+
+**2.0.7 — the Menu opens as its own screen** (ADR-0089), the third and last of
+the inline expanders on the work surface. Measured at 820×1180 on the invented
+life: with the Menu open the page was 20,374px and is 17,777px. Its 2,649px of
+list scrolls inside the sheet with the Close pinned.
+
+**All three, together, are now structurally impossible** — one surface at a
+time. The case that measured 63,906px (54.2 screens) before 2.0.5 and 20,386px
+after it is 17,777px, and never more than one of the three can be open at once.
+Driven and asserted, including against a programmatic click on a control a modal
+had made inert.
+
+**What to look at on the device:** press the line that says how many things are
+on the Menu. It should arrive at its own screen with a Close that stays put, and
+walking through an item should close it behind you rather than stack. Taking the
+last thing off the Menu from inside should put you back on the work surface
+rather than leaving you on an empty screen.
+
+**Still not fixed, and this does not pretend otherwise:** the work surface is
+one scroll, nine sections stacking to 2,715px above the held list on a full
+store. Every reader-opened expander is off it now, which is the end of what this
+approach reaches. The rest is a different decision and it is not made.
 
 **2.0.6 — two things reported from a device, and one of them nothing here could
 have caught.** The Close button was showing the panel's own text through itself:

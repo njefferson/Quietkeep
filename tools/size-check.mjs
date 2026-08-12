@@ -114,7 +114,36 @@ const BUDGET = {
   // Worth stating plainly since the count only ever rises here: nothing on the
   // workspace gained a control, and the two it did gain cannot be reached
   // without first pressing something that was already there.
-  controls: 212,
+  //
+  // 212 -> 213 on 2026-08-12 (ADR-0089), and it is the third instance of the
+  // same trade rather than a new one: the Menu became a sheet, and a sheet owes
+  // its own Close outside the scrolling body or the way out scrolls away (§4).
+  // One control, unreachable without first pressing `#menu-open`, which has
+  // been on that surface all along.
+  //
+  // THE COUNT IS NOT THE MEASUREMENT THAT MATTERED HERE, and saying so is the
+  // point of a comment rather than a number: this release took 2,597px of fold
+  // off the work surface, and the three ADR-0088/0089 sheets between them took
+  // 45,874px. A gate that can only see +1 control would have read all of that
+  // as a regression. It is a ratchet against sprawl, not a scoreboard.
+  //
+  // 213 -> 214 on 2026-08-12 (ADR-0090), and this one is the HARDER argument,
+  // so it gets the longer reason: it adds a control to the work surface, which
+  // is the surface this budget exists to protect, and it is not a way out of a
+  // sheet like the last three.
+  //
+  // What buys it: the affordance is not new. `.skip` has said "Skip to what you
+  // are holding" since the first release and is positioned off-screen until
+  // focused, so it has served a keyboard and a screen reader and nobody else —
+  // and `#capture` carries `autofocus`, so it is not even in the forward tab
+  // order. This makes an existing decision reachable by finger rather than
+  // adding a new capability.
+  //
+  // And it is CONDITIONAL, which nothing else counted here is: it renders only
+  // when a section is live above the list and the list has rows. On a quiet day
+  // and on an empty store the count is 213, not 214. This number is the worst
+  // case, which is the right thing for a ceiling to measure.
+  controls: 214,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

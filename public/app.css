@@ -378,6 +378,33 @@ button.ghost {
   cursor: pointer;
 }
 
+/* THE WAY PAST THE STACK (2.0.8, ADR-0090). Built on `.gauge`'s shape — a full
+   width, left-aligned, quiet row — because that is already the idiom for "a line
+   on this surface that takes you somewhere", and a reader's hands have learned
+   it. It is NOT a call to action and must never read as one: no fill, no accent
+   background, nothing that competes with the offer directly above it.
+
+   `--ink-soft` like the gauge, which the contrast gate holds to 4.5:1 on the
+   surface behind it. The arrow is decorative and after the words, so the
+   accessible name is the sentence (SC 2.5.3) and nothing depends on seeing a
+   glyph (B-01/B-02). */
+.jump {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.9rem;
+  padding: 0.5rem 0;
+  min-height: var(--target);
+  text-align: left;
+  color: var(--ink-soft);
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+.jump::after {
+  content: " \2193";        /* a downward arrow, decorative — the words carry it */
+}
+
 /* THE PROOF (ADR-0084). Read before the inventory below it, so it carries the
    reading weight: the promise as a sentence, then how it knows. A count here is
    a fact to check, never a score — nothing about it may look like a target. */

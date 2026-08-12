@@ -29,6 +29,36 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.9',
+    kind: 'ITERATION',
+    date: '2026-08-12',
+    notes: [
+      '**Nothing on screen has changed in this one.** It carries a single invisible attribute in the page, which exists so a new check can hold the app to a rule: anything that only a keyboard can reach has to say how a finger reaches the same place. The check now runs on every push.',
+      'It gets a release of its own because of how the app updates: files are kept in a store named after the version, so a change that does not move the version never reaches a device that already has the app. Publishing it without this would have meant publishing it nowhere.',
+    ],
+  },
+  {
+    triplet: '2.0.8',
+    kind: 'ITERATION',
+    date: '2026-08-12',
+    notes: [
+      '**The Menu line is now one row lower than it was; it was directly under Upkeep.** A new row sits above it — see below. Nothing else moved.',
+      '**There is a way straight down to your list now, and you can tap it.** On a full planner the list of what you are holding starts about three screens down on an iPad, and nearly five on a phone, behind everything the app wanted to tell you first. A line saying **Go to what you are holding** now sits just under what is next up and takes you there in one tap. It is only there when something is actually in the way — never on a quiet day, never on an empty one.',
+      '**On a phone you still scroll past the offer to reach it** — about a screen and a half, because the card at the top is taller there. That is honest rather than ideal: it is a way past four more screens, not a way past all of them. On an iPad it is on the first screen.',
+      '**This existed already and you could not reach it.** The app has carried a "skip to what you are holding" link since the first release, for keyboard and screen-reader users only. By finger it was unreachable. That is the gap this closes.',
+      '**Still one scroll.** The sections above your list have not changed and nothing has been hidden. This gives you a way past them, not fewer of them.',
+    ],
+  },
+  {
+    triplet: '2.0.7',
+    kind: 'ITERATION',
+    date: '2026-08-12',
+    notes: [
+      '**The Menu opens as its own screen now**, like the two things above it did last release. It used to unfold in the middle of the page, above the list you were already looking at. It is the same list, the control is where it was, and it still says plainly that nothing on it is asking for anything.',
+      '**Your main screen is still one scroll.** With a lot on, the sections above your list stack up in front of it. All three of the things you could open yourself have now been moved off it; the rest is a separate question and it is not answered yet.',
+    ],
+  },
+  {
     triplet: '2.0.6',
     kind: 'ITERATION',
     date: '2026-08-11',

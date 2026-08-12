@@ -203,6 +203,24 @@ jobs:
       - name: Every collision says what it is built on
         run: npm run collisions:check
 
+      # THE INDEX AGAINST THE RECORDS. docs/adr/README.md went fifteen records
+      # stale — 0074 to 0088 — before anyone noticed, including the record
+      # written by the session that noticed. A missing row is invisible in a way
+      # a wrong row is not: the index reads as complete whatever is absent from
+      # it, so there is nothing to see and nothing to click. Checked BOTH ways,
+      # because a row pointing at no file survives a rename silently.
+      - name: Every decision is in the index, and every row is a real decision
+        run: npm run adr:check
+
+      # A ROUTE A FINGER CANNOT TAKE IS NOT A ROUTE. The reference platform is a
+      # tablet, used by touch, and every other gate here measures CONFORMANCE —
+      # which is defined for input methods in general. The skip link shipped in
+      # the first commit, off-canvas until focused, with `autofocus` in the same
+      # commit putting the document's focus after it: never reachable by tabbing
+      # forward, never reachable by finger, green everywhere, for 142 releases.
+      - name: Every off-canvas route names a way a finger can take it
+        run: npm run touch:check
+
       # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
       # somebody who did not open the app, on a lock screen, possibly in front of
       # other people, on a day they may be at their worst — and there is no

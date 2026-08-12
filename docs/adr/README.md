@@ -249,6 +249,68 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0072](0072-an-update-waits-for-the-reader.md)**
   - Decision: The new worker waits and only the reader's decision releases it — `skipWaiting()` on install was creating the half-updated shell its own comment claimed to prevent
   - Status: Accepted
+- **[0074](0074-arrangements-that-run-without-you.md)**
+  - Decision: An arrangement is a field on an upkeep, and its clock measures confirmation — its failure mode is silence, so the thing under a clock is *did you check*, never *did it happen*
+  - Status: Accepted · shipped 1.21.0
+- **[0075](0075-the-header-clock.md)**
+  - Decision: The header clock says the time, the remainder and a count, and refuses the fourth thing — the dial answers a question that was never the problem; the remainder is the gradient
+  - Status: Accepted · shipped 1.22.0
+- **[0076](0076-assembled-context-on-the-cards.md)**
+  - Decision: Assembled context belongs on the card where the decision is made — the half of ADR-0012 that was never delivered
+  - Status: Accepted · shipped 1.23.0
+- **[0077](0077-when-you-cannot-start.md)**
+  - Decision: The two things you can do when you cannot start, both on the offer — name a first step, or say it is heavy
+  - Status: Accepted · shipped 1.24.0
+- **[0078](0078-what-the-gates-did-not-look-at.md)**
+  - Decision: Two gates that measured everything except whether the page was right — each measured a property of the page rather than the page
+  - Status: Accepted · shipped 1.24.1
+- **[0079](0079-a-way-past-a-card.md)**
+  - Decision: Triage gets a way past a card, and it records nothing — every pass had paths in and no path out, while Next up has had "Not this" since ADR-0030
+  - Status: Accepted · shipped 1.25.0
+- **[0080](0080-dating-a-place.md)**
+  - Decision: A place gets a return date, and it is a review clock offered on the receipt
+  - Status: Accepted · shipped 1.26.0 · V2 stage 3
+- **[0081](0081-waiting-for-a-thing-rather-than-a-date.md)**
+  - Decision: An item may wait for another item to be finished, and that is law 1's fifth clause
+  - Status: Accepted · shipped 1.30.0
+- **[0082](0082-put-it-down.md)**
+  - Decision: Put it down — the exit that is neither done nor deleted, reversible, leaving no browsable pile and no count
+  - Status: Accepted · shipped 1.32.0
+- **[0083](0083-four-destinations.md)**
+  - Decision: Help, Settings, Your data and How it works stop being folds inside the ⓘ and become their own screens, reached from More — one surface at a time
+  - Status: Accepted · supersedes [0055](0055-the-panel-folds.md)
+- **[0084](0084-the-guarantee-is-the-product.md)**
+  - Decision: The guarantee is the product and it has to be openable — the proof (why each thing comes back) before the inventory (what is in here)
+  - Status: Accepted
+- **[0085](0085-sorting-is-not-the-corridor.md)**
+  - Decision: Capture covers. Sorting is a door, never the corridor
+  - Status: Accepted
+- **[0086](0086-a-thing-is-a-task-the-moment-it-exists.md)**
+  - Decision: A thing is a task the moment it exists
+  - Status: Accepted · shipped 2.0.0
+- **[0087](0087-a-cure-is-not-somebody-asking.md)**
+  - Decision: A cure is not somebody asking, and every cured kind is classified
+  - Status: Accepted · shipped 2.0.1
+- **[0088](0088-the-claim-and-the-tree-are-places.md)**
+  - Decision: The coverage claim and the alignment tree stop unfolding into the workspace and become sheets, opened from the controls that always stated them
+  - Status: Accepted · shipped 2.0.5 · extends [0083](0083-four-destinations.md), amends [0013](0013-levels-push-down.md) and [0084](0084-the-guarantee-is-the-product.md)
+- **[0089](0089-the-menu-is-a-place.md)**
+  - Decision: The Menu becomes a sheet — the third and last inline expander off the work surface — and law 6 stops being maintained and becomes structural, because a dialog cannot remember it was open
+  - Status: Accepted · shipped 2.0.7 · extends [0088](0088-the-claim-and-the-tree-are-places.md)
+- **[0090](0090-a-way-past-the-stack.md)**
+  - Decision: A visible, touch-reachable jump to the held list, shown only when something is in the way — the `.skip` link had served keyboard and screen-reader users only, and autofocus kept it out of the forward tab order
+  - Status: Accepted · shipped 2.0.8 · extends [0089](0089-the-menu-is-a-place.md)
+
+**This index went fifteen records stale before anyone noticed**, from 0074 to
+0088 — every record written between 5 and 11 August. Nothing gates it, and a
+missing row is invisible in exactly the way a wrong row is not: the index reads
+as complete whatever is absent from it, which is the same shape as the stale
+paragraph the hub's own CLAUDE.md records under *one file, two answers*.
+
+Adding only the newest would have been worse than adding none — it would have
+put a current date on a list still missing fourteen records. If this drifts
+again the answer is a gate that compares `ls docs/adr/0*.md` against the rows
+here, not another catch-up.
 
 **Provisional** means: decided well enough to build on, and explicitly awaiting the
 owner's word. It is not the same as Accepted, and it is not the same as open.

@@ -36,6 +36,8 @@
     "reasons:check": "node tools/reasons.mjs",
     "controls:check": "node tools/controls.mjs",
     "collisions:check": "node tools/collisions.mjs",
+    "adr:check": "node tools/adr-index.mjs",
+    "touch:check": "node tools/touch-check.mjs",
     "notify:check": "node tools/notify-voice.mjs",
     "release:check": "node --experimental-strip-types tools/release-check.mjs",
     "size:check": "node tools/size-check.mjs",
