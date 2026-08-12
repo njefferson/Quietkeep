@@ -583,7 +583,11 @@ decided by a session.**
 ### Staged and waiting on the owner
 
 - **https://staging.quietkeep.pages.dev** — the candidate, **2.0.5**
-- **https://quietkeep.pages.dev** — production, **2.0.4**
+- **https://quietkeep.pages.dev** — production, **2.0.5**
+
+**Nothing is waiting.** Both carry the same build. 2.0.5 was promoted on his
+word, 2026-08-12, and this is the first entry in this block written after the
+production deploy was read rather than before it.
 
 **2.0.5 — the claim and the tree stopped unfolding into the workspace**
 (ADR-0088). Both controls are where they were and say what they said; their
@@ -594,15 +598,22 @@ page was 43,808px and is 17,777px; with the tree open it was 35,023px and is
 The workspace with nothing opened is unchanged at 17,777px, which is the point
 — that surface was not the target and was not touched.
 
-**What to look at on the device:** press the line above your list, and press
-"How it hangs together". Each should arrive at its own screen with a Close that
-stays put however far you scroll, and closing it should put you back exactly
-where you were. Walking from a tree row into a thing's own sheet should close
-the tree rather than stack the two.
+**Promoted as `d40a37c`, and the production deploy was verified on that exact
+sha** — Deploy and Spine green, the deploy STEPS run rather than skipped, and
+the log's own words: `Deployed to PRODUCTION: https://quietkeep.pages.dev`.
+The merge tree was byte-identical to `fe93d98`, the staging sha already walked
+green, and every gate was re-run against the merged tree regardless.
 
 **What it does not fix, and must not be read as fixing:** the workspace is still
 one scroll. On a full store nine sections stack to 2,715px above the held list.
-That is a separate decision and it is not made.
+Each is conditional and individually justified; nothing bounds their sum. Law 8
+bounds the re-entry greeting and governs that path only, not the everyday
+surface. That is a separate decision and it is not made.
+
+**Also still a fold: the Menu**, at 2,597px — the whole of the 2,609px that
+separates the post-change claim-plus-tree-plus-Menu figure from the untouched
+workspace. Two of the three inline expanders moved; this is the third, and it
+was left because the change he asked for named two.
 
 **Everything through 2.0.4 was promoted 2026-08-11**, on his word. What went to
 `main` that day was tests, a research correction, two gates and a permission
