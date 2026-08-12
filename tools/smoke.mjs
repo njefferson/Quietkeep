@@ -3393,10 +3393,37 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       .filter(Boolean));
   is(SURFACES_WITH_A_WAY_OUT.length >= 7, true,
     `every scrolling surface with a way out is discovered, not listed (${SURFACES_WITH_A_WAY_OUT.length} found)`);
+  // NOT EVERY SURFACE IS REACHED THROUGH `More`. `openSurface` routes anything
+  // that is not the ⓘ through More's destination list, and the two sheets that
+  // arrived with ADR-0088 are opened from the WORKSPACE — the gauge opens the
+  // coverage sheet, `#tree-open` opens the tree. So the first version of this
+  // loop silently failed to open them (the `.catch` swallowed it), measured a
+  // CLOSED dialog, and reported "the way out is transparent" — a true reading of
+  // a `.ghost` button that no rule applies to while its dialog is shut.
+  //
+  // It named two real surfaces for the wrong reason, which is worse than missing
+  // them: a check that misattributes sends you to fix a stylesheet that was
+  // already right. The opener is per-surface now, and the measurement refuses to
+  // run at all unless the dialog is actually open.
+  const WORKSPACE_DOORS = { 'sheet-coverage': '#gauge', 'sheet-tree': '#tree-open' };
   const seeThrough = [];
   for (const [surface, bodySel, closeSel] of SURFACES_WITH_A_WAY_OUT) {
-    await openSurface(tpage, surface).catch(() => {});
+    const door = WORKSPACE_DOORS[surface];
+    if (door) {
+      await tpage.evaluate(() => {
+        for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+      });
+      await tpage.locator(door).click().catch(() => {});
+    } else {
+      await openSurface(tpage, surface).catch(() => {});
+    }
     await tpage.waitForTimeout(90);
+    // A CLOSED DIALOG HAS NO COMPUTED STYLE WORTH READING. Say so as its own
+    // failure rather than letting it masquerade as a finding about colour.
+    if (!(await tpage.locator(`#${surface}[open]`).count())) {
+      seeThrough.push(`${surface} — the walk could not open it, so nothing was measured`);
+      continue;
+    }
     const m = await tpage.evaluate(([b, c]) => {
       const body = document.querySelector(b);
       const btn = document.querySelector(c);
