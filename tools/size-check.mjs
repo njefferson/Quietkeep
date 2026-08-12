@@ -84,7 +84,19 @@ const BUDGET = {
   // navigation is what put everything behind one button in the first place.
   // If this ever needs raising for eight more FEATURES, that is a different
   // argument and it should be a harder one to win.
-  controls: 210,
+  //
+  // 210 -> 212 on 2026-08-11 (ADR-0088), and it is the same argument as the
+  // raise above rather than the harder one. Two sheets took the place of two
+  // inline folds; a sheet owes its own Close, outside the scrolling body, or
+  // the way out scrolls away (§4). So this is +2 controls that exist ONLY to
+  // leave surfaces that already existed — and the change DELETED scroll rather
+  // than adding any: the ⓘ went from 2281px to 2084px in the same commit, and
+  // the workspace shed up to 43,277px of fold.
+  //
+  // Worth stating plainly since the count only ever rises here: nothing on the
+  // workspace gained a control, and the two it did gain cannot be reached
+  // without first pressing something that was already there.
+  controls: 212,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

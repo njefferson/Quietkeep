@@ -543,32 +543,26 @@
 
   <h2 class="section">What you are holding</h2>
   <!-- Tappable: the gauge's number is a claim, and the claim is checkable —
-       every item and the date it comes back. -->
-  <button id="gauge" class="gauge" type="button" aria-expanded="false"
-          aria-controls="coverage"></button>
-  <!-- HOW MANY, ONLY ONCE YOU HAVE ASKED. The gauge itself used to lead with
-       "N held" — an aggregate, on the landing surface, that only ever rises.
-       The number is still true and still checkable; it just belongs to the act
-       of opening the claim rather than to the act of opening the app. Outside
-       the <ul> because a list may only contain list items — the same axe rule
-       that caught a stray note inside a <dl>. -->
-  <!-- THE PROOF, BEFORE THE INVENTORY (ADR-0084). Opening the claim used to
-       lead straight into every item and its return date — the CONTENTS. The
-       question this app exists to answer is about the CONTAINER: not "what is
-       in here" but "can I stop holding this myself". So the first thing behind
-       the claim is how it knows — the small closed set of reasons a thing comes
-       back, each with a count — and anything it cannot guarantee, named. The
-       itemised list stays underneath, for when the reasons are not enough. -->
-  <div id="coverage-proof" class="coverage-proof" hidden></div>
-  <p id="coverage-count" class="coverage-count" hidden></p>
-  <ul id="coverage" class="coverage" hidden></ul>
+       every item and the date it comes back.
+
+       IT OPENS A SHEET, NOT A FOLD (2.0.5, ADR-0088). Both of these controls
+       used to unfold their contents inline, directly above the held list. On a
+       full store that put 26,031px of claim and 17,246px of tree between the
+       reader and the list they were already looking at — measured at 820x1180,
+       not estimated. ADR-0083 retired exactly that shape in the (i) panel and
+       said why: a fold changes how much stands in front of you and not how far
+       you have to travel, and travel is what was expensive. Neither of these is
+       an expander any more, so neither carries aria-expanded/aria-controls —
+       a button that opens a dialog is not a disclosure and must not claim to
+       be one. -->
+  <button id="gauge" class="gauge" type="button"></button>
 
   <!-- The alignment tree, ON REQUEST (1.6.0 — build-plan item 39, ADR-0013).
        Never the landing view; an inspection mode, not a workspace. Rows carry
-       exactly one verb — open the sheet. No drag, no reorder, no add-here. -->
-  <button id="tree-open" class="gauge" type="button" aria-expanded="false"
-          aria-controls="tree">How it hangs together</button>
-  <ul id="tree" class="tree" hidden></ul>
+       exactly one verb — open the sheet. No drag, no reorder, no add-here.
+       Its own ADR called it an inspection mode from the day it shipped, and it
+       unfolded into the workspace for thirty-four releases regardless. -->
+  <button id="tree-open" class="gauge" type="button">How it hangs together</button>
 
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
@@ -1897,6 +1891,51 @@
 
     </div>
   <button id="sheet-group-extras-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- THE CLAIM, AS ITS OWN PLACE (2.0.5, ADR-0088).
+     The gauge states a guarantee about the container; this is where the
+     guarantee is checked. It is NOT in More: ADR-0083 named "six destinations
+     becoming twelve" as the thing that would overturn it, and these two are
+     reached from the controls that always stated them, in the place those
+     controls have always been. What changed is where the contents land. -->
+<dialog id="sheet-coverage" aria-labelledby="sheet-coverage-title">
+  <h2 id="sheet-coverage-title" class="section">What comes back, and when</h2>
+  <div class="sheet-body">
+    <!-- THE PROOF, BEFORE THE INVENTORY (ADR-0084). Opening the claim used to
+         lead straight into every item and its return date — the CONTENTS. The
+         question this app exists to answer is about the CONTAINER: not "what is
+         in here" but "can I stop holding this myself". So the first thing behind
+         the claim is how it knows — the small closed set of reasons a thing comes
+         back, each with a count — and anything it cannot guarantee, named. The
+         itemised list stays underneath, for when the reasons are not enough. -->
+    <div id="coverage-proof" class="coverage-proof"></div>
+    <!-- HOW MANY, ONLY ONCE YOU HAVE ASKED. The gauge itself used to lead with
+         "N held" — an aggregate, on the landing surface, that only ever rises.
+         The number is still true and still checkable; it just belongs to the act
+         of opening the claim rather than to the act of opening the app. Outside
+         the <ul> because a list may only contain list items — the same axe rule
+         that caught a stray note inside a <dl>. -->
+    <p id="coverage-count" class="coverage-count"></p>
+    <ul id="coverage" class="coverage"></ul>
+  </div>
+  <button id="sheet-coverage-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- The alignment tree, as its own place (2.0.5, ADR-0088). ADR-0013 called it
+     an inspection mode rather than a workspace; a sheet is what that sentence
+     always described. -->
+<dialog id="sheet-tree" aria-labelledby="sheet-tree-title">
+  <h2 id="sheet-tree-title" class="section">How it hangs together</h2>
+  <!-- `tabindex="0"` for the same reason How it works carries it: when nothing
+       is filed, this body holds one sentence and no focusable thing, and a
+       scrolling region with nothing focusable inside cannot be scrolled from a
+       keyboard at all (WCAG 2.1.1). The populated case is saved by its rows;
+       the empty case is not, and the empty case is the newcomer's. -->
+  <div class="sheet-body" tabindex="0">
+    <ul id="tree" class="tree"></ul>
+  </div>
+  <button id="sheet-tree-close" type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="about" aria-labelledby="about-title">

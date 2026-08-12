@@ -32,6 +32,7 @@ import { sampleEvents, sampleSummary, sampleWords } from '../sample.ts';
 import { bigSampleEvents, bigSampleSummary, bigSampleWords } from '../big-sample.ts';
 import { CONFIRM_WORD, clearEvents, confirmMatches, eraseEverything, purgeCount, purgeSummary, purgeWords, purgedWords, type PurgeCount, type PurgeMode } from '../purge.ts';
 import { KEY_KV } from '../sync-keys.ts';
+import { openSheet as openSheetById, onSheetOpen, wireSheetClose, closeEverything } from './sheets.ts';
 import { badgeWords, badgeToggleLabel, isBadgeOn, setBadgeEnabled } from './badge.ts';
 import { importSummary, importWords, parseAnyExport, taskPaperEvents } from '../taskpaper.ts';
 import { deliverCopy, deliverDiagnostic, deliverGeneratedSet } from './export-copy.ts';
@@ -212,21 +213,19 @@ export async function mountAbout(
   {
     const SHEETS = ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
       'sheet-group-actions', 'sheet-group-extras'];
-    for (const id of SHEETS) {
-      document.querySelector<HTMLButtonElement>(`#${id}-close`)
-        ?.addEventListener('click', () => document.querySelector<HTMLDialogElement>(`#${id}`)?.close());
-    }
-    /** One surface at a time. Two open dialogs overlap and the top one eats the
-     *  other's taps — and "somewhere to go" means arriving at ONE place. */
-    const openSheet = (target: string): boolean => {
-      const sheet = document.querySelector<HTMLDialogElement>(`#sheet-${target}`);
-      if (!sheet) return false;
-      for (const id of SHEETS) document.querySelector<HTMLDialogElement>(`#${id}`)?.close();
-      dialog.close();
-      sheet.showModal();
-      repaintSheet(sheet.id);
-      return true;
-    };
+    for (const id of SHEETS) wireSheetClose(id);
+    // The repaint each of these owes on open, registered rather than called by
+    // whoever happens to open it (2.0.5). More is no longer the only door: the
+    // footer's build stamp and the empty store's way back both land inside a
+    // sheet, and a third caller that forgot to repaint is the stale-panel defect
+    // this file has already fixed twice.
+    for (const id of SHEETS) onSheetOpen(id, () => repaintSheet(id));
+    /** One surface at a time — the rule now lives in `./sheets.ts`, because the
+     *  coverage claim and the tree needed the same discipline and could not
+     *  reach it here (ADR-0088). This wrapper keeps More's own vocabulary: it
+     *  presses a destination NAME, and the sheet's id is an implementation
+     *  detail of this block. */
+    const openSheet = (target: string): boolean => openSheetById(`sheet-${target}`);
     goToSheet = (target) => { openSheet(target); };
 
     const more = document.querySelector<HTMLDialogElement>('#more');
@@ -1595,6 +1594,11 @@ export async function mountAbout(
     // `null` means the question has not come back; the button then stays as it
     // is rather than being shown for a promise that may already have been made.
     if (kept !== null && introAsk) introAsk.hidden = kept;
+    // ONE SURFACE AT A TIME applies to the ⓘ too (2.0.5). It opens with
+    // `showModal` here rather than through `openSheet`, because this is where
+    // its own repaint lives — so the close half has to be asked for explicitly
+    // or the panel is the one surface that can stack on top of another.
+    closeEverything('about');
     dialog.showModal();
     void paintStorage();
     // The calendar count is recomputed on every open. It used to be painted once

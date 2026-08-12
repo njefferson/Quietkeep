@@ -582,16 +582,32 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-**Everything through 2.0.4 was promoted 2026-08-11**, on his word.
-
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.4**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.5**
 - **https://quietkeep.pages.dev** — production, **2.0.4**
 
-**Both carry the same build, and the promote that made them equal changed nothing
-a reader can see.** What went to `main` on 11 August was tests, a research
-correction, two gates and a permission rule — not one byte under `src/` or
-`public/`. A promote is allowed to change nothing on screen; what it must never
-do is leave this block saying otherwise.
+**2.0.5 — the claim and the tree stopped unfolding into the workspace**
+(ADR-0088). Both controls are where they were and say what they said; their
+contents open as sheets instead of pushing the held list down. Measured at
+820×1180 on the invented life (566 things, 523 held): with the claim open the
+page was 43,808px and is 17,777px; with the tree open it was 35,023px and is
+17,777px; the claim-plus-tree-plus-Menu case went from 63,906px to 20,386px.
+The workspace with nothing opened is unchanged at 17,777px, which is the point
+— that surface was not the target and was not touched.
+
+**What to look at on the device:** press the line above your list, and press
+"How it hangs together". Each should arrive at its own screen with a Close that
+stays put however far you scroll, and closing it should put you back exactly
+where you were. Walking from a tree row into a thing's own sheet should close
+the tree rather than stack the two.
+
+**What it does not fix, and must not be read as fixing:** the workspace is still
+one scroll. On a full store nine sections stack to 2,715px above the held list.
+That is a separate decision and it is not made.
+
+**Everything through 2.0.4 was promoted 2026-08-11**, on his word. What went to
+`main` that day was tests, a research correction, two gates and a permission
+rule — not one byte under `src/` or `public/`. A promote is allowed to change
+nothing on screen; what it must never do is leave this block saying otherwise.
 
 **These two lines said 1.40.3 and 1.39.3 while the app was on 2.0.4** — nine
 releases and the largest change the app has had, all after the last time anybody
@@ -1099,12 +1115,28 @@ Both filing paths carry it. `fileUnderNewEvents` does not call
 `fileUnderEvents`, so a filter in one of them would have meant the same act
 having two answers, decided by whether the folder happened to exist yet.
 
-**Still owed in stage 3:** someday/reference shedding a date is unavoidable (the
-Menu is demand-free by law 6) but must be SAID rather than done silently; undo
-does not restore what a route cleared; the standing passed-dates range; the
-record-nothing "Not this one" on the replan card; persistent, never-timed undo;
-a release verb that is neither done nor deleted; and putting a whole place down
-at once.
+**~~Still owed in stage 3:~~ NOTHING — all seven closed, checked one at a time
+against the code on 2026-08-11 rather than read off this list.**
+
+- *someday/reference shedding a date must be SAID, not done silently* — said.
+  `clarify.ts` counts what a route will shed and states it before it commits.
+- *undo does not restore what a route cleared* — it does now.
+  `undoRouteEvents` takes what the route shed, captured before it committed, and
+  puts each one back — Menu-removal first, because the law-6 belt refuses a clock
+  on something still on the Menu. An undo that returns less than it took is not
+  an undo, and on an append-only log there was no other way back.
+- *the standing passed-dates range* — built, and no longer gated on an absence:
+  sixty-nine of them three at a time was not a way through.
+- *the record-nothing "Not this one" on the replan card* — `replan-skip`.
+- *persistent, never-timed undo* — no timer anywhere near it. A five-second
+  toast is a time limit and the interrupted reader is exactly who misses it.
+- *a release verb that is neither done nor deleted* — 1.32.0, `node.released`.
+- *putting a whole place down at once* — one act, thirty things.
+
+**This paragraph said all seven were owed until the day somebody checked.** Six
+of them had shipped and been written up in the patch notes the app itself shows
+you. A "still owed" line is the easiest kind of prose to leave behind, because
+nothing fails when it goes stale and it keeps reading like diligence.
 
 **1.30.1 is the first item of stage 3: the amnesty moved zero of four.**
 
@@ -1178,8 +1210,11 @@ and is why it is safe to write one onto the thing being offered right now.
 somewhere to put an alternate for when the plan breaks, since the deficit at that
 moment is generating options rather than choosing between them.
 
-**Still owed in stage 2:** an item anchored to another item's completion rather
-than to a clock, which needs a fifth coverage clause in the write gate.
+**~~Still owed in stage 2:~~ NOTHING — closed 2026-08-11.** The one item was an
+item anchored to another item's completion rather than to a clock, needing a
+fifth coverage clause in the write gate. It **shipped in 1.30.0**: `after.set` is
+in the gate, `unblocked` is a reason the offer states, and the walk drives it.
+The line stayed as though owed for eleven releases after the thing was built.
 
 **1.28.0 is stage 1 of the V2 plan: making "nothing has gone quiet" mean
 "and you will be shown it".**
