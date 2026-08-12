@@ -583,10 +583,14 @@ decided by a session.**
 ### Staged and waiting on the owner
 
 - **https://staging.quietkeep.pages.dev** — the candidate, **2.0.9**
-- **https://quietkeep.pages.dev** — production, **2.0.6**
+- **https://quietkeep.pages.dev** — production, **2.0.9**
 
-**2.0.7, 2.0.8 and 2.0.9 are all staged and waiting on your on-device pass.**
-Production is on 2.0.6.
+**Nothing is waiting.** 2.0.7, 2.0.8 and 2.0.9 were promoted together on his
+word, 2026-08-12, as `65e8d19`. The production deploy was verified on that exact
+sha — Deploy and Spine green, the deploy steps run rather than skipped, and the
+log's own words: `Deployed to PRODUCTION: https://quietkeep.pages.dev`. The
+merge tree was byte-identical to `bc43b73`, the staging sha already walked
+green, and the tests and gates were re-run against the merged tree regardless.
 
 **2.0.9 — one invisible attribute, and it needed a release of its own.** The
 touch gate reads `data-touch-partner` off the markup, so declaring it changed a
