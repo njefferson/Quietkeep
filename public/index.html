@@ -346,6 +346,28 @@
     <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
 
+  <!-- THE WAY PAST THE STACK, ON TOUCH (2.0.8, ADR-0090).
+       `.skip` at the top of this document has said "Skip to what you are
+       holding" since the first release, and it is positioned off-screen until
+       focused — so it serves a keyboard and a screen reader and NOBODY ELSE.
+       `#capture` carries `autofocus`, so it is not even in the forward tab
+       order: reaching it takes three Shift+Tabs backwards. On an iPad, by
+       finger, the affordance this app already decided to have does not exist.
+
+       Measured on a full store at 820x1180: the held list begins 2.8 screens
+       down, and 4.5 screens down at 390px. Everything between is a section
+       answering a question the reader did not arrive with — a NON-FOCAL cue in
+       McDaniel and Einstein's sense, which fires only under monitoring, and
+       monitoring costs the task you are actually doing. Being on the page is
+       not the same as cueing.
+
+       HERE, and not at the top: the first screen is capture and the offer, and
+       that is correct on every store and both viewports. This is the row you
+       want one moment later — when you have read the offer and it is not what
+       you came for. It is absent when there is nothing between you and the
+       list, so it never greets anybody with an escape from an empty page. -->
+  <button id="to-held" class="jump" type="button" hidden>Go to what you are holding</button>
+
   <!-- Triage: the heat pass and clarify. One card at a time; hidden when the
        inbox is clear. Announced in its own live region. -->
   <section id="triage" class="triage" aria-labelledby="triage-prompt" hidden>

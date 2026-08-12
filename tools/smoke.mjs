@@ -1578,6 +1578,49 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const gaugeHeldAfter = Number((await tpage.locator('#gauge').textContent() || '').match(/(\d+) ready now/)?.[1] ?? '0');
   is(gaugeHeldAfter, gaugeHeldBefore - 1, `and what is ready now actually fell (${gaugeHeldBefore} -> ${gaugeHeldAfter})`);
 
+  // --- THE WAY PAST THE STACK (2.0.8, ADR-0090) ---------------------------
+  //
+  // `.skip` has pointed at #cards since the first release and lives at
+  // left:-9999px until focused — and `#capture` carries autofocus, so it is not
+  // in the forward tab order either. By finger it did not exist. This asserts
+  // the touch-reachable one: that it is REACHABLE (not off-screen), that it
+  // actually moves the reader, and that it is absent when there is nothing in
+  // the way rather than being permanent furniture.
+  console.log('\nA way past the stack, reachable by finger');
+  const jumpBox = await tpage.evaluate(() => {
+    const b = document.querySelector('#to-held');
+    if (!b || b.hidden) return null;
+    // IN VIEW BEFORE HIT-TESTING. `elementFromPoint` takes VIEWPORT coordinates,
+    // so testing a control that is below the fold asks about whatever happens to
+    // be at those coordinates instead — the first version of this check failed
+    // for that reason and the app was fine. "Is anything covering it" is only a
+    // question about a control you can currently see.
+    b.scrollIntoView({ block: 'center' });
+    const r = b.getBoundingClientRect();
+    return { left: Math.round(r.left), w: Math.round(r.width), h: Math.round(r.height),
+             hit: document.elementFromPoint(Math.round(r.left + r.width / 2),
+                                            Math.round(r.top + r.height / 2))?.id ?? null };
+  });
+  is(jumpBox !== null, true, 'it is on the surface when there is a stack above the list');
+  is(jumpBox && jumpBox.left >= 0, true,
+    `and it is ON SCREEN, not parked off-canvas like the keyboard skip link (left=${jumpBox?.left})`);
+  is(jumpBox && jumpBox.hit === 'to-held', true,
+    'and a finger landing on it hits it, with nothing over the top');
+  // IT MOVES YOU, and takes focus with it — a scroll that leaves focus behind
+  // throws the next Tab back up the page.
+  await tpage.evaluate(() => window.scrollTo(0, 0));
+  await tpage.click('#to-held');
+  await tpage.waitForTimeout(350);
+  const landed = await tpage.evaluate(() => ({
+    focus: document.activeElement?.id ?? null,
+    cardsTop: Math.round(document.querySelector('#cards').getBoundingClientRect().top),
+    scrolled: window.scrollY,
+  }));
+  is(landed.focus, 'cards', 'pressing it puts focus on the list, not just the scrollbar');
+  is(landed.scrolled > 0 && landed.cardsTop < 200, true,
+    `and the list is actually at the top of the screen (scrolled ${landed.scrolled}px, list at ${landed.cardsTop}px)`);
+  await tpage.evaluate(() => window.scrollTo(0, 0));
+
   console.log('\nWork mode — the gauge is a claim you can open');
   // A SHEET, NOT A FOLD (2.0.5, ADR-0088). The claim used to unfold under the
   // gauge and push the held list down by up to 26,031px; it is a place now, so

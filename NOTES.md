@@ -582,10 +582,44 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.7**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.8**
 - **https://quietkeep.pages.dev** — production, **2.0.6**
 
-**2.0.7 is staged and waiting on your on-device pass.** Production is on 2.0.6.
+**2.0.7 and 2.0.8 are both staged and waiting on your on-device pass.**
+Production is on 2.0.6.
+
+**2.0.8 — the way past the stack, reachable by finger** (ADR-0090). `.skip` has
+said "Skip to what you are holding" since the first release, at `left:-9999px`
+until focused — and `#capture` carries `autofocus`, so it is not in the forward
+tab order either: reaching it takes three Shift+Tabs BACKWARDS. It has served a
+keyboard and a screen reader and nobody else. On an iPad, by finger, the app's
+own decision did not exist.
+
+Measured on a full store: the held list begins 3.0 screens down at 820×1180 and
+4.9 at 390×844. One tap now lands on it with focus. The control itself sits 0.86
+screens down on an iPad — on the first screen — and 1.57 on a phone, because the
+offer is 980px tall there. That second number is stated in the release notes
+rather than rounded away: it is a way past four more screens, not past all of
+them.
+
+**What the research found, and one correction to the catalogue.** The cost of
+the section stack is not choice overload — entry 16 marks that Contested, and
+ADR-0060 already established the right variable ("not how many things are shown
+— whether choosing requires a comparison"). It is FOCALITY. Entry 3 rates itself
+Strong on Einstein & McDaniel and reads "visible is the only kind of
+remembered"; the same authors' multiprocess framework says visibility is not
+sufficiency — a focal cue fires spontaneously, a non-focal one needs monitoring,
+and monitoring costs the task in hand. A section is focal for whoever came for
+it and non-focal for everyone else. `docs/nd-collisions.md` entry 3 should carry
+that correction the way entry 16 already carries its own.
+
+**What to look at:** with a busy store, the line under Next up. It should not be
+there on a quiet day or an empty one.
+
+**Still not fixed:** the work surface is one scroll and nothing was hidden or
+reordered. This is a way past the sections, not fewer of them. Whether the
+everyday surface should show that much at once is still undecided, and Q-11
+gates the version of it that involves ranking.
 
 **These two lines said candidate 2.0.6 / production 2.0.5 while 2.0.6 was
 already live**, on both branches, from the promote until now. Verified before

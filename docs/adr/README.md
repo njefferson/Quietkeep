@@ -297,6 +297,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0089](0089-the-menu-is-a-place.md)**
   - Decision: The Menu becomes a sheet — the third and last inline expander off the work surface — and law 6 stops being maintained and becomes structural, because a dialog cannot remember it was open
   - Status: Accepted · shipped 2.0.7 · extends [0088](0088-the-claim-and-the-tree-are-places.md)
+- **[0090](0090-a-way-past-the-stack.md)**
+  - Decision: A visible, touch-reachable jump to the held list, shown only when something is in the way — the `.skip` link had served keyboard and screen-reader users only, and autofocus kept it out of the forward tab order
+  - Status: Accepted · shipped 2.0.8 · extends [0089](0089-the-menu-is-a-place.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

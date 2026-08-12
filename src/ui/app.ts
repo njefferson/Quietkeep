@@ -76,6 +76,40 @@ let rerenderAll: (() => void) | null = null;
  *  read is simply "everything", never a reason to fail to start. */
 let lensRoot: string | null = null;
 
+/**
+ * THE WAY PAST THE STACK (2.0.8, ADR-0090) — shown when, and only when, there is
+ * genuinely something between the reader and the list.
+ *
+ * THE LAST WORD, and it has to be. This began inside `render`, which is the
+ * FIRST thing `refreshAll` calls: `rerenderLists()` runs, then `work.refresh()`
+ * unhides Next up and Upkeep, then triage relabels. So `render` read every other
+ * surface's `hidden` one cycle stale and the control never appeared — on a store
+ * with 149 cards and eight live sections, which is exactly the case it exists
+ * for. Reading another surface's DOM is only safe after that surface has
+ * painted, and this is the only place that is true of all of them.
+ *
+ * NO THRESHOLD, deliberately. "More than N sections above the list" would be a
+ * tuned constant pretending to be a rule. The condition is the one the reader
+ * experiences: is anything in the way.
+ */
+function paintJump(): void {
+  try {
+    const jump = document.querySelector<HTMLButtonElement>('#to-held');
+    if (!jump) return;
+    const inTheWay = ['#nextup', '#triage', '#replan', '#portfolio', '#people',
+      '#review', '#composed', '#upkeep', '#bother', '#reentry', '#comms', '#close']
+      .some(sel => {
+        const el = document.querySelector<HTMLElement>(sel);
+        return !!el && !el.hidden;
+      });
+    // Somewhere to arrive at. An empty list is not a destination.
+    const hasList = document.querySelectorAll('#cards .card').length > 0;
+    jump.hidden = !(inTheWay && hasList);
+  } catch {
+    // A surface. It must never take the list down with it.
+  }
+}
+
 function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: (id: string) => void,
                 onFocus?: (n: NodeState) => void): void {
   const list = $('#cards');
@@ -696,7 +730,11 @@ export async function main(edition?: Edition): Promise<void> {
   // the clarify card on every commit anywhere in the app and change which card
   // is showing mid-interaction — the smoke walk caught exactly that. One
   // button's words is all this needs.
-  const refreshAll = (): void => { rerenderLists(); work.refresh(); triage.relabelTimer(); };
+  const refreshAll = (): void => {
+    rerenderLists(); work.refresh(); triage.relabelTimer();
+    // After everything that owns a section has painted — see paintJump.
+    paintJump();
+  };
 
   try { rerender(); } catch { /* the shell still works; cards appear on next load */ }
 
@@ -754,6 +792,25 @@ export async function main(edition?: Edition): Promise<void> {
   // would be activity, and the greeting would report an absence of zero to
   // somebody who has been gone a fortnight.
   try { reentry = mountReentry(session, now, refreshAll); } catch { /* a surface */ }
+
+  // ARRIVE, and take focus with you (2.0.8, ADR-0090). `#cards` carries
+  // tabindex="-1" precisely so a jump can land on it — the same target the
+  // document's `.skip` link has always pointed at, now reachable by a finger.
+  //
+  // Focus moves as well as the scroll, so a keyboard or screen-reader user
+  // carries on FROM the list rather than from wherever they pressed. A scroll
+  // that leaves focus behind is the defect where the next Tab throws you back
+  // up the page.
+  //
+  // No smooth behaviour: this is a jump, and an animated one both costs time
+  // and moves a lot of the screen at once for a reader who may be here because
+  // there is already too much moving.
+  document.querySelector<HTMLButtonElement>('#to-held')?.addEventListener('click', () => {
+    const cards = document.querySelector<HTMLElement>('#cards');
+    if (!cards) return;
+    cards.scrollIntoView({ block: 'start' });
+    cards.focus();
+  });
 
   // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —
   // it is demand-free, and a surface that remembers it was open is a surface
@@ -1083,6 +1140,13 @@ export async function main(edition?: Edition): Promise<void> {
   } catch {
     // A missing walkthrough costs an introduction, never capture.
   }
+
+  // Every surface has now mounted and painted once, so the question "is anything
+  // in the way" can finally be asked (2.0.8). `refreshAll` answers it on every
+  // change after this; the FIRST paint has no change to ride on, and a control
+  // that only appeared after you did something would be missing on exactly the
+  // screen you arrive at.
+  paintJump();
 
   // The store is open, state is folded, and the surface reflects it. Marked on
   // the document so the headless walk waits for the app rather than for `load`,

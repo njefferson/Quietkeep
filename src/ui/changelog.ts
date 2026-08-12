@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.8',
+    kind: 'ITERATION',
+    date: '2026-08-12',
+    notes: [
+      '**The Menu line is now one row lower than it was; it was directly under Upkeep.** A new row sits above it — see below. Nothing else moved.',
+      '**There is a way straight down to your list now, and you can tap it.** On a full planner the list of what you are holding starts about three screens down on an iPad, and nearly five on a phone, behind everything the app wanted to tell you first. A line saying **Go to what you are holding** now sits just under what is next up and takes you there in one tap. It is only there when something is actually in the way — never on a quiet day, never on an empty one.',
+      '**On a phone you still scroll past the offer to reach it** — about a screen and a half, because the card at the top is taller there. That is honest rather than ideal: it is a way past four more screens, not a way past all of them. On an iPad it is on the first screen.',
+      '**This existed already and you could not reach it.** The app has carried a "skip to what you are holding" link since the first release, for keyboard and screen-reader users only. By finger it was unreachable. That is the gap this closes.',
+      '**Still one scroll.** The sections above your list have not changed and nothing has been hidden. This gives you a way past them, not fewer of them.',
+    ],
+  },
+  {
     triplet: '2.0.7',
     kind: 'ITERATION',
     date: '2026-08-12',

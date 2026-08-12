@@ -497,8 +497,13 @@ const REGISTRY = {
   // class alone — named anyway, because "it happens to match a selector already
   // in the list" is how a surface ends up unmeasured the moment its class
   // changes (hub LESSONS 28: a new surface joins this list in the SAME commit).
+  // `#to-held` (2.0.8, ADR-0090) is registered HERE because this is the state
+  // that reliably has it: it renders only when a section is live above the list
+  // AND the list has rows, which is exactly what 'next up' stages. A registry
+  // entry matching nothing visible is the false receipt `#nextup-left` cost a
+  // release for, so it goes where it is actually on screen.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
-    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open',
+    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held',
     // When you cannot start (1.24.0). The invitation and the heavy control are
     // on the card whenever there is a head, so they belong in this state; the
     // named step and its Done are not, and get their own below — a registry
@@ -1567,7 +1572,7 @@ try {
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
     await auditTargets(page, 'next up', theme);
-    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done']);
+    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held']);
 
     // State 3c1: SETTLED (1.35.0). Reached the way anybody reaches it — finish
     // the thing being offered — and then left the same way, so every state after
