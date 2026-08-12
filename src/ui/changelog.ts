@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.0.7',
+    kind: 'ITERATION',
+    date: '2026-08-12',
+    notes: [
+      '**The Menu opens as its own screen now**, like the two things above it did last release. It used to unfold in the middle of the page, above the list you were already looking at. It is the same list, the control is where it was, and it still says plainly that nothing on it is asking for anything.',
+      '**Your main screen is still one scroll.** With a lot on, the sections above your list stack up in front of it. All three of the things you could open yourself have now been moved off it; the rest is a separate question and it is not answered yet.',
+    ],
+  },
+  {
     triplet: '2.0.6',
     kind: 'ITERATION',
     date: '2026-08-11',

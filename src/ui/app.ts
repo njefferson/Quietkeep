@@ -18,6 +18,7 @@ import { mountUpdatePrompt } from './update.ts';
 import { loadBadgePreference, paintBadge } from './badge.ts';
 import { CURRENT } from './changelog.ts';
 import { mountTriage } from './clarify.ts';
+import { openSheet, closeSheet, wireSheetClose } from './sheets.ts';
 import { mountWork } from './work.ts';
 import { mountDetail } from './detail.ts';
 import { mountSearch } from './search.ts';
@@ -322,10 +323,12 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     if (openBtn && region) {
       openBtn.hidden = total === 0;
       openBtn.textContent = menuWords(total);
-      if (total === 0) {
-        region.hidden = true;
-        openBtn.setAttribute('aria-expanded', 'false');
-      }
+      // NOTHING ON IT IS NOT A PLACE (2.0.7). The control goes when the Menu
+      // empties, and if that happens while somebody is standing in the sheet —
+      // the last item taken off from its own detail — the sheet goes too,
+      // rather than leaving them on a screen with nothing on it and no control
+      // behind it to explain where it went.
+      if (total === 0) closeSheet('sheet-menu');
       const rows: HTMLElement[] = [];
       for (const g of menuGroups(st)) {
         const h = document.createElement('h3');
@@ -353,7 +356,13 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
             m.textContent = money;
             b.append(m);
           }
-          if (openDetail) b.addEventListener('click', () => openDetail(n));
+          // The inspection surface steps aside, exactly as the tree and the
+          // claim do (ADR-0088): a dialog opened over a dialog is the overlap
+          // ADR-0083 forbids, and the top one eats the other's taps.
+          if (openDetail) b.addEventListener('click', () => {
+            closeSheet('sheet-menu');
+            openDetail(n);
+          });
           li.append(b);
           ul.append(li);
         }
@@ -746,16 +755,17 @@ export async function main(edition?: Edition): Promise<void> {
   // somebody who has been gone a fortnight.
   try { reentry = mountReentry(session, now, refreshAll); } catch { /* a surface */ }
 
-  // The Menu opens and closes. Closed on arrival, every time — it is demand-free
-  // and a surface that remembers it was open is a surface that greets you.
+  // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —
+  // it is demand-free, and a surface that remembers it was open is a surface
+  // that greets you. A dialog cannot remember, which makes law 6 structural
+  // here rather than something this handler has to keep being careful about.
+  //
+  // It unfolded above the held list until now: 2,597px of wish list inserted
+  // between the reader and their work. Smaller than the claim's 26,031px or the
+  // tree's 17,246px, which is exactly why it outlived both.
   const menuBtn = document.querySelector<HTMLButtonElement>('#menu-open');
-  const menuRegion = document.querySelector<HTMLElement>('#menu');
-  menuBtn?.addEventListener('click', () => {
-    if (!menuRegion) return;
-    const open = menuRegion.hidden;
-    menuRegion.hidden = !open;
-    menuBtn.setAttribute('aria-expanded', String(open));
-  });
+  wireSheetClose('sheet-menu');
+  menuBtn?.addEventListener('click', () => { openSheet('sheet-menu'); });
 
   // The triage surface (heat pass + clarify). It re-renders the held list when
   // it moves an item, and capture refreshes it (a new item joins the inbox).

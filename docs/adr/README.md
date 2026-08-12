@@ -294,6 +294,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0088](0088-the-claim-and-the-tree-are-places.md)**
   - Decision: The coverage claim and the alignment tree stop unfolding into the workspace and become sheets, opened from the controls that always stated them
   - Status: Accepted · shipped 2.0.5 · extends [0083](0083-four-destinations.md), amends [0013](0013-levels-push-down.md) and [0084](0084-the-guarantee-is-the-product.md)
+- **[0089](0089-the-menu-is-a-place.md)**
+  - Decision: The Menu becomes a sheet — the third and last inline expander off the work surface — and law 6 stops being maintained and becomes structural, because a dialog cannot remember it was open
+  - Status: Accepted · shipped 2.0.7 · extends [0088](0088-the-claim-and-the-tree-are-places.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

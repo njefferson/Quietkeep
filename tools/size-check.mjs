@@ -114,7 +114,19 @@ const BUDGET = {
   // Worth stating plainly since the count only ever rises here: nothing on the
   // workspace gained a control, and the two it did gain cannot be reached
   // without first pressing something that was already there.
-  controls: 212,
+  //
+  // 212 -> 213 on 2026-08-12 (ADR-0089), and it is the third instance of the
+  // same trade rather than a new one: the Menu became a sheet, and a sheet owes
+  // its own Close outside the scrolling body or the way out scrolls away (§4).
+  // One control, unreachable without first pressing `#menu-open`, which has
+  // been on that surface all along.
+  //
+  // THE COUNT IS NOT THE MEASUREMENT THAT MATTERED HERE, and saying so is the
+  // point of a comment rather than a number: this release took 2,597px of fold
+  // off the work surface, and the three ADR-0088/0089 sheets between them took
+  // 45,874px. A gate that can only see +1 control would have read all of that
+  // as a regression. It is a ratchet against sprawl, not a scoreboard.
+  controls: 213,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

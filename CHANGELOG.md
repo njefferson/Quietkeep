@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.0.7 — ITERATION
+
+*2026-08-12*
+
+- **The Menu opens as its own screen now**, like the two things above it did last release. It used to unfold in the middle of the page, above the list you were already looking at. It is the same list, the control is where it was, and it still says plainly that nothing on it is asking for anything.
+- **Your main screen is still one scroll.** With a lot on, the sections above your list stack up in front of it. All three of the things you could open yourself have now been moved off it; the rest is a separate question and it is not answered yet.
+
 ## 2.0.6 — ITERATION
 
 *2026-08-11*

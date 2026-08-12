@@ -42,9 +42,14 @@ const openSurface = async (pg, id) => {
   // The two sheets opened from the workspace (2.0.5, ADR-0088) are not in More
   // — ADR-0083 caps it at six destinations — so they are reached the way a
   // reader reaches them: by pressing the control that states the claim.
-  const WORKSPACE_DOORS = { 'sheet-coverage': '#gauge', 'sheet-tree': '#tree-open' };
-  if (WORKSPACE_DOORS[id]) {
-    await pg.evaluate((sel) => document.querySelector(sel)?.click(), WORKSPACE_DOORS[id]);
+  // 2.0.7: read off the sheet rather than held in a map here. A hand-written
+  // list of doors goes stale exactly like a hand-written list of surfaces, and
+  // this one did within a day of being written — a third sheet is what made
+  // that obvious.
+  const door = await pg.evaluate((want) =>
+    document.querySelector(`#${want}`)?.dataset.door ?? null, id);
+  if (door) {
+    await pg.evaluate((sel) => document.querySelector(sel)?.click(), door);
     await pg.waitForSelector(`#${id}[open]`);
     return;
   }
@@ -665,7 +670,9 @@ const REGISTRY = {
   // The Menu (law 6). The money line is the lowest-contrast text and it is the
   // whole of what a save-for says. There is NO bar and no colour keyed to the
   // numbers anywhere on this surface, and that absence is the measurement.
-  'menu open': ['#menu-open', '.menu-cat', '.menu-item', '.menu-title'],
+  // `#menu-open` left in 2.0.7 for the reason `#gauge` left 'coverage open': the
+  // Menu is a sheet now and its control is on the inert surface underneath.
+  'menu open': ['#sheet-menu-title', '#sheet-menu-close', '.menu-cat', '.menu-item', '.menu-title'],
   // Coming back (law 8). The reassurance is the CONTENT, so it gets full ink;
   // the counts beneath it are the lesser fact and sit in the quiet token. There
   // is nothing here keyed to how long you were away — no colour, no threshold —
@@ -1805,15 +1812,21 @@ try {
     }
     await page.locator('#triage-actions .route', { hasText: 'Someday' }).first().click();
     await page.waitForTimeout(300);
+    // The Menu, open — ITS OWN SHEET since 2.0.7 (ADR-0089), so a dialog state,
+    // measured as one. `#menu-open` left this state's focus list with the fold:
+    // it is on the surface underneath, which a modal makes inert, so focusing it
+    // here would measure a ring nobody can reach from this state. It is still
+    // measured where a reader can press it.
     await page.waitForSelector('#menu-open:not([hidden])');
     await page.click('#menu-open');
-    await page.waitForSelector('#menu:not([hidden])');
+    await page.waitForSelector('#sheet-menu[open]');
     await auditContrast(page, 'menu open', theme);
     await auditAxe(page, 'menu open', theme);
     await auditNames(page, 'menu open', theme);
     await auditTargets(page, 'menu open', theme);
-    await auditFocusRings(page, 'menu open', theme, ['#menu-open', '.menu-item']);
-    await page.click('#menu-open');           // closed again, so later states are clean
+    await auditFocusRings(page, 'menu open', theme, ['.menu-item', '#sheet-menu-close']);
+    await page.click('#sheet-menu-close');    // closed again, so later states are clean
+    await page.waitForSelector('#sheet-menu[open]', { state: 'detached' });
 
     // State 3e2: coming back. Reached by ageing the whole log, which is the only
     // honest way — `lastActivityAt` is a maximum, so one backdated event proves
@@ -2787,7 +2800,7 @@ try {
       // sheet whose content escapes where the page-level check cannot see it,
       // and the coverage rows carry the longest strings in the app — a title
       // and a return date on one line.
-      'sheet-coverage', 'sheet-tree']) {
+      'sheet-coverage', 'sheet-tree', 'sheet-menu']) {
       await openSurface(page, id);
       const over = await page.evaluate((want) => {
         const d = document.querySelector('#' + want);

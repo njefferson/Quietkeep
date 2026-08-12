@@ -3388,7 +3388,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       .map(d => {
         const body = d.querySelector('.sheet-body, .about-body');
         const close = d.querySelector('[id$="-close"]');
-        return body && close ? [d.id, `#${d.id} .sheet-body, #${d.id} .about-body`, `#${close.id}`] : null;
+        // THE WAY IN COMES FROM THE SURFACE TOO (2.0.7). `data-door` is on the
+        // sheets opened from the workspace; the rest are reached through More.
+        return body && close
+          ? [d.id, `#${d.id} .sheet-body, #${d.id} .about-body`, `#${close.id}`, d.dataset.door ?? null]
+          : null;
       })
       .filter(Boolean));
   is(SURFACES_WITH_A_WAY_OUT.length >= 7, true,
@@ -3405,10 +3409,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // them: a check that misattributes sends you to fix a stylesheet that was
   // already right. The opener is per-surface now, and the measurement refuses to
   // run at all unless the dialog is actually open.
-  const WORKSPACE_DOORS = { 'sheet-coverage': '#gauge', 'sheet-tree': '#tree-open' };
+  //
+  // 2.0.7: the map of two became a third, so it stopped being a map. Each sheet
+  // carries `data-door`, read above — a hand-written list of doors is the same
+  // defect as a hand-written list of surfaces, one indirection along.
   const seeThrough = [];
-  for (const [surface, bodySel, closeSel] of SURFACES_WITH_A_WAY_OUT) {
-    const door = WORKSPACE_DOORS[surface];
+  for (const [surface, bodySel, closeSel, door] of SURFACES_WITH_A_WAY_OUT) {
     if (door) {
       await tpage.evaluate(() => {
         for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
@@ -3552,15 +3558,43 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // are NOT reached through More — ADR-0083 caps More at six destinations, so
   // they keep the controls that always stated them. Hence an opener per sheet
   // rather than one loop that assumed a `.more-go`.
-  const SHEETS_AND_DOORS = [
-    ['sheet-group-why', null], ['sheet-group-help', null], ['sheet-group-data', null],
-    ['sheet-group-actions', null], ['sheet-group-extras', null],
-    ['sheet-coverage', '#gauge'], ['sheet-tree', '#tree-open'],
-  ];
+  //
+  // 2.0.7: DISCOVERED, not listed, for the reason the see-through check above
+  // already learned — a named list cannot fail on a screen it has never heard
+  // of, and this list had gone stale once already. Each sheet states its own
+  // way in with `data-door`; the rest are reached through More.
+  const SHEETS_AND_DOORS = await ppage.evaluate(() =>
+    [...document.querySelectorAll('dialog')]
+      .filter(d => d.querySelector('.sheet-body') && d.querySelector('[id$="-close"]'))
+      .map(d => [d.id, d.dataset.door ?? null]));
+  is(SHEETS_AND_DOORS.length >= 8, true,
+    `every sheet with a scrolling body is discovered (${SHEETS_AND_DOORS.length} found)`);
+  // NO SILENT SKIP. This page is a fresh store, and `#menu-open` is hidden
+  // until something is on the Menu — so the Menu's sheet genuinely cannot be
+  // opened here. The structural half below does not need it open; the scrolled
+  // half does, and a surface it could not reach is NAMED rather than quietly
+  // dropped, because "7 checked" reads as "all of them" either way.
+  const notOpened = [];
   for (const [id, door] of SHEETS_AND_DOORS) {
     await ppage.evaluate(() => {
       for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
     });
+    // The STRUCTURAL half first: it is a question about the DOM's shape, so it
+    // holds whether or not this store can open the surface. It is also the half
+    // that catches the real regression — a Close that slipped inside the
+    // scroller sits on screen anyway on a short body and reports green.
+    const shape = await ppage.evaluate((want) => {
+      const body = document.querySelector(`#${want} .sheet-body`);
+      const x = document.querySelector(`#${want}-close`);
+      return { outsideScroller: !!body && !!x && !body.contains(x) && x.parentElement?.id === want };
+    }, id);
+    is(shape.outsideScroller, true,
+      `${id}: its Close is outside the scrolling body, so it cannot scroll away when the body grows`);
+
+    if (door && !(await ppage.locator(door).isVisible())) {
+      notOpened.push(`${id} (its door ${door} is not on this surface with an empty store)`);
+      continue;
+    }
     if (door) {
       await ppage.click(door);
     } else {
@@ -3588,9 +3622,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     }, id);
     is(out.onScreen && out.hit === `${id}-close`, true,
       `${id}: scrolled to the bottom, its Close is still on screen and unobstructed`);
-    is(out.outsideScroller, true,
-      `${id}: and its Close is outside the scrolling body, so it cannot scroll away when the body grows`);
   }
+  // SAID OUT LOUD (hub LESSONS: no silent caps). A surface this pass could not
+  // reach is reported by name, so the count above is never read as coverage it
+  // does not have. The Menu's scrolled half is covered on the populated page.
+  console.log(notOpened.length
+    ? `  note  scrolled-half not run here: ${notOpened.join(', ')}`
+    : '  note  every discovered sheet was opened and measured on this page');
   await phone.close();
 
   // --- the §7e baseline, and §7f's report (1.18.0, ADR-0071) ---------------
@@ -3967,23 +4005,30 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const menuLine = await tpage.locator('#menu-open').textContent();
   is(/Nothing here is asking\./.test(menuLine || ''), true,
     `and the control says so in as many words ("${menuLine}")`);
-  // Idempotent: the Menu stays open across a detail sheet, so a bare click later
-  // in this walk CLOSED it and the next wait timed out. Toggles need a helper,
-  // not an assumption about what the last step left behind.
+  // A PLACE since 2.0.7 (ADR-0089), not a fold above the held list. Walking
+  // through an item closes it, like the tree and the claim, so every step below
+  // that comes back from a detail sheet re-opens it rather than assuming.
+  // Idempotent for the same reason it always was: a bare click when it is
+  // already open would close it and the next wait would time out.
   const openMenu = async () => {
-    if (await tpage.locator('#menu').isVisible()) return;
+    if (await tpage.locator('#sheet-menu').evaluate(d => d.open)) return;
     await tpage.click('#menu-open');
-    await tpage.waitForSelector('#menu:not([hidden])');
+    await tpage.waitForSelector('#sheet-menu[open]');
   };
   await openMenu();
   is(await tpage.locator('#menu .menu-cat').count() > 0, true,
     'opening it groups things by what they are for');
-  is(await tpage.getAttribute('#menu-open', 'aria-expanded'), 'true',
-    'and says so to a screen reader');
+  is(await tpage.getAttribute('#menu-open', 'aria-expanded'), null,
+    'and the control does not claim to be a disclosure — it opens a surface');
 
   // A save-for carries two numbers, by hand, and no bar.
   await tpage.locator('#menu .menu-item', { hasText: 'a decent tripod' }).first().click();
   await tpage.waitForSelector('#detail[open]');
+  // ONE SURFACE AT A TIME (2.0.7), asserted here as it is for the tree and the
+  // claim: a door inside a sheet that left its sheet open would be two stacked
+  // modals, and the top one eats the other's taps.
+  is(await tpage.locator('#sheet-menu').evaluate(d => d.open), false,
+    'and walking through a Menu item closed the Menu behind you');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   is(await tpage.locator('#detail-savefor-group').isVisible(), false,
     'a "someday" is not a thing you are saving for, so there are no numbers to set');

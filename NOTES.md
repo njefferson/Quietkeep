@@ -582,10 +582,41 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.6**
-- **https://quietkeep.pages.dev** — production, **2.0.5**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.7**
+- **https://quietkeep.pages.dev** — production, **2.0.6**
 
-**2.0.6 is staged and waiting on your on-device pass.** Production is on 2.0.5.
+**2.0.7 is staged and waiting on your on-device pass.** Production is on 2.0.6.
+
+**These two lines said candidate 2.0.6 / production 2.0.5 while 2.0.6 was
+already live**, on both branches, from the promote until now. Verified before
+correcting rather than assumed: `6795ead`, Deploy green on main, the deploy step
+run rather than skipped. The promote moved the code and left the record behind —
+which is the failure the paragraph further down this block already describes
+happening at 1.40.3, one release later and in the same file. **A promote is not
+finished when the deploy is green; it is finished when this block says what the
+deploy did.**
+
+**2.0.7 — the Menu opens as its own screen** (ADR-0089), the third and last of
+the inline expanders on the work surface. Measured at 820×1180 on the invented
+life: with the Menu open the page was 20,374px and is 17,777px. Its 2,649px of
+list scrolls inside the sheet with the Close pinned.
+
+**All three, together, are now structurally impossible** — one surface at a
+time. The case that measured 63,906px (54.2 screens) before 2.0.5 and 20,386px
+after it is 17,777px, and never more than one of the three can be open at once.
+Driven and asserted, including against a programmatic click on a control a modal
+had made inert.
+
+**What to look at on the device:** press the line that says how many things are
+on the Menu. It should arrive at its own screen with a Close that stays put, and
+walking through an item should close it behind you rather than stack. Taking the
+last thing off the Menu from inside should put you back on the work surface
+rather than leaving you on an empty screen.
+
+**Still not fixed, and this does not pretend otherwise:** the work surface is
+one scroll, nine sections stacking to 2,715px above the held list on a full
+store. Every reader-opened expander is off it now, which is the end of what this
+approach reaches. The rest is a different decision and it is not made.
 
 **2.0.6 — two things reported from a device, and one of them nothing here could
 have caught.** The Close button was showing the panel's own text through itself:
