@@ -16,7 +16,16 @@
 </head>
 <body>
 
-<a class="skip" href="#cards">Skip to what you are holding</a>
+<!-- THE KEYBOARD'S ROUTE, and it names the finger's (2.0.8, ADR-0090).
+     This is the textbook WCAG 2.4.1 bypass-blocks pattern and it is correct for
+     a keyboard. It was also the ONLY way past the section stack for 142
+     releases, on an app read on a tablet — and `#capture` below carries
+     `autofocus`, which puts the document's focus AFTER this link, so it was
+     never reachable by tabbing forward either. It was born unreachable for its
+     own stated purpose, in the same commit that created it.
+     `data-touch-partner` is what `tools/touch-check.mjs` reads: an off-canvas
+     route must SAY how a finger gets to the same place, or the gate fails. -->
+<a class="skip" href="#cards" data-touch-partner="#to-held">Skip to what you are holding</a>
 
 <header class="bar">
   <h1 class="wordmark">Quietkeep</h1>
