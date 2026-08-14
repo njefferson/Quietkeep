@@ -643,6 +643,16 @@
   </div>
 
   <div id="cards" class="cards" tabindex="-1"></div>
+
+  <!-- THE WAY BACK (2.1.0, ADR-0091). The jump above sends you up to five
+       screens down and there was NOTHING to come back to the top with —
+       measured: no back-to-top anywhere in the app. A one-way trip is not a
+       route, it is a drop.
+       At the END of the list, which is where somebody who has read to the
+       bottom actually is. It carries the same border as every other control,
+       because the defect this release exists to fix is controls that read as
+       prose. -->
+  <button id="to-top" class="jump" type="button" hidden>Back to the top</button>
 </main>
 
 <!-- Sort mode (1.3.0). A dialog, so it is never the landing view and focus is

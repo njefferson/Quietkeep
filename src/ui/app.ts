@@ -104,7 +104,12 @@ function paintJump(): void {
       });
     // Somewhere to arrive at. An empty list is not a destination.
     const hasList = document.querySelectorAll('#cards .card').length > 0;
-    jump.hidden = !(inTheWay && hasList);
+    const useful = inTheWay && hasList;
+    jump.hidden = !useful;
+    // The way back rides the same condition: if there was something to skip
+    // past on the way down, there is something to climb back over.
+    const top = document.querySelector<HTMLButtonElement>('#to-top');
+    if (top) top.hidden = !useful;
   } catch {
     // A surface. It must never take the list down with it.
   }
@@ -810,6 +815,14 @@ export async function main(edition?: Edition): Promise<void> {
     if (!cards) return;
     cards.scrollIntoView({ block: 'start' });
     cards.focus();
+  });
+
+  // AND THE WAY BACK (2.1.0, ADR-0091). Focus goes to the capture line, which
+  // is both the top of the page and the thing most likely to be wanted there —
+  // the same destination the app already picks after an action empties a card.
+  document.querySelector<HTMLButtonElement>('#to-top')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0 });
+    document.querySelector<HTMLElement>('#capture')?.focus();
   });
 
   // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —

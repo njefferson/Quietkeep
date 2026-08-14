@@ -143,7 +143,15 @@ const BUDGET = {
   // when a section is live above the list and the list has rows. On a quiet day
   // and on an empty store the count is 213, not 214. This number is the worst
   // case, which is the right thing for a ceiling to measure.
-  controls: 214,
+  // 214 -> 215 on 2026-08-12 (ADR-0091) for the way BACK. Reported from a
+  // device, as a question: how do I get back. There was no answer — nothing
+  // anywhere in the app returned the reader to the top, so the jump added the
+  // release before was a one-way trip up to five screens down.
+  //
+  // A budget that refuses the return leg of a route it already permitted is a
+  // budget being read as a score. The ceiling exists to stop sprawl, and a way
+  // out of somewhere the app sent you is not sprawl.
+  controls: 215,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

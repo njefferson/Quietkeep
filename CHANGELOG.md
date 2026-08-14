@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.1.0 — CAPABILITY
+
+*2026-08-12*
+
+- **Every way of getting somewhere now looks like a button.** Five lines on the main screen were controls that rendered as plain grey sentences: the claim above your list, "How it hangs together", the Menu line, "Sort things out", and the jump to your list. Measured on the work surface: 50 controls, 45 with a border or a fill, and the 5 without were every route off the page. They now carry the same border as More, Done and Not this.
+- **And there is a way back.** There was none — nothing anywhere in the app returned you to the top. A jump that sent you five screens down was a one-way trip. **Back to the top** now sits at the end of your list.
+
 ## 2.0.9 — ITERATION
 
 *2026-08-12*

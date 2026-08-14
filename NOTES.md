@@ -582,8 +582,32 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.9**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.1.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.1.0 — a control looks like a control, and the route has a return leg**
+(ADR-0091). Two questions from a device about one defect: how do you know that
+is a button, and how do you get back.
+
+Measured on the work surface at 390px: 50 controls, 45 carrying a border or a
+fill, 7 with none. **Five of those seven were every route off the page** — the
+claim, the tree, the Menu, sort mode, and the jump. The app had two visual
+languages and put all its navigation in the one that reads as prose. A sixth,
+`.behind-open`, was found by the check rather than by eye. Contrast went up as a
+side effect: 6.48:1 to 8.92:1 light, 9.13:1 to 9.45:1 dark.
+
+There was no way back anywhere in the app. There is now.
+
+**STILL OWED, and this release does not touch either:**
+
+- **A way to reach each SECTION**, not just the list. Asked for in the first
+  message of that thread as "pages or tabs", refused on law 4, and the refusal
+  was wrong: law 4 forbids a second WORKSPACE, not a way to reach a section.
+  ADR-0090's own falsifier named this and it has now been met.
+- **The KIND on the card.** `node.kind` holds `project`, `area`, `goal`,
+  `outcome` and is rendered nowhere on a card, so a project reads exactly like a
+  task. Verified in `src/ui/app.ts`: a card renders title, status, place and
+  contents, and never the kind.
 
 **Nothing is waiting.** 2.0.7, 2.0.8 and 2.0.9 were promoted together on his
 word, 2026-08-12, as `65e8d19`. The production deploy was verified on that exact

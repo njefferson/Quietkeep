@@ -364,17 +364,35 @@ button.ghost {
 
 /* The gauge is a real button: its number is a claim, and tapping it opens the
    itemised list that backs the claim. Styled as text, but a full target. */
+/* A CONTROL HAS TO LOOK LIKE A CONTROL (2.1.0, ADR-0091).
+ *
+ * This was `background: none; border: none; color: --ink-soft` — a full-width
+ * line of soft grey prose. Measured on the work surface at 390px: 50 controls,
+ * and 7 of them had no border, no fill and no underline. Five of those seven
+ * were EVERY route off this page — the claim, the tree, the Menu, sort mode,
+ * and the jump to the list. The other 45 controls all carry a border or a fill.
+ *
+ * So the app had two visual languages and put every way of getting somewhere in
+ * the one that reads as a paragraph. "How am I supposed to know that is a
+ * button" has one honest answer: you could not.
+ *
+ * It uses `button.ghost`'s border and accent now — the same language as More,
+ * Not this, Done and Work on this — and stays full width and left-aligned,
+ * because these are rows that span the column rather than things sitting in a
+ * row of siblings. */
 .gauge {
   display: block;
   width: 100%;
   margin: 0 0 0.75rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
   min-height: var(--target);
   text-align: left;
-  color: var(--ink-soft);
-  background: none;
-  border: none;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
   font: inherit;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -392,13 +410,15 @@ button.ghost {
   display: block;
   width: 100%;
   margin: 0 0 0.9rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
   min-height: var(--target);
   text-align: left;
-  color: var(--ink-soft);
-  background: none;
-  border: none;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
   font: inherit;
+  font-weight: 400;
   cursor: pointer;
 }
 .jump::after {
@@ -923,6 +943,11 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   border-top: 1px solid var(--line);
 }
 /* 1.6.0: the row became a DOOR — a real button, whole row the target. */
+/* The other offer, and it is a DOOR (2.1.0, ADR-0091). It had `border: 0` and a
+ * transparent fill, so the second thing the app was offering read as a caption
+ * under the first. Found by the check written for the five navigation rows —
+ * which is the point of asking the document rather than listing what you
+ * remember. It gets a box because it is a thing you press. */
 .behind-open {
   display: flex;
   flex-direction: column;
@@ -930,11 +955,11 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   gap: 0.1rem;
   width: 100%;
   min-height: var(--target);
-  padding: 0.25rem 0.35rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
   color: var(--ink);
   background: transparent;
-  border: 0;
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   font: inherit;
   cursor: pointer;

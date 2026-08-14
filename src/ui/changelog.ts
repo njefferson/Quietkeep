@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.1.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-12',
+    notes: [
+      '**Every way of getting somewhere now looks like a button.** Five lines on the main screen were controls that rendered as plain grey sentences: the claim above your list, "How it hangs together", the Menu line, "Sort things out", and the jump to your list. Measured on the work surface: 50 controls, 45 with a border or a fill, and the 5 without were every route off the page. They now carry the same border as More, Done and Not this.',
+      '**And there is a way back.** There was none — nothing anywhere in the app returned you to the top. A jump that sent you five screens down was a one-way trip. **Back to the top** now sits at the end of your list.',
+    ],
+  },
+  {
     triplet: '2.0.9',
     kind: 'ITERATION',
     date: '2026-08-12',

@@ -503,7 +503,7 @@ const REGISTRY = {
   // entry matching nothing visible is the false receipt `#nextup-left` cost a
   // release for, so it goes where it is actually on screen.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
-    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held',
+    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
     // When you cannot start (1.24.0). The invitation and the heavy control are
     // on the card whenever there is a head, so they belong in this state; the
     // named step and its Done are not, and get their own below — a registry
@@ -1572,7 +1572,7 @@ try {
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
     await auditTargets(page, 'next up', theme);
-    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held']);
+    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held', '#to-top']);
 
     // State 3c1: SETTLED (1.35.0). Reached the way anybody reaches it — finish
     // the thing being offered — and then left the same way, so every state after

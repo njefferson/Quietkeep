@@ -1617,6 +1617,28 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     scrolled: window.scrollY,
   }));
   is(landed.focus, 'cards', 'pressing it puts focus on the list, not just the scrollbar');
+  // AND A WAY BACK (2.1.0, ADR-0091). There was none anywhere in the app, so the
+  // jump was a one-way trip five screens down.
+  is(await tpage.locator('#to-top').isVisible(), true, 'and there is a way back from down here');
+  await tpage.click('#to-top');
+  await tpage.waitForTimeout(350);
+  const back = await tpage.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.id }));
+  is(back.y === 0, true, `pressing it returns to the top (scrollY ${back.y})`);
+  is(back.focus, 'capture', 'and puts focus on the capture line, which is what is up there');
+  // A CONTROL LOOKS LIKE A CONTROL. Five routes off this page rendered as plain
+  // grey sentences; 45 of the other controls carried a border or a fill.
+  const bare = await tpage.evaluate(() => {
+    const vis = el => !!(el.offsetParent || el.getClientRects().length);
+    return [...document.querySelectorAll('main button')].filter(vis).filter(b => {
+      if (b.closest('.card, .cards-group')) return false;   // the card is the box
+      const s = getComputedStyle(b);
+      const bordered = ['Top','Right','Bottom','Left'].some(x =>
+        parseFloat(s[`border${x}Width`]) > 0 && s[`border${x}Style`] !== 'none');
+      const filled = !/rgba\(.*,\s*0\)|transparent/.test(s.backgroundColor);
+      return !bordered && !filled && !s.textDecorationLine.includes('underline');
+    }).map(b => (b.id || b.className));
+  });
+  is(bare.join(', '), '', 'no control on the work surface renders as plain prose');
   is(landed.scrolled > 0 && landed.cardsTop < 200, true,
     `and the list is actually at the top of the screen (scrolled ${landed.scrolled}px, list at ${landed.cardsTop}px)`);
   await tpage.evaluate(() => window.scrollTo(0, 0));
