@@ -459,6 +459,81 @@ button.ghost {
   content: " \2193";        /* a downward arrow, decorative — the words carry it */
 }
 
+/* THE WAY TO ANYWHERE (2.3.0, ADR-0093), AND IT IS NOT FIXED.
+ *
+ * It was, for one build, and the measurement is why it is not. A floating
+ * control in the bottom corner, probed at 820x1180 and 390x844 over thirteen
+ * sample things: it overlapped ten controls and took the CENTRE of three, every
+ * one of them a card's Done. Reserving space with `padding-bottom` on `main`
+ * fixes only the END of the document — mid-scroll, content passes under a fixed
+ * element no matter what, because that is what fixed means. So the failure is
+ * not "sometimes it is in the way": you press Done and the contents open. A
+ * control that silently performs a DIFFERENT action is worse than the scrolling
+ * it was added to fix.
+ *
+ * The correct fix for a fixed bar is a real scroll container — `main` with its
+ * own `overflow-y`, which is the shape `#about[open]` uses and which this repo
+ * has verified on the reference iPad. It is NOT taken here: that moves the whole
+ * app off document scrolling, and the consequences on iPadOS Safari cannot be
+ * verified from this machine. Shipping an unverifiable layout change to the one
+ * device this app is actually used on is the failure that produced ADR-0091.
+ *
+ * So both doors are IN FLOW: one in the header beside More, where the app's
+ * navigation already lives, and one at the end of the held list beside Back to
+ * the top, where somebody who has read to the bottom actually is. Nothing is
+ * ever occluded, on any engine, and the honest cost is stated in the notes: from
+ * the middle of the page you still reach for one of the two ends. */
+.contents-open {
+  min-height: var(--target);
+  padding: 0.5rem 1rem;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  cursor: pointer;
+}
+/* The one at the end of the list carries `.jump`'s full-width block shape, so it
+   sits with Back to the top as a pair rather than as a stray button. */
+.contents-open.jump-shaped {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.9rem;
+  text-align: left;
+}
+
+/* The rows. A list of places, so it reads as one thing per line and the name
+   carries the weight — the count is what it already says about itself. */
+.contents-list { margin: 0; padding: 0; list-style: none; }
+.contents-row { margin: 0 0 0.5rem; }
+.contents-go {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: var(--target);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  cursor: pointer;
+}
+.contents-name { flex: 1 1 10rem; min-width: 0; overflow-wrap: anywhere; }
+/* The same quiet ink-on-surface pair every count line on the app uses, so no
+   new foreground/background pair enters the gate. */
+.contents-count {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
 /* THE PROOF (ADR-0084). Read before the inventory below it, so it carries the
    reading weight: the promise as a sentence, then how it knows. A count here is
    a fact to check, never a score — nothing about it may look like a target. */

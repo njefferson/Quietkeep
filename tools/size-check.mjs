@@ -166,7 +166,31 @@ const BUDGET = {
   // was every list and "show me what I can do at home" had no answer. That is a
   // planner's building block, not an embellishment, and this budget exists to
   // stop sprawl rather than to stop the app being finished.
-  controls: 219,
+  // 219 -> 222 on 2026-08-17 (ADR-0093), and this trio REMOVES reading rather
+  // than adding it, which is the only argument this ceiling should accept twice
+  // in one day.
+  //
+  // The three: a Contents door in the header beside More, a second at the end of
+  // the held list beside Back to the top, and the Close on the sheet they open.
+  // The rows inside are not a fourth — they are one per live block, they replace
+  // travelling past that block, and they exist only while the block does.
+  //
+  // IT IS THREE AND NOT TWO because the door is not fixed, and that cost a
+  // control. A floating one measured taking the tap from three Done buttons
+  // (ADR-0093), so there are two in flow instead — one at each end of the page.
+  // A budget is the wrong instrument for arbitrating that: the choice was
+  // between a cheaper control that steals presses and a dearer one that does
+  // not.
+  //
+  // The count this budget actually measures is CONTROLS, and the thing it is
+  // protecting is the reader's effort. Those come apart here: the page was
+  // measured at 3.0 screens on thirteen sample things and 8 live blocks on a
+  // real store, with no index of what was even on it and no way to reach any
+  // block but the two at the ends. Two controls that answer "what is here and
+  // how do I get to it" buy back more than they cost, and refusing them on a
+  // count would be the budget read as a score — the failure its own 214 -> 215
+  // note names.
+  controls: 222,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

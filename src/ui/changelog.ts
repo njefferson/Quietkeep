@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.3.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**The capture line is now the seventh thing in the page; it was the sixth. The Menu line is now one row lower than it was.** A **Contents** button joined the top bar beside More — see below. Nothing else moved.',
+      '**Contents lists every part of the page that is showing, and takes you to it.** In the order they come, each with what it already says about itself — "3 dates have gone by", "2 waiting on somebody". There is a second door at the very end of your list, **What’s on this page**, so you do not have to travel back up to use it.',
+      '**This answers "it is one long page, does it not need pages or tabs?"** — the first thing ever asked of this app, which did not get built. It should have been.',
+      '**It is not tabs, on purpose.** Tabs split your things into two piles, and then you have to remember to check the other pile — the exact thing this app exists to save you from. Nothing is hidden and nothing has moved.',
+      '**Your list has a real heading now.** "What you are holding" was written at the top of it but was only a line of text, so the biggest thing on the screen was not somewhere the app could take you, and a screen reader could not treat it as a place.',
+      '**Still owed: from the middle of the page you reach for one of the two ends.** A button floating in the corner was built first, then measured — over a sample set it sat on top of ten controls and took the tap from three, every one a **Done**. Pressing Done and getting a contents list is worse than scrolling, so it is not shipping.',
+    ],
+  },
+  {
     triplet: '2.2.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',

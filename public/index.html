@@ -63,6 +63,13 @@
        clause c), and a second meaning for that word in the chrome would be the
        app disagreeing with itself about its own vocabulary. -->
   <button id="open-more" type="button" class="ghost">More</button>
+  <!-- WHAT IS ON THIS PAGE (2.3.0, ADR-0093), where the app's navigation
+       already lives. `More` is the six destinations that are not this page;
+       this is the parts of the page itself, which the app had no way of
+       reaching at all. Together they are the whole answer to "where do I go" —
+       and putting them in one place is why neither had to become a floating
+       control over the reader's own work. -->
+  <button id="contents-open" type="button" class="ghost">Contents</button>
 </header>
 
 <!-- A newer version is ready. A LINE, never a modal: it must not stand between
@@ -552,7 +559,10 @@
   <!-- Upkeep: the small repeating things that have come round. Never a failure
        to have not done one yet. -->
   <section id="upkeep" class="upkeep" aria-labelledby="upkeep-heading" hidden>
-    <h2 id="upkeep-heading" class="section">Upkeep</h2>
+    <!-- tabindex=-1 like every other section heading: it is a jump target for
+         the contents sheet (2.3.0), and a jump that cannot land focus is a
+         scroll, not a route. This was the ONE heading without it. -->
+    <h2 id="upkeep-heading" class="section" tabindex="-1">Upkeep</h2>
     <ul id="upkeep-chips" class="chips"></ul>
   </section>
 
@@ -586,7 +596,17 @@
     <ul id="search-results" class="search-results"></ul>
   </section>
 
-  <h2 class="section">What you are holding</h2>
+  <!-- THE BIGGEST THING ON THE PAGE, AND IT WAS NOT A PLACE (2.3.0, ADR-0093).
+       This heading existed and nothing else did: no section around it, no id,
+       no way to focus it. So the list that is most of the page's height could
+       not be a destination — every other block on this surface is a <section>
+       with a labelled, focusable heading, and the one somebody actually lives
+       in was a loose <h2> in the middle of <main>. It reads to a screen reader
+       as a heading with no region, and to the contents sheet as nothing at all.
+       Wrapping it costs no layout: a <section> is a block box exactly like the
+       run of children it replaces. -->
+  <section id="held" class="held" aria-labelledby="held-heading">
+  <h2 id="held-heading" class="section" tabindex="-1">What you are holding</h2>
   <!-- Tappable: the gauge's number is a claim, and the claim is checkable —
        every item and the date it comes back.
 
@@ -673,7 +693,38 @@
        bottom actually is. It carries the same border as every other control,
        because the defect this release exists to fix is controls that read as
        prose. -->
+  <!-- THE WAY TO ANYWHERE (2.3.0, ADR-0093).
+       The first thing asked of this app was "it is one long page, it needs pages
+       or tabs". It got neither, and the reason given was product law 4 — "the
+       runway is the only workspace". That is a misreading: law 4 is about
+       ALTITUDE, and says a goal or an area is an inspection mode rather than
+       somewhere you go to work. It says nothing whatever about being able to
+       reach the fourteen blocks of the runway itself, and reading it as "no
+       navigation" turned an invariant about hierarchy into a reason not to build
+       a way around a page measured at 3.0 screens on thirteen sample things and
+       far more on a real store.
+
+       NOT TABS, and that part of the old answer was right. Tabs partition, and a
+       partition means remembering to check the other one — the exact failure this
+       app exists to prevent, and the same argument NOTES Q-10 made against
+       vaults. One page, one order, nothing hidden; this only says what is on it
+       and takes you there.
+
+       AND IT IS NOT A FLOATING BUTTON, which is what it was for one build. Probed
+       at 820x1180 and 390x844 over thirteen sample things, a fixed control in the
+       bottom corner overlapped ten controls and took the CENTRE of three, every
+       one a card's Done. Reserving space with padding fixes only the END of the
+       document; mid-scroll, content goes under a fixed element by definition. So
+       the failure was not "it is sometimes in the way" — you press Done and the
+       contents open, which is a control silently doing something else.
+
+       The correct fix for a fixed bar is a real scroll container, which is not
+       taken here because it cannot be verified on the device this app is used on.
+       See app.css and ADR-0093. Both doors are in flow instead: one here, and one
+       at the end of the held list beside Back to the top. -->
+  <button id="contents-open-end" class="contents-open jump-shaped" type="button">What&rsquo;s on this page</button>
   <button id="to-top" class="jump" type="button" hidden>Back to the top</button>
+  </section>
 </main>
 
 <!-- Sort mode (1.3.0). A dialog, so it is never the landing view and focus is
@@ -2034,6 +2085,25 @@
      reader's words — "Put on the Menu", "Bring back from the Menu". The count
      and the sentence saying nothing here is asking stay on the CONTROL, from
      `menuWords`, which is their one source; they are not repeated in here. -->
+<!-- What is on this page, and a way to each of it (2.3.0, ADR-0093).
+     EVERY ROW IS DERIVED, and that is the whole reliability of it. The name of
+     a block is read from the element its own `aria-labelledby` points at, so
+     the contents can never disagree with what is on screen or with what a
+     screen reader announces — they are the same string, by construction. The
+     count is `#<id>-count` where the block already publishes one. A block added
+     to the runway appears here the day it is added, with no list to update:
+     the a11y walk learned the same lesson about its hand-written list of doors
+     within a day of writing one down.
+     A row exists only while its block is live, because a contents entry for
+     something that is not on the page is a route to nowhere. -->
+<dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
+  <h2 id="sheet-contents-title" class="section">What&rsquo;s on this page</h2>
+  <div class="sheet-body">
+    <ul id="contents-list" class="contents-list"></ul>
+  </div>
+  <button id="sheet-contents-close" type="button" class="ghost">Close</button>
+</dialog>
+
 <dialog id="sheet-menu" aria-labelledby="sheet-menu-title" data-door="#menu-open">
   <h2 id="sheet-menu-title" class="section">The Menu</h2>
   <!-- `tabindex="0"` for the reason the tree's body carries it: this body can

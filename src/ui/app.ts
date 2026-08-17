@@ -18,7 +18,8 @@ import { mountUpdatePrompt } from './update.ts';
 import { loadBadgePreference, paintBadge } from './badge.ts';
 import { CURRENT } from './changelog.ts';
 import { mountTriage } from './clarify.ts';
-import { openSheet, closeSheet, wireSheetClose } from './sheets.ts';
+import { openSheet, closeSheet, wireSheetClose, onSheetOpen } from './sheets.ts';
+import { paintContents } from './contents.ts';
 import { mountWork } from './work.ts';
 import { mountDetail } from './detail.ts';
 import { mountSearch } from './search.ts';
@@ -880,6 +881,29 @@ export async function main(edition?: Edition): Promise<void> {
     window.scrollTo({ top: 0 });
     document.querySelector<HTMLElement>('#capture')?.focus();
   });
+
+  // AND A WAY TO ANYWHERE, not just to the two ends (2.3.0, ADR-0093). The two
+  // jumps above are a route between the top of the page and the list at the
+  // bottom of it, which leaves the twelve blocks in between reachable only by
+  // scrolling past the ones before them. This is the answer to the first thing
+  // ever asked of the app.
+  //
+  // `onSheetOpen` rather than a paint at mount: the page's live blocks change
+  // every refresh, and a contents list built once would offer routes to blocks
+  // that have since gone and hide ones that have arrived — a stale list is
+  // worse than none, because it reads as an answer.
+  onSheetOpen('sheet-contents', () => paintContents());
+  wireSheetClose('sheet-contents');
+  // TWO DOORS, both in flow. The header's, beside More, where the app's other
+  // navigation is; and one at the end of the held list, beside Back to the top,
+  // where somebody who has read to the bottom actually is. Neither is fixed —
+  // a floating control was measured taking the centre of three Done buttons,
+  // and `app.css` carries the numbers and the reason the scroll-container fix
+  // was not taken.
+  for (const sel of ['#contents-open', '#contents-open-end']) {
+    document.querySelector<HTMLButtonElement>(sel)
+      ?.addEventListener('click', () => { openSheet('sheet-contents'); });
+  }
 
   // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —
   // it is demand-free, and a surface that remembers it was open is a surface

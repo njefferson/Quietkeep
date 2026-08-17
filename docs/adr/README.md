@@ -306,6 +306,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0092](0092-contexts.md)**
   - Decision: Contexts — a demand-free node plus a cross-cutting link saying where a thing can be DONE, and a device preference for where you are that narrows the offer and the list; unlabelled fits everywhere and law 1 never reads it
   - Status: Accepted · shipped 2.2.0
+- **[0093](0093-a-way-to-each-part-of-the-page.md)**
+  - Decision: A contents sheet listing every live block of the runway, named and counted by the blocks themselves, behind a viewport-fixed door — and the held list becomes a real section with a focusable heading; not tabs, because a partition means remembering to check the other one
+  - Status: Accepted · shipped 2.3.0 · extends [0090](0090-a-way-past-the-stack.md), [0091](0091-a-control-looks-like-a-control.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

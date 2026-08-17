@@ -423,7 +423,14 @@ const REGISTRY = {
   // after a capture. Added to THIS entry rather than a second 'with cards' key:
   // a duplicate key in an object literal silently wins, and the registry would
   // have shrunk to one selector while still reporting a pass.
-  'with cards': ['.card-title', '.card-when', '#status', '.group-head'],
+  'with cards': ['.card-title', '.card-when', '#status', '.group-head',
+    // The way to anywhere (2.3.0, ADR-0093). BOTH doors, because there are two
+    // and a registry that names one of them measures half a control pair — the
+    // header's, beside More, and the one at the end of the list beside Back to
+    // the top. Neither is fixed; app.css carries the measurement that ruled a
+    // floating control out. `#held-heading` is the list's own heading, which
+    // existed as a loose <h2> and is a real region's name now.
+    '#contents-open', '#contents-open-end', '#held-heading'],
   // The door onto the inbox (1.39.2), which exists ONLY between a capture and
   // the moment somebody asks to sort — the app no longer answers your typing
   // with a question about it. Its own driven state, because that window is the
@@ -534,6 +541,12 @@ const REGISTRY = {
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
   'where you are': ['#where', '#where-note', '.card-where'],
+  // What is on this page (2.3.0, ADR-0093). Driven from a store with several
+  // blocks live, because a contents list with one row measures the chrome and
+  // nothing else — and the count line only renders for blocks that publish one,
+  // so the state has to be one where at least one does.
+  'contents open': ['#sheet-contents-title', '#sheet-contents-close',
+    '.contents-name', '.contents-count'],
   'coverage open': ['#sheet-coverage-title', '#sheet-coverage-close',
     '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
     '.proof-holds', '.proof-count', '.proof-reason'],
@@ -1672,6 +1685,59 @@ try {
     // and a modal sheet makes it inert.
     await page.click('#sheet-coverage-close');
     await page.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
+
+    // WHAT IS ON THIS PAGE (2.3.0, ADR-0093), and it is ASSERTED to be a route
+    // rather than a list of words. Three claims, in the order they can fail:
+    //
+    //  1. the rows exist and are named from the page itself — so the assertion
+    //     is that a live block's own heading text is present as a row, not that
+    //     "some rows rendered";
+    //  2. pressing one closes the sheet, moves the page, AND lands focus — a
+    //     scroll that leaves focus behind is the defect where the next Tab
+    //     throws you back up the page (ADR-0090 was written about exactly that);
+    //  3. no row points at a block that is not live, which is the failure mode a
+    //     hand-written list of destinations has and this one is built not to.
+    await page.click('#contents-open');
+    await page.waitForSelector('#sheet-contents[open]');
+    await auditContrast(page, 'contents open', theme);
+    await auditAxe(page, 'contents open', theme);
+    await auditNames(page, 'contents open', theme);
+    await auditTargets(page, 'contents open', theme);
+    await auditFocusRings(page, 'contents open', theme, ['.contents-go', '#sheet-contents-close']);
+    const contents = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('#contents-list .contents-go')]
+        .map((b) => ({ go: b.dataset.go, name: b.querySelector('.contents-name')?.textContent?.trim() })),
+      live: [...document.querySelectorAll('main > section[id]')]
+        .filter((s) => !s.hidden)
+        .map((s) => ({
+          id: s.id,
+          name: document.getElementById(s.getAttribute('aria-labelledby'))?.textContent?.trim() ?? '',
+        }))
+        .filter((s) => s.name),
+    }));
+    for (const block of contents.live) {
+      (contents.rows.some((r) => r.go === block.id && r.name === block.name) ? pass : fail)(
+        `${theme}/contents open: "${block.name}" (#${block.id}) is live on the page and has a row naming it`);
+    }
+    const dead = contents.rows.filter((r) => r.go !== 'top' && !contents.live.some((b) => b.id === r.go));
+    (dead.length === 0 ? pass : fail)(
+      `${theme}/contents open: no row points at a block that is not on the page` +
+      `${dead.length ? ` — ${dead.map((r) => `#${r.go}`).join(', ')}` : ''}`);
+    // The route, driven. `#held` is the block this release gave a name to, and
+    // it is the one furthest down the page — so it is the row with the most to
+    // prove about arriving.
+    await page.click('#contents-list .contents-go[data-go="held"]');
+    await page.waitForSelector('#sheet-contents[open]', { state: 'detached' });
+    const arrived = await page.evaluate(() => ({
+      focused: document.activeElement?.id ?? null,
+      // Its top edge, relative to the viewport, after the jump.
+      top: Math.round(document.querySelector('#held').getBoundingClientRect().top),
+    }));
+    (arrived.focused === 'held-heading' ? pass : fail)(
+      `${theme}/contents open: pressing a row lands focus on the block (got ${arrived.focused ?? 'nothing'})`);
+    (Math.abs(arrived.top) <= 4 ? pass : fail)(
+      `${theme}/contents open: pressing a row puts the block at the top of the screen (${arrived.top}px off)`);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
 
     // WHERE YOU ARE (2.2.0, ADR-0092), driven end to end: a place is named on a
     // thing's own sheet, then chosen on the work surface. Driven rather than
@@ -2838,7 +2904,11 @@ try {
       // sheet whose content escapes where the page-level check cannot see it,
       // and the coverage rows carry the longest strings in the app — a title
       // and a return date on one line.
-      'sheet-coverage', 'sheet-tree', 'sheet-menu']) {
+      'sheet-coverage', 'sheet-tree', 'sheet-menu',
+      // 2.3.0 (ADR-0093): its rows carry a block's heading and that block's own
+      // count sentence on one line, which at 320px @ 200% is the longest thing
+      // in the app that is not a title.
+      'sheet-contents']) {
       await openSurface(page, id);
       const over = await page.evaluate((want) => {
         const d = document.querySelector('#' + want);

@@ -57,6 +57,17 @@ requires breaking one, that is a Doctrine §1 moment: flag it, don't slip it in.
 4. **Levels push down; the user never climbs.** The runway is the only
    workspace. Higher horizons project lineage and health downward. Altitude
    views are inspection modes, not places to work.
+   **This law is about ALTITUDE and it has been misread as being about
+   navigation.** Its subject is goals, areas and outcomes: you never have to
+   climb a hierarchy to plan your day. It says nothing whatever about whether
+   the runway's own blocks can be reached, and "the runway is the only
+   workspace" is not "the runway is one undifferentiated scroll". Read the
+   second way, it was cited as the reason not to build a way around a page
+   measured at 3.0 screens with six live blocks on the *small* sample — which
+   is an invariant about hierarchy being spent on a different axis, and a
+   product law being used to close a defect. Built as the contents sheet in
+   2.3.0 ([ADR-0093](docs/adr/0093-a-way-to-each-part-of-the-page.md)), nineteen
+   days after it was first asked for. Same shape as Q-10 and hub LESSONS §96.
 5. **One decay primitive runs everything temporal:**
    `(last_done, comfort_window, rising pressure)`. **No "overdue" state exists
    anywhere** — not in the schema, not in a variable name, not in copy. Language
@@ -585,20 +596,65 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.2.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.3.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.3.0 — A WAY TO EACH PART OF THE PAGE** (ADR-0093). A **Contents** door in
+the header beside More, and a second at the end of the held list, opening a
+sheet that lists every block currently on the page — in page order, each named
+by its own heading and carrying its own count — and takes you to it. The held
+list becomes a real `<section>` with a focusable heading; it was a loose `<h2>`
+in the middle of `<main>`, so the biggest thing on the screen was nowhere the
+app could send you and nothing a screen reader could treat as a region.
+
+**This was the first thing ever asked of the app** — *"it is one long page, it
+needs pages or tabs, no?"* — and it was declined on product law 4. Law 4 is
+about ALTITUDE. Reading "the runway is the only workspace" as a statement about
+page layout spends an invariant about hierarchy on a different axis (see law 4
+above, and hub LESSONS §97). Not tabs, though: tabs partition, and a partition
+means remembering to check the other pile, which is the same argument Q-10 made
+against vaults.
+
+**Measured:** 3,589px / 3.0 screens with 6 live blocks on the *thirteen-item*
+sample; 8 blocks with the list starting 3.0 screens down at 820x1180 and 4.9 on
+a phone with a real store.
+
+**A floating door was built first and taken out.** Probed at 820x1180 and
+390x844 across 13 scroll positions: it overlapped 10 controls and took the
+CENTRE of 3, every one a card's **Done**. Reserving space with padding clears
+only the end of the document — mid-scroll, content passes under a fixed element
+by definition. The correct fix is a real scroll container, and it is deliberately
+not taken: that cannot be verified on the device this app is used on.
+
+**What to look at:** press **Contents** in the top bar. Every block showing on
+the page should be listed, in the order they appear, with its own count; pressing
+one should land you at the top of that block. Then check the two ends still work
+— *Go to what you are holding* and *Back to the top* have not moved.
+
+**Still owed, and stated in the notes rather than hidden:** from the MIDDLE of
+the page you still reach for one of the two ends. Checklists and templates remain
+the other absent building block, and node kinds still have no reader-facing
+words anywhere — nothing on a card says "project" or "goal".
 
 **2.2.0 — CONTEXTS** (ADR-0092). The axis this app did not have. The tree gives
 a thing one parent — where it LIVES. Nothing said where it can be DONE, so every
 list was every list and "show me what I can do at home" had no answer.
 
-**Nothing had ever decided against them.** Searched before building: contexts
-appear in no ADR, not in `what-it-should-be.md`, not in `build-plan.md`, and not
-in the frozen v1 MoSCoW. The concept exists in exactly ONE place in the source —
-`taskpaper.ts`, which drops contexts on import and names the drop. A session met
-the concept, wrote a line to discard it, and filed it as an import edge case
-rather than a missing building block. **The record is what sessions build from,
-and the record never contained it.**
+**This was asked for on 2026-07-29, in the repo's first week — see Q-10 above.**
+That entry got the design right in writing: *"a lens — a filter you switch on
+and off over one list — and not a partition"*, with law 1 unbent. ADR-0092's
+decision and central rule are that paragraph, restated nineteen days later by a
+session that did not know it existed. It was closed correctly about VAULTS and
+the need behind it was parked as a v1.5 candidate.
+
+This block said the opposite for a day — *"nothing had ever decided against
+them"* — written after searching for `context`, `@home` and `@work`, the words
+of the feature, while Q-10 is written in the words of the question: vault, lens,
+home, work. Corrected on being asked directly whether home versus work had ever
+come up. (Hub LESSONS §96.) `taskpaper.ts` remains the only place the word
+appears in the source, in a line that drops contexts on import and names the
+drop — so the concept was met a second time, by a different session, and filed
+as an import edge case.
 
 Q-13 had already settled the shape — anything crossing containers must be a
 cross-cutting link, not a container — and discussed it only as a *roles*
@@ -617,8 +673,9 @@ accessible name, so the title hides when the offer is empty; and the detail
 sheet's placeholders measured 4.08:1 against a 4.5:1 floor, unmeasured until now
 because no registry entry had ever named the pseudo-element.
 
-**Still owed:** a way to reach each SECTION rather than only the list. Checklists
-and templates are the other absent building block.
+**Still owed at the time; the section half is built in 2.3.0 above.** Checklists
+and templates remain the absent building block, and node kinds still have no
+reader-facing words — nothing on a card says what it is.
 
 **2.1.0 — a control looks like a control, and the route has a return leg**
 (ADR-0091). Two questions from a device about one defect: how do you know that
