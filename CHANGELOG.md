@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.5.0 — CAPABILITY
+
+*2026-08-17*
+
+- **Things now say what they are FOR, not just where they sit.** A step filed under a project under a goal says **serves ‹your goal›** on its row and on the card at the top. A description, never a door — nothing takes you up there, nothing is counted, nothing is scored.
+- **Half of a founding rule had never been built.** The rule is *levels push down; you never climb*: you should never walk up through goals and areas to plan a day, and instead the higher things send what they know down to you. The never-climbing half was always true. The sending-down half did not exist — a card knew what box it was in, and nothing anywhere said what any of it was for.
+- **This is the answer to what you said on 4 August — no feeling of being shown the right things.** It sat thirteen days because it was thought to need a question answered first. It needed somebody to read the code. Every way the app picks what to offer is about TIME, and where two things tie it falls back to which you wrote first — so it had no notion of what anything is for, and could not show you the right things by any meaning of "right" but "most time-pressured".
+- **Still owed, and it is your call rather than a build:** the ORDER things are offered in has not changed. Making "serves a goal" beat "serves nothing" would be the app deciding that filing something under a goal means it matters more — and a loose note is very often the most important thing you have written down.
+
 ## 2.4.0 — CAPABILITY
 
 *2026-08-17*

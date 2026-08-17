@@ -416,6 +416,15 @@ decided by a session.**
   - **If trust:** the right items are surfacing and nothing gives him grounds to
     believe it. The fix is a law-4 analogue of the coverage gauge: a visible
     proof of judgement, the way the gauge is a visible proof of integrity.
+  - **HALF-ANSWERED 2026-08-17 by measurement rather than by asking (2.5.0,
+    ADR-0095).** The ranking reading is established: every tier of `nextup` is
+    temporal and the only tie-break inside a tier is pressure then creation
+    order, so the app had no notion of what anything is for. Law 4's downward
+    half is now built and both readings are served by it — the card says what it
+    serves, so the reasoning is checkable. **What remains is a policy decision
+    and it is the owner's:** whether serving a horizon should outrank serving
+    nothing in the offer's order. A session must not make that call — a loose
+    capture is very often the most important thing in the store.
   - Status: **asked, not answered — and NOBODY PUT THE QUESTION TO HIM.**
     That is the defect, not the caution. "Do not build past this on a guess" is
     right and it is only half a decision: the other half is asking which reading
@@ -612,8 +621,49 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.4.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.5.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.5.0 — WHAT A THING IS FOR** (ADR-0095). Law 4's downward half, built for the
+first time. *"Levels push down; the user never climbs"* is two clauses: the
+never-climbing one has been true since ADR-0013, and *"higher horizons project
+lineage and health downward"* did not exist. A card knew what it was INSIDE and
+nothing anywhere said what it was FOR.
+
+**This answers Q-11, and it did not need the question answering.** Reported
+2026-08-04, sat thirteen days on *"asked, not answered. Do not build past this on
+a guess."* Not guessing was right; not going and looking was not. Measured in
+`nextup.ts`: **every tier is temporal** — hard-date, unblocked, resume, pressure,
+ready, unsorted, beneath — and **the only tie-break inside a tier is pressure and
+then creation order**, which is why forty rhythm-less items give the same card
+today and in a year. The app has never had any notion of what a thing is for, so
+it could not show the right things under any definition of *right* that is not
+*most time-pressured*. That is the ranking reading, established by reading the
+code. And the trust reading is served by the same build: when the card says
+*"serves A calmer house"*, the reasoning is on screen and can be disagreed with.
+
+**Highest ALTITUDE, not the top of the chain** — goal › area › outcome › project,
+ties to the nearer ancestor. `project` counts, because most real trees are one
+deep for a long time and a version that only spoke about goals would render
+nothing for almost everybody. A let-go horizon falls through to the next live one.
+
+**On the offer only when it adds something:** `lineageOf` already walks two hops,
+so a two-deep tree already says *"under A calmer house"* and appending *serves*
+would be one fact twice in two vocabularies. On the held card it is new at any
+depth — that list walked one hop and never said altitude at all.
+
+**No new control, no new class, no new colour pair** — it reuses `.card-place`,
+already in the contrast registry.
+
+**What to look at:** file something under a project under a goal, then read its
+row and the card at the top.
+
+**STILL OPEN, and it is yours rather than a build:** the ordering has NOT
+changed — it is still time alone. Making *serves a horizon* outrank *serves
+nothing* would be a session deciding that filing something under a goal means it
+matters more, and a loose capture is very often the most important thing in the
+store. That is the open half of Q-11, now stated with the numbers instead of as
+two abstract readings.
 
 **2.4.0 — A CARD SAYS WHAT IT IS** (ADR-0094). The second half of the same
 device report as 2.3.0: *"nothing indicates that some of these are projects or

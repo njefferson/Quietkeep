@@ -33,6 +33,7 @@ import { mountPrint } from './print.ts';
 import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
+import { servesWords } from '../serves.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
@@ -286,6 +287,30 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         where.className = 'card-place';
         where.textContent = place;
         open.append(where);
+      }
+
+      // AND WHAT IT IS FOR (2.5.0, ADR-0095) — law 4's downward half, on the
+      // surface that had none of it. The line above says where a thing LIVES,
+      // and it walks exactly one hop: "in Re-do the hallway". Nothing on this
+      // list has ever said what any of it was FOR, at any depth.
+      //
+      // That is the measured cause of "no feeling of being shown the right
+      // things" (Q-11, reported 2026-08-04): every tier of the offer is
+      // temporal and the only tie-break inside one is pressure then creation
+      // order, so the app has never had any notion of what a thing serves —
+      // and could not show the right things by any definition of right that is
+      // not "most time-pressured".
+      //
+      // `.card-place` REUSED rather than a new class. It carries no colour of
+      // its own, so the contrast registry's existing row covers this from the
+      // first run — which is what `.card-where` and the detail placeholders each
+      // cost a release for learning the other way round.
+      const serves = servesWords(st, node);
+      if (serves !== null) {
+        const forWhat = document.createElement('span');
+        forWhat.className = 'card-place';
+        forWhat.textContent = serves;
+        open.append(forWhat);
       }
 
       // WHAT IS IN IT, but only when it has actually come round.

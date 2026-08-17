@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.5.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Things now say what they are FOR, not just where they sit.** A step filed under a project under a goal says **serves \u2039your goal\u203a** on its row and on the card at the top. A description, never a door \u2014 nothing takes you up there, nothing is counted, nothing is scored.',
+      '**Half of a founding rule had never been built.** The rule is *levels push down; you never climb*: you should never walk up through goals and areas to plan a day, and instead the higher things send what they know down to you. The never-climbing half was always true. The sending-down half did not exist \u2014 a card knew what box it was in, and nothing anywhere said what any of it was for.',
+      '**This is the answer to what you said on 4 August \u2014 no feeling of being shown the right things.** It sat thirteen days because it was thought to need a question answered first. It needed somebody to read the code. Every way the app picks what to offer is about TIME, and where two things tie it falls back to which you wrote first \u2014 so it had no notion of what anything is for, and could not show you the right things by any meaning of "right" but "most time-pressured".',
+      '**Still owed, and it is your call rather than a build:** the ORDER things are offered in has not changed. Making "serves a goal" beat "serves nothing" would be the app deciding that filing something under a goal means it matters more \u2014 and a loose note is very often the most important thing you have written down.',
+    ],
+  },
+  {
     triplet: '2.4.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',

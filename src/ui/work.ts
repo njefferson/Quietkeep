@@ -23,6 +23,7 @@ import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
+import { servesNode } from '../serves.ts';
 import { pressureWords } from '../pressure.ts';
 import { captureContextWords } from '../capture-context.ts';
 import { calendarDaysBetween, atMidnight} from '../time.ts';
@@ -596,8 +597,26 @@ export function mountWork(
       // nothing" is not a location, and announcing bareness would make the flat
       // majority of a fresh store read as incomplete.
       if (PLACE) {
-        PLACE.textContent = up.head.place ?? '';
-        PLACE.hidden = !up.head.place;
+        // AND WHAT IT IS FOR (2.5.0, ADR-0095), appended to the same line rather
+        // than given one of its own — this card already carries a why, a where,
+        // a when-written, an approach, a situation and a first step, and law 8
+        // caps what a surface may show.
+        //
+        // ONLY WHEN IT ADDS SOMETHING. `lineageOf` walks two hops and the second
+        // is the first live container above the parent, so on a two-deep tree
+        // ("in Re-do the hallway · under A calmer house") the horizon is ALREADY
+        // named and appending "serves A calmer house" would be the card saying
+        // one fact twice in two vocabularies. It earns its place on a deeper
+        // tree, where the two-hop walk stops below the horizon and the goal goes
+        // unnamed. Checked against the rendered string rather than by counting
+        // depth, because the string is the thing the reader is comparing it to.
+        const forWhat = servesNode(session.state(), up.head.node);
+        const already = forWhat !== null && (up.head.place ?? '').includes(forWhat.title || '(untitled)');
+        const serves = forWhat === null || already
+          ? null : `serves ${forWhat.title || '(untitled)'}`;
+        const line = [up.head.place, serves].filter(Boolean).join(' · ');
+        PLACE.textContent = line;
+        PLACE.hidden = line.length === 0;
       }
       // WHEN IT WAS WRITTEN (2.0.3) — the triage card has said this since
       // 1.29.0 and this card never did.

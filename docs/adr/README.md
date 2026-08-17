@@ -312,6 +312,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0094](0094-a-card-says-what-it-is.md)**
   - Decision: One reader-facing word per node kind, defined once and stated first on a card's own line and on the detail sheet — the app had fourteen kinds and no word for any of them, so a goal and a loose to-do drew identically; `action` stays deliberately unmarked
   - Status: Accepted · shipped 2.4.0
+- **[0095](0095-what-a-thing-is-for.md)**
+  - Decision: A card says what it serves — the highest live horizon above it — as one descriptive line; law 4's downward half, built for the first time. Never a destination, no count, no score, and it does not change the offer's ordering
+  - Status: Accepted · shipped 2.5.0 · answers Q-11 · extends [0013](0013-levels-push-down.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a
