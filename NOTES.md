@@ -181,8 +181,13 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 > *"I eventually want a set of test data i can import and the ability to purge the
 > whole set of tasks, select ranges, or anything else that may make sense?"*
 
-Roadmapped, not built. **"Eventually"** — it waits behind the things that make the
-app better at its job. What follows is the shape it should take, written now
+~~Roadmapped, not built.~~ **ALL THREE ARE BUILT** — sample data (*Add some sample
+work*, *Make a set to try things on*), purging (*Clear what I'm holding*, with the
+copy-first step), and named ranges (sort mode, the standing "dates that have gone
+by" range, bulk acts through the real gate). **This line said "not built" until
+2026-08-17**, which is the same stale-prose defect this file records three times
+elsewhere. The shape written below is what they were built to, and it is kept
+because the reasoning still binds anything added to them. What follows is the shape it should take, written now
 while the reasoning is fresh, because most of these have a way of going wrong that
 is not obvious when you come to build them.
 
@@ -396,8 +401,13 @@ decided by a session.**
     settled — a role node carries its own review clock like any horizon, and
     "when do I review my roles?" is answered by the same
     mountain-comes-to-you return as everything else. When roles land, they
-    inherit that for free. Reported 2026-08-04: no feeling of being shown the right
-  things. The two readings need opposite work and the wrong guess wastes a
+    inherit that for free.
+- **Q-11 · No feeling of being shown the right things.** Reported 2026-08-04.
+  **THIS ENTRY HAD NO HEADING UNTIL 2026-08-17 and that is most of why it sat.**
+  Its text was run on to the end of Q-13's last bullet, so it was not a numbered
+  question in the list, did not appear in a scan of the open questions, and could
+  be read past by anybody reading Q-13. Thirteen days.
+  The two readings need opposite work and the wrong guess wastes a
   release — which is exactly what happened when an earlier session inferred
   "volume" and built `pressureBands` on it.
   - **If ranking:** the wrong items are surfacing, and the fix is in what
@@ -406,7 +416,13 @@ decided by a session.**
   - **If trust:** the right items are surfacing and nothing gives him grounds to
     believe it. The fix is a law-4 analogue of the coverage gauge: a visible
     proof of judgement, the way the gauge is a visible proof of integrity.
-  - Status: **asked, not answered.** Do not build past this on a guess.
+  - Status: **asked, not answered — and NOBODY PUT THE QUESTION TO HIM.**
+    That is the defect, not the caution. "Do not build past this on a guess" is
+    right and it is only half a decision: the other half is asking which reading
+    it is, and thirteen days passed with the answer one sentence away from
+    somebody who knew it. A question parked pending information nobody has gone
+    to get is not open, it is abandoned — the same shape as Q-10's close and
+    Q-13's deferral (hub LESSONS §96, §97).
 - **Q-12 · `Not this` records nothing, deliberately. Is that trade still right?**
   Declining a suggestion writes no event, so the app can never keep score — which
   is correct for this audience and is why the rule exists. It also means the app
