@@ -1,6 +1,6 @@
 # ADR-0092 · Contexts — where a thing can be DONE, which is not where it lives
 
-**Status:** Accepted · **Date:** 2026-08-17 · **Shipped:** 2.2.0 · **Settles part of:** Q-13's shape
+**Status:** Accepted · **Date:** 2026-08-17 · **Shipped:** 2.2.0 · **Answers:** Q-10 (asked 2026-07-29) · **Settles part of:** Q-13's shape
 
 ## Decision
 
@@ -14,12 +14,37 @@ The tree gives a thing exactly one parent: where it **lives**. Nothing said wher
 it can be **done**. Those are different axes, and the app only had the first — so
 every list was every list, and "show me what I can do at home" had no answer.
 
-**Nothing ever decided against contexts.** Searched before building: they appear
-in no ADR, not in `what-it-should-be.md`, not in `build-plan.md`, and not in the
-frozen v1 MoSCoW. The concept exists in exactly one place in the source —
-`taskpaper.ts`, which **drops contexts on import and names the drop**. A session
-met the concept, wrote a line to discard it, and treated it as an import edge
-case rather than a missing building block.
+**This was asked for on 2026-07-29, in the repo's first week, and the record says
+so.** NOTES.md **Q-10**: *"whether a second vault is for home tasks, and whether
+the app already separates work tasks some other way."* The session that answered
+it diagnosed the design correctly and wrote it down:
+
+> *"what he is describing wants a **lens** — a filter you switch on and off over
+> one list — and not a partition."*
+> *"Binding constraint if a lens is built: law 1 does not bend for it. A thing
+> filtered out of view still has its clock and still comes back."*
+
+That is this record's decision and this record's central rule, written nineteen
+days earlier. **It was then closed** — correctly, as a decision not to build
+vaults — and the thing actually wanted was parked: *"a Home/Work lens is a
+candidate for v1.5"*, with containment offered in the meantime.
+
+**The question was answered about the MECHANISM that was guessed at rather than
+the NEED that was described.** "Should the vault scope projections?" got a
+thorough, correct answer. "How do I keep home out of my work list?" did not get
+built, and the record then read as settled because a numbered question had a
+Status line on it.
+
+**And the first draft of this ADR repeated the failure.** It said contexts
+appeared nowhere in the record. That was written after searching for `context`,
+`@home` and `@work` — the vocabulary of the FEATURE — while Q-10 is written in
+the vocabulary of the QUESTION: vault, lens, home, work. The search that misses
+a requirement is the same search that lost it the first time. (Hub LESSONS §96.)
+
+`taskpaper.ts` remains the only place the word "context" appears in the source,
+and it is a line that **drops contexts on import and names the drop** — so the
+concept was met a second time, by a different session, and filed as an import
+edge case.
 
 **The shape was already settled and pointed elsewhere.** Q-13 established that
 anything crossing containers cannot BE a container — this tree is single-parent —
