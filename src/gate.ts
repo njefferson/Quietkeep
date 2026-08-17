@@ -193,6 +193,13 @@ export const heldWork = (state: State): NodeState[] =>
     // that was finished. It is not trashed and not hidden from an export: it
     // happened, and the log says so. It simply is not work.
     if (n.kind === 'resume-card' && n.resumeSpent) return false;
+    // NOR IS A CONTEXT (2.2.0, ADR-0092). "At home" is WHERE work can be done,
+    // and putting it in the todo list would make the label a task — the same
+    // category error the person and journal exclusions below and above exist
+    // for. Caught by the membership table rather than by eye: it appeared in
+    // heldGroups, in the coverage list and in search the moment the kind
+    // existed, because every one of those is defined by the complement.
+    if (n.kind === 'context') return false;
     // A JOURNAL ENTRY IS NOT WORK (1.13.0, ADR-0061). It is demand-free, so law
     // 1 is satisfied without a clock; it has no title by design; and it has its
     // own surface behind the ⓘ.

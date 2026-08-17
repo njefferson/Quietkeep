@@ -303,6 +303,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0091](0091-a-control-looks-like-a-control.md)**
   - Decision: Every control on the work surface carries a border or a fill, and the jump gains a return leg — 5 of the 7 prose-styled controls were every route off the page, and nothing anywhere returned the reader to the top
   - Status: Accepted · shipped 2.1.0 · extends [0090](0090-a-way-past-the-stack.md)
+- **[0092](0092-contexts.md)**
+  - Decision: Contexts — a demand-free node plus a cross-cutting link saying where a thing can be DONE, and a device preference for where you are that narrows the offer and the list; unlabelled fits everywhere and law 1 never reads it
+  - Status: Accepted · shipped 2.2.0
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

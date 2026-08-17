@@ -529,6 +529,11 @@ const REGISTRY = {
   // it here would have measured a control nobody can reach from this state,
   // which is the false receipt this file already pays for twice below. It is
   // still measured, in 'next up', where a reader can actually press it.
+  // WHERE YOU ARE (2.2.0, ADR-0092). Its OWN driven state, because the chooser
+  // and its standing line render only once a context exists and one is chosen —
+  // registering them on 'next up' put three entries in a state whose store has
+  // no context at all, and the gate correctly called all three false receipts.
+  'where you are': ['#where', '#where-note', '.card-where'],
   'coverage open': ['#sheet-coverage-title', '#sheet-coverage-close',
     '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
     '.proof-holds', '.proof-count', '.proof-reason'],
@@ -543,6 +548,8 @@ const REGISTRY = {
   // Composed Today's opt-in Extra (1.6.0) — the comms opt-in's shape. The
   // status note is audited via the dialog pass once it carries words.
   'today opt-in': ['#today-start'],
+  // Contexts on the detail sheet (2.2.0, ADR-0092) — the input, its Add, and the
+  // list of places, each of which is the control that takes itself off.
   // The detail sheet. The hint and the inline labels are the lowest-contrast
   // text on it, and the number inputs are the smallest targets.
   // `#detail-more` (1.39.1) folds the rare two-thirds of the sheet away. Added to
@@ -550,6 +557,8 @@ const REGISTRY = {
   // object literal silently wins, so the registry would have shrunk to one
   // selector while still reporting a pass.
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
+    '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
+    '#detail-context-hint',
     '.detail-hint', '#detail-name', '#detail-date', '#detail-every', '#detail-rename',
     '#detail-date-set', '#detail-close',
     // 1.3.0's verbs: the defer date, the estimate, and the picker's filter.
@@ -1572,7 +1581,7 @@ try {
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
     await auditTargets(page, 'next up', theme);
-    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held', '#to-top']);
+    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held', '#to-top', '#nextup-title']);
 
     // State 3c1: SETTLED (1.35.0). Reached the way anybody reaches it — finish
     // the thing being offered — and then left the same way, so every state after
@@ -1663,6 +1672,30 @@ try {
     // and a modal sheet makes it inert.
     await page.click('#sheet-coverage-close');
     await page.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
+
+    // WHERE YOU ARE (2.2.0, ADR-0092), driven end to end: a place is named on a
+    // thing's own sheet, then chosen on the work surface. Driven rather than
+    // seeded, because the write path is the thing worth measuring — a context
+    // planted straight into the store would prove the chooser renders and
+    // nothing about whether it can be made.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-context', 'At home');
+    await page.click('#detail-context-set');
+    await page.waitForSelector('#detail-context-list li');
+    await page.click('#detail-close');
+    await page.waitForSelector('#where-row:not([hidden])');
+    await page.selectOption('#where', { label: 'At home' });
+    await page.waitForSelector('#where-note:not([hidden])');
+    await auditContrast(page, 'where you are', theme);
+    await auditAxe(page, 'where you are', theme);
+    await auditNames(page, 'where you are', theme);
+    await auditTargets(page, 'where you are', theme);
+    await auditFocusRings(page, 'where you are', theme, ['#where']);
+    // Back to everywhere, so every state after this sees the whole list.
+    await page.selectOption('#where', '');
+    await page.waitForSelector('#where-note', { state: 'hidden' });
 
     // State 3e: the detail sheet — the surface that makes this a planner.
     await page.click('#cards .card-open');

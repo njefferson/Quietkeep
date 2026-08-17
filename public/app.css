@@ -406,6 +406,40 @@ button.ghost {
    surface behind it. The arrow is decorative and after the words, so the
    accessible name is the sentence (SC 2.5.3) and nothing depends on seeing a
    glyph (B-01/B-02). */
+/* The offered card's title is a DOOR now (2.2.0, ADR-0092). It keeps the size
+ * and weight it had as a heading — a person's eye has learned where the offer's
+ * title sits — and gains a box, because ADR-0091's rule is that a control looks
+ * like a control and this release must not reopen it. */
+.nextup-title {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  min-height: var(--target);
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+/* Where a thing can be done, on its card. Soft like the place line it sits
+ * beside — it is context, not the title. */
+.card-where { color: var(--ink-soft); }
+
+/* PLACEHOLDERS ARE TEXT SOMEBODY READS (2.2.0). The browser's default applies
+ * its own opacity on top of the colour, which measured 4.08:1 on the detail
+ * sheet — under the 4.5:1 floor. `#capture`, `#capture-many` and the search
+ * field each set this explicitly and pass; the detail sheet's inputs never did,
+ * and nothing had measured them because no registry entry named the pseudo.
+ * Fixed for every input on the sheet rather than only the one that was
+ * measured, since they all inherited the same default. */
+.detail-row input::placeholder,
+#detail-context::placeholder { color: var(--ink-soft); opacity: 1; }
+
 .jump {
   display: block;
   width: 100%;

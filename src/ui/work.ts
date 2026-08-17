@@ -32,6 +32,7 @@ import { treeRows } from '../tree-view.ts';
 import { timeLeftWords } from '../duration.ts';
 import { clockFace, nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
+import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
@@ -458,6 +459,15 @@ export function mountWork(
   // state the app was in when it started.
   onSheetOpen('sheet-coverage', () => { buildProof(); buildCoverage(); });
   wireSheetClose('sheet-coverage');
+  // The offered card opens its own sheet (2.2.0, ADR-0092). `current` is the
+  // item the surface is showing, so this can never open the wrong thing —
+  // and if the offer is empty there is nothing to open.
+  TITLE.addEventListener('click', () => {
+    if (!current || !openDetail) return;
+    const fresh = session.state().nodes.get(current.node.id);
+    if (fresh) openDetail(fresh);
+  });
+
   GAUGE.addEventListener('click', () => { openSheet('sheet-coverage'); });
 
   /** Plain words for when something returns — calendar days in the reader's
@@ -476,7 +486,30 @@ export function mountWork(
     const iso = nowIso();
     // workSurface removes the chip items from Next-up, so a ready upkeep is not
     // rendered twice on one screen with two Done buttons writing to one node.
-    const { up: all, chips: ups } = workSurface(state, iso, session.zone, 0);
+    const { up: all0, chips: ups } = workSurface(state, iso, session.zone, 0);
+    // WHERE YOU ARE (2.2.0, ADR-0092). The half that answers the question this
+    // feature exists for: "show me what I can do at home" is useless if the ONE
+    // thing the app hands you is a job for the office.
+    //
+    // Filtered here rather than inside `workSurface` deliberately — the ranking
+    // and every test over it stay untouched, exactly as ADR-0060 kept `nextup`
+    // untouched when the offer's shape changed. This narrows what is OFFERED
+    // from that ranking; it does not re-rank anything.
+    //
+    // Law 1 is not bent: what is filtered out still has its clock, still counts
+    // in the claim, and still comes back. Unlabelled things fit anywhere.
+    const here = getWhereNow();
+    // `NextUp` is head + behind + total, not an array. Filtering has to keep
+    // that shape honest: if the head does not fit, the first thing behind that
+    // does becomes the head, and `total` counts what fits — a total that
+    // counted things you cannot do from here would be the surface answering a
+    // different question from the one the chooser asked.
+    const all = ((): typeof all0 => {
+      if (!here) return all0;
+      const fits = (i: NextUpItem) => fitsHere(state, i.node, here);
+      const kept = [...(all0.head ? [all0.head] : []), ...all0.behind].filter(fits);
+      return { head: kept[0] ?? null, behind: kept.slice(1), total: kept.length };
+    })();
     // THE MENU SHAPE (1.11.0, ADR-0060). What is offered is a small set chosen
     // to be UNALIKE — at most one item per reason, plus one thing off the Menu
     // that owes nothing. `offerNow` owns that rule; this file only renders it.
@@ -510,6 +543,9 @@ export function mountWork(
       // keypress must not act on an item the reader cannot see.
       current = null;
       TITLE.textContent = '';
+      // A BUTTON WITH NO WORDS HAS NO NAME (2.2.0). Since the title became a
+      // door it must go when there is nothing to open, not sit there empty.
+      TITLE.hidden = true;
       WHY.textContent = '';
       if (PLACE) PLACE.hidden = true;
       paintWritten(null);
@@ -549,6 +585,7 @@ export function mountWork(
       if (doneBtn) doneBtn.hidden = false;
       if (skipBtn) skipBtn.hidden = false;
       TITLE.textContent = up.head.node.title || '(untitled)';
+      TITLE.hidden = false;
       // Why this, in words. Pressure adds its own gentle phrase; neither ever
       // reaches for the shame word this app refuses — no such state exists here,
       // and the vocabulary that replaces it is in pressure.ts (ADR-0010).
@@ -698,6 +735,7 @@ export function mountWork(
       if (undated > 0) {
         REGION.hidden = false;
         TITLE.textContent = 'Nothing is asking today.';
+        TITLE.hidden = false;
         if (PLACE) { PLACE.textContent = ''; PLACE.hidden = true; }
         paintWritten(null);
         // Cleared beside PLACE, for its reason: this branch reuses the same
@@ -715,6 +753,7 @@ export function mountWork(
       } else {
         REGION.hidden = true;
         TITLE.textContent = '';
+        TITLE.hidden = true;
       }
     }
 

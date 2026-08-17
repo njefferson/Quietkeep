@@ -24,6 +24,13 @@ export type VaultDomain = 'work' | 'personal' | 'journal';
 export const NODE_KINDS = [
   'action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep',
   'aspiration', 'bother', 'pebble', 'journal', 'person', 'resume-card', 'anchor',
+  // WHERE A THING CAN BE DONE (2.2.0, ADR-0092). A context is a place or a
+  // means — at home, at work, out, on the phone — and it is NOT a container.
+  // A thing lives in exactly one place in this tree; it can be doable in
+  // several. Q-13 already settled that anything crossing containers has to be a
+  // cross-cutting LINK rather than a parent, and named the shape; this is that
+  // shape, pointed at the everyday case instead of at roles.
+  'context',
 ] as const;
 export type NodeKind = (typeof NODE_KINDS)[number];
 
@@ -60,7 +67,7 @@ export type NodeKind = (typeof NODE_KINDS)[number];
  * price is paid in the same release: the surface that renders anchors ships
  * with it.
  */
-export const DEMAND_FREE_KINDS = ['aspiration', 'pebble', 'person', 'journal', 'anchor'] as const satisfies readonly NodeKind[];
+export const DEMAND_FREE_KINDS = ['aspiration', 'pebble', 'person', 'journal', 'anchor', 'context'] as const satisfies readonly NodeKind[];
 
 export type ClockKind = 'due' | 'start' | 'suspense' | 'review' | 'park';
 // `filed` is WHERE, and the only route that answers it. The other six say
@@ -358,6 +365,15 @@ export type ShardCompacted   = Ev<'shard.compacted',    { device: DeviceId; thro
 // --- H · people and journal --------------------------------------------------
 export type PersonCreated    = Ev<'person.created',     { name: string }>;
 export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned' }>;
+// --- H2 · contexts (2.2.0, ADR-0092) ----------------------------------------
+//
+// `person.linked`'s shape exactly. A context is a node so it can be renamed and
+// so nothing has to parse a string; the link is separate so a thing can be
+// doable in several places without the tree gaining a second parent.
+export type ContextCreated   = Ev<'context.created',    { name: string }>;
+export type ContextAttached  = Ev<'context.attached',   { node: NodeId; context: NodeId }>;
+export type ContextDetached  = Ev<'context.detached',   { node: NodeId; context: NodeId }>;
+
 /** Payload is ALWAYS encrypted at rest. There is no plaintext journal event. */
 /**
  * One journal entry, sealed (1.13.0, ADR-0061).
@@ -457,7 +473,8 @@ export type AppEvent =
   | ModuleEnabled | ModuleDisabled | ConsentGranted | ConsentRevoked
   | SnapshotWritten | SchemaMigrated | ExportWritten | ImportSeeded | ShardFolded
   | TerminologySkinApplied | TemplateLoaded | ShardCompacted
-  | PersonCreated | PersonLinked | JournalEntryWritten | JournalSealed | JournalTagAttached
+  | PersonCreated | PersonLinked
+  | ContextCreated | ContextAttached | ContextDetached | JournalEntryWritten | JournalSealed | JournalTagAttached
   | MenuItemAdded | MenuItemRemoved | MenuItemPromoted | SaveForUpdated
   | LapseMigrationRan | ReentryGreeted | AmnestyOffered | AmnestyAccepted
   | RangeActed | TodayChosen | TodayReleased;
@@ -485,6 +502,7 @@ export const EVENT_KINDS = [
   'snapshot.written','schema.migrated','export.written','import.seeded','shard.folded',
   'terminology.skin.applied','template.loaded','shard.compacted',
   'person.created','person.linked','journal.entry.written','journal.sealed','journal.tag.attached',
+  'context.created','context.attached','context.detached',
   'menu.item.added','menu.item.removed','menu.item.promoted','save-for.updated',
   'lapse.migration.ran','reentry.greeted','amnesty.offered','amnesty.accepted',
   'range.acted','today.chosen','today.released',

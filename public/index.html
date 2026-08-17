@@ -226,7 +226,12 @@
        Hidden when nothing is asking — an empty morning says so. -->
   <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
     <h2 id="nextup-heading" class="section" tabindex="-1">Next up</h2>
-    <p id="nextup-title" class="nextup-title"></p>
+    <!-- A DOOR, not a caption (2.2.0, ADR-0092). This was a <p>. Every other
+         thing on this card is a real control — Done, Not this, This one is
+         heavy — and the one item the app is actively handing you was the only
+         one you could not open, so changing it meant finding it again somewhere
+         else. Reported from a device in exactly those words. -->
+    <button id="nextup-title" class="nextup-title" type="button"></button>
     <p id="nextup-why" class="nextup-why"></p>
     <!-- WHERE it sits (V2 stage 1). Reuses .nextup-why's measured colour pair —
          .nextup-place adds layout only, so the contrast registry's existing row
@@ -603,6 +608,22 @@
        Its own ADR called it an inspection mode from the day it shipped, and it
        unfolded into the workspace for thirty-four releases regardless. -->
   <button id="tree-open" class="gauge" type="button">How it hangs together</button>
+
+  <!-- WHERE YOU ARE (2.2.0, ADR-0092). The thing the app did not have.
+       The tree says where a thing LIVES; this says where it can be DONE, and
+       they are different questions. Set this and the offer and the list narrow
+       to what actually fits — plus everything unlabelled, which fits anywhere.
+       A FILTER, never a partition: law 1 does not bend for it. A thing not
+       shown here still has its clock, still counts in the claim above, and
+       still comes back. Anything else is an archive with a friendlier name,
+       which law 3 forbids — the same binding ADR-0054 put on the lens.
+       Hidden until at least one place has been named, because a chooser with
+       nothing in it is a control that teaches you the feature is broken. -->
+  <div id="where-row" class="lens-row" hidden>
+    <label class="detail-inline" for="where">Where you are</label>
+    <select id="where" aria-describedby="where-note"></select>
+  </div>
+  <p id="where-note" class="detail-hint" hidden></p>
 
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
@@ -1089,6 +1110,29 @@
       It becomes its own thing again, with a clock of its own. What was
       carried across stays carried &mdash; the record does not un-happen.
     </p>
+  </div>
+
+  <!-- WHERE THIS CAN BE DONE (2.2.0, ADR-0092). Contexts.
+       The tree gives a thing exactly one parent — where it LIVES. This is a
+       different axis: where it can be DONE, and a thing can be doable in more
+       than one place, so it is a list of links and never a second parent.
+       Nothing is required. A thing with no context is doable anywhere, which is
+       why an unlabelled thing is never filtered away by "where you are" — the
+       filter narrows to what fits, and everything unlabelled always fits. -->
+  <div class="detail-group">
+    <label class="detail-label" for="detail-context">Where can this be done?</label>
+    <div class="detail-row">
+      <input id="detail-context" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="at home, out, on the phone"
+             list="detail-contexts" aria-describedby="detail-context-hint">
+      <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
+    </div>
+    <datalist id="detail-contexts"></datalist>
+    <p id="detail-context-hint" class="detail-hint">
+      As many as fit. Nothing here is required, and a thing with no place at all
+      can be done anywhere.
+    </p>
+    <ul id="detail-context-list" class="detail-feeds"></ul>
   </div>
 
   <!-- Who this is with. Clarify's "Waiting for" route is one tap and never asks

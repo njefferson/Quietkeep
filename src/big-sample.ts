@@ -319,6 +319,18 @@ export async function bigSampleEvents(
     return id;
   });
 
+  // --- contexts, next, because actions attach to them (2.2.0, ADR-0092) ------
+  //
+  // Four, because that is what a real set looks like: two places and two means.
+  // `context.created` IS the creation, exactly as `person.created` is — a
+  // context is not a `node.created` carrying a kind.
+  const CONTEXTS = ['At home', 'At work', 'Out and about', 'On the phone'];
+  const contexts = CONTEXTS.map((name) => {
+    const id = ctx.id();
+    stamp('context.created', id, { name });
+    return id;
+  });
+
   // --- the spine: areas, projects, actions, at scale ------------------------
   //
   // Real containment, several levels of it, and one container deliberately over
@@ -380,6 +392,17 @@ export async function bigSampleEvents(
     const a = parented
       ? node('action', pick(PROJECTS[pi]!.steps), projects[pi])
       : node('action', pick(STANDALONE));
+    // WHERE IT CAN BE DONE (2.2.0, ADR-0092). Most things get one; some get two,
+    // because a thing can be doable at home AND out; and a good number get none,
+    // which is the honest majority — an unlabelled thing is doable anywhere and
+    // is never filtered away. Deterministic like everything else here.
+    const cRoll = rand();
+    if (cRoll < 0.55) {
+      stamp('context.attached', a, { node: a, context: contexts[Math.floor(rand() * contexts.length)]! });
+      if (cRoll < 0.12) {
+        stamp('context.attached', a, { node: a, context: contexts[Math.floor(rand() * contexts.length)]! });
+      }
+    }
     const roll = rand();
     if (roll < 0.15) clock(a, 'due', int(-14, -1));        // passed: a replan card
     else if (roll < 0.45) clock(a, 'due', int(0, 21));
@@ -404,6 +427,14 @@ export async function bigSampleEvents(
   }
 
   // --- rename, re-kind, re-parent, un-parent --------------------------------
+  // A place put on and taken off again (2.2.0) — the detach verb exercised, so
+  // the sample carries every context event rather than only the additive half.
+  const replaced = node('action', 'Take the old paint to the tip');
+  stamp('context.attached', replaced, { node: replaced, context: contexts[0]! });
+  stamp('context.attached', replaced, { node: replaced, context: contexts[2]! });
+  stamp('context.detached', replaced, { node: replaced, context: contexts[0]! });
+  clock(replaced, 'due', int(2, 12));
+
   const renamed = node('action', 'Ring the man about the thing');
   clock(renamed, 'due', 3);
   stamp('node.renamed', renamed, { title: 'Ring the roofer about the ridge tiles' });
@@ -776,7 +807,8 @@ export function bigSampleSummary(events: readonly AppEvent[]): BigSampleSummary 
   const nodes = new Set<string>();
   for (const e of events) {
     if (e.node === null) continue;
-    if (e.kind === 'node.created' || e.kind === 'capture.recorded' || e.kind === 'person.created') {
+    if (e.kind === 'node.created' || e.kind === 'capture.recorded'
+        || e.kind === 'person.created' || e.kind === 'context.created') {
       nodes.add(e.node);
     }
   }

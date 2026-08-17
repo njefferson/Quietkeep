@@ -432,6 +432,41 @@ export const unparentEvents = (
  * who at that moment would make it three, so the answer is offered here instead —
  * and a waiting-for nobody has named stays perfectly usable.
  */
+/**
+ * WHERE THIS CAN BE DONE (2.2.0, ADR-0092).
+ *
+ * `linkPersonEvents`'s shape, minus the relation: a context has exactly one
+ * meaning, so there is nothing to choose. Creating the context node and
+ * attaching it are separate events for the same reason they are for people —
+ * the node can be renamed once and every link follows.
+ *
+ * The caller passes `createNamed` only when the typed name is new, so typing an
+ * existing context twice attaches rather than making a second one with the same
+ * words. That check belongs to the caller because it needs state.
+ */
+export function attachContextEvents(
+  ctx: StampContext, node: string, context: string,
+  opts: { createNamed?: string } = {},
+): AppEvent[] {
+  const out: AppEvent[] = [];
+  const mk = (kind: string, n: string | null, payload: unknown): AppEvent => ({
+    id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+    kind, node: n, payload,
+  } as AppEvent);
+  if (opts.createNamed) out.push(mk('context.created', context, { name: opts.createNamed }));
+  out.push(mk('context.attached', node, { node, context }));
+  return out;
+}
+
+/** Take one place off. Scoped to the node AND the context, so removing "At
+ *  work" leaves "At home" alone. */
+export const detachContextEvents = (
+  ctx: StampContext, node: string, context: string,
+): AppEvent[] => [{
+  id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+  kind: 'context.detached', node, payload: { node, context },
+} as AppEvent];
+
 export function linkPersonEvents(
   ctx: StampContext, node: string, person: string, relation: string,
   opts: { createNamed?: string; openWaiting?: boolean; forWhat?: string } = {},

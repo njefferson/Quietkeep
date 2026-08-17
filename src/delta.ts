@@ -78,6 +78,7 @@ export type ChangeKind = 'finished' | 'arrived' | 'now-waiting' | 'let-go' | 'ne
  *  - `aspiration` — a want on the Menu. It owes nothing, so it reports nothing.
  *  - `resume-card` — the app's own artifact about where you left off, not work
  *    anybody committed to and not a fact about the portfolio.
+ *  - `context` — where a thing can be done. A label on work, never work.
  */
 const REPORTABLE: Record<NodeKind, boolean> = {
   action: true,
@@ -94,6 +95,7 @@ const REPORTABLE: Record<NodeKind, boolean> = {
   journal: false,
   person: false,
   'resume-card': false,
+  context: false,
   anchor: false,
 };
 

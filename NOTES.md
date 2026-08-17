@@ -582,8 +582,40 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.1.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.2.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.2.0 — CONTEXTS** (ADR-0092). The axis this app did not have. The tree gives
+a thing one parent — where it LIVES. Nothing said where it can be DONE, so every
+list was every list and "show me what I can do at home" had no answer.
+
+**Nothing had ever decided against them.** Searched before building: contexts
+appear in no ADR, not in `what-it-should-be.md`, not in `build-plan.md`, and not
+in the frozen v1 MoSCoW. The concept exists in exactly ONE place in the source —
+`taskpaper.ts`, which drops contexts on import and names the drop. A session met
+the concept, wrote a line to discard it, and filed it as an import edge case
+rather than a missing building block. **The record is what sessions build from,
+and the record never contained it.**
+
+Q-13 had already settled the shape — anything crossing containers must be a
+cross-cutting link, not a container — and discussed it only as a *roles*
+question, then deferred it. `node.people` is that machinery, shipping since
+0.15.0. A context is the same thing with a different relation.
+
+**What to look at:** open a thing, set **Where can this be done?**, then use
+**Where you are** at the bottom of the main screen. The offer and the list should
+narrow. Anything with no place at all should stay visible everywhere.
+
+**Also: the offered card opens now.** It was a `<p>` — the one item the app
+actively hands you was the only thing on screen you could not tap to change.
+
+**Two defects the gates caught, not the eye:** a button with no words has no
+accessible name, so the title hides when the offer is empty; and the detail
+sheet's placeholders measured 4.08:1 against a 4.5:1 floor, unmeasured until now
+because no registry entry had ever named the pseudo-element.
+
+**Still owed:** a way to reach each SECTION rather than only the list. Checklists
+and templates are the other absent building block.
 
 **2.1.0 — a control looks like a control, and the route has a return leg**
 (ADR-0091). Two questions from a device about one defect: how do you know that

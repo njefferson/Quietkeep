@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.2.0 — CAPABILITY
+
+*2026-08-17*
+
+- **Done is now the second control on the offer; it was the first. Not this is now the fourth; it was the third. The Menu line is now one row lower than it was.** The card's title moved ahead of them, because it is a button now — see below. Nothing else moved.
+- **You can say where a thing can be done, and then say where you are.** At home, at work, out, on the phone — as many as fit, because a thing can be doable in more than one place. Set them on a thing's own sheet under **Where can this be done?**; then **Where you are** at the bottom of the main screen narrows what you are offered and what is listed to the things that actually fit.
+- **Anything with no place at all fits everywhere.** Most of what you write down is not tied to a room, and it would be a poor system that hid it for that. Nothing is required and nothing is filed for you.
+- **Nothing is hidden from you by this.** A thing you cannot do from where you are still has its date, still counts in the line above your list, and still comes back. It is a filter on what you are looking at, never a change to what the app is holding.
+- **And the card at the top opens now.** The one thing the app hands you was the only thing on the screen you could not tap to change — you had to go and find it somewhere else first.
+
 ## 2.1.0 — CAPABILITY
 
 *2026-08-12*

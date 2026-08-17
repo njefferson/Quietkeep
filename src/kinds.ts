@@ -28,6 +28,10 @@ import type { NodeKind } from './events.ts';
 export const NOT_ACTIONABLE: ReadonlySet<NodeKind> = new Set<NodeKind>([
   'waiting-for', 'aspiration', 'pebble', 'person', 'anchor', 'journal',
   'goal', 'area', 'outcome', 'project',
+  // A context is WHERE work can be done, not work (2.2.0, ADR-0092). Offering
+  // "At home" as the next thing to do, with a Done button on it, is the same
+  // category error as offering a person.
+  'context',
   // `bother` joined in 1.17.3 (the seam audit). A worry is "not a task, has no
   // next action" by its own module's header, and its surface is the bother
   // flow, which asks "whose is this?" FIRST. Before this, an unanswered worry

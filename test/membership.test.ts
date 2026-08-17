@@ -86,9 +86,9 @@ const SURFACES: Record<string, SurfaceRule> = {
     rows: st => heldWork(st),
   },
   'search (searchHeld)': {
-    why: 'Answers "where did that go" — so wider than work: people and anchors are findable because each opens a sheet that can say something true about it. Pebbles are excluded (their sheet is all verbs the gate refuses — 1.15.1) and a journal entry cannot match (no title, by design).',
-    allowed: [...WORK, 'aspiration', 'person', 'anchor'],
-    expect: ['action', 'person', 'anchor', 'aspiration'],
+    why: 'Answers "where did that go" — so wider than work: people, anchors and contexts are findable because each opens a sheet that can say something true about it. A context is allowed for the same reason a person is: "at home" is a real thing the reader named, and typing it should reach it. Pebbles are excluded (their sheet is all verbs the gate refuses — 1.15.1) and a journal entry cannot match (no title, by design).',
+    allowed: [...WORK, 'aspiration', 'person', 'anchor', 'context'],
+    expect: ['action', 'person', 'anchor', 'aspiration', 'context'],
     rows: st => searchHeld(st, 'e', 100000).items,
   },
   'next-up queue': {

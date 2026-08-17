@@ -201,6 +201,12 @@ export interface NodeState {
    * requested-by | mentioned.
    */
   people: { person: NodeId; relation: string }[];
+  /** WHERE THIS CAN BE DONE (2.2.0, ADR-0092). Several, because a thing can be
+   *  doable at home AND out; empty means "anywhere", which is why an unlabelled
+   *  thing is never filtered away. A LABEL, never a container: the parent still
+   *  says where it lives, and law 1 does not read this list — attaching a
+   *  context can never make a silent node non-silent. */
+  contexts: NodeId[];
   /** For a `waiting-for`: what is owed and since when. `waitingOn` is the person
    *  node; null means nobody has said who, which is an ordinary state and not a
    *  defect — the route is one tap and asking who at that moment would make it
@@ -636,7 +642,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       id, vault, kind: 'action', title: '', parent: null,
       trashed: false, mergedInto: null, clocks: {}, onMenu: null,
       lastDone: null, comfortWindowDays: null, intervalDays: null,
-      heat: null, route: null, sourceTags: [], captured: false, resumeSpent: false,
+      heat: null, route: null, sourceTags: [], captured: false, resumeSpent: false, contexts: [],
       resumeFor: null, resumeCue: null, interruptedFocus: null, interruptedAt: null,
       people: [], waitingOn: null, waitingFor: null, waitingSince: null, waitingOutcome: null,
       role: null, opr: null, saveTarget: null, saveSaved: null,
@@ -674,6 +680,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       // Same rule, same reason: `people` is a mutable array on a structural
       // field, so a bare spread would alias it into the base state.
       people: [...n.people],
+      contexts: [...n.contexts],
       // And the decision log, for the same reason a third time (1.9.0).
       decisions: [...n.decisions],
       // And the timed runs, a fifth (V2 stage 5). Same rule, same reason: a
@@ -849,6 +856,18 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
       // different person to the same node must end with both links, and linking
       // the same person twice must not produce two rows. Last-writer-wins on a
       // list would silently drop one device's answer.
+      case 'context.attached': {
+        const n = ensureNode(s, e.payload.node ?? e.node!, e.vault, touched);
+        if (!n.contexts.includes(e.payload.context)) {
+          n.contexts = [...n.contexts, e.payload.context];
+        }
+        break;
+      }
+      case 'context.detached': {
+        const n = ensureNode(s, e.payload.node ?? e.node!, e.vault, touched);
+        n.contexts = n.contexts.filter(c => c !== e.payload.context);
+        break;
+      }
       case 'person.linked': {
         const n = ensureNode(s, e.payload.node ?? e.node!, e.vault, touched);
         const rel = e.payload.relation;
@@ -1012,6 +1031,12 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
       case 'person.created': {
         const n = ensureNode(s, e.node!, e.vault, touched);
         if (wins(n.stamps['kind'], o)) { n.kind = 'person'; n.stamps['kind'] = o; }
+        if (wins(n.stamps['title'], o)) { n.title = e.payload.name; n.stamps['title'] = o; }
+        break;
+      }
+      case 'context.created': {
+        const n = ensureNode(s, e.node!, e.vault, touched);
+        if (wins(n.stamps['kind'], o)) { n.kind = 'context'; n.stamps['kind'] = o; }
         if (wins(n.stamps['title'], o)) { n.title = e.payload.name; n.stamps['title'] = o; }
         break;
       }

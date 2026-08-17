@@ -36,6 +36,7 @@ import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
+import { WHERE_KEY, allContexts, contextNames, fitsHere, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { waitingOnAnyone, withWhom, waitingWords, peopleWords } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
@@ -75,6 +76,12 @@ let rerenderAll: (() => void) | null = null;
  *  synchronous, the kv write happens on change, and a value that cannot be
  *  read is simply "everything", never a reason to fail to start. */
 let lensRoot: string | null = null;
+
+/** WHERE YOU ARE (2.2.0, ADR-0092), or null for everywhere. A device view
+ *  preference exactly like the lens root — never an event, because where
+ *  somebody is is not a fact about their work and the log has no business
+ *  keeping a history of it. */
+let whereNow: string | null = null;
 
 /**
  * THE WAY PAST THE STACK (2.0.8, ADR-0090) — shown when, and only when, there is
@@ -145,6 +152,38 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     ]);
     if (keep === '' || lensRoots.some(r => r.id === keep)) lensSel.value = keep;
   }
+  // WHERE YOU ARE (2.2.0, ADR-0092). Hidden until a place has been named — a
+  // chooser with nothing in it teaches you the feature is broken.
+  const whereSel = document.querySelector<HTMLSelectElement>('#where');
+  const whereRow = document.querySelector<HTMLElement>('#where-row');
+  const whereNote = document.querySelector<HTMLElement>('#where-note');
+  const places = allContexts(st);
+  if (whereSel && whereRow) {
+    whereRow.hidden = places.length === 0;
+    const keep = whereNow ?? '';
+    whereSel.replaceChildren(...[
+      Object.assign(document.createElement('option'), { value: '', textContent: 'anywhere' }),
+      ...places.map(c => Object.assign(document.createElement('option'), {
+        value: c.id, textContent: c.title || '(unnamed)',
+      })),
+    ]);
+    if (keep === '' || places.some(c => c.id === keep)) whereSel.value = keep;
+  }
+  // If the chosen place was trashed, the filter stands down rather than
+  // filtering by a ghost — the lens's rule, and the reason it matters more here
+  // is that a ghost context matches nothing, so the surface would go empty.
+  const whereLive = whereNow && places.some(c => c.id === whereNow) ? whereNow : null;
+  // The OFFER reads the shared copy, so it must be the live one — a ghost
+  // context matches nothing, and an offer filtered by a ghost is an empty offer.
+  if (getWhereNow() !== whereLive) setWhereNow(whereLive);
+  if (whereNote) {
+    whereNote.hidden = !whereLive;
+    if (whereLive) {
+      whereNote.textContent = whereWords(
+        places.find(c => c.id === whereLive)?.title || 'here');
+    }
+  }
+
   const lensRootNode = lensRoot ? st.nodes.get(lensRoot) : undefined;
   const lensLive = Boolean(lensRootNode && !lensRootNode.trashed && !lensRootNode.mergedInto
     && lensRoots.some(r => r.id === lensRoot));
@@ -163,7 +202,11 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     // The lens filters BEFORE the cap slices, or the cap would lie about how
     // many it held back. A group emptied by the lens is simply absent, like
     // any empty group.
-    const lensed = lensIds ? group.items.filter(n => lensIds.has(n.id)) : group.items;
+    const lensedOnly = lensIds ? group.items.filter(n => lensIds.has(n.id)) : group.items;
+    // AND WHERE YOU ARE (2.2.0). Applied with the lens and before the cap, for
+    // the same reason: a cap over an unfiltered set would lie about how many it
+    // held back. Unlabelled things fit anywhere, so they always survive this.
+    const lensed = lensedOnly.filter(n => fitsHere(st, n, whereLive));
     if (lensed.length === 0) continue;
 
     const head = document.createElement('h3');
@@ -207,6 +250,19 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // `|| '(untitled)'` like every other surface — the held list was the one
       // place a blank title rendered as an unlabelled, unidentifiable card.
       title.textContent = node.title || '(untitled)';
+
+      // WHERE IT CAN BE DONE (2.2.0, ADR-0092), on the card. A place line
+      // already says where a thing LIVES; this says where it can be DONE, and
+      // without it the label is invisible until you open the sheet — which is
+      // the "nothing indicates what this is" shape ADR-0091 was reported for.
+      // Absent when there is none, because "anywhere" is not news.
+      const where = contextNames(st, node);
+      if (where.length > 0) {
+        const w = document.createElement('span');
+        w.className = 'card-place card-where';
+        w.textContent = where.join(' · ');
+        open.append(w);
+      }
 
       const when = document.createElement('span');
       when.className = 'card-when';
@@ -1125,6 +1181,19 @@ export async function main(edition?: Edition): Promise<void> {
   } catch {
     lensRoot = null;
   }
+  try {
+    whereNow = (await session.store.getKv<string>(WHERE_KEY)) || null;
+  } catch {
+    whereNow = null;
+  }
+  setWhereNow(whereNow);
+  document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
+    whereNow = (e.target as HTMLSelectElement).value || null;
+    setWhereNow(whereNow);
+    refreshAll();
+    void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+  });
+
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {
     const v = (e.target as HTMLSelectElement).value;
     lensRoot = v || null;

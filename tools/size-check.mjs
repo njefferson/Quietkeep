@@ -151,7 +151,22 @@ const BUDGET = {
   // A budget that refuses the return leg of a route it already permitted is a
   // budget being read as a score. The ceiling exists to stop sprawl, and a way
   // out of somewhere the app sent you is not sprawl.
-  controls: 215,
+  // 215 -> 219 on 2026-08-17 (ADR-0092), and this is the FEATURE argument the
+  // 205->210 note said should be harder to win. It is won on what was missing
+  // rather than on what is being added.
+  //
+  // The four: the context input and its Add on the detail sheet, the "Where you
+  // are" chooser on the work surface, and the offered card's title becoming a
+  // button. The last one is a control that was ALREADY THERE and was a <p> — the
+  // one item the app actively hands you was the only thing on the screen that
+  // could not be opened, so changing it meant navigating away to find it again.
+  //
+  // Contexts are the axis this app did not have. The tree gives a thing one
+  // parent — where it LIVES. Nothing said where it could be DONE, so every list
+  // was every list and "show me what I can do at home" had no answer. That is a
+  // planner's building block, not an embellishment, and this budget exists to
+  // stop sprawl rather than to stop the app being finished.
+  controls: 219,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM
