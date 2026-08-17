@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.4.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Things now say what they are.** A project says **Project**, a goal says **Goal**, an area says **Area** — on its row in your list and at the top of its own sheet. Also **Waiting for**, **Upkeep**, **A worry**, **Something on you**, **A wish**, **Where you left off**, **A place**, **Person**, **A named period**, **Journal entry**.',
+      '**Nothing in the app had ever said this.** Fourteen different kinds of thing, and not one word for any of them anywhere you could see. A project holding things said "7 under it" — a number, with no name on it — and a project holding nothing, a goal, an area and an outcome said nothing whatsoever. So a goal and a stray to-do were drawn exactly the same, which is why the screen read as one long to-do list: that is what it looked like.',
+      '**Ordinary to-dos are not labelled, on purpose.** Writing "Action" on several hundred rows would add a word to every line and tell you nothing. The ones that get named are the ones you could not otherwise tell apart from a to-do.',
+      '**Your sheets say it too.** The line under a thing’s title told you it was on the Menu, or done, or when it comes back — everything about it except what it actually is, which is the thing that decides how to read the rest.',
+      '**Still owed: the tree and search results do not say it yet.** They have room for it and it should go there; this release covers your list and the sheets, which is where it was reported.',
+    ],
+  },
+  {
     triplet: '2.3.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',

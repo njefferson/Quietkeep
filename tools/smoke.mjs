@@ -2833,8 +2833,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   is(places['draft the brief'], 'in the quarterly report',
     `the filed action shows the project it is in ("${places['draft the brief']}")`);
-  is(places['the quarterly report'], '1 under it',
-    `and the container says how many it holds ("${places['the quarterly report']}")`);
+  // 2.4.0 (ADR-0094): it says WHAT IT IS first, then how much it holds. This
+  // asserted '1 under it' — a number with no name on it, which is precisely the
+  // shape reported from a device as "nothing indicates that some of these are
+  // projects or goals". A container that only states a count is still drawn like
+  // an action.
+  is(places['the quarterly report'], 'Project · 1 under it',
+    `and the container names itself and says how many it holds ("${places['the quarterly report']}")`);
+  // And the unmarked case is genuinely unchanged: `action` has no words, so the
+  // filed action above reads exactly as it did. That assertion is three lines up
+  // and it is the other half of this one.
 
   // A parenting is silent-risk, so the log must show the gate covering it.
   const parentLog = await tpage.evaluate(async () => {

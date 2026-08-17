@@ -596,8 +596,44 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.3.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.4.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.4.0 — A CARD SAYS WHAT IT IS** (ADR-0094). The second half of the same
+device report as 2.3.0: *"nothing indicates that some of these are projects or
+goals or anything other than todos"*. It was true everywhere. **Fourteen node
+kinds and not one reader-facing word for any of them** — `kind` was a
+discriminator the code branched on and reached a reader nowhere at all.
+
+What a row could say about itself was `placeWords`: *"in Boy Scouts"* and/or
+*"7 under it"*. So a project holding things gave a NUMBER and no name, and a
+project holding nothing, a goal, an area and an outcome said nothing whatever —
+a goal and a stray to-do drew identically. The detail sheet's state line was the
+same: *let go*, *on the Menu*, *done*, *comes back Thursday*, and never what the
+thing IS.
+
+**The words are the app's own, quoted rather than invented.** *Waiting for* is
+`clarify.ts`'s route label; *Upkeep* its section heading; *Something on you* the
+pebble form's label; *Where you left off* the title `focus-intents.ts` writes.
+Two are decisions and both are pinned by a test: an aspiration is *A wish* and
+not *On the Menu* (it can be taken off the Menu and still be one), and a pebble
+is *Something on you* and not *Pebble* (that word already names the WEIGHT).
+
+**`action` gets no word, on purpose.** It is the unmarked case; stamping
+"Action" on several hundred rows adds a word per line and distinguishes nothing.
+It is asserted to be the ONLY wordless kind, so a kind added without words fails
+rather than silently joining it.
+
+**No new control, no new class, no new colour pair.** The words ride in
+`.card-place` and `.detail-state`, both already in the contrast registry — so
+this is measured from the first run rather than needing an entry, which is how
+`.card-where` and the detail placeholders each cost a release.
+
+**What to look at:** your list, for the rows that are not plain to-dos, and the
+line under a title on any sheet.
+
+**Still owed:** the tree and search results have room for it and do not carry it
+yet. Checklists and templates remain the absent building block.
 
 **2.3.0 — A WAY TO EACH PART OF THE PAGE** (ADR-0093). A **Contents** door in
 the header beside More, and a second at the end of the held list, opening a

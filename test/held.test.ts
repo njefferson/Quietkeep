@@ -49,7 +49,10 @@ test('a child says which project it is in; a container says how many it holds; a
   assert.equal(parentTitleOf(s.nodes.get('A1')!, s), 'Boy Scouts', 'the child names its container');
   assert.equal(parentTitleOf(s.nodes.get('LOOSE')!, s), null, 'a loose item has no container');
   assert.equal(placeWords(s.nodes.get('A1')!, s, counts), 'in Boy Scouts', 'the filed action reads as filed');
-  assert.equal(placeWords(s.nodes.get('PROJ')!, s, counts), '2 under it', 'the container reads as a container');
+  // 2.4.0 (ADR-0094): it says WHAT IT IS first. It read "2 under it" — a number
+  // and no name — which is why a project and an action drew identically on a row.
+  assert.equal(placeWords(s.nodes.get('PROJ')!, s, counts), 'Project · 2 under it',
+    'the container names itself and then says how much it holds');
   assert.equal(placeWords(s.nodes.get('LOOSE')!, s, counts), null,
     'the loose item shows nothing — it IS loose, which is the whole distinction');
 });

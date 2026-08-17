@@ -20,6 +20,8 @@ import { raisesReplanCard } from './replan.ts';
 import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
 import { boundaryOf } from './day.ts';
 import { isGone, isHeld } from './fold.ts';
+import { kindWords } from './kind-words.ts';
+import type { NodeKind } from './events.ts';
 
 export type HeldGroupKey = 'unsorted' | 'replan' | 'ready' | 'soon' | 'later' | 'menu' | 'done';
 
@@ -401,13 +403,25 @@ export function contentsWords(
 }
 
 /**
- * The one line a card shows about where a node sits in the structure: the
- * container it is in, and/or how many things are under it. Either, both, or
- * neither — a loose action with no parent and no children returns null and reads
- * as exactly what it is. One definition, so the list and any test agree.
+ * The one line a card shows about itself: WHAT IT IS, the container it is in,
+ * and/or how many things are under it. Any of them, all of them, or none — a
+ * loose action with no parent and no children returns null and reads as exactly
+ * what it is. One definition, so the list and any test agree.
+ *
+ * WHAT IT IS COMES FIRST (2.4.0, ADR-0094), and it is the half that was missing.
+ * Reported from a device: *"nothing indicates that some of these are projects or
+ * goals or anything other than todos"*. A project with children said "7 under
+ * it" — a number, not a name — and a project with none, a goal, an area and an
+ * outcome said nothing whatever, so every row in the list drew identically.
+ *
+ * `kindWords` returns null for `action`, which is why this reads unchanged for
+ * the overwhelming majority of rows: the unmarked case stays unmarked, and only
+ * the kinds a reader cannot otherwise tell from an action get named.
  */
 export function placeWords(n: NodeState, state: State, childCounts: Map<string, number>): string | null {
   const parts: string[] = [];
+  const what = kindWords(n.kind as NodeKind);
+  if (what) parts.push(what);
   const parent = parentTitleOf(n, state);
   if (parent) parts.push(`in ${parent}`);
   const kids = childCounts.get(n.id) ?? 0;

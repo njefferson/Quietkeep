@@ -16,7 +16,8 @@
 
 import type { Session } from './session.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
-import { DEMAND_FREE_KINDS } from '../events.ts';
+import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
+import { kindWords } from '../kind-words.ts';
 import { everyDaysWords, localDayKey, atMidnight} from '../time.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
 import { isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo } from '../arrangement.ts';
@@ -463,6 +464,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // What is true about it now, in words — never a colour, never a badge.
     const p = pressureOf(n, new Date(now()).toISOString(), dayOf(session));
     const bits: string[] = [];
+    // WHAT IT IS, FIRST (2.4.0, ADR-0094). This line said everything true about
+    // a thing except the one fact that decides how to read the rest of it — a
+    // goal and an action carrying the same clock mean different things, and the
+    // sheet named neither. Null for `action`, so the common case is unchanged.
+    const what = kindWords(n.kind as NodeKind);
+    if (what) bits.push(what);
     if (n.trashed) bits.push('let go');
     if (n.mergedInto) {
       const survivor = session.state().nodes.get(n.mergedInto);

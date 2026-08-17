@@ -309,6 +309,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0093](0093-a-way-to-each-part-of-the-page.md)**
   - Decision: A contents sheet listing every live block of the runway, named and counted by the blocks themselves, behind a viewport-fixed door — and the held list becomes a real section with a focusable heading; not tabs, because a partition means remembering to check the other one
   - Status: Accepted · shipped 2.3.0 · extends [0090](0090-a-way-past-the-stack.md), [0091](0091-a-control-looks-like-a-control.md)
+- **[0094](0094-a-card-says-what-it-is.md)**
+  - Decision: One reader-facing word per node kind, defined once and stated first on a card's own line and on the detail sheet — the app had fourteen kinds and no word for any of them, so a goal and a loose to-do drew identically; `action` stays deliberately unmarked
+  - Status: Accepted · shipped 2.4.0
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a
