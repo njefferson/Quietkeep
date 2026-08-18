@@ -666,11 +666,29 @@ decided by a session.**
 ### Staged and waiting on the owner
 
 - **https://staging.quietkeep.pages.dev** — the candidate, **2.8.1**
-- **https://quietkeep.pages.dev** — production, **2.7.2** (promoted 2026-08-17,
-  `ce57b8f`, Deploy and Spine green, tree asserted identical to verified staging)
+- **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
+  `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
+  SHA; the promoted tree asserted byte-identical to the verified staging tree —
+  `fda790c` on both — rather than inferred from a clean merge)
 
-**Two candidates are stacked on staging: 2.8.0 and 2.8.1.** Neither has had a
-device pass. They are independent of each other and can be judged in one sitting.
+**Staging and production are level at 2.8.1.** Nothing is waiting.
+
+**Promoted on his word rather than after a device pass**, which is his call to
+make and was made explicitly. Both 2.8.0 and 2.8.1 went in the same promote,
+neither having had a separate on-device sitting. What that means for the next
+session: the two things most worth hearing about from the device are the SIZE
+control's smallest setting (2.8.0 — whether *smaller* is actually readable in
+practice, which is the stated overturn condition for ADR-0098's lower bound) and
+whether **naming a worry at two taps** is one tap too far (2.8.1 — the stated
+overturn condition for ADR-0099, and the entries go back to the runway if it is).
+
+**A CI record correction that should not be repeated as green:** `92504fc`
+(2.8.0 on staging) had Deploy success, but its **Spine run was CANCELLED** by
+the push of `8971f50` a few hours later. Nothing shipped unverified — `8971f50`'s
+Spine covers the same tree plus 2.8.1, and `928c53a`'s covers it again on main —
+but 92504fc itself must not be cited as "Deploy and Spine green". Concurrency
+cancellation makes a run's absence look like a run's success in any listing that
+reads only the newest conclusion per workflow.
 
 **2.8.1 — THE FIRST SCREEN, AND WHAT A REARRANGEMENT CAN AND CANNOT BUY**
 (ADR-0099). Three doors leave the runway and become rows in **Contents** — the
