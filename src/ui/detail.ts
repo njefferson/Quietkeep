@@ -16,7 +16,8 @@
 
 import type { Session } from './session.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
-import { DEMAND_FREE_KINDS } from '../events.ts';
+import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
+import { kindWords } from '../kind-words.ts';
 import { everyDaysWords, localDayKey, atMidnight} from '../time.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
 import { isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo } from '../arrangement.ts';
@@ -35,6 +36,9 @@ import { doneEvents } from './work.ts';
 import { declareFeedsEvents, releaseFeedsEvents } from './detail-intents.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
+import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
+import { allContexts, contextsOf } from '../contexts.ts';
+import { allRoles, rolesOf } from '../roles.ts';
 import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
@@ -461,6 +465,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // What is true about it now, in words — never a colour, never a badge.
     const p = pressureOf(n, new Date(now()).toISOString(), dayOf(session));
     const bits: string[] = [];
+    // WHAT IT IS, FIRST (2.4.0, ADR-0094). This line said everything true about
+    // a thing except the one fact that decides how to read the rest of it — a
+    // goal and an action carrying the same clock mean different things, and the
+    // sheet named neither. Null for `action`, so the common case is unchanged.
+    const what = kindWords(n.kind as NodeKind);
+    if (what) bits.push(what);
     if (n.trashed) bits.push('let go');
     if (n.mergedInto) {
       const survivor = session.state().nodes.get(n.mergedInto);
@@ -512,6 +522,65 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (n.comfortWindowDays && n.comfortWindowDays > 0) SLACK.value = String(n.comfortWindowDays);
 
     // Who it is with (the person lens's write side).
+    // WHERE THIS CAN BE DONE (2.2.0, ADR-0092). The list is the removal control:
+    // each place is a button that takes itself off, which is the shape the feeds
+    // list already uses. No confirm — detaching a label loses nothing, and the
+    // event is append-only so the log still says it was there.
+    {
+      const cst = session.state();
+      const cList = q('#detail-context-list');
+      const cData = q('#detail-contexts');
+      if (cData) {
+        cData.replaceChildren(...allContexts(cst).map(c =>
+          Object.assign(document.createElement('option'), { value: c.title || '' })));
+      }
+      if (cList) {
+        cList.replaceChildren(...contextsOf(cst, n).map(c => {
+          const li = document.createElement('li');
+          li.className = 'detail-feed';
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'linklike';
+          b.textContent = `${c.title || '(unnamed)'} — take it off`;
+          b.addEventListener('click', () => {
+            void run(ctx => detachContextEvents(ctx, n.id, c.id),
+              `No longer ${c.title || 'there'}.`);
+          });
+          li.append(b);
+          return li;
+        }));
+      }
+    }
+
+    // WHO THIS IS FOR (2.6.0, ADR-0096). The block above, on the other axis —
+    // identical by design rather than by accident: they are one shape, and a
+    // gratuitous difference would be two mechanisms wearing one idea.
+    {
+      const rst = session.state();
+      const rList = q('#detail-role-list');
+      const rData = q('#detail-roles');
+      if (rData) {
+        rData.replaceChildren(...allRoles(rst).map(r =>
+          Object.assign(document.createElement('option'), { value: r.title || '' })));
+      }
+      if (rList) {
+        rList.replaceChildren(...rolesOf(rst, n).map(r => {
+          const li = document.createElement('li');
+          li.className = 'detail-feed';
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'linklike';
+          b.textContent = `${r.title || '(unnamed)'} — take it off`;
+          b.addEventListener('click', () => {
+            void run(ctx => detachRoleEvents(ctx, n.id, r.id),
+              `No longer part of ${r.title || 'that'}.`);
+          });
+          li.append(b);
+          return li;
+        }));
+      }
+    }
+
     if (PERSON && PEOPLE && PEOPLE_LIST) {
       const st = session.state();
       // The datalist offers names already in this vault, so the second thing you
@@ -1279,6 +1348,43 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         forWhat: current!.title,
       });
     }, `With ${name}.`);
+  });
+
+  // WHERE THIS CAN BE DONE (2.2.0, ADR-0092). The person input's shape, minus
+  // the relation — a context has one meaning, so there is nothing to choose.
+  btn('#detail-context-set')?.addEventListener('click', () => {
+    const input = q<HTMLInputElement>('#detail-context');
+    if (!input || !current) return;
+    const name = input.value.trim();
+    if (!name) { say('A place first — or leave it, and it can be done anywhere.'); return; }
+    const st = session.state();
+    // Match by name before minting a second node for the same place, exactly as
+    // the person input does: "at home" and "At home" are one place, and a
+    // duplicate would split the filter in two for ever.
+    const existing = allContexts(st).find(c => (c.title || '').toLowerCase() === name.toLowerCase());
+    input.value = '';
+    void run(ctx => {
+      const id = existing?.id ?? ctx.id();
+      return attachContextEvents(ctx, current!.id, id, existing ? {} : { createNamed: name });
+    }, `Can be done ${name}.`);
+  });
+
+  // WHO THIS IS FOR (2.6.0, ADR-0096). The place input's shape exactly.
+  btn('#detail-role-set')?.addEventListener('click', () => {
+    const input = q<HTMLInputElement>('#detail-role');
+    if (!input || !current) return;
+    const name = input.value.trim();
+    if (!name) { say('A name first — or leave it, and it belongs to no one in particular.'); return; }
+    const st = session.state();
+    // Match by name before minting a second node for the same identity, exactly
+    // as places and people do: "parent" and "Parent" are one role, and a
+    // duplicate would split the readout in two for ever.
+    const existing = allRoles(st).find(r => (r.title || '').toLowerCase() === name.toLowerCase());
+    input.value = '';
+    void run(ctx => {
+      const id = existing?.id ?? ctx.id();
+      return attachRoleEvents(ctx, current!.id, id, existing ? {} : { createNamed: name });
+    }, `Part of ${name}.`);
   });
 
   btn('#detail-track')?.addEventListener('click', () => {

@@ -423,7 +423,14 @@ const REGISTRY = {
   // after a capture. Added to THIS entry rather than a second 'with cards' key:
   // a duplicate key in an object literal silently wins, and the registry would
   // have shrunk to one selector while still reporting a pass.
-  'with cards': ['.card-title', '.card-when', '#status', '.group-head'],
+  'with cards': ['.card-title', '.card-when', '#status', '.group-head',
+    // The way to anywhere (2.3.0, ADR-0093). BOTH doors, because there are two
+    // and a registry that names one of them measures half a control pair — the
+    // header's, beside More, and the one at the end of the list beside Back to
+    // the top. Neither is fixed; app.css carries the measurement that ruled a
+    // floating control out. `#held-heading` is the list's own heading, which
+    // existed as a loose <h2> and is a real region's name now.
+    '#contents-open', '#contents-open-end', '#held-heading'],
   // The door onto the inbox (1.39.2), which exists ONLY between a capture and
   // the moment somebody asks to sort — the app no longer answers your typing
   // with a question about it. Its own driven state, because that window is the
@@ -503,7 +510,7 @@ const REGISTRY = {
   // entry matching nothing visible is the false receipt `#nextup-left` cost a
   // release for, so it goes where it is actually on screen.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
-    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held',
+    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
     // When you cannot start (1.24.0). The invitation and the heavy control are
     // on the card whenever there is a head, so they belong in this state; the
     // named step and its Done are not, and get their own below — a registry
@@ -529,6 +536,30 @@ const REGISTRY = {
   // it here would have measured a control nobody can reach from this state,
   // which is the false receipt this file already pays for twice below. It is
   // still measured, in 'next up', where a reader can actually press it.
+  // WHERE YOU ARE (2.2.0, ADR-0092). Its OWN driven state, because the chooser
+  // and its standing line render only once a context exists and one is chosen —
+  // registering them on 'next up' put three entries in a state whose store has
+  // no context at all, and the gate correctly called all three false receipts.
+  'where you are': ['#where', '#where-note', '.card-where'],
+  // WHO IT IS FOR (2.6.0, ADR-0096). Its own driven state for the reason 'where
+  // you are' has one: the door and the readout render only once a role exists,
+  // so registering them on a state whose store has none would be three false
+  // receipts — the failure `#nextup-left` already cost a release for.
+  'where the attention is': ['#roles-open'],
+  'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
+    '.roles-name', '.roles-held', '#roles-unnamed'],
+  // THE AMBIENT HORIZON on the focus surface (2.7.1, collisions entry 7). It
+  // shares `.focus-held`'s measured pair — the class adds nothing but a second
+  // element — but it gets its own registry line because it renders only when a
+  // fixed thing is actually ahead today, which is a different state from the
+  // interruption count beside it.
+  'focus, with a fixed thing ahead': ['#focus-fixed'],
+  // What is on this page (2.3.0, ADR-0093). Driven from a store with several
+  // blocks live, because a contents list with one row measures the chrome and
+  // nothing else — and the count line only renders for blocks that publish one,
+  // so the state has to be one where at least one does.
+  'contents open': ['#sheet-contents-title', '#sheet-contents-close',
+    '.contents-name', '.contents-count'],
   'coverage open': ['#sheet-coverage-title', '#sheet-coverage-close',
     '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
     '.proof-holds', '.proof-count', '.proof-reason'],
@@ -543,6 +574,8 @@ const REGISTRY = {
   // Composed Today's opt-in Extra (1.6.0) — the comms opt-in's shape. The
   // status note is audited via the dialog pass once it carries words.
   'today opt-in': ['#today-start'],
+  // Contexts on the detail sheet (2.2.0, ADR-0092) — the input, its Add, and the
+  // list of places, each of which is the control that takes itself off.
   // The detail sheet. The hint and the inline labels are the lowest-contrast
   // text on it, and the number inputs are the smallest targets.
   // `#detail-more` (1.39.1) folds the rare two-thirds of the sheet away. Added to
@@ -550,6 +583,8 @@ const REGISTRY = {
   // object literal silently wins, so the registry would have shrunk to one
   // selector while still reporting a pass.
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
+    '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
+    '#detail-context-hint',
     '.detail-hint', '#detail-name', '#detail-date', '#detail-every', '#detail-rename',
     '#detail-date-set', '#detail-close',
     // 1.3.0's verbs: the defer date, the estimate, and the picker's filter.
@@ -1572,7 +1607,7 @@ try {
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
     await auditTargets(page, 'next up', theme);
-    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held']);
+    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held', '#to-top', '#nextup-title']);
 
     // State 3c1: SETTLED (1.35.0). Reached the way anybody reaches it — finish
     // the thing being offered — and then left the same way, so every state after
@@ -1663,6 +1698,138 @@ try {
     // and a modal sheet makes it inert.
     await page.click('#sheet-coverage-close');
     await page.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
+
+    // WHAT IS ON THIS PAGE (2.3.0, ADR-0093), and it is ASSERTED to be a route
+    // rather than a list of words. Three claims, in the order they can fail:
+    //
+    //  1. the rows exist and are named from the page itself — so the assertion
+    //     is that a live block's own heading text is present as a row, not that
+    //     "some rows rendered";
+    //  2. pressing one closes the sheet, moves the page, AND lands focus — a
+    //     scroll that leaves focus behind is the defect where the next Tab
+    //     throws you back up the page (ADR-0090 was written about exactly that);
+    //  3. no row points at a block that is not live, which is the failure mode a
+    //     hand-written list of destinations has and this one is built not to.
+    await page.click('#contents-open');
+    await page.waitForSelector('#sheet-contents[open]');
+    await auditContrast(page, 'contents open', theme);
+    await auditAxe(page, 'contents open', theme);
+    await auditNames(page, 'contents open', theme);
+    await auditTargets(page, 'contents open', theme);
+    await auditFocusRings(page, 'contents open', theme, ['.contents-go', '#sheet-contents-close']);
+    const contents = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('#contents-list .contents-go')]
+        .map((b) => ({ go: b.dataset.go, name: b.querySelector('.contents-name')?.textContent?.trim() })),
+      live: [...document.querySelectorAll('main > section[id]')]
+        .filter((s) => !s.hidden)
+        .map((s) => ({
+          id: s.id,
+          name: document.getElementById(s.getAttribute('aria-labelledby'))?.textContent?.trim() ?? '',
+        }))
+        .filter((s) => s.name),
+    }));
+    for (const block of contents.live) {
+      (contents.rows.some((r) => r.go === block.id && r.name === block.name) ? pass : fail)(
+        `${theme}/contents open: "${block.name}" (#${block.id}) is live on the page and has a row naming it`);
+    }
+    const dead = contents.rows.filter((r) => r.go !== 'top' && !contents.live.some((b) => b.id === r.go));
+    (dead.length === 0 ? pass : fail)(
+      `${theme}/contents open: no row points at a block that is not on the page` +
+      `${dead.length ? ` — ${dead.map((r) => `#${r.go}`).join(', ')}` : ''}`);
+    // The route, driven. `#held` is the block this release gave a name to, and
+    // it is the one furthest down the page — so it is the row with the most to
+    // prove about arriving.
+    await page.click('#contents-list .contents-go[data-go="held"]');
+    await page.waitForSelector('#sheet-contents[open]', { state: 'detached' });
+    const arrived = await page.evaluate(() => ({
+      focused: document.activeElement?.id ?? null,
+      // Its top edge, relative to the viewport, after the jump.
+      top: Math.round(document.querySelector('#held').getBoundingClientRect().top),
+    }));
+    (arrived.focused === 'held-heading' ? pass : fail)(
+      `${theme}/contents open: pressing a row lands focus on the block (got ${arrived.focused ?? 'nothing'})`);
+    (Math.abs(arrived.top) <= 4 ? pass : fail)(
+      `${theme}/contents open: pressing a row puts the block at the top of the screen (${arrived.top}px off)`);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+
+    // WHERE YOU ARE (2.2.0, ADR-0092), driven end to end: a place is named on a
+    // thing's own sheet, then chosen on the work surface. Driven rather than
+    // seeded, because the write path is the thing worth measuring — a context
+    // planted straight into the store would prove the chooser renders and
+    // nothing about whether it can be made.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-context', 'At home');
+    await page.click('#detail-context-set');
+    await page.waitForSelector('#detail-context-list li');
+    await page.click('#detail-close');
+    await page.waitForSelector('#where-row:not([hidden])');
+    await page.selectOption('#where', { label: 'At home' });
+    await page.waitForSelector('#where-note:not([hidden])');
+    await auditContrast(page, 'where you are', theme);
+    await auditAxe(page, 'where you are', theme);
+    await auditNames(page, 'where you are', theme);
+    await auditTargets(page, 'where you are', theme);
+    await auditFocusRings(page, 'where you are', theme, ['#where']);
+    // WHO IT IS FOR (2.6.0, ADR-0096), driven the same way and for the same
+    // reason: a role planted into the store would prove the readout renders and
+    // nothing about whether one can be made. Three claims, in the order they can
+    // fail: the write path works; the door appears only once a role EXISTS (it
+    // is `hidden` before, so a registry entry naming it would otherwise be a
+    // false receipt); and the readout states the unnamed remainder rather than
+    // letting the named roles read as the whole store.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    const doorBefore = await page.evaluate(() =>
+      document.querySelector('#roles-open')?.hidden ?? null);
+    (doorBefore === true ? pass : fail)(
+      `${theme}/roles: the readout door is absent until a role exists (hidden=${doorBefore})`);
+    await page.fill('#detail-role', 'Parent');
+    await page.click('#detail-role-set');
+    await page.waitForSelector('#detail-role-list li');
+    await page.click('#detail-close');
+    await page.waitForSelector('#roles-open:not([hidden])');
+    await auditContrast(page, 'where the attention is', theme);
+    await auditTargets(page, 'where the attention is', theme);
+    await page.click('#roles-open');
+    await page.waitForSelector('#sheet-roles[open]');
+    await auditContrast(page, 'roles open', theme);
+    await auditAxe(page, 'roles open', theme);
+    await auditNames(page, 'roles open', theme);
+    await auditTargets(page, 'roles open', theme);
+    await auditFocusRings(page, 'roles open', theme, ['#sheet-roles-close']);
+    const readout = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('#roles-list .roles-row')].map(r => ({
+        name: r.querySelector('.roles-name')?.textContent?.trim(),
+        held: r.querySelector('.roles-held')?.textContent?.trim(),
+      })),
+      unnamed: document.querySelector('#roles-unnamed')?.textContent?.trim() ?? '',
+      words: document.querySelector('#roles-words')?.textContent?.trim() ?? '',
+    }));
+    (readout.rows.some(r => r.name === 'Parent' && r.held === '1 thing') ? pass : fail)(
+      `${theme}/roles open: the role somebody just made is listed, carrying what they attached it to`);
+    // WORDS AND NOT A BARE INTEGER — "3" beside a name reads as a score.
+    (readout.rows.every(r => /thing|nothing/.test(r.held ?? '')) ? pass : fail)(
+      `${theme}/roles open: every count is words, never a bare number`);
+    (/no named role/.test(readout.unnamed) ? pass : fail)(
+      `${theme}/roles open: the unnamed remainder is STATED — on a real store it is the biggest number`);
+    (/not a target/.test(readout.words) ? pass : fail)(
+      `${theme}/roles open: it says out loud that it is not a score (law 7 is what makes it legal)`);
+    // NO BAR, NO METER, NO PROGRESS ELEMENT anywhere on this surface. A bar is a
+    // machine for implying you are behind (law 5), and the check is structural
+    // rather than a promise in a comment.
+    const bars = await page.evaluate(() =>
+      document.querySelectorAll('#sheet-roles progress, #sheet-roles meter, #sheet-roles [role="progressbar"]').length);
+    (bars === 0 ? pass : fail)(
+      `${theme}/roles open: no bar, meter or progressbar on the readout (${bars} found)`);
+    await page.click('#sheet-roles-close');
+    await page.waitForSelector('#sheet-roles[open]', { state: 'detached' });
+
+    // Back to everywhere, so every state after this sees the whole list.
+    await page.selectOption('#where', '');
+    await page.waitForSelector('#where-note', { state: 'hidden' });
 
     // State 3e: the detail sheet — the surface that makes this a planner.
     await page.click('#cards .card-open');
@@ -2011,6 +2178,75 @@ try {
     await auditTargets(page, 'focus', theme);
     await auditFocusRings(page, 'focus', theme,
       ['#focus-interrupt', '#focus-done', '#focus-stop']);
+    // THE AMBIENT HORIZON (2.7.1, collisions entry 7). Its own driven state,
+    // because the line renders only when a fixed thing is genuinely ahead today
+    // — registering it on plain 'focus' would be a receipt for a line that is
+    // usually absent, which is the `#nextup-left` failure this file pays for.
+    //
+    // ASSERTED AS THE SAME FACT the work surface states, not merely as present.
+    // The whole reason it renders here is that the work surface's copy is on a
+    // screen the reader has left; two surfaces disagreeing about what is coming
+    // would be worse than one of them being silent.
+    // DRIVEN INTO EXISTENCE, because the first version of this check was
+    // VACUOUS: the walk's store has nothing dated today, so the line was absent,
+    // the assertion took its "correctly absent" branch, and the thing the
+    // release added was never measured once. That is the false receipt this file
+    // already pays for twice — a check that can only pass by the feature being
+    // missing is not a check.
+    //
+    // A due date is stored at the END of the chosen day (`endOfDayKey`), so a
+    // date of TODAY is genuinely still ahead while the walk runs, which is what
+    // `nextFixedToday` requires. Set through the sheet, on the app's real write
+    // path, rather than seeded.
+    // EVERY DIALOG CLOSED FIRST. Stopping focus opens `#focus-sheet` to ask for
+    // the optional five words, and it intercepts pointer events — the first
+    // version of this drive timed out clicking a card underneath it, which is
+    // the same modal-in-the-way trap this file's `fillSearch` records.
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.click('#focus-stop').catch(() => {});
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.waitForSelector('#focus[hidden]').catch(() => {});
+    await page.locator('#cards .card-open').first().click();
+    await page.waitForSelector('#detail[open]');
+    const todayKey = await page.evaluate(() => {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    });
+    await page.fill('#detail-date', todayKey);
+    await page.click('#detail-date-set');
+    await page.waitForTimeout(200);
+    await page.click('#detail-close');
+    await page.locator('#cards .card-focus').first().click();
+    await page.waitForSelector('#focus:not([hidden])');
+    await page.waitForSelector('#focus-fixed:not([hidden])', { timeout: 5000 }).catch(() => {});
+
+    const horizon = await page.evaluate(() => ({
+      onFocus: document.querySelector('#focus-fixed')?.hidden === false
+        ? document.querySelector('#focus-fixed')?.textContent?.trim() ?? '' : '',
+      onWork: document.querySelector('#nextup-fixed')?.hidden === false
+        ? document.querySelector('#nextup-fixed')?.textContent?.trim() ?? '' : '',
+    }));
+    if (horizon.onWork) {
+      (horizon.onFocus === horizon.onWork ? pass : fail)(
+        `${theme}/focus: the ambient horizon says the same thing here as on the work surface `
+        + `("${horizon.onFocus}" vs "${horizon.onWork}")`);
+      // A NAME AND NEVER A COUNTDOWN — a countdown is a deadline and adds
+      // aversion, which is the entry's own reason for the shape.
+      (!/\d+\s*(min|hour|hr|:\d\d)/i.test(horizon.onFocus) ? pass : fail)(
+        `${theme}/focus: it names the thing and does not count down to it`);
+      await auditContrast(page, 'focus, with a fixed thing ahead', theme);
+    } else {
+      // NOT A PASS. The whole point of driving the date above is that this
+      // branch means the drive failed, and reporting that as "correctly absent"
+      // is how the check was vacuous in the first place.
+      fail(`${theme}/focus: a date was set for today and the ambient horizon still did not render `
+        + `— the line the release exists for was not measured`);
+    }
 
     await page.fill('#focus-interrupt', 'the phone rang');
     await page.click('#focus-interrupt-form button[type=submit]');
@@ -2805,7 +3041,14 @@ try {
       // sheet whose content escapes where the page-level check cannot see it,
       // and the coverage rows carry the longest strings in the app — a title
       // and a return date on one line.
-      'sheet-coverage', 'sheet-tree', 'sheet-menu']) {
+      'sheet-coverage', 'sheet-tree', 'sheet-menu',
+      // 2.3.0 (ADR-0093): its rows carry a block's heading and that block's own
+      // count sentence on one line, which at 320px @ 200% is the longest thing
+      // in the app that is not a title.
+      'sheet-contents',
+      // 2.6.0 (ADR-0096): a role somebody named can be a long phrase, and it
+      // sits on one line with its count.
+      'sheet-roles']) {
       await openSurface(page, id);
       const over = await page.evaluate((want) => {
         const d = document.querySelector('#' + want);

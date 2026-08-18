@@ -364,17 +364,35 @@ button.ghost {
 
 /* The gauge is a real button: its number is a claim, and tapping it opens the
    itemised list that backs the claim. Styled as text, but a full target. */
+/* A CONTROL HAS TO LOOK LIKE A CONTROL (2.1.0, ADR-0091).
+ *
+ * This was `background: none; border: none; color: --ink-soft` — a full-width
+ * line of soft grey prose. Measured on the work surface at 390px: 50 controls,
+ * and 7 of them had no border, no fill and no underline. Five of those seven
+ * were EVERY route off this page — the claim, the tree, the Menu, sort mode,
+ * and the jump to the list. The other 45 controls all carry a border or a fill.
+ *
+ * So the app had two visual languages and put every way of getting somewhere in
+ * the one that reads as a paragraph. "How am I supposed to know that is a
+ * button" has one honest answer: you could not.
+ *
+ * It uses `button.ghost`'s border and accent now — the same language as More,
+ * Not this, Done and Work on this — and stays full width and left-aligned,
+ * because these are rows that span the column rather than things sitting in a
+ * row of siblings. */
 .gauge {
   display: block;
   width: 100%;
   margin: 0 0 0.75rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
   min-height: var(--target);
   text-align: left;
-  color: var(--ink-soft);
-  background: none;
-  border: none;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
   font: inherit;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -388,21 +406,132 @@ button.ghost {
    surface behind it. The arrow is decorative and after the words, so the
    accessible name is the sentence (SC 2.5.3) and nothing depends on seeing a
    glyph (B-01/B-02). */
+/* The offered card's title is a DOOR now (2.2.0, ADR-0092). It keeps the size
+ * and weight it had as a heading — a person's eye has learned where the offer's
+ * title sits — and gains a box, because ADR-0091's rule is that a control looks
+ * like a control and this release must not reopen it. */
+.nextup-title {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  min-height: var(--target);
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+/* Where a thing can be done, on its card. Soft like the place line it sits
+ * beside — it is context, not the title. */
+.card-where { color: var(--ink-soft); }
+
+/* PLACEHOLDERS ARE TEXT SOMEBODY READS (2.2.0). The browser's default applies
+ * its own opacity on top of the colour, which measured 4.08:1 on the detail
+ * sheet — under the 4.5:1 floor. `#capture`, `#capture-many` and the search
+ * field each set this explicitly and pass; the detail sheet's inputs never did,
+ * and nothing had measured them because no registry entry named the pseudo.
+ * Fixed for every input on the sheet rather than only the one that was
+ * measured, since they all inherited the same default. */
+.detail-row input::placeholder,
+#detail-context::placeholder { color: var(--ink-soft); opacity: 1; }
+
 .jump {
   display: block;
   width: 100%;
   margin: 0 0 0.9rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0.75rem;
   min-height: var(--target);
   text-align: left;
-  color: var(--ink-soft);
-  background: none;
-  border: none;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
   font: inherit;
+  font-weight: 400;
   cursor: pointer;
 }
 .jump::after {
   content: " \2193";        /* a downward arrow, decorative — the words carry it */
+}
+
+/* THE WAY TO ANYWHERE (2.3.0, ADR-0093), AND IT IS NOT FIXED.
+ *
+ * It was, for one build, and the measurement is why it is not. A floating
+ * control in the bottom corner, probed at 820x1180 and 390x844 over thirteen
+ * sample things: it overlapped ten controls and took the CENTRE of three, every
+ * one of them a card's Done. Reserving space with `padding-bottom` on `main`
+ * fixes only the END of the document — mid-scroll, content passes under a fixed
+ * element no matter what, because that is what fixed means. So the failure is
+ * not "sometimes it is in the way": you press Done and the contents open. A
+ * control that silently performs a DIFFERENT action is worse than the scrolling
+ * it was added to fix.
+ *
+ * The correct fix for a fixed bar is a real scroll container — `main` with its
+ * own `overflow-y`, which is the shape `#about[open]` uses and which this repo
+ * has verified on the reference iPad. It is NOT taken here: that moves the whole
+ * app off document scrolling, and the consequences on iPadOS Safari cannot be
+ * verified from this machine. Shipping an unverifiable layout change to the one
+ * device this app is actually used on is the failure that produced ADR-0091.
+ *
+ * So both doors are IN FLOW: one in the header beside More, where the app's
+ * navigation already lives, and one at the end of the held list beside Back to
+ * the top, where somebody who has read to the bottom actually is. Nothing is
+ * ever occluded, on any engine, and the honest cost is stated in the notes: from
+ * the middle of the page you still reach for one of the two ends. */
+.contents-open {
+  min-height: var(--target);
+  padding: 0.5rem 1rem;
+  color: var(--accent);
+  background: transparent;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  cursor: pointer;
+}
+/* The one at the end of the list carries `.jump`'s full-width block shape, so it
+   sits with Back to the top as a pair rather than as a stray button. */
+.contents-open.jump-shaped {
+  display: block;
+  width: 100%;
+  margin: 0 0 0.9rem;
+  text-align: left;
+}
+
+/* The rows. A list of places, so it reads as one thing per line and the name
+   carries the weight — the count is what it already says about itself. */
+.contents-list { margin: 0; padding: 0; list-style: none; }
+.contents-row { margin: 0 0 0.5rem; }
+.contents-go {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: var(--target);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  cursor: pointer;
+}
+.contents-name { flex: 1 1 10rem; min-width: 0; overflow-wrap: anywhere; }
+/* The same quiet ink-on-surface pair every count line on the app uses, so no
+   new foreground/background pair enters the gate. */
+.contents-count {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
 }
 
 /* THE PROOF (ADR-0084). Read before the inventory below it, so it carries the
@@ -923,6 +1052,11 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   border-top: 1px solid var(--line);
 }
 /* 1.6.0: the row became a DOOR — a real button, whole row the target. */
+/* The other offer, and it is a DOOR (2.1.0, ADR-0091). It had `border: 0` and a
+ * transparent fill, so the second thing the app was offering read as a caption
+ * under the first. Found by the check written for the five navigation rows —
+ * which is the point of asking the document rather than listing what you
+ * remember. It gets a box because it is a thing you press. */
 .behind-open {
   display: flex;
   flex-direction: column;
@@ -930,11 +1064,11 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   gap: 0.1rem;
   width: 100%;
   min-height: var(--target);
-  padding: 0.25rem 0.35rem;
+  padding: 0.5rem 0.75rem;
   text-align: left;
   color: var(--ink);
   background: transparent;
-  border: 0;
+  border: 2px solid var(--line);
   border-radius: var(--radius);
   font: inherit;
   cursor: pointer;
@@ -2161,4 +2295,37 @@ dialog, dialog * { overflow-wrap: anywhere; }
   background: var(--surface);
   border: 2px solid var(--line);
   border-radius: var(--radius);
+}
+
+/* WHERE THE ATTENTION IS (2.6.0, ADR-0096) — the role readout.
+ *
+ * NO BAR, and that is the design rather than an omission. A bar next to a name
+ * is a proportion, a proportion implies a whole, and a whole implies a target —
+ * "a bar is a machine for implying you are behind" is this repo's own phrase for
+ * it (law 5). The numbers are words on a row and nothing draws a comparison
+ * between them; the human does the interpreting (law 7).
+ *
+ * Two columns that collapse: the name takes the room and the count sits at the
+ * end, and at 320px @ 200% the count drops under the name rather than pushing
+ * the page sideways. */
+.roles-list { margin: 0; padding: 0; list-style: none; }
+.roles-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule, var(--line));
+}
+.roles-row:last-child { border-bottom: 0; }
+.roles-name { flex: 1 1 10rem; min-width: 0; overflow-wrap: anywhere; color: var(--ink); }
+/* The same quiet ink-on-surface pair every count line in the app uses, so no new
+   foreground/background pair enters the contrast gate. */
+.roles-held {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
 }

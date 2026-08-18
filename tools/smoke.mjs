@@ -1617,6 +1617,28 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     scrolled: window.scrollY,
   }));
   is(landed.focus, 'cards', 'pressing it puts focus on the list, not just the scrollbar');
+  // AND A WAY BACK (2.1.0, ADR-0091). There was none anywhere in the app, so the
+  // jump was a one-way trip five screens down.
+  is(await tpage.locator('#to-top').isVisible(), true, 'and there is a way back from down here');
+  await tpage.click('#to-top');
+  await tpage.waitForTimeout(350);
+  const back = await tpage.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.id }));
+  is(back.y === 0, true, `pressing it returns to the top (scrollY ${back.y})`);
+  is(back.focus, 'capture', 'and puts focus on the capture line, which is what is up there');
+  // A CONTROL LOOKS LIKE A CONTROL. Five routes off this page rendered as plain
+  // grey sentences; 45 of the other controls carried a border or a fill.
+  const bare = await tpage.evaluate(() => {
+    const vis = el => !!(el.offsetParent || el.getClientRects().length);
+    return [...document.querySelectorAll('main button')].filter(vis).filter(b => {
+      if (b.closest('.card, .cards-group')) return false;   // the card is the box
+      const s = getComputedStyle(b);
+      const bordered = ['Top','Right','Bottom','Left'].some(x =>
+        parseFloat(s[`border${x}Width`]) > 0 && s[`border${x}Style`] !== 'none');
+      const filled = !/rgba\(.*,\s*0\)|transparent/.test(s.backgroundColor);
+      return !bordered && !filled && !s.textDecorationLine.includes('underline');
+    }).map(b => (b.id || b.className));
+  });
+  is(bare.join(', '), '', 'no control on the work surface renders as plain prose');
   is(landed.scrolled > 0 && landed.cardsTop < 200, true,
     `and the list is actually at the top of the screen (scrolled ${landed.scrolled}px, list at ${landed.cardsTop}px)`);
   await tpage.evaluate(() => window.scrollTo(0, 0));
@@ -2811,8 +2833,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   is(places['draft the brief'], 'in the quarterly report',
     `the filed action shows the project it is in ("${places['draft the brief']}")`);
-  is(places['the quarterly report'], '1 under it',
-    `and the container says how many it holds ("${places['the quarterly report']}")`);
+  // 2.4.0 (ADR-0094): it says WHAT IT IS first, then how much it holds. This
+  // asserted '1 under it' — a number with no name on it, which is precisely the
+  // shape reported from a device as "nothing indicates that some of these are
+  // projects or goals". A container that only states a count is still drawn like
+  // an action.
+  is(places['the quarterly report'], 'Project · 1 under it',
+    `and the container names itself and says how many it holds ("${places['the quarterly report']}")`);
+  // And the unmarked case is genuinely unchanged: `action` has no words, so the
+  // filed action above reads exactly as it did. That assertion is three lines up
+  // and it is the other half of this one.
 
   // A parenting is silent-risk, so the log must show the gate covering it.
   const parentLog = await tpage.evaluate(async () => {
@@ -3456,6 +3486,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // 2.0.7: the map of two became a third, so it stopped being a map. Each sheet
   // carries `data-door`, read above — a hand-written list of doors is the same
   // defect as a hand-written list of surfaces, one indirection along.
+  // A CONDITIONAL DOOR IS STILL A DOOR (2.6.0, ADR-0096). `#roles-open` is
+  // `hidden` until a role has been named, so the sweep above discovered
+  // `sheet-roles` from the markup — correctly, that is the whole point of
+  // discovering rather than listing — and then could not open it, and said so
+  // rather than measuring a closed dialog and calling it green.
+  //
+  // The fix is to put the app into the state the door needs rather than to
+  // exempt the surface. An exemption would have been one line and would have
+  // left the sheet unmeasured for ever, which is the shape hub LESSONS §28 is
+  // about: a surface that ships without ever being measured.
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.locator('#cards .card-open').first().click().catch(() => {});
+  await tpage.waitForSelector('#detail[open]').catch(() => {});
+  await tpage.evaluate(() => {
+    const b = document.querySelector('#detail-more');
+    if (b && b.getAttribute('aria-expanded') !== 'true') b.click();
+  });
+  await tpage.fill('#detail-role', 'Parent').catch(() => {});
+  await tpage.locator('#detail-role-set').click().catch(() => {});
+  await tpage.waitForSelector('#detail-role-list li').catch(() => {});
+  await tpage.locator('#detail-close').click().catch(() => {});
+  await tpage.waitForSelector('#roles-open:not([hidden])').catch(() => {});
+
   const seeThrough = [];
   for (const [surface, bodySel, closeSel, door] of SURFACES_WITH_A_WAY_OUT) {
     if (door) {

@@ -10,7 +10,7 @@
 
 import { openSession, captureEvent, type Session } from './session.ts';
 import type { AppEvent } from '../events.ts';
-import { coverageGauge } from '../gate.ts';
+import { coverageGauge, heldWork } from '../gate.ts';
 import type { NodeState } from '../fold.ts';
 import { mountAbout } from './about.ts';
 import { mountTour } from './tour.ts';
@@ -18,7 +18,8 @@ import { mountUpdatePrompt } from './update.ts';
 import { loadBadgePreference, paintBadge } from './badge.ts';
 import { CURRENT } from './changelog.ts';
 import { mountTriage } from './clarify.ts';
-import { openSheet, closeSheet, wireSheetClose } from './sheets.ts';
+import { openSheet, closeSheet, wireSheetClose, onSheetOpen } from './sheets.ts';
+import { paintContents } from './contents.ts';
 import { mountWork } from './work.ts';
 import { mountDetail } from './detail.ts';
 import { mountSearch } from './search.ts';
@@ -32,10 +33,13 @@ import { mountPrint } from './print.ts';
 import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
+import { servesWords } from '../serves.ts';
+import { roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS } from '../roles.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
+import { WHERE_KEY, allContexts, contextNames, fitsHere, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { waitingOnAnyone, withWhom, waitingWords, peopleWords } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
@@ -76,6 +80,12 @@ let rerenderAll: (() => void) | null = null;
  *  read is simply "everything", never a reason to fail to start. */
 let lensRoot: string | null = null;
 
+/** WHERE YOU ARE (2.2.0, ADR-0092), or null for everywhere. A device view
+ *  preference exactly like the lens root — never an event, because where
+ *  somebody is is not a fact about their work and the log has no business
+ *  keeping a history of it. */
+let whereNow: string | null = null;
+
 /**
  * THE WAY PAST THE STACK (2.0.8, ADR-0090) — shown when, and only when, there is
  * genuinely something between the reader and the list.
@@ -104,7 +114,12 @@ function paintJump(): void {
       });
     // Somewhere to arrive at. An empty list is not a destination.
     const hasList = document.querySelectorAll('#cards .card').length > 0;
-    jump.hidden = !(inTheWay && hasList);
+    const useful = inTheWay && hasList;
+    jump.hidden = !useful;
+    // The way back rides the same condition: if there was something to skip
+    // past on the way down, there is something to climb back over.
+    const top = document.querySelector<HTMLButtonElement>('#to-top');
+    if (top) top.hidden = !useful;
   } catch {
     // A surface. It must never take the list down with it.
   }
@@ -140,6 +155,38 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     ]);
     if (keep === '' || lensRoots.some(r => r.id === keep)) lensSel.value = keep;
   }
+  // WHERE YOU ARE (2.2.0, ADR-0092). Hidden until a place has been named — a
+  // chooser with nothing in it teaches you the feature is broken.
+  const whereSel = document.querySelector<HTMLSelectElement>('#where');
+  const whereRow = document.querySelector<HTMLElement>('#where-row');
+  const whereNote = document.querySelector<HTMLElement>('#where-note');
+  const places = allContexts(st);
+  if (whereSel && whereRow) {
+    whereRow.hidden = places.length === 0;
+    const keep = whereNow ?? '';
+    whereSel.replaceChildren(...[
+      Object.assign(document.createElement('option'), { value: '', textContent: 'anywhere' }),
+      ...places.map(c => Object.assign(document.createElement('option'), {
+        value: c.id, textContent: c.title || '(unnamed)',
+      })),
+    ]);
+    if (keep === '' || places.some(c => c.id === keep)) whereSel.value = keep;
+  }
+  // If the chosen place was trashed, the filter stands down rather than
+  // filtering by a ghost — the lens's rule, and the reason it matters more here
+  // is that a ghost context matches nothing, so the surface would go empty.
+  const whereLive = whereNow && places.some(c => c.id === whereNow) ? whereNow : null;
+  // The OFFER reads the shared copy, so it must be the live one — a ghost
+  // context matches nothing, and an offer filtered by a ghost is an empty offer.
+  if (getWhereNow() !== whereLive) setWhereNow(whereLive);
+  if (whereNote) {
+    whereNote.hidden = !whereLive;
+    if (whereLive) {
+      whereNote.textContent = whereWords(
+        places.find(c => c.id === whereLive)?.title || 'here');
+    }
+  }
+
   const lensRootNode = lensRoot ? st.nodes.get(lensRoot) : undefined;
   const lensLive = Boolean(lensRootNode && !lensRootNode.trashed && !lensRootNode.mergedInto
     && lensRoots.some(r => r.id === lensRoot));
@@ -158,7 +205,11 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     // The lens filters BEFORE the cap slices, or the cap would lie about how
     // many it held back. A group emptied by the lens is simply absent, like
     // any empty group.
-    const lensed = lensIds ? group.items.filter(n => lensIds.has(n.id)) : group.items;
+    const lensedOnly = lensIds ? group.items.filter(n => lensIds.has(n.id)) : group.items;
+    // AND WHERE YOU ARE (2.2.0). Applied with the lens and before the cap, for
+    // the same reason: a cap over an unfiltered set would lie about how many it
+    // held back. Unlabelled things fit anywhere, so they always survive this.
+    const lensed = lensedOnly.filter(n => fitsHere(st, n, whereLive));
     if (lensed.length === 0) continue;
 
     const head = document.createElement('h3');
@@ -203,6 +254,19 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // place a blank title rendered as an unlabelled, unidentifiable card.
       title.textContent = node.title || '(untitled)';
 
+      // WHERE IT CAN BE DONE (2.2.0, ADR-0092), on the card. A place line
+      // already says where a thing LIVES; this says where it can be DONE, and
+      // without it the label is invisible until you open the sheet — which is
+      // the "nothing indicates what this is" shape ADR-0091 was reported for.
+      // Absent when there is none, because "anywhere" is not news.
+      const where = contextNames(st, node);
+      if (where.length > 0) {
+        const w = document.createElement('span');
+        w.className = 'card-place card-where';
+        w.textContent = where.join(' · ');
+        open.append(w);
+      }
+
       const when = document.createElement('span');
       when.className = 'card-when';
       // Every item states its own status in words — the text channel of B-01, so
@@ -224,6 +288,43 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         where.className = 'card-place';
         where.textContent = place;
         open.append(where);
+      }
+
+      // AND WHAT IT IS FOR (2.5.0, ADR-0095) — law 4's downward half, on the
+      // surface that had none of it. The line above says where a thing LIVES,
+      // and it walks exactly one hop: "in Re-do the hallway". Nothing on this
+      // list has ever said what any of it was FOR, at any depth.
+      //
+      // That is the measured cause of "no feeling of being shown the right
+      // things" (Q-11, reported 2026-08-04): every tier of the offer is
+      // temporal and the only tie-break inside one is pressure then creation
+      // order, so the app has never had any notion of what a thing serves —
+      // and could not show the right things by any definition of right that is
+      // not "most time-pressured".
+      //
+      // `.card-place` REUSED rather than a new class. It carries no colour of
+      // its own, so the contrast registry's existing row covers this from the
+      // first run — which is what `.card-where` and the detail placeholders each
+      // cost a release for learning the other way round.
+      const serves = servesWords(st, node);
+      if (serves !== null) {
+        const forWhat = document.createElement('span');
+        forWhat.className = 'card-place';
+        forWhat.textContent = serves;
+        open.append(forWhat);
+      }
+
+      // AND WHO IT IS FOR (2.6.0, ADR-0096). A third axis and a third silence
+      // broken: the tree says where a thing lives, a context says where it can
+      // be done, and a role says whose it is. Absent when there is none, which
+      // is the honest majority — an identity is never required and never
+      // inferred. `.card-place` again, so no new colour pair enters the gate.
+      const whose = roleNames(st, node);
+      if (whose.length > 0) {
+        const w = document.createElement('span');
+        w.className = 'card-place';
+        w.textContent = whose.join(' · ');
+        open.append(w);
       }
 
       // WHAT IS IN IT, but only when it has actually come round.
@@ -363,6 +464,21 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // rather than leaving them on a screen with nothing on it and no control
       // behind it to explain where it went.
       if (total === 0) closeSheet('sheet-menu');
+      // WHERE THE ATTENTION IS (2.6.0, ADR-0096), painted on the same pass. Its
+      // door states WHAT IT OPENS and no number: a count on a standing control
+      // about somebody's own identities is a score on the landing surface, which
+      // is what took the volume count off the gauge in V2 stage 1. It is hidden
+      // entirely until a role exists, and closes behind anybody standing in it
+      // when the last one goes — the rule directly above, for the same reason.
+      {
+        const rolesBtn = document.querySelector<HTMLButtonElement>('#roles-open');
+        const anyRoles = allRoles(st).length;
+        if (rolesBtn) {
+          rolesBtn.hidden = anyRoles === 0;
+          rolesBtn.textContent = 'Where the attention is';
+          if (anyRoles === 0) closeSheet('sheet-roles');
+        }
+      }
       const rows: HTMLElement[] = [];
       for (const g of menuGroups(st)) {
         const h = document.createElement('h3');
@@ -812,6 +928,82 @@ export async function main(edition?: Edition): Promise<void> {
     cards.focus();
   });
 
+  // AND THE WAY BACK (2.1.0, ADR-0091). Focus goes to the capture line, which
+  // is both the top of the page and the thing most likely to be wanted there —
+  // the same destination the app already picks after an action empties a card.
+  document.querySelector<HTMLButtonElement>('#to-top')?.addEventListener('click', () => {
+    window.scrollTo({ top: 0 });
+    document.querySelector<HTMLElement>('#capture')?.focus();
+  });
+
+  // AND A WAY TO ANYWHERE, not just to the two ends (2.3.0, ADR-0093). The two
+  // jumps above are a route between the top of the page and the list at the
+  // bottom of it, which leaves the twelve blocks in between reachable only by
+  // scrolling past the ones before them. This is the answer to the first thing
+  // ever asked of the app.
+  //
+  // `onSheetOpen` rather than a paint at mount: the page's live blocks change
+  // every refresh, and a contents list built once would offer routes to blocks
+  // that have since gone and hide ones that have arrived — a stale list is
+  // worse than none, because it reads as an answer.
+  // WHERE THE ATTENTION IS (2.6.0, ADR-0096). A plot, never a verdict — see the
+  // note on the markup. Painted on open like every other sheet, because a
+  // readout built once would report the store as it was when the app started.
+  const paintRoles = (): void => {
+    const st = session.state();
+    const { rows, unnamed } = roleLoads(st, heldWork);
+    const words = document.querySelector<HTMLElement>('#roles-words');
+    if (words) words.textContent = ROLE_READOUT_WORDS;
+    const list = document.querySelector<HTMLUListElement>('#roles-list');
+    if (list) {
+      list.replaceChildren(...rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        name.textContent = r.role.title || '(unnamed)';
+        const held = document.createElement('span');
+        held.className = 'roles-held';
+        // WORDS, not a bare integer. "3" beside a name reads as a score; "3
+        // things" reads as a count of work, which is what it is.
+        held.textContent = r.held === 0
+          ? 'nothing right now'
+          : r.held === 1 ? '1 thing' : `${r.held} things`;
+        li.append(name, held);
+        return li;
+      }));
+    }
+    const rest = document.querySelector<HTMLElement>('#roles-unnamed');
+    if (rest) {
+      // STATED, never hidden. On any real store this is the biggest number, and
+      // leaving it out would make the named roles look like the whole of
+      // somebody's life. It is deliberately not a row: it is not an identity,
+      // and listing it beside real ones invites reading it as one.
+      rest.textContent = unnamed === 0
+        ? 'Everything you are holding belongs to one of these.'
+        : `${unnamed === 1 ? '1 other thing' : `${unnamed} other things`} `
+          + 'you are holding belong to no named role. That is ordinary — most things do not.';
+      rest.hidden = false;
+    }
+  };
+  onSheetOpen('sheet-roles', paintRoles);
+  wireSheetClose('sheet-roles');
+  document.querySelector<HTMLButtonElement>('#roles-open')
+    ?.addEventListener('click', () => { openSheet('sheet-roles'); });
+
+  onSheetOpen('sheet-contents', () => paintContents());
+  wireSheetClose('sheet-contents');
+  // TWO DOORS, both in flow. The header's, beside More, where the app's other
+  // navigation is; and one at the end of the held list, beside Back to the top,
+  // where somebody who has read to the bottom actually is. Neither is fixed —
+  // a floating control was measured taking the centre of three Done buttons,
+  // and `app.css` carries the numbers and the reason the scroll-container fix
+  // was not taken.
+  for (const sel of ['#contents-open', '#contents-open-end']) {
+    document.querySelector<HTMLButtonElement>(sel)
+      ?.addEventListener('click', () => { openSheet('sheet-contents'); });
+  }
+
   // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —
   // it is demand-free, and a surface that remembers it was open is a surface
   // that greets you. A dialog cannot remember, which makes law 6 structural
@@ -1112,6 +1304,19 @@ export async function main(edition?: Edition): Promise<void> {
   } catch {
     lensRoot = null;
   }
+  try {
+    whereNow = (await session.store.getKv<string>(WHERE_KEY)) || null;
+  } catch {
+    whereNow = null;
+  }
+  setWhereNow(whereNow);
+  document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
+    whereNow = (e.target as HTMLSelectElement).value || null;
+    setWhereNow(whereNow);
+    refreshAll();
+    void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+  });
+
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {
     const v = (e.target as HTMLSelectElement).value;
     lensRoot = v || null;

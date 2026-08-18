@@ -13,6 +13,8 @@ import type { Session } from './session.ts';
 import type { NodeState } from '../fold.ts';
 import { focusView, focusWords, interruptWords, resumeCards } from '../focus.ts';
 import { commsChip } from '../comms.ts';
+import { nextFixedToday, nextFixedWords } from '../clock.ts';
+import { boundaryOf } from '../day.ts';
 import { coverageGauge } from '../gate.ts';
 import {
   startFocusEvents, endFocusEvents, interruptEvents, resumeEvents, cleanCue,
@@ -40,6 +42,8 @@ export function mountFocus(
   const title = q('#focus-title');
   const elapsed = q('#focus-elapsed');
   const held = q('#focus-held');
+  // Soft-bound like `held`: a missing line costs that line, never the surface.
+  const fixed = q('#focus-fixed');
   const live = q('#focus-live');
   const form = q<HTMLFormElement>('#focus-interrupt-form');
   const input = q<HTMLInputElement>('#focus-interrupt');
@@ -49,7 +53,7 @@ export function mountFocus(
     return { refresh() {}, start() {} };
   }
   const REGION = region, TITLE = title, ELAPSED = elapsed, LIVE = live;
-  const FORM = form, INPUT = input, HELD = held, HEAD = heading;
+  const FORM = form, INPUT = input, HELD = held, HEAD = heading, FIXED = fixed;
 
   let busy = false;
   let tick: ReturnType<typeof setInterval> | null = null;
@@ -156,6 +160,21 @@ export function mountFocus(
       const w = interruptWords(v.interrupted.length);
       HELD.textContent = w ?? '';
       HELD.hidden = !w;
+    }
+    // THE AMBIENT HORIZON (2.7.1, collisions entry 7). The next fixed thing
+    // today, by name — the one line the catalogue's routing proposal asked for
+    // ON THIS SURFACE, and which has only ever rendered on the work surface an
+    // absorbed person has already left.
+    //
+    // The SAME projection the work surface uses, called here rather than copied,
+    // so the two can never disagree about what is coming. It is pure and reads
+    // state, so calling it on the thirty-second tick costs nothing.
+    if (FIXED) {
+      const fw = nextFixedWords(nextFixedToday(
+        session.state(), new Date(now()).toISOString(),
+        { zone: session.zone, boundary: boundaryOf(session.state()) }));
+      FIXED.textContent = fw ?? '';
+      FIXED.hidden = fw === null;
     }
     // A minute is the resolution the words have, so that is how often it ticks.
     // Anything faster is a spinner pretending to be information.

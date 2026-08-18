@@ -247,6 +247,12 @@ export function eventWords(
 
     // --- people and journal --------------------------------------------------
     case 'person.created': return 'A person was noted.';
+    case 'context.created': return 'A place to do things was named.';
+    case 'context.attached': return 'This can be done there.';
+    case 'context.detached': return 'This is no longer one of its places.';
+    case 'role.created': return 'A role was named.';
+    case 'role.attached': return 'This belongs to that role.';
+    case 'role.detached': return 'This is no longer part of that role.';
     case 'person.linked': return `Linked to ${name(p['person'])}.`;
     case 'journal.sealed': return 'You set a passphrase for the journal.';
     case 'journal.entry.written': return 'A journal entry was written.';

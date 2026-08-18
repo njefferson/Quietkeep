@@ -700,6 +700,46 @@ agreed to survives a copy change (law 10).
 - **`person.linked`**
   - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned`
   - Silent risk: no
+- **`context.created`** (emitter 2.2.0, ADR-0092)
+  - Payload: `name` — vault-scoped
+  - Silent risk: no
+  - A context is WHERE work can be done — at home, at work, out, on the phone.
+    It is a node so it can be renamed and so nothing has to parse a string, and
+    it is **demand-free**: the gate refuses a clock on it, and it can never be
+    offered as work.
+- **`context.attached`** (emitter 2.2.0, ADR-0092)
+  - Payload: `node, context`
+  - Silent risk: no
+  - **A LABEL, NEVER A PARENT.** A thing lives in exactly one place in this
+    tree; it can be doable in several. Q-13 settled that anything crossing
+    containers has to be a cross-cutting link rather than a container, and this
+    is that shape. **Law 1 does not read it** — attaching a context can never
+    make a silent node non-silent, and the write gate is unchanged by it.
+- **`context.detached`** (emitter 2.2.0, ADR-0092)
+  - Payload: `node, context`
+  - Silent risk: no
+  - Subtracts one link. Scoped to the node AND the context, so taking a thing
+    off "At work" leaves "At home" alone.
+- **`role.created`** (emitter 2.6.0, ADR-0096)
+  - Payload: `name` — vault-scoped
+  - Silent risk: no
+  - A role is WHO work is for — an identity that crosses multiple areas, which
+    is the owner's own framing recorded in NOTES Q-13. It is a node so it can be
+    renamed and so nothing has to parse a string, and it is **demand-free**: the
+    gate refuses a clock on it and it can never be offered as work.
+- **`role.attached`** (emitter 2.6.0, ADR-0096)
+  - Payload: `node, role`
+  - Silent risk: no
+  - **A LABEL, NEVER A PARENT**, and this is the case Q-13 was actually about: a
+    role crosses areas, this tree is single-parent, so a role structurally
+    cannot be a container. An area HOLDS work; a role runs THROUGH areas.
+    **Law 1 does not read it** — attaching a role can never make a silent node
+    non-silent, and the write gate is unchanged by it.
+- **`role.detached`** (emitter 2.6.0, ADR-0096)
+  - Payload: `node, role`
+  - Silent risk: no
+  - Subtracts one link. Scoped to the node AND the role, so taking a thing out
+    of one identity leaves the others alone.
 - **`journal.entry.written`** (emitter 1.13.0, ADR-0061)
   - Payload: `v, iv, ct` — the `seal.ts` envelope. **Always encrypted.** The
     third field was called `ciphertext` here from the first draft; nothing ever

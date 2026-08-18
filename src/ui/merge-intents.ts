@@ -81,6 +81,17 @@ export const MERGE_DISPOSITION: Record<keyof NodeState, Disposition> = {
     when: 'per CARRY_FIELDS below — `note` joins when both speak; anything unnamed is NOT carried, so a future field is safe by default',
   },
   people: { carry: 'state', via: 'person.linked', when: 'each link the survivor lacks; additive by design' },
+  // A UNION, for the same reason people is (2.2.0, ADR-0092). If the duplicate
+  // was doable at work and the survivor at home, the one thing that remains is
+  // doable in both — dropping either would make the survivor LESS reachable
+  // than the pair was, which is a fold losing a fact rather than merging one.
+  contexts: { carry: 'state', via: 'context.attached', when: 'each context the survivor lacks; additive, like people' },
+  // A UNION, on the same grounds as contexts and people (2.6.0, ADR-0096). If
+  // the duplicate belonged to one role and the survivor to another, the one
+  // thing that remains belongs to both — dropping either would make the
+  // survivor answer to FEWER identities than the pair did, which is a fold
+  // losing a fact rather than merging one.
+  roles: { carry: 'state', via: 'role.attached', when: 'each role the survivor lacks; additive, like contexts' },
   opr: {
     carry: 'state', via: 'opr.assigned',
     when: 'when the survivor has none. REQUIRED, not optional: the opr person LINK is already carried, so leaving n.opr null reproduces the render-contradicts-record shape ADR-0057 was written to kill',

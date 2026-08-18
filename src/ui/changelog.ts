@@ -29,6 +29,105 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.7.2',
+    kind: 'ITERATION',
+    date: '2026-08-17',
+    notes: [
+      '**The line under the capture box now reads *How you are, and anything weighing on you*.** It said *Something weighing on you?* \u2014 which names only one of the two things behind it. Saying **it is a low stretch today** has always lived there too, and nothing said so, so finding it meant guessing that the question about weights was where it was kept.',
+      '**Nothing moved and nothing was added.** It is the same line in the same place, still closed until you open it. An app that asks every morning how you are is a demand, and this one is not going to start.',
+    ],
+  },
+  {
+    triplet: '2.7.1',
+    kind: 'ITERATION',
+    date: '2026-08-17',
+    notes: [
+      '**When you are working on one thing, the screen now tells you what else is fixed for today.** One line, by name, on the **Working on** screen \u2014 no clock, no countdown. A countdown is a deadline and makes a thing harder to face; the alarm in your calendar is still the thing that actually guarantees you are told.',
+      '**That line already existed, on the other screen.** It has been on the main screen since the day-boundary work, which is the screen you have already left when you are deep in something. The research this app is built on says absorption collapses time \u2014 an appointment does not get forgotten so much as stop existing \u2014 so the one place the line is worth having is the place it was not.',
+    ],
+  },
+  {
+    triplet: '2.7.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**The app now reads the hot-or-cold you already gave it.** When several things are simply waiting \u2014 none of them dated, none of them pressing \u2014 the one you called **hot** is offered first, then the ones you never answered about, then the ones you called cold. The card says so: *"this one is waiting, and you said it was hot."*',
+      '**You have been answering that question since the beginning and nothing has ever read it.** The two-tap Hot or Cold in sorting was written to the record, kept, carried through every backup \u2014 and the screen that decides what to hand you next had never once looked at it.',
+      '**Cold is never hidden**, and not answering is not a penalty: unanswered sits between hot and cold, so answering can only move something in the direction you pointed.',
+      '**Nothing else about the order changed.** A real date that is here still comes first, always. This only decides between things that were tied \u2014 and where they were tied, the app fell back to whichever you wrote down first, for ever. Forty things with no rhythm gave the same card today, next month and next year.',
+      '**Why this and not "what is most important":** the research this app is built on is clear that for this audience importance does not start the engine \u2014 interest, novelty, challenge, urgency and passion do. Ranking by importance is the famous urgent/important grid, and its whole top row is a dead letter here. That was the other option and it was refused on the evidence, not on taste.',
+    ],
+  },
+  {
+    triplet: '2.6.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Roles.** A thing can now say who it is for \u2014 a part of your life that runs through more than one area. Set it on a thing\u2019s own sheet under **Who is this for?**, as many as fit. It sits beside where a thing can be done, and it is a different question: that one is WHERE, this one is WHO.',
+      '**And a readout: Where the attention is.** A line above your list, once you have named a role, showing what each one is carrying right now. It says the number of things and nothing else \u2014 no bar, no share of a whole, no target, nothing about whether any of it is even. A bar is a machine for implying you are behind. What it is for is the question that has been in the notes for weeks: whether you are putting enough into each. The app plots; you read it.',
+      '**It also states what belongs to no role at all**, which on any real set is most of it. Leaving that out would make the named ones look like the whole of your life.',
+      '**Nothing is required and nothing is guessed.** The app never infers a role from a title, a folder or your history. Most things belong to none, and that is the ordinary case rather than an unfinished one.',
+      '**This was settled on 4 August and not built for thirteen days.** The shape was written down correctly that day \u2014 a role crosses areas, so it can never be a container, it has to be a link \u2014 and then the build was held back pending a judgement about whether you had made enough projects yet to justify it. That judgement was not anyone\u2019s to make but yours.',
+    ],
+  },
+  {
+    triplet: '2.5.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Things now say what they are FOR, not just where they sit.** A step filed under a project under a goal says **serves \u2039your goal\u203a** on its row and on the card at the top. A description, never a door \u2014 nothing takes you up there, nothing is counted, nothing is scored.',
+      '**Half of a founding rule had never been built.** The rule is *levels push down; you never climb*: you should never walk up through goals and areas to plan a day, and instead the higher things send what they know down to you. The never-climbing half was always true. The sending-down half did not exist \u2014 a card knew what box it was in, and nothing anywhere said what any of it was for.',
+      '**This is the answer to what you said on 4 August \u2014 no feeling of being shown the right things.** It sat thirteen days because it was thought to need a question answered first. It needed somebody to read the code. Every way the app picks what to offer is about TIME, and where two things tie it falls back to which you wrote first \u2014 so it had no notion of what anything is for, and could not show you the right things by any meaning of "right" but "most time-pressured".',
+      '**Still owed, and it is your call rather than a build:** the ORDER things are offered in has not changed. Making "serves a goal" beat "serves nothing" would be the app deciding that filing something under a goal means it matters more \u2014 and a loose note is very often the most important thing you have written down.',
+    ],
+  },
+  {
+    triplet: '2.4.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Things now say what they are.** A project says **Project**, a goal says **Goal**, an area says **Area** — on its row in your list and at the top of its own sheet. Also **Waiting for**, **Upkeep**, **A worry**, **Something on you**, **A wish**, **Where you left off**, **A place**, **Person**, **A named period**, **Journal entry**.',
+      '**Nothing in the app had ever said this.** Fourteen different kinds of thing, and not one word for any of them anywhere you could see. A project holding things said "7 under it" — a number, with no name on it — and a project holding nothing, a goal, an area and an outcome said nothing whatsoever. So a goal and a stray to-do were drawn exactly the same, which is why the screen read as one long to-do list: that is what it looked like.',
+      '**Ordinary to-dos are not labelled, on purpose.** Writing "Action" on several hundred rows would add a word to every line and tell you nothing. The ones that get named are the ones you could not otherwise tell apart from a to-do.',
+      '**Your sheets say it too.** The line under a thing’s title told you it was on the Menu, or done, or when it comes back — everything about it except what it actually is, which is the thing that decides how to read the rest.',
+      '**Still owed: the tree and search results do not say it yet.** They have room for it and it should go there; this release covers your list and the sheets, which is where it was reported.',
+    ],
+  },
+  {
+    triplet: '2.3.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**The capture line is now the seventh thing in the page; it was the sixth. The Menu line is now one row lower than it was.** A **Contents** button joined the top bar beside More — see below. Nothing else moved.',
+      '**Contents lists every part of the page that is showing, and takes you to it.** In the order they come, each with what it already says about itself — "3 dates have gone by", "2 waiting on somebody". There is a second door at the very end of your list, **What’s on this page**, so you do not have to travel back up to use it.',
+      '**This answers "it is one long page, does it not need pages or tabs?"** — the first thing ever asked of this app, which did not get built. It should have been.',
+      '**It is not tabs, on purpose.** Tabs split your things into two piles, and then you have to remember to check the other pile — the exact thing this app exists to save you from. Nothing is hidden and nothing has moved.',
+      '**Your list has a real heading now.** "What you are holding" was written at the top of it but was only a line of text, so the biggest thing on the screen was not somewhere the app could take you, and a screen reader could not treat it as a place.',
+      '**Still owed: from the middle of the page you reach for one of the two ends.** A button floating in the corner was built first, then measured — over a sample set it sat on top of ten controls and took the tap from three, every one a **Done**. Pressing Done and getting a contents list is worse than scrolling, so it is not shipping.',
+    ],
+  },
+  {
+    triplet: '2.2.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Done is now the second control on the offer; it was the first. Not this is now the fourth; it was the third. The Menu line is now one row lower than it was.** The card\'s title moved ahead of them, because it is a button now — see below. Nothing else moved.',
+      '**You can say where a thing can be done, and then say where you are.** At home, at work, out, on the phone — as many as fit, because a thing can be doable in more than one place. Set them on a thing\'s own sheet under **Where can this be done?**; then **Where you are** at the bottom of the main screen narrows what you are offered and what is listed to the things that actually fit.',
+      '**Anything with no place at all fits everywhere.** Most of what you write down is not tied to a room, and it would be a poor system that hid it for that. Nothing is required and nothing is filed for you.',
+      '**Nothing is hidden from you by this.** A thing you cannot do from where you are still has its date, still counts in the line above your list, and still comes back. It is a filter on what you are looking at, never a change to what the app is holding.',
+      '**And the card at the top opens now.** The one thing the app hands you was the only thing on the screen you could not tap to change — you had to go and find it somewhere else first.',
+    ],
+  },
+  {
+    triplet: '2.1.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-12',
+    notes: [
+      '**Every way of getting somewhere now looks like a button.** Five lines on the main screen were controls that rendered as plain grey sentences: the claim above your list, "How it hangs together", the Menu line, "Sort things out", and the jump to your list. Measured on the work surface: 50 controls, 45 with a border or a fill, and the 5 without were every route off the page. They now carry the same border as More, Done and Not this.',
+      '**And there is a way back.** There was none — nothing anywhere in the app returned you to the top. A jump that sent you five screens down was a one-way trip. **Back to the top** now sits at the end of your list.',
+    ],
+  },
+  {
     triplet: '2.0.9',
     kind: 'ITERATION',
     date: '2026-08-12',

@@ -1,7 +1,7 @@
 {
   "capture": {
     "region": "document",
-    "ordinal": 6,
+    "ordinal": 7,
     "label": "What do you want to put down?"
   },
   "open-about": {
@@ -11,17 +11,17 @@
   },
   "nextup-done": {
     "region": "nextup",
-    "ordinal": 0,
+    "ordinal": 1,
     "label": "Done with what is next up"
   },
   "nextup-skip": {
     "region": "nextup",
-    "ordinal": 2,
+    "ordinal": 3,
     "label": "Not this"
   },
   "menu-open": {
     "region": "document",
-    "ordinal": 43,
+    "ordinal": 45,
     "label": null
   }
 }

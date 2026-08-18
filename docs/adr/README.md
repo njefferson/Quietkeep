@@ -300,6 +300,27 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0090](0090-a-way-past-the-stack.md)**
   - Decision: A visible, touch-reachable jump to the held list, shown only when something is in the way — the `.skip` link had served keyboard and screen-reader users only, and autofocus kept it out of the forward tab order
   - Status: Accepted · shipped 2.0.8 · extends [0089](0089-the-menu-is-a-place.md)
+- **[0091](0091-a-control-looks-like-a-control.md)**
+  - Decision: Every control on the work surface carries a border or a fill, and the jump gains a return leg — 5 of the 7 prose-styled controls were every route off the page, and nothing anywhere returned the reader to the top
+  - Status: Accepted · shipped 2.1.0 · extends [0090](0090-a-way-past-the-stack.md)
+- **[0092](0092-contexts.md)**
+  - Decision: Contexts — a demand-free node plus a cross-cutting link saying where a thing can be DONE, and a device preference for where you are that narrows the offer and the list; unlabelled fits everywhere and law 1 never reads it
+  - Status: Accepted · shipped 2.2.0
+- **[0093](0093-a-way-to-each-part-of-the-page.md)**
+  - Decision: A contents sheet listing every live block of the runway, named and counted by the blocks themselves, behind a viewport-fixed door — and the held list becomes a real section with a focusable heading; not tabs, because a partition means remembering to check the other one
+  - Status: Accepted · shipped 2.3.0 · extends [0090](0090-a-way-past-the-stack.md), [0091](0091-a-control-looks-like-a-control.md)
+- **[0094](0094-a-card-says-what-it-is.md)**
+  - Decision: One reader-facing word per node kind, defined once and stated first on a card's own line and on the detail sheet — the app had fourteen kinds and no word for any of them, so a goal and a loose to-do drew identically; `action` stays deliberately unmarked
+  - Status: Accepted · shipped 2.4.0
+- **[0095](0095-what-a-thing-is-for.md)**
+  - Decision: A card says what it serves — the highest live horizon above it — as one descriptive line; law 4's downward half, built for the first time. Never a destination, no count, no score, and it does not change the offer's ordering
+  - Status: Accepted · shipped 2.5.0 · answers Q-11 · extends [0013](0013-levels-push-down.md)
+- **[0096](0096-roles.md)**
+  - Decision: A role is a cross-cutting link saying WHO work is for — an identity crossing areas, so it can never be a container; plus "Where the attention is", a readout of live work per role that is sorted by name, has no bar or target, and states the unnamed remainder
+  - Status: Accepted · shipped 2.6.0 · settles Q-13 · extends [0092](0092-contexts.md)
+- **[0097](0097-the-offer-reads-interest.md)**
+  - Decision: Inside the `ready` tier only, the offer breaks ties on the heat the reader already set — hot, unsaid, cold — and says so on the card; routed by nd-collisions entry 5, which also REFUSES the importance rank that was the alternative
+  - Status: Accepted · shipped 2.7.0 · closes Q-11 · extends [0029](0029-triage-model.md), [0030](0030-work-mode.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

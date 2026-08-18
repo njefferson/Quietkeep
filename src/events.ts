@@ -24,6 +24,22 @@ export type VaultDomain = 'work' | 'personal' | 'journal';
 export const NODE_KINDS = [
   'action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep',
   'aspiration', 'bother', 'pebble', 'journal', 'person', 'resume-card', 'anchor',
+  // WHERE A THING CAN BE DONE (2.2.0, ADR-0092). A context is a place or a
+  // means — at home, at work, out, on the phone — and it is NOT a container.
+  // A thing lives in exactly one place in this tree; it can be doable in
+  // several. Q-13 already settled that anything crossing containers has to be a
+  // cross-cutting LINK rather than a parent, and named the shape; this is that
+  // shape, pointed at the everyday case instead of at roles.
+  'context',
+  // WHO A THING IS FOR (2.6.0, ADR-0096). A role is an IDENTITY that crosses
+  // multiple areas — recorded as the owner's own framing in NOTES Q-13, which
+  // settled the shape on 2026-08-04 and then deferred the build for thirteen
+  // days behind a judgement about whether enough containers existed yet.
+  //
+  // Same shape as `context`, different axis. This tree is single-parent, so
+  // anything that crosses containers is a cross-cutting LINK and can never be a
+  // container: an area holds work, and a role runs THROUGH areas.
+  'role',
 ] as const;
 export type NodeKind = (typeof NODE_KINDS)[number];
 
@@ -60,7 +76,7 @@ export type NodeKind = (typeof NODE_KINDS)[number];
  * price is paid in the same release: the surface that renders anchors ships
  * with it.
  */
-export const DEMAND_FREE_KINDS = ['aspiration', 'pebble', 'person', 'journal', 'anchor'] as const satisfies readonly NodeKind[];
+export const DEMAND_FREE_KINDS = ['aspiration', 'pebble', 'person', 'journal', 'anchor', 'context', 'role'] as const satisfies readonly NodeKind[];
 
 export type ClockKind = 'due' | 'start' | 'suspense' | 'review' | 'park';
 // `filed` is WHERE, and the only route that answers it. The other six say
@@ -358,6 +374,30 @@ export type ShardCompacted   = Ev<'shard.compacted',    { device: DeviceId; thro
 // --- H · people and journal --------------------------------------------------
 export type PersonCreated    = Ev<'person.created',     { name: string }>;
 export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned' }>;
+// --- H2 · contexts (2.2.0, ADR-0092) ----------------------------------------
+//
+// `person.linked`'s shape exactly. A context is a node so it can be renamed and
+// so nothing has to parse a string; the link is separate so a thing can be
+// doable in several places without the tree gaining a second parent.
+export type ContextCreated   = Ev<'context.created',    { name: string }>;
+export type ContextAttached  = Ev<'context.attached',   { node: NodeId; context: NodeId }>;
+export type ContextDetached  = Ev<'context.detached',   { node: NodeId; context: NodeId }>;
+
+// --- H2 · roles (2.6.0, ADR-0096) -------------------------------------------
+//
+// `context.*`'s shape exactly, on a different axis. A context is WHERE work can
+// be done; a role is WHO IT IS FOR — an identity that crosses multiple areas.
+// Q-13 settled this shape on 2026-08-04 in exactly these terms and it was then
+// deferred for thirteen days behind a session's judgement about whether enough
+// containers existed yet to make it worth building.
+//
+// A role is a node so it can be renamed and so nothing has to parse a string,
+// and it is DEMAND-FREE: an identity is not work and can never be offered as
+// the next thing to do.
+export type RoleCreated   = Ev<'role.created',   { name: string }>;
+export type RoleAttached  = Ev<'role.attached',  { node: NodeId; role: NodeId }>;
+export type RoleDetached  = Ev<'role.detached',  { node: NodeId; role: NodeId }>;
+
 /** Payload is ALWAYS encrypted at rest. There is no plaintext journal event. */
 /**
  * One journal entry, sealed (1.13.0, ADR-0061).
@@ -457,7 +497,9 @@ export type AppEvent =
   | ModuleEnabled | ModuleDisabled | ConsentGranted | ConsentRevoked
   | SnapshotWritten | SchemaMigrated | ExportWritten | ImportSeeded | ShardFolded
   | TerminologySkinApplied | TemplateLoaded | ShardCompacted
-  | PersonCreated | PersonLinked | JournalEntryWritten | JournalSealed | JournalTagAttached
+  | PersonCreated | PersonLinked
+  | ContextCreated | ContextAttached | ContextDetached
+  | RoleCreated | RoleAttached | RoleDetached | JournalEntryWritten | JournalSealed | JournalTagAttached
   | MenuItemAdded | MenuItemRemoved | MenuItemPromoted | SaveForUpdated
   | LapseMigrationRan | ReentryGreeted | AmnestyOffered | AmnestyAccepted
   | RangeActed | TodayChosen | TodayReleased;
@@ -485,6 +527,8 @@ export const EVENT_KINDS = [
   'snapshot.written','schema.migrated','export.written','import.seeded','shard.folded',
   'terminology.skin.applied','template.loaded','shard.compacted',
   'person.created','person.linked','journal.entry.written','journal.sealed','journal.tag.attached',
+  'context.created','context.attached','context.detached',
+  'role.created','role.attached','role.detached',
   'menu.item.added','menu.item.removed','menu.item.promoted','save-for.updated',
   'lapse.migration.ran','reentry.greeted','amnesty.offered','amnesty.accepted',
   'range.acted','today.chosen','today.released',

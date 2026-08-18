@@ -57,6 +57,17 @@ requires breaking one, that is a Doctrine §1 moment: flag it, don't slip it in.
 4. **Levels push down; the user never climbs.** The runway is the only
    workspace. Higher horizons project lineage and health downward. Altitude
    views are inspection modes, not places to work.
+   **This law is about ALTITUDE and it has been misread as being about
+   navigation.** Its subject is goals, areas and outcomes: you never have to
+   climb a hierarchy to plan your day. It says nothing whatever about whether
+   the runway's own blocks can be reached, and "the runway is the only
+   workspace" is not "the runway is one undifferentiated scroll". Read the
+   second way, it was cited as the reason not to build a way around a page
+   measured at 3.0 screens with six live blocks on the *small* sample — which
+   is an invariant about hierarchy being spent on a different axis, and a
+   product law being used to close a defect. Built as the contents sheet in
+   2.3.0 ([ADR-0093](docs/adr/0093-a-way-to-each-part-of-the-page.md)), nineteen
+   days after it was first asked for. Same shape as Q-10 and hub LESSONS §96.
 5. **One decay primitive runs everything temporal:**
    `(last_done, comfort_window, rising pressure)`. **No "overdue" state exists
    anywhere** — not in the schema, not in a variable name, not in copy. Language
@@ -170,8 +181,13 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 > *"I eventually want a set of test data i can import and the ability to purge the
 > whole set of tasks, select ranges, or anything else that may make sense?"*
 
-Roadmapped, not built. **"Eventually"** — it waits behind the things that make the
-app better at its job. What follows is the shape it should take, written now
+~~Roadmapped, not built.~~ **ALL THREE ARE BUILT** — sample data (*Add some sample
+work*, *Make a set to try things on*), purging (*Clear what I'm holding*, with the
+copy-first step), and named ranges (sort mode, the standing "dates that have gone
+by" range, bulk acts through the real gate). **This line said "not built" until
+2026-08-17**, which is the same stale-prose defect this file records three times
+elsewhere. The shape written below is what they were built to, and it is kept
+because the reasoning still binds anything added to them. What follows is the shape it should take, written now
 while the reasoning is fresh, because most of these have a way of going wrong that
 is not obvious when you come to build them.
 
@@ -377,6 +393,14 @@ decided by a session.**
   cross-cutting LINK (the shape the feeds relation already has), which means
   role support is a vocabulary addition (a `role` kind plus a link event),
   not a fourth door on stage 4's chooser.
+  - **BUILT 2026-08-17 as 2.6.0 (ADR-0096), thirteen days later, and the
+    deferral is the lesson rather than the build.** This entry got the model
+    exactly right — a role crosses areas, this tree is single-parent, therefore a
+    cross-cutting link and never a container — and ADR-0096 is that paragraph
+    implemented. **The gate it set was a session's judgement about whether the
+    owner had made enough containers yet to justify it, which is not a session's
+    call to make about somebody else's planner.** Third instance in one audit,
+    after Q-10 and Q-11 (hub LESSONS §96, §97).
   - **Deliberately deferred, with the shape named.** Building role machinery
     now, before a single area or goal exists in his store, repeats the
     eleven-empty-nouns mistake the azimuth check just caught. Stage 4's
@@ -385,8 +409,13 @@ decided by a session.**
     settled — a role node carries its own review clock like any horizon, and
     "when do I review my roles?" is answered by the same
     mountain-comes-to-you return as everything else. When roles land, they
-    inherit that for free. Reported 2026-08-04: no feeling of being shown the right
-  things. The two readings need opposite work and the wrong guess wastes a
+    inherit that for free.
+- **Q-11 · No feeling of being shown the right things.** Reported 2026-08-04.
+  **THIS ENTRY HAD NO HEADING UNTIL 2026-08-17 and that is most of why it sat.**
+  Its text was run on to the end of Q-13's last bullet, so it was not a numbered
+  question in the list, did not appear in a scan of the open questions, and could
+  be read past by anybody reading Q-13. Thirteen days.
+  The two readings need opposite work and the wrong guess wastes a
   release — which is exactly what happened when an earlier session inferred
   "volume" and built `pressureBands` on it.
   - **If ranking:** the wrong items are surfacing, and the fix is in what
@@ -395,7 +424,31 @@ decided by a session.**
   - **If trust:** the right items are surfacing and nothing gives him grounds to
     believe it. The fix is a law-4 analogue of the coverage gauge: a visible
     proof of judgement, the way the gauge is a visible proof of integrity.
-  - Status: **asked, not answered.** Do not build past this on a guess.
+  - **CLOSED 2026-08-17 (2.7.0, ADR-0097) — by research, not by asking him.**
+    The remaining half was a ranking decision, and `docs/nd-collisions.md` entry
+    5 had already routed it and gated the routing on this very question. With
+    the ranking reading established by measurement, the gate discharged and the
+    mechanism was already named: heat breaking the tie inside `ready`. The
+    entry also REFUSES the alternative — an importance rank — in terms, which is
+    the half that was about to be handed to him as a policy question. **A
+    question a session cannot answer from taste is not automatically the
+    owner's; check whether the research already answered it.**
+  - **HALF-ANSWERED 2026-08-17 by measurement rather than by asking (2.5.0,
+    ADR-0095).** The ranking reading is established: every tier of `nextup` is
+    temporal and the only tie-break inside a tier is pressure then creation
+    order, so the app had no notion of what anything is for. Law 4's downward
+    half is now built and both readings are served by it — the card says what it
+    serves, so the reasoning is checkable. **What remains is a policy decision
+    and it is the owner's:** whether serving a horizon should outrank serving
+    nothing in the offer's order. A session must not make that call — a loose
+    capture is very often the most important thing in the store.
+  - Status: **asked, not answered — and NOBODY PUT THE QUESTION TO HIM.**
+    That is the defect, not the caution. "Do not build past this on a guess" is
+    right and it is only half a decision: the other half is asking which reading
+    it is, and thirteen days passed with the answer one sentence away from
+    somebody who knew it. A question parked pending information nobody has gone
+    to get is not open, it is abandoned — the same shape as Q-10's close and
+    Q-13's deferral (hub LESSONS §96, §97).
 - **Q-12 · `Not this` records nothing, deliberately. Is that trade still right?**
   Declining a suggestion writes no event, so the app can never keep score — which
   is correct for this audience and is why the rule exists. It also means the app
@@ -404,6 +457,33 @@ decided by a session.**
   this app (see [`docs/nd-collisions.md`](docs/nd-collisions.md)), not a
   theoretical one; the question is whether "records nothing" is the only way to
   get it.
+  - **ANSWERED 2026-08-17 from the research, and the answer is YES — the trade
+    stands, and it is now doubly right.** Two independent reasons, neither of
+    them taste:
+  - **The research forbids the alternative outright.** Learning from declines is
+    avoidance data by construction — a decline is the record of a thing not done.
+    `nd-collisions.md` entry 2's refusal is *"any avoidance detection — an
+    inferred wall is the ledger this app exists to not keep"*, and entry 8
+    (demand avoidance) calls this the best-defended collision in the app and
+    routes **refuse further building**. An app that learned from what you turned
+    down would be keeping exactly the ledger both entries forbid, whether or not
+    it ever showed you the tally.
+  - **And the thing it was wanted FOR has been supplied by a deliberate signal.**
+    Q-12's stated motivation was that the app "can never learn what matters" —
+    one of Q-11's two candidate causes. Q-11's ranking cause was then found by
+    measurement (ADR-0095): every tier was temporal, and the app had no
+    non-temporal signal at all. It has one now — the heat pass, given
+    deliberately in a flow that ASKS, read since 2.7.0 (ADR-0097). **A signal
+    somebody chose to give is not the same object as a signal inferred from what
+    they avoided**, and only the first is compatible with laws 5 and 7. So the
+    app can be interest-aware without ever learning from a decline, which is the
+    thing this question was actually worried about.
+  - **What stays open, and it is narrow:** nothing here says the heat pass is
+    answered often enough to be useful in practice. That is a question about use,
+    not about design, and it belongs to the on-device pass rather than to a
+    session or to the literature. It is also the falsifier ADR-0097 names.
+  - Status: **Closed.** The trade is right. `Not this` and `Not now` record
+    nothing, forever.
 
 ### Closed
 
@@ -425,6 +505,9 @@ decided by a session.**
   - **Recommendation, and it is against building the vault:** what he is describing wants a **lens** — a filter you switch on and off over one list — and not a partition. A hard vault split forces Next up to pick a side, and *"one thing, chosen for you"* across the whole of someone's life is the app's central promise. Two vaults are two apps, and then you have to remember to check both, which is exactly the failure this app exists to prevent. A lens keeps one queue underneath and one coverage gauge that still reads zero.
   - **Binding constraint if a lens is built:** law 1 does not bend for it. A thing filtered out of view still has its clock and still comes back — a filter may change what you are looking at and may never change what the app is holding. Anything else is an archive with a friendlier name (law 3).
   - Status: **Closed as a decision not to build vaults.** The `vault` field stays in the log (it costs nothing, it is already in every event, and removing it would be a destructive schema change for no gain). A Home/Work lens is a candidate for v1.5 whenever The requirement is it; he has containment in the meantime.
+  - **BUILT 2026-08-17, nineteen days later, as contexts (2.2.0, ADR-0092) — and the delay is the lesson, not the build.** This entry got the design right and wrote it down: a filter over one list rather than a partition, with law 1 unbent. ADR-0092's decision and its central rule are that paragraph, restated by a session that did not know this entry existed.
+  - **What went wrong is the SHAPE of the close.** The question was answered about the MECHANISM that had been guessed at — vaults — and the thing actually needed was parked as "a candidate for v1.5". A numbered question with a Status line reads as settled, so nineteen days of sessions read this, saw "Closed", and moved on. The answer was correct and the requirement was still lost.
+  - **It was nearly lost a third time.** ADR-0092's first draft stated that contexts appeared nowhere in the record. That came from searching for `context`, `@home` and `@work` — the vocabulary of the feature — while this entry is written in the vocabulary of the question: vault, lens, home, work. **The search that missed it is the same translation that lost it.** Corrected on being asked directly whether home vs work had ever been raised. (Hub LESSONS §96.)
 - **Q-06**
   - Question: The astro app's naming was inconsistent — repo and URL said `clear-horizons`, the hub displayed **"Astro Planner"**, and the name The choice was appeared nowhere a visitor saw.
   - Answer: **"Astro Planner will be named Clear Horizons."** the owner, 2026-07-29. The app itself already used the name throughout (title, og tags, manifest); only the hub's two entries were stale, and both are fixed (`noahjefferson` @ `004fddd`). Nothing in the `clear-horizons` repo needed changing.
@@ -582,8 +665,326 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.0.9**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.2**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.7.2 — THE DOOR NAMES BOTH ACTS** (collisions entry 10). The collapsed line
+under capture read *"Something weighing on you?"* — which names raising a pebble
+— while the CAPACITY declaration lived behind it unannounced. It now reads *"How
+you are, and anything weighing on you"*.
+
+**Entry 10's premise was wrong and the check is what found it.** The entry framed
+its open question as placement — *"whether the declare verb sits where a heavy
+morning actually happens (the work surface) rather than down a sheet"*. Measured:
+`#capacity-level` is on the work surface, above every section, directly under
+capture. It was never down a sheet. **The reach defect was the LABEL**, which is
+smaller and more specific than the entry claimed, and it is the same class as
+every other reach defect this month: the thing exists, in the right place, and
+nothing says it is there.
+
+**Still a collapsed door.** An app that asks every morning how you are is a
+demand, and entry 8 calls this the best-defended collision in the product.
+Four words became eight; the word budget had room.
+
+**THE CATALOGUE'S ROUTED BACKLOG IS NOW EXHAUSTED.** Twenty-two entries: every
+one is SHIPPED or REFUSED except entry 3's contents-on-return card, which waits
+on real filing use and is therefore the owner's to answer by using it, not a
+session's to guess. Six marks were corrected today for claiming more or less than
+the code (entries 1, 4, 13, 15, 17, 18), two were reversed to refusals on their
+own evidence (entries 2, 20), and one had its premise disproved (entry 10).
+
+**2.7.1 — THE AMBIENT HORIZON, ON THE SURFACE IT WAS ASKED FOR** (collisions
+entry 7). The next fixed thing today, by name, on the **focus** surface. A name
+and never a countdown — a countdown is a deadline and adds aversion (ADR-0059's
+reasoning); the OS alarm stays the guarantee (T1).
+
+**The line and its projection already existed and were on the WRONG SCREEN.**
+`nextFixedToday`/`nextFixedWords` shipped in V2 stage 5 and rendered on the work
+surface only — the one an absorbed person has already left. Entry 7's routing
+proposal says *"one fact line on the focus surface"* and read as an outstanding
+candidate the whole time its mechanism sat finished elsewhere. Hub LESSONS §95's
+shape: a feature that exists where the reader is not. It now renders from the
+SAME projection rather than a copy, and the walk asserts the two surfaces say the
+same thing.
+
+**AND THE FIRST VERSION OF THAT ASSERTION WAS VACUOUS.** It read *if the line is
+there, check it; else pass, "correctly absent"* — and both themes took the else
+branch, because the walk's store has nothing dated today. The thing the release
+added was never measured. Fixed by DRIVING a date of today through the sheet (a
+due clock is stored at the END of the day, so today is still ahead) and making
+the else branch FAIL. Hub LESSONS §100.
+
+**CATALOGUE RECONCILED in the same commit**, because four entries were claiming
+more or less than the code:
+
+- **Entry 15** — the voice gate over notification copy: **shipped**
+  (`tools/notify-voice.mjs`), still marked V2-candidate.
+- **Entry 18** — its constraint on the law-4 projection: **honoured** by 2.5.0,
+  which arrives as computed signal and explicitly never as a destination.
+- **Entry 2** — routing mark **reversed to refuse**. The proposal was a pebble
+  whose `affects` names an item, with the app plotting the co-occurrence. That
+  plot IS the wall rendered, and the entry's own refusal is *"any avoidance
+  detection — an inferred wall is the ledger this app exists to not keep"*. The
+  entry was arguing with itself: its SINCE WRITTEN already recorded the pebble
+  route as not taken while its mark still said candidate. `affects` stays in the
+  vocabulary and stays unwritten, deliberately now rather than merely in fact.
+- **Entry 10** — **premise was wrong.** *"Down a sheet"* was never true:
+  `#capacity-level` is on the work surface, above every section, under capture.
+  The reach defect is the LABEL — the disclosure says *"Something weighing on
+  you?"*, which names raising a pebble, and the capacity declaration lives behind
+  it unannounced. Re-aimed and kept at *later*: the app is at its word budget and
+  the honest fix is a rewording somebody should meet in use first.
+
+**2.7.0 — THE OFFER READS THE INTEREST YOU ALREADY GAVE IT** (ADR-0097). Closes
+Q-11. Inside the `ready` tier and only there, the tie-break becomes the heat the
+reader set: hot, then unsaid, then cold, then creation order as before. The card
+says the warrant.
+
+**THE RESEARCH DECIDED THIS, not the owner and not a session's taste.**
+`docs/nd-collisions.md` entry 5 had routed it for weeks — *"heat informing which
+candidate fills the offer's `ready` slot"* — gated on Q-11, whose ranking reading
+is now established by measurement (ADR-0095) rather than by asking. Verified in
+code first: `heat.set` is written, folded and snapshotted, and read by **nothing
+except the flow that collects it**. `nextup.ts` contained no reference to it.
+
+**What the research REFUSED matters more.** The alternative was ranking on
+IMPORTANCE — making *serves a horizon* outrank *serves nothing*, using the
+lineage 2.5.0 had just built. It was drafted, and it was going to be put to the
+owner as a policy question. Entry 5 forbids it in terms: activation follows
+interest, novelty, challenge, urgency and passion, **not importance**, and the
+Eisenhower top row is *"a dead letter for this nervous system"*. It did not need
+his ruling. It needed the catalogue read.
+
+Three more refusals bind it, each with its evidence grade: entry 12 (moderate) —
+no manufactured novelty, so the frozen offer is not fixed by randomising, and a
+test pins determinism; entry 13 (community) — never fabricate urgency, so this
+cannot cross tiers and a test pins that a dated cold thing beats a hot waiting
+one; entry 16 (contested) — the cap of two stands, so the offer is not widened.
+
+**Vocabulary, never a rank** — entry 5's own binding, because INCUP is
+community-grade. Honoured three ways: a two-state fact the reader stated, a
+tie-break inside one tier, and the card says it out loud, because an interest
+read that silently reorders the offer IS a hidden rank.
+
+**Unsaid sits in the MIDDLE.** Last would make skipping the optional heat pass a
+penalty; first would make saying *cold* one. In the middle, answering can only
+move a thing in the direction the answer points.
+
+**Q-12 is untouched** — *Not this* still records nothing. This reads a signal
+given deliberately in a flow that asks; it learns nothing from declines.
+
+**What to look at:** sort a few things, call one hot, and see what the app offers
+when nothing is dated.
+
+**2.6.0 — ROLES, AND WHERE THE ATTENTION IS** (ADR-0096). Q-13 settled on
+2026-08-04 and deferred for thirteen days. Roles are identities that cross
+multiple areas — that framing settles the model on its own, because this tree is
+single-parent, so a thing crossing areas structurally cannot be a container and
+has to be a cross-cutting link.
+
+**Three axes now:** the tree says where a thing LIVES, a context says where it
+can be DONE, a role says who it is FOR. The last two are one mechanism pointed in
+two directions.
+
+**A role is NOT a filter, and a context is.** Where you are physically changes
+during a day; an identity does not — you do not stop being a parent at the
+office. A "show me only Parent work" switch is the partition Q-10 argued against.
+
+**Where the attention is** — the readout, behind a control, hidden until a role
+exists. It answers the recorded question *"when do I visit whether I'm putting
+enough energy into each?"*, named in ADR-0013's consequences and in
+`docs/horizon-models.md` and never built. Sorted BY NAME and never by size,
+because ordering somebody's identities by how much each carries is a ranking of
+their life. No bar, no meter, no proportion, no target — asserted structurally by
+the walk. Counts are words. It says out loud that it is not a target, and the
+walk asserts that sentence is present. The unnamed remainder is stated
+separately, because on any real store it is the biggest number.
+
+**The deferral is the lesson.** The gate Q-13 set was a session's judgement about
+whether the owner had made enough projects yet to justify it. That is not a
+session's call. Third instance in one audit, after Q-10 and Q-11.
+
+**What to look at:** open a thing, **Who is this for?**, add a role. The door
+appears above your list once one exists.
+
+**2.5.0 — WHAT A THING IS FOR** (ADR-0095). Law 4's downward half, built for the
+first time. *"Levels push down; the user never climbs"* is two clauses: the
+never-climbing one has been true since ADR-0013, and *"higher horizons project
+lineage and health downward"* did not exist. A card knew what it was INSIDE and
+nothing anywhere said what it was FOR.
+
+**This answers Q-11, and it did not need the question answering.** Reported
+2026-08-04, sat thirteen days on *"asked, not answered. Do not build past this on
+a guess."* Not guessing was right; not going and looking was not. Measured in
+`nextup.ts`: **every tier is temporal** — hard-date, unblocked, resume, pressure,
+ready, unsorted, beneath — and **the only tie-break inside a tier is pressure and
+then creation order**, which is why forty rhythm-less items give the same card
+today and in a year. The app has never had any notion of what a thing is for, so
+it could not show the right things under any definition of *right* that is not
+*most time-pressured*. That is the ranking reading, established by reading the
+code. And the trust reading is served by the same build: when the card says
+*"serves A calmer house"*, the reasoning is on screen and can be disagreed with.
+
+**Highest ALTITUDE, not the top of the chain** — goal › area › outcome › project,
+ties to the nearer ancestor. `project` counts, because most real trees are one
+deep for a long time and a version that only spoke about goals would render
+nothing for almost everybody. A let-go horizon falls through to the next live one.
+
+**On the offer only when it adds something:** `lineageOf` already walks two hops,
+so a two-deep tree already says *"under A calmer house"* and appending *serves*
+would be one fact twice in two vocabularies. On the held card it is new at any
+depth — that list walked one hop and never said altitude at all.
+
+**No new control, no new class, no new colour pair** — it reuses `.card-place`,
+already in the contrast registry.
+
+**What to look at:** file something under a project under a goal, then read its
+row and the card at the top.
+
+**STILL OPEN, and it is yours rather than a build:** the ordering has NOT
+changed — it is still time alone. Making *serves a horizon* outrank *serves
+nothing* would be a session deciding that filing something under a goal means it
+matters more, and a loose capture is very often the most important thing in the
+store. That is the open half of Q-11, now stated with the numbers instead of as
+two abstract readings.
+
+**2.4.0 — A CARD SAYS WHAT IT IS** (ADR-0094). The second half of the same
+device report as 2.3.0: *"nothing indicates that some of these are projects or
+goals or anything other than todos"*. It was true everywhere. **Fourteen node
+kinds and not one reader-facing word for any of them** — `kind` was a
+discriminator the code branched on and reached a reader nowhere at all.
+
+What a row could say about itself was `placeWords`: *"in Boy Scouts"* and/or
+*"7 under it"*. So a project holding things gave a NUMBER and no name, and a
+project holding nothing, a goal, an area and an outcome said nothing whatever —
+a goal and a stray to-do drew identically. The detail sheet's state line was the
+same: *let go*, *on the Menu*, *done*, *comes back Thursday*, and never what the
+thing IS.
+
+**The words are the app's own, quoted rather than invented.** *Waiting for* is
+`clarify.ts`'s route label; *Upkeep* its section heading; *Something on you* the
+pebble form's label; *Where you left off* the title `focus-intents.ts` writes.
+Two are decisions and both are pinned by a test: an aspiration is *A wish* and
+not *On the Menu* (it can be taken off the Menu and still be one), and a pebble
+is *Something on you* and not *Pebble* (that word already names the WEIGHT).
+
+**`action` gets no word, on purpose.** It is the unmarked case; stamping
+"Action" on several hundred rows adds a word per line and distinguishes nothing.
+It is asserted to be the ONLY wordless kind, so a kind added without words fails
+rather than silently joining it.
+
+**No new control, no new class, no new colour pair.** The words ride in
+`.card-place` and `.detail-state`, both already in the contrast registry — so
+this is measured from the first run rather than needing an entry, which is how
+`.card-where` and the detail placeholders each cost a release.
+
+**What to look at:** your list, for the rows that are not plain to-dos, and the
+line under a title on any sheet.
+
+**Still owed:** the tree and search results have room for it and do not carry it
+yet. Checklists and templates remain the absent building block.
+
+**2.3.0 — A WAY TO EACH PART OF THE PAGE** (ADR-0093). A **Contents** door in
+the header beside More, and a second at the end of the held list, opening a
+sheet that lists every block currently on the page — in page order, each named
+by its own heading and carrying its own count — and takes you to it. The held
+list becomes a real `<section>` with a focusable heading; it was a loose `<h2>`
+in the middle of `<main>`, so the biggest thing on the screen was nowhere the
+app could send you and nothing a screen reader could treat as a region.
+
+**This was the first thing ever asked of the app** — *"it is one long page, it
+needs pages or tabs, no?"* — and it was declined on product law 4. Law 4 is
+about ALTITUDE. Reading "the runway is the only workspace" as a statement about
+page layout spends an invariant about hierarchy on a different axis (see law 4
+above, and hub LESSONS §97). Not tabs, though: tabs partition, and a partition
+means remembering to check the other pile, which is the same argument Q-10 made
+against vaults.
+
+**Measured:** 3,589px / 3.0 screens with 6 live blocks on the *thirteen-item*
+sample; 8 blocks with the list starting 3.0 screens down at 820x1180 and 4.9 on
+a phone with a real store.
+
+**A floating door was built first and taken out.** Probed at 820x1180 and
+390x844 across 13 scroll positions: it overlapped 10 controls and took the
+CENTRE of 3, every one a card's **Done**. Reserving space with padding clears
+only the end of the document — mid-scroll, content passes under a fixed element
+by definition. The correct fix is a real scroll container, and it is deliberately
+not taken: that cannot be verified on the device this app is used on.
+
+**What to look at:** press **Contents** in the top bar. Every block showing on
+the page should be listed, in the order they appear, with its own count; pressing
+one should land you at the top of that block. Then check the two ends still work
+— *Go to what you are holding* and *Back to the top* have not moved.
+
+**Still owed, and stated in the notes rather than hidden:** from the MIDDLE of
+the page you still reach for one of the two ends. Checklists and templates remain
+the other absent building block, and node kinds still have no reader-facing
+words anywhere — nothing on a card says "project" or "goal".
+
+**2.2.0 — CONTEXTS** (ADR-0092). The axis this app did not have. The tree gives
+a thing one parent — where it LIVES. Nothing said where it can be DONE, so every
+list was every list and "show me what I can do at home" had no answer.
+
+**This was asked for on 2026-07-29, in the repo's first week — see Q-10 above.**
+That entry got the design right in writing: *"a lens — a filter you switch on
+and off over one list — and not a partition"*, with law 1 unbent. ADR-0092's
+decision and central rule are that paragraph, restated nineteen days later by a
+session that did not know it existed. It was closed correctly about VAULTS and
+the need behind it was parked as a v1.5 candidate.
+
+This block said the opposite for a day — *"nothing had ever decided against
+them"* — written after searching for `context`, `@home` and `@work`, the words
+of the feature, while Q-10 is written in the words of the question: vault, lens,
+home, work. Corrected on being asked directly whether home versus work had ever
+come up. (Hub LESSONS §96.) `taskpaper.ts` remains the only place the word
+appears in the source, in a line that drops contexts on import and names the
+drop — so the concept was met a second time, by a different session, and filed
+as an import edge case.
+
+Q-13 had already settled the shape — anything crossing containers must be a
+cross-cutting link, not a container — and discussed it only as a *roles*
+question, then deferred it. `node.people` is that machinery, shipping since
+0.15.0. A context is the same thing with a different relation.
+
+**What to look at:** open a thing, set **Where can this be done?**, then use
+**Where you are** at the bottom of the main screen. The offer and the list should
+narrow. Anything with no place at all should stay visible everywhere.
+
+**Also: the offered card opens now.** It was a `<p>` — the one item the app
+actively hands you was the only thing on screen you could not tap to change.
+
+**Two defects the gates caught, not the eye:** a button with no words has no
+accessible name, so the title hides when the offer is empty; and the detail
+sheet's placeholders measured 4.08:1 against a 4.5:1 floor, unmeasured until now
+because no registry entry had ever named the pseudo-element.
+
+**Still owed at the time; the section half is built in 2.3.0 above.** Checklists
+and templates remain the absent building block, and node kinds still have no
+reader-facing words — nothing on a card says what it is.
+
+**2.1.0 — a control looks like a control, and the route has a return leg**
+(ADR-0091). Two questions from a device about one defect: how do you know that
+is a button, and how do you get back.
+
+Measured on the work surface at 390px: 50 controls, 45 carrying a border or a
+fill, 7 with none. **Five of those seven were every route off the page** — the
+claim, the tree, the Menu, sort mode, and the jump. The app had two visual
+languages and put all its navigation in the one that reads as prose. A sixth,
+`.behind-open`, was found by the check rather than by eye. Contrast went up as a
+side effect: 6.48:1 to 8.92:1 light, 9.13:1 to 9.45:1 dark.
+
+There was no way back anywhere in the app. There is now.
+
+**STILL OWED, and this release does not touch either:**
+
+- **A way to reach each SECTION**, not just the list. Asked for in the first
+  message of that thread as "pages or tabs", refused on law 4, and the refusal
+  was wrong: law 4 forbids a second WORKSPACE, not a way to reach a section.
+  ADR-0090's own falsifier named this and it has now been met.
+- **The KIND on the card.** `node.kind` holds `project`, `area`, `goal`,
+  `outcome` and is rendered nowhere on a card, so a project reads exactly like a
+  task. Verified in `src/ui/app.ts`: a card renders title, status, place and
+  contents, and never the kind.
 
 **Nothing is waiting.** 2.0.7, 2.0.8 and 2.0.9 were promoted together on his
 word, 2026-08-12, as `65e8d19`. The production deploy was verified on that exact

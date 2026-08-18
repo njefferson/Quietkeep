@@ -63,6 +63,13 @@
        clause c), and a second meaning for that word in the chrome would be the
        app disagreeing with itself about its own vocabulary. -->
   <button id="open-more" type="button" class="ghost">More</button>
+  <!-- WHAT IS ON THIS PAGE (2.3.0, ADR-0093), where the app's navigation
+       already lives. `More` is the six destinations that are not this page;
+       this is the parts of the page itself, which the app had no way of
+       reaching at all. Together they are the whole answer to "where do I go" —
+       and putting them in one place is why neither had to become a floating
+       control over the reader's own work. -->
+  <button id="contents-open" type="button" class="ghost">Contents</button>
 </header>
 
 <!-- A newer version is ready. A LINE, never a modal: it must not stand between
@@ -143,7 +150,22 @@
        must terminate in a route; a weight is not going anywhere and is not
        asking to be dealt with. It sits on you, and saying so is the whole act. -->
   <details id="load-entry" class="bother-entry">
-    <summary id="load-summary">Something weighing on you?</summary>
+    <!-- THE DOOR NAMES BOTH ACTS (2.7.2, collisions entry 10).
+         It read "Something weighing on you?", which names raising a pebble —
+         and the CAPACITY declaration lives behind it too, unannounced. So on a
+         heavy morning, saying "it is a low stretch" required guessing that the
+         question about weights was where that lived.
+         Entry 10's open question was reach, and it framed it as placement —
+         "whether the declare verb sits where a heavy morning actually happens
+         (the work surface) rather than down a sheet". Measured 2026-08-17: the
+         premise was wrong. This is on the work surface, above every section,
+         directly under capture. The reach defect was never the location; it was
+         the label, which is a smaller and more specific thing.
+         Two acts behind one door, and now the door says so. Still a door and
+         still collapsed — a standing question about how somebody is would be a
+         demand, and this surface is the best-defended part of the app against
+         exactly that (entry 8). -->
+    <summary id="load-summary">How you are, and anything weighing on you</summary>
 
     <p id="load-hint" class="detail-hint">
       None of this becomes a task, takes a date, or comes back at you. It is here
@@ -226,7 +248,12 @@
        Hidden when nothing is asking — an empty morning says so. -->
   <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
     <h2 id="nextup-heading" class="section" tabindex="-1">Next up</h2>
-    <p id="nextup-title" class="nextup-title"></p>
+    <!-- A DOOR, not a caption (2.2.0, ADR-0092). This was a <p>. Every other
+         thing on this card is a real control — Done, Not this, This one is
+         heavy — and the one item the app is actively handing you was the only
+         one you could not open, so changing it meant finding it again somewhere
+         else. Reported from a device in exactly those words. -->
+    <button id="nextup-title" class="nextup-title" type="button"></button>
     <p id="nextup-why" class="nextup-why"></p>
     <!-- WHERE it sits (V2 stage 1). Reuses .nextup-why's measured colour pair —
          .nextup-place adds layout only, so the contrast registry's existing row
@@ -460,6 +487,18 @@
       </p>
     </form>
     <p id="focus-held" class="focus-held" hidden></p>
+    <!-- THE AMBIENT HORIZON (2.7.1, collisions entry 7).
+         Hyperfocus collapses time perception and suppresses interoception, so
+         the appointment does not so much get forgotten as stop existing. The
+         catalogue's routing proposal for it is one fact line ON THIS SURFACE —
+         and the line was built in V2 stage 5 and put on the WORK surface, which
+         is the one an absorbed person has already left. A feature that only
+         exists where the reader is not is the shape hub LESSONS §95 records.
+         A NAME AND NEVER A COUNTDOWN. A countdown is a deadline and adds
+         aversion (ADR-0059's reasoning); the OS alarm is the guarantee (T1),
+         and this is the thing somebody deep in a task can catch peripherally.
+         Same projection as the work surface's, so the two can never disagree. -->
+    <p id="focus-fixed" class="focus-held" hidden></p>
     <div class="focus-actions">
       <button id="focus-done" type="button">Done</button>
       <button id="focus-stop" type="button" class="ghost">Stop for now</button>
@@ -547,7 +586,10 @@
   <!-- Upkeep: the small repeating things that have come round. Never a failure
        to have not done one yet. -->
   <section id="upkeep" class="upkeep" aria-labelledby="upkeep-heading" hidden>
-    <h2 id="upkeep-heading" class="section">Upkeep</h2>
+    <!-- tabindex=-1 like every other section heading: it is a jump target for
+         the contents sheet (2.3.0), and a jump that cannot land focus is a
+         scroll, not a route. This was the ONE heading without it. -->
+    <h2 id="upkeep-heading" class="section" tabindex="-1">Upkeep</h2>
     <ul id="upkeep-chips" class="chips"></ul>
   </section>
 
@@ -568,6 +610,24 @@
        aria-controls — a button that opens a dialog is not a disclosure. -->
   <button id="menu-open" class="gauge" type="button" hidden></button>
 
+  <!-- WHERE THE ATTENTION IS (2.6.0, ADR-0096). The answer to a question in the
+       record for weeks: "when do I visit whether I'm putting enough energy into
+       each?" — recorded in ADR-0013's consequences and named again in
+       docs/horizon-models.md as the direct structural answer, and never built.
+
+       A PLOT, NEVER A VERDICT (law 7 — the app plots, the human interprets).
+       Counts of live work per named role, sorted BY NAME and never by size,
+       because ordering somebody's own identities by how much each carries is
+       a ranking of their life and the app does not get to make it. No target,
+       no proportion of a whole, no bar, no colour, nothing "balanced" — a bar
+       is a machine for implying you are behind (law 5).
+
+       BEHIND A CONTROL, like the Menu and the claim: a readout that greets you
+       every morning is a standing report card. Hidden entirely until a role has
+       been named, because a chooser with nothing in it teaches you the feature
+       is broken. -->
+  <button id="roles-open" class="gauge" type="button" hidden></button>
+
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
@@ -581,7 +641,17 @@
     <ul id="search-results" class="search-results"></ul>
   </section>
 
-  <h2 class="section">What you are holding</h2>
+  <!-- THE BIGGEST THING ON THE PAGE, AND IT WAS NOT A PLACE (2.3.0, ADR-0093).
+       This heading existed and nothing else did: no section around it, no id,
+       no way to focus it. So the list that is most of the page's height could
+       not be a destination — every other block on this surface is a <section>
+       with a labelled, focusable heading, and the one somebody actually lives
+       in was a loose <h2> in the middle of <main>. It reads to a screen reader
+       as a heading with no region, and to the contents sheet as nothing at all.
+       Wrapping it costs no layout: a <section> is a block box exactly like the
+       run of children it replaces. -->
+  <section id="held" class="held" aria-labelledby="held-heading">
+  <h2 id="held-heading" class="section" tabindex="-1">What you are holding</h2>
   <!-- Tappable: the gauge's number is a claim, and the claim is checkable —
        every item and the date it comes back.
 
@@ -603,6 +673,22 @@
        Its own ADR called it an inspection mode from the day it shipped, and it
        unfolded into the workspace for thirty-four releases regardless. -->
   <button id="tree-open" class="gauge" type="button">How it hangs together</button>
+
+  <!-- WHERE YOU ARE (2.2.0, ADR-0092). The thing the app did not have.
+       The tree says where a thing LIVES; this says where it can be DONE, and
+       they are different questions. Set this and the offer and the list narrow
+       to what actually fits — plus everything unlabelled, which fits anywhere.
+       A FILTER, never a partition: law 1 does not bend for it. A thing not
+       shown here still has its clock, still counts in the claim above, and
+       still comes back. Anything else is an archive with a friendlier name,
+       which law 3 forbids — the same binding ADR-0054 put on the lens.
+       Hidden until at least one place has been named, because a chooser with
+       nothing in it is a control that teaches you the feature is broken. -->
+  <div id="where-row" class="lens-row" hidden>
+    <label class="detail-inline" for="where">Where you are</label>
+    <select id="where" aria-describedby="where-note"></select>
+  </div>
+  <p id="where-note" class="detail-hint" hidden></p>
 
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
@@ -643,6 +729,47 @@
   </div>
 
   <div id="cards" class="cards" tabindex="-1"></div>
+
+  <!-- THE WAY BACK (2.1.0, ADR-0091). The jump above sends you up to five
+       screens down and there was NOTHING to come back to the top with —
+       measured: no back-to-top anywhere in the app. A one-way trip is not a
+       route, it is a drop.
+       At the END of the list, which is where somebody who has read to the
+       bottom actually is. It carries the same border as every other control,
+       because the defect this release exists to fix is controls that read as
+       prose. -->
+  <!-- THE WAY TO ANYWHERE (2.3.0, ADR-0093).
+       The first thing asked of this app was "it is one long page, it needs pages
+       or tabs". It got neither, and the reason given was product law 4 — "the
+       runway is the only workspace". That is a misreading: law 4 is about
+       ALTITUDE, and says a goal or an area is an inspection mode rather than
+       somewhere you go to work. It says nothing whatever about being able to
+       reach the fourteen blocks of the runway itself, and reading it as "no
+       navigation" turned an invariant about hierarchy into a reason not to build
+       a way around a page measured at 3.0 screens on thirteen sample things and
+       far more on a real store.
+
+       NOT TABS, and that part of the old answer was right. Tabs partition, and a
+       partition means remembering to check the other one — the exact failure this
+       app exists to prevent, and the same argument NOTES Q-10 made against
+       vaults. One page, one order, nothing hidden; this only says what is on it
+       and takes you there.
+
+       AND IT IS NOT A FLOATING BUTTON, which is what it was for one build. Probed
+       at 820x1180 and 390x844 over thirteen sample things, a fixed control in the
+       bottom corner overlapped ten controls and took the CENTRE of three, every
+       one a card's Done. Reserving space with padding fixes only the END of the
+       document; mid-scroll, content goes under a fixed element by definition. So
+       the failure was not "it is sometimes in the way" — you press Done and the
+       contents open, which is a control silently doing something else.
+
+       The correct fix for a fixed bar is a real scroll container, which is not
+       taken here because it cannot be verified on the device this app is used on.
+       See app.css and ADR-0093. Both doors are in flow instead: one here, and one
+       at the end of the held list beside Back to the top. -->
+  <button id="contents-open-end" class="contents-open jump-shaped" type="button">What&rsquo;s on this page</button>
+  <button id="to-top" class="jump" type="button" hidden>Back to the top</button>
+  </section>
 </main>
 
 <!-- Sort mode (1.3.0). A dialog, so it is never the landing view and focus is
@@ -1079,6 +1206,57 @@
       It becomes its own thing again, with a clock of its own. What was
       carried across stays carried &mdash; the record does not un-happen.
     </p>
+  </div>
+
+  <!-- WHERE THIS CAN BE DONE (2.2.0, ADR-0092). Contexts.
+       The tree gives a thing exactly one parent — where it LIVES. This is a
+       different axis: where it can be DONE, and a thing can be doable in more
+       than one place, so it is a list of links and never a second parent.
+       Nothing is required. A thing with no context is doable anywhere, which is
+       why an unlabelled thing is never filtered away by "where you are" — the
+       filter narrows to what fits, and everything unlabelled always fits. -->
+  <div class="detail-group">
+    <label class="detail-label" for="detail-context">Where can this be done?</label>
+    <div class="detail-row">
+      <input id="detail-context" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="at home, out, on the phone"
+             list="detail-contexts" aria-describedby="detail-context-hint">
+      <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
+    </div>
+    <datalist id="detail-contexts"></datalist>
+    <p id="detail-context-hint" class="detail-hint">
+      As many as fit. Nothing here is required, and a thing with no place at all
+      can be done anywhere.
+    </p>
+    <ul id="detail-context-list" class="detail-feeds"></ul>
+  </div>
+
+  <!-- WHO THIS IS FOR (2.6.0, ADR-0096). Roles.
+       Recorded in NOTES Q-13 as the owner's own framing: roles are identities
+       that cross multiple areas. That sentence settles the data model — this
+       tree is single-parent, so a thing crossing areas structurally cannot be a
+       container, and a role is a cross-cutting LINK. Q-13 said so on
+       2026-08-04, named the shape, and the build was then deferred for thirteen
+       days behind a judgement about whether enough containers existed yet.
+       The same machinery as the places above, pointed at a different question:
+       that one asks WHERE work can be done, this one asks WHO it is for.
+       Nothing is required, nothing is inferred, and the honest majority of what
+       anybody writes down belongs to no named identity at all. -->
+  <div class="detail-group">
+    <label class="detail-label" for="detail-role">Who is this for?</label>
+    <div class="detail-row">
+      <input id="detail-role" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="a part of your life this belongs to"
+             list="detail-roles" aria-describedby="detail-role-hint">
+      <button id="detail-role-set" type="button" aria-label="Add a role this belongs to">Add</button>
+    </div>
+    <datalist id="detail-roles"></datalist>
+    <p id="detail-role-hint" class="detail-hint">
+      A part of your life that runs through more than one area &mdash; not where
+      the work sits, but who it is for. As many as fit, and most things belong to
+      none.
+    </p>
+    <ul id="detail-role-list" class="detail-feeds"></ul>
   </div>
 
   <!-- Who this is with. Clarify's "Waiting for" route is one tap and never asks
@@ -1980,6 +2158,39 @@
      reader's words — "Put on the Menu", "Bring back from the Menu". The count
      and the sentence saying nothing here is asking stay on the CONTROL, from
      `menuWords`, which is their one source; they are not repeated in here. -->
+<!-- What is on this page, and a way to each of it (2.3.0, ADR-0093).
+     EVERY ROW IS DERIVED, and that is the whole reliability of it. The name of
+     a block is read from the element its own `aria-labelledby` points at, so
+     the contents can never disagree with what is on screen or with what a
+     screen reader announces — they are the same string, by construction. The
+     count is `#<id>-count` where the block already publishes one. A block added
+     to the runway appears here the day it is added, with no list to update:
+     the a11y walk learned the same lesson about its hand-written list of doors
+     within a day of writing one down.
+     A row exists only while its block is live, because a contents entry for
+     something that is not on the page is a route to nowhere. -->
+<dialog id="sheet-roles" aria-labelledby="sheet-roles-title" data-door="#roles-open">
+  <h2 id="sheet-roles-title" class="section">Where the attention is</h2>
+  <!-- `tabindex="0"` for the reason the tree's and the Menu's bodies carry it:
+       this body holds no focusable thing at all — it is rows of words — and a
+       scrolling region with nothing focusable inside cannot be scrolled from a
+       keyboard (WCAG 2.1.1). -->
+  <div class="sheet-body" tabindex="0">
+    <p id="roles-words" class="detail-hint"></p>
+    <ul id="roles-list" class="roles-list"></ul>
+    <p id="roles-unnamed" class="detail-hint"></p>
+  </div>
+  <button id="sheet-roles-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
+  <h2 id="sheet-contents-title" class="section">What&rsquo;s on this page</h2>
+  <div class="sheet-body">
+    <ul id="contents-list" class="contents-list"></ul>
+  </div>
+  <button id="sheet-contents-close" type="button" class="ghost">Close</button>
+</dialog>
+
 <dialog id="sheet-menu" aria-labelledby="sheet-menu-title" data-door="#menu-open">
   <h2 id="sheet-menu-title" class="section">The Menu</h2>
   <!-- `tabindex="0"` for the reason the tree's body carries it: this body can

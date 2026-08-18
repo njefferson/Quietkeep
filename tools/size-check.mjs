@@ -53,7 +53,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 // controls is a different and larger job than cutting prose; this stops the
 // number growing while nobody is looking, which is the failure that happened.
 const BUDGET = {
-  words: 3300,
+  // 3300 -> 3340 on 2026-08-17 (ADR-0096). Roles add one labelled field to the
+  // detail sheet with its hint, and one readout sheet whose whole content is a
+  // sentence saying it is NOT a score. That sentence is the thing that makes the
+  // readout legal under law 7, so cutting it to fit a word budget would cut the
+  // safeguard and keep the numbers — exactly backwards.
+  words: 3340,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -143,7 +148,65 @@ const BUDGET = {
   // when a section is live above the list and the list has rows. On a quiet day
   // and on an empty store the count is 213, not 214. This number is the worst
   // case, which is the right thing for a ceiling to measure.
-  controls: 214,
+  // 214 -> 215 on 2026-08-12 (ADR-0091) for the way BACK. Reported from a
+  // device, as a question: how do I get back. There was no answer — nothing
+  // anywhere in the app returned the reader to the top, so the jump added the
+  // release before was a one-way trip up to five screens down.
+  //
+  // A budget that refuses the return leg of a route it already permitted is a
+  // budget being read as a score. The ceiling exists to stop sprawl, and a way
+  // out of somewhere the app sent you is not sprawl.
+  // 215 -> 219 on 2026-08-17 (ADR-0092), and this is the FEATURE argument the
+  // 205->210 note said should be harder to win. It is won on what was missing
+  // rather than on what is being added.
+  //
+  // The four: the context input and its Add on the detail sheet, the "Where you
+  // are" chooser on the work surface, and the offered card's title becoming a
+  // button. The last one is a control that was ALREADY THERE and was a <p> — the
+  // one item the app actively hands you was the only thing on the screen that
+  // could not be opened, so changing it meant navigating away to find it again.
+  //
+  // Contexts are the axis this app did not have. The tree gives a thing one
+  // parent — where it LIVES. Nothing said where it could be DONE, so every list
+  // was every list and "show me what I can do at home" had no answer. That is a
+  // planner's building block, not an embellishment, and this budget exists to
+  // stop sprawl rather than to stop the app being finished.
+  // 219 -> 222 on 2026-08-17 (ADR-0093), and this trio REMOVES reading rather
+  // than adding it, which is the only argument this ceiling should accept twice
+  // in one day.
+  //
+  // The three: a Contents door in the header beside More, a second at the end of
+  // the held list beside Back to the top, and the Close on the sheet they open.
+  // The rows inside are not a fourth — they are one per live block, they replace
+  // travelling past that block, and they exist only while the block does.
+  //
+  // IT IS THREE AND NOT TWO because the door is not fixed, and that cost a
+  // control. A floating one measured taking the tap from three Done buttons
+  // (ADR-0093), so there are two in flow instead — one at each end of the page.
+  // A budget is the wrong instrument for arbitrating that: the choice was
+  // between a cheaper control that steals presses and a dearer one that does
+  // not.
+  //
+  // The count this budget actually measures is CONTROLS, and the thing it is
+  // protecting is the reader's effort. Those come apart here: the page was
+  // measured at 3.0 screens on thirteen sample things and 8 live blocks on a
+  // real store, with no index of what was even on it and no way to reach any
+  // block but the two at the ends. Two controls that answer "what is here and
+  // how do I get to it" buy back more than they cost, and refusing them on a
+  // count would be the budget read as a score — the failure its own 214 -> 215
+  // note names.
+  // 222 -> 226 on 2026-08-17 (ADR-0096), and this is the FEATURE argument again
+  // rather than the cheap one. The four: the role input and its Add on the
+  // detail sheet, the "Where the attention is" door, and that sheet's Close.
+  //
+  // It is the same trade contexts won at 215 -> 219 and it is won on the same
+  // ground: an axis the app did not have. The tree says where a thing LIVES and
+  // a context says where it can be DONE; nothing said WHO it was for, so "am I
+  // putting enough into each part of my life" had no answer anywhere in the
+  // product. Two of the four exist only to leave or reach a surface, and the
+  // door is hidden entirely until a role has been named — on a store with none,
+  // the count is 224.
+  controls: 226,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

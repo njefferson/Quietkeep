@@ -23,6 +23,7 @@ import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
+import { servesNode } from '../serves.ts';
 import { pressureWords } from '../pressure.ts';
 import { captureContextWords } from '../capture-context.ts';
 import { calendarDaysBetween, atMidnight} from '../time.ts';
@@ -32,6 +33,7 @@ import { treeRows } from '../tree-view.ts';
 import { timeLeftWords } from '../duration.ts';
 import { clockFace, nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
+import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
@@ -458,6 +460,15 @@ export function mountWork(
   // state the app was in when it started.
   onSheetOpen('sheet-coverage', () => { buildProof(); buildCoverage(); });
   wireSheetClose('sheet-coverage');
+  // The offered card opens its own sheet (2.2.0, ADR-0092). `current` is the
+  // item the surface is showing, so this can never open the wrong thing —
+  // and if the offer is empty there is nothing to open.
+  TITLE.addEventListener('click', () => {
+    if (!current || !openDetail) return;
+    const fresh = session.state().nodes.get(current.node.id);
+    if (fresh) openDetail(fresh);
+  });
+
   GAUGE.addEventListener('click', () => { openSheet('sheet-coverage'); });
 
   /** Plain words for when something returns — calendar days in the reader's
@@ -476,7 +487,30 @@ export function mountWork(
     const iso = nowIso();
     // workSurface removes the chip items from Next-up, so a ready upkeep is not
     // rendered twice on one screen with two Done buttons writing to one node.
-    const { up: all, chips: ups } = workSurface(state, iso, session.zone, 0);
+    const { up: all0, chips: ups } = workSurface(state, iso, session.zone, 0);
+    // WHERE YOU ARE (2.2.0, ADR-0092). The half that answers the question this
+    // feature exists for: "show me what I can do at home" is useless if the ONE
+    // thing the app hands you is a job for the office.
+    //
+    // Filtered here rather than inside `workSurface` deliberately — the ranking
+    // and every test over it stay untouched, exactly as ADR-0060 kept `nextup`
+    // untouched when the offer's shape changed. This narrows what is OFFERED
+    // from that ranking; it does not re-rank anything.
+    //
+    // Law 1 is not bent: what is filtered out still has its clock, still counts
+    // in the claim, and still comes back. Unlabelled things fit anywhere.
+    const here = getWhereNow();
+    // `NextUp` is head + behind + total, not an array. Filtering has to keep
+    // that shape honest: if the head does not fit, the first thing behind that
+    // does becomes the head, and `total` counts what fits — a total that
+    // counted things you cannot do from here would be the surface answering a
+    // different question from the one the chooser asked.
+    const all = ((): typeof all0 => {
+      if (!here) return all0;
+      const fits = (i: NextUpItem) => fitsHere(state, i.node, here);
+      const kept = [...(all0.head ? [all0.head] : []), ...all0.behind].filter(fits);
+      return { head: kept[0] ?? null, behind: kept.slice(1), total: kept.length };
+    })();
     // THE MENU SHAPE (1.11.0, ADR-0060). What is offered is a small set chosen
     // to be UNALIKE — at most one item per reason, plus one thing off the Menu
     // that owes nothing. `offerNow` owns that rule; this file only renders it.
@@ -510,6 +544,9 @@ export function mountWork(
       // keypress must not act on an item the reader cannot see.
       current = null;
       TITLE.textContent = '';
+      // A BUTTON WITH NO WORDS HAS NO NAME (2.2.0). Since the title became a
+      // door it must go when there is nothing to open, not sit there empty.
+      TITLE.hidden = true;
       WHY.textContent = '';
       if (PLACE) PLACE.hidden = true;
       paintWritten(null);
@@ -549,6 +586,7 @@ export function mountWork(
       if (doneBtn) doneBtn.hidden = false;
       if (skipBtn) skipBtn.hidden = false;
       TITLE.textContent = up.head.node.title || '(untitled)';
+      TITLE.hidden = false;
       // Why this, in words. Pressure adds its own gentle phrase; neither ever
       // reaches for the shame word this app refuses — no such state exists here,
       // and the vocabulary that replaces it is in pressure.ts (ADR-0010).
@@ -559,8 +597,26 @@ export function mountWork(
       // nothing" is not a location, and announcing bareness would make the flat
       // majority of a fresh store read as incomplete.
       if (PLACE) {
-        PLACE.textContent = up.head.place ?? '';
-        PLACE.hidden = !up.head.place;
+        // AND WHAT IT IS FOR (2.5.0, ADR-0095), appended to the same line rather
+        // than given one of its own — this card already carries a why, a where,
+        // a when-written, an approach, a situation and a first step, and law 8
+        // caps what a surface may show.
+        //
+        // ONLY WHEN IT ADDS SOMETHING. `lineageOf` walks two hops and the second
+        // is the first live container above the parent, so on a two-deep tree
+        // ("in Re-do the hallway · under A calmer house") the horizon is ALREADY
+        // named and appending "serves A calmer house" would be the card saying
+        // one fact twice in two vocabularies. It earns its place on a deeper
+        // tree, where the two-hop walk stops below the horizon and the goal goes
+        // unnamed. Checked against the rendered string rather than by counting
+        // depth, because the string is the thing the reader is comparing it to.
+        const forWhat = servesNode(session.state(), up.head.node);
+        const already = forWhat !== null && (up.head.place ?? '').includes(forWhat.title || '(untitled)');
+        const serves = forWhat === null || already
+          ? null : `serves ${forWhat.title || '(untitled)'}`;
+        const line = [up.head.place, serves].filter(Boolean).join(' · ');
+        PLACE.textContent = line;
+        PLACE.hidden = line.length === 0;
       }
       // WHEN IT WAS WRITTEN (2.0.3) — the triage card has said this since
       // 1.29.0 and this card never did.
@@ -698,6 +754,7 @@ export function mountWork(
       if (undated > 0) {
         REGION.hidden = false;
         TITLE.textContent = 'Nothing is asking today.';
+        TITLE.hidden = false;
         if (PLACE) { PLACE.textContent = ''; PLACE.hidden = true; }
         paintWritten(null);
         // Cleared beside PLACE, for its reason: this branch reuses the same
@@ -715,6 +772,7 @@ export function mountWork(
       } else {
         REGION.hidden = true;
         TITLE.textContent = '';
+        TITLE.hidden = true;
       }
     }
 
