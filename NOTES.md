@@ -665,8 +665,36 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.2**
-- **https://quietkeep.pages.dev** — production, **2.0.9**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.8.0**
+- **https://quietkeep.pages.dev** — production, **2.7.2** (promoted 2026-08-17,
+  `ce57b8f`, Deploy and Spine green, tree asserted identical to verified staging)
+
+**2.8.0 — THE APP'S OWN SIZE, AND A FLOOR THAT MEANS IT** (ADR-0098). A size
+control in Settings scaling this app's type on this device, as a MULTIPLE of
+whatever the reader's browser or OS is already doing.
+
+**The floor had to be fixed first, and that is the release.** `--target` was
+`2.75rem` — 44px at the default root, in rem so it would GROW with the reader's
+text. The growing half is right. The shrinking half was never considered and is
+not symmetric: bigger text means bigger targets; **smaller text does not mean
+smaller fingers.** Measured at 390px before anything was built, at a root of
+87.5% — an ordinary browser setting and the second option this control offers —
+**24 visible controls fell below 44px**, including the whole header, the capture
+box and the skip link. At 75% they were 33–34px. It is now
+`max(2.75rem, 44px)`.
+
+**And the gate could not have caught it.** `auditTargets` iterated
+`'button, input, a, [role=button]'` — a hand-written list of element TYPES, the
+same defect as a hand-written list of surfaces. Widening it found **four
+controls under the floor at the DEFAULT size**, long shipped and green: the two
+`<select>`s in the load entry at **19px**, `#detail-situation` (a `<textarea>`
+somebody types into) at **36px**, and `#load-summary` with no floor at all.
+Fixed by RULE — `select`, `textarea`, `summary` — because every select that had
+a floor got it individually, which is exactly why the missed ones had none.
+
+**What to look at:** Settings → *How big this app is*.
+
+
 
 **2.7.2 — THE DOOR NAMES BOTH ACTS** (collisions entry 10). The collapsed line
 under capture read *"Something weighing on you?"* — which names raising a pebble

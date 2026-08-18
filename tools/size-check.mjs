@@ -58,7 +58,11 @@ const BUDGET = {
   // sentence saying it is NOT a score. That sentence is the thing that makes the
   // readout legal under law 7, so cutting it to fit a word budget would cut the
   // safeguard and keep the numbers — exactly backwards.
-  words: 3340,
+  // 3340 -> 3390 on 2026-08-17 (ADR-0098). One Settings block: a heading, two
+  // sentences of scope, a label and the note. The scope sentences ARE the
+  // feature — the request was for a size that touches this app and nothing else,
+  // so a control that did not say so would be answering a different question.
+  words: 3390,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -206,7 +210,16 @@ const BUDGET = {
   // product. Two of the four exist only to leave or reach a surface, and the
   // door is hidden entirely until a role has been named — on a store with none,
   // the count is 224.
-  controls: 226,
+  // 226 -> 228 on 2026-08-17 (ADR-0098): the size chooser and its Set, in
+  // Settings, beside the timer length and the day boundary they are shaped after.
+  // Both are set calmly rather than in the moment they would matter, which is
+  // the same reason the timer's length lives there.
+  //
+  // It BUYS BACK reading rather than adding it, which is the argument this
+  // ceiling accepts: a reader who sets the app smaller fits more of their own
+  // work on a screen, and every measurement this month has been about how far
+  // somebody has to travel to reach their own list.
+  controls: 228,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

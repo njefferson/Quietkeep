@@ -703,6 +703,8 @@ const REGISTRY = {
   // control. `#nextup-load` is in its OWN state below — it renders only while
   // something is on you, and registering it here would name a selector that
   // matches nothing visible, which this gate fails on by design.
+  // How big this app is (2.8.0, ADR-0098) — its own state, driven in Settings.
+  'app size': ['#ui-scale', '#ui-scale-set', '#ui-scale-note'],
   'load entry': ['#load-summary', '#load-hint', '#capacity-level',
     '#pebble-text', { sel: '#pebble-text', pseudo: '::placeholder' },
     '#pebble-weight', '#pebble-form button[type=submit]', '.detail-label'],
@@ -1034,7 +1036,15 @@ async function auditNames(page, stateName, theme) {
 async function auditTargets(page, stateName, theme) {
   const small = await page.evaluate(() => {
     const out = [];
-    for (const el of document.querySelectorAll('button, input, a, [role=button]')) {
+    // DERIVED, NOT HAND-LISTED (2.8.0). This read
+    // `'button, input, a, [role=button]'` — which omits `select` and `summary`,
+    // both of which this app uses as real controls. So a 19px `<select>` in the
+    // load entry and a 21px `<summary>` on its door were invisible to the floor
+    // by construction, and every run reported green about them. A hand-written
+    // list of element TYPES is the same defect as a hand-written list of
+    // surfaces, one level down — and this file already learned that twice.
+    for (const el of document.querySelectorAll(
+      'button, input, select, textarea, summary, a[href], [role=button], [tabindex]:not([tabindex="-1"])')) {
       const r = el.getBoundingClientRect();
       if (r.width === 0 && r.height === 0) continue;
       // Height carries B-06's 44px floor; width gets WCAG 2.2 2.5.8's 24px —
@@ -1315,6 +1325,50 @@ try {
     await auditTargets(page, 'settings', theme);
     await auditFocusRings(page, 'settings', theme,
       ['#badge-toggle', '#day-boundary-set', '#sheet-group-extras-close']);
+
+    // HOW BIG THIS APP IS (2.8.0, ADR-0098), driven end to end rather than
+    // asserted as markup: choosing a size must CHANGE the document, pressing Set
+    // must keep it, and the note must state the scope — this app, this device —
+    // because scope is the entire request.
+    await auditContrast(page, 'app size', theme);
+    await auditTargets(page, 'app size', theme);
+    const before = await page.evaluate(() => document.documentElement.style.fontSize);
+    await page.selectOption('#ui-scale', '1.3');
+    await page.waitForTimeout(120);
+    const previewed = await page.evaluate(() => document.documentElement.style.fontSize);
+    (previewed !== before && /%$/.test(previewed) ? pass : fail)(
+      `${theme}/app size: choosing a size shows it immediately, before committing ("${previewed}")`);
+    // RELATIVE, never absolute — an absolute px root would overrule the reader's
+    // own device setting, which is the opposite of what was asked for.
+    (!/px/.test(previewed) ? pass : fail)(
+      `${theme}/app size: it multiplies the reader's own base rather than replacing it`);
+    await page.click('#ui-scale-set');
+    await page.waitForTimeout(120);
+    const note = await page.evaluate(() =>
+      document.querySelector('#ui-scale-note')?.textContent ?? '');
+    (/this app/i.test(note) && /this device/i.test(note) ? pass : fail)(
+      `${theme}/app size: the note states the scope ("${note.slice(0, 60)}")`);
+    (!/\d/.test(note) ? pass : fail)(
+      `${theme}/app size: it says no figure at the reader`);
+    // AND THE FLOOR HOLDS AT THE SIZE IT JUST SET. This is the assertion the
+    // whole release turns on: a size control that can take a target under 44px
+    // is a control that breaks the app for a finger.
+    const shortAfter = await page.evaluate(() => {
+      const out = [];
+      for (const el of document.querySelectorAll('button, input, select, summary, a[href]')) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 && r.height === 0) continue;
+        if (r.height < 44) out.push(`${el.tagName.toLowerCase()}#${el.id} ${Math.round(r.height)}px`);
+      }
+      return out;
+    });
+    (shortAfter.length === 0 ? pass : fail)(
+      `${theme}/app size: every target still clears 44px at the chosen size`
+      + `${shortAfter.length ? ` — ${shortAfter.slice(0, 4).join(', ')}` : ''}`);
+    // Put it back, so every state after this is measured at the ordinary size.
+    await page.selectOption('#ui-scale', '1');
+    await page.click('#ui-scale-set');
+    await page.waitForTimeout(120);
 
     // The clearing confirmation is revealed by choosing a mode, so it is opened
     // here: a control that only exists after a click is still a control somebody
@@ -1877,6 +1931,37 @@ try {
     await page.click('#detail-history summary');
 
     // B-04's hardest case, for the densest surface in the app.
+    // THE FLOOR AT EVERY SIZE THE APP ITSELF OFFERS (2.8.0, ADR-0098).
+    //
+    // The 44px floor was measured at ONE root size — whatever the runner happened
+    // to use — and `--target` was `2.75rem`, so it shrank with the reader. At a
+    // root of 87.5%, an ordinary browser setting AND the second option in this
+    // release's own size control, 24 visible controls fell below 44px: the whole
+    // header, the capture box, the skip link. At 75% they were 33-34px.
+    //
+    // A ceiling-and-floor check that only runs at 100% is a check that measured
+    // the runner rather than the app. This drives the SMALLEST size the control
+    // offers, because that is the one that can break the floor.
+    for (const root of ['85%', '92.5%']) {
+      await page.evaluate((r) => { document.documentElement.style.fontSize = r; }, root);
+      await page.waitForTimeout(80);
+      const short = await page.evaluate(() => {
+        const out = [];
+        for (const el of document.querySelectorAll(
+          'button, input, select, textarea, summary, a[href], [role=button], [tabindex]:not([tabindex="-1"])')) {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) continue;
+          if (r.height < 44 || r.width < 24) {
+            out.push(`${el.tagName.toLowerCase()}#${el.id || el.className} ${Math.round(r.width)}x${Math.round(r.height)}`);
+          }
+        }
+        return out;
+      });
+      (short.length === 0 ? pass : fail)(
+        `${theme}/root ${root}: a finger's target still clears 44px${short.length ? ` — ${short.slice(0, 6).join(', ')}` : ''}`);
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+
     await page.setViewportSize({ width: 320, height: 568 });
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     const sheetOverflow = await page.evaluate(() => {

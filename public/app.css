@@ -29,9 +29,25 @@
 
   --gap: 1rem;
   --radius: 0.75rem;
-  /* 44px at the default root size, but expressed in rem so it grows with the
-     reader's text setting rather than staying put (B-06). */
-  --target: 2.75rem;
+  /* A FINGERTIP DOES NOT SHRINK (2.8.0).
+   *
+   * This was `2.75rem` alone, with the note "44px at the default root size, but
+   * expressed in rem so it grows with the reader's text setting rather than
+   * staying put (B-06)". The growing half is right and is kept. The SHRINKING
+   * half was never considered, and it is not symmetric: bigger text means bigger
+   * targets, which is fine, and smaller text does NOT mean smaller fingers.
+   *
+   * Measured at 390px before the fix: at a root of 87.5% — an ordinary browser
+   * text setting, and exactly what an in-app scale control would produce — 24
+   * visible controls fell below 44px, including every control in the header, the
+   * capture box and the skip link. At 75% they were 33-34px. The app conformed at
+   * one root size and silently stopped conforming at another, which is hub
+   * LESSONS §95's shape: measured under the conditions the gate happens to use.
+   *
+   * `max()` keeps both halves honest — it grows with the reader's text and never
+   * goes under the physical floor. This is also what makes the scale control in
+   * Settings safe to build at all. */
+  --target: max(2.75rem, 44px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -1735,6 +1751,54 @@ dialog, dialog * { overflow-wrap: anywhere; }
   gap: 0.5rem;
 }
 .detail-row button { min-height: var(--target); }
+/* EVERY SELECT GETS THE FLOOR, BY RULE (2.8.0).
+ *
+ * `.detail-row button` and `.detail-row input` had it; `select` did not, and
+ * each select that happened to be noticed was floored INDIVIDUALLY — `#detail-lead`,
+ * `#detail-parent`, `.lens-row select`. The two in the load entry were never
+ * noticed, and measured 19px tall at the default text size: less than half the
+ * floor, on the control somebody reaches for on a heavy morning.
+ *
+ * They were invisible to the gate too, whose element list read
+ * `button, input, a, [role=button]` — no `select`, no `summary`. So this is one
+ * defect wearing two hats: a style applied per-instance instead of by rule, and
+ * a check that could not see the instances that were missed. Both are fixed
+ * here and in `tools/a11y.mjs`.
+ *
+ * A RULE rather than a fourth id, because the next select added would be the
+ * fourth thing somebody had to remember. */
+select { min-height: var(--target); }
+/* AND THE OTHER TWO THE OLD GATE COULD NOT SEE (2.8.0).
+ *
+ * Widening the target audit from `button, input, a, [role=button]` to every real
+ * control immediately found two more, both of which had shipped for a long time:
+ * `#detail-situation` is a `<textarea>` somebody types their own words into and
+ * measured 36px tall, and `<summary>` — the door on the two collapsed entries
+ * under capture — had no floor at all and fell to 20px at a reduced root size.
+ *
+ * By RULE, like the selects above. Naming the two would leave the third to be
+ * found by whoever adds it. `display: block` on the summary is what makes the
+ * floor bind: a `list-item` box sizes to its marker and ignores min-height in
+ * some engines, and the marker is added back explicitly so the disclosure still
+ * LOOKS like one — a door that stops looking like a door is ADR-0091's defect. */
+textarea { min-height: var(--target); }
+summary {
+  display: block;
+  min-height: var(--target);
+  /* Vertically centred, so the words sit in the middle of the target rather than
+     at its top with dead space beneath — a target you have to aim at the top of
+     is not really the size it measures. */
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+summary::before {
+  content: "\25B8";              /* the disclosure marker, restored by hand */
+  flex: 0 0 auto;
+  transition: none;              /* B-05: nothing animates */
+}
+details[open] > summary::before { content: "\25BE"; }
+summary::-webkit-details-marker { display: none; }
 .detail-row input {
   min-height: var(--target);
   padding: 0.4rem 0.6rem;

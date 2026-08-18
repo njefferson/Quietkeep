@@ -2053,6 +2053,38 @@
   </div>
   <p id="day-boundary-note" class="storage-note" role="status" aria-live="polite"></p>
 
+  <!-- THE APP'S OWN TEXT SIZE (2.8.0, ADR-0098).
+       Asked for from a device: a way to scale this app INDEPENDENTLY of the
+       phone's own setting. That is not the same request as browser zoom — you
+       may want your messages large and your planner dense, or the reverse, and
+       today the only lever moves everything at once.
+       IT SCALES THE TYPE AND NEVER THE TOUCH FLOOR. `--target` is
+       `max(2.75rem, 44px)` as of this release precisely so this control cannot
+       take a finger's target under the floor: at 87.5% it measured 24 controls
+       below 44px before that fix, including the whole header and the capture
+       box. Bigger text may grow a target; smaller text does not shrink a finger.
+       A DEVICE PREFERENCE, not an event. How big somebody wants the type is not
+       a fact about their work and the log has no business holding a history of
+       it — the same rule as the lens root and where-you-are. -->
+  <h3 class="about-section">How big this app is</h3>
+  <p class="about-p">
+    Only this app, and only on this device. It does not touch anything else on
+    your phone, and nothing you have written down changes.
+  </p>
+  <div class="about-actions">
+    <label class="detail-inline" for="ui-scale">Text in this app</label>
+    <select id="ui-scale">
+      <option value="0.85">smaller</option>
+      <option value="0.925">a little smaller</option>
+      <option value="1">the usual</option>
+      <option value="1.15">a little bigger</option>
+      <option value="1.3">bigger</option>
+      <option value="1.5">biggest</option>
+    </select>
+    <button id="ui-scale-set" type="button" class="ghost">Set the size</button>
+  </div>
+  <p id="ui-scale-note" class="storage-note" role="status" aria-live="polite"></p>
+
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">
     How long the <em>Do now</em> timer runs. Set it here, calmly, rather than in the moment you are trying to start.

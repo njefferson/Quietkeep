@@ -321,6 +321,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0097](0097-the-offer-reads-interest.md)**
   - Decision: Inside the `ready` tier only, the offer breaks ties on the heat the reader already set — hot, unsaid, cold — and says so on the card; routed by nd-collisions entry 5, which also REFUSES the importance rank that was the alternative
   - Status: Accepted · shipped 2.7.0 · closes Q-11 · extends [0029](0029-triage-model.md), [0030](0030-work-mode.md)
+- **[0098](0098-the-apps-own-size.md)**
+  - Decision: A size control scaling this app's type on this device as a MULTIPLE of the reader's own setting — and `--target` becomes `max(2.75rem, 44px)` first, because the floor shrank with the text and 24 controls fell under 44px at an ordinary reduced setting
+  - Status: Accepted · shipped 2.8.0 · extends [0059](0059-presence-not-progress.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

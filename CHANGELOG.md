@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.8.0 — CAPABILITY
+
+*2026-08-17*
+
+- **You can set how big this app is, on its own.** In **Settings**, under *How big this app is* — smaller through to biggest. It only touches this app on this device: your phone keeps whatever text size you have set for everything else, and nothing you have written down changes.
+- **It multiplies your own setting rather than replacing it.** If your phone’s text is already large and you pick *a little smaller*, you get your large text a little smaller — not thrown back to whatever this app thinks is normal.
+- **And the buttons stop shrinking with the words, which they should never have done.** Every control in this app has a floor of 44 pixels, the size a fingertip actually needs. That floor was written in a unit that follows your text size — so it grew when you made text bigger, which is right, and SHRANK when you made it smaller, which is not: smaller text does not mean smaller fingers. Measured at an ordinary reduced setting, **24 controls were under the floor**, including everything in the top bar and the box you type into.
+- **Four controls were under the floor even at the normal size**, and had been for a long time: the two dropdowns for how you are and how heavy something is, the box you type your own words into on a thing’s sheet, and the doors on the two collapsed lines under the capture box. The check that was supposed to catch them had a hand-written list of what counts as a control, and dropdowns, text boxes and those doors were not on it.
+
 ## 2.7.2 — ITERATION
 
 *2026-08-17*
