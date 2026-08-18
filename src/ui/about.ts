@@ -1973,6 +1973,37 @@ export async function mountAbout(
     const out = document.querySelector<HTMLElement>('#diagnostic-text');
     const dnote = document.querySelector<HTMLElement>('#diagnostic-note');
 
+    /**
+     * What the text is ACTUALLY doing on this device (2.9.1).
+     *
+     * Measured off the rendered page — the root's computed size, a real
+     * control's computed size, and that control's real height. Reading the
+     * stylesheet back would answer a different question: this exists precisely
+     * for the case where what was asked for and what the browser did differ.
+     *
+     * `#capture` is the sample because it is the control the whole app is for,
+     * and because it is one of the two that were anchored to the root rather
+     * than to their own text until this release.
+     *
+     * Soft throughout: a diagnostic that throws is a diagnostic nobody can
+     * send, and this is asked for at exactly the moment something is wrong.
+     */
+    const typeReading = (): DeviceReading['type'] => {
+      try {
+        const root = document.documentElement;
+        const box = document.querySelector<HTMLElement>('#capture');
+        if (!box) return null;
+        return {
+          root: parseFloat(getComputedStyle(root).fontSize) || 0,
+          text: parseFloat(getComputedStyle(box).fontSize) || 0,
+          box: box.getBoundingClientRect().height,
+          // `null` when it is still at 1: "not used" and "set back to normal"
+          // are the same state and the report should not invent a difference.
+          chosen: getScale() === 1 ? null : getScale(),
+        };
+      } catch { return null; }
+    };
+
     /** Everything the pure module cannot find out for itself. */
     const reading = async (): Promise<DeviceReading> => {
       const r = await read();
@@ -2025,6 +2056,10 @@ export async function mountAbout(
         // reporting the second when the first is true is how a report sends
         // somebody hunting in the wrong place.
         unreadableEntries: journalUnreadable,
+        // Measured off the rendered page, never read back out of the
+        // stylesheet: the whole point is to catch the case where what the
+        // stylesheet asked for and what the browser did are different things.
+        type: typeReading(),
       };
     };
 

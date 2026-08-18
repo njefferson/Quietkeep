@@ -665,11 +665,40 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.1**
 - **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
   `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
   `fda790c` on both — rather than inferred from a clean merge)
+
+**2.9.1 — A CONTROL'S BOX IS MEASURED IN ITS OWN TEXT.** Reported from a device:
+*changing the font size does not resize anything but the letters.* Reproduced and
+measured at 390px by growing the text WITHOUT growing the root — which is what a
+browser's own text setting does, and a minimum font size, and a user stylesheet:
+
+- every button's words went **×1.50 while its box went ×1.27**, because
+  `--target` and every control's padding were `rem` and the root had not moved
+- **`#capture` and `#nextup-title` did not move at all** — both carried an
+  explicit `rem` font-size, so the app's most important control and the title of
+  the thing it is handing you were the two that stood completely still
+
+`--target` is `max(2.75em, 44px)` now and control padding is `em`. A custom
+property carrying `em` resolves against the element that USES it, so one line
+re-anchors every `min-height: var(--target)` in the file. The floor still holds
+for small print: 13px text gives 36px and `max()` returns 44. After: capture
+×1.50, buttons ×1.50, nothing overflowing.
+
+**A latent bug found on the way:** the capture box's `1.0625rem` dropped below
+16px at the app's own *smaller* setting — and 16px is the size under which iOS
+zooms the whole page when an input takes focus. It is `max(1.0625em, 16px)`.
+
+**Gated, and planted.** The a11y walk grows `body` rather than the root and
+asserts each control's box follows its own text. Reverted to `rem` it reports
+`#capture` box ×1.11 and the header controls ×1.27 against text ×1.50.
+
+**And the diagnostic now names the mechanism** (§7f): the text size, the root it
+is measured against, the box it sits in, and which of the three moved it. That
+question could not be answered from a screenshot and cost a round trip.
 
 **2.9.0 — THE FRAME STAYS** (ADR-0100). The page is a flex column of viewport
 height with exactly one scrolling child. Capture, the proof line and the three

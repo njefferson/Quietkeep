@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.9.1',
+    kind: 'ITERATION',
+    date: '2026-08-18',
+    notes: [
+      '**Making the text bigger now makes the boxes bigger too.** Reported from a device, and it was true: a button’s words grew by half again while its box grew by about a quarter, so the letters ended up crowding the edges. **The capture box and the title of the thing you are offered did not grow at all.**',
+      '**Why:** every control’s padding, and the 44-pixel floor under every target, were measured against *the page’s* text size rather than *that control’s*. This app’s own size setting moves the page’s, so it worked there. Your browser’s own text setting does not move it — nor does a minimum font size, nor a text size set for every site — so under any of those the boxes stood still. They are measured against each control’s own text now, and the floor still holds for small print.',
+      '**One thing that was quietly broken and is now fixed:** at the app’s *smaller* setting the capture box’s text dropped below 16 pixels, which is the size at which iOS zooms the whole page the moment you tap into a box. It cannot go under that any more.',
+      '**And the diagnostic now says what your text is actually doing** — the size of the words, the size of the page they are measured against, and which of the three things moved them: this app’s setting, your browser’s, or a page zoom. That question could not be answered from a screenshot, and it cost a round trip.',
+    ],
+  },
+  {
     triplet: '2.9.0',
     kind: 'CAPABILITY',
     date: '2026-08-18',

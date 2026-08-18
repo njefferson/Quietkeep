@@ -46,8 +46,24 @@
    *
    * `max()` keeps both halves honest — it grows with the reader's text and never
    * goes under the physical floor. This is also what makes the scale control in
-   * Settings safe to build at all. */
-  --target: max(2.75rem, 44px);
+   * Settings safe to build at all.
+   *
+   * `em`, NOT `rem` (2.9.1). Reported from a device: making the text bigger
+   * resizes the letters and not the boxes. Reproduced by growing the text
+   * WITHOUT growing the root — which is what a browser's own text control does,
+   * and what a minimum-font-size setting does, and what any user stylesheet
+   * does. Measured at 390px: every button's text went ×1.50 while its box went
+   * ×1.27, because the padding and this floor are both root-relative and the
+   * root had not moved. The letters grew inside boxes that did not.
+   *
+   * `rem` asks "how big is the page", `em` asks "how big is THIS control's own
+   * text", and the second is the question a touch target is actually about.
+   * A custom property carrying `em` resolves against the element that USES it,
+   * so this one line re-anchors every `min-height: var(--target)` in the file.
+   *
+   * The floor still holds for small text: a 13px control gives 2.75em = 36px,
+   * and `max()` returns 44. Only controls whose text has actually grown grow. */
+  --target: max(2.75em, 44px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -200,7 +216,7 @@ body {
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-  padding: 0.5rem 0.75rem;
+  padding: 0.5em 0.75em;
   color: var(--ink);
   background: var(--surface);
   border: 2px solid var(--accent);
@@ -330,7 +346,7 @@ body {
   min-width: 0;
   min-height: var(--target);
   padding: 0.5rem 0.75rem;
-  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  font-size: max(1.0625em, 16px); /* em so it follows the reader's own text; 16px floor because iOS zooms the page when a smaller input takes focus — and the app's OWN 'smaller' setting used to push it under that */
   color: var(--ink);
   background: var(--surface);
   border: 2px solid var(--line);
@@ -348,7 +364,7 @@ body {
   min-width: 0;
   padding: 0.5rem 0.75rem;
   font-family: inherit;
-  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  font-size: max(1.0625em, 16px); /* em so it follows the reader's own text; 16px floor because iOS zooms the page when a smaller input takes focus — and the app's OWN 'smaller' setting used to push it under that */
   line-height: 1.5;
   color: var(--ink);
   background: var(--surface);
@@ -368,10 +384,17 @@ body {
 }
 .capture-offer button { margin-left: 0.25rem; }
 
+/* PADDING IN `em` FOR THE SAME REASON `--target` IS (2.9.1): the space around a
+   control's words has to be measured in that control's words. In `rem` it is
+   measured in the page's, so a browser text control that grows the text and not
+   the root leaves every button's padding at exactly 8px while its label goes
+   half again as big — which is the reported "only the letters resized", and it
+   is true. Padding does not compound the way `font-size` does, so this is safe
+   where a blanket rem→em on type would not be. */
 button {
   min-height: var(--target);
   min-width: var(--target);
-  padding: 0.5rem 1rem;
+  padding: 0.5em 1em;
   font: inherit;
   font-weight: 600;
   color: var(--bg);
@@ -394,7 +417,7 @@ button.ghost {
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-  padding: 0 0.25rem;
+  padding: 0 0.25em;
   font: inherit;
   color: var(--accent);
   background: none;
@@ -422,10 +445,10 @@ button.ghost {
   border-radius: var(--radius);
 }
 .triage-gauge { margin: 0 0 0.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
-.triage-prompt { margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; }
+.triage-prompt { margin: 0 0 0.5rem; font-size: 1.0625em; font-weight: 600; }
 .triage-card {
   margin: 0 0 1rem;
-  font-size: 1.0625rem;
+  font-size: 1.0625em;
   overflow-wrap: anywhere;   /* a long captured token must not overflow */
 }
 .triage-actions {
@@ -931,7 +954,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   min-height: var(--target);
   padding: 0.5rem 0.75rem;
   font: inherit;
-  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  font-size: max(1.0625em, 16px); /* em so it follows the reader's own text; 16px floor because iOS zooms the page when a smaller input takes focus — and the app's OWN 'smaller' setting used to push it under that */
   color: var(--ink);
   background: var(--surface);
   border: 2px solid var(--line);
@@ -1170,7 +1193,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
-.nextup-title { margin: 0 0 0.25rem; font-size: 1.0625rem; overflow-wrap: anywhere; }
+.nextup-title { margin: 0 0 0.25rem; font-size: 1.0625em; overflow-wrap: anywhere; }
 .nextup-why { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
 .nextup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .nextup-actions button { min-height: var(--target); }

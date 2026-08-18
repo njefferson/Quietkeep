@@ -117,6 +117,36 @@ export interface DeviceReading {
    *  only it holds the key. Null when the journal is locked or unset, which is
    *  NOT the same fact as zero and is not reported as one. */
   unreadableEntries: number | null;
+  /**
+   * HOW BIG THE TEXT ACTUALLY IS, and by which of three mechanisms (2.9.1).
+   *
+   * Reported from a device: *changing the font size does not resize anything
+   * but the letters.* There was no way to tell from here which control had been
+   * used, and the three behave differently:
+   *
+   *   - this app's own size control sets a PERCENTAGE ON THE ROOT, so `root`
+   *     moves and `text` moves with it;
+   *   - a browser's own text setting, a minimum-font-size, or a user stylesheet
+   *     grows the INHERITED text and leaves the root alone, so `text` moves and
+   *     `root` does not;
+   *   - a page zoom moves both and neither number changes relative to the other.
+   *
+   * So the two numbers together name the mechanism, and `box` says whether the
+   * boxes followed. A report that could not distinguish these sent somebody
+   * reasoning about a control the reader had not touched.
+   */
+  type: {
+    /** The root's computed font size in px — what every `rem` is measured in. */
+    root: number;
+    /** The capture box's computed font size in px — real text on a real
+     *  control, not a value read back out of the stylesheet. */
+    text: number;
+    /** The capture box's height in px. If the text grew and this did not, the
+     *  boxes are anchored to the wrong thing, which is the defect 2.9.1 fixed. */
+    box: number;
+    /** What the app's own control is set to, or null if it has not been used. */
+    chosen: number | null;
+  } | null;
 }
 
 const plural = (n: number, one: string, many: string): string =>
@@ -320,6 +350,22 @@ export function diagnosticReport(
   L.push(`  This store's id: ${r.device}`);
   L.push('    (one per site and per browser, not per machine — the same iPad');
   L.push('     has a different one for each edition, and a fresh one after a clear)');
+  if (r.type) {
+    const t = r.type;
+    // The RATIO is the reading, not either number on its own.
+    const ratio = t.root > 0 ? t.text / t.root : 0;
+    L.push(`  Text size: ${Math.round(t.text)}px on a ${Math.round(t.root)}px root`
+      + `, in a ${Math.round(t.box)}px box`);
+    L.push(`    (this app's own size setting: ${t.chosen === null ? 'not used' : `${Math.round(t.chosen * 100)}%`})`);
+    // Said in words, because the numbers only mean something together and the
+    // person reading this should not have to divide them.
+    if (Math.abs(t.root - 16) > 0.5 && Math.abs(ratio - 1.0625) < 0.15) {
+      L.push('    (the root has moved — this is the app\'s own size setting)');
+    } else if (Math.abs(t.root - 16) <= 0.5 && ratio > 1.2) {
+      L.push('    (the text has grown but the root has not — that is the browser\'s');
+      L.push('     own text setting, a minimum font size, or a user stylesheet)');
+    }
+  }
   L.push(`  Time zone: ${r.zone}`);
   L.push(`  Paired with another device: ${r.paired ? 'yes' : 'no'}`);
   L.push('');

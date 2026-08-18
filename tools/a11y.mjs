@@ -2085,6 +2085,73 @@ try {
     }
     await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
 
+    // AND THE OTHER WAY THE TEXT GETS BIGGER (2.9.1).
+    //
+    // Everything above moves the ROOT, which is what this app's own size
+    // control does. A browser's own text setting does not: it grows the
+    // INHERITED text and leaves the root where it was, and so does a
+    // minimum-font-size and so does a user stylesheet. Simulated here by
+    // growing `body` rather than the root, which is exactly that shape.
+    //
+    // Reported from a device as "changing the font size does not resize
+    // anything but the letters", and it was true: `--target` and every
+    // control's padding were `rem`, so at 150% text a button's words went
+    // ×1.50 inside a box that went ×1.27 — and `#capture` and the offer's own
+    // title, both carrying an explicit `rem` font-size, did not move AT ALL.
+    //
+    // The assertion is that a control's box tracks ITS OWN text. Not that it is
+    // big enough — a box can clear 44px while its words spill past its padding —
+    // so this measures growth AND overflow together.
+    const beforeGrow = await page.evaluate(() => {
+      const pick = ['#capture', '#gauge', '#open-more', '#contents-open'];
+      return Object.fromEntries(pick.map(sel => {
+        const el = document.querySelector(sel);
+        return [sel, el && el.checkVisibility()
+          ? { h: el.getBoundingClientRect().height, f: parseFloat(getComputedStyle(el).fontSize) }
+          : null];
+      }));
+    });
+    await page.evaluate(() => { document.body.style.fontSize = '150%'; });
+    await page.waitForTimeout(120);
+    const afterGrow = await page.evaluate(() => {
+      const pick = ['#capture', '#gauge', '#open-more', '#contents-open'];
+      const boxes = Object.fromEntries(pick.map(sel => {
+        const el = document.querySelector(sel);
+        return [sel, el && el.checkVisibility()
+          ? { h: el.getBoundingClientRect().height, f: parseFloat(getComputedStyle(el).fontSize) }
+          : null];
+      }));
+      const spill = [];
+      for (const el of document.querySelectorAll('button, input, a[href], [role=button]')) {
+        if (!el.checkVisibility() || el.closest('dialog')) continue;
+        if (el.scrollHeight > el.clientHeight + 2 || el.scrollWidth > el.clientWidth + 2) {
+          spill.push(`${el.tagName.toLowerCase()}#${el.id || el.className}`);
+        }
+      }
+      return { boxes, spill };
+    });
+    // NON-EMPTY FIRST, so deleting the controls cannot leave this loop with
+    // nothing to iterate and a green line about a feature that is gone
+    // (hub LESSONS 100).
+    const grown = Object.keys(beforeGrow).filter(k => beforeGrow[k] && afterGrow.boxes[k]);
+    (grown.length >= 4 ? pass : fail)(
+      `${theme}/text grown by the browser: the sample controls are on screen to be measured (${grown.length} of 4)`);
+    for (const sel of grown) {
+      const a = beforeGrow[sel], b = afterGrow.boxes[sel];
+      const textGrew = b.f / a.f;
+      const boxGrew = b.h / a.h;
+      // The box need not match the text exactly — a wrapping label grows faster
+      // — but it must not stand still while the words inside it get bigger.
+      (boxGrew >= textGrew - 0.12 ? pass : fail)(
+        `${theme}/text grown by the browser: ${sel}'s box follows its own text `
+        + `(text ×${textGrew.toFixed(2)}, box ×${boxGrew.toFixed(2)})`);
+    }
+    (afterGrow.spill.length === 0 ? pass : fail)(
+      `${theme}/text grown by the browser: nothing overflows its own control`
+      + `${afterGrow.spill.length ? ` — ${afterGrow.spill.slice(0, 6).join(', ')}` : ''}`);
+    await page.evaluate(() => { document.body.style.fontSize = ''; });
+    await page.waitForTimeout(80);
+
     await page.setViewportSize({ width: 320, height: 568 });
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     const sheetOverflow = await page.evaluate(() => {
