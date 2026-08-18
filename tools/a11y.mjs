@@ -548,6 +548,12 @@ const REGISTRY = {
   'where the attention is': ['#roles-open'],
   'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
     '.roles-name', '.roles-held', '#roles-unnamed'],
+  // THE AMBIENT HORIZON on the focus surface (2.7.1, collisions entry 7). It
+  // shares `.focus-held`'s measured pair — the class adds nothing but a second
+  // element — but it gets its own registry line because it renders only when a
+  // fixed thing is actually ahead today, which is a different state from the
+  // interruption count beside it.
+  'focus, with a fixed thing ahead': ['#focus-fixed'],
   // What is on this page (2.3.0, ADR-0093). Driven from a store with several
   // blocks live, because a contents list with one row measures the chrome and
   // nothing else — and the count line only renders for blocks that publish one,
@@ -2172,6 +2178,75 @@ try {
     await auditTargets(page, 'focus', theme);
     await auditFocusRings(page, 'focus', theme,
       ['#focus-interrupt', '#focus-done', '#focus-stop']);
+    // THE AMBIENT HORIZON (2.7.1, collisions entry 7). Its own driven state,
+    // because the line renders only when a fixed thing is genuinely ahead today
+    // — registering it on plain 'focus' would be a receipt for a line that is
+    // usually absent, which is the `#nextup-left` failure this file pays for.
+    //
+    // ASSERTED AS THE SAME FACT the work surface states, not merely as present.
+    // The whole reason it renders here is that the work surface's copy is on a
+    // screen the reader has left; two surfaces disagreeing about what is coming
+    // would be worse than one of them being silent.
+    // DRIVEN INTO EXISTENCE, because the first version of this check was
+    // VACUOUS: the walk's store has nothing dated today, so the line was absent,
+    // the assertion took its "correctly absent" branch, and the thing the
+    // release added was never measured once. That is the false receipt this file
+    // already pays for twice — a check that can only pass by the feature being
+    // missing is not a check.
+    //
+    // A due date is stored at the END of the chosen day (`endOfDayKey`), so a
+    // date of TODAY is genuinely still ahead while the walk runs, which is what
+    // `nextFixedToday` requires. Set through the sheet, on the app's real write
+    // path, rather than seeded.
+    // EVERY DIALOG CLOSED FIRST. Stopping focus opens `#focus-sheet` to ask for
+    // the optional five words, and it intercepts pointer events — the first
+    // version of this drive timed out clicking a card underneath it, which is
+    // the same modal-in-the-way trap this file's `fillSearch` records.
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.click('#focus-stop').catch(() => {});
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.waitForSelector('#focus[hidden]').catch(() => {});
+    await page.locator('#cards .card-open').first().click();
+    await page.waitForSelector('#detail[open]');
+    const todayKey = await page.evaluate(() => {
+      const d = new Date();
+      const p = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+    });
+    await page.fill('#detail-date', todayKey);
+    await page.click('#detail-date-set');
+    await page.waitForTimeout(200);
+    await page.click('#detail-close');
+    await page.locator('#cards .card-focus').first().click();
+    await page.waitForSelector('#focus:not([hidden])');
+    await page.waitForSelector('#focus-fixed:not([hidden])', { timeout: 5000 }).catch(() => {});
+
+    const horizon = await page.evaluate(() => ({
+      onFocus: document.querySelector('#focus-fixed')?.hidden === false
+        ? document.querySelector('#focus-fixed')?.textContent?.trim() ?? '' : '',
+      onWork: document.querySelector('#nextup-fixed')?.hidden === false
+        ? document.querySelector('#nextup-fixed')?.textContent?.trim() ?? '' : '',
+    }));
+    if (horizon.onWork) {
+      (horizon.onFocus === horizon.onWork ? pass : fail)(
+        `${theme}/focus: the ambient horizon says the same thing here as on the work surface `
+        + `("${horizon.onFocus}" vs "${horizon.onWork}")`);
+      // A NAME AND NEVER A COUNTDOWN — a countdown is a deadline and adds
+      // aversion, which is the entry's own reason for the shape.
+      (!/\d+\s*(min|hour|hr|:\d\d)/i.test(horizon.onFocus) ? pass : fail)(
+        `${theme}/focus: it names the thing and does not count down to it`);
+      await auditContrast(page, 'focus, with a fixed thing ahead', theme);
+    } else {
+      // NOT A PASS. The whole point of driving the date above is that this
+      // branch means the drive failed, and reporting that as "correctly absent"
+      // is how the check was vacuous in the first place.
+      fail(`${theme}/focus: a date was set for today and the ambient horizon still did not render `
+        + `— the line the release exists for was not measured`);
+    }
 
     await page.fill('#focus-interrupt', 'the phone rang');
     await page.click('#focus-interrupt-form button[type=submit]');

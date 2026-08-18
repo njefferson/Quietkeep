@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.7.1 — ITERATION
+
+*2026-08-17*
+
+- **When you are working on one thing, the screen now tells you what else is fixed for today.** One line, by name, on the **Working on** screen — no clock, no countdown. A countdown is a deadline and makes a thing harder to face; the alarm in your calendar is still the thing that actually guarantees you are told.
+- **That line already existed, on the other screen.** It has been on the main screen since the day-boundary work, which is the screen you have already left when you are deep in something. The research this app is built on says absorption collapses time — an appointment does not get forgotten so much as stop existing — so the one place the line is worth having is the place it was not.
+
 ## 2.7.0 — CAPABILITY
 
 *2026-08-17*

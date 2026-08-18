@@ -638,8 +638,50 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.1**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.7.1 — THE AMBIENT HORIZON, ON THE SURFACE IT WAS ASKED FOR** (collisions
+entry 7). The next fixed thing today, by name, on the **focus** surface. A name
+and never a countdown — a countdown is a deadline and adds aversion (ADR-0059's
+reasoning); the OS alarm stays the guarantee (T1).
+
+**The line and its projection already existed and were on the WRONG SCREEN.**
+`nextFixedToday`/`nextFixedWords` shipped in V2 stage 5 and rendered on the work
+surface only — the one an absorbed person has already left. Entry 7's routing
+proposal says *"one fact line on the focus surface"* and read as an outstanding
+candidate the whole time its mechanism sat finished elsewhere. Hub LESSONS §95's
+shape: a feature that exists where the reader is not. It now renders from the
+SAME projection rather than a copy, and the walk asserts the two surfaces say the
+same thing.
+
+**AND THE FIRST VERSION OF THAT ASSERTION WAS VACUOUS.** It read *if the line is
+there, check it; else pass, "correctly absent"* — and both themes took the else
+branch, because the walk's store has nothing dated today. The thing the release
+added was never measured. Fixed by DRIVING a date of today through the sheet (a
+due clock is stored at the END of the day, so today is still ahead) and making
+the else branch FAIL. Hub LESSONS §100.
+
+**CATALOGUE RECONCILED in the same commit**, because four entries were claiming
+more or less than the code:
+
+- **Entry 15** — the voice gate over notification copy: **shipped**
+  (`tools/notify-voice.mjs`), still marked V2-candidate.
+- **Entry 18** — its constraint on the law-4 projection: **honoured** by 2.5.0,
+  which arrives as computed signal and explicitly never as a destination.
+- **Entry 2** — routing mark **reversed to refuse**. The proposal was a pebble
+  whose `affects` names an item, with the app plotting the co-occurrence. That
+  plot IS the wall rendered, and the entry's own refusal is *"any avoidance
+  detection — an inferred wall is the ledger this app exists to not keep"*. The
+  entry was arguing with itself: its SINCE WRITTEN already recorded the pebble
+  route as not taken while its mark still said candidate. `affects` stays in the
+  vocabulary and stays unwritten, deliberately now rather than merely in fact.
+- **Entry 10** — **premise was wrong.** *"Down a sheet"* was never true:
+  `#capacity-level` is on the work surface, above every section, under capture.
+  The reach defect is the LABEL — the disclosure says *"Something weighing on
+  you?"*, which names raising a pebble, and the capacity declaration lives behind
+  it unannounced. Re-aimed and kept at *later*: the app is at its word budget and
+  the honest fix is a rewording somebody should meet in use first.
 
 **2.7.0 — THE OFFER READS THE INTEREST YOU ALREADY GAVE IT** (ADR-0097). Closes
 Q-11. Inside the `ready` tier and only there, the tie-break becomes the heat the

@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.7.1',
+    kind: 'ITERATION',
+    date: '2026-08-17',
+    notes: [
+      '**When you are working on one thing, the screen now tells you what else is fixed for today.** One line, by name, on the **Working on** screen \u2014 no clock, no countdown. A countdown is a deadline and makes a thing harder to face; the alarm in your calendar is still the thing that actually guarantees you are told.',
+      '**That line already existed, on the other screen.** It has been on the main screen since the day-boundary work, which is the screen you have already left when you are deep in something. The research this app is built on says absorption collapses time \u2014 an appointment does not get forgotten so much as stop existing \u2014 so the one place the line is worth having is the place it was not.',
+    ],
+  },
+  {
     triplet: '2.7.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',
