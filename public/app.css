@@ -518,6 +518,20 @@ button.ghost {
   text-align: left;
 }
 
+/* TWO GROUPS SINCE 2.8.1 (ADR-0099): the surfaces you can open, then the stops
+   on the page. Real headings rather than styled text, because the difference
+   between "this takes you somewhere on this page" and "this opens something
+   that is not on the page at all" is the whole reason both are here, and a
+   screen reader user gets that difference from the heading or not at all.
+   `--ink-soft` on `--bg`, a pair the gate already holds at 4.5:1. */
+.contents-group {
+  margin: 0 0 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.contents-list + .contents-group { margin-top: 1.25rem; }
+
 /* The rows. A list of places, so it reads as one thing per line and the name
    carries the weight — the count is what it already says about itself. */
 .contents-list { margin: 0; padding: 0; list-style: none; }
@@ -685,7 +699,6 @@ button.ghost {
  * The picker rows and the card reuse the app's card look; every colour token is
  * an already-registered pair on these backgrounds. The card itself reuses
  * `.triage-card` (now a button on both surfaces). */
-#sort-open { margin: 0.75rem 0; }
 .sort-choices {
   list-style: none;
   margin: 0 0 1rem;
@@ -2209,14 +2222,10 @@ summary::-webkit-details-marker { display: none; }
 #detail-save-set { min-height: var(--target); }
 
 /* --- bothers: the thing that isn't a task --------------------------------- */
-/* A <details>, closed by default. It sits under capture and asks nothing of you
-   until you open it — the entry point for a worry must not itself be a prompt to
-   find one. */
-.bother-entry { margin: 0 0 1rem; }
-#bother-summary {
-  min-height: var(--target); display: flex; align-items: center;
-  color: var(--ink-soft); font-size: 0.9375rem; cursor: pointer;
-}
+/* The entry was a <details> under capture until 2.8.1 (ADR-0099) made it a
+   surface reached from Contents. What it must not be has not changed: the entry
+   point for a worry must not itself be a prompt to find one, which is why it has
+   never stood open and why its row in Contents carries no count. */
 #bother-text { min-height: var(--target); flex: 1 1 6rem; min-width: 0; font: inherit; }
 #bother-text::placeholder { color: var(--ink); opacity: 1; }
 /* The load entry's box, on the same rule and for the same reason (1.15.0): the

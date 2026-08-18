@@ -1005,6 +1005,14 @@ export async function main(edition?: Edition): Promise<void> {
       ?.addEventListener('click', () => { openSheet('sheet-contents'); });
   }
 
+  // The two entries that came off the runway in 2.8.1 (ADR-0099). Their doors
+  // are rows in Contents, built by `paintContents` from `data-contents-door` —
+  // nothing here opens them, and that is the point: a hand-wired opener per
+  // surface is the list this app keeps learning not to write. Only the way OUT
+  // is wired, by the same convention every other sheet uses.
+  wireSheetClose('sheet-bother-entry');
+  wireSheetClose('sheet-load-entry');
+
   // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —
   // it is demand-free, and a surface that remembers it was open is a surface
   // that greets you. A dialog cannot remember, which makes law 6 structural

@@ -39,6 +39,7 @@ import {
   type BulkParams, type BulkReceipt, type BulkVerb,
 } from './bulk-intents.ts';
 import { boundaryOf } from '../day.ts';
+import { onSheetOpen } from './sheets.ts';
 
 const ROUTES: { route: ClarifyRoute; label: string; hint: string }[] = [
   { route: 'do-now', label: 'Do now', hint: 'this one is for today' },
@@ -64,7 +65,6 @@ export function mountSort(
 ): SortUI {
   const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
   const dlg = q<HTMLDialogElement>('#sort');
-  const openBtn = q<HTMLButtonElement>('#sort-open');
   const picker = q('#sort-picker');
   const choices = q('#sort-choices');
   const queryInput = q<HTMLInputElement>('#sort-query');
@@ -76,7 +76,7 @@ export function mountSort(
   const actions = q('#sort-actions');
   const undoBar = q('#sort-undo');
   const live = q('#sort-live');
-  if (!dlg || !openBtn || !picker || !choices || !queryInput || !queryGo
+  if (!dlg || !picker || !choices || !queryInput || !queryGo
     || !cardRegion || !entry || !card || !where || !actions || !undoBar || !live) {
     return { refresh() {} };
   }
@@ -616,11 +616,20 @@ export function mountSort(
     });
   });
 
-  openBtn.addEventListener('click', () => {
+  // THE DOOR MOVED, THE RESET DID NOT (2.8.1, ADR-0099). This was the body of
+  // `#sort-open`'s click handler — a button that stood on the runway between
+  // triage and the replan cards. The button is gone and the row in Contents
+  // calls `openSheet('sort')`, so the reset that used to live in the opener now
+  // lives where `sheets.ts` runs it on EVERY open, by whatever route.
+  //
+  // Registering it rather than leaving it in one caller is the point: a surface
+  // that reads from the log must repaint on open or it shows the state the app
+  // was in when it started, and this repo has fixed that defect three times by
+  // remembering rather than by construction.
+  onSheetOpen('sort', () => {
     showPicker();
     LIVE.textContent = '';
     queryInput.value = '';
-    if (!DLG.open) DLG.showModal();
   });
   q<HTMLButtonElement>('#sort-close')?.addEventListener('click', () => DLG.close());
   q<HTMLButtonElement>('#sort-back')?.addEventListener('click', showPicker);

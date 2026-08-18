@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.8.1',
+    kind: 'ITERATION',
+    date: '2026-08-18',
+    notes: [
+      '**The first screen is capture, the proof line, and the one thing.** *Something on your mind that isn’t a task?*, *How you are, and anything weighing on you* and *Sort things out* have moved behind **Contents**, and all three do exactly what they did. The line saying nothing has gone quiet came up to meet you — it was the first thing inside your list, nearly three screens down, so the one line telling you nothing was lost was only ever read after you had scrolled to the list it was about.',
+      '**And the load line says what is behind it** — its row in **Contents** carries what you said and how many things are on you, so it does not go quiet just because it is out of sight. Nothing at all when there is nothing to say. Never a nought.',
+      '**Measured, not claimed:** on a phone *Next up* went from 0.48 screens down to 0.43, and the first screen from fifteen controls to fourteen. **What it did not buy is worth more:** the top bar and capture take 236 pixels before anything else exists, so the offer cannot beat about 0.36 screens while it sits under them. **Putting the one thing at the top cannot be done by moving blocks** — it needs capture to become part of the frame. Bigger change, not here, and there is now a number to decide it with.',
+      '**The Menu’s door is now higher up the page; it was six controls further down.** Nothing about the Menu changed — three doors came off above it.',
+      '**Naming a worry is one tap further than it was.** A real cost if you have to fight to start things, and the thing to tell me about after a few days.',
+    ],
+  },
+  {
     triplet: '2.8.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',

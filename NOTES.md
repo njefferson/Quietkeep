@@ -665,9 +665,57 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.8.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.8.1**
 - **https://quietkeep.pages.dev** — production, **2.7.2** (promoted 2026-08-17,
   `ce57b8f`, Deploy and Spine green, tree asserted identical to verified staging)
+
+**Two candidates are stacked on staging: 2.8.0 and 2.8.1.** Neither has had a
+device pass. They are independent of each other and can be judged in one sitting.
+
+**2.8.1 — THE FIRST SCREEN, AND WHAT A REARRANGEMENT CAN AND CANNOT BUY**
+(ADR-0099). Three doors leave the runway and become rows in **Contents** — the
+worry entry, the load entry, and *Sort things out*. The coverage gauge moves to
+the top of the page, under capture, where it can be read before the list it is
+reassuring somebody about.
+
+**This is a measurement, taken on purpose instead of the rebuild it belongs to.**
+The design read published on 2026-08-17 named it as the smallest honest first
+step and said it would test that document's thesis before anything was committed
+to it. It did.
+
+**What it bought**, at 390x844, empty store and the thirteen-item sample:
+
+- Next up — the app's whole thesis — **0.48 → 0.43 screens**
+- controls on the first screen: **15 → 14** with the sample, **14 → 13** empty
+- the held list: **2.73 → 2.57 screens**; the whole page **5.91 → 5.66**
+
+Forty-two pixels of an 844px screen. The two entries freed about 110px and the
+proof line put 68px back.
+
+**What it did not buy is the more useful half.** The header is 140px and capture
+96px before anything else exists, so with a proof line above the offer **the
+floor in this shell is about 0.36 screens** — and it is at 0.43. About two thirds
+of the reachable gain is taken and the rest is all that rearrangement has left.
+**Putting the one thing at the top of the screen cannot be done by moving
+blocks**; it needs capture to become fixed chrome rather than the first block of
+a scroll. That is a shell change, it is not in this release, and there is now a
+number to decide it with rather than an argument.
+
+**What it costs:** naming a worry is one tap further than it was. Activation cost
+at the point of performance is the best-evidenced entry in the catalogue and this
+adds some; *out of sight* is answered by the proof line moving up and by the load
+door reporting its own state on the row that reaches it. Both halves are recorded
+in `docs/nd-collisions.md` — entry 3 gains the proof-line move, entry 6 gains the
+open question this release raises and cannot settle: whether a switch is cheaper
+than the scroll it replaced, in use, over days.
+
+**Reversible on purpose.** If the worry box turns out to be one tap too far, the
+entries come back to the runway and the finding stands anyway.
+
+**What to look at:** the first screen on the phone, and **Contents** in the top
+bar — the three rows under *Things you can open*.
+
+
 
 **2.8.0 — THE APP'S OWN SIZE, AND A FLOOR THAT MEANS IT** (ADR-0098). A size
 control in Settings scaling this app's type on this device, as a MULTIPLE of

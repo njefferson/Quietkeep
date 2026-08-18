@@ -35,7 +35,29 @@
  * handed a control that does not go where it says.
  */
 
-import { closeSheet } from './sheets.ts';
+import { closeSheet, openSheet } from './sheets.ts';
+
+/** A surface reached from here and from nowhere else.
+ *
+ *  2.8.1 (ADR-0099). This sheet answered "what is on this page" and the page it
+ *  answered for was getting shorter — the worry entry, the load entry and sort's
+ *  door came off the runway, and a control that has no door left is a feature
+ *  that has been deleted for everybody who cannot find it.
+ *
+ *  DERIVED EXACTLY LIKE A STOP, for exactly the same reason: `data-contents-door`
+ *  on the dialog, and the name read from whatever its own `aria-labelledby`
+ *  points at. So the row, the sheet's heading, and the string a screen reader
+ *  announces on arrival are ONE string. A door added later shows up the day it
+ *  is marked, and a door whose title is rewritten cannot leave a stale row
+ *  behind, because there is no second copy to go stale. */
+export interface Door {
+  /** The dialog's element id — `sheet-load-entry`, `sort`. */
+  readonly id: string;
+  /** Its title, read from its own `aria-labelledby`. */
+  readonly name: string;
+  /** What the surface publishes about its own state, or null. */
+  readonly count: string | null;
+}
 
 /** Where the reader can be sent, in the order the page puts them. */
 export interface Stop {
@@ -83,6 +105,30 @@ export function stops(doc: Document = document): Stop[] {
 }
 
 /**
+ * Read the doors. Marked dialogs, in document order, named by their own titles.
+ *
+ * A door with no name is skipped, like a stop with no name: a row that says
+ * nothing is a button that says nothing, and this app has already paid a release
+ * for one of those.
+ */
+export function doors(doc: Document = document): Door[] {
+  const out: Door[] = [];
+  for (const el of Array.from(doc.querySelectorAll<HTMLDialogElement>('dialog[data-contents-door]'))) {
+    const labelledBy = el.getAttribute('aria-labelledby');
+    if (!labelledBy) continue;
+    const name = (doc.getElementById(labelledBy)?.textContent ?? '').trim();
+    if (!name) continue;
+    // The surface's own words about its state, by the same convention a block
+    // uses. This is what keeps a door from going silent: out of sight is the
+    // collision the whole app is a rebuttal to, so a surface that holds
+    // something says so on the row that reaches it.
+    const count = (doc.getElementById(`${el.id}-count`)?.textContent ?? '').trim() || null;
+    out.push({ id: el.id, name, count });
+  }
+  return out;
+}
+
+/**
  * Go somewhere.
  *
  * The sheet closes FIRST. A modal dialog makes the page behind it inert, so
@@ -107,38 +153,52 @@ export function goTo(stop: Stop, doc: Document = document): void {
   focus?.focus({ preventScroll: true });
 }
 
+/** One row, built the same way whichever list it lands in. */
+function row(doc: Document, name: string, count: string | null, onGo: () => void): HTMLLIElement {
+  const li = doc.createElement('li');
+  li.className = 'contents-row';
+
+  const go = doc.createElement('button');
+  go.type = 'button';
+  go.className = 'contents-go';
+
+  const label = doc.createElement('span');
+  label.className = 'contents-name';
+  label.textContent = name;
+  go.append(label);
+
+  // The block's own words about its size, not a number this file invents.
+  // Several blocks publish a sentence rather than a count ("3 waiting on
+  // somebody"), and repeating it here is what makes the list answer "is it
+  // worth going" as well as "how do I get there".
+  if (count) {
+    const c = doc.createElement('span');
+    c.className = 'contents-count';
+    c.textContent = count;
+    go.append(c);
+  }
+
+  go.addEventListener('click', onGo);
+  li.append(go);
+  return li;
+}
+
 /** Build the rows. Called on every open, because the page changes underneath. */
 export function paintContents(doc: Document = document): void {
+  const doorList = doc.querySelector<HTMLUListElement>('#contents-doors');
+  if (doorList) {
+    doorList.replaceChildren(...doors(doc).map((door) => {
+      const li = row(doc, door.name, door.count, () => openSheet(door.id));
+      li.querySelector<HTMLButtonElement>('.contents-go')?.setAttribute('data-open', door.id);
+      return li;
+    }));
+  }
+
   const list = doc.querySelector<HTMLUListElement>('#contents-list');
   if (!list) return;
-  list.replaceChildren();
-  for (const stop of stops(doc)) {
-    const li = doc.createElement('li');
-    li.className = 'contents-row';
-
-    const go = doc.createElement('button');
-    go.type = 'button';
-    go.className = 'contents-go';
-    go.dataset.go = stop.id;
-
-    const name = doc.createElement('span');
-    name.className = 'contents-name';
-    name.textContent = stop.name;
-    go.append(name);
-
-    // The block's own words about its size, not a number this file invents.
-    // Several blocks publish a sentence rather than a count ("3 waiting on
-    // somebody"), and repeating it here is what makes the list answer "is it
-    // worth going" as well as "how do I get there".
-    if (stop.count) {
-      const count = doc.createElement('span');
-      count.className = 'contents-count';
-      count.textContent = stop.count;
-      go.append(count);
-    }
-
-    go.addEventListener('click', () => goTo(stop, doc));
-    li.append(go);
-    list.append(li);
-  }
+  list.replaceChildren(...stops(doc).map((stop) => {
+    const li = row(doc, stop.name, stop.count, () => goTo(stop, doc));
+    li.querySelector<HTMLButtonElement>('.contents-go')?.setAttribute('data-go', stop.id);
+    return li;
+  }));
 }

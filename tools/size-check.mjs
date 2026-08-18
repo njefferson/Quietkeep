@@ -219,7 +219,26 @@ const BUDGET = {
   // ceiling accepts: a reader who sets the app smaller fits more of their own
   // work on a screen, and every measurement this month has been about how far
   // somebody has to travel to reach their own list.
-  controls: 228,
+  // 228 -> 229 on 2026-08-18 (ADR-0099), and the +1 is an ACCOUNTING artefact
+  // of this rule, not growth. Three doors left the runway: `#sort-open` (a
+  // button, counted) and the two `<summary>` elements on the worry and load
+  // entries (NOT counted — this regex reads button/input/select/textarea, and a
+  // summary is none of them). Two sheet Closes arrived, both counted. So the
+  // page shed three controls a finger can press and the number went UP by one.
+  //
+  // THE REGEX IS THE DEFECT, and it is the same one 2.8.0 found in the a11y
+  // walk's target audit an inch away from here: a hand-written list of element
+  // TYPES that omits the ones this app happens to use as controls. It is not
+  // widened in this release because doing so reprices every historical figure
+  // in this comment at the same time as a layout change, and then neither the
+  // count nor the layout could be read against what came before. It is worth
+  // doing on its own.
+  //
+  // What the release actually did to the first screen was measured rather than
+  // counted, at 390x844: fourteen controls to thirteen on an empty store,
+  // fifteen to fourteen with the sample on, and Next up from 0.48 screens to
+  // 0.43.
+  controls: 229,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

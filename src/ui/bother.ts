@@ -12,6 +12,7 @@ import {
   OWNERSHIPS, OWNERSHIP_WORDS,
 } from '../bother.ts';
 import { botherEvents, answerBotherEvents } from './bother-intents.ts';
+import { closeSheet } from './sheets.ts';
 import type { Ownership } from '../events.ts';
 
 export interface BotherUI { refresh(): void }
@@ -26,7 +27,6 @@ export function mountBother(session: Session, onChange: () => void): BotherUI {
   const live = q('#bother-live');
   const form = q<HTMLFormElement>('#bother-form');
   const input = q<HTMLInputElement>('#bother-text');
-  const entry = q<HTMLDetailsElement>('#bother-entry');
   if (!region || !prompt || !card || !actions || !live) return { refresh() {} };
   const REGION = region, PROMPT = prompt, CARD = card, ACTIONS = actions, LIVE = live;
 
@@ -75,9 +75,17 @@ export function mountBother(session: Session, onChange: () => void): BotherUI {
           .then(() => {
             // Focus must not fall to <body> when the button it was on is
             // replaced or removed (WCAG 2.4.3). The prompt if there is another
-            // one; the entry line if that was the last.
+            // one; capture if that was the last.
+            //
+            // It was `#bother-summary` — the collapsed entry line directly
+            // above — until 2.8.1 moved that entry behind Contents. The
+            // replacement is not the new door: sending somebody to a
+            // navigation control after they answered their last worry offers
+            // them the way back in to a surface they have just finished with.
+            // Capture is where this app puts focus on arrival, it is one line
+            // up, and it asks nothing.
             if (!REGION.hidden) PROMPT.focus();
-            else q<HTMLElement>('#bother-summary')?.focus();
+            else q<HTMLElement>('#capture')?.focus();
           });
       });
       return btn;
@@ -89,7 +97,11 @@ export function mountBother(session: Session, onChange: () => void): BotherUI {
     const text = input?.value ?? '';
     if (!text.trim()) { LIVE.textContent = 'It needs to say something.'; return; }
     if (input) input.value = '';
-    if (entry) entry.open = false;
+    // The surface put itself away when the worry landed, exactly as the
+    // collapsed entry used to shut itself. What you named is now a card in the
+    // flow on the page behind, so staying here would hide the answer to the
+    // thing you just did.
+    closeSheet('sheet-bother-entry');
     void run(ctx => botherEvents(ctx, ctx.id(), text), 'Put down. Nothing to decide yet.')
       .then(() => { if (!REGION.hidden) PROMPT.focus(); });
   });
