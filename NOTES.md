@@ -665,8 +665,84 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.2**
-- **https://quietkeep.pages.dev** — production, **2.0.9**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.8.1**
+- **https://quietkeep.pages.dev** — production, **2.7.2** (promoted 2026-08-17,
+  `ce57b8f`, Deploy and Spine green, tree asserted identical to verified staging)
+
+**Two candidates are stacked on staging: 2.8.0 and 2.8.1.** Neither has had a
+device pass. They are independent of each other and can be judged in one sitting.
+
+**2.8.1 — THE FIRST SCREEN, AND WHAT A REARRANGEMENT CAN AND CANNOT BUY**
+(ADR-0099). Three doors leave the runway and become rows in **Contents** — the
+worry entry, the load entry, and *Sort things out*. The coverage gauge moves to
+the top of the page, under capture, where it can be read before the list it is
+reassuring somebody about.
+
+**This is a measurement, taken on purpose instead of the rebuild it belongs to.**
+The design read published on 2026-08-17 named it as the smallest honest first
+step and said it would test that document's thesis before anything was committed
+to it. It did.
+
+**What it bought**, at 390x844, empty store and the thirteen-item sample:
+
+- Next up — the app's whole thesis — **0.48 → 0.43 screens**
+- controls on the first screen: **15 → 14** with the sample, **14 → 13** empty
+- the held list: **2.73 → 2.57 screens**; the whole page **5.91 → 5.66**
+
+Forty-two pixels of an 844px screen. The two entries freed about 110px and the
+proof line put 68px back.
+
+**What it did not buy is the more useful half.** The header is 140px and capture
+96px before anything else exists, so with a proof line above the offer **the
+floor in this shell is about 0.36 screens** — and it is at 0.43. About two thirds
+of the reachable gain is taken and the rest is all that rearrangement has left.
+**Putting the one thing at the top of the screen cannot be done by moving
+blocks**; it needs capture to become fixed chrome rather than the first block of
+a scroll. That is a shell change, it is not in this release, and there is now a
+number to decide it with rather than an argument.
+
+**What it costs:** naming a worry is one tap further than it was. Activation cost
+at the point of performance is the best-evidenced entry in the catalogue and this
+adds some; *out of sight* is answered by the proof line moving up and by the load
+door reporting its own state on the row that reaches it. Both halves are recorded
+in `docs/nd-collisions.md` — entry 3 gains the proof-line move, entry 6 gains the
+open question this release raises and cannot settle: whether a switch is cheaper
+than the scroll it replaced, in use, over days.
+
+**Reversible on purpose.** If the worry box turns out to be one tap too far, the
+entries come back to the runway and the finding stands anyway.
+
+**What to look at:** the first screen on the phone, and **Contents** in the top
+bar — the three rows under *Things you can open*.
+
+
+
+**2.8.0 — THE APP'S OWN SIZE, AND A FLOOR THAT MEANS IT** (ADR-0098). A size
+control in Settings scaling this app's type on this device, as a MULTIPLE of
+whatever the reader's browser or OS is already doing.
+
+**The floor had to be fixed first, and that is the release.** `--target` was
+`2.75rem` — 44px at the default root, in rem so it would GROW with the reader's
+text. The growing half is right. The shrinking half was never considered and is
+not symmetric: bigger text means bigger targets; **smaller text does not mean
+smaller fingers.** Measured at 390px before anything was built, at a root of
+87.5% — an ordinary browser setting and the second option this control offers —
+**24 visible controls fell below 44px**, including the whole header, the capture
+box and the skip link. At 75% they were 33–34px. It is now
+`max(2.75rem, 44px)`.
+
+**And the gate could not have caught it.** `auditTargets` iterated
+`'button, input, a, [role=button]'` — a hand-written list of element TYPES, the
+same defect as a hand-written list of surfaces. Widening it found **four
+controls under the floor at the DEFAULT size**, long shipped and green: the two
+`<select>`s in the load entry at **19px**, `#detail-situation` (a `<textarea>`
+somebody types into) at **36px**, and `#load-summary` with no floor at all.
+Fixed by RULE — `select`, `textarea`, `summary` — because every select that had
+a floor got it individually, which is exactly why the missed ones had none.
+
+**What to look at:** Settings → *How big this app is*.
+
+
 
 **2.7.2 — THE DOOR NAMES BOTH ACTS** (collisions entry 10). The collapsed line
 under capture read *"Something weighing on you?"* — which names raising a pebble

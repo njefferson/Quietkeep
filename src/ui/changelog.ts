@@ -29,6 +29,29 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.8.1',
+    kind: 'ITERATION',
+    date: '2026-08-18',
+    notes: [
+      '**The first screen is capture, the proof line, and the one thing.** *Something on your mind that isn’t a task?*, *How you are, and anything weighing on you* and *Sort things out* have moved behind **Contents**, and all three do exactly what they did. The line saying nothing has gone quiet came up to meet you — it was the first thing inside your list, nearly three screens down, so the one line telling you nothing was lost was only ever read after you had scrolled to the list it was about.',
+      '**And the load line says what is behind it** — its row in **Contents** carries what you said and how many things are on you, so it does not go quiet just because it is out of sight. Nothing at all when there is nothing to say. Never a nought.',
+      '**Measured, not claimed:** on a phone *Next up* went from 0.48 screens down to 0.43, and the first screen from fifteen controls to fourteen. **What it did not buy is worth more:** the top bar and capture take 236 pixels before anything else exists, so the offer cannot beat about 0.36 screens while it sits under them. **Putting the one thing at the top cannot be done by moving blocks** — it needs capture to become part of the frame. Bigger change, not here, and there is now a number to decide it with.',
+      '**The Menu’s door is now higher up the page; it was six controls further down.** Nothing about the Menu changed — three doors came off above it.',
+      '**Naming a worry is one tap further than it was.** A real cost if you have to fight to start things, and the thing to tell me about after a few days.',
+    ],
+  },
+  {
+    triplet: '2.8.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**You can set how big this app is, on its own.** In **Settings**, under *How big this app is* \u2014 smaller through to biggest. It only touches this app on this device: your phone keeps whatever text size you have set for everything else, and nothing you have written down changes.',
+      '**It multiplies your own setting rather than replacing it.** If your phone\u2019s text is already large and you pick *a little smaller*, you get your large text a little smaller \u2014 not thrown back to whatever this app thinks is normal.',
+      '**And the buttons stop shrinking with the words, which they should never have done.** Every control in this app has a floor of 44 pixels, the size a fingertip actually needs. That floor was written in a unit that follows your text size \u2014 so it grew when you made text bigger, which is right, and SHRANK when you made it smaller, which is not: smaller text does not mean smaller fingers. Measured at an ordinary reduced setting, **24 controls were under the floor**, including everything in the top bar and the box you type into.',
+      '**Four controls were under the floor even at the normal size**, and had been for a long time: the two dropdowns for how you are and how heavy something is, the box you type your own words into on a thing\u2019s sheet, and the doors on the two collapsed lines under the capture box. The check that was supposed to catch them had a hand-written list of what counts as a control, and dropdowns, text boxes and those doors were not on it.',
+    ],
+  },
+  {
     triplet: '2.7.2',
     kind: 'ITERATION',
     date: '2026-08-17',

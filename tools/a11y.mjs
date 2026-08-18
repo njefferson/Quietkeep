@@ -319,8 +319,10 @@ const REGISTRY = {
     // Search is a tool that is always on screen even before anything is held,
     // so its input and placeholder are audited here where they first appear.
     '.search-input', { sel: '#search-input', pseudo: '::placeholder' },
-    // Sort mode's door is always on screen too (1.3.0).
-    '#sort-open',
+    // Sort mode's door was here until 2.8.1 (ADR-0099) moved it into Contents.
+    // It is measured as a `.contents-go` row on the 'contents open' state now,
+    // on the surface it actually lives on — leaving it here would have named a
+    // selector matching nothing visible, which this gate fails on by design.
     'button.info', '.section', '.gauge', '.empty', '.foot', '.foot a', '.build',
     '#update-words', '#update-save', '#update-reload', '#update-dismiss',
     // The way back (1.14.0, ADR-0062). This is the ONLY state it appears in —
@@ -559,7 +561,7 @@ const REGISTRY = {
   // nothing else — and the count line only renders for blocks that publish one,
   // so the state has to be one where at least one does.
   'contents open': ['#sheet-contents-title', '#sheet-contents-close',
-    '.contents-name', '.contents-count'],
+    '.contents-group', '.contents-name', '.contents-count'],
   'coverage open': ['#sheet-coverage-title', '#sheet-coverage-close',
     '#coverage-count', '.coverage-title', '.coverage-when', '.coverage-open',
     '.proof-holds', '.proof-count', '.proof-reason'],
@@ -695,7 +697,7 @@ const REGISTRY = {
   // like one.
   'bother': ['#bother-prompt', '.bother-card', '.bother-choice',
     '.bother-choice-label', '.bother-choice-hint'],
-  'bother entry': ['#bother-summary', '#bother-text',
+  'bother entry': ['#sheet-bother-entry-title', '#sheet-bother-entry-close', '#bother-text',
     { sel: '#bother-text', pseudo: '::placeholder' },
     '#bother-form button[type=submit]', '.detail-hint'],
   // Load, not work (1.15.0, ADR-0065). The `bother entry` shape, audited the
@@ -703,9 +705,17 @@ const REGISTRY = {
   // control. `#nextup-load` is in its OWN state below — it renders only while
   // something is on you, and registering it here would name a selector that
   // matches nothing visible, which this gate fails on by design.
-  'load entry': ['#load-summary', '#load-hint', '#capacity-level',
+  // How big this app is (2.8.0, ADR-0098) — its own state, driven in Settings.
+  'app size': ['#ui-scale', '#ui-scale-set', '#ui-scale-note'],
+  'load entry': ['#sheet-load-entry-title', '#sheet-load-entry-close',
+    '#load-hint', '#capacity-level',
     '#pebble-text', { sel: '#pebble-text', pseudo: '::placeholder' },
     '#pebble-weight', '#pebble-form button[type=submit]', '.detail-label'],
+  // The door's own state line (2.8.1, ADR-0099). Its OWN state, driven after a
+  // weight is on, because it is `hidden` while there is nothing to report — an
+  // entry here would name a selector matching nothing visible on an untouched
+  // store, which this gate fails on by design and rightly.
+  'load door state': ['#sheet-load-entry-count'],
   'load carried': ['#pebble-list li', '#pebble-list li button', '#nextup-load'],
   // The Menu (law 6). The money line is the lowest-contrast text and it is the
   // whole of what a save-for says. There is NO bar and no colour keyed to the
@@ -1031,10 +1041,60 @@ async function auditNames(page, stateName, theme) {
   }
 }
 
+/**
+ * OPEN A SURFACE THE WAY A READER DOES (2.8.1, ADR-0099).
+ *
+ * Three entries came off the runway and are reached from Contents now. This
+ * walk could open their dialogs with one line of `showModal()` and every audit
+ * below would pass — measuring a surface while proving nothing whatever about
+ * whether anybody can reach it.
+ *
+ * That is not a hypothetical. Hub LESSONS §95 is a skip link this app shipped
+ * for 142 releases, correct in every particular and reachable by nobody, with
+ * contrast and targets and axe green throughout. A driver that opens a dialog
+ * directly is the same mistake wearing a test's clothes.
+ *
+ * So the walk takes the reader's route: press Contents, find the row, press it.
+ * A door that stops working fails here, on the release that breaks it.
+ *
+ * AND IT SAYS WHY IT COULD NOT. Planted by stripping `data-contents-door` from
+ * the markup, the first version of this simply timed out after thirty seconds
+ * on a click — non-zero, correctly, and pointing at nothing. A gate that fails
+ * without naming its cause sends somebody to read the sheet it was opening
+ * rather than the marker that went missing; this file has already paid for that
+ * once, in a see-through check that named two real surfaces for the wrong
+ * reason.
+ */
+async function openViaContents(page, id) {
+  await page.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await page.click('#contents-open');
+  await page.waitForSelector('#sheet-contents[open]');
+  const row = `#contents-doors .contents-go[data-open="${id}"]`;
+  if (await page.locator(row).count() === 0) {
+    fail(`#${id} has no row in Contents — it is on the page and nobody can reach it`);
+    throw new Error(`no Contents row for #${id}`);
+  }
+  await page.click(row);
+  await page.waitForSelector(`#${id}[open]`, { timeout: 4000 }).catch(() => {
+    fail(`#${id}'s row in Contents does not open it`);
+    throw new Error(`#${id} did not open`);
+  });
+}
+
 async function auditTargets(page, stateName, theme) {
   const small = await page.evaluate(() => {
     const out = [];
-    for (const el of document.querySelectorAll('button, input, a, [role=button]')) {
+    // DERIVED, NOT HAND-LISTED (2.8.0). This read
+    // `'button, input, a, [role=button]'` — which omits `select` and `summary`,
+    // both of which this app uses as real controls. So a 19px `<select>` in the
+    // load entry and a 21px `<summary>` on its door were invisible to the floor
+    // by construction, and every run reported green about them. A hand-written
+    // list of element TYPES is the same defect as a hand-written list of
+    // surfaces, one level down — and this file already learned that twice.
+    for (const el of document.querySelectorAll(
+      'button, input, select, textarea, summary, a[href], [role=button], [tabindex]:not([tabindex="-1"])')) {
       const r = el.getBoundingClientRect();
       if (r.width === 0 && r.height === 0) continue;
       // Height carries B-06's 44px floor; width gets WCAG 2.2 2.5.8's 24px —
@@ -1315,6 +1375,50 @@ try {
     await auditTargets(page, 'settings', theme);
     await auditFocusRings(page, 'settings', theme,
       ['#badge-toggle', '#day-boundary-set', '#sheet-group-extras-close']);
+
+    // HOW BIG THIS APP IS (2.8.0, ADR-0098), driven end to end rather than
+    // asserted as markup: choosing a size must CHANGE the document, pressing Set
+    // must keep it, and the note must state the scope — this app, this device —
+    // because scope is the entire request.
+    await auditContrast(page, 'app size', theme);
+    await auditTargets(page, 'app size', theme);
+    const before = await page.evaluate(() => document.documentElement.style.fontSize);
+    await page.selectOption('#ui-scale', '1.3');
+    await page.waitForTimeout(120);
+    const previewed = await page.evaluate(() => document.documentElement.style.fontSize);
+    (previewed !== before && /%$/.test(previewed) ? pass : fail)(
+      `${theme}/app size: choosing a size shows it immediately, before committing ("${previewed}")`);
+    // RELATIVE, never absolute — an absolute px root would overrule the reader's
+    // own device setting, which is the opposite of what was asked for.
+    (!/px/.test(previewed) ? pass : fail)(
+      `${theme}/app size: it multiplies the reader's own base rather than replacing it`);
+    await page.click('#ui-scale-set');
+    await page.waitForTimeout(120);
+    const note = await page.evaluate(() =>
+      document.querySelector('#ui-scale-note')?.textContent ?? '');
+    (/this app/i.test(note) && /this device/i.test(note) ? pass : fail)(
+      `${theme}/app size: the note states the scope ("${note.slice(0, 60)}")`);
+    (!/\d/.test(note) ? pass : fail)(
+      `${theme}/app size: it says no figure at the reader`);
+    // AND THE FLOOR HOLDS AT THE SIZE IT JUST SET. This is the assertion the
+    // whole release turns on: a size control that can take a target under 44px
+    // is a control that breaks the app for a finger.
+    const shortAfter = await page.evaluate(() => {
+      const out = [];
+      for (const el of document.querySelectorAll('button, input, select, summary, a[href]')) {
+        const r = el.getBoundingClientRect();
+        if (r.width === 0 && r.height === 0) continue;
+        if (r.height < 44) out.push(`${el.tagName.toLowerCase()}#${el.id} ${Math.round(r.height)}px`);
+      }
+      return out;
+    });
+    (shortAfter.length === 0 ? pass : fail)(
+      `${theme}/app size: every target still clears 44px at the chosen size`
+      + `${shortAfter.length ? ` — ${shortAfter.slice(0, 4).join(', ')}` : ''}`);
+    // Put it back, so every state after this is measured at the ordinary size.
+    await page.selectOption('#ui-scale', '1');
+    await page.click('#ui-scale-set');
+    await page.waitForTimeout(120);
 
     // The clearing confirmation is revealed by choosing a mode, so it is opened
     // here: a control that only exists after a click is still a control somebody
@@ -1659,18 +1763,29 @@ try {
     // weight is put on so the SECOND state — the list row and the line beside a
     // narrowed offer — has something to render. A boulder, so the threshold is
     // crossed in one go rather than by piling up three.
-    await page.click('#load-summary');
+    await openViaContents(page, 'sheet-load-entry');
     await page.waitForSelector('#pebble-text');
     await auditContrast(page, 'load entry', theme);
     await auditAxe(page, 'load entry', theme);
     await auditNames(page, 'load entry', theme);
     await auditTargets(page, 'load entry', theme);
     await auditFocusRings(page, 'load entry', theme,
-      ['#load-summary', '#pebble-text', '#capacity-level', '#pebble-weight']);
+      ['#sheet-load-entry-close', '#pebble-text', '#capacity-level', '#pebble-weight']);
     await page.fill('#pebble-text', 'the thing with the roof');
     await page.selectOption('#pebble-weight', 'boulder');
     await page.click('#pebble-form button[type=submit]');
     await page.waitForSelector('#pebble-list li');
+    // The door's state line, now that there is something behind the door to
+    // report. Asserted as words rather than assumed: a surface that goes silent
+    // the moment it is out of sight is the collision this app is a rebuttal to,
+    // so the line is audited AND its content is checked below.
+    await page.waitForSelector('#sheet-load-entry-count:not([hidden])');
+    await auditContrast(page, 'load door state', theme);
+    const doorWords = (await page.textContent('#sheet-load-entry-count')).trim();
+    (/\bthing\b/.test(doorWords) ? pass : fail)(
+      `${theme}/load door state: the door says what is behind it — "${doorWords}"`);
+    (/\d+\s*%|\bof\b\s*\d/.test(doorWords) ? fail : pass)(
+      `${theme}/load door state: and says it without a score or a proportion`);
     await page.waitForSelector('#nextup-load:not([hidden])');
     await auditContrast(page, 'load carried', theme);
     await auditAxe(page, 'load carried', theme);
@@ -1681,7 +1796,8 @@ try {
     // offer is back to its ordinary shape for every state after this one.
     await page.click('#pebble-list li button');
     await page.waitForSelector('#nextup-load', { state: 'hidden' });
-    await page.click('#load-summary');
+    await page.click('#sheet-load-entry-close');
+    await page.waitForSelector('#sheet-load-entry', { state: 'hidden' });
 
     // The claim, opened — ITS OWN SHEET since 2.0.5 (ADR-0088), so this is a
     // dialog state now and is measured as one: the sheet's Close is chrome
@@ -1736,6 +1852,49 @@ try {
     (dead.length === 0 ? pass : fail)(
       `${theme}/contents open: no row points at a block that is not on the page` +
       `${dead.length ? ` — ${dead.map((r) => `#${r.go}`).join(', ')}` : ''}`);
+
+    // THE DOORS HALF (2.8.1, ADR-0099). Three surfaces came off the runway and
+    // this list is now their only route, so the assertion is not "the rows look
+    // right" but "every marked door has one, named by the surface itself".
+    //
+    // Written so it CANNOT go vacuous. The count is asserted non-zero first:
+    // strip `data-contents-door` from the markup and the loop below has nothing
+    // to iterate, every per-door assertion silently does not run, and the state
+    // reports green about a feature that is gone. Hub LESSONS §100 is exactly
+    // that shape, found in this file, in an ambient-horizon check that took its
+    // "correctly absent" branch through a whole release in both themes.
+    const marked = await page.evaluate(() => ({
+      doors: [...document.querySelectorAll('dialog[data-contents-door]')].map((d) => ({
+        id: d.id,
+        name: document.getElementById(d.getAttribute('aria-labelledby'))?.textContent?.trim() ?? '',
+      })),
+      rows: [...document.querySelectorAll('#contents-doors .contents-go')].map((b) => ({
+        open: b.dataset.open,
+        name: b.querySelector('.contents-name')?.textContent?.trim() ?? '',
+      })),
+    }));
+    (marked.doors.length >= 3 ? pass : fail)(
+      `${theme}/contents open: the page still marks its off-runway surfaces (${marked.doors.length} found, expected at least 3)`);
+    for (const door of marked.doors) {
+      (marked.rows.some((r) => r.open === door.id && r.name === door.name) ? pass : fail)(
+        `${theme}/contents open: "${door.name}" (#${door.id}) is reachable, and its row is named by the surface itself`);
+    }
+    const orphan = marked.rows.filter((r) => !marked.doors.some((d) => d.id === r.open));
+    (orphan.length === 0 ? pass : fail)(
+      `${theme}/contents open: no door row points at a surface that is not there` +
+      `${orphan.length ? ` — ${orphan.map((r) => `#${r.open}`).join(', ')}` : ''}`);
+
+    // And the route itself, driven. The worry entry, because it is the one that
+    // gave up a one-tap door on the runway to be here — if any door has to work,
+    // it is this one.
+    await page.click('#contents-doors .contents-go[data-open="sheet-bother-entry"]');
+    await page.waitForSelector('#sheet-bother-entry[open]');
+    (await page.evaluate(() => document.querySelector('#sheet-contents')?.open === false) ? pass : fail)(
+      `${theme}/contents open: arriving at a surface puts Contents away (one surface at a time)`);
+    await page.click('#sheet-bother-entry-close');
+    await page.waitForSelector('#sheet-bother-entry', { state: 'hidden' });
+    await page.click('#contents-open');
+    await page.waitForSelector('#sheet-contents[open]');
     // The route, driven. `#held` is the block this release gave a name to, and
     // it is the one furthest down the page — so it is the row with the most to
     // prove about arriving.
@@ -1877,6 +2036,37 @@ try {
     await page.click('#detail-history summary');
 
     // B-04's hardest case, for the densest surface in the app.
+    // THE FLOOR AT EVERY SIZE THE APP ITSELF OFFERS (2.8.0, ADR-0098).
+    //
+    // The 44px floor was measured at ONE root size — whatever the runner happened
+    // to use — and `--target` was `2.75rem`, so it shrank with the reader. At a
+    // root of 87.5%, an ordinary browser setting AND the second option in this
+    // release's own size control, 24 visible controls fell below 44px: the whole
+    // header, the capture box, the skip link. At 75% they were 33-34px.
+    //
+    // A ceiling-and-floor check that only runs at 100% is a check that measured
+    // the runner rather than the app. This drives the SMALLEST size the control
+    // offers, because that is the one that can break the floor.
+    for (const root of ['85%', '92.5%']) {
+      await page.evaluate((r) => { document.documentElement.style.fontSize = r; }, root);
+      await page.waitForTimeout(80);
+      const short = await page.evaluate(() => {
+        const out = [];
+        for (const el of document.querySelectorAll(
+          'button, input, select, textarea, summary, a[href], [role=button], [tabindex]:not([tabindex="-1"])')) {
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) continue;
+          if (r.height < 44 || r.width < 24) {
+            out.push(`${el.tagName.toLowerCase()}#${el.id || el.className} ${Math.round(r.width)}x${Math.round(r.height)}`);
+          }
+        }
+        return out;
+      });
+      (short.length === 0 ? pass : fail)(
+        `${theme}/root ${root}: a finger's target still clears 44px${short.length ? ` — ${short.slice(0, 6).join(', ')}` : ''}`);
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+
     await page.setViewportSize({ width: 320, height: 568 });
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
     const sheetOverflow = await page.evaluate(() => {
@@ -1937,12 +2127,13 @@ try {
     await page.click('#replan-close');
 
     // State 3d2: a worry, and the question it is asked first.
-    await page.click('#bother-summary');
+    await openViaContents(page, 'sheet-bother-entry');
     await page.waitForSelector('#bother-text');
     await auditContrast(page, 'bother entry', theme);
     await auditNames(page, 'bother entry', theme);
     await auditTargets(page, 'bother entry', theme);
-    await auditFocusRings(page, 'bother entry', theme, ['#bother-text', '#bother-summary']);
+    await auditFocusRings(page, 'bother entry', theme,
+      ['#bother-text', '#sheet-bother-entry-close']);
     await page.fill('#bother-text', 'the thing with the roof');
     await page.click('#bother-form button[type=submit]');
     await page.waitForSelector('#bother:not([hidden])');
@@ -2494,8 +2685,7 @@ try {
     await page.click('#detail-close');
     await fillSearch('');
 
-    await page.click('#sort-open');
-    await page.waitForSelector('#sort[open]');
+    await openViaContents(page, 'sort');
     await page.waitForSelector('.sort-choice');
     await auditContrast(page, 'sort picker', theme);
     await auditAxe(page, 'sort picker', theme);

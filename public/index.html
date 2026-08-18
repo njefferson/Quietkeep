@@ -124,86 +124,37 @@
        looked away is precisely the one this is for. -->
   <p id="capture-offer" class="capture-offer" hidden></p>
 
-  <!-- Naming a worry (v1.5). NOT a task, and deliberately not the same box:
-       being told to enter "the thing with the roof" as a task is what makes
-       people invent a next action they will not do. -->
-  <details id="bother-entry" class="bother-entry">
-    <summary id="bother-summary">Something on your mind that isn&rsquo;t a task?</summary>
-    <form id="bother-form" autocomplete="off">
-      <label class="visually-hidden" for="bother-text">What is on your mind?</label>
-      <div class="detail-row">
-        <input id="bother-text" type="text" enterkeyhint="done" autocomplete="off"
-               autocapitalize="sentences" spellcheck="true"
-               placeholder="the thing with the roof" aria-describedby="bother-entry-hint">
-        <button type="submit">Put it down</button>
-      </div>
-      <p id="bother-entry-hint" class="detail-hint">
-        You do not have to know what to do about it. That is the next question,
-        and it is not the first one.
-      </p>
-    </form>
-  </details>
+  <!-- THE PROOF, WHERE SOMEBODY CAN ACTUALLY READ IT (2.8.1, ADR-0099).
+       This control was the first thing INSIDE the held list — measured 2.73
+       screens down on a thirteen-item store at 390x844 — so the one line that
+       says nothing has gone quiet was only ever read by somebody who had
+       already scrolled to the list it was reassuring them about.
 
-  <!-- Load, not work (1.15.0, ADR-0065). The `bother-entry` shape exactly: a
-       collapsed line under capture, invisible until you want it, cheap when you
-       do. Deliberately NOT the same box as a bother — a worry is pre-triage and
-       must terminate in a route; a weight is not going anywhere and is not
-       asking to be dealt with. It sits on you, and saying so is the whole act. -->
-  <details id="load-entry" class="bother-entry">
-    <!-- THE DOOR NAMES BOTH ACTS (2.7.2, collisions entry 10).
-         It read "Something weighing on you?", which names raising a pebble —
-         and the CAPACITY declaration lives behind it too, unannounced. So on a
-         heavy morning, saying "it is a low stretch" required guessing that the
-         question about weights was where that lived.
-         Entry 10's open question was reach, and it framed it as placement —
-         "whether the declare verb sits where a heavy morning actually happens
-         (the work surface) rather than down a sheet". Measured 2026-08-17: the
-         premise was wrong. This is on the work surface, above every section,
-         directly under capture. The reach defect was never the location; it was
-         the label, which is a smaller and more specific thing.
-         Two acts behind one door, and now the door says so. Still a door and
-         still collapsed — a standing question about how somebody is would be a
-         demand, and this surface is the best-defended part of the app against
-         exactly that (entry 8). -->
-    <summary id="load-summary">How you are, and anything weighing on you</summary>
+       It is here because it is what buys the right to have taken two entries
+       off this screen. Hiding things is frightening with no standing claim that
+       nothing was lost and unremarkable with one, and this is that claim: it
+       names the exceptions first, states the number that is on the app icon,
+       and opens the sheet that lists every item and the date it comes back.
+       Same control, same words, same sheet behind it. Moved. -->
+  <button id="gauge" class="gauge" type="button"></button>
 
-    <p id="load-hint" class="detail-hint">
-      None of this becomes a task, takes a date, or comes back at you. It is here
-      so the app can ask less of you while you are carrying it.
-    </p>
+  <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
+       Both were collapsed lines here, directly under capture: `bother-entry`
+       from v1.5 and `load-entry` from 1.15.0. They are surfaces now, reached
+       from Contents in the header, and their markup sits at the foot of this
+       file with the app's other sheets.
 
-    <label class="detail-label" for="capacity-level">How are things just now?</label>
-    <div class="detail-row">
-      <select id="capacity-level">
-        <!-- Disabled: it is the display before you have said anything, not a
-             choice. Stepping back from a declaration is `not sure`, which is
-             one of the four words on purpose. -->
-        <option value="" disabled>not said</option>
-        <option value="low">a low stretch</option>
-        <option value="steady">steady</option>
-        <option value="sharp">sharp</option>
-        <option value="unsure">not sure</option>
-      </select>
-    </div>
+       Measured here first, at 390x844, so the trade is on the record rather
+       than argued: fourteen controls on the first screen of an EMPTY store,
+       and Next up — the app's whole thesis, one thing chosen for you — 0.48
+       screens down, behind two shut doors and a status line. The two doors
+       cost 92px of a 844px screen while shut and offered nothing while shut.
 
-    <form id="pebble-form" autocomplete="off">
-      <label class="detail-label" for="pebble-text">Something on you</label>
-      <div class="detail-row">
-        <input id="pebble-text" type="text" enterkeyhint="done" autocomplete="off"
-               autocapitalize="sentences" spellcheck="true"
-               placeholder="the thing with the roof">
-        <label class="visually-hidden" for="pebble-weight">How heavy it is</label>
-        <select id="pebble-weight">
-          <option value="pebble">a pebble</option>
-          <option value="rock">a rock</option>
-          <option value="boulder">a boulder</option>
-        </select>
-        <button type="submit">Note it</button>
-      </div>
-    </form>
-
-    <ul id="pebble-list" class="trash-list"></ul>
-  </details>
+       WHAT THIS TRADES, stated because it is a real cost and not a free win:
+       naming a worry goes from one tap to two. The catalogue's best-evidenced
+       item is activation cost at the point of performance, and this adds some.
+       Against it: every visible ask is an ask (entry 8), and the thing that was
+       being pushed below the fold was the one thing the app is for. -->
 
   <!-- The flow. One at a time, like triage — a list of worries is a worse object
        than any single worry on it. It asks WHOSE IT IS before it asks anything
@@ -446,11 +397,11 @@
        names where the card went and returns it to the inbox in one tap. -->
   <div id="triage-undo" class="triage-undo"></div>
 
-  <!-- Sort mode (1.3.0): the same one-card conveyor, pointed at a range you
-       NAME — a big import, everything under one project, whatever matches a
-       word. Opt-in, behind this control, never the landing view. -->
-  <button id="sort-open" class="gauge" type="button">Sort things out
-    &mdash; work through a batch, one card at a time</button>
+  <!-- Sort mode's door left this surface in 2.8.1 (ADR-0099). It was a 68px
+       row here, 1.92 screens down on a thirteen-item store, standing between
+       the triage conveyor and the replan cards — a way IN to a batch sitting in
+       the middle of the page you were already scrolling past. It is a row in
+       Contents now. The sheet itself is unchanged; only its door moved. -->
 
   <!-- Dates that have gone by (product law 3, ADR-0012/ADR-0034). NOT a list of
        failures — there is no such list in this app. Each row is a live decision,
@@ -652,20 +603,21 @@
        run of children it replaces. -->
   <section id="held" class="held" aria-labelledby="held-heading">
   <h2 id="held-heading" class="section" tabindex="-1">What you are holding</h2>
-  <!-- Tappable: the gauge's number is a claim, and the claim is checkable —
-       every item and the date it comes back.
+  <!-- The gauge stood here, first inside this list, until 2.8.1 moved it to the
+       top of the page (ADR-0099). A proof that nothing has gone quiet is worth
+       most to somebody who has NOT yet scrolled to the list, and it was 2.73
+       screens away from them.
 
-       IT OPENS A SHEET, NOT A FOLD (2.0.5, ADR-0088). Both of these controls
-       used to unfold their contents inline, directly above the held list. On a
-       full store that put 26,031px of claim and 17,246px of tree between the
-       reader and the list they were already looking at — measured at 820x1180,
-       not estimated. ADR-0083 retired exactly that shape in the (i) panel and
-       said why: a fold changes how much stands in front of you and not how far
-       you have to travel, and travel is what was expensive. Neither of these is
-       an expander any more, so neither carries aria-expanded/aria-controls —
+       IT OPENS A SHEET, NOT A FOLD (2.0.5, ADR-0088). Both the gauge and the
+       tree used to unfold their contents inline, directly above the held list.
+       On a full store that put 26,031px of claim and 17,246px of tree between
+       the reader and the list they were already looking at — measured at
+       820x1180, not estimated. ADR-0083 retired exactly that shape in the (i)
+       panel and said why: a fold changes how much stands in front of you and
+       not how far you have to travel, and travel is what was expensive. Neither
+       is an expander any more, so neither carries aria-expanded/aria-controls —
        a button that opens a dialog is not a disclosure and must not claim to
        be one. -->
-  <button id="gauge" class="gauge" type="button"></button>
 
   <!-- The alignment tree, ON REQUEST (1.6.0 — build-plan item 39, ADR-0013).
        Never the landing view; an inspection mode, not a workspace. Rows carry
@@ -776,7 +728,13 @@
      contained. The picker shows SENTENCES AND COUNTS, never lists (law 8); the
      card shows one thing; the only number sorting ever states is the range's
      true total, once, at entry. No tally, no countdown, no bar (law 5). -->
-<dialog id="sort" aria-labelledby="sort-title">
+<!-- Sort mode (1.3.0): the same one-card conveyor, pointed at a range you NAME —
+     a big import, everything under one project, whatever matches a word. Opt-in,
+     and never the landing view. Its door moved off the runway into Contents in
+     2.8.1 (ADR-0099); the sheet is untouched. -->
+<dialog id="sort" aria-labelledby="sort-title"
+        data-contents-door
+        data-door="#contents-open | #contents-doors .contents-go[data-open='sort']">
   <h2 id="sort-title" class="detail-title">Sort things out</h2>
   <div id="sort-picker">
     <p class="detail-hint">Pick a batch. One card at a time, oldest first
@@ -2053,6 +2011,38 @@
   </div>
   <p id="day-boundary-note" class="storage-note" role="status" aria-live="polite"></p>
 
+  <!-- THE APP'S OWN TEXT SIZE (2.8.0, ADR-0098).
+       Asked for from a device: a way to scale this app INDEPENDENTLY of the
+       phone's own setting. That is not the same request as browser zoom — you
+       may want your messages large and your planner dense, or the reverse, and
+       today the only lever moves everything at once.
+       IT SCALES THE TYPE AND NEVER THE TOUCH FLOOR. `--target` is
+       `max(2.75rem, 44px)` as of this release precisely so this control cannot
+       take a finger's target under the floor: at 87.5% it measured 24 controls
+       below 44px before that fix, including the whole header and the capture
+       box. Bigger text may grow a target; smaller text does not shrink a finger.
+       A DEVICE PREFERENCE, not an event. How big somebody wants the type is not
+       a fact about their work and the log has no business holding a history of
+       it — the same rule as the lens root and where-you-are. -->
+  <h3 class="about-section">How big this app is</h3>
+  <p class="about-p">
+    Only this app, and only on this device. It does not touch anything else on
+    your phone, and nothing you have written down changes.
+  </p>
+  <div class="about-actions">
+    <label class="detail-inline" for="ui-scale">Text in this app</label>
+    <select id="ui-scale">
+      <option value="0.85">smaller</option>
+      <option value="0.925">a little smaller</option>
+      <option value="1">the usual</option>
+      <option value="1.15">a little bigger</option>
+      <option value="1.3">bigger</option>
+      <option value="1.5">biggest</option>
+    </select>
+    <button id="ui-scale-set" type="button" class="ghost">Set the size</button>
+  </div>
+  <p id="ui-scale-note" class="storage-note" role="status" aria-live="polite"></p>
+
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">
     How long the <em>Do now</em> timer runs. Set it here, calmly, rather than in the moment you are trying to start.
@@ -2184,11 +2174,120 @@
 </dialog>
 
 <dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
-  <h2 id="sheet-contents-title" class="section">What&rsquo;s on this page</h2>
+  <h2 id="sheet-contents-title" class="section">What&rsquo;s here, and what you can open</h2>
   <div class="sheet-body">
-    <ul id="contents-list" class="contents-list"></ul>
+    <!-- DOORS FIRST, and not for symmetry (2.8.1, ADR-0099). The stops below
+         are places the reader can already reach by scrolling; these are the
+         only route to their surface. Putting them second would mean scrolling
+         past thirteen page stops to put a worry down. -->
+    <h3 id="contents-doors-title" class="contents-group">Things you can open</h3>
+    <ul id="contents-doors" class="contents-list" aria-labelledby="contents-doors-title"></ul>
+    <h3 id="contents-stops-title" class="contents-group">On this page</h3>
+    <ul id="contents-list" class="contents-list" aria-labelledby="contents-stops-title"></ul>
   </div>
   <button id="sheet-contents-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- Naming a worry (v1.5). NOT a task, and deliberately not the same box:
+     being told to enter "the thing with the roof" as a task is what makes
+     people invent a next action they will not do.
+
+     A SURFACE SINCE 2.8.1 (ADR-0099), where it was a collapsed line under
+     capture. `data-door` names BOTH taps, separated by `|` — the walk clicks
+     them in order, so a surface that takes two taps to reach is still
+     discovered from its own markup rather than from a list somebody maintains.
+     A one-tap door stays a single selector and nothing about it changes. -->
+<dialog id="sheet-bother-entry" aria-labelledby="sheet-bother-entry-title"
+        data-contents-door
+        data-door="#contents-open | #contents-doors .contents-go[data-open='sheet-bother-entry']">
+  <h2 id="sheet-bother-entry-title" class="section">Something on your mind that isn&rsquo;t a task?</h2>
+  <div class="sheet-body">
+    <form id="bother-form" autocomplete="off">
+      <label class="visually-hidden" for="bother-text">What is on your mind?</label>
+      <div class="detail-row">
+        <input id="bother-text" type="text" enterkeyhint="done" autocomplete="off"
+               autocapitalize="sentences" spellcheck="true"
+               placeholder="the thing with the roof" aria-describedby="bother-entry-hint">
+        <button type="submit">Put it down</button>
+      </div>
+      <p id="bother-entry-hint" class="detail-hint">
+        You do not have to know what to do about it. That is the next question,
+        and it is not the first one.
+      </p>
+    </form>
+  </div>
+  <button id="sheet-bother-entry-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- Load, not work (1.15.0, ADR-0065). Deliberately NOT the same box as a
+     bother — a worry is pre-triage and must terminate in a route; a weight is
+     not going anywhere and is not asking to be dealt with. It sits on you, and
+     saying so is the whole act.
+
+     THE DOOR NAMES BOTH ACTS (2.7.2, collisions entry 10). It read "Something
+     weighing on you?", which names raising a pebble — and the CAPACITY
+     declaration lives behind it too, unannounced. So on a heavy morning, saying
+     "it is a low stretch" required guessing that the question about weights was
+     where that lived. Two acts behind one door, and the door says so.
+
+     A SURFACE SINCE 2.8.1 (ADR-0099), and its Contents row CARRIES ITS STATE —
+     what you said and how many weights are on you. That is the answer to the
+     collision this whole app is a rebuttal to: a thing that leaves the visual
+     field leaves existence, so the door reports what is behind it rather than
+     going quiet. The row answers "is it worth going" as well as "how do I get
+     there", which is the argument the page stops already run on. -->
+<dialog id="sheet-load-entry" aria-labelledby="sheet-load-entry-title"
+        data-contents-door
+        data-door="#contents-open | #contents-doors .contents-go[data-open='sheet-load-entry']">
+  <h2 id="sheet-load-entry-title" class="section">How you are, and anything weighing on you</h2>
+  <div class="sheet-body">
+    <!-- WHAT YOU HAVE SAID, in one line, and the SAME line the Contents row
+         shows — `doors()` reads it from here by the `#<sheet-id>-count`
+         convention the page stops already use, so the door and the surface
+         cannot disagree about what is behind the door. There is only one of it.
+         Hidden while there is nothing to report: a standing "0" is a reminder
+         that you have not filled something in, and this entry has been defended
+         against exactly that since it was built. -->
+    <p id="sheet-load-entry-count" class="detail-hint" hidden></p>
+
+    <p id="load-hint" class="detail-hint">
+      None of this becomes a task, takes a date, or comes back at you. It is here
+      so the app can ask less of you while you are carrying it.
+    </p>
+
+    <label class="detail-label" for="capacity-level">How are things just now?</label>
+    <div class="detail-row">
+      <select id="capacity-level">
+        <!-- Disabled: it is the display before you have said anything, not a
+             choice. Stepping back from a declaration is `not sure`, which is
+             one of the four words on purpose. -->
+        <option value="" disabled>not said</option>
+        <option value="low">a low stretch</option>
+        <option value="steady">steady</option>
+        <option value="sharp">sharp</option>
+        <option value="unsure">not sure</option>
+      </select>
+    </div>
+
+    <form id="pebble-form" autocomplete="off">
+      <label class="detail-label" for="pebble-text">Something on you</label>
+      <div class="detail-row">
+        <input id="pebble-text" type="text" enterkeyhint="done" autocomplete="off"
+               autocapitalize="sentences" spellcheck="true"
+               placeholder="the thing with the roof">
+        <label class="visually-hidden" for="pebble-weight">How heavy it is</label>
+        <select id="pebble-weight">
+          <option value="pebble">a pebble</option>
+          <option value="rock">a rock</option>
+          <option value="boulder">a boulder</option>
+        </select>
+        <button type="submit">Note it</button>
+      </div>
+    </form>
+
+    <ul id="pebble-list" class="trash-list"></ul>
+  </div>
+  <button id="sheet-load-entry-close" type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-menu" aria-labelledby="sheet-menu-title" data-door="#menu-open">

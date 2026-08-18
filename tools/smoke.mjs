@@ -126,6 +126,39 @@ const openSurface = async (pg, id) => {
   }
   await pg.waitForSelector(`#${id}[open]`);
 };
+
+// AND THE THREE THAT ARE REACHED FROM CONTENTS (2.8.1, ADR-0099).
+//
+// The worry entry, the load entry and sort's picker came off the runway. They
+// are not in More's destination list — they are rows in Contents — so they get
+// their own opener for the same reason `openSurface` exists at all: a walk that
+// reaches a surface by a route no reader has cannot say anything about whether
+// the reader's route works.
+//
+// It NAMES what is missing rather than timing out. Planted by stripping
+// `data-contents-door`, the first version spent thirty seconds waiting on a
+// click and then said only that a click had timed out, which points at the
+// sheet rather than at the marker that went missing.
+// A door may take more than one tap (2.8.1, ADR-0099), and the surface still
+// declares its own way in. `|` separates the taps — NOT a space, which is the
+// descendant combinator and would make the whole chain one valid selector
+// matching nothing, failing as "could not open it" and sending somebody to read
+// the sheet rather than this line.
+const doorSteps = (d) => d.split('|').map(x => x.trim()).filter(Boolean);
+
+const openViaContents = async (pg, id) => {
+  await pg.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await pg.click('#contents-open');
+  await pg.waitForSelector('#sheet-contents[open]');
+  const row = `#contents-doors .contents-go[data-open="${id}"]`;
+  if (await pg.locator(row).count() === 0) {
+    throw new Error(`#${id} has no row in Contents — it is in the app and nobody can reach it`);
+  }
+  await pg.click(row);
+  await pg.waitForSelector(`#${id}[open]`, { timeout: 4000 });
+};
 const ready = () => page.waitForSelector('body[data-ready=true]');
 
   const bootStart = Date.now();
@@ -1482,12 +1515,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#nextup-bite-form').isVisible(), true,
     'and finishing the step brings the invitation back');
 
-  // TOO HEAVY. Not a second form — it opens the one under the capture line with
-  // this item attached, so `affects` finally gets a writer after eight releases
-  // of being a complete and unreachable field.
+  // TOO HEAVY. Not a second form — it opens the ONE load entry with this item
+  // attached, so `affects` finally gets a writer after eight releases of being a
+  // complete and unreachable field. That entry became a surface in 2.8.1
+  // (ADR-0099) and this route had to move with it: `attachTo` calls `openSheet`
+  // now, so the same act still ends on the same form.
   const heavyAbout = await tpage.locator('#nextup-title').textContent();
   await tpage.click('#nextup-heavy');
-  await tpage.waitForSelector('#load-entry[open]');
+  await tpage.waitForSelector('#sheet-load-entry[open]');
   await tpage.fill('#pebble-text', 'the whole history of it');
   await tpage.selectOption('#pebble-weight', 'rock');
   await tpage.click('#pebble-form button[type=submit]');
@@ -1509,18 +1544,29 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/·\s*on /.test(secondRow), false,
     `the next weight is attached to nothing ("${secondRow}")`);
 
+  // THE DOOR REPORTS WHAT IS BEHIND IT (2.8.1, ADR-0099). The entry is off the
+  // runway now, and a surface that goes quiet the moment it is out of sight is
+  // the collision this whole app is a rebuttal to. Asserted while two weights
+  // are genuinely on, so the check cannot pass by the line being absent.
+  const doorState = (await tpage.textContent('#sheet-load-entry-count')).trim();
+  is(/2 things on you/.test(doorState), true,
+    `the load door says what is behind it ("${doorState}")`);
+
   // LEAVE THE SURFACE AS THIS SECTION FOUND IT. Both weights come off and the
-  // entry closes again. Two reasons, and the second is the one that bit: real
-  // weight narrows the offer (ADR-0065), so leaving it on would silently change
-  // what every later section is offered; and the load section further down
-  // opens this <details> by clicking its summary, which TOGGLES — so an entry
-  // left open is an entry that section then closes on itself. Its failure looks
-  // like a broken load surface and is really this block's litter.
+  // entry closes again. Real weight narrows the offer (ADR-0065), so leaving it
+  // on would silently change what every later section is offered.
   for (const t of ['the whole history of it', 'something else entirely']) {
     await tpage.locator('#pebble-list li', { hasText: t }).locator('button').click();
     await tpage.waitForTimeout(120);
   }
-  await tpage.evaluate(() => { document.querySelector('#load-entry')?.removeAttribute('open'); });
+  // AND THE DOOR GOES QUIET AGAIN, which is the other half of the same rule: a
+  // standing "0 things on you" is a reminder that you have not filled something
+  // in, and this entry has been defended against exactly that since it was
+  // built. Nothing to report means nothing said.
+  is(await tpage.locator('#sheet-load-entry-count').isVisible(), false,
+    'and says nothing at all once the weight is off');
+  await tpage.click('#sheet-load-entry-close');
+  await tpage.waitForSelector('#sheet-load-entry', { state: 'hidden' });
   await tpage.waitForTimeout(120);
 
   console.log('\nWork mode — Done records, and the item stops being offered');
@@ -1751,7 +1797,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const gaugeBefore = await tpage.locator('#gauge').textContent();
   const cardsBefore = await tpage.locator('#cards .card').count();
 
-  await tpage.click('#load-summary');
+  await openViaContents(tpage, 'sheet-load-entry');
   await tpage.waitForSelector('#pebble-text');
   await tpage.fill('#pebble-text', 'the thing with the roof');
   await tpage.selectOption('#pebble-weight', 'boulder');
@@ -1797,8 +1843,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // no journal entry and no pebble in it. Run it here, with a pebble ON, so it
   // is a real check.
   // The claim is a sheet since 2.0.5, so it is never left open by an earlier
-  // section: open it, read it, close it. The "put it back as you found it"
-  // dance the toggle needed is gone with the toggle.
+  // section: open it, read it, close it.
+  //
+  // AND THE LOAD ENTRY IS A SHEET TOO NOW (2.8.1, ADR-0099), so it has to be put
+  // away before the gauge can be pressed at all. As a <details> it could be left
+  // standing open and the walk went on clicking the page underneath; a modal
+  // takes every tap, which is the discipline working — one surface at a time
+  // binds the walk exactly as it binds a reader.
+  await tpage.click('#sheet-load-entry-close');
+  await tpage.waitForSelector('#sheet-load-entry', { state: 'hidden' });
   await tpage.click('#gauge');
   await tpage.waitForSelector('#sheet-coverage[open]');
   const loadRows = await tpage.locator('.coverage-item').count();
@@ -1814,7 +1867,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#nextup-load:not([hidden])');
   is(true, true, 'the weight is still on after a full reload');
-  await tpage.click('#load-summary');
+  await openViaContents(tpage, 'sheet-load-entry');
   await tpage.waitForSelector('#pebble-list li button');
   await tpage.click('#pebble-list li button');
   await tpage.waitForSelector('#nextup-load', { state: 'hidden' });
@@ -1829,7 +1882,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // is also true of "10 silent" and "100 silent".
   is(silentCount(await tpage.locator('#gauge').textContent()), 0,
     'with nothing silent');
-  await tpage.click('#load-summary');
+  await tpage.click('#sheet-load-entry-close');
 
   // --- The detail sheet: dates, repeats, undo (Phase 3.5) ------------------
   // The point of this section is that the app is a PLANNER now: it can hold a
@@ -3517,7 +3570,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       await tpage.evaluate(() => {
         for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
       });
-      await tpage.locator(door).click().catch(() => {});
+      // A DOOR MAY TAKE MORE THAN ONE TAP (2.8.1, ADR-0099), and the surface
+      // still declares its own way in. Three entries came off the runway and
+      // are reached through Contents, so their `data-door` names both taps,
+      // separated by `|` — press Contents, then the row. A one-tap door is a
+      // single selector and nothing about it changed.
+      //
+      // The separator is NOT a space: a space is the descendant combinator, so
+      // `#contents-open .contents-go` is one valid selector matching nothing,
+      // which would fail as "could not open it" and send somebody looking at
+      // the sheet rather than at this line.
+      for (const step of doorSteps(door)) {
+        await tpage.locator(step).click().catch(() => {});
+        await tpage.waitForTimeout(60);
+      }
     } else {
       await openSurface(tpage, surface).catch(() => {});
     }
@@ -3689,13 +3755,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     is(shape.outsideScroller, true,
       `${id}: its Close is outside the scrolling body, so it cannot scroll away when the body grows`);
 
-    if (door && !(await ppage.locator(door).isVisible())) {
-      notOpened.push(`${id} (its door ${door} is not on this surface with an empty store)`);
+    // A CHAIN IS CHECKED STEP BY STEP (2.8.1, ADR-0099). Each tap has to be on
+    // screen when its turn comes — asking about the whole chain at once would
+    // read it as one selector and report every multi-tap surface unreachable.
+    let blocked = null;
+    if (door) {
+      for (const step of doorSteps(door)) {
+        if (!(await ppage.locator(step).isVisible())) { blocked = step; break; }
+        await ppage.click(step);
+        await ppage.waitForTimeout(60);
+      }
+    }
+    if (blocked) {
+      notOpened.push(`${id} (its door ${blocked} is not on this surface with an empty store)`);
       continue;
     }
-    if (door) {
-      await ppage.click(door);
-    } else {
+    if (!door) {
       await ppage.evaluate(() => document.querySelector('#more')?.showModal());
       await ppage.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
     }
@@ -3882,7 +3957,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#bother').isVisible(), false,
     'nothing is on your mind, so nothing asks');
 
-  await tpage.click('#bother-summary');
+  await openViaContents(tpage, 'sheet-bother-entry');
   await tpage.fill('#bother-text', 'my brother\u2019s job situation');
   await tpage.click('#bother-form button[type=submit]');
   await tpage.waitForSelector('#bother:not([hidden])');
@@ -4050,7 +4125,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   while (await tpage.locator('#triage:not([hidden]) .route').count() > 0) {
     await routeOne('Next action');
   }
-  await tpage.click('#bother-summary');
+  await openViaContents(tpage, 'sheet-bother-entry');
   await tpage.fill('#bother-text', 'the thing with the roof');
   await tpage.click('#bother-form button[type=submit]');
   await tpage.waitForSelector('#bother:not([hidden])');
@@ -4686,8 +4761,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(gaugeAfterLoose, gaugeBeforeLoose,
     `the daily triage gauge is untouched by an import ("${gaugeBeforeLoose}" -> "${gaugeAfterLoose}")`);
 
-  await tpage.click('#sort-open');
-  await tpage.waitForSelector('#sort[open]');
+  await openViaContents(tpage, 'sort');
   const choiceWords = await tpage.locator('#sort-choices .sort-choice-words').allTextContents();
   is(choiceWords.some(w => /Loose things brought in/.test(w)), true,
     `the picker offers the loose-import range (${JSON.stringify(choiceWords)})`);
@@ -4937,8 +5011,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('body[data-ready=true]');
 
   // Reach it through sort mode's query door and open the sheet.
-  await tpage.click('#sort-open');
-  await tpage.waitForSelector('#sort[open]');
+  await openViaContents(tpage, 'sort');
   await tpage.fill('#sort-query', 'Noted thing');
   await tpage.click('#sort-query-go');
   await tpage.waitForSelector('#sort-card-region:not([hidden])');
@@ -4987,8 +5060,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.reload();
   await tpage.waitForSelector('body[data-ready=true]');
-  await tpage.click('#sort-open');
-  await tpage.waitForSelector('#sort[open]');
+  await openViaContents(tpage, 'sort');
   await tpage.fill('#sort-query', 'Noted thing');
   await tpage.click('#sort-query-go');
   await tpage.waitForSelector('#sort-card-region:not([hidden])');
@@ -5409,8 +5481,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('body[data-ready=true]');
 
   // Enter the range and open the wholesale block.
-  await tpage.click('#sort-open');
-  await tpage.waitForSelector('#sort[open]');
+  await openViaContents(tpage, 'sort');
   await tpage.fill('#sort-query', 'Bulk me');
   await tpage.click('#sort-query-go');
   await tpage.waitForSelector('#sort-card-region:not([hidden])');
@@ -5743,8 +5814,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // that merely rhymes. The fixture already holds duplicates of its own, so
   // every count below is a DELTA against what the picker said before.
   const twinsCount = async () => {
-    await tpage.click('#sort-open');
-    await tpage.waitForSelector('#sort[open]');
+    await openViaContents(tpage, 'sort');
     const rows = await tpage.locator('#sort-choices .sort-choice').allTextContents();
     await tpage.click('#sort-close');
     const row = rows.find(r => /Sharing a name with something else/.test(r));
@@ -5759,8 +5829,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   is(await twinsCount(), twinsBefore + 2,
     `the twins range grew by exactly the pair — the banister merely rhymes (${twinsBefore} -> ${twinsBefore + 2})`);
-  await tpage.click('#sort-open');
-  await tpage.waitForSelector('#sort[open]');
+  await openViaContents(tpage, 'sort');
   await tpage.locator('#sort-choices .sort-choice', { hasText: 'Sharing a name' }).click();
   await tpage.waitForSelector('#sort-card-region:not([hidden])');
   is(/thing/.test(await tpage.locator('#sort-entry').textContent() || ''), true,

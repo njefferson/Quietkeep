@@ -15,6 +15,7 @@
 import { requestPersistence, ulid } from '../ids.ts';
 import { toCalendar, calendarCount } from '../ics.ts';
 import { exportFilename, inspectExport, importSeedingFresh, foldInShard, toJsonl } from '../portability.ts';
+import { SCALE_KEY, applyScale, getScale, setScale, scaleNote, normaliseScale } from '../scale.ts';
 import { statusReport, renderReport, reportedBefore, type ReportFormat } from '../delta.ts';
 import { commsNode } from '../comms.ts';
 import { printText } from './print.ts';
@@ -1441,6 +1442,34 @@ export async function mountAbout(
   // the point of starting — showing options to someone stuck at activation is
   // choice overload where it costs most (thesis §4). The start button then
   // names the chosen length, so the common path stays one tap and no decision.
+  // HOW BIG THIS APP IS (2.8.0, ADR-0098). The timer-length shape exactly, on a
+  // DEVICE preference rather than an event — how big somebody wants the type is
+  // not a fact about their work, and the log has no business holding a history
+  // of it (the rule the lens root and where-you-are already follow).
+  //
+  // Applied on CHANGE as well as on Set, so the reader sees the size while they
+  // are choosing it rather than having to commit to find out. Only the press
+  // persists — changing your mind and closing the panel leaves nothing behind.
+  const scaleSel = document.querySelector<HTMLSelectElement>('#ui-scale');
+  const scaleSet = document.querySelector<HTMLButtonElement>('#ui-scale-set');
+  const scaleNoteEl = document.querySelector<HTMLElement>('#ui-scale-note');
+  if (scaleSel && scaleSet && scaleNoteEl) {
+    scaleSel.value = String(getScale());
+    scaleNoteEl.textContent = scaleNote(getScale());
+    scaleSel.addEventListener('change', () => {
+      // Preview only — nothing is stored until Set is pressed.
+      applyScale(normaliseScale(Number(scaleSel.value)));
+    });
+    scaleSet.addEventListener('click', () => {
+      const chosen = normaliseScale(Number(scaleSel.value));
+      setScale(chosen);
+      applyScale(chosen);
+      scaleNoteEl.textContent = scaleNote(chosen);
+      void session.store.setKv(SCALE_KEY, chosen)
+        .catch(() => { /* a view preference: it applies now either way */ });
+    });
+  }
+
   const timerLen = document.querySelector<HTMLSelectElement>('#timer-length');
   const timerSet = document.querySelector<HTMLButtonElement>('#timer-length-set');
   const timerNote = document.querySelector<HTMLElement>('#timer-length-note');
