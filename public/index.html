@@ -27,7 +27,43 @@
      route must SAY how a finger gets to the same place, or the gate fails. -->
 <a class="skip" href="#cards" data-touch-partner="#to-held">Skip to what you are holding</a>
 
-<header class="bar">
+<!-- THE FRAME STAYS (2.9.0, ADR-0100).
+     Everything from here to </div class="frame"> is the app's own chrome: it does
+     not scroll, because it is not inside the box that scrolls. Capture, what the
+     app just did with it, and the proof that nothing has gone quiet.
+
+     NOT `position: fixed` and NOT `position: sticky`. Both were ruled out by
+     measurements this repo already paid for:
+
+       - FIXED was built once, as a floating Contents button, and probed at two
+         screen sizes across thirteen scroll positions: it overlapped ten
+         controls and took the CENTRE of three, every one of them a card's Done.
+         Mid-scroll, content passes under a fixed element by definition, and
+         padding at the document's end does not help.
+       - STICKY was the way out of the (i) panel, and it did NOT hold on the
+         reference iPad — the bar scrolled away with the content. Found twice, on
+         device. `app.css` records the fix as removing the DEPENDENCY rather than
+         debugging it.
+
+     What replaced sticky there is what this uses here: a flex column where only
+     the middle scrolls. `.frame` cannot scroll away because it is not inside the
+     scroller, which — in that file's own words — "needs no support from any
+     engine and cannot regress". It is the pattern every sheet in this app has
+     shipped on his device since 1.40.0, applied one level up to the page itself.
+     Hub LESSONS 93: an argument accepted for one surface does not travel to the
+     others by itself. Somebody has to carry it. -->
+<!-- THE FRAME IS THE BANNER, and it has to be a landmark rather than a div.
+     `axe` failed on all 33 states at once: "All page content should be contained
+     by landmarks", naming the capture box's own label. It was true — lifting
+     capture, its status line and the proof out of <main> left them in a bare
+     wrapper belonging to no landmark at all, so a screen-reader user jumping by
+     landmark would pass straight over the box this app exists to offer.
+     A <header> that is a direct child of <body> IS the banner, and site-wide
+     chrome containing a text box is what a banner is for. The row of identity
+     and destinations below is now an ordinary <div>; it was only ever a header
+     because it was the only chrome there was. -->
+<header class="frame">
+<div class="bar">
   <h1 class="wordmark">Quietkeep</h1>
   <!-- The clock (1.22.0), off unless it is switched on in Extras. The DIAL is
        decorative — a screen reader gets the sentence in #clock-words, not a
@@ -70,11 +106,60 @@
        and putting them in one place is why neither had to become a floating
        control over the reader's own work. -->
   <button id="contents-open" type="button" class="ghost">Contents</button>
-</header>
+</div>
+
+<!-- Capture first, and it is the thing that has focus on arrival. The gap
+     between having a thought and it being safe is the whole product. -->
+<form id="capture-form" autocomplete="off">
+  <label class="visually-hidden" for="capture">What do you want to put down?</label>
+  <input id="capture" name="capture" type="text" enterkeyhint="done"
+         autocomplete="off" autocapitalize="sentences" spellcheck="true"
+         placeholder="Put it down here" autofocus>
+  <!-- Room for a whole meeting's worth, one thing per line (1.38.0).
+       NOT a second surface: this is the same Dump, the same draft and the
+       same commit path, with many lines instead of one. ADR-0026 already
+       calls this screen Dump and ADR-0015 already calls a batch a "Dump
+       session"; a second thing called Dump would contradict both.
+       Nothing is written until the same button is pressed. -->
+  <label class="visually-hidden" for="capture-many">One thing per line</label>
+  <textarea id="capture-many" name="capture-many" rows="10" hidden
+            autocomplete="off" autocapitalize="sentences" spellcheck="true"
+            placeholder="One thing per line"></textarea>
+  <button type="submit">Hold it</button>
+
+</form>
+<!-- Not a toast. Nothing meaningful is transient (V2 stage 3): the reader who
+     looked away is precisely the one this is for. -->
+<p id="capture-offer" class="capture-offer" hidden></p>
+
+<!-- A live region, so a screen-reader user learns the write landed without
+     hunting for it. It reports what already happened, never a prediction. -->
+<p id="status" role="status" aria-live="polite" class="status"></p>
+
+<!-- THE PROOF, WHERE SOMEBODY CAN ACTUALLY READ IT (2.8.1, ADR-0099).
+     This control was the first thing INSIDE the held list — measured 2.73
+     screens down on a thirteen-item store at 390x844 — so the one line that
+     says nothing has gone quiet was only ever read by somebody who had
+     already scrolled to the list it was reassuring them about.
+
+     It is here because it is what buys the right to have taken two entries
+     off this screen. Hiding things is frightening with no standing claim that
+     nothing was lost and unremarkable with one, and this is that claim: it
+     names the exceptions first, states the number that is on the app icon,
+     and opens the sheet that lists every item and the date it comes back.
+     Same control, same words, same sheet behind it. Moved. -->
+<button id="gauge" class="gauge" type="button"></button>
 
 <!-- A newer version is ready. A LINE, never a modal: it must not stand between
      somebody and their capture box, and it has a way out from the first frame
-     (Doctrine §4). Hidden until there is genuinely something to say. -->
+     (Doctrine §4). Hidden until there is genuinely something to say.
+
+     BELOW the capture box since 2.9.0, not above it. In a frame that does not
+     scroll, a block above capture pushes capture down every time it appears —
+     so the line whose own comment says it must not stand between somebody and
+     their capture box was about to start doing exactly that, in the one layout
+     where the reader cannot scroll past it. It is still permanent chrome and it
+     is still seen without hunting; it simply no longer moves the box. -->
 <section id="update" class="update" role="status" aria-live="polite" hidden>
   <p id="update-words" class="update-words"></p>
   <div class="about-actions">
@@ -83,61 +168,45 @@
     <button id="update-dismiss" type="button" class="ghost">Not now</button>
   </div>
 </section>
+</header>
 
+<!-- THE ONLY THING THAT SCROLLS. `<main>` and the footer ride inside it; the
+     frame above does not. Everything a jump or a contents row scrolls to is in
+     here, so `scrollIntoView` finds this box as its nearest scrollable ancestor
+     and needs no help. The two callers that scrolled the WINDOW to the top were
+     changed with it — a window scroll on a page that does not scroll is a call
+     that silently does nothing. -->
+<div class="runway" id="runway">
 <main>
-  <!-- Capture first, and it is the thing that has focus on arrival. The gap
-       between having a thought and it being safe is the whole product. -->
-  <form id="capture-form" autocomplete="off">
-    <label class="visually-hidden" for="capture">What do you want to put down?</label>
-    <input id="capture" name="capture" type="text" enterkeyhint="done"
-           autocomplete="off" autocapitalize="sentences" spellcheck="true"
-           placeholder="Put it down here" autofocus>
-    <!-- Room for a whole meeting's worth, one thing per line (1.38.0).
-         NOT a second surface: this is the same Dump, the same draft and the
-         same commit path, with many lines instead of one. ADR-0026 already
-         calls this screen Dump and ADR-0015 already calls a batch a "Dump
-         session"; a second thing called Dump would contradict both.
-         Nothing is written until the same button is pressed. -->
-    <label class="visually-hidden" for="capture-many">One thing per line</label>
-    <textarea id="capture-many" name="capture-many" rows="10" hidden
-              autocomplete="off" autocapitalize="sentences" spellcheck="true"
-              placeholder="One thing per line"></textarea>
-    <button type="submit">Hold it</button>
-    <!-- Hidden when the text has more than one line, because collapsing back to
-         a single-line input would silently run the lines together — the exact
-         defect that makes pasting into it useless. A control that would destroy
-         what you wrote is not offered rather than refused. -->
-    <button type="button" id="capture-room" class="ghost">More room</button>
-    <!-- Hold what I copied (1.41.0). V-21 closed the other way in: on this
-         platform a link cannot open the installed app, so anything copied
-         elsewhere arrives only if somebody opens Quietkeep and puts it in.
-         Retyping what is already on the clipboard is the friction that decides
-         whether a thought is kept at all.
 
-         Ships HIDDEN and is revealed only where the browser can actually read a
-         clipboard — a control that cannot do its one job is worse than an absent
-         one. Nothing is written by it: the text lands in the field above, where
-         it can be seen, and the ordinary button commits it. -->
-    <button type="button" id="capture-paste" class="ghost" hidden>Hold what I copied</button>
-  </form>
-  <!-- Not a toast. Nothing meaningful is transient (V2 stage 3): the reader who
-       looked away is precisely the one this is for. -->
-  <p id="capture-offer" class="capture-offer" hidden></p>
+<!-- THE SECOND ROW OF CAPTURE, WHICH THE FRAME COULD NOT AFFORD (2.9.0, ADR-0100).
+     These two were inside the form, on a second line, and measured 52px of a
+     345px frame at 390px wide — a sixth of chrome that never scrolls, for two
+     controls used at the START of a sitting and almost never again.
+     So they sit at the top of the runway instead: still the first thing under
+     the box, still one look away on arrival, and they scroll off with everything
+     else once you are working. That is the trade, and it is a real one — from
+     three screens down, "More room" now needs a trip back to the top. The box it
+     opens is still in the frame, so pressing it from here fills a field you can
+     already see. -->
+<div class="capture-extras">
+  <!-- Hidden when the text has more than one line, because collapsing back to
+       a single-line input would silently run the lines together — the exact
+       defect that makes pasting into it useless. A control that would destroy
+       what you wrote is not offered rather than refused. -->
+  <button type="button" id="capture-room" class="ghost">More room</button>
+  <!-- Hold what I copied (1.41.0). V-21 closed the other way in: on this
+       platform a link cannot open the installed app, so anything copied
+       elsewhere arrives only if somebody opens Quietkeep and puts it in.
+       Retyping what is already on the clipboard is the friction that decides
+       whether a thought is kept at all.
 
-  <!-- THE PROOF, WHERE SOMEBODY CAN ACTUALLY READ IT (2.8.1, ADR-0099).
-       This control was the first thing INSIDE the held list — measured 2.73
-       screens down on a thirteen-item store at 390x844 — so the one line that
-       says nothing has gone quiet was only ever read by somebody who had
-       already scrolled to the list it was reassuring them about.
-
-       It is here because it is what buys the right to have taken two entries
-       off this screen. Hiding things is frightening with no standing claim that
-       nothing was lost and unremarkable with one, and this is that claim: it
-       names the exceptions first, states the number that is on the app icon,
-       and opens the sheet that lists every item and the date it comes back.
-       Same control, same words, same sheet behind it. Moved. -->
-  <button id="gauge" class="gauge" type="button"></button>
-
+       Ships HIDDEN and is revealed only where the browser can actually read a
+       clipboard — a control that cannot do its one job is worse than an absent
+       one. Nothing is written by it: the text lands in the field above, where
+       it can be seen, and the ordinary button commits it. -->
+  <button type="button" id="capture-paste" class="ghost" hidden>Hold what I copied</button>
+</div>
   <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
        Both were collapsed lines here, directly under capture: `bother-entry`
        from v1.5 and `load-entry` from 1.15.0. They are surfaces now, reached
@@ -169,10 +238,6 @@
     <div id="bother-actions" class="bother-actions"></div>
     <p id="bother-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
-
-  <!-- A live region, so a screen-reader user learns the write landed without
-       hunting for it. It reports what already happened, never a prediction. -->
-  <p id="status" role="status" aria-live="polite" class="status"></p>
 
   <!-- Coming back (product law 8: rest is legitimate). The greeting is BOUNDED
        BY SCHEMA — Next-up, at most three triage items, the gauge, and an amnesty
@@ -1418,6 +1483,7 @@
   <button class="build" id="build-version" type="button"
           aria-label="Open the diagnostic report"></button>
 </footer>
+</div>
 
 <!-- The walkthrough (src/ui/tour.ts). A calm, skippable, replayable first-run
      guide — the family's first tutorial, built to the house "calm skippable

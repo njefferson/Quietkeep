@@ -1654,22 +1654,39 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and a finger landing on it hits it, with nothing over the top');
   // IT MOVES YOU, and takes focus with it — a scroll that leaves focus behind
   // throws the next Tab back up the page.
-  await tpage.evaluate(() => window.scrollTo(0, 0));
+  // THE RUNWAY'S scrollTop, NOT `window.scrollY` (2.9.0, ADR-0100). The document
+  // stopped scrolling when the frame stopped riding inside the scroller, so
+  // `window.scrollY` is now 0 at every position — and the assertion below that
+  // pressing the way back RETURNS you to the top reads `y === 0`, which a
+  // permanent zero satisfies for ever. It would have gone green while measuring
+  // nothing, on the release that broke it, which is hub LESSONS 100's shape
+  // arriving through a layout change rather than through a conditional.
+  const runwayY = () => tpage.evaluate(() => document.querySelector('#runway')?.scrollTop ?? window.scrollY);
+  await tpage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
   await tpage.click('#to-held');
   await tpage.waitForTimeout(350);
-  const landed = await tpage.evaluate(() => ({
-    focus: document.activeElement?.id ?? null,
-    cardsTop: Math.round(document.querySelector('#cards').getBoundingClientRect().top),
-    scrolled: window.scrollY,
-  }));
+  // `cardsTop` IS RELATIVE TO THE RUNWAY (2.9.0, ADR-0100), for the same reason
+  // the runway's scrollTop replaced window.scrollY three lines up: the frame
+  // above never moves, so a viewport-relative reading counts the frame's whole
+  // height as error and reports a jump that landed perfectly as 219px off.
+  // The threshold below is untouched; the origin was what was wrong.
+  const landed = await tpage.evaluate(() => {
+    const runway = document.querySelector('#runway');
+    const origin = runway ? runway.getBoundingClientRect().top : 0;
+    return {
+      focus: document.activeElement?.id ?? null,
+      cardsTop: Math.round(document.querySelector('#cards').getBoundingClientRect().top - origin),
+      scrolled: runway ? runway.scrollTop : window.scrollY,
+    };
+  });
   is(landed.focus, 'cards', 'pressing it puts focus on the list, not just the scrollbar');
   // AND A WAY BACK (2.1.0, ADR-0091). There was none anywhere in the app, so the
   // jump was a one-way trip five screens down.
   is(await tpage.locator('#to-top').isVisible(), true, 'and there is a way back from down here');
   await tpage.click('#to-top');
   await tpage.waitForTimeout(350);
-  const back = await tpage.evaluate(() => ({ y: window.scrollY, focus: document.activeElement?.id }));
-  is(back.y === 0, true, `pressing it returns to the top (scrollY ${back.y})`);
+  const back = { y: await runwayY(), focus: await tpage.evaluate(() => document.activeElement?.id) };
+  is(back.y === 0, true, `pressing it returns to the top (runway scrollTop ${back.y})`);
   is(back.focus, 'capture', 'and puts focus on the capture line, which is what is up there');
   // A CONTROL LOOKS LIKE A CONTROL. Five routes off this page rendered as plain
   // grey sentences; 45 of the other controls carried a border or a fill.
@@ -1686,8 +1703,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   is(bare.join(', '), '', 'no control on the work surface renders as plain prose');
   is(landed.scrolled > 0 && landed.cardsTop < 200, true,
-    `and the list is actually at the top of the screen (scrolled ${landed.scrolled}px, list at ${landed.cardsTop}px)`);
-  await tpage.evaluate(() => window.scrollTo(0, 0));
+    `and the list is actually at the top of the screen (runway scrolled ${landed.scrolled}px, list at ${landed.cardsTop}px)`);
+  await tpage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
 
   console.log('\nWork mode — the gauge is a claim you can open');
   // A SHEET, NOT A FOLD (2.0.5, ADR-0088). The claim used to unfold under the

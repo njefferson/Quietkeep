@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.9.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-18',
+    notes: [
+      '**The capture box no longer scrolls away.** It, the line saying nothing has gone quiet, and the way to everywhere are now a frame the page moves underneath — so from anywhere in your list you can put something down without going anywhere first. That is what the last release measured and said could not be got by moving blocks about.',
+      '**The capture box is now the fourth control on the page; it was the seventh**, and **the Menu’s door is now the 39th; it was the 45th.** Nothing about either changed but the frame above them.',
+      '**Measured on a phone.** The frame takes about a quarter of the screen and never gives it back — 201 pixels of 844 empty, 225 with things in it. At the top that is a gain, since the same chrome used to take 304; deep in a list it is a loss, since it used to be gone. In exchange *Next up* begins **0.08 screens into the scrolling part** instead of 0.43 down the page.',
+      '**Nothing became unreachable, and that was checked rather than hoped:** every control was asked whether some scroll position brings its whole box into view — all of them, both sizes, empty and full. The last attempt at chrome that stays put was a floating button, and it failed exactly that test.',
+      '**Two smaller things moved with it.** *More room* and *Hold what I copied* now sit just under the frame rather than inside it, so from far down they need a trip back up. And “a newer version is ready” now appears **below** the capture box, so it can never push the box down. **If the frame is more in the way than it is worth, say so** — it comes off, and the numbers stay true either way.',
+    ],
+  },
+  {
     triplet: '2.8.1',
     kind: 'ITERATION',
     date: '2026-08-18',

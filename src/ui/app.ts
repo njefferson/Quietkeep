@@ -103,6 +103,24 @@ let whereNow: string | null = null;
  * tuned constant pretending to be a rule. The condition is the one the reader
  * experiences: is anything in the way.
  */
+/**
+ * Put the runway back at the top (2.9.0, ADR-0100).
+ *
+ * One place, because there were two callers scrolling the WINDOW and a third
+ * would have been written the same way. The document stopped scrolling when the
+ * frame stopped being inside the scroller, so `window.scrollTo` became a call
+ * that resolves and moves nothing — the failure mode with no symptom.
+ *
+ * Falls back to the window if the element is missing, which is not defensive
+ * noise: `tools/` opens this page in states where markup can be absent, and a
+ * jump that throws would take the surface down with it.
+ */
+export function scrollRunwayToTop(): void {
+  const runway = document.querySelector<HTMLElement>('#runway');
+  if (runway) runway.scrollTop = 0;
+  else window.scrollTo({ top: 0 });
+}
+
 function paintJump(): void {
   try {
     const jump = document.querySelector<HTMLButtonElement>('#to-held');
@@ -933,7 +951,12 @@ export async function main(edition?: Edition): Promise<void> {
   // is both the top of the page and the thing most likely to be wanted there —
   // the same destination the app already picks after an action empties a card.
   document.querySelector<HTMLButtonElement>('#to-top')?.addEventListener('click', () => {
-    window.scrollTo({ top: 0 });
+    // THE RUNWAY, NOT THE WINDOW (2.9.0, ADR-0100). The document does not scroll
+    // any more — `.runway` does — and `window.scrollTo` on a document that
+    // cannot scroll is a call that succeeds and moves nothing. That is the worst
+    // shape a regression can take here: no error, no exception, a control that
+    // simply stops working, on the way BACK from the bottom of a long list.
+    scrollRunwayToTop();
     document.querySelector<HTMLElement>('#capture')?.focus();
   });
 

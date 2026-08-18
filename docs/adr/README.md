@@ -327,6 +327,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0099](0099-the-first-screen.md)**
   - Decision: The worry entry, the load entry and sort's door leave the runway and become derived rows in Contents; the coverage gauge moves to the top where it can be read before the list it reassures about. Measured, not argued: Next up 0.48 → 0.43 screens, and a floor of about 0.36 that no rearrangement can beat in this shell
   - Status: Accepted · shipped 2.8.1 · extends [0093](0093-a-way-to-each-part-of-the-page.md)
+- **[0100](0100-the-frame-stays.md)**
+  - Decision: The page becomes a flex column of viewport height with one scrolling child; capture, the proof and the destinations sit outside the scroller and never move. NOT fixed and NOT sticky — both were ruled out by measurements already in this repo — but the flex-column shape every sheet has proved on the reference device since 1.40.0, carried up to the document
+  - Status: Accepted · shipped 2.9.0 · follows [0099](0099-the-first-screen.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

@@ -665,13 +665,57 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.8.1**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.0**
 - **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
   `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
   `fda790c` on both — rather than inferred from a clean merge)
 
-**Staging and production are level at 2.8.1.** Nothing is waiting.
+**2.9.0 — THE FRAME STAYS** (ADR-0100). The page is a flex column of viewport
+height with exactly one scrolling child. Capture, the proof line and the three
+destinations sit outside the scroller and never move; `<main>` and the footer
+ride inside `.runway`.
+
+**The mechanism was chosen by the record, not by preference.** ADR-0099's
+measurement said the offer could not reach the top by moving blocks — it needed
+capture out of the scroll. Two ways to do that were already ruled out by
+measurements in this repo: `position: fixed` was the floating Contents button
+that overlapped ten controls and took the centre of three, and `position: sticky`
+was the (i) panel's way out that **did not hold on the reference iPad, found
+twice, on device**. What replaced sticky there is what this uses — a flex column
+whose bar is a sibling of the scroller — and every sheet has shipped that shape
+on his device since 1.40.0. Carried one level up, which is hub LESSONS 93.
+
+**Measured**, at 390x844 and 820x1180, empty store and the thirteen-item sample:
+
+- `#nextup` begins **0.08 screens into the runway** on a phone (0.05 on the
+  iPad). It was 0.43 screens down the page.
+- The frame costs **201px empty, 225px seeded** on a phone (23.8% / 26.7%) and
+  201px on the iPad (17.0%). A gain at the top — the same chrome took 304px —
+  and a loss deep in a list, where it used to be gone.
+- **Unreachable controls: zero**, both sizes, both stores. That is the test the
+  floating button failed, asked again of its replacement.
+- Document scroll area beyond its own box: **0px**.
+
+**Three defects the measurements found that reading would not have.** The frame
+collapsed 165px to 39px the moment there was data (`flex: 0 1 auto` distributes
+shrink by basis, and the runway's basis was the whole list) — with the empty
+store measuring a perfect 165px beside it. The document reported itself
+scrollable because every `.visually-hidden` label is absolutely positioned and
+escaped to the initial containing block. And `axe` failed all 33 states at once
+on landmarks, because lifting capture out of `<main>` left it in a bare wrapper.
+
+**And three gates were measuring the wrong origin**, one of which would have gone
+vacuous: the way-back assertion tests `scrollY === 0`, and `scrollY` is now
+permanently 0. Corrected at the origin rather than loosened at the tolerance.
+
+**The open cost is V-24**: a document that does not scroll never lets iOS
+collapse the URL bar, so browser use pays ~60px on top of the frame. Installed to
+the Home Screen it is zero. One look on the device settles it.
+
+**What to look at:** put something down from three screens into your list. Then
+decide whether a quarter of the screen is worth it — ADR-0100 says what happens
+if it is not, and the numbers stay true either way.
 
 **Promoted on his word rather than after a device pass**, which is his call to
 make and was made explicitly. Both 2.8.0 and 2.8.1 went in the same promote,

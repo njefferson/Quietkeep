@@ -1900,16 +1900,34 @@ try {
     // prove about arriving.
     await page.click('#contents-list .contents-go[data-go="held"]');
     await page.waitForSelector('#sheet-contents[open]', { state: 'detached' });
-    const arrived = await page.evaluate(() => ({
-      focused: document.activeElement?.id ?? null,
-      // Its top edge, relative to the viewport, after the jump.
-      top: Math.round(document.querySelector('#held').getBoundingClientRect().top),
-    }));
+    // RELATIVE TO THE SCROLLER, not to the viewport (2.9.0, ADR-0100). "The top
+    // of the screen" for anything in the runway is the top of the RUNWAY — the
+    // frame above it never moves, so measuring against the viewport now reports
+    // the frame's height as error and would fail on a jump that worked
+    // perfectly. Corrected rather than loosened: the tolerance is unchanged,
+    // it is the origin that was wrong.
+    const arrived = await page.evaluate(() => {
+      const runway = document.querySelector('#runway');
+      const origin = runway ? runway.getBoundingClientRect().top : 0;
+      // AND THE CLEARANCE IS READ, NOT ASSUMED. `.runway` sets `scroll-padding-top`
+      // so a heading does not land flush against the frame's edge, and
+      // `scrollIntoView` honours it — so a jump that worked perfectly landed
+      // exactly that far down and the check failed by exactly that much. The
+      // tolerance is NOT widened to swallow it; the expected landing point comes
+      // from the stylesheet, so changing the clearance moves the check with it
+      // and a jump that actually breaks still fails.
+      const pad = runway ? parseFloat(getComputedStyle(runway).scrollPaddingTop) || 0 : 0;
+      return {
+        focused: document.activeElement?.id ?? null,
+        pad: Math.round(pad),
+        top: Math.round(document.querySelector('#held').getBoundingClientRect().top - origin - pad),
+      };
+    });
     (arrived.focused === 'held-heading' ? pass : fail)(
       `${theme}/contents open: pressing a row lands focus on the block (got ${arrived.focused ?? 'nothing'})`);
     (Math.abs(arrived.top) <= 4 ? pass : fail)(
-      `${theme}/contents open: pressing a row puts the block at the top of the screen (${arrived.top}px off)`);
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'auto' }));
+      `${theme}/contents open: pressing a row puts the block at the top of the runway, under its ${arrived.pad}px clearance (${arrived.top}px off)`);
+    await page.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo({ top: 0, behavior: 'auto' }); });
 
     // WHERE YOU ARE (2.2.0, ADR-0092), driven end to end: a place is named on a
     // thing's own sheet, then chosen on the work surface. Driven rather than

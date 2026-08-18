@@ -809,6 +809,34 @@ fails this way. Promoting is the owner's call and has not been made.
 
 ---
 
+## V-24 · A page whose document does not scroll never lets iOS collapse the URL bar — **OPEN, and it is a COST rather than a defect**
+· raised 2026-08-18 by ADR-0100, which made the document stop scrolling on purpose
+
+**What is known from here, and it is not the answer.** 2.9.0 makes the page a
+flex column of viewport height with one scrolling child, so the frame — capture,
+the proof, the destinations — cannot scroll away. That is measured: the
+document's scroll area beyond its own box is 0px at both sizes and both stores.
+
+**What follows from that, and cannot be measured from a build machine.** iOS
+Safari collapses its URL bar in response to the *document* scrolling. A document
+that never scrolls never triggers it, so in a browser tab the reader keeps the
+URL bar permanently — roughly 60px — on top of the frame's own 201px. Installed
+to the Home Screen there is no URL bar and the cost is zero.
+
+**Why this is recorded rather than fixed.** There is no fix that keeps the frame;
+the two are the same mechanism. It is a real cost to browser use and it is the
+reason Doctrine §7e's install instructions matter more after this release than
+before. If it dominates in practice, ADR-0100 says what happens: the frame
+belongs to the installed app and the browser gets the old shell.
+
+**What would settle it:** opening the app in Safari on the reference iPad,
+scrolling the list, and saying whether the URL bar stays. One look.
+
+**NOT the same question as whether the layout works.** The flex-column-with-one-
+scroller shape is what every sheet in this app has used on that device since
+1.40.0, and what replaced `position: sticky` after sticky was found twice not to
+hold there. What is new is applying it to the document rather than to a dialog.
+
 ## V-22 · The relay's DELETE empties what KV *lists*, and KV `list` is eventually consistent — **UNDERSTOOD, and the gate no longer races it**
 · raised 2026-07-30 when Relay run 12 on `c706a64` went red at "Check it actually answers"
 
