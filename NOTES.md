@@ -424,6 +424,15 @@ decided by a session.**
   - **If trust:** the right items are surfacing and nothing gives him grounds to
     believe it. The fix is a law-4 analogue of the coverage gauge: a visible
     proof of judgement, the way the gauge is a visible proof of integrity.
+  - **CLOSED 2026-08-17 (2.7.0, ADR-0097) — by research, not by asking him.**
+    The remaining half was a ranking decision, and `docs/nd-collisions.md` entry
+    5 had already routed it and gated the routing on this very question. With
+    the ranking reading established by measurement, the gate discharged and the
+    mechanism was already named: heat breaking the tie inside `ready`. The
+    entry also REFUSES the alternative — an importance rank — in terms, which is
+    the half that was about to be handed to him as a policy question. **A
+    question a session cannot answer from taste is not automatically the
+    owner's; check whether the research already answered it.**
   - **HALF-ANSWERED 2026-08-17 by measurement rather than by asking (2.5.0,
     ADR-0095).** The ranking reading is established: every tier of `nextup` is
     temporal and the only tie-break inside a tier is pressure then creation
@@ -629,8 +638,49 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.6.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.7.0 — THE OFFER READS THE INTEREST YOU ALREADY GAVE IT** (ADR-0097). Closes
+Q-11. Inside the `ready` tier and only there, the tie-break becomes the heat the
+reader set: hot, then unsaid, then cold, then creation order as before. The card
+says the warrant.
+
+**THE RESEARCH DECIDED THIS, not the owner and not a session's taste.**
+`docs/nd-collisions.md` entry 5 had routed it for weeks — *"heat informing which
+candidate fills the offer's `ready` slot"* — gated on Q-11, whose ranking reading
+is now established by measurement (ADR-0095) rather than by asking. Verified in
+code first: `heat.set` is written, folded and snapshotted, and read by **nothing
+except the flow that collects it**. `nextup.ts` contained no reference to it.
+
+**What the research REFUSED matters more.** The alternative was ranking on
+IMPORTANCE — making *serves a horizon* outrank *serves nothing*, using the
+lineage 2.5.0 had just built. It was drafted, and it was going to be put to the
+owner as a policy question. Entry 5 forbids it in terms: activation follows
+interest, novelty, challenge, urgency and passion, **not importance**, and the
+Eisenhower top row is *"a dead letter for this nervous system"*. It did not need
+his ruling. It needed the catalogue read.
+
+Three more refusals bind it, each with its evidence grade: entry 12 (moderate) —
+no manufactured novelty, so the frozen offer is not fixed by randomising, and a
+test pins determinism; entry 13 (community) — never fabricate urgency, so this
+cannot cross tiers and a test pins that a dated cold thing beats a hot waiting
+one; entry 16 (contested) — the cap of two stands, so the offer is not widened.
+
+**Vocabulary, never a rank** — entry 5's own binding, because INCUP is
+community-grade. Honoured three ways: a two-state fact the reader stated, a
+tie-break inside one tier, and the card says it out loud, because an interest
+read that silently reorders the offer IS a hidden rank.
+
+**Unsaid sits in the MIDDLE.** Last would make skipping the optional heat pass a
+penalty; first would make saying *cold* one. In the middle, answering can only
+move a thing in the direction the answer points.
+
+**Q-12 is untouched** — *Not this* still records nothing. This reads a signal
+given deliberately in a flow that asks; it learns nothing from declines.
+
+**What to look at:** sort a few things, call one hot, and see what the app offers
+when nothing is dated.
 
 **2.6.0 — ROLES, AND WHERE THE ATTENTION IS** (ADR-0096). Q-13 settled on
 2026-08-04 and deferred for thirteen days. Roles are identities that cross

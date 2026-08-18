@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.7.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**The app now reads the hot-or-cold you already gave it.** When several things are simply waiting \u2014 none of them dated, none of them pressing \u2014 the one you called **hot** is offered first, then the ones you never answered about, then the ones you called cold. The card says so: *"this one is waiting, and you said it was hot."*',
+      '**You have been answering that question since the beginning and nothing has ever read it.** The two-tap Hot or Cold in sorting was written to the record, kept, carried through every backup \u2014 and the screen that decides what to hand you next had never once looked at it.',
+      '**Cold is never hidden**, and not answering is not a penalty: unanswered sits between hot and cold, so answering can only move something in the direction you pointed.',
+      '**Nothing else about the order changed.** A real date that is here still comes first, always. This only decides between things that were tied \u2014 and where they were tied, the app fell back to whichever you wrote down first, for ever. Forty things with no rhythm gave the same card today, next month and next year.',
+      '**Why this and not "what is most important":** the research this app is built on is clear that for this audience importance does not start the engine \u2014 interest, novelty, challenge, urgency and passion do. Ranking by importance is the famous urgent/important grid, and its whole top row is a dead letter here. That was the other option and it was refused on the evidence, not on taste.',
+    ],
+  },
+  {
     triplet: '2.6.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',

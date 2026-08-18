@@ -318,6 +318,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0096](0096-roles.md)**
   - Decision: A role is a cross-cutting link saying WHO work is for — an identity crossing areas, so it can never be a container; plus "Where the attention is", a readout of live work per role that is sorted by name, has no bar or target, and states the unnamed remainder
   - Status: Accepted · shipped 2.6.0 · settles Q-13 · extends [0092](0092-contexts.md)
+- **[0097](0097-the-offer-reads-interest.md)**
+  - Decision: Inside the `ready` tier only, the offer breaks ties on the heat the reader already set — hot, unsaid, cold — and says so on the card; routed by nd-collisions entry 5, which also REFUSES the importance rank that was the alternative
+  - Status: Accepted · shipped 2.7.0 · closes Q-11 · extends [0029](0029-triage-model.md), [0030](0030-work-mode.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

@@ -58,7 +58,7 @@ export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | '
  * What is closed is the SET of sentences, not the words inside a title
  * somebody wrote.
  */
-export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string }) => string> = {
+export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean }) => string> = {
   'hard-date': () => 'a real date, and it is here',
   // YOUR five words when there are five words. Nothing this app composes beats
   // what you wrote at the moment you put it down.
@@ -72,13 +72,34 @@ export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?
   // "Back with you today" was a falsehood for any clock older than today — and
   // gate cure clocks never move, so that was the NORMAL case rather than an
   // edge one (Doctrine §5: no copy the data does not support).
-  ready: () => 'this one is waiting',
+  // AND WHY THIS ONE OF THEM (2.7.0, ADR-0097). The card has to say the warrant
+  // it was actually chosen on, or the interest read is a hidden ranking — which
+  // is the thing entry 5 forbids when it says to treat INCUP as vocabulary and
+  // never as a rank. It states what the READER said, in their word, and claims
+  // nothing about importance.
+  ready: of => (of.hot ? 'this one is waiting, and you said it was hot' : 'this one is waiting'),
   // A FACT ABOUT THE WORLD, and the smallest true one there is: you wrote this
   // down and have not said anything else about it. Not "unclassified", not
   // "needs attention", not a count of how many others are like it — the schema
   // word never reaches a surface and the state is not a reproach.
   unsorted: () => 'you put this down',
 };
+
+/**
+ * Hot, then unsaid, then cold — and unsaid sits in the MIDDLE deliberately.
+ *
+ * Putting "not said" last would make skipping the heat pass a penalty, and the
+ * pass is optional by ADR-0029 ("optional-first", which took until 1.31.0 to
+ * actually be true). Putting it first would make saying "cold" a penalty
+ * instead. In the middle, answering the question can only move a thing away
+ * from where not answering leaves it, in the direction the answer points.
+ *
+ * `cold` sorts last and is never excluded. A cold thing still comes back, still
+ * counts in the gauge, and still fills the offer when it is all there is —
+ * hiding it would be an archive with a friendlier name (law 3).
+ */
+const HEAT_ORDER: Record<'hot' | 'cold' | 'none', number> =
+  { hot: 0, none: 1, cold: 2 };
 
 export interface NextUpItem {
   node: NodeState;
@@ -451,7 +472,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       // "Back with you today" was a falsehood for any clock older than today —
       // and gate cure clocks never move, so that was the NORMAL case, not an
       // edge one (Doctrine §5: no copy the data does not support).
-      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
+      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({ hot: n.heat === 'hot' }), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
     // A THING YOU PUT DOWN AND HAVE NOT TOUCHED SINCE (2.0.0).
@@ -532,6 +553,37 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     if (a.reason === 'pressure' && b.reason === 'pressure') {
       const d = (b.pressure ?? 0) - (a.pressure ?? 0);
       if (d !== 0) return d;
+    }
+    // WITHIN `ready`, THE INTEREST YOU ALREADY GAVE IT (2.7.0, ADR-0097).
+    //
+    // `ready` is the tier with no rising pressure and nothing choosing between
+    // its members, so its tie-break was creation order — for ever. Forty
+    // rhythm-less items therefore gave the same card today, in a month and in a
+    // year, which is the frozen offer NOTES Q-11 was reported about.
+    //
+    // THE RESEARCH PICKED THIS MECHANISM, not a preference and not a guess.
+    // `docs/nd-collisions.md` entry 5 (interest-based motivation): activation
+    // follows interest, novelty, challenge, urgency and passion rather than
+    // importance — so an importance rank is the wrong instrument, and the entry
+    // says in terms that the heat pass is already a two-tap interest read while
+    // "nothing about interest reaches `nextUp` — everything ranks on when". Its
+    // own routing proposal is this: heat informing which candidate fills the
+    // `ready` slot. It was gated on Q-11, and Q-11's ranking reading is now
+    // established by measurement rather than by asking.
+    //
+    // VOCABULARY, NEVER A RANK — the entry's own binding, because INCUP is
+    // community-grade evidence. So this is a two-state fact the reader stated,
+    // used to break a tie inside one tier, and the card SAYS it. It is not a
+    // score, nothing accumulates, and `heat.set` was already in the log being
+    // read by nothing but the flow that collects it.
+    //
+    // CONFINED TO `ready`, and the confinement is the point. A real date still
+    // outranks everything (entry 13 — the true urgency signal must stay
+    // legible), a chain still comes second, and pressure still sorts by
+    // pressure. Nothing here reorders a tier or fabricates a reason.
+    if (a.reason === 'ready' && b.reason === 'ready') {
+      const h = HEAT_ORDER[a.node.heat ?? 'none'] - HEAT_ORDER[b.node.heat ?? 'none'];
+      if (h !== 0) return h;
     }
     return a.node.id < b.node.id ? -1 : a.node.id > b.node.id ? 1 : 0;
   });
