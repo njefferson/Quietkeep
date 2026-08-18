@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.7.2',
+    kind: 'ITERATION',
+    date: '2026-08-17',
+    notes: [
+      '**The line under the capture box now reads *How you are, and anything weighing on you*.** It said *Something weighing on you?* \u2014 which names only one of the two things behind it. Saying **it is a low stretch today** has always lived there too, and nothing said so, so finding it meant guessing that the question about weights was where it was kept.',
+      '**Nothing moved and nothing was added.** It is the same line in the same place, still closed until you open it. An app that asks every morning how you are is a demand, and this one is not going to start.',
+    ],
+  },
+  {
     triplet: '2.7.1',
     kind: 'ITERATION',
     date: '2026-08-17',

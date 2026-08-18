@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.7.2 — ITERATION
+
+*2026-08-17*
+
+- **The line under the capture box now reads *How you are, and anything weighing on you*.** It said *Something weighing on you?* — which names only one of the two things behind it. Saying **it is a low stretch today** has always lived there too, and nothing said so, so finding it meant guessing that the question about weights was where it was kept.
+- **Nothing moved and nothing was added.** It is the same line in the same place, still closed until you open it. An app that asks every morning how you are is a demand, and this one is not going to start.
+
 ## 2.7.1 — ITERATION
 
 *2026-08-17*

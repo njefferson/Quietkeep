@@ -665,8 +665,33 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.1**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.7.2**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.7.2 — THE DOOR NAMES BOTH ACTS** (collisions entry 10). The collapsed line
+under capture read *"Something weighing on you?"* — which names raising a pebble
+— while the CAPACITY declaration lived behind it unannounced. It now reads *"How
+you are, and anything weighing on you"*.
+
+**Entry 10's premise was wrong and the check is what found it.** The entry framed
+its open question as placement — *"whether the declare verb sits where a heavy
+morning actually happens (the work surface) rather than down a sheet"*. Measured:
+`#capacity-level` is on the work surface, above every section, directly under
+capture. It was never down a sheet. **The reach defect was the LABEL**, which is
+smaller and more specific than the entry claimed, and it is the same class as
+every other reach defect this month: the thing exists, in the right place, and
+nothing says it is there.
+
+**Still a collapsed door.** An app that asks every morning how you are is a
+demand, and entry 8 calls this the best-defended collision in the product.
+Four words became eight; the word budget had room.
+
+**THE CATALOGUE'S ROUTED BACKLOG IS NOW EXHAUSTED.** Twenty-two entries: every
+one is SHIPPED or REFUSED except entry 3's contents-on-return card, which waits
+on real filing use and is therefore the owner's to answer by using it, not a
+session's to guess. Six marks were corrected today for claiming more or less than
+the code (entries 1, 4, 13, 15, 17, 18), two were reversed to refusals on their
+own evidence (entries 2, 20), and one had its premise disproved (entry 10).
 
 **2.7.1 — THE AMBIENT HORIZON, ON THE SURFACE IT WAS ASKED FOR** (collisions
 entry 7). The next fixed thing today, by name, on the **focus** surface. A name
