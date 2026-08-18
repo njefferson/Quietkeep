@@ -467,6 +467,36 @@ export const detachContextEvents = (
   kind: 'context.detached', node, payload: { node, context },
 } as AppEvent];
 
+/**
+ * WHO THIS IS FOR (2.6.0, ADR-0096).
+ *
+ * `attachContextEvents` to the letter, on the other axis. Keeping the two
+ * identical is deliberate: they are one shape and one thing to learn, and a
+ * gratuitous difference between them would be two mechanisms wearing one idea.
+ */
+export function attachRoleEvents(
+  ctx: StampContext, node: string, role: string,
+  opts: { createNamed?: string } = {},
+): AppEvent[] {
+  const out: AppEvent[] = [];
+  const mk = (kind: string, n: string | null, payload: unknown): AppEvent => ({
+    id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+    kind, node: n, payload,
+  } as AppEvent);
+  if (opts.createNamed) out.push(mk('role.created', role, { name: opts.createNamed }));
+  out.push(mk('role.attached', node, { node, role }));
+  return out;
+}
+
+/** Take one role off. Scoped to the node AND the role, so removing one identity
+ *  leaves the others alone. */
+export const detachRoleEvents = (
+  ctx: StampContext, node: string, role: string,
+): AppEvent[] => [{
+  id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+  kind: 'role.detached', node, payload: { node, role },
+} as AppEvent];
+
 export function linkPersonEvents(
   ctx: StampContext, node: string, person: string, relation: string,
   opts: { createNamed?: string; openWaiting?: boolean; forWhat?: string } = {},

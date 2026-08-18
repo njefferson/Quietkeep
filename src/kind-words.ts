@@ -83,6 +83,11 @@ export const KIND_WORDS: Record<NodeKind, string | null> = {
   'resume-card': 'Where you left off',
   // Where work can be DONE, which is not a thing to do (ADR-0092).
   context: 'A place',
+  // WHO work is for (2.6.0, ADR-0096). An identity that crosses areas, in the
+  // reader's own noun — not "identity", which is diagnosis-adjacent copy this
+  // app does not write, and not "hat", which is the cute register the voice
+  // rules refuse.
+  role: 'Role',
 };
 
 /** The reader's word for a kind, or null when there is deliberately none. */

@@ -10,7 +10,7 @@
 
 import { openSession, captureEvent, type Session } from './session.ts';
 import type { AppEvent } from '../events.ts';
-import { coverageGauge } from '../gate.ts';
+import { coverageGauge, heldWork } from '../gate.ts';
 import type { NodeState } from '../fold.ts';
 import { mountAbout } from './about.ts';
 import { mountTour } from './tour.ts';
@@ -34,6 +34,7 @@ import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
 import { servesWords } from '../serves.ts';
+import { roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS } from '../roles.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
@@ -313,6 +314,19 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         open.append(forWhat);
       }
 
+      // AND WHO IT IS FOR (2.6.0, ADR-0096). A third axis and a third silence
+      // broken: the tree says where a thing lives, a context says where it can
+      // be done, and a role says whose it is. Absent when there is none, which
+      // is the honest majority — an identity is never required and never
+      // inferred. `.card-place` again, so no new colour pair enters the gate.
+      const whose = roleNames(st, node);
+      if (whose.length > 0) {
+        const w = document.createElement('span');
+        w.className = 'card-place';
+        w.textContent = whose.join(' · ');
+        open.append(w);
+      }
+
       // WHAT IS IN IT, but only when it has actually come round.
       //
       // The completion of "the place comes back, and its contents come back with
@@ -450,6 +464,21 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // rather than leaving them on a screen with nothing on it and no control
       // behind it to explain where it went.
       if (total === 0) closeSheet('sheet-menu');
+      // WHERE THE ATTENTION IS (2.6.0, ADR-0096), painted on the same pass. Its
+      // door states WHAT IT OPENS and no number: a count on a standing control
+      // about somebody's own identities is a score on the landing surface, which
+      // is what took the volume count off the gauge in V2 stage 1. It is hidden
+      // entirely until a role exists, and closes behind anybody standing in it
+      // when the last one goes — the rule directly above, for the same reason.
+      {
+        const rolesBtn = document.querySelector<HTMLButtonElement>('#roles-open');
+        const anyRoles = allRoles(st).length;
+        if (rolesBtn) {
+          rolesBtn.hidden = anyRoles === 0;
+          rolesBtn.textContent = 'Where the attention is';
+          if (anyRoles === 0) closeSheet('sheet-roles');
+        }
+      }
       const rows: HTMLElement[] = [];
       for (const g of menuGroups(st)) {
         const h = document.createElement('h3');
@@ -917,6 +946,51 @@ export async function main(edition?: Edition): Promise<void> {
   // every refresh, and a contents list built once would offer routes to blocks
   // that have since gone and hide ones that have arrived — a stale list is
   // worse than none, because it reads as an answer.
+  // WHERE THE ATTENTION IS (2.6.0, ADR-0096). A plot, never a verdict — see the
+  // note on the markup. Painted on open like every other sheet, because a
+  // readout built once would report the store as it was when the app started.
+  const paintRoles = (): void => {
+    const st = session.state();
+    const { rows, unnamed } = roleLoads(st, heldWork);
+    const words = document.querySelector<HTMLElement>('#roles-words');
+    if (words) words.textContent = ROLE_READOUT_WORDS;
+    const list = document.querySelector<HTMLUListElement>('#roles-list');
+    if (list) {
+      list.replaceChildren(...rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        name.textContent = r.role.title || '(unnamed)';
+        const held = document.createElement('span');
+        held.className = 'roles-held';
+        // WORDS, not a bare integer. "3" beside a name reads as a score; "3
+        // things" reads as a count of work, which is what it is.
+        held.textContent = r.held === 0
+          ? 'nothing right now'
+          : r.held === 1 ? '1 thing' : `${r.held} things`;
+        li.append(name, held);
+        return li;
+      }));
+    }
+    const rest = document.querySelector<HTMLElement>('#roles-unnamed');
+    if (rest) {
+      // STATED, never hidden. On any real store this is the biggest number, and
+      // leaving it out would make the named roles look like the whole of
+      // somebody's life. It is deliberately not a row: it is not an identity,
+      // and listing it beside real ones invites reading it as one.
+      rest.textContent = unnamed === 0
+        ? 'Everything you are holding belongs to one of these.'
+        : `${unnamed === 1 ? '1 other thing' : `${unnamed} other things`} `
+          + 'you are holding belong to no named role. That is ordinary — most things do not.';
+      rest.hidden = false;
+    }
+  };
+  onSheetOpen('sheet-roles', paintRoles);
+  wireSheetClose('sheet-roles');
+  document.querySelector<HTMLButtonElement>('#roles-open')
+    ?.addEventListener('click', () => { openSheet('sheet-roles'); });
+
   onSheetOpen('sheet-contents', () => paintContents());
   wireSheetClose('sheet-contents');
   // TWO DOORS, both in flow. The header's, beside More, where the app's other

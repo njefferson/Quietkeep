@@ -393,6 +393,14 @@ decided by a session.**
   cross-cutting LINK (the shape the feeds relation already has), which means
   role support is a vocabulary addition (a `role` kind plus a link event),
   not a fourth door on stage 4's chooser.
+  - **BUILT 2026-08-17 as 2.6.0 (ADR-0096), thirteen days later, and the
+    deferral is the lesson rather than the build.** This entry got the model
+    exactly right — a role crosses areas, this tree is single-parent, therefore a
+    cross-cutting link and never a container — and ADR-0096 is that paragraph
+    implemented. **The gate it set was a session's judgement about whether the
+    owner had made enough containers yet to justify it, which is not a session's
+    call to make about somebody else's planner.** Third instance in one audit,
+    after Q-10 and Q-11 (hub LESSONS §96, §97).
   - **Deliberately deferred, with the shape named.** Building role machinery
     now, before a single area or goal exists in his store, repeats the
     eleven-empty-nouns mistake the azimuth check just caught. Stage 4's
@@ -621,8 +629,39 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.5.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.6.0**
 - **https://quietkeep.pages.dev** — production, **2.0.9**
+
+**2.6.0 — ROLES, AND WHERE THE ATTENTION IS** (ADR-0096). Q-13 settled on
+2026-08-04 and deferred for thirteen days. Roles are identities that cross
+multiple areas — that framing settles the model on its own, because this tree is
+single-parent, so a thing crossing areas structurally cannot be a container and
+has to be a cross-cutting link.
+
+**Three axes now:** the tree says where a thing LIVES, a context says where it
+can be DONE, a role says who it is FOR. The last two are one mechanism pointed in
+two directions.
+
+**A role is NOT a filter, and a context is.** Where you are physically changes
+during a day; an identity does not — you do not stop being a parent at the
+office. A "show me only Parent work" switch is the partition Q-10 argued against.
+
+**Where the attention is** — the readout, behind a control, hidden until a role
+exists. It answers the recorded question *"when do I visit whether I'm putting
+enough energy into each?"*, named in ADR-0013's consequences and in
+`docs/horizon-models.md` and never built. Sorted BY NAME and never by size,
+because ordering somebody's identities by how much each carries is a ranking of
+their life. No bar, no meter, no proportion, no target — asserted structurally by
+the walk. Counts are words. It says out loud that it is not a target, and the
+walk asserts that sentence is present. The unnamed remainder is stated
+separately, because on any real store it is the biggest number.
+
+**The deferral is the lesson.** The gate Q-13 set was a session's judgement about
+whether the owner had made enough projects yet to justify it. That is not a
+session's call. Third instance in one audit, after Q-10 and Q-11.
+
+**What to look at:** open a thing, **Who is this for?**, add a role. The door
+appears above your list once one exists.
 
 **2.5.0 — WHAT A THING IS FOR** (ADR-0095). Law 4's downward half, built for the
 first time. *"Levels push down; the user never climbs"* is two clauses: the

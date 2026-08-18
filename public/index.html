@@ -583,6 +583,24 @@
        aria-controls — a button that opens a dialog is not a disclosure. -->
   <button id="menu-open" class="gauge" type="button" hidden></button>
 
+  <!-- WHERE THE ATTENTION IS (2.6.0, ADR-0096). The answer to a question in the
+       record for weeks: "when do I visit whether I'm putting enough energy into
+       each?" — recorded in ADR-0013's consequences and named again in
+       docs/horizon-models.md as the direct structural answer, and never built.
+
+       A PLOT, NEVER A VERDICT (law 7 — the app plots, the human interprets).
+       Counts of live work per named role, sorted BY NAME and never by size,
+       because ordering somebody's own identities by how much each carries is
+       a ranking of their life and the app does not get to make it. No target,
+       no proportion of a whole, no bar, no colour, nothing "balanced" — a bar
+       is a machine for implying you are behind (law 5).
+
+       BEHIND A CONTROL, like the Menu and the claim: a readout that greets you
+       every morning is a standing report card. Hidden entirely until a role has
+       been named, because a chooser with nothing in it teaches you the feature
+       is broken. -->
+  <button id="roles-open" class="gauge" type="button" hidden></button>
+
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
@@ -1184,6 +1202,34 @@
       can be done anywhere.
     </p>
     <ul id="detail-context-list" class="detail-feeds"></ul>
+  </div>
+
+  <!-- WHO THIS IS FOR (2.6.0, ADR-0096). Roles.
+       Recorded in NOTES Q-13 as the owner's own framing: roles are identities
+       that cross multiple areas. That sentence settles the data model — this
+       tree is single-parent, so a thing crossing areas structurally cannot be a
+       container, and a role is a cross-cutting LINK. Q-13 said so on
+       2026-08-04, named the shape, and the build was then deferred for thirteen
+       days behind a judgement about whether enough containers existed yet.
+       The same machinery as the places above, pointed at a different question:
+       that one asks WHERE work can be done, this one asks WHO it is for.
+       Nothing is required, nothing is inferred, and the honest majority of what
+       anybody writes down belongs to no named identity at all. -->
+  <div class="detail-group">
+    <label class="detail-label" for="detail-role">Who is this for?</label>
+    <div class="detail-row">
+      <input id="detail-role" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="a part of your life this belongs to"
+             list="detail-roles" aria-describedby="detail-role-hint">
+      <button id="detail-role-set" type="button" aria-label="Add a role this belongs to">Add</button>
+    </div>
+    <datalist id="detail-roles"></datalist>
+    <p id="detail-role-hint" class="detail-hint">
+      A part of your life that runs through more than one area &mdash; not where
+      the work sits, but who it is for. As many as fit, and most things belong to
+      none.
+    </p>
+    <ul id="detail-role-list" class="detail-feeds"></ul>
   </div>
 
   <!-- Who this is with. Clarify's "Waiting for" route is one tap and never asks
@@ -2096,6 +2142,20 @@
      within a day of writing one down.
      A row exists only while its block is live, because a contents entry for
      something that is not on the page is a route to nowhere. -->
+<dialog id="sheet-roles" aria-labelledby="sheet-roles-title" data-door="#roles-open">
+  <h2 id="sheet-roles-title" class="section">Where the attention is</h2>
+  <!-- `tabindex="0"` for the reason the tree's and the Menu's bodies carry it:
+       this body holds no focusable thing at all — it is rows of words — and a
+       scrolling region with nothing focusable inside cannot be scrolled from a
+       keyboard (WCAG 2.1.1). -->
+  <div class="sheet-body" tabindex="0">
+    <p id="roles-words" class="detail-hint"></p>
+    <ul id="roles-list" class="roles-list"></ul>
+    <p id="roles-unnamed" class="detail-hint"></p>
+  </div>
+  <button id="sheet-roles-close" type="button" class="ghost">Close</button>
+</dialog>
+
 <dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
   <h2 id="sheet-contents-title" class="section">What&rsquo;s on this page</h2>
   <div class="sheet-body">

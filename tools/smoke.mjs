@@ -3486,6 +3486,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // 2.0.7: the map of two became a third, so it stopped being a map. Each sheet
   // carries `data-door`, read above — a hand-written list of doors is the same
   // defect as a hand-written list of surfaces, one indirection along.
+  // A CONDITIONAL DOOR IS STILL A DOOR (2.6.0, ADR-0096). `#roles-open` is
+  // `hidden` until a role has been named, so the sweep above discovered
+  // `sheet-roles` from the markup — correctly, that is the whole point of
+  // discovering rather than listing — and then could not open it, and said so
+  // rather than measuring a closed dialog and calling it green.
+  //
+  // The fix is to put the app into the state the door needs rather than to
+  // exempt the surface. An exemption would have been one line and would have
+  // left the sheet unmeasured for ever, which is the shape hub LESSONS §28 is
+  // about: a surface that ships without ever being measured.
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.locator('#cards .card-open').first().click().catch(() => {});
+  await tpage.waitForSelector('#detail[open]').catch(() => {});
+  await tpage.evaluate(() => {
+    const b = document.querySelector('#detail-more');
+    if (b && b.getAttribute('aria-expanded') !== 'true') b.click();
+  });
+  await tpage.fill('#detail-role', 'Parent').catch(() => {});
+  await tpage.locator('#detail-role-set').click().catch(() => {});
+  await tpage.waitForSelector('#detail-role-list li').catch(() => {});
+  await tpage.locator('#detail-close').click().catch(() => {});
+  await tpage.waitForSelector('#roles-open:not([hidden])').catch(() => {});
+
   const seeThrough = [];
   for (const [surface, bodySel, closeSel, door] of SURFACES_WITH_A_WAY_OUT) {
     if (door) {

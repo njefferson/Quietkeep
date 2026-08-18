@@ -541,6 +541,13 @@ const REGISTRY = {
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
   'where you are': ['#where', '#where-note', '.card-where'],
+  // WHO IT IS FOR (2.6.0, ADR-0096). Its own driven state for the reason 'where
+  // you are' has one: the door and the readout render only once a role exists,
+  // so registering them on a state whose store has none would be three false
+  // receipts — the failure `#nextup-left` already cost a release for.
+  'where the attention is': ['#roles-open'],
+  'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
+    '.roles-name', '.roles-held', '#roles-unnamed'],
   // What is on this page (2.3.0, ADR-0093). Driven from a store with several
   // blocks live, because a contents list with one row measures the chrome and
   // nothing else — and the count line only renders for blocks that publish one,
@@ -1759,6 +1766,61 @@ try {
     await auditNames(page, 'where you are', theme);
     await auditTargets(page, 'where you are', theme);
     await auditFocusRings(page, 'where you are', theme, ['#where']);
+    // WHO IT IS FOR (2.6.0, ADR-0096), driven the same way and for the same
+    // reason: a role planted into the store would prove the readout renders and
+    // nothing about whether one can be made. Three claims, in the order they can
+    // fail: the write path works; the door appears only once a role EXISTS (it
+    // is `hidden` before, so a registry entry naming it would otherwise be a
+    // false receipt); and the readout states the unnamed remainder rather than
+    // letting the named roles read as the whole store.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    const doorBefore = await page.evaluate(() =>
+      document.querySelector('#roles-open')?.hidden ?? null);
+    (doorBefore === true ? pass : fail)(
+      `${theme}/roles: the readout door is absent until a role exists (hidden=${doorBefore})`);
+    await page.fill('#detail-role', 'Parent');
+    await page.click('#detail-role-set');
+    await page.waitForSelector('#detail-role-list li');
+    await page.click('#detail-close');
+    await page.waitForSelector('#roles-open:not([hidden])');
+    await auditContrast(page, 'where the attention is', theme);
+    await auditTargets(page, 'where the attention is', theme);
+    await page.click('#roles-open');
+    await page.waitForSelector('#sheet-roles[open]');
+    await auditContrast(page, 'roles open', theme);
+    await auditAxe(page, 'roles open', theme);
+    await auditNames(page, 'roles open', theme);
+    await auditTargets(page, 'roles open', theme);
+    await auditFocusRings(page, 'roles open', theme, ['#sheet-roles-close']);
+    const readout = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('#roles-list .roles-row')].map(r => ({
+        name: r.querySelector('.roles-name')?.textContent?.trim(),
+        held: r.querySelector('.roles-held')?.textContent?.trim(),
+      })),
+      unnamed: document.querySelector('#roles-unnamed')?.textContent?.trim() ?? '',
+      words: document.querySelector('#roles-words')?.textContent?.trim() ?? '',
+    }));
+    (readout.rows.some(r => r.name === 'Parent' && r.held === '1 thing') ? pass : fail)(
+      `${theme}/roles open: the role somebody just made is listed, carrying what they attached it to`);
+    // WORDS AND NOT A BARE INTEGER — "3" beside a name reads as a score.
+    (readout.rows.every(r => /thing|nothing/.test(r.held ?? '')) ? pass : fail)(
+      `${theme}/roles open: every count is words, never a bare number`);
+    (/no named role/.test(readout.unnamed) ? pass : fail)(
+      `${theme}/roles open: the unnamed remainder is STATED — on a real store it is the biggest number`);
+    (/not a target/.test(readout.words) ? pass : fail)(
+      `${theme}/roles open: it says out loud that it is not a score (law 7 is what makes it legal)`);
+    // NO BAR, NO METER, NO PROGRESS ELEMENT anywhere on this surface. A bar is a
+    // machine for implying you are behind (law 5), and the check is structural
+    // rather than a promise in a comment.
+    const bars = await page.evaluate(() =>
+      document.querySelectorAll('#sheet-roles progress, #sheet-roles meter, #sheet-roles [role="progressbar"]').length);
+    (bars === 0 ? pass : fail)(
+      `${theme}/roles open: no bar, meter or progressbar on the readout (${bars} found)`);
+    await page.click('#sheet-roles-close');
+    await page.waitForSelector('#sheet-roles[open]', { state: 'detached' });
+
     // Back to everywhere, so every state after this sees the whole list.
     await page.selectOption('#where', '');
     await page.waitForSelector('#where-note', { state: 'hidden' });
@@ -2908,7 +2970,10 @@ try {
       // 2.3.0 (ADR-0093): its rows carry a block's heading and that block's own
       // count sentence on one line, which at 320px @ 200% is the longest thing
       // in the app that is not a title.
-      'sheet-contents']) {
+      'sheet-contents',
+      // 2.6.0 (ADR-0096): a role somebody named can be a long phrase, and it
+      // sits on one line with its count.
+      'sheet-roles']) {
       await openSurface(page, id);
       const over = await page.evaluate((want) => {
         const d = document.querySelector('#' + want);

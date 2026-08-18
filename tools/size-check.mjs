@@ -53,7 +53,12 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 // controls is a different and larger job than cutting prose; this stops the
 // number growing while nobody is looking, which is the failure that happened.
 const BUDGET = {
-  words: 3300,
+  // 3300 -> 3340 on 2026-08-17 (ADR-0096). Roles add one labelled field to the
+  // detail sheet with its hint, and one readout sheet whose whole content is a
+  // sentence saying it is NOT a score. That sentence is the thing that makes the
+  // readout legal under law 7, so cutting it to fit a word budget would cut the
+  // safeguard and keep the numbers — exactly backwards.
+  words: 3340,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -190,7 +195,18 @@ const BUDGET = {
   // how do I get to it" buy back more than they cost, and refusing them on a
   // count would be the budget read as a score — the failure its own 214 -> 215
   // note names.
-  controls: 222,
+  // 222 -> 226 on 2026-08-17 (ADR-0096), and this is the FEATURE argument again
+  // rather than the cheap one. The four: the role input and its Add on the
+  // detail sheet, the "Where the attention is" door, and that sheet's Close.
+  //
+  // It is the same trade contexts won at 215 -> 219 and it is won on the same
+  // ground: an axis the app did not have. The tree says where a thing LIVES and
+  // a context says where it can be DONE; nothing said WHO it was for, so "am I
+  // putting enough into each part of my life" had no answer anywhere in the
+  // product. Two of the four exist only to leave or reach a surface, and the
+  // door is hidden entirely until a role has been named — on a store with none,
+  // the count is 224.
+  controls: 226,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

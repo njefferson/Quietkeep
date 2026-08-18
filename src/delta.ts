@@ -79,6 +79,9 @@ export type ChangeKind = 'finished' | 'arrived' | 'now-waiting' | 'let-go' | 'ne
  *  - `resume-card` — the app's own artifact about where you left off, not work
  *    anybody committed to and not a fact about the portfolio.
  *  - `context` — where a thing can be done. A label on work, never work.
+ *  - `role` — WHO a thing is for. An identity is not portfolio news, and a
+ *    status report naming somebody's own roles at somebody else is a fact about
+ *    the person rather than about the work — the same line `person` is on.
  */
 const REPORTABLE: Record<NodeKind, boolean> = {
   action: true,
@@ -96,6 +99,7 @@ const REPORTABLE: Record<NodeKind, boolean> = {
   person: false,
   'resume-card': false,
   context: false,
+  role: false,
   anchor: false,
 };
 

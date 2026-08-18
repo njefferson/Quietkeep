@@ -207,6 +207,12 @@ export interface NodeState {
    *  says where it lives, and law 1 does not read this list — attaching a
    *  context can never make a silent node non-silent. */
   contexts: NodeId[];
+  /** WHO THIS IS FOR (2.6.0, ADR-0096). Several, because one piece of work can
+   *  belong to more than one identity; empty is the ordinary case and means
+   *  nothing at all — a role is never required and never inferred. A LABEL,
+   *  never a container: the parent still says where it lives, and law 1 does not
+   *  read this list — attaching a role can never make a silent node non-silent. */
+  roles: NodeId[];
   /** For a `waiting-for`: what is owed and since when. `waitingOn` is the person
    *  node; null means nobody has said who, which is an ordinary state and not a
    *  defect — the route is one tap and asking who at that moment would make it
@@ -642,7 +648,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       id, vault, kind: 'action', title: '', parent: null,
       trashed: false, mergedInto: null, clocks: {}, onMenu: null,
       lastDone: null, comfortWindowDays: null, intervalDays: null,
-      heat: null, route: null, sourceTags: [], captured: false, resumeSpent: false, contexts: [],
+      heat: null, route: null, sourceTags: [], captured: false, resumeSpent: false, contexts: [], roles: [],
       resumeFor: null, resumeCue: null, interruptedFocus: null, interruptedAt: null,
       people: [], waitingOn: null, waitingFor: null, waitingSince: null, waitingOutcome: null,
       role: null, opr: null, saveTarget: null, saveSaved: null,
@@ -681,6 +687,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       // field, so a bare spread would alias it into the base state.
       people: [...n.people],
       contexts: [...n.contexts],
+      roles: [...n.roles],
       // And the decision log, for the same reason a third time (1.9.0).
       decisions: [...n.decisions],
       // And the timed runs, a fifth (V2 stage 5). Same rule, same reason: a
@@ -1031,6 +1038,24 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
       case 'person.created': {
         const n = ensureNode(s, e.node!, e.vault, touched);
         if (wins(n.stamps['kind'], o)) { n.kind = 'person'; n.stamps['kind'] = o; }
+        if (wins(n.stamps['title'], o)) { n.title = e.payload.name; n.stamps['title'] = o; }
+        break;
+      }
+      case 'role.attached': {
+        const n = ensureNode(s, e.payload.node ?? e.node!, e.vault, touched);
+        if (!n.roles.includes(e.payload.role)) {
+          n.roles = [...n.roles, e.payload.role];
+        }
+        break;
+      }
+      case 'role.detached': {
+        const n = ensureNode(s, e.payload.node ?? e.node!, e.vault, touched);
+        n.roles = n.roles.filter(r => r !== e.payload.role);
+        break;
+      }
+      case 'role.created': {
+        const n = ensureNode(s, e.node!, e.vault, touched);
+        if (wins(n.stamps['kind'], o)) { n.kind = 'role'; n.stamps['kind'] = o; }
         if (wins(n.stamps['title'], o)) { n.title = e.payload.name; n.stamps['title'] = o; }
         break;
       }

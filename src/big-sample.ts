@@ -279,6 +279,8 @@ export async function bigSampleEvents(
 ): Promise<AppEvent[]> {
   const out: AppEvent[] = [];
   const rand = rng(20260803);
+  // A SECOND, INDEPENDENT STREAM for roles (2.6.0) — see the note at its use.
+  const roleRand = rng(20260817);
   const pick = <T>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!;
   const int = (lo: number, hi: number): number => lo + Math.floor(rand() * (hi - lo + 1));
 
@@ -328,6 +330,21 @@ export async function bigSampleEvents(
   const contexts = CONTEXTS.map((name) => {
     const id = ctx.id();
     stamp('context.created', id, { name });
+    return id;
+  });
+
+  // --- roles, on the other axis (2.6.0, ADR-0096) ----------------------------
+  //
+  // Three, and deliberately FEWER than the contexts: a person has a handful of
+  // identities and a great many places, and a sample that gave them the same
+  // cardinality would teach the wrong shape. They are named as identities rather
+  // than as areas — an area holds work, a role runs THROUGH areas — because the
+  // whole reason this is a link and not a container is that the two differ.
+  // `role.created` IS the creation, exactly as `context.created` is.
+  const ROLES = ['Parent', 'The photography', 'Keeping the house running'];
+  const roles = ROLES.map((name) => {
+    const id = ctx.id();
+    stamp('role.created', id, { name });
     return id;
   });
 
@@ -403,6 +420,24 @@ export async function bigSampleEvents(
         stamp('context.attached', a, { node: a, context: contexts[Math.floor(rand() * contexts.length)]! });
       }
     }
+
+    // WHO IT IS FOR (2.6.0, ADR-0096). Rarer than a place, because a role is
+    // something you attach on purpose to work that is genuinely OF that identity
+    // and not to every errand — and the honest majority carrying none is what
+    // keeps a role from reading as a required field.
+    // ITS OWN STREAM, and that is not fussiness. Drawing from `rand` would shift
+    // every subsequent draw in the generator, silently reshaping a sample that
+    // dozens of assertions are written against — the first version of this did,
+    // and the membership gate immediately reported that the set no longer held a
+    // waiting-for with a passed date. A new label must ADD a case, never quietly
+    // delete somebody else's.
+    const rRoll = roleRand();
+    if (rRoll < 0.3) {
+      stamp('role.attached', a, { node: a, role: roles[Math.floor(roleRand() * roles.length)]! });
+      if (rRoll < 0.06) {
+        stamp('role.attached', a, { node: a, role: roles[Math.floor(roleRand() * roles.length)]! });
+      }
+    }
     const roll = rand();
     if (roll < 0.15) clock(a, 'due', int(-14, -1));        // passed: a replan card
     else if (roll < 0.45) clock(a, 'due', int(0, 21));
@@ -434,6 +469,16 @@ export async function bigSampleEvents(
   stamp('context.attached', replaced, { node: replaced, context: contexts[2]! });
   stamp('context.detached', replaced, { node: replaced, context: contexts[0]! });
   clock(replaced, 'due', int(2, 12));
+
+  // A role put on and taken off again (2.6.0) — the detach verb exercised, so
+  // the sample carries every role event and not only the additive half. Taking
+  // one role off must leave the other alone, which is the scoping the projection
+  // depends on.
+  const reroled = node('action', 'Send the prints to be framed');
+  stamp('role.attached', reroled, { node: reroled, role: roles[1]! });
+  stamp('role.attached', reroled, { node: reroled, role: roles[2]! });
+  stamp('role.detached', reroled, { node: reroled, role: roles[2]! });
+  clock(reroled, 'due', int(2, 12));
 
   const renamed = node('action', 'Ring the man about the thing');
   clock(renamed, 'due', 3);
@@ -808,7 +853,8 @@ export function bigSampleSummary(events: readonly AppEvent[]): BigSampleSummary 
   for (const e of events) {
     if (e.node === null) continue;
     if (e.kind === 'node.created' || e.kind === 'capture.recorded'
-        || e.kind === 'person.created' || e.kind === 'context.created') {
+        || e.kind === 'person.created' || e.kind === 'context.created'
+        || e.kind === 'role.created') {
       nodes.add(e.node);
     }
   }

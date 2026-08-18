@@ -36,8 +36,9 @@ import { doneEvents } from './work.ts';
 import { declareFeedsEvents, releaseFeedsEvents } from './detail-intents.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
-import { attachContextEvents, detachContextEvents } from './detail-intents.ts';
+import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
+import { allRoles, rolesOf } from '../roles.ts';
 import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
@@ -544,6 +545,35 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
           b.addEventListener('click', () => {
             void run(ctx => detachContextEvents(ctx, n.id, c.id),
               `No longer ${c.title || 'there'}.`);
+          });
+          li.append(b);
+          return li;
+        }));
+      }
+    }
+
+    // WHO THIS IS FOR (2.6.0, ADR-0096). The block above, on the other axis —
+    // identical by design rather than by accident: they are one shape, and a
+    // gratuitous difference would be two mechanisms wearing one idea.
+    {
+      const rst = session.state();
+      const rList = q('#detail-role-list');
+      const rData = q('#detail-roles');
+      if (rData) {
+        rData.replaceChildren(...allRoles(rst).map(r =>
+          Object.assign(document.createElement('option'), { value: r.title || '' })));
+      }
+      if (rList) {
+        rList.replaceChildren(...rolesOf(rst, n).map(r => {
+          const li = document.createElement('li');
+          li.className = 'detail-feed';
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'linklike';
+          b.textContent = `${r.title || '(unnamed)'} — take it off`;
+          b.addEventListener('click', () => {
+            void run(ctx => detachRoleEvents(ctx, n.id, r.id),
+              `No longer part of ${r.title || 'that'}.`);
           });
           li.append(b);
           return li;
@@ -1337,6 +1367,24 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       const id = existing?.id ?? ctx.id();
       return attachContextEvents(ctx, current!.id, id, existing ? {} : { createNamed: name });
     }, `Can be done ${name}.`);
+  });
+
+  // WHO THIS IS FOR (2.6.0, ADR-0096). The place input's shape exactly.
+  btn('#detail-role-set')?.addEventListener('click', () => {
+    const input = q<HTMLInputElement>('#detail-role');
+    if (!input || !current) return;
+    const name = input.value.trim();
+    if (!name) { say('A name first — or leave it, and it belongs to no one in particular.'); return; }
+    const st = session.state();
+    // Match by name before minting a second node for the same identity, exactly
+    // as places and people do: "parent" and "Parent" are one role, and a
+    // duplicate would split the readout in two for ever.
+    const existing = allRoles(st).find(r => (r.title || '').toLowerCase() === name.toLowerCase());
+    input.value = '';
+    void run(ctx => {
+      const id = existing?.id ?? ctx.id();
+      return attachRoleEvents(ctx, current!.id, id, existing ? {} : { createNamed: name });
+    }, `Part of ${name}.`);
   });
 
   btn('#detail-track')?.addEventListener('click', () => {

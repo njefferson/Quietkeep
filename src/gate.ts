@@ -200,6 +200,11 @@ export const heldWork = (state: State): NodeState[] =>
     // heldGroups, in the coverage list and in search the moment the kind
     // existed, because every one of those is defined by the complement.
     if (n.kind === 'context') return false;
+    // NOR IS A ROLE (2.6.0, ADR-0096). A role is WHO work is for, and putting
+    // an identity in the todo list with a Done button on it is the same
+    // category error — and a worse one, because the thing being ticked off is a
+    // person's sense of themselves rather than a place.
+    if (n.kind === 'role') return false;
     // A JOURNAL ENTRY IS NOT WORK (1.13.0, ADR-0061). It is demand-free, so law
     // 1 is satisfied without a clock; it has no title by design; and it has its
     // own surface behind the ⓘ.

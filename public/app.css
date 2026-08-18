@@ -2296,3 +2296,36 @@ dialog, dialog * { overflow-wrap: anywhere; }
   border: 2px solid var(--line);
   border-radius: var(--radius);
 }
+
+/* WHERE THE ATTENTION IS (2.6.0, ADR-0096) — the role readout.
+ *
+ * NO BAR, and that is the design rather than an omission. A bar next to a name
+ * is a proportion, a proportion implies a whole, and a whole implies a target —
+ * "a bar is a machine for implying you are behind" is this repo's own phrase for
+ * it (law 5). The numbers are words on a row and nothing draws a comparison
+ * between them; the human does the interpreting (law 7).
+ *
+ * Two columns that collapse: the name takes the room and the count sits at the
+ * end, and at 320px @ 200% the count drops under the name rather than pushing
+ * the page sideways. */
+.roles-list { margin: 0; padding: 0; list-style: none; }
+.roles-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--gap);
+  flex-wrap: wrap;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--rule, var(--line));
+}
+.roles-row:last-child { border-bottom: 0; }
+.roles-name { flex: 1 1 10rem; min-width: 0; overflow-wrap: anywhere; color: var(--ink); }
+/* The same quiet ink-on-surface pair every count line in the app uses, so no new
+   foreground/background pair enters the contrast gate. */
+.roles-held {
+  flex: 0 1 auto;
+  min-width: 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}

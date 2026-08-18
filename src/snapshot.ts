@@ -102,6 +102,10 @@ export function deserialiseState(raw: unknown): State {
       // `?? []` is the OLD-SNAPSHOT default: a cut taken before 2.2.0 has no
       // contexts key, and a missing label must read as "anywhere", never as undefined.
       contexts: [...(n.contexts ?? [])],
+      // The same OLD-SNAPSHOT default, for the same reason: a cut taken before
+      // 2.6.0 has no roles key, and a missing label must read as "none" rather
+      // than as undefined.
+      roles: [...(n.roles ?? [])],
       waitingOn: n.waitingOn ?? null,
       waitingFor: n.waitingFor ?? null,
       waitingSince: n.waitingSince ?? null,

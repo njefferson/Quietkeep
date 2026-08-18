@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.6.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-17',
+    notes: [
+      '**Roles.** A thing can now say who it is for \u2014 a part of your life that runs through more than one area. Set it on a thing\u2019s own sheet under **Who is this for?**, as many as fit. It sits beside where a thing can be done, and it is a different question: that one is WHERE, this one is WHO.',
+      '**And a readout: Where the attention is.** A line above your list, once you have named a role, showing what each one is carrying right now. It says the number of things and nothing else \u2014 no bar, no share of a whole, no target, nothing about whether any of it is even. A bar is a machine for implying you are behind. What it is for is the question that has been in the notes for weeks: whether you are putting enough into each. The app plots; you read it.',
+      '**It also states what belongs to no role at all**, which on any real set is most of it. Leaving that out would make the named ones look like the whole of your life.',
+      '**Nothing is required and nothing is guessed.** The app never infers a role from a title, a folder or your history. Most things belong to none, and that is the ordinary case rather than an unfinished one.',
+      '**This was settled on 4 August and not built for thirteen days.** The shape was written down correctly that day \u2014 a role crosses areas, so it can never be a container, it has to be a link \u2014 and then the build was held back pending a judgement about whether you had made enough projects yet to justify it. That judgement was not anyone\u2019s to make but yours.',
+    ],
+  },
+  {
     triplet: '2.5.0',
     kind: 'CAPABILITY',
     date: '2026-08-17',
