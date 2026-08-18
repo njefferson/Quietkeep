@@ -457,6 +457,33 @@ decided by a session.**
   this app (see [`docs/nd-collisions.md`](docs/nd-collisions.md)), not a
   theoretical one; the question is whether "records nothing" is the only way to
   get it.
+  - **ANSWERED 2026-08-17 from the research, and the answer is YES — the trade
+    stands, and it is now doubly right.** Two independent reasons, neither of
+    them taste:
+  - **The research forbids the alternative outright.** Learning from declines is
+    avoidance data by construction — a decline is the record of a thing not done.
+    `nd-collisions.md` entry 2's refusal is *"any avoidance detection — an
+    inferred wall is the ledger this app exists to not keep"*, and entry 8
+    (demand avoidance) calls this the best-defended collision in the app and
+    routes **refuse further building**. An app that learned from what you turned
+    down would be keeping exactly the ledger both entries forbid, whether or not
+    it ever showed you the tally.
+  - **And the thing it was wanted FOR has been supplied by a deliberate signal.**
+    Q-12's stated motivation was that the app "can never learn what matters" —
+    one of Q-11's two candidate causes. Q-11's ranking cause was then found by
+    measurement (ADR-0095): every tier was temporal, and the app had no
+    non-temporal signal at all. It has one now — the heat pass, given
+    deliberately in a flow that ASKS, read since 2.7.0 (ADR-0097). **A signal
+    somebody chose to give is not the same object as a signal inferred from what
+    they avoided**, and only the first is compatible with laws 5 and 7. So the
+    app can be interest-aware without ever learning from a decline, which is the
+    thing this question was actually worried about.
+  - **What stays open, and it is narrow:** nothing here says the heat pass is
+    answered often enough to be useful in practice. That is a question about use,
+    not about design, and it belongs to the on-device pass rather than to a
+    session or to the literature. It is also the falsifier ADR-0097 names.
+  - Status: **Closed.** The trade is right. `Not this` and `Not now` record
+    nothing, forever.
 
 ### Closed
 
