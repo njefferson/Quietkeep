@@ -330,6 +330,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0100](0100-the-frame-stays.md)**
   - Decision: The page becomes a flex column of viewport height with one scrolling child; capture, the proof and the destinations sit outside the scroller and never move. NOT fixed and NOT sticky — both were ruled out by measurements already in this repo — but the flex-column shape every sheet has proved on the reference device since 1.40.0, carried up to the document
   - Status: Accepted · shipped 2.9.0 · follows [0099](0099-the-first-screen.md)
+- **[0101](0101-the-frame-stands-down.md)**
+  - Decision: Past half the viewport the frame stops being a frame and the document scrolls again, rather than scrolling inside itself and cutting the proof line through the middle of its own sentence; two thresholds, so a height near the line cannot flip on every measurement
+  - Status: Accepted · shipped 2.9.2 · amends [0100](0100-the-frame-stays.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

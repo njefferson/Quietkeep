@@ -20,6 +20,7 @@ import { CURRENT } from './changelog.ts';
 import { mountTriage } from './clarify.ts';
 import { openSheet, closeSheet, wireSheetClose, onSheetOpen } from './sheets.ts';
 import { paintContents } from './contents.ts';
+import { frameShouldStandDown } from '../frame.ts';
 import { mountWork } from './work.ts';
 import { mountDetail } from './detail.ts';
 import { mountSearch } from './search.ts';
@@ -116,9 +117,51 @@ let whereNow: string | null = null;
  * jump that throws would take the surface down with it.
  */
 export function scrollRunwayToTop(): void {
+  // BOTH, always (2.9.2). The runway scrolls while the frame is up and the
+  // DOCUMENT scrolls when the frame has stood down, and a caller has no business
+  // knowing which state the page is in. Each is a no-op in the other mode, so
+  // doing both is not belt-and-braces — it is the only version that is correct
+  // in both, and the alternative is a way back that silently does nothing at
+  // exactly the text size somebody needed it most.
   const runway = document.querySelector<HTMLElement>('#runway');
   if (runway) runway.scrollTop = 0;
-  else window.scrollTo({ top: 0 });
+  window.scrollTo({ top: 0 });
+}
+
+/**
+ * Watch whether the frame still fits, and take it down when it does not
+ * (2.9.2, ADR-0101).
+ *
+ * The decision is in `src/frame.ts` and is pure; this is the wiring. The
+ * attribute goes on `<html>` rather than on the body because the shell's
+ * `overflow: hidden` lives there and `:has()` is not a dependency worth taking
+ * for something the layout turns on.
+ *
+ * Measured on every resize, and resize is what a text-size change produces —
+ * the reflow changes the frame's content height, which is the number this reads.
+ */
+export function watchFrameFit(): void {
+  const frame = document.querySelector<HTMLElement>('.frame');
+  if (!frame) return;
+  const root = document.documentElement;
+  let down = false;
+  const check = (): void => {
+    try {
+      const next = frameShouldStandDown(frame.scrollHeight, window.innerHeight, down);
+      if (next === down) return;
+      down = next;
+      if (down) root.setAttribute('data-frame', 'off');
+      else root.removeAttribute('data-frame');
+    } catch { /* a surface: never take the page down over a layout question */ }
+  };
+  check();
+  try {
+    // The frame's own box changes when its content wraps, which is what a text
+    // size change does — so observing the frame catches the case a window
+    // resize listener alone would miss entirely.
+    new ResizeObserver(check).observe(frame);
+  } catch { /* no ResizeObserver: the window listener below still catches most */ }
+  window.addEventListener('resize', check);
 }
 
 function paintJump(): void {
@@ -1035,6 +1078,9 @@ export async function main(edition?: Edition): Promise<void> {
   // is wired, by the same convention every other sheet uses.
   wireSheetClose('sheet-bother-entry');
   wireSheetClose('sheet-load-entry');
+
+  // The frame is a luxury that only pays when it is small (2.9.2, ADR-0101).
+  watchFrameFit();
 
   // The Menu is a PLACE (2.0.7, ADR-0089), and closed on arrival every time —
   // it is demand-free, and a surface that remembers it was open is a surface

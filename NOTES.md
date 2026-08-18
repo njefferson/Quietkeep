@@ -665,11 +665,37 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.1**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.2**
 - **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
   `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
   `fda790c` on both — rather than inferred from a clean merge)
+
+**2.9.2 — THE FRAME STANDS DOWN RATHER THAN CUTTING ITSELF IN HALF** (ADR-0101).
+Reported from a device at a larger text size: the proof line was sliced through
+the middle of its own sentence.
+
+**ADR-0100's cap was the right instinct and the wrong remedy.** `max-height: 50dvh`
+with `overflow-y: auto` means that past the cap the frame scrolls INSIDE ITSELF.
+Its own consequences section predicted *"the proof line is one small scroll away
+rather than gone"* — a guess about how a capped scroller would read, and wrong in
+a way only a device could show. Reproduced at 390px: 474px of content against a
+422px cap at 175% browser text, 530px at 200%, 468px at the app's own 150%.
+
+Past half the viewport there is now no frame: everything returns to ordinary page
+content and the document scrolls, exactly as before 2.9.0 — a layout that shipped
+for months. **Two thresholds** (down past 50%, back below 42%) so a height near
+the line cannot flip on every measurement and rebuild the page under the reader.
+
+Measured on the sample: phone 390x844 **34%, up**; phone with the address bar
+390x664 **43%, up**; iPad **18%, up**; 320x568 **59%, stood down**. No reader on
+a real device loses it at ordinary text.
+
+**And two gate assertions were measuring in a mode they could not name.** The
+contents jump reported 1,419px of error because it took the runway's top as its
+origin while the DOCUMENT was what had scrolled, then −8px because it allowed for
+a `scroll-padding-top` that only exists on the runway. Both read the mode first
+now and say which one they measured in.
 
 **2.9.1 — A CONTROL'S BOX IS MEASURED IN ITS OWN TEXT.** Reported from a device:
 *changing the font size does not resize anything but the letters.* Reproduced and

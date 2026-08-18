@@ -127,6 +127,40 @@ body {
    the URL bar and rubber-bands under a frame that is not supposed to move. */
 html { height: 100%; overflow: hidden; }
 
+/* AND THE WHOLE SHELL STANDS DOWN WHEN THE FRAME WILL NOT FIT (2.9.2, ADR-0101).
+ *
+ * The cap below was the right instinct and the wrong remedy. `overflow-y: auto`
+ * on a capped frame means that past the cap it scrolls INSIDE ITSELF, and what
+ * a reader sees is the proof line cut through the middle of its own sentence.
+ * Reported from a device; reproduced at 390px, where 175% browser text gives the
+ * frame 474px of content against a 422px cap, and the app's own 150% gives 468px.
+ *
+ * A box cut in half is this app implying something has been lost, which is the
+ * one thing it may not do. So past the threshold there is no frame: everything
+ * returns to ordinary page content and the document scrolls, exactly as it did
+ * before 2.9.0 — a layout that shipped for months and is known good. The reader
+ * loses a convenience rather than a sentence.
+ *
+ * On `<html>` rather than on `<body>` because the shell's `overflow` lives here,
+ * and `:has()` is not a dependency worth taking for something layout turns on. */
+html[data-frame="off"] { height: auto; overflow: visible; }
+html[data-frame="off"] body {
+  height: auto;
+  min-height: 100dvh;
+  display: block;
+  overflow: visible;
+  padding-bottom: max(calc(var(--gap) * 2), env(safe-area-inset-bottom));
+}
+html[data-frame="off"] .frame {
+  max-height: none;
+  overflow: visible;
+}
+html[data-frame="off"] .runway {
+  overflow: visible;
+  /* The scroller's own bottom padding belongs to the body again. */
+  padding-bottom: 0;
+}
+
 body {
   min-height: 100dvh;
   height: 100dvh;

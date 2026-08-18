@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.9.2',
+    kind: 'ITERATION',
+    date: '2026-08-18',
+    notes: [
+      '**The line saying nothing has gone quiet was being cut in half.** At a larger text size the strip at the top of the screen ran out of room and started scrolling inside itself, so the sentence was sliced through the middle. Reported from a device and reproduced: at 175% browser text it needed 474 pixels and had 422.',
+      '**A box cut in half is this app suggesting something has been lost, and it may not do that.** So past half the screen the top strip stops being a fixed strip: everything goes back to being ordinary page content and the whole page scrolls, exactly as it did before. You lose the convenience, never the sentence.',
+      '**Where that actually happens:** on a phone at ordinary text the strip takes about a third of the screen and stays. It stands down on a very small screen, or once your text is large enough that keeping it would cost more than it is worth.',
+      '**And it does not flicker.** It stands down past half the screen and only comes back below 42%, so a size sitting right on the line cannot flip the page back and forth while you read it.',
+    ],
+  },
+  {
     triplet: '2.9.1',
     kind: 'ITERATION',
     date: '2026-08-18',

@@ -1907,8 +1907,17 @@ try {
     // perfectly. Corrected rather than loosened: the tolerance is unchanged,
     // it is the origin that was wrong.
     const arrived = await page.evaluate(() => {
+      // THE ORIGIN DEPENDS ON WHICH BOX ACTUALLY SCROLLED (2.9.2, ADR-0101).
+      // With the frame up, runway content is measured from the runway's top.
+      // With the frame stood down there is no inner scroller — the DOCUMENT
+      // scrolled — and the runway's own top is now somewhere above the viewport,
+      // so subtracting it reports the whole scroll distance as error. It did:
+      // 1419px, on a walk where an earlier state had left the frame down.
+      // Named rather than tolerated, because a check that cannot say which
+      // layout it measured cannot be trusted in either.
+      const off = document.documentElement.getAttribute('data-frame') === 'off';
       const runway = document.querySelector('#runway');
-      const origin = runway ? runway.getBoundingClientRect().top : 0;
+      const origin = (!off && runway) ? runway.getBoundingClientRect().top : 0;
       // AND THE CLEARANCE IS READ, NOT ASSUMED. `.runway` sets `scroll-padding-top`
       // so a heading does not land flush against the frame's edge, and
       // `scrollIntoView` honours it — so a jump that worked perfectly landed
@@ -1916,17 +1925,23 @@ try {
       // tolerance is NOT widened to swallow it; the expected landing point comes
       // from the stylesheet, so changing the clearance moves the check with it
       // and a jump that actually breaks still fails.
-      const pad = runway ? parseFloat(getComputedStyle(runway).scrollPaddingTop) || 0 : 0;
+      // AND THE CLEARANCE ONLY APPLIES IN THE MODE THAT OWNS IT: `.runway` sets
+      // `scroll-padding-top`, and with the frame down the runway is not the
+      // scroller, so the document lands the block flush and there is no
+      // clearance to allow for. Reported as -8px until this said so.
+      const pad = (!off && runway) ? parseFloat(getComputedStyle(runway).scrollPaddingTop) || 0 : 0;
       return {
         focused: document.activeElement?.id ?? null,
         pad: Math.round(pad),
+        mode: off ? 'frame down, the document scrolls' : 'frame up, the runway scrolls',
         top: Math.round(document.querySelector('#held').getBoundingClientRect().top - origin - pad),
       };
     });
     (arrived.focused === 'held-heading' ? pass : fail)(
       `${theme}/contents open: pressing a row lands focus on the block (got ${arrived.focused ?? 'nothing'})`);
     (Math.abs(arrived.top) <= 4 ? pass : fail)(
-      `${theme}/contents open: pressing a row puts the block at the top of the runway, under its ${arrived.pad}px clearance (${arrived.top}px off)`);
+      `${theme}/contents open: pressing a row puts the block at the top, under its ${arrived.pad}px clearance`
+      + ` — ${arrived.mode} (${arrived.top}px off)`);
     await page.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo({ top: 0, behavior: 'auto' }); });
 
     // WHERE YOU ARE (2.2.0, ADR-0092), driven end to end: a place is named on a
@@ -2151,6 +2166,63 @@ try {
       + `${afterGrow.spill.length ? ` — ${afterGrow.spill.slice(0, 6).join(', ')}` : ''}`);
     await page.evaluate(() => { document.body.style.fontSize = ''; });
     await page.waitForTimeout(80);
+
+    // AND THE FRAME NEVER CUTS ITS OWN CONTENT IN HALF (2.9.2, ADR-0101).
+    //
+    // 2.9.0 capped the frame at half the viewport so it could not crush the
+    // runway at large text. `overflow-y: auto` on a capped box means that past
+    // the cap it scrolls INSIDE ITSELF — and what a reader saw, reported from a
+    // device, was the proof line cut through the middle of its own sentence.
+    // Measured at 390px: 474px of content against a 422px cap at 175% browser
+    // text, and 468px at the app's own 150%.
+    //
+    // The frame stands down instead. So the assertion is not "the frame fits" —
+    // it is that at EVERY size it either fits or is not a frame, and the proof
+    // line is whole either way. Both mechanisms are driven, because they are
+    // different code paths through the same threshold.
+    const clips = [];
+    for (const [how, apply] of [
+      ['the browser\'s own text', (v) => { document.body.style.fontSize = v; }],
+      ['this app\'s size setting', (v) => { document.documentElement.style.fontSize = v; }],
+    ]) {
+      for (const size of ['125%', '150%', '175%', '200%']) {
+        await page.evaluate(apply, size);
+        await page.waitForTimeout(180);
+        const m = await page.evaluate(() => {
+          const f = document.querySelector('.frame');
+          const g = document.querySelector('#gauge');
+          if (!f || !g) return null;
+          const fr = f.getBoundingClientRect(), gr = g.getBoundingClientRect();
+          return {
+            off: document.documentElement.getAttribute('data-frame') === 'off',
+            scrolls: f.scrollHeight > f.clientHeight + 1,
+            cut: gr.bottom > fr.bottom + 1 || gr.top < fr.top - 1,
+            share: Math.round((f.scrollHeight / window.innerHeight) * 100),
+          };
+        });
+        if (!m) { clips.push(`${how} ${size}: the frame or the proof line is not there to measure`); continue; }
+        if (m.cut) clips.push(`${how} ${size}: the proof line is cut by the frame (${m.share}% of the viewport)`);
+        if (m.scrolls) clips.push(`${how} ${size}: the frame scrolls inside itself (${m.share}%)`);
+        // The other half: it must not merely avoid clipping by growing for ever.
+        if (!m.off && m.share > 55) clips.push(`${how} ${size}: the frame is ${m.share}% of the viewport and still up`);
+      }
+      await page.evaluate(() => {
+        document.body.style.fontSize = '';
+        document.documentElement.style.fontSize = '';
+      });
+      await page.waitForTimeout(180);
+    }
+    (clips.length === 0 ? pass : fail)(
+      `${theme}/frame at every text size: it fits or it stands down, and the proof line is never cut`
+      + `${clips.length ? ` — ${clips.slice(0, 6).join('; ')}` : ' (8 sizes across both mechanisms)'}`);
+    // AND IT DOES STAND DOWN SOMEWHERE, so the loop above cannot pass by the
+    // frame simply never being tested at a size that matters (LESSONS 100).
+    await page.evaluate(() => { document.body.style.fontSize = '200%'; });
+    await page.waitForTimeout(200);
+    ((await page.evaluate(() => document.documentElement.getAttribute('data-frame'))) === 'off' ? pass : fail)(
+      `${theme}/frame at every text size: and at 200% it has actually stood down`);
+    await page.evaluate(() => { document.body.style.fontSize = ''; });
+    await page.waitForTimeout(150);
 
     await page.setViewportSize({ width: 320, height: 568 });
     await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
