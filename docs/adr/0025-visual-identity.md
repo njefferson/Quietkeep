@@ -15,20 +15,33 @@
 > trapped by what they are carrying, a cell fails for the same reason the spiral
 > does.
 >
-> **And the research says it is worse than a cell.** `docs/nd-collisions.md`
-> entry 3 — the thesis, and the best-evidenced entry in the catalogue — is that
-> *a thing that leaves the visual field leaves existence; visible is the only
-> kind of remembered; filed means gone*. A warm form shut inside a dark box is a
-> picture of something put away where it can no longer cue you. **The icon
-> illustrates the failure the app exists to prevent.** Any replacement is briefed
-> on *stays in view*, not on *held safely* — which retires vessels, cradles,
-> boxes and stacks as a family.
+> **And there is an argument that it is worse than a cell — an inference, not a
+> measurement.** `docs/nd-collisions.md` entry 3 — the thesis, and the
+> best-evidenced entry in the catalogue — is that *a thing that leaves the visual
+> field leaves existence; visible is the only kind of remembered; filed means
+> gone*. Read against that, a warm form shut inside a dark box is a picture of
+> something put away where it can no longer cue you. Against the reading: the
+> intent was a *lit opening*, and light coming out of a shelter is not a lid going
+> on. **Both readings are available, which is itself the problem with the mark.**
+> Either way a replacement is briefed on *stays in view*, not on *held safely* —
+> which retires vessels, cradles, boxes and stacks as a family.
 >
-> **The enclosure was forced by a colour error.** `--warm` is `#7A4E00` in light
-> mode and `#F5C978` in dark; the icon uses the DARK value on its light paper
-> field, where it measures 1.38:1 against 6.38:1 for the correct one. A colour
-> that cannot describe a shape on paper needs a dark ground put behind it, and
-> that ground is the box. Fix the token and the enclosure stops being necessary.
+> **The enclosure is ENTAILED BY THE COLOUR, and there is no bug under it.**
+> `--warm` is `#7A4E00` in light mode and `#F5C978` in dark. On the icon's paper
+> field `#F4F1E9` those measure 6.38:1 and 1.38:1, so `#F5C978` cannot describe a
+> shape on paper and any mark carrying it must supply a dark ground — which is the
+> box. That constraint is real, and it is why every open composition attempted in
+> that amber failed on contrast before it was judged on taste.
+>
+> **This paragraph previously said the icon was using the dark-mode value on a
+> light ground — "a colour error" — and that was FALSE.** Measured on the rendered
+> artwork: 82% of the amber's border is the navy `#33425F` and the remaining 18%
+> are antialiasing blends between the two; **it touches the paper field nowhere**,
+> and sits on navy at 6.48:1. The mark is internally correct. The earlier figure
+> that suggested otherwise came from a probe counting blend pixels as *not navy* —
+> a tolerance artefact read as a finding, and committed to this record on the day
+> it was hunting exactly that kind of defect. **There is no token to fix**, so a
+> replacement that must not enclose has to change the COLOUR, not the geometry.
 >
 > A replacement is OPEN, not decided. Six directions have been tried and every
 > one collided with a well-known glyph — see

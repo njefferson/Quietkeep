@@ -10,9 +10,11 @@ ADR-0025 states the rule this list serves: *a mark has to be checked against the
 audience's own vocabulary, not only against other logos.* Collision checks that
 ask "does this resemble another brand" miss all of these.
 
-## The research says the current mark depicts the failure mode
+## An argument that the current mark depicts the failure mode
 
-**This is the finding that matters most, and it outranks the cell reading.**
+**This is an inference, not a measurement — labelled as such because the section
+below it once dressed one up as the other.** The research is established; the
+reading of the mark against it is mine, and it is arguable.
 
 `docs/nd-collisions.md` entry 3 is the app's thesis and **the best-evidenced
 entry in the catalogue** — cue-dependent prospective memory failure, Einstein &
@@ -25,29 +27,41 @@ The entry names filing and archiving as the *virtues of conventional systems*
 that make the collision worse — "inbox zero is literally the instruction to put
 everything where it can no longer cue you".
 
-**The mark is a warm form shut inside a dark box.** That is a picture of
-something put away where it can no longer cue you. The icon has been
-illustrating the exact failure the app exists to prevent, on the app's own front
-door, for its entire life.
+**The mark is a warm form shut inside a dark box.** The argument is that this
+depicts something put away where it can no longer cue you — the exact failure
+the app exists to prevent. Against it: the original intent was a *lit opening*,
+and light coming out of a shelter is not the same as a lid going on. Both
+readings are available, which is itself the problem with the mark.
 
 So the brief for any replacement is not *held safely* — vessels, cradles, boxes
 and stacks are all the wrong family. It is **stays in view**, or **comes back
 into view**.
 
-## The colour error that forced the enclosure
+## The colour ENTAILS the enclosure — and this section once said it was a bug
 
-`--warm` has two values: `#7A4E00` in light mode, `#F5C978` in dark. Measured
-against the icon's paper field `#F4F1E9`:
+`--warm` has two values: `#7A4E00` in light mode, `#F5C978` in dark. Against the
+icon's paper field `#F4F1E9`:
 
 - `#F5C978` — **1.38:1**. Three times under the 4.5:1 the hub's PALETTES.md
   holds every accent to, because *"accents are text"*.
 - `#7A4E00` — **6.38:1**. Clears it.
 
-**The icon uses the dark-mode warm on a light-mode ground.** That colour cannot
-describe a shape on paper, so the mark needs a dark field behind it to survive —
-and the dark field is the enclosure. The cell is a symptom of a token error, not
-a design decision, and every open composition attempted against the old value
-was doomed before it was drawn.
+So `#F5C978` **cannot describe a shape on paper**, and any mark using it has to
+supply a dark ground. That is why every open, non-enclosing composition tried
+against it failed on contrast: the enclosure is not a stylistic preference, it is
+*entailed by the colour*.
+
+**THIS SECTION PREVIOUSLY CLAIMED THE ICON WAS USING THE WRONG TOKEN — "the
+dark-mode warm on a light-mode ground" — AND THAT WAS FALSE.** Measured on the
+rendered artwork: **82% of the amber's border is `#33425F`, and the remaining
+18% are antialiasing blend pixels between amber and navy. It touches the paper
+field nowhere.** The amber sits on navy at 6.48:1 and the mark is internally
+correct. The earlier "56% on navy" figure came from the same probe counting
+blend pixels as *not navy* — a tolerance artefact read as a finding.
+
+**There is no token to fix.** What is true is the constraint above: choose
+`#F5C978` and you have committed to a dark ground somewhere in the mark. A
+replacement that must not enclose has to change the colour, not the geometry.
 
 ## The current mark also fails this list
 
