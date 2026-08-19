@@ -225,9 +225,10 @@ jobs:
       # from the commit that added it. The plain check also asserts that
       # `.git/hooks/pre-commit` is installed and current, which is a fact about
       # one CLONE — and `actions/checkout` leaves `.git/hooks` empty by
-      # definition, so it can never hold here. Eight consecutive pushes went out
-      # with this job red; the step was watched passing LOCALLY, where the hook
-      # is installed, which is the one place it proves nothing about CI.
+      # definition, so it can never hold here. Ten runs since the step was added
+      # — seven concluding failure, three cancelled by a superseding push, none
+      # ever green; the step was watched passing LOCALLY, where the hook is
+      # installed, which is the one place it proves nothing about CI.
       #
       # What CI can check, and what this now checks, is the tracked artefact
       # against what `.branch-guard` declares — the drift that would leave every

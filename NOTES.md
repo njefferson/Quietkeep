@@ -674,6 +674,37 @@ decided by a session.**
   was the honest state at the time: the previous promote's green belongs to
   `c909104` and is a fact about 2.10.0 and about nothing else.)
 
+**AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
+WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
+runs — seven concluded FAILURE, three were cancelled by a superseding push, none
+succeeded.** Every one of those pushes was verified against the remote —
+correctly — and reported as landed.
+
+The step ran `branch-guard.mjs --repo .` and failed every time on the same line:
+`.git/hooks/pre-commit is MISSING`. That tool asserts four things. Two are about
+the REPO — the tracked `.githooks/pre-commit` exists, and matches what
+`.branch-guard` declares. Two are about ONE CLONE — `.git/hooks/pre-commit`
+exists, and matches the tracked copy. **`actions/checkout` leaves `.git/hooks`
+empty by definition**, so the second pair can never hold in CI.
+
+**It failed from the commit that added it** (`20e6146`), and it was watched
+passing LOCALLY, where the hook is installed — which is the one place it proves
+nothing about CI. That is hub LESSONS 53 a second time in a different mechanism:
+a session that adds a hard gate to a pipeline has just built a new way for its
+own work to silently not arrive, and is at its least likely to look because it
+just watched the tool succeed.
+
+Fixed with `--artefact` in the hub (`0208a03`), which runs the two repo checks
+and PRINTS the two it skipped rather than dropping them. **Not `--install`
+first** — that WRITES the tracked file, so a drifted artefact would be repaired
+on the spot and the check would pass over the one defect it exists to find.
+Verified by reproducing the CI condition locally: with `.git/hooks/pre-commit`
+removed the plain command exits 1 and `--artefact` exits 0, and with drift
+planted in the tracked hook `--artefact` exits 1.
+
+**The reason it went eight pushes: a push was verified and a RUN was not.** The
+push output has never once known whether CI passed.
+
 **Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
 releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one
 subject: the landing surface saying less.
