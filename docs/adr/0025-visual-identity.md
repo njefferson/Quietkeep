@@ -81,8 +81,9 @@ and SVG is text, so the identity is diffable and reviewable like everything else
 The drawn mark keeps the third one's idea and fixes both faults: the wall is a **rounded
 square** — a wall, not a marker — and the arch now appears only in the warm opening.
 
-**No spiral, and that rule outranks every legibility argument above.** Settled:
-*"spiraling looks bad… a spiral is the loss of control, and anxiety laden."*
+**No spiral, and that rule outranks every legibility argument above.** Settled on
+what the shape MEANS rather than on how it looks — the objection was never that
+the curve was ugly.
 
 That is the whole reason, and it is not a matter of taste. **A spiral is loss of control.**
 It is the shape of a thing tightening inward with no way out, and the word carries anxiety

@@ -180,7 +180,8 @@ Whether the app needs a second navigation surface for its sheets is a question
 for `#more`, which ADR-0083 already caps at six destinations; two overlapping
 navigation surfaces would be worse than one.
 
-It does not address the other half of what was reported from the device: that
-*"nothing indicates that some of these are projects or goals or anything other
-than todos"*. The node kinds have no reader-facing vocabulary anywhere in the
-app. That is a separate defect and is owed.
+It does not address the other half of the defect found on the device: **the app
+never says which kind a thing is.** A project, a goal, an area and an ordinary
+next action are indistinguishable on every surface that lists them — the node
+kinds have no reader-facing vocabulary anywhere in the app, so a list of five
+things reads as five todos. That is a separate defect and is owed.
