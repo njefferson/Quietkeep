@@ -60,6 +60,44 @@ jobs:
       - name: The offline pattern mirror has not drifted from the hub
         run: node .hub-gates/privacy-mirror-check.mjs --repo .
 
+      # THE HOOK THAT ENFORCES THE FRESHNESS RULE IS THE ONE THIS REPO DECLARES.
+      # That rule is caught locally by the generated pre-commit hook, which
+      # `--no-verify` walks straight past — so the tracked hook is checked here
+      # against what `.branch-guard` says it should be. A guard that can be
+      # skipped locally and is not verified centrally is a guard that is on
+      # until the first time somebody is in a hurry.
+      #
+      # UP HERE BECAUSE IT NEEDS NOTHING BUT THE TWO CHECKOUTS. It used to sit
+      # near the end, behind the browser install and every walk — so a failure
+      # in a check that takes under a second was reported twenty-odd minutes
+      # into a run, if the run got that far at all. It was red for ten runs and
+      # its position is part of why nobody saw it. Cheap checks that depend on
+      # nothing belong where a failure is answered in seconds.
+      #
+      # `.hub-gates` is where this job already checked the hub out — the sibling
+      # path this is run from locally does not exist in CI, and a step that
+      # cannot find its tool is a step that fails for the wrong reason.
+      #
+      # `--artefact` BECAUSE THIS STEP FAILED EVERY TIME WITHOUT IT, and did so
+      # from the commit that added it. The plain check also asserts that
+      # `.git/hooks/pre-commit` is installed and current, which is a fact about
+      # one CLONE — and `actions/checkout` leaves `.git/hooks` empty by
+      # definition, so it can never hold here. Ten runs since the step was added
+      # — seven concluding failure, three cancelled by a superseding push, none
+      # ever green; the step was watched passing LOCALLY, where the hook is
+      # installed, which is the one place it proves nothing about CI.
+      #
+      # What CI can check, and what this now checks, is the tracked artefact
+      # against what `.branch-guard` declares — the drift that would leave every
+      # developer clone running a rule the repo no longer states. Verified by
+      # planting that drift and watching this exact command exit 1.
+      #
+      # Not `--install` first: that WRITES the tracked file, so a drifted
+      # artefact would be repaired on the spot and the check would pass over the
+      # one defect it exists to find.
+      - name: The commit guard is the one that was declared
+        run: node .hub-gates/branch-guard.mjs --repo . --artefact
+
 
       - run: npm run typecheck
       - run: npm run test:only
@@ -210,36 +248,6 @@ jobs:
       - name: The walkthrough shows this version of the app
         run: npm run tour:check
 
-      # AND THE HOOK THAT ENFORCES IT IS THE ONE THIS REPO DECLARES. The
-      # freshness rule is caught locally by the generated pre-commit hook, which
-      # `--no-verify` walks straight past — so the tracked hook is checked here
-      # against what `.branch-guard` says it should be. A guard that can be
-      # skipped locally and is not verified centrally is a guard that is on
-      # until the first time somebody is in a hurry.
-      #
-      # `.hub-gates` is where this job already checked the hub out — the sibling
-      # path this is run from locally does not exist in CI, and a step that
-      # cannot find its tool is a step that fails for the wrong reason.
-      #
-      # `--artefact` BECAUSE THIS STEP FAILED EVERY TIME WITHOUT IT, and did so
-      # from the commit that added it. The plain check also asserts that
-      # `.git/hooks/pre-commit` is installed and current, which is a fact about
-      # one CLONE — and `actions/checkout` leaves `.git/hooks` empty by
-      # definition, so it can never hold here. Ten runs since the step was added
-      # — seven concluding failure, three cancelled by a superseding push, none
-      # ever green; the step was watched passing LOCALLY, where the hook is
-      # installed, which is the one place it proves nothing about CI.
-      #
-      # What CI can check, and what this now checks, is the tracked artefact
-      # against what `.branch-guard` declares — the drift that would leave every
-      # developer clone running a rule the repo no longer states. Verified by
-      # planting that drift and watching this exact command exit 1.
-      #
-      # Not `--install` first: that WRITES the tracked file, so a drifted
-      # artefact would be repaired on the spot and the check would pass over the
-      # one defect it exists to find.
-      - name: The commit guard is the one that was declared
-        run: node .hub-gates/branch-guard.mjs --repo . --artefact
 
       # WHERE THE CONTROLS ARE (V2 stage 7). The shape is fixed forever and the
       # contents change every time — a person's hands learn where Done is, and
