@@ -967,7 +967,25 @@
               aria-describedby="detail-date-unsaved">Set</button>
       <button id="detail-date-clear" type="button" class="ghost">No date</button>
     </div>
-    <div class="detail-group" id="detail-note-group">
+    <!-- A PICKED DAY IS NOT A SAVED DAY, and the markup alone cannot show the
+         difference (1.38.2, found on device). The native picker fills this field
+         the instant a day is chosen, which looks exactly like a date that has
+         been kept. Not a warning — nothing is wrong, and you may still be
+         deciding — it is the line between a field holding a proposal and a field
+         holding a fact. Described BY the Set button too, so it is announced when
+         focus reaches the control that finishes it.
+
+         IT SAT UNDER THE NOTE FIELD UNTIL 2.10.3, four controls below the Set
+         button it names, because this group was never closed and the note group
+         opened INSIDE it. Every gate passed: `aria-describedby` points at the
+         right element wherever that element sits, so the announcement was always
+         correct and the sighted reader got "press Set" underneath a section
+         whose only button says "Keep the note". Found by photographing the
+         sheet — nothing measured it, because nothing had ever looked. -->
+    <p id="detail-date-unsaved" class="detail-hint" hidden></p>
+  </div>
+
+  <div class="detail-group" id="detail-note-group">
     <label class="detail-label" for="detail-note">Anything to keep with it?</label>
     <textarea id="detail-note" rows="3" autocomplete="off" spellcheck="true"
               aria-describedby="detail-note-hint"></textarea>
@@ -977,16 +995,6 @@
     <p id="detail-note-hint" class="detail-hint">
       Stays with the item and shows only here.
     </p>
-  </div>
-
-  <!-- A PICKED DAY IS NOT A SAVED DAY, and the markup alone cannot show the
-         difference (1.38.2, found on device). The native picker fills this field
-         the instant a day is chosen, which looks exactly like a date that has
-         been kept. Not a warning — nothing is wrong, and you may still be
-         deciding — it is the line between a field holding a proposal and a field
-         holding a fact. Described BY the Set button too, so it is announced when
-         focus reaches the control that finishes it. -->
-    <p id="detail-date-unsaved" class="detail-hint" hidden></p>
   </div>
 
   <!-- The defer verb (1.3.0). A start date OPENS a thing rather than asking for

@@ -1870,7 +1870,18 @@ export async function mountAbout(
       typeof (await session.store.getKv<string>(KEY_KV)) === 'string';
 
     const paintSummary = async (): Promise<void> => {
-      purgeSummaryEl.textContent = purgeSummary(await counted());
+      const count = await counted();
+      purgeSummaryEl.textContent = purgeSummary(count);
+      // AND THE BACKUP STOPS LEADING WHEN THERE IS NOTHING TO BACK UP (2.10.3).
+      // "Save a copy first — it is the only way back" is true and urgent over a
+      // full planner, and over an empty one it is the loudest control on the
+      // panel proposing a chore about nothing. It still WORKS — an export of an
+      // empty store is a valid file — so it is quietened rather than removed:
+      // a control that does something real is never hidden, and a control that
+      // leads is claiming to be the thing to do next.
+      if (purgeBackup) {
+        purgeBackup.classList.toggle('ghost', count.things === 0 && count.events === 0);
+      }
     };
     await paintSummary();
 
@@ -1896,9 +1907,21 @@ export async function mountAbout(
       // Read from kv rather than from the sync module: this file ships in BOTH
       // editions and the default one may not contain that module at all
       // (ADR-0036). The key's presence is the whole question being asked.
-      purgeConsequence.textContent = purgeWords(m, await counted(), savedACopy, await isPaired());
-      purgeConfirm.hidden = false;
-      purgeWordInput.focus();
+      const count = await counted();
+      purgeConsequence.textContent = purgeWords(m, count, savedACopy, await isPaired());
+      // NO CEREMONY OVER A NO-OP (2.10.3, found by photographing this sheet on
+      // an empty store). The confirmation is a safeguard, and a safeguard around
+      // an act that changes nothing is theatre: it asked somebody to type the
+      // word `clear` in full, over a planner with nothing in it, to authorise
+      // doing nothing. The sentence above already says so.
+      //
+      // Same distinction the words make and for the same reason: `start again`
+      // erases the LOG, so it is only a no-op when the record is empty too.
+      const nothingToDo = m === 'clear'
+        ? count.things === 0
+        : count.things === 0 && count.events === 0;
+      purgeConfirm.hidden = nothingToDo;
+      if (!nothingToDo) purgeWordInput.focus();
     };
 
     purgePickClear.addEventListener('click', () => { void pick('clear'); });

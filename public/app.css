@@ -438,12 +438,31 @@ button {
   cursor: pointer;
 }
 
-button.ghost {
+button.ghost,
+/* THE STUCK UPDATE HAS NOTHING TO PRESS, so nothing on it leads (2.10.3).
+   The state hides "Install it now" because pressing it again cannot help, and
+   that left "Save a copy" as the first button — which is where the filled style
+   lands. So the loudest control on the card became a backup, directly under a
+   sentence saying nothing you have written is affected: loud by REMOVAL rather
+   than by anyone deciding it should be, the same shape as the report that told
+   you to back up an empty planner (2.9.4). The instruction that actually works
+   is in the words, and no button can perform it. */
+#update[data-state="stuck"] #update-save {
   color: var(--accent);
   background: transparent;
   border-color: var(--line);
   font-weight: 400;
 }
+
+/* Driven by the SAME token the app sets, so the walk that photographs this
+   state cannot drift from it. It used to re-enact the effects by hand — two
+   DOM mutations copied out of `update.ts` under a comment claiming it drove the
+   state "exactly as mountUpdatePrompt drives it" — and the day a third effect
+   was added, the claim was quietly false and the gate measured a state the
+   reader never gets. A hand-written mirror with nothing checking it against
+   what it mirrors is this repo's oldest defect; the fix is one state token
+   rather than a better copy. */
+#update[data-state="stuck"] #update-reload { display: none; }
 
 .linklike {
   /* An inline text button (Undo) that reads as a link but is a real <button>,

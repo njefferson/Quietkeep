@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.10.3',
+    kind: 'ITERATION',
+    date: '2026-08-19',
+    notes: [
+      '**Clearing out no longer invents a chore over an empty planner.** With nothing in it, the panel still said *“This clears 0 things — everything you are keeping here, people, weights and private entries included”*, warned that you had not saved a copy, made **Save a copy first** the loudest thing on the screen, and asked you to type the word **clear** out in full — to authorise doing nothing. The line directly above it had always said *“There is nothing here to clear.”* Now the rest of the panel has been told: it says it does nothing, asks for no word, and nothing on it leads.',
+      '**Starting again over a HISTORY still warns you, and that is deliberate** — that one erases the record, so a planner holding nothing may still have something worth keeping. The warning only goes when there is genuinely nothing to lose.',
+      '**“Not kept yet — press Set.” now sits under the Set button.** It was rendering below the whole note field — four controls away from the button it names, under a section whose only button says *Keep the note*. The markup had never closed the date group before the note began.',
+      '**And a stuck update stops telling you to do something instead.** When a device will not let the new version take over, the card explains that closing the app completely and opening it again is what works — and it hid *Install it now*, which left **Save a copy** as the loudest button, directly under a sentence saying nothing you have written is affected. It was loud because something else was removed, not because anyone decided it should be. Nothing on that card leads now; the thing that works is in the words.',
+    ],
+  },
+  {
     triplet: '2.10.2',
     kind: 'ITERATION',
     date: '2026-08-19',

@@ -211,3 +211,48 @@ test('the labels say which is which without reading the body text', () => {
   assert.match(PURGE_LABEL['clear'], /holding/);
   assert.match(PURGE_LABEL['start-again'], /empty|again/);
 });
+
+// --- nothing to lose means nothing to warn about (2.10.3) -------------------
+//
+// Found by photographing the clearing-out sheet on an empty store. `purgeSummary`
+// has always said "There is nothing here to clear."; `purgeWords` directly under
+// it said "This clears 0 things — everything you are keeping here, people,
+// weights and private entries included" and "You have not saved a copy", above a
+// field demanding the word `clear` be typed. A backup warning about an empty
+// planner is a chore invented out of nothing.
+//
+// The start-again case is deliberately NOT folded in: it erases the log, so a
+// store holding nothing may still have a history worth keeping.
+
+test('clearing an empty store says it does nothing, and asks for no backup', () => {
+  const empty = { things: 0, events: 0, unsorted: 0 };
+  const words = purgeWords('clear', empty, false);
+  assert.match(words, /nothing here to clear/);
+  assert.doesNotMatch(words, /not saved a copy/,
+    'no backup warning about a planner with nothing in it');
+  assert.doesNotMatch(words, /\b0 things\b/,
+    'and it does not enumerate the nothing');
+});
+
+test('but start again over a HISTORY still warns, even with nothing held', () => {
+  // The distinction that must not be collapsed: no things, plenty of record.
+  const held = { things: 0, events: 42, unsorted: 0 };
+  const words = purgeWords('start-again', held, false);
+  assert.match(words, /42 records/, 'the log is what this mode destroys');
+  assert.match(words, /not saved a copy/,
+    'and there is genuinely something to lose, so the warning stands');
+});
+
+test('start again with no things AND no record says it does nothing', () => {
+  const empty = { things: 0, events: 0, unsorted: 0 };
+  const words = purgeWords('start-again', empty, false);
+  assert.match(words, /does nothing/);
+  assert.doesNotMatch(words, /not saved a copy/);
+});
+
+test('a store with things in it is untouched by any of this', () => {
+  // The suppression must not be reachable by the warning never rendering.
+  const real = { things: 3, events: 40, unsorted: 1 };
+  assert.match(purgeWords('clear', real, false), /clears 3 things/);
+  assert.match(purgeWords('clear', real, false), /not saved a copy/);
+});

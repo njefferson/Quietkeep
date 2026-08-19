@@ -665,12 +665,66 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.2**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.3**
 - **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
   `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA — read from the runs, not inferred from a clean merge)
 
-**Staging is 2.10.2 and it is waiting on you.** Production is 2.10.0.
+**Staging is 2.10.3 and it is waiting on you.** Production is 2.10.0.
+
+**2.10.3 — EVERY ROUTE IN, THROUGH AND OUT, PHOTOGRAPHED.** The audit of that
+name was done by reading code and running gates. The app was never rendered
+along those routes and looked at. The a11y walk already DRIVES all of them —
+93 audited states across both themes, proven traversal — and had never produced
+a single picture, so `LOOK=1 npm run a11y` now writes every state it reaches to
+disk. 188 files. The traversal was never the missing part.
+
+**Three defects in the first pass through them, all invisible to every gate:**
+
+**The clearing-out panel invented a chore over an empty planner.** With nothing
+in the store it said *"This clears 0 things — everything you are keeping here,
+people, weights and private entries included"*, warned no copy had been saved,
+made **Save a copy first** the loudest control, and demanded the word `clear` be
+typed out to authorise doing nothing. `purgeSummary` one line above had always
+said *"There is nothing here to clear."* — the confirmation under it had simply
+never been told. **The same defect as 2.9.4**, on the other surface nobody had
+looked at. `start-again` is deliberately NOT folded in: it erases the log, so a
+store holding nothing may still have a history worth a copy.
+
+**"Not kept yet — press Set." rendered below the entire note field**, four
+controls from the button it names, under a section whose only button says *Keep
+the note*. `#detail-date-group` was never closed before `#detail-note-group`
+opened inside it. **Every gate passed**, because `aria-describedby` points at the
+right element wherever that element sits — the announcement was always correct
+and only the eye could see it was in the wrong place.
+
+**The stuck-update card made a backup its loudest act.** Hiding *Install it now*
+(pressing it again cannot help) left **Save a copy** first, which is where the
+filled style lands — directly under a sentence saying nothing you have written
+is affected. Loud by REMOVAL, not by decision. The state is one token now and
+CSS owns its appearance.
+
+**AND THE WALK WAS RE-ENACTING THAT STATE BY HAND.** Its comment claimed it drove
+the stuck strip *"exactly as mountUpdatePrompt drives it"*; it was a copy of two
+DOM mutations, so the moment the real code grew a third the claim was false and
+the walk photographed a state no reader gets — with every assertion under it
+green, because all of them were true of the half-driven state. Both sides set the
+same `data-state` now, and the walk asserts the state took.
+
+**Two vacuity traps found and closed while fixing the above.** The typed-word
+confirmation — the one surface standing between somebody and their history — is
+now asserted to be guarding something, because it is withheld entirely over an
+empty store and the wait for it would otherwise read as a flake. And the empty
+store gained four assertions of its own, non-vacuity first: the store really is
+empty, no ceremony is staged, it says so plainly, and no backup chore leads.
+
+**Two things checked and found NOT to be defects, before changing anything.**
+The welcome heading's box is a focus ring — `border: none`, `outline: 2px`,
+`:focus-visible` true on first load with no prior interaction — which is correct
+and must stay. And the offer heading's ring in an earlier picture came from a
+synthetic click in the probe, not from the app. **A tool that renders a state no
+person can reach is the same defect as a gate that measures the wrong thing**,
+and it twice nearly bought a fix to behaviour that was already right.
 
 **2.10.2 — THE CARD STOPPED TELLING YOU ABOUT THE THING IN FRONT OF YOU.**
 Found by rotating the offer six times and reading what the card actually said,

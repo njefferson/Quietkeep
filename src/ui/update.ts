@@ -182,7 +182,16 @@ export function mountUpdatePrompt(session: Session): void {
       setTimeout(() => {
         if (reloading) return;              // the swap happened; we are on our way out
         ui.words.textContent = UPDATE_STUCK_WORDS;
-        ui.reload.hidden = true;            // pressing it again cannot help
+        // ONE TOKEN, NOT A LIST OF EFFECTS (2.10.3). This used to hide the
+        // reload imperatively, and the a11y walk re-enacted that mutation by
+        // hand under a comment claiming it drove the state "exactly as
+        // mountUpdatePrompt drives it". The moment a second effect was needed —
+        // quietening "Save a copy", which had become the loudest control on the
+        // card purely because hiding the reload left it first — the walk's claim
+        // was false and it was photographing a state the reader never gets.
+        // The appearance of this state is now CSS's, keyed off this attribute,
+        // so the walk sets the same one thing the app does and cannot drift.
+        ui.region.dataset.state = 'stuck';
       }, 3000);
       return;
     }
@@ -208,6 +217,10 @@ export function mountUpdatePrompt(session: Session): void {
     if (ui.region.dataset.seen === 'true') return;
     ui.region.dataset.seen = 'true';
     ui.words.textContent = UPDATE_WORDS;
+    // The ordinary strip DOES have a thing to do first, and "Save a copy" is
+    // it. Cleared here rather than only set above, so the quietening is a
+    // property of the stuck state and not a one-way door.
+    delete ui.region.dataset.state;
     ui.region.hidden = false;
   };
 

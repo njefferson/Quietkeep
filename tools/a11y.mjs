@@ -21,7 +21,7 @@
 //   npm run a11y        (exits non-zero on any failure)
 
 import { chromium } from 'playwright-core';
-import { existsSync, writeFileSync, rmSync, readFileSync } from 'node:fs';
+import { existsSync, writeFileSync, rmSync, readFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -1200,9 +1200,50 @@ async function openViaContents(page, id) {
 /** Separation and size together, at every state the walk already drives.
  *  ONE call site, deliberately: a second list of states to keep in step is the
  *  defect this file has paid for three times (doors, element types, surfaces). */
+/* PHOTOGRAPH IT WHILE YOU ARE HERE.
+ *
+ * This walk drives every route in, through and out of the app — 93 audited
+ * states across both themes — and until now it has never once produced a
+ * picture of any of them. It measured contrast ratios and target rectangles at
+ * each stop and reported green, correctly, through seven releases of defects
+ * that were obvious on sight: the task drawn as a form field, six verbs as six
+ * boxes, a proof line cut mid-sentence, a screen showing one task that was too
+ * busy to begin in. Not one of those is a ratio or a rectangle.
+ *
+ * The traversal was never the missing part. It is here, it is proven, and it
+ * is the only code that knows how to reach a route like "load door, stuck
+ * update strip, dark, at 200%". So the shot is taken from inside the audit
+ * rather than from a second walk that would have to learn all of it again and
+ * would drift the day a route changed.
+ *
+ *   LOOK=1 npm run a11y            (writes every state to /tmp/quietkeep-look)
+ *   LOOK=/some/dir npm run a11y
+ *
+ * Off by default: it is a few hundred files and CI has no eyes. This asserts
+ * nothing and cannot fail the gate — a picture is for a person to look at, and
+ * an exit code would only invite somebody to satisfy it instead of looking. */
+const LOOK = process.env.LOOK ? (process.env.LOOK === '1' ? '/tmp/quietkeep-look' : process.env.LOOK) : null;
+if (LOOK) mkdirSync(LOOK, { recursive: true });
+let shotSeq = 0;
+const shotNames = new Set();
+
+async function photograph(page, stateName, theme) {
+  if (!LOOK) return;
+  const slug = `${String(++shotSeq).padStart(3, '0')}-${theme}-${stateName}`
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 90);
+  shotNames.add(slug);
+  try {
+    await page.screenshot({ path: join(LOOK, `${slug}.png`) });
+  } catch (err) {
+    // A picture failing is never a reason to fail the walk that was measuring.
+    console.log(`  ..    (could not photograph ${theme}/${stateName}: ${err.message})`);
+  }
+}
+
 async function auditSeparationAndTargets(page, stateName, theme) {
   await auditSeparation(page, stateName, theme);
   await auditTargets(page, stateName, theme);
+  await photograph(page, stateName, theme);
 }
 
 async function auditTargets(page, stateName, theme) {
@@ -1548,25 +1589,6 @@ try {
     // the one surface in the app standing between a person and their history.
     // It lives under Your data since 1.40.0 — clearing your data is a thing you
     // do TO your data, not a preference.
-    await openSurface(page, 'sheet-group-data');
-    await page.click('#purge-pick-clear');
-    await page.waitForSelector('#purge-confirm:not([hidden])');
-    await auditContrast(page, 'clearing out', theme);
-    await auditAxe(page, 'clearing out', theme);
-    await auditNames(page, 'clearing out', theme);
-    await auditSeparationAndTargets(page, 'clearing out', theme);
-    // `#purge-go` ships DISABLED and stays that way until the word is typed, so
-    // it is genuinely not focusable and auditing it as-is would report a defect
-    // about a control behaving exactly as designed. The word is typed to reach
-    // the enabled state — the ring on THE most consequential button in the app
-    // is worth the two lines — and cleared again immediately. It is never
-    // pressed: the walk's whole store is on the other side of it.
-    await page.fill('#purge-word',
-      (await page.locator('#purge-word-required').textContent()) ?? '');
-    await page.waitForSelector('#purge-go:not([disabled])');
-    await auditFocusRings(page, 'clearing out', theme, ['#purge-word', '#purge-go', '#purge-cancel']);
-    await page.fill('#purge-word', '');
-    await page.click('#purge-cancel');
 
     // And the ⓘ itself, which keeps what the app IS — the intro, the release
     // notes, the diagnostic and the way to the calendar.
@@ -1602,6 +1624,48 @@ try {
     await auditFocusRings(page, 'empty store', theme,
       ['#capture', '#capture-form button[type=submit]', '#capture-paste',
         'button.info', '.skip', '#restore-go']);
+
+    // AND NOTHING IS INVENTED TO DO OVER AN EMPTY PLANNER (2.10.3). Found by
+    // photographing the clearing-out sheet on a store with nothing in it: it
+    // said "This clears 0 things — everything you are keeping here, people,
+    // weights and private entries included", warned that no copy had been
+    // saved, made "Save a copy first" the loudest control on the panel, and
+    // asked for the word `clear` to be typed out in full — to authorise doing
+    // nothing. `purgeSummary` one line above had always said "There is nothing
+    // here to clear."; the confirmation under it had never been told.
+    //
+    // A chore invented out of nothing is the thing this app is least allowed to
+    // do — the same defect 2.9.4 fixed on the diagnostic report, on the other
+    // surface nobody had ever looked at. Asserted HERE because this is the walk's
+    // only genuinely empty store; the seeded confirmation is audited later.
+    await openSurface(page, 'sheet-group-data');
+    await page.click('#purge-pick-clear');
+    await page.waitForTimeout(400);
+    const overNothing = await page.evaluate(() => ({
+      held: document.querySelector('#purge-summary')?.textContent ?? '',
+      ceremony: !document.querySelector('#purge-confirm').hidden,
+      words: document.querySelector('#purge-consequence')?.textContent ?? '',
+      backupLeads: !document.querySelector('#purge-backup').classList.contains('ghost'),
+    }));
+    // NON-VACUOUS FIRST: all three below are trivially true of a store that is
+    // not empty, so the emptiness is asserted before anything rests on it.
+    (/nothing here to clear/.test(overNothing.held) ? pass : fail)(
+      `${theme}/empty store: the store really is empty here ("${overNothing.held.slice(0, 40)}")`);
+    (!overNothing.ceremony ? pass : fail)(
+      `${theme}/empty store: clearing nothing stages no typed-word ceremony`);
+    (/does nothing/.test(overNothing.words) ? pass : fail)(
+      `${theme}/empty store: and it says so plainly ("${overNothing.words.slice(0, 52)}")`);
+    (!overNothing.backupLeads ? pass : fail)(
+      `${theme}/empty store: no backup chore leads over an empty planner`);
+    // Left as it was found: everything after this reads the surface underneath,
+    // and a modal sheet makes it inert. NO CANCEL TO PRESS — `#purge-cancel`
+    // lives inside the confirmation block, which is exactly what is withheld
+    // here, so reaching for it timed out on the first run. A cleanup written
+    // against the old behaviour is the same drift the state itself was about.
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.waitForTimeout(200);
 
     // State 2m: MORE — the destination list (1.39.0). Its own driven state
     // because it is a modal that nothing else is on screen with, and because
@@ -1656,8 +1720,26 @@ try {
     // the reader gets rather than a mock of it.
     await page.evaluate((words) => {
       document.querySelector('#update-words').textContent = words;
-      document.querySelector('#update-reload').hidden = true;
+      document.querySelector('#update').dataset.state = 'stuck';
     }, UPDATE_STUCK_WORDS);
+    // AND PROVE THE STATE ACTUALLY TOOK. The two lines above used to re-enact
+    // `mountUpdatePrompt`'s effects by hand, and the day the real code grew a
+    // second effect this walk went on photographing a state the reader never
+    // gets — with every assertion below it green, because they were all true of
+    // the half-driven state. Setting one token the app also sets removes the
+    // copy; checking the token did something removes the assumption.
+    const stuckTook = await page.evaluate(() => {
+      const reload = document.querySelector('#update-reload');
+      const save = document.querySelector('#update-save');
+      return {
+        reloadGone: !reload.checkVisibility({ contentVisibilityAuto: true }),
+        saveQuiet: getComputedStyle(save).backgroundColor === 'rgba(0, 0, 0, 0)',
+      };
+    });
+    (stuckTook.reloadGone && stuckTook.saveQuiet ? pass : fail)(
+      `${theme}/update stuck: the state took — the reload is gone and nothing on the card leads`
+      + (stuckTook.reloadGone && stuckTook.saveQuiet ? ''
+        : ` (reload gone: ${stuckTook.reloadGone}, save quiet: ${stuckTook.saveQuiet})`));
     await auditContrast(page, 'update stuck', theme);
     await auditAxe(page, 'update stuck', theme);
     await auditNames(page, 'update stuck', theme);
@@ -3355,6 +3437,33 @@ try {
     await page.click('#detail-close');
     await fillSearch('');
     await openSurface(page, 'sheet-group-data');
+    // The clearing confirmation is revealed by choosing a mode, so it is opened
+    // here: a control that only exists after a click is still a control somebody
+    // reads, and leaving it out would exempt the typed-word box — the one
+    // surface in the app standing between a person and their history.
+    await page.click('#purge-pick-clear');
+    await page.waitForSelector('#purge-confirm:not([hidden])');
+    // AND IT IS GUARDING SOMETHING, SAID OUT LOUD (2.10.3). The confirmation is
+    // withheld entirely over a store with nothing in it now, so this step is
+    // silently load-bearing on the walk's sample still being seeded here. If a
+    // later edit ever empties the store before this point, the wait above would
+    // time out and read as a flake; this says which fact broke instead.
+    const guarding = await page.evaluate(() =>
+      (document.querySelector('#purge-consequence')?.textContent ?? ''));
+    (/\b[1-9]\d* thing/.test(guarding) ? pass : fail)(
+      `${theme}/clearing out: the confirmation is guarding something ("${guarding.slice(0, 56)}")`);
+    await auditContrast(page, 'clearing out', theme);
+    await auditAxe(page, 'clearing out', theme);
+    await auditNames(page, 'clearing out', theme);
+    await auditSeparationAndTargets(page, 'clearing out', theme);
+    // `#purge-go` ships DISABLED until the word is typed, so auditing it as-is
+    // would report a defect about a control behaving exactly as designed.
+    await page.fill('#purge-word',
+      (await page.locator('#purge-word-required').textContent()) ?? '');
+    await page.waitForSelector('#purge-go:not([disabled])');
+    await auditFocusRings(page, 'clearing out', theme, ['#purge-word', '#purge-go', '#purge-cancel']);
+    await page.fill('#purge-word', '');
+    await page.click('#purge-cancel');
     await page.click('#notnow-open');
     await page.waitForSelector('#notnow-view:not([hidden])');
     await page.waitForSelector('#notnow-list .trash-row');
