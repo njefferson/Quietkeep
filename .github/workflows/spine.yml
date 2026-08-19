@@ -185,6 +185,18 @@ jobs:
       - name: Every offer says why, from one closed set with one author
         run: npm run reasons:check
 
+      # WHAT SURVIVES THE WORST DAY (2.10.0). "Just one thing" strips the offer
+      # back to the thing and the acts, and what it strips is a hand-written
+      # list — which went stale three times in silence, so on the day the mode
+      # exists for the card still said how much of today was left.
+      #
+      # This is here rather than only in `npm run check` because a gate that is
+      # not in CI protects nothing on a push, and it was written the same hour
+      # the defect was found: the step list of this very workflow is where its
+      # absence was noticed.
+      - name: What survives the worst day
+        run: npm run plain:check
+
       # WHERE THE CONTROLS ARE (V2 stage 7). The shape is fixed forever and the
       # contents change every time — a person's hands learn where Done is, and
       # moving it costs them that silently. A core control's position and label
