@@ -1,6 +1,26 @@
 # ADR-0025 · The mark is drawn as SVG; the social background is generated
 
-**Status:** Accepted · **Date:** 2026-07-28
+**Status:** Accepted, and **the mark it chose is now known to fail its own rule** ·
+**Date:** 2026-07-28 · **Finding added:** 2026-08-19
+
+> **The drawn mark reads as a prison cell.** A warm arched form inside a dark
+> rounded square, on four sides. Reported from use.
+>
+> This record already rejected a candidate whose silhouette — round top,
+> straight sides, flat base — read as a **headstone**, and called that "the worst
+> reading available for an app whose promise is that nothing you put in is lost".
+> The fix below made the outer form a rounded square and kept the arch "only in
+> the warm opening". **So the disqualifying silhouette was never removed; it was
+> moved inward and then enclosed.** For an app whose users are people who feel
+> trapped by what they are carrying, a cell fails for the same reason the spiral
+> does.
+>
+> A replacement is OPEN, not decided. Six directions have been tried and every
+> one collided with a well-known glyph — see
+> [`docs/brand-collisions.md`](../brand-collisions.md), which is the checklist to
+> work from and is the durable part of that attempt. The reasoning in this record
+> about geometry versus illustration, about three flat colours, and about
+> measuring rather than eyeballing all still stands and binds any replacement.
 
 ## Decision
 
