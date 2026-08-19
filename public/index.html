@@ -388,13 +388,13 @@
          caused the other. "Fewer, while…" names two facts about the same
          period. "Fewer, because…" would be the app explaining you to yourself. -->
     <p id="nextup-load" class="nextup-count" hidden></p>
-    <!-- THE ONE PERMITTED NUMBER (V2 stage 5). "About 2h 30m left today" —
-         arithmetic on the clock and the day boundary, two facts about the
-         world, read BEFORE an attempt where it can still change what somebody
-         picks up. No bar, no colour, no instruction, and nothing at all once
-         the day has run out: a countdown to zero at that hour is pressure
-         where it costs most. -->
-    <p id="nextup-left" class="nextup-count" hidden></p>
+    <!-- "THE ONE PERMITTED NUMBER" WAS HERE AND IS GONE (2.12.2, ADR-0103).
+         `#nextup-left` said "About 2h 30m left today" on every ordinary offer.
+         The fact is not gone — it is where this app already put it, on the
+         opt-in header clock. Removed because the same arithmetic was on screen
+         twice for anyone who had switched the clock on, and because the clock
+         is opt-in on the reasoning that "a day is not a countdown", which this
+         line ignored while being on for everybody. -->
     <!-- The next fixed thing today, BY NAME (collisions 7 and 9). Hyperfocus
          eats the day and waiting mode consumes the hours before an appointment;
          both are answered by naming the one thing that is not moveable, so an

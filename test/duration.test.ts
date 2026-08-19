@@ -1,4 +1,4 @@
-// How long things take — V2 stage 5, and the one number that is allowed.
+// How long things take — V2 stage 5. The "one number that is allowed" is gone.
 //
 // Task durations are tau-heavy: a long right tail, most attempts near the
 // bottom, a few enormous. The mean of that sits in the gap where almost nothing
@@ -12,8 +12,10 @@ import { fold, emptyState, type State } from '../src/fold.ts';
 import { admit, gateOptionsFor } from '../src/gate.ts';
 import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import {
-  estimateOf, timedRange, rangeWords, estimateWords, minutesWords, timeLeftWords,
+  estimateOf, timedRange, rangeWords, estimateWords, minutesWords,
 } from '../src/duration.ts';
+import * as duration from '../src/duration.ts';
+import { remainderWords } from '../src/clock.ts';
 import type { AppEvent } from '../src/events.ts';
 
 const TZ = 'America/Denver';
@@ -156,20 +158,20 @@ test('the runs are COPIED, not aliased — the three-place rule, a fifth time', 
   assert.equal(later.nodes.get('A')!.timedMinutes.length, 2);
 });
 
-test('THE ONE PERMITTED NUMBER: prospective clock arithmetic, and nothing else', () => {
-  // "About 2h 30m left today", said BEFORE an attempt where it can still change
-  // what somebody picks up. It is arithmetic on the clock and the day boundary
-  // — two facts about the world — and contains nothing about the person.
-  assert.equal(timeLeftWords(150), 'About 2h 30m left today.');
-  assert.equal(timeLeftWords(45), 'About 45 minutes left today.');
-  // Past the end it says NOTHING rather than "0 minutes left". A day that has
-  // run out has nothing useful to add, and a countdown's voice at that hour is
-  // pressure where it costs most.
-  assert.equal(timeLeftWords(0), null);
-  assert.equal(timeLeftWords(-30), null);
-  const words = timeLeftWords(150)!;
-  assert.doesNotMatch(words, /should|enough|only|just|hurry|left to do|behind|%/i,
-    'no instruction, no judgement, and no percentage of anything');
+test('the offer card states no number that moves on its own (2.12.2, ADR-0103)', () => {
+  // `timeLeftWords` was "the one permitted number" and it is DELETED with the
+  // line it fed. Asserted from this side rather than left to the walk: the walk
+  // checks a screen, and this checks that the projection cannot come back by
+  // import, because a surface can only render what a module exports.
+  //
+  // The fact is not gone from the app. `remainderWords` in `src/clock.ts`
+  // speaks it on the opt-in header clock — the home entry 9 of
+  // docs/nd-collisions.md gives it, and opt-in precisely because a running
+  // remainder is a countdown.
+  assert.equal(Object.hasOwn(duration, 'timeLeftWords'), false,
+    'duration.ts must not export a day-remainder projection — nothing renders one');
+  assert.equal(typeof remainderWords(150), 'string',
+    'and the fact still has its home on the clock');
 });
 
 test('the words never round to something friendlier than the truth', () => {

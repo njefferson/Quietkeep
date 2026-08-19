@@ -1256,20 +1256,53 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
-  console.log('\nHow long things take (V2 stage 5)');
-  // The two ENDS and never an average, and the ONE permitted number. Asserted
-  // on the built app because a projection nothing renders is the log lying
-  // rather than merely silent (ADR-0031) — src/duration.ts was written with no
-  // reader, which is exactly the defect this repo has already shipped once.
-  const leftLine = await tpage.evaluate(() => {
-    const el = document.querySelector('#nextup-left');
-    return { hidden: el?.hidden, text: el?.textContent ?? '' };
+  console.log('\nThe offer card states no number that moves on its own (2.12.2)');
+  // "THE ONE PERMITTED NUMBER" WAS `#nextup-left` AND IT IS GONE (ADR-0103).
+  //
+  // Asserted on the BUILT app, from the screen, because that is where the defect
+  // was: the element and its projection could each be deleted while a stale
+  // build kept rendering the line, and this walk is the only thing here that
+  // looks at what is actually on the page.
+  //
+  // Both halves. The line is absent from the card, AND the fact it carried is
+  // still reachable — it lives on the opt-in header clock, which is the home
+  // entry 9 of docs/nd-collisions.md gives it. A removal that also deleted the
+  // fact would be a different change from the one that was decided.
+  const cardNumbers = await tpage.evaluate(() => {
+    const card = document.querySelector('#nextup');
+    const visible = [...(card?.querySelectorAll('p, span, li') ?? [])]
+      .filter(el => el.checkVisibility?.() ?? !el.hidden)
+      .map(el => el.textContent ?? '');
+    return {
+      leftPresent: !!document.querySelector('#nextup-left'),
+      sayingLeftToday: visible.filter(t => /left today/i.test(t)),
+    };
   });
-  is(leftLine.hidden, false, 'the offer says how much of the day is left');
-  is(/left today/.test(leftLine.text), true,
-    `and says it in words ("${leftLine.text}")`);
-  is(/%|\bof\b.*\bdone\b|should|hurry|only|behind/i.test(leftLine.text), false,
+  is(cardNumbers.leftPresent, false,
+    'the day-remainder line is not in the card markup at all');
+  is(cardNumbers.sayingLeftToday.length, 0,
+    `and nothing on the card says how much of today is left (found ${
+      JSON.stringify(cardNumbers.sayingLeftToday)})`);
+
+  // The fact still has a home: switch the clock on and read it there. It is
+  // opt-in on the stated reasoning that "a day is not a countdown", which is
+  // exactly why the card may not say it unasked.
+  await openSurface(tpage, 'sheet-group-extras');
+  await tpage.click('#clock-on');
+  await tpage.waitForFunction(() => {
+    const el = document.querySelector('#clock');
+    return !!el && !el.hidden;
+  });
+  const clockLine = await tpage.evaluate(() =>
+    document.querySelector('#clock-words')?.textContent ?? '');
+  is(/left/.test(clockLine), true,
+    `and the clock, once asked for, still says what is left of the day ("${clockLine}")`);
+  is(/%|should|hurry|only|behind/i.test(clockLine), false,
     'with no percentage, no instruction and no judgement in it');
+  await tpage.click('#clock-off');
+  await tpage.waitForFunction(() => document.querySelector('#clock')?.hidden === true);
+  await openSurface(tpage, 'about');
+  await tpage.click('#about-close');
 
   console.log('\nWhen your day ends (V2 stage 5)');
   // Everything meaning "today" asks this, and a preference you must restate

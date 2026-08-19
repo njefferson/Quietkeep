@@ -31,7 +31,43 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const only = process.argv.slice(2).filter((a) => !a.startsWith('-'))[0] ?? null;
+
+// THE ARGUMENT LIST IS CLOSED, and this file had to learn it twice.
+//
+// The filter used to be `.filter(a => !a.startsWith('-'))[0]`, so anything
+// beginning with a dash was DROPPED — and `--only=a11y:check`, which is the
+// spelling anybody reaches for, silently selected nothing and ran all
+// twenty-two gates. A full run is many minutes and drives a browser several
+// times, so "it is taking a while" reads as normal and the mistake never
+// surfaces. It cost a wrong reading of this tool's own output in the session
+// that added the note.
+//
+// `tools/tour-shots.mjs` closed its flags for exactly this reason. An unknown
+// argument is an error here too: a tool that ignores what it was asked for is
+// answering a question nobody put to it.
+const ARGS = process.argv.slice(2);
+let only = null;
+for (const arg of ARGS) {
+  if (arg.startsWith('--only=')) {
+    if (only !== null) {
+      console.error(`\n  Two gate filters given ("${only}" and "${arg.slice('--only='.length)}"). Pass one.\n`);
+      process.exit(2);
+    }
+    only = arg.slice('--only='.length);
+    continue;
+  }
+  if (arg.startsWith('-')) {
+    console.error(`\n  ${arg} is not a flag this tool has. Use --only=<substring>, or a bare substring.\n`);
+    process.exit(2);
+  }
+  if (only === null) { only = arg; continue; }
+  console.error(`\n  Two gate filters given ("${only}" and "${arg}"). Pass one.\n`);
+  process.exit(2);
+}
+if (only !== null && only.trim() === '') {
+  console.error('\n  --only= was given with nothing after it.\n');
+  process.exit(2);
+}
 
 /**
  * One entry per gate script in package.json.
@@ -56,15 +92,95 @@ const only = process.argv.slice(2).filter((a) => !a.startsWith('-'))[0] ?? null;
  * rendered a state no person can reach) that the instrument had the fault it
  * was built to find.
  */
+/**
+ * THE PLANT IS WRITTEN DOWN BEFORE IT IS MADE, SO A DEAD RUN CANNOT KEEP IT.
+ *
+ * This tool breaks the tree on purpose. Every restore path it had ran INSIDE the
+ * process — `finally`, and later a signal handler — and none of them survives the
+ * process not surviving. A plant left behind is a real defect in a real tracked
+ * file, made by the tool whose entire job is proving defects get caught.
+ *
+ * It happened. A full run was killed during the a11y plant and `public/app.css`
+ * was left carrying `--line: #F3F0E8` — a near-invisible control boundary in the
+ * deployed stylesheet, invisible to every gate that does not measure contrast,
+ * and every gate that ran afterwards passed over it.
+ *
+ * A signal handler is not enough on its own, for a reason worth stating: `run`
+ * below uses `execSync`, which BLOCKS THE EVENT LOOP. A signal delivered to this
+ * process while a gate is running is queued until that child exits, so the
+ * handler fires minutes late — and never at all under SIGKILL, a container
+ * stopping, or power going.
+ *
+ * So the record goes to DISK, before the tree is touched, and the next run
+ * replays it. That does not depend on this process doing anything ever again.
+ */
+const JOURNAL = join(root, '.gate-audit-plant.json');
+
+/** Undo whatever a previous run wrote down and did not clear. */
+const replayJournal = () => {
+  if (!existsSync(JOURNAL)) return false;
+  let entry;
+  try { entry = JSON.parse(readFileSync(JOURNAL, 'utf8')); } catch {
+    console.error(`\n  ${JOURNAL} is unreadable. Delete it, then check \`git status\` by hand.\n`);
+    process.exit(2);
+  }
+  const path = join(root, entry.rel);
+  if (entry.before === null) { if (existsSync(path)) rmSync(path); }
+  else writeFileSync(path, entry.before);
+  rmSync(JOURNAL);
+  console.error(`\n  A PREVIOUS RUN DIED WITH A PLANT IN THE TREE. ${entry.rel} has been put back.`);
+  console.error('  Check `git status` — nothing else was touched, but see for yourself.\n');
+  return true;
+};
+
+// REPLAY BEFORE ANYTHING ELSE RUNS. Not at the top of the gate loop, and not
+// beside the first plant: the first thing a new run does with the journal file
+// must be READ it, because the first thing a plant does is WRITE it. Written the
+// other way round, a second run silently overwrites the record of the first
+// run's plant and the damage becomes unrecoverable — which is what the first
+// draft of this did, and it was caught by simulating a dead run rather than by
+// reading the code.
+replayJournal();
+
+/** Record the plant, make it, and hand back a restore that also clears the record. */
+const journalled = (rel, before, apply) => {
+  // Never write over a record that is already there. If one exists at this
+  // point, `replayJournal` above did not run or did not clear it, and blindly
+  // overwriting would destroy the only copy of an earlier plant's original.
+  if (existsSync(JOURNAL)) {
+    throw new Error(`${JOURNAL} already exists — refusing to plant over an unreplayed record`);
+  }
+  writeFileSync(JOURNAL, JSON.stringify({ rel, before }));
+  apply();
+  return () => {
+    const path = join(root, rel);
+    if (before === null) { if (existsSync(path)) rmSync(path); }
+    else writeFileSync(path, before);
+    if (existsSync(JOURNAL)) rmSync(JOURNAL);
+  };
+};
+
+/**
+ * A PLANT THAT DID NOT APPLY IS NOT A GATE THAT DID NOT FIRE.
+ *
+ * `String.replace` returns the original string when its pattern is not found —
+ * silently — so a plant written against a line that has since been reworded
+ * mutates nothing, the gate correctly stays green, and this audit reports the
+ * gate as broken. The first run did exactly that and blamed seven gates, most
+ * of them innocent.
+ */
 const edit = (rel, fn) => {
   const path = join(root, rel);
   if (!existsSync(path)) throw new Error(`plant targets ${rel}, which does not exist`);
   const before = readFileSync(path, 'utf8');
   const after = fn(before);
   if (after === before) throw new Error(`plant made no change to ${rel} — the pattern it edits is gone`);
-  writeFileSync(path, after);
-  return () => writeFileSync(path, before);
+  return journalled(rel, before, () => writeFileSync(path, after));
 };
+
+/** A plant that CREATES a file. Restoring means deleting it again. */
+const create = (rel, body) =>
+  journalled(rel, null, () => writeFileSync(join(root, rel), body));
 
 const GATES = [
   {
@@ -193,6 +309,19 @@ const GATES = [
     },
   },
   {
+    name: 'adr:check',
+    // A SECOND PLANT FOR THE SAME GATE, because the one above only exercises the
+    // row checks. The cross-reference check (2.12.2) reads links the row checks
+    // never see — the `extends`/`narrows` links under each row, and the
+    // references inside the records — and five of those were broken when it was
+    // written. A plant that trips a DIFFERENT check of the same gate is the only
+    // thing that says the new check is doing work, rather than the old ones
+    // covering for it.
+    catches: 'a cross-reference to a record that does not exist',
+    plant: () => edit('docs/adr/README.md', (s) =>
+      s.replace('](0010-decay-primitive.md)', '](0010-the-decay-primitive.md)')),
+  },
+  {
     name: 'notify:check',
     catches: 'notification copy breaking the voice rules before the feature exists',
     // This gate walks all of `src/` plus the worker, so the copy can be planted
@@ -210,6 +339,30 @@ const GATES = [
   {
     name: 'release:check',
     catches: 'a change to the app with no triplet bump, so the cache never retires',
+    // CANNOT BE AUDITED FROM A TREE WHOSE TRIPLET IS UNCOMMITTED, and saying so
+    // is the point of this hook.
+    //
+    // This gate compares the shipped surface against the commit that introduced
+    // the head triplet. When the triplet exists only in the working tree — which
+    // is EXACTLY the state a session is in while preparing a release — there is
+    // nothing to compare, and the gate correctly says so and exits 0. Plant a
+    // defect into that state and it still exits 0, so the audit reported
+    // `release:check` as not doing its job.
+    //
+    // It was doing its job. The audit was reading a vacuous pass as a real one,
+    // which is the same false receipt this whole file exists to hunt — the third
+    // time the hunter has had the fault it hunts, after the no-op plant and the
+    // plant that outlived the run. A gate that cannot be exercised right now is
+    // UNVERIFIED, never failing: an audit that cries wolf teaches people to
+    // discount it, and the accusation lands on the gate rather than on the tree
+    // state that caused it.
+    precondition: () => {
+      const out = execSync('node --experimental-strip-types tools/release-check.mjs',
+        { cwd: root, stdio: 'pipe' }).toString();
+      return /is not committed yet/.test(out)
+        ? 'the head triplet is not committed yet, so this gate has nothing to compare and passes unconditionally — audit it again after the release commit'
+        : null;
+    },
     plant: () => edit('src/held.ts', (s) => `${s}\n// a change with no release\n`),
   },
   {
@@ -247,6 +400,33 @@ let broken = 0;
 let unverified = 0;
 const results = [];
 
+// THE PLANT MUST NOT SURVIVE THE RUN, INCLUDING A RUN THAT IS KILLED.
+//
+// Each gate below is exercised by breaking the tree on purpose, and `finally`
+// puts it back. `finally` covers a throw and it does NOT cover a signal — and a
+// full audit takes many minutes of synchronous child processes, which is a long
+// window in which somebody presses Ctrl-C or a timeout fires.
+//
+// This happened. The run was killed during the a11y plant, which sets `--line`
+// to a near-invisible value, and `public/app.css` was left carrying it. That is
+// a real defect in a real deployed stylesheet, planted by the thing whose job is
+// to prove defects get caught, and it is invisible to every gate that does not
+// measure contrast — including the ones that ran afterwards and passed.
+//
+// So the restore is registered process-wide as well as locally. Running it twice
+// is harmless: it writes back bytes that are already there.
+let live = null;
+const undoLive = () => { if (live) { try { live(); } catch { /* nothing better to do */ } live = null; } };
+for (const sig of ['SIGINT', 'SIGTERM', 'SIGHUP']) {
+  process.on(sig, () => {
+    undoLive();
+    console.error(`\n  interrupted (${sig}) — the plant has been put back.\n`);
+    process.exit(130);
+  });
+}
+process.on('exit', undoLive);
+process.on('uncaughtException', (err) => { undoLive(); throw err; });
+
 for (const gate of chosen) {
   if (!gate.plant) {
     unverified += 1;
@@ -254,8 +434,23 @@ for (const gate of chosen) {
     continue;
   }
 
+  // A GATE THAT CANNOT BE EXERCISED FROM THIS TREE IS UNVERIFIED, NOT FAILING.
+  // A gate may declare a `precondition` returning the reason it cannot be
+  // audited right now — see `release:check` for the case and the reasoning.
+  if (gate.precondition) {
+    let why = null;
+    try { why = gate.precondition(); } catch (err) { why = `its precondition threw: ${err.message}`; }
+    if (why) {
+      unverified += 1;
+      results.push(`  ????  ${gate.name} — NOT AUDITABLE HERE: ${why}`);
+      continue;
+    }
+  }
+
   // GREEN FIRST. A gate that is already red proves nothing when it goes red on
   // a plant, and this audit would report it as working.
+  //
+  // (`live` above is the interrupt guard — see the note beside its declaration.)
   const before = run(gate.name);
   if (before !== 0) {
     broken += 1;
@@ -267,14 +462,17 @@ for (const gate of chosen) {
   let planted = null;
   try {
     restore = gate.plant();
+    live = restore;
     planted = run(gate.name);
   } catch (err) {
     results.push(`  FAIL  ${gate.name} — the plant itself threw: ${err.message}`);
     broken += 1;
     if (restore) restore();
+    live = null;
     continue;
   } finally {
     if (restore) restore();
+    live = null;
   }
 
   // AND GREEN AGAIN. A gate left red by a restore that did not restore would

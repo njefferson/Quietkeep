@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.12.2',
+    kind: 'ITERATION',
+    date: '2026-08-19',
+    notes: [
+      '**The line saying how much of today is left has come off the offer card.** It read *“About 2h 30m left today”*, and it was on the card from the moment you opened the app until the day ran out. The last release said it was unsettled; this one settles it.',
+      '**The card already refused to do exactly this, one line further down.** The line naming the fixed thing today gives you its name and never how long until it — because a number counting down towards something you are already avoiding makes it harder to start, not easier. The remainder of the day was the same kind of number, three lines above it.',
+      '**The clock in the header still says it, and the clock is off until you ask for it.** It was built as something you switch on, because a day is not a countdown and one should not arrive on your screen uninvited. If you had switched it on, the app was telling you the same thing twice at once, in two different phrasings.',
+      '**It was there to help you judge whether something fits in what is left — and the card never told you how long anything takes.** How long a thing has taken you before is on the thing itself, when you open it. A remainder with nothing to measure it against is just a clock running down.',
+      '**If you want the running remainder, it is one switch:** *More → Settings → A clock in the header*. Nothing else on the card changed.',
+      '**Still not measured: whether the rest of the card is now the right length.** It still names where the thing lives, why it is being offered, what a first small piece of it would be, the next fixed thing today, two other things and something you wanted. That was not weighed in this release.',
+    ],
+  },
+  {
     triplet: '2.12.1',
     kind: 'ITERATION',
     date: '2026-08-19',

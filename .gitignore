@@ -11,3 +11,10 @@ dist/
 # the tree drifts from its source and starts getting hand-edited.
 public/app.js
 public/app.js.map
+
+# The gate audit's plant record (tools/gate-audit.mjs). Written before the tree
+# is broken on purpose and deleted when it is put back, so a run that dies leaves
+# it behind for the next run to replay. Machinery, never a deliverable — and the
+# DAMAGE it records shows in `git status` on its own, which is the signal worth
+# seeing.
+.gate-audit-plant.json

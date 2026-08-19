@@ -494,11 +494,11 @@ const REGISTRY = {
   'do now offered': ['.donow', '.donow-label', '.donow-done'],
   // Work mode. The "why" lines and the behind-list are the lowest-contrast text
   // on these surfaces, so they are named rather than left to axe alone.
-  // `#nextup-left` (V2 stage 5) is the one permitted number, and it sits with
-  // the other count lines on the work surface. It is HERE and not in the
-  // always-measured list because it is hidden once the day has run out — an
-  // entry in that list must match something on every state, and the first-run
-  // dialog proved it does not.
+  // `#nextup-left` (V2 stage 5, "the one permitted number") WAS listed here and
+  // the element is gone from the card (2.12.2, ADR-0103). Its cautionary value
+  // is not — every note below citing it is about a registry entry matching
+  // nothing, which is what it did before it was moved into this list, and that
+  // lesson outlives the element.
   // `#nextup-fixed` (the next fixed thing today, collisions 7 and 9) is
   // DELIBERATELY not listed, and this note is here so nobody "fixes" that by
   // adding it — `#nextup-left` was put in the always-measured list on exactly
@@ -515,7 +515,7 @@ const REGISTRY = {
   // AND the list has rows, which is exactly what 'next up' stages. A registry
   // entry matching nothing visible is the false receipt `#nextup-left` cost a
   // release for, so it goes where it is actually on screen.
-  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
+  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
     // When you cannot start (1.24.0). The heavy control is on the card whenever
     // there is a head, so it belongs in this state. THE INVITATION IS NOW ONE

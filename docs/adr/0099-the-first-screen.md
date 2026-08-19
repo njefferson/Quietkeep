@@ -2,7 +2,7 @@
 
 **Status:** Accepted · **Date:** 2026-08-18 · **Shipped:** 2.8.1 ·
 **Extends:** [0093](0093-a-way-to-each-part-of-the-page.md) ·
-**Touches:** [0065](0065-load-not-work.md), [0088](0088-the-claim-and-the-tree.md)
+**Touches:** [0065](0065-load-not-work.md), [0088](0088-the-claim-and-the-tree-are-places.md)
 
 ## Decision
 

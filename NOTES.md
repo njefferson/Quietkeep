@@ -665,7 +665,7 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.1**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.2**
 - **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
   `10d329f`; the promoted tree asserted byte-identical to the verified staging
   tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
@@ -674,7 +674,63 @@ decided by a session.**
   was the honest state at the time: the previous promote's green belongs to
   `c909104` and is a fact about 2.10.0 and about nothing else.)
 
-**Staging is 2.12.1 and it is waiting on you.** Production is 2.11.0.
+**Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
+releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one
+subject: the landing surface saying less.
+
+**2.12.2 — THE OFFER CARD STATES NO NUMBER THAT MOVES ON ITS OWN
+([ADR-0103](docs/adr/0103-the-card-states-no-moving-number.md)).** `#nextup-left`
+— *"About 2h 30m left today."*, called **the one permitted number** since V2
+stage 5 — is off the card. This settles the question 2.12.0's notes left open,
+and it was settled from material already in the repo rather than by taste.
+
+**Four things said it, and none of them had been put beside the others:**
+
+- **The card forbids exactly this three lines lower.** `nextFixedWords` names
+  the next unmoveable thing and is held by test to no number at all, on the
+  reasoning in `src/clock.ts` that a shrinking number against an aversive thing
+  adds aversion at the moment of approach. The remainder shrank every minute.
+- **The header clock is opt-in on that same reasoning** — *"a clock is the most
+  charged piece of chrome there is, because half the point of this app is that a
+  day is not a countdown"* (`src/ui/about.ts`, written when it was built). The
+  card said the same arithmetic to everybody, undeclinable, and nothing anywhere
+  argued why it was affordable there.
+- **With the clock on, the app said it twice at once** — header and card, two
+  phrasings, no coordination between them. That is ADR-0102's defect at line
+  granularity instead of block.
+- **Its own defence needed a second half that never shipped.** The line was
+  prospective — a fit judgement before an attempt — and a fit judgement needs
+  how long the thing takes. `rangeWords` renders in the detail sheet and nowhere
+  else. V2 stage 5 shipped a pair that never met.
+
+**And "Just one thing" had already decided it, one surface short.** The mode
+stripped this line with the reasoning that on the worst day every hour costs
+most. No paragraph ever argued the ordinary day. There is no property that
+distinguishes the two surfaces.
+
+**`timeLeftWords` is DELETED, not left exported.** ADR-0031: a projection nothing
+renders is the log lying rather than merely silent — and `src/duration.ts` is the
+file that was written with no reader and is named in `smoke.mjs` for it. An
+export kept warm "in case" is that state with a nicer story. `remainderWords` in
+`src/clock.ts` is untouched; the fact keeps the home entry 9 of
+`docs/nd-collisions.md` gives it.
+
+**Two gate repairs came out of the same work, and neither was the subject:**
+
+- **`adr:check` read one link per row and nothing else.** The `extends`/`narrows`
+  links under each row and every cross-reference inside a record were unchecked,
+  and **five were broken** — naming a plausible slug the file has never had, like
+  `0083-the-panel-stops-folding.md` for `0083-four-destinations.md`, which is
+  what that record is about rather than what it is called. Fixed, and the check
+  added; watched red on a plant that only the new check can see, four `ok` beside
+  one `FAIL`.
+- **`gates:audit` left its plant in the tree when it was killed.** `finally`
+  covers a throw and does not cover a signal, and a full audit is many minutes of
+  synchronous child processes. Observed: a run interrupted during the a11y plant
+  left `public/app.css` carrying `--line: #F3F0E8` — a near-invisible control
+  boundary in the deployed stylesheet, planted by the tool whose job is proving
+  defects get caught, and invisible to every gate that does not measure contrast.
+  The restore is now registered process-wide as well.
 
 **2.12.1 — "HOLD WHAT I COPIED" IS GONE, BECAUSE PASTE ALREADY DID ALL OF IT.**
 Reported as redundant, and checking settled it: `src/ui/app.ts` has a `paste`
@@ -964,6 +1020,14 @@ today is left. It carries a shrinking number on the same card as a line
 (`nextFixedWords`) that is forbidden by test from carrying any number at all.
 It is already stripped in *Just one thing*. Whether it belongs on the ordinary
 card is a real question and it is not settled.
+
+**SETTLED IN 2.12.2 — the line is gone
+([ADR-0103](docs/adr/0103-the-card-states-no-moving-number.md)).** It was
+settleable the whole time from material already written down: the rule the card
+applies to the line beneath it, the reasoning that made the header clock opt-in,
+the duplicate that appears the moment the clock is on, and the fit judgement the
+card never had the other half of. **Nothing new had to be learned and nobody had
+to be asked** — the four facts had simply never been put beside each other.
 
 **AND THE LANDING PAGE IS 5.4 SCREENS, SHOWING EVERY ITEM TWICE.** Measured at
 390px on the thirteen-item sample, with the whole page finally rendered:
