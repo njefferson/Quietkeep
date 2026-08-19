@@ -324,7 +324,10 @@ export async function mountAbout(
       // read by nothing until now (ADR-0062).
       ['Last copy', copyDayWords(copy, session.zone)],
       ['Room available', r.quotaMb == null ? 'unknown' : `${r.quotaMb.toLocaleString()} MB`],
-      ['Used by Quietkeep', r.usageMb == null ? 'unknown' : `${r.usageMb} MB`],
+      // Per-ORIGIN, so it counts the app's own downloaded code too (2.9.4). The
+      // old label said "Used by Quietkeep", which a reader takes as "used by my
+      // things" — and on an empty store that is a megabyte of the app itself.
+      ['Used at this address', r.usageMb == null ? 'unknown' : `${r.usageMb} MB, app included`],
       // `heldWork`, NOT `nodes.size` and NOT `heldNodes`. The gauge on the main
       // screen says "N held" and this row says "Things held" — the same words
       // about the same store, so they must be the same number or the app is

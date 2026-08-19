@@ -665,11 +665,37 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.3**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.4**
 - **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
   `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
   `fda790c` on both — rather than inferred from a clean merge)
+
+**2.9.4 — THE REPORT SAYS ONLY WHAT IS TRUE.** Found by reading a diagnostic
+sent from a device — a store with **0 events, 0 held, every count zero** — and
+noticing two things in it that do not hold up.
+
+**It told an empty store to back itself up.** The first line under WHAT IS WRONG
+was *"No copy has ever left this device. Everything here exists in one place, and
+clearing website data would take it."* There is no everything and nothing to
+take. `findings()` raised it on `!lastCopy(log)` with no check that there was
+anything to copy — a chore invented out of an empty store, on the one surface
+whose whole job is to say only what is true, and law 6 forbids exactly that.
+Guarded on the LOG rather than on what is held: a store whose every item has been
+let go still has a history worth a copy.
+
+**And "Used by Quietkeep: 1.3 MB" beside a log of 0 events.** Neither a lie nor a
+bug: `navigator.storage.estimate()` is per-ORIGIN and counts the app's own
+downloaded code alongside anything the reader put in, and the browser does not
+separate them. The LABEL was claiming a precision the number does not have. It
+reads *Used at this address* now, and says what is in it. Fixed in both places
+that state it — the report and the (i) panel's storage block.
+
+**Kept deliberately:** the not-persisted finding still fires on an empty store.
+That one is the thing to sort out BEFORE relying on the app rather than after.
+
+Both pinned, and the guard planted: reverting `!copy && log.length > 0` to
+`!copy` fails *"an empty log raises no missing-copy finding"*.
 
 **2.9.3 — NO TWO CONTROLS TOUCH.** Reported from a device: *Bring a copy back*
 and *What's on this page* overlap. Measured: **0.0px apart at every viewport and

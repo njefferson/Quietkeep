@@ -196,10 +196,19 @@ export function findings(state: State, log: readonly AppEvent[], r: DeviceReadin
   }
 
   const copy = lastCopy(log);
-  if (!copy) {
+  // NOTHING TO COPY IS NOT A MISSING COPY (2.9.4). This fired on an empty store —
+  // zero events, zero held — and told the reader that everything here exists in
+  // one place and clearing website data would take it. There is no "everything"
+  // and nothing to take. A chore invented out of an empty store is a manufactured
+  // demand on the one surface in this app whose entire job is to say only what is
+  // true, and it was the FIRST line of the report.
+  //
+  // The log, not the state: a store whose every item has been let go still holds
+  // a history worth a copy, and `heldNodes` would call that empty.
+  if (!copy && log.length > 0) {
     out.push('No copy has ever left this device. Everything here exists in one place, and '
       + 'clearing website data would take it.');
-  } else if (changesSinceCopy(log, copy)) {
+  } else if (copy && changesSinceCopy(log, copy)) {
     out.push(`There is work here that no copy holds — the newest copy is from `
       + `${copyDayWords(copy, r.zone)}.`);
   }
@@ -374,7 +383,15 @@ export function diagnosticReport(
   L.push(`  Browser reports on storage: ${r.storageSupported ? 'yes' : 'no'}`);
   L.push(`  Browser has agreed to keep it: ${r.persisted ? 'yes' : 'no'}`);
   L.push(`  Room available: ${r.quotaMb == null ? 'unknown' : `${r.quotaMb} MB`}`);
-  L.push(`  Used by Quietkeep: ${r.usageMb == null ? 'unknown' : `${r.usageMb} MB`}`);
+  // WHAT THE NUMBER ACTUALLY MEASURES (2.9.4). `navigator.storage.estimate()` is
+  // per-ORIGIN: it counts the app's own downloaded code alongside anything the
+  // reader has put in, and the browser does not separate them. Labelled "Used by
+  // Quietkeep" it read as "used by your things" — and a report showing 1.3 MB
+  // beside a log of 0 events reads as either a lie or a bug. It was neither; the
+  // label was claiming a precision the number does not have.
+  L.push(`  Used at this address: ${r.usageMb == null ? 'unknown' : `${r.usageMb} MB`}`);
+  L.push('    (the app\'s own downloaded code as well as anything you have put in —');
+  L.push('     the browser does not separate them, so on an empty store it is almost all app)');
   L.push('');
 
   L.push('WHAT IT IS HOLDING');

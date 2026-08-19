@@ -414,3 +414,40 @@ test('it never guesses when there is nothing to read', () => {
   const r = diagnosticReport(emptyState(), [], wellDevice({ type: null }), NOW);
   assert.equal(/Text size:/.test(r), false);
 });
+
+
+// --- an empty store has nothing to lose (2.9.4) ------------------------------
+//
+// Sent from a device: a report whose log held ZERO events, whose every count was
+// 0, and whose first line under WHAT IS WRONG was "No copy has ever left this
+// device. Everything here exists in one place, and clearing website data would
+// take it." There is no everything. A chore invented out of an empty store is a
+// manufactured demand on the one surface whose whole job is to say only what is
+// true — and law 6 says this app does not do that anywhere.
+
+test('an empty log raises no missing-copy finding — there is nothing to copy', () => {
+  const f = findings(emptyState(), [], wellDevice());
+  assert.equal(f.some(x => /No copy has ever left this device/.test(x)), false,
+    `an empty store must not be told to back it up — got: ${f.join(' | ')}`);
+});
+
+test('and the moment there IS something, the finding comes back', () => {
+  // The guard is on the LOG, not on what is held: a store whose every item has
+  // been let go still has a history worth a copy.
+  const one = write(emptyState(), [ev('node.created', 'n1', { kind: 'action', title: 'x' })]);
+  const log = [ev('node.created', 'n2', { kind: 'action', title: 'y' })];
+  const f = findings(one, log, wellDevice());
+  assert.equal(f.some(x => /No copy has ever left this device/.test(x)), true,
+    `a store with events in it must still be told there is no copy — got: ${f.join(' | ')}`);
+});
+
+test('the storage line says what the number measures, not what it seems to', () => {
+  // `navigator.storage.estimate()` is per-ORIGIN and counts the app's own
+  // downloaded code. Labelled "Used by Quietkeep" it read as the reader's own
+  // things, and 1.3 MB beside a log of 0 events reads as a lie or a bug.
+  const r = diagnosticReport(emptyState(), [], wellDevice({ usageMb: 1.3 }), NOW);
+  assert.match(r, /Used at this address: 1\.3 MB/);
+  assert.match(r, /the app's own downloaded code as well as anything you have put in/);
+  assert.equal(/Used by Quietkeep/.test(r), false,
+    'the old label claimed a precision the number does not have');
+});

@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.9.4 — ITERATION
+
+*2026-08-19*
+
+- **The report no longer tells you to back up an empty planner.** On a store with nothing in it, the first thing under *what is wrong* was “No copy has ever left this device — everything here exists in one place, and clearing website data would take it.” There is no everything, and nothing to take. A chore invented out of nothing is exactly what this app is not supposed to do, and it was doing it on the one screen whose whole job is to say only what is true.
+- **And the storage line now says what it is actually counting.** It read *Used by Quietkeep: 1.3 MB* next to a log of zero events, which looks like either a lie or a bug. It was neither: the browser counts the app’s own downloaded code and anything you have put in as one number and does not separate them. On an empty planner that figure is almost entirely the app. It says so now, and it is labelled *Used at this address*.
+- **Still true and still worth acting on:** the browser has not agreed to keep your planner. That warning stays on an empty store, because it is the thing to sort out **before** you rely on it rather than after.
+
 ## 2.9.3 — ITERATION
 
 *2026-08-19*
