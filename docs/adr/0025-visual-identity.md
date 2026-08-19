@@ -15,6 +15,21 @@
 > trapped by what they are carrying, a cell fails for the same reason the spiral
 > does.
 >
+> **And the research says it is worse than a cell.** `docs/nd-collisions.md`
+> entry 3 — the thesis, and the best-evidenced entry in the catalogue — is that
+> *a thing that leaves the visual field leaves existence; visible is the only
+> kind of remembered; filed means gone*. A warm form shut inside a dark box is a
+> picture of something put away where it can no longer cue you. **The icon
+> illustrates the failure the app exists to prevent.** Any replacement is briefed
+> on *stays in view*, not on *held safely* — which retires vessels, cradles,
+> boxes and stacks as a family.
+>
+> **The enclosure was forced by a colour error.** `--warm` is `#7A4E00` in light
+> mode and `#F5C978` in dark; the icon uses the DARK value on its light paper
+> field, where it measures 1.38:1 against 6.38:1 for the correct one. A colour
+> that cannot describe a shape on paper needs a dark ground put behind it, and
+> that ground is the box. Fix the token and the enclosure stops being necessary.
+>
 > A replacement is OPEN, not decided. Six directions have been tried and every
 > one collided with a well-known glyph — see
 > [`docs/brand-collisions.md`](../brand-collisions.md), which is the checklist to
