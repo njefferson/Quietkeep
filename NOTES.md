@@ -708,15 +708,36 @@ push.
 
 **And the step was moved to position 9 from position 30.** It needs nothing but
 the two checkouts, and it had been sitting behind the chromium install and every
-browser walk — so a check that answers in under a second was reported twenty-odd
-minutes in, when the run got that far. The run before this one sat over
-twenty-five minutes on `Install chromium` without finishing, which means a
-healthy answer from that position was never guaranteed at all. **Its position is
-part of why a red gate went ten runs unseen.** Cheap checks that depend on
-nothing belong where a failure is answered in seconds.
+browser walk. On the last healthy full run (32261983527) the guard's answer
+arrived at 14:12:51, **six minutes and fifty-four seconds** after the job
+started; from position 9 it arrives in seven to thirteen seconds. Cheap checks
+that depend on nothing belong where a failure is answered in seconds.
+
+**A FAILURE THERE ALSO SUPPRESSED SEVEN GATES, WHICH IS THE REAL COST.** A
+failed step stops the ones after it, so on every red run steps 31 to 37 were
+`skipped`: `controls:check`, `collisions:check`, `adr:check`, `touch:check`,
+`notify:check`, `sample:check` and `storage:check`. **Seven gates were not
+running in CI at all for those runs**, and the run page said `skipped` rather
+than anything alarming.
 
 **The reason it went unseen: a push was verified and a RUN was not.** The push
 output has never once known whether CI passed.
+
+**AND THE `Install chromium` STEP IS STALLING, CAUSE UNKNOWN.** Measured off the
+run timestamps: healthy is **24 seconds** (32261983527, 14:06:27 to 14:06:51).
+Run 32296164308 sat on it for **10m35s** without finishing — it ended because
+the run was cancelled, not because the step completed — and the next run about
+three minutes before the same thing. Nothing in this repo changed that step and
+it has completed fine before, so no cause is established and nothing here claims
+to fix it. What is fixed is the STATE: `timeout-minutes: 10` on the step and 45
+on the job, replacing a six-hour default under which a stall reads as *still
+going* rather than as broken.
+
+**Two figures in this section were wrong before they were right, both stated
+from impression rather than read off the source** — "eight consecutive pushes"
+for what the run list says is ten runs and seven failures, and "25+ minutes" for
+what the timestamps say is 10m35s. Recorded rather than quietly fixed: the
+second happened after the lesson about the first was written.
 
 **Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
 releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one

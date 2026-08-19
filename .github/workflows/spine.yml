@@ -115,23 +115,55 @@ jobs:
       # Checking them here means a change to icon.svg or the social preview cannot
       # quietly drop below 3:1 — B-08's rule is that a new pair joins the gate in
       # the same commit that introduces it, and this is that gate.
-      # ITS OWN DEADLINE, because this is the step that hangs.
+      # ITS OWN DEADLINE, because this is the step that stalls.
       #
-      # Observed twice in a row: 25+ minutes on one run without finishing, and
-      # 15+ on the next, while every browser gate below waits behind it. It has
-      # completed fine on earlier runs and nothing in this repo changed it, so
-      # the cause is not established and this does not claim to fix it — it makes
-      # the hang ARRIVE as a failure instead of as an unfinished run. `--with-deps`
-      # shells out to apt, which is the part that can wait forever on a lock.
+      # Measured off the run timestamps rather than estimated. Healthy: 24
+      # SECONDS (run 32261983527, 14:06:27 to 14:06:51). Stalled: 10m35s on run
+      # 32296164308 without finishing — it ended because the run was cancelled,
+      # not because the step completed — and about 3 minutes on the next before
+      # the same thing. Every browser gate below waits behind it.
+      #
+      # It has completed fine on earlier runs and nothing in this repo changed
+      # it, so the cause is NOT established and this does not claim to fix it. It
+      # makes a stall ARRIVE as a failure instead of as an unfinished run.
+      # `--with-deps` shells out to apt, which is the part that can wait on a
+      # lock, but that is a hypothesis and it has not been tested.
+      #
+      # (This comment first said "25+ minutes" and "15+" — figures taken from an
+      # impression of how long the checks had felt, not read off the timestamps.
+      # Both were wrong. 24 seconds against 10m35s is the real finding and it did
+      # not need inflating.)
       - name: Install chromium for the browser checks
         timeout-minutes: 10
         run: npx --no-install playwright-core install --with-deps chromium
       - name: Brand assets
         run: npm run brand:check
 
+      # ONE RED STEP MUST NOT SILENCE THE INDEPENDENT ONES BELOW IT.
+      #
+      # A failed step stops every step after it, and that is how a single red
+      # gate took seven others down with it: when the commit guard failed at
+      # position 30, steps 31 to 37 were `skipped` on every one of those runs —
+      # controls, collisions, adr, touch, notify, sample and storage. Seven gates
+      # were not running in CI at all, and the page said `skipped`, which reads
+      # as deliberate rather than as lost.
+      #
+      # So every gate below that needs nothing but the checkout carries
+      # `if: ${{ !cancelled() }}`: it runs whether or not something earlier
+      # failed, and the job still ends red. `!cancelled()` rather than `always()`
+      # so a cancelled run does not keep grinding through checks nobody is
+      # waiting for.
+      #
+      # NOT on the browser and build steps — `brand`, `smoke`, `update:walk`,
+      # `a11y`, `size`, `build:sync`, `touch` — those genuinely need the chromium
+      # install or `npm run build` to have happened, and running them anyway
+      # would report a missing prerequisite as a gate failure, which is the false
+      # accusation this repo has already paid for twice.
+
       # Doctrine §7: the changelog's head triplet and the service-worker cache
       # name bump together. A rule someone has to remember, until it is a check.
       - name: Changelog and triplet
+        if: ${{ !cancelled() }}
         run: npm run changelog:check
 
       # And that the triplet has not stood still while the app moved. The check
@@ -141,12 +173,14 @@ jobs:
       # and every already-installed reader kept the old bundle. Published, and
       # unable to arrive.
       - name: The shipped surface is not newer than the release
+        if: ${{ !cancelled() }}
         run: npm run release:check
 
       # The hosted "why it works this way" page is GENERATED from the rationale
       # doc (tools/thesis.mjs), so the two cannot drift — same rule as the
       # changelog, so it earns the same gate.
       - name: Thesis page in sync with the doc
+        if: ${{ !cancelled() }}
         run: npm run thesis:check
 
       # The unit tests prove the spine folds. They cannot prove the bundle
@@ -184,6 +218,7 @@ jobs:
       # let it reach another host. That is one line of _headers, so it is gated —
       # it is exactly the kind of thing that erodes quietly.
       - name: Network posture
+        if: ${{ !cancelled() }}
         run: npm run headers:check
 
       # ADR-0036's OTHER half. `headers:check` proves the default origin cannot
@@ -201,6 +236,7 @@ jobs:
       # hand at the terminal — which is how 0.15.0 and 0.16.0 passed nine gates
       # locally and went red in CI on the tenth. Two copies of one rule drift.
       - name: No banned vocabulary
+        if: ${{ !cancelled() }}
         run: npm run vocabulary
 
       # The closed list, checked against the DOCUMENT that governs it (1.9.1).
@@ -212,6 +248,7 @@ jobs:
       # itself calls "the machine-checkable form of product law 1" and which
       # nothing had ever machine-checked.
       - name: The closed event list matches the vocabulary
+        if: ${{ !cancelled() }}
         run: npm run events:check
 
       # "Nothing outside the gate imports the store's write API" — claimed in
@@ -220,6 +257,7 @@ jobs:
       # forbidden; unrecorded ones are. The allowlist carries a reason per
       # entry, and a stale entry fails too.
       - name: No unrecorded write-gate bypass
+        if: ${{ !cancelled() }}
         run: npm run writegate:check
 
       # Twice in one day the same shape landed: `export.written` recorded since
@@ -231,6 +269,7 @@ jobs:
       # written by the app or says in the vocabulary, in words, that it is not
       # and why. A stale note fails too.
       - name: Every noun accounts for itself
+        if: ${{ !cancelled() }}
         run: npm run emitters:check
 
       # The closed reason vocabulary (V2 stage 7). Determinism is the product:
@@ -239,6 +278,7 @@ jobs:
       # caused from one they did not. Seven push sites each wrote their own
       # literal before this, and two had independently written the same one.
       - name: Every offer says why, from one closed set with one author
+        if: ${{ !cancelled() }}
         run: npm run reasons:check
 
       # WHAT SURVIVES THE WORST DAY (2.10.0). "Just one thing" strips the offer
@@ -251,6 +291,7 @@ jobs:
       # the defect was found: the step list of this very workflow is where its
       # absence was noticed.
       - name: What survives the worst day
+        if: ${{ !cancelled() }}
         run: npm run plain:check
 
       # THE WALKTHROUGH'S PICTURES ARE OF THIS APP (2.10.4). They are rendered
@@ -264,6 +305,7 @@ jobs:
       # are on disk — so it belongs in the cheap block rather than beside the
       # walks. Regenerate with `npm run tour:shots`.
       - name: The walkthrough shows this version of the app
+        if: ${{ !cancelled() }}
         run: npm run tour:check
 
 
@@ -274,6 +316,7 @@ jobs:
       # place-language, in the running release's notes. The manifest alone is
       # bookkeeping; telling the person is the obligation.
       - name: The shape is where it was, or the release says otherwise
+        if: ${{ !cancelled() }}
         run: npm run controls:check
 
       # The collision catalogue stays honest (V2 stage 7). It was a false receipt
@@ -283,6 +326,7 @@ jobs:
       # This holds the SHAPE: every entry states how strong its evidence is and
       # how it routes, both from closed sets.
       - name: Every collision says what it is built on
+        if: ${{ !cancelled() }}
         run: npm run collisions:check
 
       # THE INDEX AGAINST THE RECORDS. docs/adr/README.md went fifteen records
@@ -292,6 +336,7 @@ jobs:
       # it, so there is nothing to see and nothing to click. Checked BOTH ways,
       # because a row pointing at no file survives a rename silently.
       - name: Every decision is in the index, and every row is a real decision
+        if: ${{ !cancelled() }}
         run: npm run adr:check
 
       # A ROUTE A FINGER CANNOT TAKE IS NOT A ROUTE. The reference platform is a
@@ -311,6 +356,7 @@ jobs:
       # today; this is armed so the commit that adds one cannot also be the commit
       # that ships an unmeasured sentence.
       - name: No sentence can reach a lock screen unmeasured
+        if: ${{ !cancelled() }}
         run: npm run notify:check
 
       # And every kind is DEMONSTRATED, or says why not (1.16.0, ADR-0067). The
@@ -319,6 +365,7 @@ jobs:
       # never once been seen with data in it. This generates the set for real,
       # runs it through the write boundary, and asks what came out.
       - name: The sample set covers the app
+        if: ${{ !cancelled() }}
         run: npm run sample:check
 
       # Storage is IndexedDB via Dexie and localStorage is banned outright. That
@@ -327,4 +374,5 @@ jobs:
       # and the vocabulary, both of which fail the build. A rule enforced by
       # remembering is a rule that lapses on a busy afternoon.
       - name: No localStorage
+        if: ${{ !cancelled() }}
         run: npm run storage:check
