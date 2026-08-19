@@ -665,12 +665,60 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.3**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.11.0**
 - **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
   `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA — read from the runs, not inferred from a clean merge)
 
-**Staging is 2.10.3 and it is waiting on you.** Production is 2.10.0.
+**Staging is 2.11.0 and it is waiting on you.** Production is 2.10.0.
+
+**2.11.0 — THE WALKTHROUGH SHOWS YOU THE THING IT IS TALKING ABOUT.** Six steps
+described an app the reader was looking at and could not see yet — *"the box at
+the top"*, *"it offers you a small number of things"* — with no picture of any
+of it. Five of the six carry one now, generated from the running app in both
+themes by `tools/tour-shots.mjs`, precached so a first run offline is whole.
+**277KB across ten files at 1x.**
+
+**Crops, not screens, and the weight is the lesser reason.** A full screen at 2x
+is ~64KB and ten of them is three quarters of a megabyte in a shell that must
+precache; but a picture of the whole screen does not point at anything. The step
+about the capture box shows the capture box.
+
+**Generated, never drawn, and gated on drift.** `tour:check` compares a recorded
+hash of the files that decide what is IN the pictures and fails once any moves —
+the same one-source-plus-a-gate shape that fixed the changelog, the doors list
+and the strip list. **A help screen illustrated with a UI that no longer exists
+is worse than one with no pictures**: stale prose reads as stale, a screenshot
+reads as proof. Wired into the Spine.
+
+**The drift list was wrong once, in the safe direction, and was narrowed.** It
+began with `src/ui/tour.ts` — the walkthrough's own words — which cannot change
+what the app LOOKS like, so the gate went red the moment the alt text was written
+and demanded a regeneration that could not have altered a pixel. **A gate that
+cries wolf gets satisfied by reflex.** It watches markup, stylesheet, and the
+three renderers whose output is actually pictured.
+
+**Alt text is written by hand and cannot be generated.** It says what a picture
+MEANS to somebody who cannot see it, which is not a list of what is in the
+rectangle — and this is the screen where a reader knows least about the app.
+
+**AND THE WALKTHROUGH'S OWN BUTTONS HAD BEEN BREAKING IN HALF.** From step 2
+onward the row is *Skip*, dots, *Back*, *Next*, and flex items shrink below their
+content width by default, so on a 390px phone the labels wrapped INSIDE the word:
+**"Ski / p", "Bac / k", "Nex / t"** — on the first screen anybody ever sees, on
+every step but the first. They were 44px targets, contrast-passing and uniquely
+named throughout, and **axe has no opinion about a word broken in half**. Found
+by looking at a picture of step 2, in the release that exists to add pictures.
+
+**Four framing defects the generator shipped before it stopped shipping them**,
+each of which wrote a plausible-looking file: an element taller than the window
+came out cut with dead space under it; a frame aimed at a `<dl>` filled at
+runtime produced a strip of whitespace; the sorting card was framed to a section
+whose own box ends above its final row; and the guard written to catch a cut
+frame had been edited into the other branch of the function and never ran. The
+tool refuses all four now, by height rather than by file size — the first guard
+compared bytes and rejected the capture box at 5.5KB, which is small because it
+is a tight crop and is exactly the picture wanted.
 
 **2.10.3 — EVERY ROUTE IN, THROUGH AND OUT, PHOTOGRAPHED.** The audit of that
 name was done by reading code and running gates. The app was never rendered

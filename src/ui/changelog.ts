@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.11.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-19',
+    notes: [
+      '**The walkthrough shows you the thing it is talking about.** Six steps described an app you were looking at and could not see yet — *“the box at the top”*, *“it offers you a small number of things”* — with no picture of any of it. Five of the six now carry one: the box with something typed in it, the sorting choices, the offer card, the same card with almost everything stripped away, and what the browser has promised about keeping your writing.',
+      '**They are photographs of this version, not drawings of it.** Each one is rendered from the running app, in both light and dark, and the build fails if the app changes and they do not. A help screen illustrated with a version that no longer exists is worse than one with no pictures at all — writing that has gone stale reads as stale, and a screenshot reads as proof.',
+      '**They work with no connection.** The pictures are kept with the app itself, so the walkthrough is whole on a first run with nothing to fetch.',
+      '**And the walkthrough’s own buttons had been breaking in half.** From step 2 onward the row reads *Skip*, *Back*, *Next* on a phone, and the words were wrapping inside themselves — “Ski / p”, “Bac / k”, “Nex / t” — on the first screen anybody ever sees. They were the right size, the right contrast and correctly named throughout, which is why nothing had ever caught it.',
+    ],
+  },
+  {
     triplet: '2.10.3',
     kind: 'ITERATION',
     date: '2026-08-19',

@@ -197,6 +197,19 @@ jobs:
       - name: What survives the worst day
         run: npm run plain:check
 
+      # THE WALKTHROUGH'S PICTURES ARE OF THIS APP (2.10.4). They are rendered
+      # from the running app rather than drawn, and this fails once the markup,
+      # the stylesheet or any renderer behind them has moved — because a help
+      # screen illustrated with a UI that no longer exists is WORSE than one with
+      # no pictures at all: prose that is out of date reads as out of date, and a
+      # screenshot reads as proof.
+      #
+      # It needs no browser — it compares a recorded hash and checks the files
+      # are on disk — so it belongs in the cheap block rather than beside the
+      # walks. Regenerate with `npm run tour:shots`.
+      - name: The walkthrough shows this version of the app
+        run: npm run tour:check
+
       # WHERE THE CONTROLS ARE (V2 stage 7). The shape is fixed forever and the
       # contents change every time — a person's hands learn where Done is, and
       # moving it costs them that silently. A core control's position and label

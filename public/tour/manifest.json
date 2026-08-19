@@ -1,0 +1,32 @@
+{
+  "ui": "ce43842b88bb7346",
+  "sources": [
+    "public/index.html",
+    "public/app.css",
+    "src/ui/work.ts",
+    "src/ui/clarify.ts",
+    "src/ui/about.ts"
+  ],
+  "shots": [
+    {
+      "step": 2,
+      "name": "capture"
+    },
+    {
+      "step": 3,
+      "name": "sorting"
+    },
+    {
+      "step": 4,
+      "name": "offer"
+    },
+    {
+      "step": 5,
+      "name": "quiet-day"
+    },
+    {
+      "step": 6,
+      "name": "your-data"
+    }
+  ]
+}

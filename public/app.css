@@ -1937,7 +1937,21 @@ dialog, dialog * { overflow-wrap: anywhere; }
   align-items: center;
   gap: 0.5rem;
   margin-top: 1.25rem;
+  /* THE BUTTONS BREAK MID-WORD WITHOUT THIS (2.10.4). From step 2 onward the row
+     is Skip, dots, Back, Next — four items across a dialog on a 390px phone —
+     and flex items shrink below their content width by default, so the labels
+     wrapped INSIDE the word: "Ski / p", "Bac / k", "Nex / t". On the first
+     screen anybody ever sees, on every step but the first.
+     Nothing measured it: they are still 44px targets, still contrast-passing,
+     still uniquely named, and axe has no opinion about a word broken in half.
+     It took looking at a picture of step 2. */
+  flex-wrap: wrap;
+  row-gap: 0.6rem;
 }
+.tour-nav button { white-space: nowrap; flex: 0 0 auto; }
+/* The dots may give up their space first — they are decorative, and the live
+   "Step N of M" is the real announcement. */
+.tour-nav .tour-dots { flex: 0 1 auto; min-width: 0; overflow: hidden; }
 /* Next is the primary action and sits at the end; Skip leads, Back sits between,
    and the dots take the slack in the middle. */
 .tour-nav #tour-next { margin-left: auto; }
@@ -2701,4 +2715,24 @@ summary::-webkit-details-marker { display: none; }
   color: var(--ink-soft);
   font-size: 0.875rem;
   overflow-wrap: anywhere;
+}
+
+/* THE WALKTHROUGH'S ILLUSTRATIONS (2.10.4).
+   Rendered from the running app by `tools/tour-shots.mjs`, one per step, in
+   both themes — the `<picture>` in `tour.ts` picks by `prefers-color-scheme`,
+   which is the only thing this app themes from.
+   `max-width` and `height:auto` rather than fixed dimensions: these are 390px
+   wide at 1x and the dialog is narrower than that on a small phone, so they
+   must scale down and never push the card sideways. */
+.tour-shot {
+  display: block;
+  width: 100%;
+  max-width: 390px;
+  height: auto;
+  margin: 0.9rem auto 0.2rem;
+  border: 1px solid var(--rule, var(--line));
+  border-radius: 4px;
+  /* A picture OF the app, inside the app, needs an edge or it reads as part of
+     the dialog it sits in — which is exactly the "nothing recedes so nothing
+     leads" problem 2.10.1 was about, one level up. */
 }
