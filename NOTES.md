@@ -90,9 +90,10 @@ requires breaking one, that is a Doctrine §1 moment: flag it, don't slip it in.
 
 ## What VERSION 1 means — settled 2026-07-29
 
-> *"I will say we are at version 1 when we have all initial capabilities in place
-> to make this do all the things I specified. It is not a planner app until then,
-> and I will not name version 1 until it is ready."*
+**The rule for the first slot, settled 2026-07-29.** Version 1 is reached when
+every initial capability is in place — all of the specified behaviour, not a
+subset that feels close. Until then this is not a planner app, and the number is
+not claimed. Naming it is the owner's act and happens only once it is ready.
 
 **Binding, and it settles the first slot.** The VERSION slot is not reached by a
 big release, a large diff, or a session's judgement that things feel complete. It
@@ -178,8 +179,9 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 
 ### Trying it out, and starting over — settled 2026-07-29
 
-> *"I eventually want a set of test data i can import and the ability to purge the
-> whole set of tasks, select ranges, or anything else that may make sense?"*
+**Three capabilities asked for together, settled 2026-07-29:** importable test
+data to try the app on, a way to purge the whole set of tasks, and a way to
+select ranges rather than acting on everything or one thing.
 
 ~~Roadmapped, not built.~~ **ALL THREE ARE BUILT** — sample data (*Add some sample
 work*, *Make a set to try things on*), purging (*Clear what I'm holding*, with the
@@ -750,7 +752,41 @@ the lesson about the second. The pattern is one thing: **a conclusion drawn from
 an observation that was never allowed to finish**, then written in the voice of a
 measurement.
 
-**Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
+**2.12.2 IS IN PRODUCTION.** Promoted 2026-08-19, `864c30e`. The promoted tree
+was asserted byte-identical to the verified staging tree (`7e4e11b…`) rather than
+inferred from a clean merge. Deploy run 32305299449 success with every step run
+and the log reading *Deployed to PRODUCTION*; Push-on-main success; Spine on
+`3cf6f9f` — the tree that was promoted — success, all 37 steps.
+
+**AND SIX QUOTATIONS OF THE OWNER'S OWN SPEECH WERE FOUND IN THIS REPO, ALL
+GREEN ON EVERY GATE.** Found while checking `main` out to promote. The privacy
+rule has two clauses — never by name, never in what words — and
+`privacy-check.mjs` anchors every pattern on the NAME, so a verbatim sentence of
+his speech is invisible to it.
+
+- `ADR-0025` after *"Settled:"*, and `ADR-0093` after *"what was reported from
+  the device"*, which is the *who reported it* pattern the rule names in terms.
+- `ADR-0073`, `ADR-0094` and `ADR-0096` as blockquotes under an explicit
+  attribution line, plus two first-person paragraphs in this file — one carrying
+  a typo, which is what raw message text looks like.
+
+All six now state what was wrong and what it measured. **`quote-check.mjs` is the
+gate** (hub `4f2f362`, wired into the Spine beside the privacy gate and as
+`npm run quotes:check`): every set-apart quotation is declared in `.quote-allow`
+as *document*, *product-copy* or *analysis*. It is a LIST because three pattern
+rules were measured against the real violations and flagged 39, 138 and 227 files
+of honest prose — the shape of his speech and the shape of the product's voice
+are the same shape. Hub LESSONS §108.
+
+**Staging and production are both 2.12.2, and nothing is waiting on you.** The
+work since the promote is docs, tooling and CI — measured, not assumed:
+`git diff --name-only 6cbb5ab HEAD -- public/ src/` is empty, so the deployed
+artefact is byte-identical and there is no release to number. (This paragraph
+said *2.12.3* before that was checked, which is the fourth time in this session a
+claim was written before it was read off something. It was caught here rather
+than after it shipped, which is the only difference.)
+
+Three
 releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one
 subject: the landing surface saying less.
 

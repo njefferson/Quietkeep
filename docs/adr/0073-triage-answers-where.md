@@ -4,12 +4,14 @@
 
 ## Context
 
-The owner, on what actually ends a working day and resets the dogfood gate:
+**What actually ended a working day and reset the dogfood gate**, found in use
+on a large imported backlog:
 
-> *"I have a huge backlog, and I imported it to work through and put in the right
-> places, but keep finding that the places were not there, yet. That's the
-> problem. I'd see the task leave and not know where/if it went, and had no
-> feeling that I was seeing the right things."*
+- **The places to put things into did not exist yet**, so working through the
+  backlog kept stopping at a route with nowhere to route to.
+- **A routed thing vanished without saying where it went**, or whether it had.
+- **And nothing gave grounds to believe the surface was showing the right
+  things** — the ranking might have been correct and there was no way to tell.
 
 **Every route triage had answers WHEN.** `routeEvents` takes no parent at all:
 `do-now`, `next-action` and `waiting-for` set a clock, `someday` and `reference`

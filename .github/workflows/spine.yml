@@ -69,6 +69,16 @@ jobs:
       - name: The offline pattern mirror has not drifted from the hub
         run: node .hub-gates/privacy-mirror-check.mjs --repo .
 
+      # THE SECOND HALF OF THE PRIVACY RULE (2.12.3). privacy-check.mjs anchors
+      # every pattern on the owner's NAME or role, so it cannot see a verbatim
+      # sentence of his speech — five of those were in this repo, and one more in
+      # an ADR that had copied one, all of them green on every gate. This holds
+      # every set-apart quotation to a declaration saying whose words it is.
+      # Runs beside the privacy gate because it is the same rule.
+      - name: Every set-apart quotation says whose words it is
+        if: ${{ !cancelled() }}
+        run: node .hub-gates/quote-check.mjs --repo .
+
       # THE HOOK THAT ENFORCES THE FRESHNESS RULE IS THE ONE THIS REPO DECLARES.
       # That rule is caught locally by the generated pre-commit hook, which
       # `--no-verify` walks straight past — so the tracked hook is checked here

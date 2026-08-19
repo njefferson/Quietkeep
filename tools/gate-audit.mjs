@@ -295,6 +295,17 @@ const GATES = [
       s.replace('<button id="menu-open"', '<button id="gate-audit-decoy" type="button">Decoy</button>\n  <button id="menu-open"')),
   },
   {
+    name: 'quotes:check',
+    catches: "a set-apart quotation nobody has said whose words it is",
+    // A REAL VIOLATION, restored. This is the exact sentence that sat in
+    // docs/adr/0096-roles.md until it was found by hand — a verbatim line of the
+    // owner's speech, green on privacy-check.mjs, which anchors on his name and
+    // cannot see it.
+    plant: () => edit('docs/adr/0096-roles.md', (s) => s.replace(
+      'NOTES **Q-13**, 2026-08-04, settled the framing: **a role is an IDENTITY, and it\ncrosses multiple areas.**',
+      'NOTES **Q-13**, 2026-08-04, recording the framing:\n\n> *"Roles are identities for me, that cross multiple areas."*')),
+  },
+  {
     name: 'collisions:check',
     catches: 'a research entry whose routing mark or evidence grade is missing',
     plant: () => edit('docs/nd-collisions.md', (s) => s.replace('**EVIDENCE**', '**EVIDENCEX**')),
