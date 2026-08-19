@@ -676,6 +676,45 @@ decided by a session.**
 
 **Staging is 2.12.0 and it is waiting on you.** Production is 2.11.0.
 
+**EVERY GATE HAS NOW BEEN WATCHED FAILING** (`npm run gates:audit`). Twenty-one
+gate scripts; for each one, plant the defect it exists to catch, run the exact
+command CI runs, require a non-zero exit, restore, and require green again — a
+"gate" that fails on everything is equally useless and would sail through the
+first half of that.
+
+**All twenty-one are red on their plant and green again after.** That is the
+first time any of them has been held to the standard this repo already wrote
+down for the privacy gate: *wired means the exact CI command was seen red on a
+LOCAL plant.*
+
+**It found no broken gate. It found seven broken PLANTS, and that distinction is
+the whole value of the tool.** The first run blamed seven gates; every one was
+doing its job and being aimed at with the wrong lever:
+
+- `brand:check` measures declared colour PAIRS, not the wordmark and not the
+  icon file — rendering the assets is `npm run brand`, not `:check`.
+- `sample:check` builds its store from `src/big-sample.ts`, not `src/sample.ts`.
+  Two plants edited a file it never reads and it kept correctly reporting
+  16 node kinds of 16.
+- `emitters:check` tracks only nouns that exist in the CODE, so an invented
+  vocabulary entry is none of its business; the defect is a real kind losing
+  its entry.
+- `notify:check` inspects only files that actually call a notification API.
+  Nothing does yet, so it reports itself **armed and dormant** — banned copy in
+  an unrelated const is correctly ignored. It goes red the moment a real
+  emitter carries it.
+- `size:check` measures the BUILT app. A plant in `src/` without a rebuild never
+  reaches it, which is the gate being right about what a person actually reads.
+- `writegate:check` and `editions:check` were both aimed at the wrong artefact.
+
+**And the harness had the defect it was built to hunt, within the hour.**
+`String.replace` returns the original string when its pattern is not found —
+silently — so a plant written against a reworded line mutates nothing, the gate
+correctly stays green, and the audit reports the gate as broken. It now refuses
+a plant that changed no bytes. **That is the second instrument today to carry
+the fault it was made to find** (`tools/look.mjs` rendered a focus state no
+person can reach), which is worth saying plainly rather than quietly fixing.
+
 **2.12.0 — THE FRONT PAGE STOPPED BEING A LIST** ([ADR-0102](docs/adr/0102-the-inventory-is-folded.md)).
 Measured at 390px on the thirteen-item sample, whole page rendered: the runway
 was **4,247px** and `#held` was **2,387px of it — 56% of the landing surface was

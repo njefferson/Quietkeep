@@ -24,6 +24,7 @@
     "look": "node tools/look.mjs",
     "tour:shots": "node tools/tour-shots.mjs",
     "tour:check": "node tools/tour-shots.mjs --check",
+    "gates:audit": "node tools/gate-audit.mjs",
     "headers:check": "node tools/headers.mjs",
     "build:sync": "node tools/editions.mjs",
     "editions:check": "node tools/editions.mjs --check",
