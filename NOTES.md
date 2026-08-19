@@ -665,7 +665,7 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.1**
 - **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
   `10d329f`; the promoted tree asserted byte-identical to the verified staging
   tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
@@ -674,7 +674,30 @@ decided by a session.**
   was the honest state at the time: the previous promote's green belongs to
   `c909104` and is a fact about 2.10.0 and about nothing else.)
 
-**Staging is 2.12.0 and it is waiting on you.** Production is 2.11.0.
+**Staging is 2.12.1 and it is waiting on you.** Production is 2.11.0.
+
+**2.12.1 — "HOLD WHAT I COPIED" IS GONE, BECAUSE PASTE ALREADY DID ALL OF IT.**
+Reported as redundant, and checking settled it: `src/ui/app.ts` has a `paste`
+listener on the capture field that calls the SAME `takeText` the button called.
+Multi-line splitting, the *one thing per line* line and the *Hold it as one
+thing* escape all belong to paste; none of them belonged to the button. It read
+the clipboard for you and nothing else.
+
+**What it did buy was two taps on a tablet** — press it rather than tap the box,
+long-press, choose Paste. A real saving on the capture path, which is the one
+thing that must never break. Against that: a permanent control on the surface
+this app most wants quiet, duplicating a gesture every reader owns, for the less
+common way of putting something down. 2.10.0 counted thirty-one things asked
+before anything could happen and this was one of them.
+
+**The smoke block was repointed rather than deleted**, and that is the part
+worth copying. Every behaviour it asserted still exists via paste, so the block
+now drives a real paste and proves nothing was lost — plus one new assertion
+that the button is gone. **It also needed a REAL keyboard paste**: the handler
+returns early for a single line and lets the browser do the insertion, which a
+synthesised `ClipboardEvent` does not perform, so the first version left the
+field empty and timed out. The driver's limit, not the app's — the same
+instrument-cannot-reach-this-state shape found three times today.
 
 **EVERY GATE HAS NOW BEEN WATCHED FAILING** (`npm run gates:audit`). Twenty-one
 gate scripts; for each one, plant the defect it exists to catch, run the exact

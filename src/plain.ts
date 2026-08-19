@@ -147,7 +147,6 @@ export const PLAIN_KEPT = [
  */
 export const PLAIN_CHROME_HIDDEN = [
   '#capture-room',    // a capture accessory, and directly in the path to the offer
-  '#capture-paste',   // the same
   '#contents-open',   // navigation. On this day you are not navigating.
   '#clock',           // a clock face, the time, and how much of today is left
 ] as const;

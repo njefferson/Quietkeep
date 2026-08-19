@@ -1294,30 +1294,20 @@ export async function main(edition?: Edition): Promise<void> {
   // one job is worse than an absent one. iOS asks the reader to confirm the
   // paste, which is the gesture the platform requires and is also the right
   // shape: the app never reads the clipboard without being told to, twice.
-  const pasteIn = $<HTMLButtonElement>('#capture-paste');
-  if (typeof navigator.clipboard?.readText === 'function') pasteIn.hidden = false;
-  pasteIn.addEventListener('click', () => {
-    void (async () => {
-      let text = '';
-      try {
-        text = await navigator.clipboard.readText();
-      } catch {
-        // Declined, or the browser refused. Not an error and not framed as one:
-        // the reader either changed their mind or the platform said no, and
-        // neither is something they did wrong.
-        offer.textContent = 'Nothing was taken from the clipboard.';
-        offer.hidden = false;
-        return;
-      }
-      if (text.trim() === '') {
-        offer.textContent = 'There is nothing copied to hold.';
-        offer.hidden = false;
-        return;
-      }
-      takeText(text);
-      (many.hidden ? input : many).focus();
-    })();
-  });
+  // HOLD WHAT I COPIED WAS REMOVED IN 2.12.1, and what it did is worth recording
+  // so nobody rebuilds it. It read the clipboard and called `takeText` — the
+  // SAME function an ordinary paste into the field already calls, a few lines
+  // above. Multi-line splitting, the "one thing per line" offer and the "Hold it
+  // as one thing" escape all came with paste and none of them came with the
+  // button. It bought exactly one thing: on a tablet it saved
+  // tap-field, long-press, Paste down to one tap.
+  //
+  // That is not nothing on the capture path, which is the one thing that must
+  // never break. It is also a permanent control on the surface this app most
+  // wants quiet, duplicating a gesture every reader already owns, for a flow
+  // that is not the common one — capture is usually a thought being typed, not
+  // something being pasted. 2.10.0 counted thirty-one things asked before
+  // anything could happen; this was one of them.
 
   $<HTMLFormElement>('#capture-form').addEventListener('submit', async (e) => {
     e.preventDefault();

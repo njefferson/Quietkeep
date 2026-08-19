@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.12.1 — ITERATION
+
+*2026-08-19*
+
+- **“Hold what I copied” is gone, because pasting already did all of it.** Paste into the box and you get exactly what that button gave you — several lines arriving as one thing per line, the line telling you so, and *Hold it as one thing* if you would rather. Both went through the same code; the button only read the clipboard for you.
+- **What it did buy was two taps**, on a tablet: press it instead of tapping the box, holding, and choosing Paste. That is a real saving and it is why it existed. It is also a permanent control on the one surface this app most wants quiet, doing something your device already does, for the less common way of putting something down — most things arrive typed.
+- **The Menu is now the 39th thing on the page; it was the 40th** — one button was taken away above it and nothing about the Menu changed.
+
 ## 2.12.0 — CAPABILITY
 
 *2026-08-19*

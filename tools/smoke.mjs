@@ -528,7 +528,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // reference platform, so anything copied elsewhere arrives only if somebody
   // opens Quietkeep and puts it in. This is that door, and the thing it must
   // never do is write.
-  console.log('\nHold what I copied — a way in that lands in the right place');
+  // DRIVEN BY A REAL PASTE SINCE 2.12.1, when the `Hold what I copied` button
+  // was removed. Every behaviour below belonged to `takeText`, which an ordinary
+  // paste into the field has always called — the button only read the clipboard
+  // for you. So this block is not deleted with it; it is pointed at the route
+  // that remains, which is what actually proves nothing was lost.
+  console.log('\nPasting into capture — a way in that lands in the right place');
+  //
+  // A REAL KEYBOARD PASTE, not a synthesised ClipboardEvent. The handler returns
+  // early for a single line and lets the BROWSER do the insertion — which a
+  // dispatched event does not perform, so the synthetic version left the field
+  // empty and timed out. That was the driver's limit, not the app's, and it is
+  // exactly the shape this repo keeps finding: an instrument reproducing a state
+  // no person can reach. Pressing the keys covers both paths.
+  const pasteInto = async (text) => {
+    await page.evaluate((t) => navigator.clipboard.writeText(t), text);
+    await page.focus('#capture');
+    await page.keyboard.press('ControlOrMeta+KeyV');
+  };
   const countEvents = async () => page.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -537,26 +554,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const clipBefore = await countEvents();
-  await page.evaluate(() => navigator.clipboard.writeText(
-    'ring the school\nbins out\nbook the car in'));
-  await page.click('#capture-paste');
+  await pasteInto('ring the school\nbins out\nbook the car in');
   await page.waitForSelector('#capture-many:not([hidden])');
   await page.waitForFunction(() =>
     (document.querySelector('#capture-many')?.value ?? '').includes('bins out'));
   is((await page.locator('#capture-many').inputValue()).split('\n').length, 3,
     'what was copied arrives intact, one line per line');
   is(await countEvents(), clipBefore,
-    'and NOTHING is written by pressing it — the button fills the box, it does not capture');
+    'and NOTHING is written by pasting — it fills the box, it does not capture');
   is(await page.locator('#capture-offer').isVisible(), true,
     'it says what pressing Hold it will do, rather than deciding for you');
+  is(await page.locator('#capture-paste').count(), 0,
+    'and the clipboard button is gone — paste already did all of this (2.12.1)');
   // A single line is the other reading, and must not open the room.
   await page.fill('#capture-many', '');
   await page.click('#capture-room');
-  await page.evaluate(() => navigator.clipboard.writeText('one thing only'));
-  await page.click('#capture-paste');
-  // The handler is async — the click returns when it is DISPATCHED, not when the
-  // clipboard read resolves. Asserting straight after read an empty box and
-  // reported a defect in working code.
+  await pasteInto('one thing only');
   await page.waitForFunction(() =>
     document.querySelector('#capture')?.value === 'one thing only');
   is(await page.locator('#capture').inputValue(), 'one thing only',
