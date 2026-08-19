@@ -668,10 +668,11 @@ decided by a session.**
 - **https://staging.quietkeep.pages.dev** — level with production, **2.11.0**
 - **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
   `10d329f`; the promoted tree asserted byte-identical to the verified staging
-  tree — `e38fe6e` on both — rather than inferred from a clean merge. **The
-  workflow runs on that SHA had not been read when this line was written**, and
-  it says so rather than inheriting the previous promote's receipt: `c909104`
-  was green, and that is a fact about 2.10.0 and about nothing else.)
+  tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
+  Spine and the push-on-main workflow all green **on `10d329f` itself**, read
+  from the runs. This line briefly said the receipt had not been read yet, which
+  was the honest state at the time: the previous promote's green belongs to
+  `c909104` and is a fact about 2.10.0 and about nothing else.)
 
 **Staging and production are level at 2.11.0.** Promoted 2026-08-19, `10d329f`,
 with the promoted tree asserted byte-identical to the verified staging tree —
