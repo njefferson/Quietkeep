@@ -33,6 +33,7 @@
     "writegate:check": "node tools/write-gate.mjs",
     "emitters:check": "node --experimental-strip-types tools/emitters.mjs",
     "sample:check": "node --experimental-strip-types tools/sample-coverage.mjs",
+    "plain:check": "node tools/plain.mjs",
     "reasons:check": "node tools/reasons.mjs",
     "controls:check": "node tools/controls.mjs",
     "collisions:check": "node tools/collisions.mjs",

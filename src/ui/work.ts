@@ -19,7 +19,7 @@ import { coverageProof, heldWork } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
-import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
+import { PLAIN_MODULE, PLAIN_HIDDEN, PLAIN_CHROME_HIDDEN, plainIsOn } from '../plain.ts';
 import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
@@ -126,7 +126,17 @@ export function mountWork(
         const words = captureContextWords(first.at, session.zone, new Date().toISOString());
         if (!words) return;
         WRITTEN.textContent = words;
-        WRITTEN.hidden = false;
+        // AND NOT WHILE THE STRIP IS ON (2.10.0). This resolves a store lookup,
+        // so it lands in a LATER TICK than `refresh` — and the strip's own
+        // comment says it "has to be the last word", which it is within the
+        // pass and is not against an async painter. `#nextup-written` was in
+        // PLAIN_HIDDEN and still on screen, because this line un-hid it a few
+        // milliseconds after the strip had hidden it.
+        //
+        // The class is the live answer rather than a captured flag: the mode can
+        // be left while this promise is in flight, and a stale `false` would
+        // leave the line gone on an ordinary day.
+        WRITTEN.hidden = REGION.classList.contains('nextup-plain');
       })
       .catch(() => { /* a line of context, never the card */ });
   };
@@ -301,6 +311,27 @@ export function mountWork(
    * own rule, so the ordinary pass decides what is visible and the strip only
    * ever overrides it while the state is on.
    */
+  /**
+   * THE CHROME GOES TOO (2.10.0). The strip only ever reached inside the card,
+   * and a mode for the day when operating the tool is itself hard that leaves
+   * the tool's own furniture alone answers the smaller half of the problem.
+   *
+   * Restored the same way and for the same reason as the card's own: shown back
+   * unconditionally first, so each element's own rule still decides. `#clock`
+   * and `#capture-paste` both have owners that hide them for other reasons —
+   * the clock is off unless switched on, the paste button is absent where the
+   * browser cannot read a clipboard — and a restore that tried to be clever
+   * about which would be the way one of them ends up permanently on.
+   */
+  const chrome = (hide: boolean): void => {
+    for (const sel of PLAIN_CHROME_HIDDEN) {
+      const el = q<HTMLElement>(sel);
+      if (!el) continue;
+      if (hide) { el.dataset.plainHid = '1'; el.hidden = true; }
+      else if (el.dataset.plainHid === '1') { delete el.dataset.plainHid; el.hidden = false; }
+    }
+  };
+
   const plainRestore = (): void => {
     for (const sel of PLAIN_HIDDEN) {
       const el = q<HTMLElement>(sel);
@@ -320,6 +351,7 @@ export function mountWork(
   };
 
   const paintPlainChrome = (on: boolean): void => {
+    chrome(on);
     REGION.classList.toggle('nextup-plain', on);
     const bar = q('#nextup-plain-bar');
     if (bar) bar.hidden = !on;

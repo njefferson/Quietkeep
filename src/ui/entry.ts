@@ -13,3 +13,13 @@
 import { start } from './app.ts';
 
 start();
+
+// WHAT "JUST ONE THING" STRIPS, published for the walk (2.10.0).
+//
+// The gate has to check the SCREEN against the lists rather than the lists
+// against themselves, and hard-coding them in `tools/a11y.mjs` would be a fourth
+// copy of exactly the list that went stale three times. One source, read at
+// runtime.
+import { PLAIN_HIDDEN, PLAIN_CHROME_HIDDEN } from '../plain.ts';
+(globalThis as unknown as { __PLAIN_STRIPPED?: readonly string[] }).__PLAIN_STRIPPED =
+  [...PLAIN_HIDDEN, ...PLAIN_CHROME_HIDDEN];

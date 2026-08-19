@@ -665,15 +665,55 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — level with production, **2.9.4**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.0**
 - **https://quietkeep.pages.dev** — production, **2.9.4** (promoted 2026-08-19,
   `26e80dd`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
   `fb2b498` on both — rather than inferred from a clean merge)
 
-**Staging and production are level at 2.9.4.** Nothing is waiting.
+**Staging is 2.10.0 and it is waiting on you.** Production is 2.9.4.
 
-**Five went in this promote — 2.9.0 through 2.9.4 — on his word rather than
+**2.10.0 — JUST ONE THING MEANS THE WHOLE SCREEN.** Reported from a device, on a
+screen showing exactly one task: *terrifyingly busy, and I don't even want to
+begin in this.* The honest response was a count, not an argument.
+
+**Counted at 390px on the thirteen-item sample: 31 things asked before anything
+can happen.** Nine controls, four lines of standing text, and **eighteen things
+on the card that is meant to be one thing** — including three other tasks
+(`BEHIND_CAP` is 5), seven verbs and seven lines of prose.
+
+**And the mode built for exactly this day changed none of the chrome.** "Just one
+thing" only ever reached inside the card. Same nine controls, same four lines; it
+took 31 to 21.
+
+**Three lines had been slipping through it for three releases.** `#nextup-left`
+(how much of today is left — its own markup comment warns a countdown is
+"pressure where it costs most"), `#nextup-fixed` (the next unmoveable thing) and
+`#nextup-written` (when it was captured) were each added to the card AFTER
+`PLAIN_HIDDEN` was written, and none was added to it. The oldest defect in this
+repo wearing a new hat: a hand-written list with nothing checking it against the
+set it covers.
+
+**Now: 31 → 15.** The card is the thing, Done, Not this, That is enough for now,
+the way back, and the standing "everything is still here". The strip reaches
+`#capture-room`, `#capture-paste`, `#contents-open` and the clock. Capture, the
+proof line and `More` never go — a screen with no way to anywhere is a trap.
+
+**Two gates, because the list is what failed.** `tools/plain.mjs` requires every
+element of the card to be in `PLAIN_HIDDEN` or `PLAIN_KEPT` — a new line fails
+the build until it says which. And the a11y walk checks the SCREEN against the
+lists rather than the lists against themselves, because one of the three was in
+the list and visible at the same time: `paintWritten` resolves a store lookup and
+un-hid itself a tick AFTER the strip, which the strip's own comment ("has to be
+the last word") is true of a pass and not of a promise. Planted: it names
+`#nextup-written "Written this evening"`.
+
+**Still open, and the honest next question:** the DEFAULT card is still 18
+things, and `BEHIND_CAP = 5` means the card headed "one thing, chosen for you"
+lists up to six. That is a design decision with ADR-0060 behind it, and it wants
+its own release rather than being folded into this one.
+
+**Five went in the previous promote — 2.9.0 through 2.9.4 — on his word rather than
 after a device sitting.** Four of the five exist BECAUSE of a device report, and
 the chain is worth reading as one thing: 2.9.0's frame was built on ADR-0099's
 measurement, and then the device found what the measurement could not. 2.9.1
