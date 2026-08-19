@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.10.2 — ITERATION
+
+*2026-08-19*
+
+- **The card has stopped telling you about the thing you are looking at.** Under the head it printed *Fixed today: <the same thing>* — the one unmoveable thing today, which is very often the thing being offered, because a real date today is the first reason anything gets picked. So the card named it twice and the second time read as a second job.
+- **That line is still there when it has something to say.** It exists so somebody deep in a task can catch what is coming without going looking, and when it names something you are **not** holding it does exactly that. It goes only when it would be repeating the head back at you.
+- **And it now knows the difference by identity rather than by name**, so two things you have both called *Ring the plumber back* are not mistaken for each other.
+
 ## 2.10.1 — ITERATION
 
 *2026-08-19*
@@ -24,7 +32,7 @@ triplet and what it did for you.
 - **Six verbs, drawn as six boxes, are now two acts and four quiet words.** *Done* and *Not this* are what the card is for. *Start smaller*, *This one is heavy*, *That is enough for now* and *Just one thing* are things you might say about the day, and as equal boxes they turned a card that claims to have decided for you into a list of six decisions. Nothing is hidden and nothing moved — they are quieter.
 - **The proof line and the ways to elsewhere are quieter too**, a hairline instead of a heavy border. They are ways to somewhere; the work is the point.
 - **The Menu’s door is now the 40th control on the page; it was the 39th** — one button was added above it and nothing about the Menu changed.
-- **Still wrong and still on the card: the also-available list and the hours left in the day.** Those are the next thing.
+- **Still on the card and still worth arguing about: the line saying how much of today is left.** It carries a shrinking number, on the same card as a line that is forbidden from carrying any number at all. It is already gone in *Just one thing*. Whether it belongs on the ordinary card is the next question and it is not settled here.
 
 ## 2.10.0 — CAPABILITY
 

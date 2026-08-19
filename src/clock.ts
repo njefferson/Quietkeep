@@ -168,13 +168,19 @@ export function datedTodayCount(state: State, nowIso: string, day: DayShape): nu
  *
  * PURE, like everything here.
  */
+/* The `id` is returned so a surface can tell whether this names something the
+ * reader is already looking at. It is NOT for lookups — every field a caller
+ * needs is here — and the projection stays pure either way. Comparing by TITLE
+ * would have done at the one call site that needs it, and would have been a
+ * quiet bug the day two things share a name, which in a planner full of
+ * "Ring the plumber back" is not a hypothetical. */
 export function nextFixedToday(
   state: State, nowIso: string, day: DayShape,
-): { title: string; at: string } | null {
+): { id: string; title: string; at: string } | null {
   let today: string;
   try { today = localDayKey(nowIso, day); } catch { return null; }
 
-  let best: { title: string; at: string; ms: number } | null = null;
+  let best: { id: string; title: string; at: string; ms: number } | null = null;
   for (const node of heldNodes(state)) {
     if (node.lastDone) continue;
     if (!exportsToCalendar(node)) continue;
@@ -190,10 +196,10 @@ export function nextFixedToday(
       // absorbed in their work that they have already missed something, which is
       // the one sentence this surface must never produce.
       if (ms <= Date.parse(nowIso)) continue;
-      if (!best || ms < best.ms) best = { title: node.title, at: clock.at, ms };
+      if (!best || ms < best.ms) best = { id: node.id, title: node.title, at: clock.at, ms };
     }
   }
-  return best ? { title: best.title, at: best.at } : null;
+  return best ? { id: best.id, title: best.title, at: best.at } : null;
 }
 
 /**

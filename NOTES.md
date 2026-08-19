@@ -665,12 +665,74 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.1**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.2**
 - **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
   `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA — read from the runs, not inferred from a clean merge)
 
-**Staging is 2.10.1 and it is waiting on you.** Production is 2.10.0.
+**Staging is 2.10.2 and it is waiting on you.** Production is 2.10.0.
+
+**2.10.2 — THE CARD STOPPED TELLING YOU ABOUT THE THING IN FRONT OF YOU.**
+Found by rotating the offer six times and reading what the card actually said,
+which is the same method as 2.10.1 and the reason that release exists.
+
+**`Fixed today: <the head>` was on the card on every one of six rotations, and
+named the head itself on two of them.** A real date today is the first reason
+`nextUp` ranks on, so the next unmoveable thing today and the thing being
+offered are the same item **by construction rather than by chance** — the
+line's value is that it names something you are NOT looking at (collisions 7
+and 9, the afternoon being eaten by a 3pm appointment), and against the head it
+has no value left, only length. Card 761px → 728px on that offer. It still
+renders, unchanged, when it names a different item; the focus surface is
+untouched, because nothing there shows a head.
+
+**By identity, not by title.** `nextFixedToday` now returns the node's `id`. A
+title comparison would have done at the one call site and would have been a
+quiet bug the day two things are both called *Ring the plumber back*, which in
+a planner is not a hypothetical. Three tests, both directions — the suppression
+must not be satisfiable by a line that never renders (hub LESSONS §100).
+
+**A CLAIM IN 2.10.1's NOTES WAS WRONG AND IS CORRECTED HERE.** It said the
+also-available list was "still wrong", on the strength of `BEHIND_CAP = 5`
+meaning a card headed *one thing* could list six. **`BEHIND_CAP` is in
+`nextup.ts` and never reaches the card.** `offerNow` applies `OFFER_CAP = 2`
+(ADR-0060), and the measurement says so: two also-available rows on every one
+of six rotations, never more. The card is the head, one more piece of work of a
+different kind, and the wish — which is exactly what ADR-0060 decided, with its
+reasoning about comparison versus preference intact.
+
+**That claim was inherited and repeated without being checked, in the release
+whose entire subject is not checking.** It reached a shipped patch note. The
+lesson is not "look at the screen" — 2.10.1 already learned that — it is that a
+number read out of one file does not tell you what a surface renders, and the
+only thing that does is the surface.
+
+**What that leaves genuinely open on the card:** the line saying how much of
+today is left. It carries a shrinking number on the same card as a line
+(`nextFixedWords`) that is forbidden by test from carrying any number at all.
+It is already stripped in *Just one thing*. Whether it belongs on the ordinary
+card is a real question and it is not settled.
+
+**AND THE LANDING PAGE IS 5.4 SCREENS, SHOWING EVERY ITEM TWICE.** Measured at
+390px on the thirteen-item sample, with the whole page finally rendered:
+**4,584px tall.** `#held` — the full inventory — is **2,387px of the 4,070px
+runway, 58% of it**, and it repeats every item already shown in the offer card,
+in *Needs a new plan* and in *With other people*. Seven items appear two or
+three times on one surface.
+
+**The research says this plainly and has since it was written.** Collisions
+entry 1: *"A long list raises the activation threshold of every item on it."*
+The app's answer to that entry is the single computed Next-up card — and the
+list it exists to replace sits directly beneath it, twice over.
+
+**It is not obvious what to do and that is the honest state.** Entry 6 says a
+switch is expensive and ADR-0099 already named scroll-versus-switch as the open
+question that cannot be settled from a chair, so moving the inventory behind a
+door is not automatically right. Nor can the inventory silently omit what is
+shown above it — *"what you are holding"* that is not everything you are
+holding breaks the promise law 1 exists for. **What is not a trade-off is the
+repetition itself**, and no entry defends it. This is the next release and it
+wants an ADR, not a patch.
 
 **2.10.1 — THE SCREEN WAS NEVER LOOKED AT.** Asked whether the UI arrived at by
 iteration was the UI a version designed whole would have, the answer given was
@@ -721,9 +783,9 @@ is a state that did not exist before, so it joined the contrast registry in the
 same commit (hub LESSONS §28) and is measured in both themes; the four entries
 that had been registered against `next up` moved with it.
 
-**Still wrong and still on the card, deliberately:** the also-available list and
-the hours left in the day. `BEHIND_CAP` is 5, so a card headed "one thing" can
-still list six. That has ADR-0060 behind it and is the next release, not this one.
+**What this release left on the card** is recorded accurately under 2.10.2
+above — the also-available list is ADR-0060 working as decided, and the
+`BEHIND_CAP` claim that appeared here was wrong.
 
 **2.10.0 — JUST ONE THING MEANS THE WHOLE SCREEN.** Reported from a device, on a
 screen showing exactly one task: *terrifyingly busy, and I don't even want to

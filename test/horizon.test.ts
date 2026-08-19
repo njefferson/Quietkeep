@@ -91,3 +91,54 @@ test('a title of only spaces produces no line, rather than an empty claim', () =
   assert.equal(nextFixedWords(nextFixedToday(s, NOW, DAY)), null,
     '"Fixed today: ." is worse than silence');
 });
+
+// --- and never about the thing in front of you (2.10.2) ---------------------
+//
+// A real date today is the first reason `nextUp` ranks on, so the next fixed
+// thing today and the thing being OFFERED are the same item by construction
+// rather than by chance. The offer card rendered both: the title as its head,
+// and "Fixed today: <the same title>." three lines under it.
+//
+// The identity is what these assert on, not the words. The projection now
+// returns the node's `id` precisely so the surface can ask "is this the thing
+// they are already looking at" without comparing titles — two items called
+// "Ring the plumber back" is not a hypothetical in a planner.
+//
+// BOTH DIRECTIONS, because a check that only proves the line CAN be suppressed
+// is satisfied by a line that never renders at all (hub LESSONS §100).
+
+test('it returns the id, so a surface can tell it names what is already on screen', () => {
+  const s = dated(emptyState(), 'A', 'the dentist', endOfLocalDay(NOW, DAY, 0));
+  const next = nextFixedToday(s, NOW, DAY);
+  assert.equal(next?.id, 'A', 'the identity, not just the words');
+  assert.equal(next?.title, 'the dentist', 'and the words are unchanged');
+});
+
+test('the same item as the head is recognisable as such — by id, not by title', () => {
+  // Two things sharing a title, one of them dated today. Title comparison
+  // cannot tell these apart; the id can, which is the whole reason it is there.
+  let s = dated(emptyState(), 'A', 'Ring the plumber back', endOfLocalDay(NOW, DAY, 0));
+  s = write(s, [ev('capture.recorded', 'B', { text: 'Ring the plumber back' })]);
+  s = write(s, [ev('clarify.routed', 'B', { route: 'next-action' })]);
+
+  const next = nextFixedToday(s, NOW, DAY)!;
+  assert.equal(next.id, 'A', 'the dated one is the fixed thing');
+  assert.notEqual(next.id, 'B',
+    'and the undated namesake is NOT it, which a title comparison would have got wrong');
+});
+
+test('a DIFFERENT thing being fixed today still has its line — the horizon is the point', () => {
+  // The suppression must not be reachable by deleting the feature. Here the
+  // head somebody would be offered and the fixed thing are different items, so
+  // the line carries what it exists to carry.
+  let s = dated(emptyState(), 'A', 'the dentist', endOfLocalDay(NOW, DAY, 0));
+  s = write(s, [ev('capture.recorded', 'B', { text: 'sort the recycling' })]);
+  s = write(s, [ev('clarify.routed', 'B', { route: 'next-action' })]);
+
+  const next = nextFixedToday(s, NOW, DAY)!;
+  assert.equal(next.id, 'A');
+  assert.notEqual(next.id, 'B',
+    'a head that is not the fixed thing leaves the line saying something new');
+  assert.equal(nextFixedWords(next), 'Fixed today: the dentist.',
+    'and it still says it — suppression is about identity, never about the words');
+});

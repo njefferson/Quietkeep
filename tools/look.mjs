@@ -106,8 +106,48 @@ await shot('02-with-things-in-it');
 
 // The whole runway, not only the first screen. What is below the fold is the
 // half nobody looks at and the half that grows without anyone deciding to.
+//
+// `fullPage: true` DOES NOT DO THIS, and its picture looks exactly like a
+// correct one. Since 2.9.0 the shell is a fixed-height body with the list in an
+// inner scroller (`#runway`), so the DOCUMENT does not scroll — `fullPage`
+// faithfully captures a document that is exactly one screen tall and returns the
+// first screen under a filename that says whole page. The first version of this
+// tool shipped that, in the release whose entire subject was that nobody had
+// looked below the fold.
+//
+// So the viewport is grown to the content instead. That changes no state and no
+// attribute; it is the same app, rendered tall. And the shot is only taken once
+// the runway has been PROVED to have nothing left below it — a picture claiming
+// to be everything has to be able to show it is.
 await settle();
-await shot('03-the-whole-page', { fullPage: true });
+{
+  const need = await page.evaluate(() => {
+    const r = document.querySelector('#runway');
+    const f = document.querySelector('.frame');
+    if (!r) return null;
+    return Math.ceil(r.scrollHeight + (f?.getBoundingClientRect().height ?? 0) + 24);
+  });
+  if (need === null) {
+    console.log('  (no #runway — the shell has changed shape and this shot needs rewriting)');
+  } else {
+    await page.setViewportSize({ width: WIDTH, height: Math.max(HEIGHT, need) });
+    await page.waitForTimeout(700);
+    const left = await page.evaluate(() => {
+      const r = document.querySelector('#runway');
+      if (!r) return -1;
+      r.scrollTop = r.scrollHeight; // if anything is below, this moves.
+      const below = r.scrollTop;
+      r.scrollTop = 0;
+      return below;
+    });
+    if (left > 1) {
+      console.log(`  WARNING: ${left}px of the runway is still below this picture — it is not the whole page.`);
+    }
+    await shot('03-the-whole-page', { fullPage: true });
+    await page.setViewportSize({ width: WIDTH, height: HEIGHT });
+    await page.waitForTimeout(500);
+  }
+}
 
 // And the mode that exists to answer the worst day. If this one is busy, the
 // mode does not work, which is exactly what was reported.

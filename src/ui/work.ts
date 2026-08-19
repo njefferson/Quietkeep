@@ -748,9 +748,27 @@ export function mountWork(
       // person can catch this peripherally; somebody whose afternoon is being
       // eaten by a 3pm appointment can see what it actually is. No countdown —
       // the OS alarm is the guarantee and this is the ambient horizon.
+      //
+      // AND NEVER ABOUT THE THING IN FRONT OF YOU. The next fixed thing today is
+      // often the thing being offered — a real date today is the first reason
+      // `nextUp` ranks on, so the two agree by construction rather than by
+      // chance. The card then read "Ring the plumber back about the tap" as its
+      // head and "Fixed today: Ring the plumber back about the tap." three lines
+      // under it, which is the card telling somebody about the thing they are
+      // already looking at, in a release whose whole subject was that the card
+      // says too much. Measured across six rotations of the sample: present on
+      // all six, naming the head on two of them.
+      //
+      // This line is an AMBIENT HORIZON — the value in it is that it names
+      // something you are NOT looking at (collisions 7 and 9: the afternoon
+      // being eaten by a 3pm appointment). When it names the head it has no
+      // value left, only length. The focus surface renders the same projection
+      // and is untouched: nothing there shows the head, so the line is doing
+      // exactly its job.
       if (FIXED) {
-        const fw = nextFixedWords(nextFixedToday(
-          session.state(), nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) }));
+        const fixed = nextFixedToday(
+          session.state(), nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) });
+        const fw = fixed && fixed.id === up.head.node.id ? null : nextFixedWords(fixed);
         FIXED.textContent = fw ?? '';
         FIXED.hidden = fw === null;
       }
