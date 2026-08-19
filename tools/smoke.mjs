@@ -364,6 +364,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const writeStart = Date.now();
   await page.click('#capture-form button[type=submit]');
   await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+
+  // THE INVENTORY ARRIVES FOLDED (2.12.0, ADR-0102), so every assertion below
+  // about `.card` needs it opened first — and this walk timed out on exactly
+  // that, which is the gate working. Opened through the control a finger uses,
+  // not by setting the attribute: a fold that only script can open is not the
+  // route anybody takes.
+  //
+  // ASSERTED CLOSED FIRST. "Open the fold then check the cards are there" would
+  // pass just as well against a fold that was never closed, which is the whole
+  // point of the release.
+  is(await page.locator('#cards .card').first().isVisible(), false,
+    'the inventory arrives folded — the landing surface is not a list');
+  const foldWords = (await page.locator('#held-fold-summary').textContent()) ?? '';
+  is(/Not sorted yet|Ready now|Coming up|Later|On the Menu|Done/.test(foldWords), true,
+    `and the fold says which groups are in there ("${foldWords.trim().replace(/\s+/g, ' ').slice(0, 62)}")`);
+  is(/\d/.test(foldWords), false,
+    'and states no number — ADR-0032 has no tally, and the gauge already holds the totals');
+  await page.click('#held-fold-summary');
   await page.waitForSelector('.card');
   const writeMs = Date.now() - writeStart;
   is(await page.locator('.card').count(), 1, 'one card after capture');

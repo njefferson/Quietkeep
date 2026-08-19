@@ -665,7 +665,7 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — level with production, **2.11.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.0**
 - **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
   `10d329f`; the promoted tree asserted byte-identical to the verified staging
   tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
@@ -674,7 +674,53 @@ decided by a session.**
   was the honest state at the time: the previous promote's green belongs to
   `c909104` and is a fact about 2.10.0 and about nothing else.)
 
-**Staging and production are level at 2.11.0.** Promoted 2026-08-19, `10d329f`,
+**Staging is 2.12.0 and it is waiting on you.** Production is 2.11.0.
+
+**2.12.0 — THE FRONT PAGE STOPPED BEING A LIST** ([ADR-0102](docs/adr/0102-the-inventory-is-folded.md)).
+Measured at 390px on the thirteen-item sample, whole page rendered: the runway
+was **4,247px** and `#held` was **2,387px of it — 56% of the landing surface was
+one list.** It is **2,228px** now.
+
+**Seven items were on that surface twice or three times** — the offer's head,
+its two also-available rows, the replan card and the with-someone card were all
+also rows in the inventory below. Two carried **different acts in the two
+places**: *Put the recycling out for collection* offered **Not this one** in
+*Needs a new plan* and **Work on this · Done** two screens down.
+
+**Collisions entry 1 has said this since it was written:** *"a long list raises
+the activation threshold of every item on it"*, and the single Next-up card is
+this app's stated answer to that entry. It was sitting on top of the pile rather
+than instead of it.
+
+**Why a fold and not a sheet, and why this is not the fold ADR-0083/0088
+refused.** Their finding was right and general — *"a fold changes how much stands
+in front of you and not how far you have to travel, and travel is what was
+expensive"* — and it was derived from SIBLING folds mid-surface, where opening
+one pushes the rest out of reach. `#held` is the LAST block; nothing follows but
+the footer, so the two quantities are the same one and closing it removes the
+travel rather than rearranging it. And a fold is **not a switch**: entry 6 says a
+forced transition can cost the day and ADR-0099 left scroll-versus-switch as the
+question nobody may settle from a chair. A sheet would have taken that trade.
+
+**No counts, and that is a rule.** ADR-0032: *"groups are headings, not counts of
+things undone. There is no tally."* ADR-0060 retired *"8 things are asking"* and
+put the honest totals in the gauge. A folded list captioned with numbers is that
+backlog headline rebuilt. The summary names the groups and states no number, read
+from `heldGroups` so a renamed group cannot leave it lying.
+
+**Every route into it opens it.** `#to-held` and the skip link both target
+`#cards`, which is inside — a jump to a closed fold lands on a heading, moves
+focus into something with no visible content, and reports success.
+
+**The separation gate caught a defect I introduced, first time it has stopped one
+arriving.** `#restore-go` and the new summary were **0.0px apart on every state**
+— the exact shape 2.9.3 was written for.
+
+**And the folded state is audited as its own state**, non-vacuity first: it is
+asserted closed AND asserted to be naming groups, because every other assertion
+is trivially true of a fold that was never closed.
+
+**Staging and production were level at 2.11.0.** Promoted 2026-08-19, `10d329f`,
 with the promoted tree asserted byte-identical to the verified staging tree —
 `e38fe6e` on both — rather than inferred from a clean merge. Four releases went
 in it: 2.10.1, 2.10.2, 2.10.3 and 2.11.0.

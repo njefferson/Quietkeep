@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.12.0 — CAPABILITY
+
+*2026-08-19*
+
+- **The front page has stopped being a list.** Measured at 390 pixels on the thirteen-item sample: it ran to **4,247 pixels — a little over five screens — and *What you are holding* was 2,387 of them.** Fifty-six per cent of the page you land on was one list. It is **2,228 pixels now**, and everything below the card fits in about two and a half screens.
+- **Seven things were on that page twice.** The thing you were being offered, the two beside it, the one needing a new plan and the one with someone else were all also rows further down — and two of them offered *different acts* in the two places. *Put the recycling out for collection* said **Not this one** near the top and **Work on this · Done** two screens below.
+- **Nothing has been removed, and nothing has moved.** The list is folded, not gone. Opening it is one press, it opens where it is rather than taking you somewhere, and it stays how you left it. Every group is named on the way in — *Not sorted yet, Needs a new plan, Ready now, Coming up, Later, On the Menu, Done* — so where everything is, is still said out loud before you open anything.
+- **And it counts nothing.** The fold names the groups and states no number. The honest totals already live in the line under the capture box, and saying them twice — the second time as a heading over a folded list — is how a backlog gets rebuilt.
+- **Still on the card and still unsettled: the line saying how much of today is left.** It carries a shrinking number, and it is already gone in *Just one thing*.
+
 ## 2.11.0 — CAPABILITY
 
 *2026-08-19*

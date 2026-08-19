@@ -425,6 +425,11 @@ const REGISTRY = {
   // after a capture. Added to THIS entry rather than a second 'with cards' key:
   // a duplicate key in an object literal silently wins, and the registry would
   // have shrunk to one selector while still reporting a pass.
+  // THE INVENTORY, FOLDED (2.12.0, ADR-0102) — the state it arrives in, which
+  // is now the one a reader actually meets. Registered in the same commit that
+  // created it: a new surface that does not join this list ships unmeasured
+  // (hub LESSONS §28), and this one is the whole landing surface's shape.
+  'inventory folded': ['#held-heading', '.held-fold-label', '.held-fold-where'],
   'with cards': ['.card-title', '.card-when', '#status', '.group-head',
     // The way to anywhere (2.3.0, ADR-0093). BOTH doors, because there are two
     // and a registry that names one of them measures half a control pair — the
@@ -1764,6 +1769,40 @@ try {
     await auditFocusRings(page, 'the door onto the inbox', theme, ['#triage-open']);
 
     await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+
+    // THE INVENTORY ARRIVES FOLDED (2.12.0, ADR-0102), and that state is audited
+    // before it is opened — `<summary>` is a real control a finger has to reach,
+    // and a disclosure nobody measured is how the walkthrough's own buttons came
+    // to be breaking mid-word for every release but the first.
+    //
+    // NON-VACUITY FIRST: everything below is trivially true of a fold that was
+    // never closed, and "the list is not on screen" is also what a broken render
+    // looks like. So the summary is asserted to be naming groups.
+    const folded = await page.evaluate(() => {
+      const f = document.querySelector('#held-fold');
+      const sum = document.querySelector('#held-fold-summary');
+      return {
+        closed: Boolean(f) && !f.open,
+        words: (sum?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+        cardShowing: Boolean(document.querySelector('#cards .card')
+          ?.checkVisibility({ contentVisibilityAuto: true })),
+      };
+    });
+    (folded.closed && !folded.cardShowing ? pass : fail)(
+      `${theme}/inventory folded: the landing surface arrives without the list on it`);
+    (/Not sorted yet|Ready now|Coming up|Later|On the Menu|Done/.test(folded.words) ? pass : fail)(
+      `${theme}/inventory folded: and it names what is in there ("${folded.words.slice(0, 58)}")`);
+    (!/\d/.test(folded.words) ? pass : fail)(
+      `${theme}/inventory folded: and counts nothing — ADR-0032 has no tally, the gauge holds the totals`);
+    await auditContrast(page, 'inventory folded', theme);
+    await auditAxe(page, 'inventory folded', theme);
+    await auditNames(page, 'inventory folded', theme);
+    await auditSeparationAndTargets(page, 'inventory folded', theme);
+    await auditFocusRings(page, 'inventory folded', theme, ['#held-fold-summary']);
+
+    // Opened the way a finger opens it, not by setting the attribute — a fold
+    // only script can open is not the route anybody takes.
+    await page.click('#held-fold-summary');
     await page.waitForSelector('.card');
     await auditContrast(page, 'with cards', theme);
     await auditAxe(page, 'with cards', theme);

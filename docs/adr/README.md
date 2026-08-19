@@ -333,6 +333,9 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0101](0101-the-frame-stands-down.md)**
   - Decision: Past half the viewport the frame stops being a frame and the document scrolls again, rather than scrolling inside itself and cutting the proof line through the middle of its own sentence; two thresholds, so a height near the line cannot flip on every measurement
   - Status: Accepted · shipped 2.9.2 · amends [0100](0100-the-frame-stays.md)
+- **[0102](0102-the-inventory-is-folded.md)**
+  - Decision: What you are holding keeps everything and stops standing open — its body is a disclosure, closed on arrival, whose summary names every non-empty group and carries no counts. Measured: the runway was 4,247px with this list 2,387px of it, and seven items appeared on the landing surface twice or three times. Not the fold ADR-0083/0088 refused, because for the LAST block "how much stands in front of you" and "how far you have to travel" are the same quantity; and a fold is not a switch, which is why it is not a sheet
+  - Status: Accepted · shipped 2.12.0 · extends [0032](0032-held-list-grouped.md), [0099](0099-the-first-screen.md) · narrows [0083](0083-the-panel-stops-folding.md), [0088](0088-claim-and-tree-are-places.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

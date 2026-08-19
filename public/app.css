@@ -2736,3 +2736,46 @@ summary::-webkit-details-marker { display: none; }
      the dialog it sits in — which is exactly the "nothing recedes so nothing
      leads" problem 2.10.1 was about, one level up. */
 }
+
+/* THE INVENTORY'S FOLD (2.12.0, ADR-0102).
+   A `<summary>` is a real control and a finger has to reach it, so it carries
+   the same 44px floor and the same border every other control on this surface
+   carries — the 2.1.0 defect was controls that read as prose, and a summary
+   styled as a heading is exactly that shape. */
+.held-fold {
+  /* Room above it. The first version set `margin: 0` and the separation gate
+     caught `restore-go` and this summary at 0.0px apart on every state — two
+     controls with nothing between them read as one, and a finger on the seam
+     gets whichever is on top. That gate exists because the same shape shipped
+     in 2.9.3; this is the first time it has stopped one arriving. */
+  margin: 0.9rem 0 0;
+}
+.held-fold > summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem 0.6rem;
+  min-height: var(--target);
+  padding: 0.5em 0.9em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+  /* The default triangle is a 10px glyph doing the whole job of saying this
+     opens. It stays — removing it would leave a bordered box with no sign it
+     is a disclosure — but it is not the only signal: the words say so too. */
+}
+.held-fold > summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.held-fold-label { font-weight: 600; }
+/* The group names, which are the whole summary. Quieter than the label, and
+   NEVER a count — ADR-0032's no-tally rule and ADR-0060's "the honest totals
+   already have a home three lines up". */
+.held-fold-where {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+.held-fold[open] > summary { margin-bottom: 0.6rem; }
