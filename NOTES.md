@@ -723,21 +723,32 @@ than anything alarming.
 **The reason it went unseen: a push was verified and a RUN was not.** The push
 output has never once known whether CI passed.
 
-**AND THE `Install chromium` STEP IS STALLING, CAUSE UNKNOWN.** Measured off the
-run timestamps: healthy is **24 seconds** (32261983527, 14:06:27 to 14:06:51).
-Run 32296164308 sat on it for **10m35s** without finishing — it ended because
-the run was cancelled, not because the step completed — and the next run about
-three minutes before the same thing. Nothing in this repo changed that step and
-it has completed fine before, so no cause is established and nothing here claims
-to fix it. What is fixed is the STATE: `timeout-minutes: 10` on the step and 45
-on the job, replacing a six-hour default under which a stall reads as *still
-going* rather than as broken.
+**SPINE IS GREEN — run 32298044605 on `aa028a3`, conclusion `success`, all 37
+steps, 9m37s.** The first fully green Spine on staging since the guard step was
+added, on the tree carrying 2.12.2. **Every one of the seven suppressed gates ran
+and passed**, along with the smoke walk (3m02s), the update walk, the rendered
+a11y audit (2m58s) and the reading budget.
 
-**Two figures in this section were wrong before they were right, both stated
-from impression rather than read off the source** — "eight consecutive pushes"
-for what the run list says is ten runs and seven failures, and "25+ minutes" for
-what the timestamps say is 10m35s. Recorded rather than quietly fixed: the
-second happened after the lesson about the first was written.
+**THE `Install chromium` STEP WAS NOT STALLING, AND THIS SECTION SAID TWICE THAT
+IT WAS.** Completed observations, off the timestamps: **24s, 1m57s, 4m45s — all
+successful.** It varies, and that is all the evidence supports. The one long
+reading, 10m35s on run 32296164308, ended because that run was **cancelled by a
+subsequent push** and not because the step gave up. Three pushes inside ten
+minutes cancelled three runs in a row; the truncated observations were then read
+as evidence of stalling, when they are evidence of cancelling. **The pushes were
+mine.** `timeout-minutes` stays as headroom over the slowest completed run — a
+gate that never answers is worse than one that fails — but it is a net, not a
+fence around a known fault.
+
+**THREE claims in this section were wrong before they were right, all three
+stated from impression rather than read off the source.** "Eight consecutive
+pushes" for what the run list says is ten runs and seven failures. "25+ minutes"
+for what the timestamps say is 10m35s. And a *hang* for a step that has been
+observed completing three times. Recorded rather than quietly fixed, because the
+second happened after the lesson about the first was written and the third after
+the lesson about the second. The pattern is one thing: **a conclusion drawn from
+an observation that was never allowed to finish**, then written in the voice of a
+measurement.
 
 **Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
 releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one

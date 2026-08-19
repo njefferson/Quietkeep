@@ -115,24 +115,23 @@ jobs:
       # Checking them here means a change to icon.svg or the social preview cannot
       # quietly drop below 3:1 — B-08's rule is that a new pair joins the gate in
       # the same commit that introduces it, and this is that gate.
-      # ITS OWN DEADLINE, because this is the step that stalls.
+      # ITS OWN DEADLINE — A SAFETY NET, NOT A DIAGNOSIS.
       #
-      # Measured off the run timestamps rather than estimated. Healthy: 24
-      # SECONDS (run 32261983527, 14:06:27 to 14:06:51). Stalled: 10m35s on run
-      # 32296164308 without finishing — it ended because the run was cancelled,
-      # not because the step completed — and about 3 minutes on the next before
-      # the same thing. Every browser gate below waits behind it.
+      # This step's duration VARIES a lot. Completed observations, read off the
+      # run timestamps: 24s (32261983527), 1m57s (32298044605), 4m45s
+      # (32297560926). All three succeeded. Everything below waits behind it, so
+      # a bad enough day here costs the whole gate.
       #
-      # It has completed fine on earlier runs and nothing in this repo changed
-      # it, so the cause is NOT established and this does not claim to fix it. It
-      # makes a stall ARRIVE as a failure instead of as an unfinished run.
-      # `--with-deps` shells out to apt, which is the part that can wait on a
-      # lock, but that is a hypothesis and it has not been tested.
+      # THERE IS NO OBSERVED HANG, and this comment claimed one twice before it
+      # said this. The single long reading — 10m35s on run 32296164308 — ended
+      # because that run was CANCELLED by a subsequent push, not because the step
+      # gave up; nobody ever let it finish. Three separate pushes in ten minutes
+      # cancelled three runs in a row, and the truncated observations were then
+      # read as evidence of stalling. They are evidence of cancelling.
       #
-      # (This comment first said "25+ minutes" and "15+" — figures taken from an
-      # impression of how long the checks had felt, not read off the timestamps.
-      # Both were wrong. 24 seconds against 10m35s is the real finding and it did
-      # not need inflating.)
+      # So ten minutes is headroom over the slowest completed run, not a fence
+      # around a known fault. It exists for the same reason as the job timeout
+      # above: a gate that never answers is worse than one that fails.
       - name: Install chromium for the browser checks
         timeout-minutes: 10
         run: npx --no-install playwright-core install --with-deps chromium
