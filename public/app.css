@@ -585,6 +585,11 @@ button.ghost {
  * Not this, Done and Work on this — and stays full width and left-aligned,
  * because these are rows that span the column rather than things sitting in a
  * row of siblings. */
+/* A 2px border on every one of these made the proof line, the way to the Menu,
+   the tree and the jump all as loud as the work (2.10.1). They are ways to
+   somewhere; the work is the point. One pixel, and the accent still says it is
+   a control — ADR-0091 asked for a control that looks like a control, not for
+   every control to shout equally. */
 .gauge {
   display: block;
   width: 100%;
@@ -594,9 +599,10 @@ button.ghost {
   text-align: left;
   color: var(--accent);
   background: transparent;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   font: inherit;
+  font-size: 0.9375rem;
   font-weight: 400;
   cursor: pointer;
 }
@@ -615,22 +621,41 @@ button.ghost {
  * and weight it had as a heading — a person's eye has learned where the offer's
  * title sits — and gains a box, because ADR-0091's rule is that a control looks
  * like a control and this release must not reopen it. */
+/* THE ONE THING LOOKS LIKE THE ONE THING (2.10.1).
+ *
+ * Looked at rather than measured. It was a rounded box with a 2px border —
+ * the SAME drawing as the capture field directly above it and the smaller-step
+ * field directly below. The single item this app exists to hand somebody was
+ * rendered as a form field, in a screen where eleven elements shared one visual
+ * idea and nothing led.
+ *
+ * ADR-0091's rule stands and is not being reopened: a control still looks like a
+ * control. It keeps its full target height, it keeps a hit area, and it gains an
+ * underline on its words — which is a control's oldest signal and does not make
+ * it a box among boxes. What it loses is the border that made it a field.
+ *
+ * Bigger, too. It is the thing; everything around it is about the thing. */
 .nextup-title {
   display: block;
   width: 100%;
   margin: 0 0 0.5rem;
-  padding: 0.5rem 0.75rem;
+  padding: 0.4rem 0;
   min-height: var(--target);
   text-align: left;
   color: var(--ink);
   background: transparent;
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
+  border: 0;
   font: inherit;
-  font-size: 1.125rem;
+  font-size: 1.375rem;
+  line-height: 1.25;
   font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 2px;
   cursor: pointer;
 }
+.nextup-title:hover { text-decoration-color: var(--accent); }
 /* Where a thing can be done, on its card. Soft like the place line it sits
  * beside — it is context, not the title. */
 .card-where { color: var(--ink-soft); }
@@ -663,7 +688,7 @@ button.ghost {
   text-align: left;
   color: var(--accent);
   background: transparent;
-  border: 2px solid var(--line);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   font: inherit;
   font-weight: 400;
@@ -1261,6 +1286,40 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
    stacked rows are separated by the same amount. */
 .nextup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
 .nextup-actions button { min-height: var(--target); }
+
+/* TWO ACTS, AND THEN A SECOND TIER (2.10.1).
+ *
+ * Looked at: the card carried SIX verbs — Done, Not this, Start smaller, This
+ * one is heavy, That is enough for now, Just one thing — every one of them a
+ * full-width outlined box, wrapping one per line into a column of five. Done and
+ * a way past it are what this card is for; the other four are things you might
+ * say about the day, and drawn as peers of Done they made a list of six
+ * decisions out of a card whose whole claim is that it decided for you.
+ *
+ * They are not hidden and nothing is behind a door: they are QUIETER. Smaller
+ * type, tighter box, so two or three sit on a line instead of one, and the eye
+ * reaches Done first. ADR-0091 is not reopened — every one still carries its
+ * border, its 44px floor and its accent; the rule was that a control looks like
+ * a control, never that every control has to shout at the same volume. */
+.nextup-second { gap: 0.25rem 1rem; }
+.nextup-second button {
+  font-size: 0.9375rem;
+  padding: 0 0.1em;
+  min-width: 0;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  /* THE UNDERLINE IS THE CONTROL, and it is why this does not reopen 2.1.0.
+     That release found five routes off the page rendered as plain grey
+     sentences — no border, no fill, NO UNDERLINE — and gave everything a box.
+     The finding was that a control must be legible as one, not that a box is
+     the only way to be one: an underlined word has been a control since before
+     any of this, and these keep their 44px target and their accent colour.
+     What they give up is the boxed weight that made four secondary verbs read
+     as peers of Done. */
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 
 /* --- the two things you can do when you cannot start (1.24.0) --------------
  *

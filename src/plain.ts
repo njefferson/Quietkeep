@@ -74,7 +74,7 @@ export const PLAIN_OFFER_CAP = 1;
 export const PLAIN_HIDDEN = [
   '#nextup-why', '#nextup-place', '#nextup-approach', '#nextup-situation',
   '#nextup-bite', '#nextup-bite-form', '#nextup-behind', '#nextup-count',
-  '#nextup-load', '#upkeep', '#nextup-heavy',
+  '#nextup-load', '#upkeep', '#nextup-heavy', '#nextup-bite-open',
   // THREE THAT THIS LIST MISSED FOR THREE RELEASES (2.10.0). Each was added to
   // the offer card AFTER this list was written, and nobody came back to it — so
   // the mode built for the worst day left them standing. Measured on the

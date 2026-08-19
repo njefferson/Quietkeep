@@ -21,6 +21,7 @@
     "changelog": "node --experimental-strip-types tools/changelog.mjs",
     "changelog:check": "node --experimental-strip-types tools/changelog.mjs --check",
     "a11y": "node tools/a11y.mjs",
+    "look": "node tools/look.mjs",
     "headers:check": "node tools/headers.mjs",
     "build:sync": "node tools/editions.mjs",
     "editions:check": "node tools/editions.mjs --check",

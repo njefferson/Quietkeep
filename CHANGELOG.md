@@ -14,11 +14,23 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.10.1 — ITERATION
+
+*2026-08-19*
+
+- **Everything on the screen had the same weight, so nothing led.** Asked what a version designed whole would look like, I answered with pixel counts and never once rendered the app and looked at it. Looking at it: eleven outlined boxes stacked, drawn identically — the navigation, the capture field, the proof line, and the task itself.
+- **The one thing now looks like the one thing.** Its title was a rounded box with a border, the same drawing as the capture field above it and the smaller-step field below — the item this app exists to hand you was rendered as a form to fill in. It is bigger, plainer, underlined type now.
+- **The card no longer explains itself to you.** *Start smaller* was a text field standing open, a loud button beside it, and four lines of prose about what a first step is — a manual printed on the thing you are trying to begin. It is one quiet word now, and the field appears when you ask for it.
+- **Six verbs, drawn as six boxes, are now two acts and four quiet words.** *Done* and *Not this* are what the card is for. *Start smaller*, *This one is heavy*, *That is enough for now* and *Just one thing* are things you might say about the day, and as equal boxes they turned a card that claims to have decided for you into a list of six decisions. Nothing is hidden and nothing moved — they are quieter.
+- **The proof line and the ways to elsewhere are quieter too**, a hairline instead of a heavy border. They are ways to somewhere; the work is the point.
+- **The Menu’s door is now the 40th control on the page; it was the 39th** — one button was added above it and nothing about the Menu changed.
+- **Still wrong and still on the card: the also-available list and the hours left in the day.** Those are the next thing.
+
 ## 2.10.0 — CAPABILITY
 
 *2026-08-19*
 
-- **Just one thing now quiets the whole screen, not only the card.** You said a screen showing exactly one task was terrifyingly busy and you did not want to begin in it. Counted at 390 pixels with the sample on: **thirty-one things were being asked of you before anything could happen** — nine controls, four lines to read, and eighteen things on the card that is supposed to be one thing. Turning this mode on changed **none** of the chrome. It is fifteen now.
+- **Just one thing now quiets the whole screen, not only the card.** Reported from a device, on a screen showing exactly one task: too busy to want to begin in. Counted at 390 pixels with the sample on: **thirty-one things were being asked of you before anything could happen** — nine controls, four lines to read, and eighteen things on the card that is supposed to be one thing. Turning this mode on changed **none** of the chrome. It is fifteen now.
 - **The card called “one thing” was showing four**, plus seven verbs and seven lines of prose. In this mode it is the thing, *Done*, *Not this*, *That is enough for now*, and the way back to everything.
 - **Three lines had been quietly slipping through for three releases:** how much of today is left, the next fixed thing, and when you wrote it. Each was added to the card after the strip’s list was written and none was ever added to it — so on the day this mode exists for, the app was still telling you the hours were going.
 - **And the strip now reaches the top bar** — *More room*, *Hold what I copied*, *Contents* and the clock all stand down with it. Capture never does, the line saying nothing has gone quiet never does, and *More* never does: a screen with no way to anywhere is a trap.
@@ -128,7 +140,7 @@ triplet and what it did for you.
 
 - **Things now say what they are FOR, not just where they sit.** A step filed under a project under a goal says **serves ‹your goal›** on its row and on the card at the top. A description, never a door — nothing takes you up there, nothing is counted, nothing is scored.
 - **Half of a founding rule had never been built.** The rule is *levels push down; you never climb*: you should never walk up through goals and areas to plan a day, and instead the higher things send what they know down to you. The never-climbing half was always true. The sending-down half did not exist — a card knew what box it was in, and nothing anywhere said what any of it was for.
-- **This is the answer to what you said on 4 August — no feeling of being shown the right things.** It sat thirteen days because it was thought to need a question answered first. It needed somebody to read the code. Every way the app picks what to offer is about TIME, and where two things tie it falls back to which you wrote first — so it had no notion of what anything is for, and could not show you the right things by any meaning of "right" but "most time-pressured".
+- **This is the answer to a report that the app gave no feeling of showing the right things.** It sat thirteen days because it was thought to need a question answered first. It needed somebody to read the code. Every way the app picks what to offer is about TIME, and where two things tie it falls back to which you wrote first — so it had no notion of what anything is for, and could not show you the right things by any meaning of "right" but "most time-pressured".
 - **Still owed, and it is your call rather than a build:** the ORDER things are offered in has not changed. Making "serves a goal" beat "serves nothing" would be the app deciding that filing something under a goal means it matters more — and a loose note is very often the most important thing you have written down.
 
 ## 2.4.0 — CAPABILITY

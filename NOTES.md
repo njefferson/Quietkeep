@@ -665,13 +665,65 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.0**
-- **https://quietkeep.pages.dev** — production, **2.9.4** (promoted 2026-08-19,
-  `26e80dd`, Deploy, Spine and the push-on-main workflow all green on that exact
-  SHA; the promoted tree asserted byte-identical to the verified staging tree —
-  `fb2b498` on both — rather than inferred from a clean merge)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.1**
+- **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
+  `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
+  SHA — read from the runs, not inferred from a clean merge)
 
-**Staging is 2.10.0 and it is waiting on you.** Production is 2.9.4.
+**Staging is 2.10.1 and it is waiting on you.** Production is 2.10.0.
+
+**2.10.1 — THE SCREEN WAS NEVER LOOKED AT.** Asked whether the UI arrived at by
+iteration was the UI a version designed whole would have, the answer given was
+pixel offsets and control counts. **The app was never rendered and looked at.**
+Twenty tools in this repo measure it and, until this release, none showed it.
+
+**What one picture had that no number did.** Eleven outlined rounded rectangles
+of identical weight, so nothing led. The task itself — the one thing this app
+exists to hand somebody — drawn as a bordered box identical to the capture field
+above it and the smaller-step field below it: **the item was rendered as a form
+to fill in.** Six verbs as six full-width boxes stacking one per line. Three
+dark-filled buttons of equal loudness on one screen. Four lines of prose
+explaining what a first physical action is, printed on the thing you are trying
+to begin. Every one of these is visible at a glance and every gate was green,
+correctly — they measured what they measured.
+
+**Now:** the title is large plain underlined type, `Done` is the single loud act,
+`Not this` its quiet pair, and *Start smaller*, *This one is heavy*, *That is
+enough for now* and *Just one thing* are underlined words rather than boxes.
+Nothing was hidden and nothing moved. The smaller-step field stands open only
+when asked for, and the four lines went with it. The proof line and the ways
+elsewhere are a hairline instead of a heavy border.
+
+**`tools/look.mjs` ships with it (`npm run look`).** It asserts nothing — no
+counts, no budget, no exit code to satisfy. It renders the app at 390×844 and
+writes four pictures: first run, with things in it, the whole page including
+what is below the fold, and "Just one thing".
+
+**And it had the same defect it was built to catch, within an hour.** The first
+version drove the app with `element.click()` inside `page.evaluate` — a synthetic
+click, which Chromium does not count as a user interaction, so the focus modality
+stays wherever it was. Its picture of "Just one thing" showed a 3px focus ring
+painted around the heading, the loudest box on a screen whose whole purpose is
+that nothing is loud. **That ring is not in the app.** Tapping the same control
+with a real touch event gives `:focus-visible: false` and `outline: 0px`;
+reaching it by keyboard gives the 3px ring, which is exactly right. A tool built
+to show the truth about a screen was rendering a state no person can reach, and
+it very nearly bought a "fix" to correct behaviour. Real input events only, and
+the reason is written in its header.
+
+**Three checks were asserting a route that no longer exists**, and all three
+failed on the next run rather than passing quietly, which is the design working:
+the a11y and smoke walks both typed into a field that is now behind a door, and
+smoke asserted that finishing a first step leaves the field standing open — the
+exact thing this release removed. Its intent survives (naming one first step is
+not a one-shot) so it now asks for the quiet word instead. Asking for the field
+is a state that did not exist before, so it joined the contrast registry in the
+same commit (hub LESSONS §28) and is measured in both themes; the four entries
+that had been registered against `next up` moved with it.
+
+**Still wrong and still on the card, deliberately:** the also-available list and
+the hours left in the day. `BEHIND_CAP` is 5, so a card headed "one thing" can
+still list six. That has ADR-0060 behind it and is the next release, not this one.
 
 **2.10.0 — JUST ONE THING MEANS THE WHOLE SCREEN.** Reported from a device, on a
 screen showing exactly one task: *terrifyingly busy, and I don't even want to

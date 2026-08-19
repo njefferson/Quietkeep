@@ -155,6 +155,12 @@ export function mountWork(
   const BITE_INPUT = q<HTMLInputElement>('#nextup-bite-input');
   const BITE_DONE = q<HTMLButtonElement>('#nextup-bite-done');
   const HEAVY = q<HTMLButtonElement>('#nextup-heavy');
+  const BITE_OPEN = q<HTMLButtonElement>('#nextup-bite-open');
+  /** Has the reader asked for the smaller-step field on the offer in front of
+   *  them? Memory only, and cleared when the offer changes — a question that
+   *  survived the item it was about would be the app asking again about
+   *  something else. */
+  let askedForBite = false;
 
   // "Not this" lives HERE, in memory, and nowhere else. It is deliberately not
   // persisted: a skip that survived a reload would be a record of a decision the
@@ -231,7 +237,14 @@ export function mountWork(
     // The form goes away once there is a step, and comes back when it is done.
     // Two open invitations to name a first step is a second decision on a
     // surface built to hold one.
-    if (BITE_FORM) BITE_FORM.hidden = Boolean(bite) || head === null;
+    // BEHIND A DOOR SINCE 2.10.1. The form no longer stands open on the card —
+    // it was a field, a loud submit and four lines of prose explaining what a
+    // first step is, on the thing somebody is trying to begin. `askedForBite`
+    // is the reader having pressed "Start smaller", and it is per-offer: the
+    // question is about THIS item, so moving on closes it again.
+    if (bite || head === null) askedForBite = false;
+    if (BITE_FORM) BITE_FORM.hidden = !askedForBite || Boolean(bite) || head === null;
+    if (BITE_OPEN) BITE_OPEN.hidden = askedForBite || Boolean(bite) || head === null;
     if (HEAVY) HEAVY.hidden = head === null;
   };
 
@@ -448,6 +461,14 @@ export function mountWork(
   // NAME A FIRST STEP (1.24.0, docs/nd-collisions.md entry 1). The whole act is
   // one field and a submit, on the card, because the moment this helps is the
   // moment leaving the surface to do it is more than somebody can spend.
+  BITE_OPEN?.addEventListener('click', () => {
+    askedForBite = true;
+    if (BITE_FORM) BITE_FORM.hidden = false;
+    BITE_OPEN.hidden = true;
+    // Focus follows, or the door opens a field somebody then has to go and find.
+    BITE_INPUT?.focus();
+  });
+
   BITE_FORM?.addEventListener('submit', (e) => {
     e.preventDefault();
     if (!current || busy || !BITE_INPUT) return;
@@ -591,6 +612,7 @@ export function mountWork(
       if (biteLine) biteLine.hidden = true;
       const biteForm = q('#nextup-bite-form');
       if (biteForm) biteForm.hidden = true;
+      if (BITE_OPEN) BITE_OPEN.hidden = true;
       const biteDone = q<HTMLButtonElement>('#nextup-bite-done');
       if (biteDone) biteDone.hidden = true;
       BEHIND.replaceChildren();

@@ -513,12 +513,21 @@ const REGISTRY = {
   // release for, so it goes where it is actually on screen.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
-    // When you cannot start (1.24.0). The invitation and the heavy control are
-    // on the card whenever there is a head, so they belong in this state; the
-    // named step and its Done are not, and get their own below — a registry
-    // entry matching nothing visible fails by design.
-    '#nextup-bite-input', { sel: '#nextup-bite-input', pseudo: '::placeholder' },
-    '#nextup-bite-form button[type=submit]', '#nextup-bite-hint', '#nextup-heavy'],
+    // When you cannot start (1.24.0). The heavy control is on the card whenever
+    // there is a head, so it belongs in this state. THE INVITATION IS NOW ONE
+    // WORD (2.10.1): the field, its placeholder, its submit and its hint left
+    // this state when the form stopped standing open, and moved to the state
+    // below where somebody has asked for them. They were all four still listed
+    // here and all four failed on the next run — which is the design working,
+    // and the same false receipt `#nextup-left` cost a release for, caught this
+    // time by the gate rather than by a reader.
+    '#nextup-bite-open', '#nextup-heavy'],
+  // The invitation has been ASKED FOR — a state that did not exist before 2.10.1,
+  // registered in the same commit that created it (hub LESSONS §28). The field
+  // stands open only from here, so this is the only state its colours are on
+  // screen to be measured in.
+  'first step asked for': ['#nextup-bite-input', { sel: '#nextup-bite-input', pseudo: '::placeholder' },
+    '#nextup-bite-form button[type=submit]', '#nextup-bite-hint', '.nextup-title'],
   // A first step has been named. Its own state, because the invitation is
   // replaced by the step once one exists — two open invitations to name a first
   // step is a second decision on a surface built to hold one.
@@ -1891,9 +1900,27 @@ try {
       document.querySelector('#nextup-plain-bar')?.hidden === true);
 
     // State 3d0: a first step has been named (1.24.0). Reached the way anybody
-    // reaches it — type into the invitation on the card — and then UNDONE, so
-    // every state after this one meets the ordinary offer. The card now carries
-    // two completion controls, so the §4 name check earns its keep here.
+    // reaches it, and in 2.10.1 that route changed: the field no longer stands
+    // open on the card, because four lines of prose explaining what a first step
+    // is were being printed on the thing you are trying to begin. You ask for it
+    // now. This walk still said `fill` and timed out — which is the gate working,
+    // and worth saying plainly: the walk is the only thing that noticed the route
+    // it had been asserting no longer exists.
+    //
+    // State 3c9 is the asking, and it is a state that did not exist before this
+    // release. A form appearing on press is a new surface, and a new surface that
+    // does not join this list in the same commit ships unmeasured (hub LESSONS
+    // §28) — so it is audited here rather than stepped through.
+    await page.click('#nextup-bite-open');
+    await page.waitForSelector('#nextup-bite-form:not([hidden])');
+    await auditContrast(page, 'first step asked for', theme);
+    await auditAxe(page, 'first step asked for', theme);
+    await auditNames(page, 'first step asked for', theme);
+    await auditSeparationAndTargets(page, 'first step asked for', theme);
+
+    // and then UNDONE, so every state after this one meets the ordinary offer.
+    // The card now carries two completion controls, so the §4 name check earns
+    // its keep here.
     await page.fill('#nextup-bite-input', 'open the file and write one line');
     await page.click('#nextup-bite-form button[type=submit]');
     await page.waitForSelector('#nextup-bite:not([hidden])');

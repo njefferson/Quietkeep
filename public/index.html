@@ -306,11 +306,21 @@
       <button id="nextup-bite-done" type="button" aria-label="Done with the first step" hidden>Done with the first step</button>
       <button id="nextup-skip" type="button" class="ghost">Not this</button>
     </div>
+    <div class="nextup-actions nextup-second">
+      <!-- A DOOR, NOT A STANDING FORM (2.10.1). Looked at rather than measured:
+           the card carried an always-open text field, a filled submit beside it,
+           and FOUR LINES OF PROSE explaining what a first step is — a manual
+           printed on the thing you are supposed to begin. Three of the eighteen
+           things on this card were that form explaining itself.
+           The act is unchanged and it is still one tap from here; what has gone
+           is the app asking the question before anybody wanted it asked. -->
+      <button id="nextup-bite-open" type="button" class="ghost">Start smaller</button>
+    </div>
     <!-- WHEN IT IS TOO BIG TO BEGIN (1.24.0, docs/nd-collisions.md entry 1).
          The same inline shape as the focus surface's interrupt line: one field,
          a submit beside it, and you never leave where you are. Naming a first
          physical action is the act, so the act lives where the stuckness is. -->
-    <form id="nextup-bite-form" class="nextup-bite-form" autocomplete="off">
+    <form id="nextup-bite-form" class="nextup-bite-form" autocomplete="off" hidden>
       <label class="visually-hidden" for="nextup-bite-input">A smaller first step</label>
       <div class="detail-row">
         <input id="nextup-bite-input" type="text" enterkeyhint="done" autocomplete="off"
@@ -329,7 +339,7 @@
          one under the capture line with this item already attached, so the
          weight is recorded exactly as it always has been and finally says what
          it is about. -->
-    <div class="nextup-actions">
+    <div class="nextup-actions nextup-second">
       <button id="nextup-heavy" type="button" class="ghost">This one is heavy</button>
       <!-- THE SYMMETRIC EXIT. Declining has to end the session as completely as
            finishing does, or escape strictly dominates and the interface has

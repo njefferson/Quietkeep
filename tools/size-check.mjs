@@ -100,7 +100,31 @@ const BUDGET = {
   // by six pixels, which is the exact trap hub LESSONS §62 records: three pixels
   // short, with the product's honesty measurably worse. Six pixels is never a
   // reason to cut a sentence.
-  notesPx: 1200,
+  // 1200 -> 1300 on 2026-08-19 (2.10.1). Four pixels over, and this file's own
+  // note twenty lines up settles it: "six pixels is never a reason to cut a
+  // sentence" — hub LESSONS §62, where three pixels of headroom were bought by
+  // making the product measurably less honest. The release that reports having
+  // finally LOOKED at the screen is not the one to trim for four pixels.
+  //
+  // 1300 -> 1400 THE SAME DAY, IN THE SAME RELEASE, and the second raise is the
+  // one worth reading. 1300 was set against six bullets and then a seventh was
+  // written — the `#menu-open` move, which `controls.mjs` REQUIRES in the running
+  // release's notes — so the budget had been fitted to a block that was not
+  // finished. Raising a ceiling to clear a measurement taken before the work was
+  // done is not a deliberate raise, it is a ratchet chasing its own tail.
+  //
+  // The seventh bullet was first folded into the third to save the height. IT
+  // SAVED NOTHING — 1330px before and 1330px after, because the height is the
+  // words and the words did not change — and it cost the declaration the shape
+  // `controls.mjs` asks for, which leads with WHERE. Merging prose to satisfy a
+  // pixel budget is the §62 trap wearing a disguise: it looks like editing and it
+  // is the same trade, honesty for headroom, with the honesty spent on layout
+  // instead of on a cut sentence.
+  //
+  // So: seven bullets measure 1330. 1400 is that with one line spare, and ten
+  // bullets are still near 3,000 and still fail, which is what this number is
+  // actually for.
+  notesPx: 1400,
   // 205 -> 210 on 2026-08-09, ONE COMMIT after this gate was written, because it
   // caught its own author: adding navigation ("More", five destinations and a
   // close) took the count from 199 to 207.
@@ -238,7 +262,15 @@ const BUDGET = {
   // counted, at 390x844: fourteen controls to thirteen on an empty store,
   // fifteen to fourteen with the sample on, and Next up from 0.48 screens to
   // 0.43.
-  controls: 229,
+  // 229 -> 230 on 2026-08-19 (2.10.1): "Start smaller" is a door now. The card
+  // carried an always-open text field, a filled submit beside it and four lines
+  // of prose explaining what a first step is — a manual printed on the thing you
+  // are trying to begin. One button replaces the standing form, so the COUNT
+  // goes up by one and what is on the card at rest goes down by three, plus the
+  // paragraph. This budget counts controls in the markup and cannot see that,
+  // which is the second time in three releases it has read the wrong way round;
+  // the note is the record, as it is meant to be.
+  controls: 230,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM
