@@ -19,6 +19,15 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
+    # A GATE WITH NO ANSWER IS NOT A GATE, and the default here is SIX HOURS.
+    #
+    # A healthy run of this job is about twenty minutes. Left at the default, a
+    # single hung step holds the only signal anybody has about a release for the
+    # rest of the working day, in a state that reads as "still going" rather than
+    # as broken — which is the same shape as the red step nobody noticed for ten
+    # runs, one level up. Failing loudly at forty-five minutes is worse than
+    # succeeding and far better than never answering.
+    timeout-minutes: 45
     steps:
       # fetch-depth: 0 — `release:check` has to find the commit that introduced
       # the current triplet, which a depth-1 clone cannot see. That gate fails
@@ -106,7 +115,16 @@ jobs:
       # Checking them here means a change to icon.svg or the social preview cannot
       # quietly drop below 3:1 — B-08's rule is that a new pair joins the gate in
       # the same commit that introduces it, and this is that gate.
+      # ITS OWN DEADLINE, because this is the step that hangs.
+      #
+      # Observed twice in a row: 25+ minutes on one run without finishing, and
+      # 15+ on the next, while every browser gate below waits behind it. It has
+      # completed fine on earlier runs and nothing in this repo changed it, so
+      # the cause is not established and this does not claim to fix it — it makes
+      # the hang ARRIVE as a failure instead of as an unfinished run. `--with-deps`
+      # shells out to apt, which is the part that can wait forever on a lock.
       - name: Install chromium for the browser checks
+        timeout-minutes: 10
         run: npx --no-install playwright-core install --with-deps chromium
       - name: Brand assets
         run: npm run brand:check
