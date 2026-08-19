@@ -702,8 +702,21 @@ Verified by reproducing the CI condition locally: with `.git/hooks/pre-commit`
 removed the plain command exits 1 and `--artefact` exits 0, and with drift
 planted in the tracked hook `--artefact` exits 1.
 
-**The reason it went eight pushes: a push was verified and a RUN was not.** The
-push output has never once known whether CI passed.
+**VERIFIED GREEN — run 32297197356 on `fa19442`, step 9, conclusion `success`,
+at 20:12:27, thirteen seconds into the run.** Read from the run, not from the
+push.
+
+**And the step was moved to position 9 from position 30.** It needs nothing but
+the two checkouts, and it had been sitting behind the chromium install and every
+browser walk — so a check that answers in under a second was reported twenty-odd
+minutes in, when the run got that far. The run before this one sat over
+twenty-five minutes on `Install chromium` without finishing, which means a
+healthy answer from that position was never guaranteed at all. **Its position is
+part of why a red gate went ten runs unseen.** Cheap checks that depend on
+nothing belong where a failure is answered in seconds.
+
+**The reason it went unseen: a push was verified and a RUN was not.** The push
+output has never once known whether CI passed.
 
 **Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
 releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one
