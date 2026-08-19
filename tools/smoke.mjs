@@ -1474,6 +1474,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // more than somebody can spend.
   console.log('\nWhen you cannot start — a smaller bite, and saying it is heavy');
   const biteParent = await tpage.locator('#nextup-title').textContent();
+  // ASK FOR IT FIRST (2.10.1). The field used to stand open on the card with a
+  // loud button beside it and four lines telling you what a first step is. It is
+  // one quiet word now and the form appears when you press it, so the route this
+  // walk asserts has a door in it.
+  is(await tpage.locator('#nextup-bite-form').isHidden(), true,
+    'the smaller-step field is not standing open on the card');
+  await tpage.click('#nextup-bite-open');
+  await tpage.waitForSelector('#nextup-bite-form:not([hidden])');
+  is(await tpage.locator('#nextup-bite-input').isVisible(), true,
+    'and asking for it opens the field');
   await tpage.fill('#nextup-bite-input', 'open the file and write one line');
   await tpage.click('#nextup-bite-form button[type=submit]');
   await tpage.waitForSelector('#nextup-bite:not([hidden])');
@@ -1512,8 +1522,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `the two Dones answer to different names (${doneNames.join(' / ')})`);
   await tpage.click('#nextup-bite-done');
   await tpage.waitForSelector('#nextup-bite', { state: 'hidden' });
-  is(await tpage.locator('#nextup-bite-form').isVisible(), true,
-    'and finishing the step brings the invitation back');
+  // THE INVITATION COMES BACK, AND IN 2.10.1 IT COMES BACK QUIET. This used to
+  // assert the field itself was visible again; the field standing open is the
+  // thing that release removed. What the check is actually for — naming one first
+  // step is not a one-shot, you can name another — is unchanged, so it now asks
+  // for the door rather than the form. Both halves, because "the field is hidden"
+  // on its own is also what a dead end looks like.
+  is(await tpage.locator('#nextup-bite-form').isHidden(), true,
+    'and finishing the step does not leave the field standing open');
+  is(await tpage.locator('#nextup-bite-open').isVisible(), true,
+    'the invitation comes back, as the quiet word — naming one is not a one-shot');
 
   // TOO HEAVY. Not a second form — it opens the ONE load entry with this item
   // attached, so `affects` finally gets a writer after eight releases of being a

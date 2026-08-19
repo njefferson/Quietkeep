@@ -665,13 +665,229 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.10.0**
-- **https://quietkeep.pages.dev** — production, **2.9.4** (promoted 2026-08-19,
-  `26e80dd`, Deploy, Spine and the push-on-main workflow all green on that exact
-  SHA; the promoted tree asserted byte-identical to the verified staging tree —
-  `fb2b498` on both — rather than inferred from a clean merge)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.11.0**
+- **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
+  `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
+  SHA — read from the runs, not inferred from a clean merge)
 
-**Staging is 2.10.0 and it is waiting on you.** Production is 2.9.4.
+**Staging is 2.11.0 and it is waiting on you.** Production is 2.10.0.
+
+**2.11.0 — THE WALKTHROUGH SHOWS YOU THE THING IT IS TALKING ABOUT.** Six steps
+described an app the reader was looking at and could not see yet — *"the box at
+the top"*, *"it offers you a small number of things"* — with no picture of any
+of it. Five of the six carry one now, generated from the running app in both
+themes by `tools/tour-shots.mjs`, precached so a first run offline is whole.
+**277KB across ten files at 1x.**
+
+**Crops, not screens, and the weight is the lesser reason.** A full screen at 2x
+is ~64KB and ten of them is three quarters of a megabyte in a shell that must
+precache; but a picture of the whole screen does not point at anything. The step
+about the capture box shows the capture box.
+
+**Generated, never drawn, and gated on drift.** `tour:check` compares a recorded
+hash of the files that decide what is IN the pictures and fails once any moves —
+the same one-source-plus-a-gate shape that fixed the changelog, the doors list
+and the strip list. **A help screen illustrated with a UI that no longer exists
+is worse than one with no pictures**: stale prose reads as stale, a screenshot
+reads as proof. Wired into the Spine.
+
+**The drift list was wrong once, in the safe direction, and was narrowed.** It
+began with `src/ui/tour.ts` — the walkthrough's own words — which cannot change
+what the app LOOKS like, so the gate went red the moment the alt text was written
+and demanded a regeneration that could not have altered a pixel. **A gate that
+cries wolf gets satisfied by reflex.** It watches markup, stylesheet, and the
+three renderers whose output is actually pictured.
+
+**Alt text is written by hand and cannot be generated.** It says what a picture
+MEANS to somebody who cannot see it, which is not a list of what is in the
+rectangle — and this is the screen where a reader knows least about the app.
+
+**AND THE WALKTHROUGH'S OWN BUTTONS HAD BEEN BREAKING IN HALF.** From step 2
+onward the row is *Skip*, dots, *Back*, *Next*, and flex items shrink below their
+content width by default, so on a 390px phone the labels wrapped INSIDE the word:
+**"Ski / p", "Bac / k", "Nex / t"** — on the first screen anybody ever sees, on
+every step but the first. They were 44px targets, contrast-passing and uniquely
+named throughout, and **axe has no opinion about a word broken in half**. Found
+by looking at a picture of step 2, in the release that exists to add pictures.
+
+**Four framing defects the generator shipped before it stopped shipping them**,
+each of which wrote a plausible-looking file: an element taller than the window
+came out cut with dead space under it; a frame aimed at a `<dl>` filled at
+runtime produced a strip of whitespace; the sorting card was framed to a section
+whose own box ends above its final row; and the guard written to catch a cut
+frame had been edited into the other branch of the function and never ran. The
+tool refuses all four now, by height rather than by file size — the first guard
+compared bytes and rejected the capture box at 5.5KB, which is small because it
+is a tight crop and is exactly the picture wanted.
+
+**2.10.3 — EVERY ROUTE IN, THROUGH AND OUT, PHOTOGRAPHED.** The audit of that
+name was done by reading code and running gates. The app was never rendered
+along those routes and looked at. The a11y walk already DRIVES all of them —
+93 audited states across both themes, proven traversal — and had never produced
+a single picture, so `LOOK=1 npm run a11y` now writes every state it reaches to
+disk. 188 files. The traversal was never the missing part.
+
+**Three defects in the first pass through them, all invisible to every gate:**
+
+**The clearing-out panel invented a chore over an empty planner.** With nothing
+in the store it said *"This clears 0 things — everything you are keeping here,
+people, weights and private entries included"*, warned no copy had been saved,
+made **Save a copy first** the loudest control, and demanded the word `clear` be
+typed out to authorise doing nothing. `purgeSummary` one line above had always
+said *"There is nothing here to clear."* — the confirmation under it had simply
+never been told. **The same defect as 2.9.4**, on the other surface nobody had
+looked at. `start-again` is deliberately NOT folded in: it erases the log, so a
+store holding nothing may still have a history worth a copy.
+
+**"Not kept yet — press Set." rendered below the entire note field**, four
+controls from the button it names, under a section whose only button says *Keep
+the note*. `#detail-date-group` was never closed before `#detail-note-group`
+opened inside it. **Every gate passed**, because `aria-describedby` points at the
+right element wherever that element sits — the announcement was always correct
+and only the eye could see it was in the wrong place.
+
+**The stuck-update card made a backup its loudest act.** Hiding *Install it now*
+(pressing it again cannot help) left **Save a copy** first, which is where the
+filled style lands — directly under a sentence saying nothing you have written
+is affected. Loud by REMOVAL, not by decision. The state is one token now and
+CSS owns its appearance.
+
+**AND THE WALK WAS RE-ENACTING THAT STATE BY HAND.** Its comment claimed it drove
+the stuck strip *"exactly as mountUpdatePrompt drives it"*; it was a copy of two
+DOM mutations, so the moment the real code grew a third the claim was false and
+the walk photographed a state no reader gets — with every assertion under it
+green, because all of them were true of the half-driven state. Both sides set the
+same `data-state` now, and the walk asserts the state took.
+
+**Two vacuity traps found and closed while fixing the above.** The typed-word
+confirmation — the one surface standing between somebody and their history — is
+now asserted to be guarding something, because it is withheld entirely over an
+empty store and the wait for it would otherwise read as a flake. And the empty
+store gained four assertions of its own, non-vacuity first: the store really is
+empty, no ceremony is staged, it says so plainly, and no backup chore leads.
+
+**Two things checked and found NOT to be defects, before changing anything.**
+The welcome heading's box is a focus ring — `border: none`, `outline: 2px`,
+`:focus-visible` true on first load with no prior interaction — which is correct
+and must stay. And the offer heading's ring in an earlier picture came from a
+synthetic click in the probe, not from the app. **A tool that renders a state no
+person can reach is the same defect as a gate that measures the wrong thing**,
+and it twice nearly bought a fix to behaviour that was already right.
+
+**2.10.2 — THE CARD STOPPED TELLING YOU ABOUT THE THING IN FRONT OF YOU.**
+Found by rotating the offer six times and reading what the card actually said,
+which is the same method as 2.10.1 and the reason that release exists.
+
+**`Fixed today: <the head>` was on the card on every one of six rotations, and
+named the head itself on two of them.** A real date today is the first reason
+`nextUp` ranks on, so the next unmoveable thing today and the thing being
+offered are the same item **by construction rather than by chance** — the
+line's value is that it names something you are NOT looking at (collisions 7
+and 9, the afternoon being eaten by a 3pm appointment), and against the head it
+has no value left, only length. Card 761px → 728px on that offer. It still
+renders, unchanged, when it names a different item; the focus surface is
+untouched, because nothing there shows a head.
+
+**By identity, not by title.** `nextFixedToday` now returns the node's `id`. A
+title comparison would have done at the one call site and would have been a
+quiet bug the day two things are both called *Ring the plumber back*, which in
+a planner is not a hypothetical. Three tests, both directions — the suppression
+must not be satisfiable by a line that never renders (hub LESSONS §100).
+
+**A CLAIM IN 2.10.1's NOTES WAS WRONG AND IS CORRECTED HERE.** It said the
+also-available list was "still wrong", on the strength of `BEHIND_CAP = 5`
+meaning a card headed *one thing* could list six. **`BEHIND_CAP` is in
+`nextup.ts` and never reaches the card.** `offerNow` applies `OFFER_CAP = 2`
+(ADR-0060), and the measurement says so: two also-available rows on every one
+of six rotations, never more. The card is the head, one more piece of work of a
+different kind, and the wish — which is exactly what ADR-0060 decided, with its
+reasoning about comparison versus preference intact.
+
+**That claim was inherited and repeated without being checked, in the release
+whose entire subject is not checking.** It reached a shipped patch note. The
+lesson is not "look at the screen" — 2.10.1 already learned that — it is that a
+number read out of one file does not tell you what a surface renders, and the
+only thing that does is the surface.
+
+**What that leaves genuinely open on the card:** the line saying how much of
+today is left. It carries a shrinking number on the same card as a line
+(`nextFixedWords`) that is forbidden by test from carrying any number at all.
+It is already stripped in *Just one thing*. Whether it belongs on the ordinary
+card is a real question and it is not settled.
+
+**AND THE LANDING PAGE IS 5.4 SCREENS, SHOWING EVERY ITEM TWICE.** Measured at
+390px on the thirteen-item sample, with the whole page finally rendered:
+**4,584px tall.** `#held` — the full inventory — is **2,387px of the 4,070px
+runway, 58% of it**, and it repeats every item already shown in the offer card,
+in *Needs a new plan* and in *With other people*. Seven items appear two or
+three times on one surface.
+
+**The research says this plainly and has since it was written.** Collisions
+entry 1: *"A long list raises the activation threshold of every item on it."*
+The app's answer to that entry is the single computed Next-up card — and the
+list it exists to replace sits directly beneath it, twice over.
+
+**It is not obvious what to do and that is the honest state.** Entry 6 says a
+switch is expensive and ADR-0099 already named scroll-versus-switch as the open
+question that cannot be settled from a chair, so moving the inventory behind a
+door is not automatically right. Nor can the inventory silently omit what is
+shown above it — *"what you are holding"* that is not everything you are
+holding breaks the promise law 1 exists for. **What is not a trade-off is the
+repetition itself**, and no entry defends it. This is the next release and it
+wants an ADR, not a patch.
+
+**2.10.1 — THE SCREEN WAS NEVER LOOKED AT.** Asked whether the UI arrived at by
+iteration was the UI a version designed whole would have, the answer given was
+pixel offsets and control counts. **The app was never rendered and looked at.**
+Twenty tools in this repo measure it and, until this release, none showed it.
+
+**What one picture had that no number did.** Eleven outlined rounded rectangles
+of identical weight, so nothing led. The task itself — the one thing this app
+exists to hand somebody — drawn as a bordered box identical to the capture field
+above it and the smaller-step field below it: **the item was rendered as a form
+to fill in.** Six verbs as six full-width boxes stacking one per line. Three
+dark-filled buttons of equal loudness on one screen. Four lines of prose
+explaining what a first physical action is, printed on the thing you are trying
+to begin. Every one of these is visible at a glance and every gate was green,
+correctly — they measured what they measured.
+
+**Now:** the title is large plain underlined type, `Done` is the single loud act,
+`Not this` its quiet pair, and *Start smaller*, *This one is heavy*, *That is
+enough for now* and *Just one thing* are underlined words rather than boxes.
+Nothing was hidden and nothing moved. The smaller-step field stands open only
+when asked for, and the four lines went with it. The proof line and the ways
+elsewhere are a hairline instead of a heavy border.
+
+**`tools/look.mjs` ships with it (`npm run look`).** It asserts nothing — no
+counts, no budget, no exit code to satisfy. It renders the app at 390×844 and
+writes four pictures: first run, with things in it, the whole page including
+what is below the fold, and "Just one thing".
+
+**And it had the same defect it was built to catch, within an hour.** The first
+version drove the app with `element.click()` inside `page.evaluate` — a synthetic
+click, which Chromium does not count as a user interaction, so the focus modality
+stays wherever it was. Its picture of "Just one thing" showed a 3px focus ring
+painted around the heading, the loudest box on a screen whose whole purpose is
+that nothing is loud. **That ring is not in the app.** Tapping the same control
+with a real touch event gives `:focus-visible: false` and `outline: 0px`;
+reaching it by keyboard gives the 3px ring, which is exactly right. A tool built
+to show the truth about a screen was rendering a state no person can reach, and
+it very nearly bought a "fix" to correct behaviour. Real input events only, and
+the reason is written in its header.
+
+**Three checks were asserting a route that no longer exists**, and all three
+failed on the next run rather than passing quietly, which is the design working:
+the a11y and smoke walks both typed into a field that is now behind a door, and
+smoke asserted that finishing a first step leaves the field standing open — the
+exact thing this release removed. Its intent survives (naming one first step is
+not a one-shot) so it now asks for the quiet word instead. Asking for the field
+is a state that did not exist before, so it joined the contrast registry in the
+same commit (hub LESSONS §28) and is measured in both themes; the four entries
+that had been registered against `next up` moved with it.
+
+**What this release left on the card** is recorded accurately under 2.10.2
+above — the also-available list is ADR-0060 working as decided, and the
+`BEHIND_CAP` claim that appeared here was wrong.
 
 **2.10.0 — JUST ONE THING MEANS THE WHOLE SCREEN.** Reported from a device, on a
 screen showing exactly one task: *terrifyingly busy, and I don't even want to

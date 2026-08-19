@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-2.10.0';
+const CACHE = 'quietkeep-2.11.0';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -19,6 +19,19 @@ const SHELL = [
   './brand/icon-512.png',
   './brand/apple-touch-icon.png',
   './brand/favicon-32.png',
+  // The walkthrough's illustrations (2.10.4). Precached because the first run
+  // is the one screen these exist for, and a tutorial with five broken images
+  // is worse than a tutorial with none. 277KB across ten files, 1x, generated.
+  './tour/step-2-light.png',
+  './tour/step-2-dark.png',
+  './tour/step-3-light.png',
+  './tour/step-3-dark.png',
+  './tour/step-4-light.png',
+  './tour/step-4-dark.png',
+  './tour/step-5-light.png',
+  './tour/step-5-dark.png',
+  './tour/step-6-light.png',
+  './tour/step-6-dark.png',
 ];
 
 // THE NEW WORKER WAITS. It does not take over on its own (Doctrine §7h.1).

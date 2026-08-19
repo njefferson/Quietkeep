@@ -196,6 +196,28 @@ export function purgeWords(mode: PurgeMode, count: PurgeCount, savedACopy: boole
   const pairing = mode === 'start-again' && paired
     ? ' It also unpairs this device, so it stops syncing: without that, the other device would simply fill this one back up. The other device keeps its own copy — to empty that one too, do this again over there.'
     : '';
+  // NOTHING TO LOSE MEANS NOTHING TO WARN ABOUT (2.10.3, found by photographing
+  // this sheet on an empty store). `purgeSummary` three lines below has always
+  // said "There is nothing here to clear." — and this function then said "This
+  // clears 0 things — everything you are keeping here, people, weights and
+  // private entries included" and "You have not saved a copy", over a store with
+  // nothing in it, above a field demanding the word `clear` be typed out.
+  //
+  // A backup warning about an empty planner is a chore invented out of nothing,
+  // which is the one thing this app is least allowed to do — the same defect
+  // 2.9.4 fixed on the diagnostic report, on a surface nobody had looked at.
+  //
+  // START AGAIN IS NOT THE SAME CASE and must not be folded in. It erases the
+  // LOG, so a store holding nothing may still have a history worth a copy; the
+  // no-op is only when the events are gone too.
+  const nothingToDo = mode === 'clear'
+    ? count.things === 0
+    : count.things === 0 && count.events === 0;
+  if (nothingToDo) {
+    return mode === 'clear'
+      ? 'There is nothing here to clear, so this does nothing.'
+      : 'There is nothing here and no record of anything, so this does nothing.';
+  }
   const body = mode === 'clear'
     ? `This clears ${things} — everything you are keeping here, people, weights and private entries included, not only the work the gauge counts. Everything that happened stays in the log, so a copy you export afterwards still has all of it.`
     : `This replaces everything with an empty planner — ${things} and all ${count.events} records of what happened. It cannot be undone from inside the app.${pairing}`;

@@ -29,6 +29,22 @@ interface Step {
   heading: string;
   /** One paragraph per string — rendered with textContent, never innerHTML. */
   body: string[];
+  /**
+   * The part of the app this step is describing, pictured (2.10.4).
+   *
+   * `step` numbers the file in `public/tour/`; `tools/tour-shots.mjs` renders
+   * both themes from the running app and `npm run tour:check` refuses to pass
+   * once the markup or stylesheet has moved underneath them. A help screen
+   * illustrated with a UI that no longer exists is worse than one with no
+   * pictures at all: prose that is out of date reads as out of date, and a
+   * screenshot reads as proof.
+   *
+   * `alt` IS WRITTEN BY HAND and cannot be generated. It says what the picture
+   * MEANS to somebody who cannot see it, which is not the same as listing what
+   * is in the rectangle — and this is a first-run screen, where a reader knows
+   * least about the app and can least afford a description that assumes it.
+   */
+  picture?: { step: number; alt: string };
 }
 
 /** Computed per show, not at import: the last step's privacy sentence must
@@ -48,6 +64,7 @@ const stepsNow = (): readonly Step[] => [
       'The box at the top is where everything begins. Type whatever is on your mind and press *Hold it*.',
       'One line, nothing to fill in, no folder to choose. Get it out of your head first; the sorting comes later.',
     ],
+    picture: { step: 2, alt: 'The box at the top of the screen, with the words "ring the plumber back about the tap" typed into it, and a Hold it button beside it.' },
   },
   {
     heading: 'It sorts and times itself',
@@ -55,6 +72,7 @@ const stepsNow = (): readonly Step[] => [
       'When you have a few, Quietkeep walks you through them one at a time, with a choice you cannot get wrong.',
       'Then it gives each one a moment to come back to you, and hands you the single thing worth doing now. You never file anything or set a reminder by hand.',
     ],
+    picture: { step: 3, alt: 'One captured thing shown on its own, above eight plain choices: Do now, Next action, Waiting for, Someday, Reference, Trash, Put it somewhere, and Not this one. Each choice carries a short line saying what it means.' },
   },
   {
     heading: 'One thing at a time',
@@ -62,6 +80,7 @@ const stepsNow = (): readonly Step[] => [
       'It offers you a small number of things — usually two, chosen to be unalike, so picking is a preference rather than a comparison. Each one says why it is here: a date arrived, something it was waiting on is done, a place it lives came round.',
       '*Not this* moves past it, as often as you like, and records nothing at all. When you finish something the screen settles and waits — nothing new arrives until you ask for it. That gap is on purpose.',
     ],
+    picture: { step: 4, alt: 'A card headed Next up, holding one task, with the reason it was chosen underneath it. Two buttons, Done and Not this, and then four quieter words: Start smaller, This one is heavy, That is enough for now, and Just one thing.' },
   },
   {
     heading: 'Not every day is the same',
@@ -69,6 +88,7 @@ const stepsNow = (): readonly Step[] => [
       'You can say how heavy a thing is, and how the day is going. Neither shortens the list — they change which things come forward, because being handed less on a bad day is the app deciding what you can manage.',
       'And when the screen itself is too much, *Just one thing* strips it back to a single item and almost nothing else. Nothing turns that on for you. The ⓘ explains all of it, whenever you want it.',
     ],
+    picture: { step: 5, alt: 'The same card with almost everything stripped away — the task, Done, Not this, That is enough for now, and a way back to the rest of the app.' },
   },
   {
     heading: 'It is yours, and it is all here',
@@ -85,6 +105,7 @@ const stepsNow = (): readonly Step[] => [
       // day one rather than on the day it matters.
       'That panel also writes you a copy of everything, as a file you keep. It is the one copy that survives a new device or a cleared browser, and bringing it back is one button in the same place.',
     ],
+    picture: { step: 6, alt: 'A short list of plain facts about where your writing is kept on this device, a sentence saying the browser has not yet promised to keep it, and two buttons: Ask the browser to keep it, and Export a copy.' },
   },
 ];
 
@@ -130,6 +151,28 @@ export function showTour(session: Session, onFinish?: () => void): void {
       p.append(...namedControls(text));
       return p;
     }));
+    // THE PICTURE, IF THIS STEP HAS ONE. `<picture>` with a `prefers-color-scheme`
+    // source rather than a swap in script: this app takes its light or dark from
+    // the operating system and has no toggle of its own, so the browser can
+    // choose correctly with no JavaScript and no flash of the wrong one.
+    //
+    // `loading="eager"` deliberately — this is a modal the reader is already
+    // looking at, and a lazily-loaded illustration that arrives after the words
+    // is a layout shift on the first screen anybody ever sees.
+    if (step.picture) {
+      const pic = document.createElement('picture');
+      const dark = document.createElement('source');
+      dark.media = '(prefers-color-scheme: dark)';
+      dark.srcset = `./tour/step-${step.picture.step}-dark.png`;
+      const img = document.createElement('img');
+      img.src = `./tour/step-${step.picture.step}-light.png`;
+      img.alt = step.picture.alt;
+      img.className = 'tour-shot';
+      img.loading = 'eager';
+      img.decoding = 'async';
+      pic.append(dark, img);
+      bodyEl.append(pic);
+    }
     // Dots are decorative; the live "Step N of M" is the real announcement.
     dots.replaceChildren(...STEPS.map((_, n) => {
       const dot = document.createElement('span');
