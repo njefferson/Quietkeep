@@ -665,12 +665,294 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.11.0**
-- **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
-  `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
-  SHA — read from the runs, not inferred from a clean merge)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.2**
+- **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
+  `10d329f`; the promoted tree asserted byte-identical to the verified staging
+  tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
+  Spine and the push-on-main workflow all green **on `10d329f` itself**, read
+  from the runs. This line briefly said the receipt had not been read yet, which
+  was the honest state at the time: the previous promote's green belongs to
+  `c909104` and is a fact about 2.10.0 and about nothing else.)
 
-**Staging is 2.11.0 and it is waiting on you.** Production is 2.10.0.
+**AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
+WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
+runs — seven concluded FAILURE, three were cancelled by a superseding push, none
+succeeded.** Every one of those pushes was verified against the remote —
+correctly — and reported as landed.
+
+The step ran `branch-guard.mjs --repo .` and failed every time on the same line:
+`.git/hooks/pre-commit is MISSING`. That tool asserts four things. Two are about
+the REPO — the tracked `.githooks/pre-commit` exists, and matches what
+`.branch-guard` declares. Two are about ONE CLONE — `.git/hooks/pre-commit`
+exists, and matches the tracked copy. **`actions/checkout` leaves `.git/hooks`
+empty by definition**, so the second pair can never hold in CI.
+
+**It failed from the commit that added it** (`20e6146`), and it was watched
+passing LOCALLY, where the hook is installed — which is the one place it proves
+nothing about CI. That is hub LESSONS 53 a second time in a different mechanism:
+a session that adds a hard gate to a pipeline has just built a new way for its
+own work to silently not arrive, and is at its least likely to look because it
+just watched the tool succeed.
+
+Fixed with `--artefact` in the hub (`0208a03`), which runs the two repo checks
+and PRINTS the two it skipped rather than dropping them. **Not `--install`
+first** — that WRITES the tracked file, so a drifted artefact would be repaired
+on the spot and the check would pass over the one defect it exists to find.
+Verified by reproducing the CI condition locally: with `.git/hooks/pre-commit`
+removed the plain command exits 1 and `--artefact` exits 0, and with drift
+planted in the tracked hook `--artefact` exits 1.
+
+**VERIFIED GREEN — run 32297197356 on `fa19442`, step 9, conclusion `success`,
+at 20:12:27, thirteen seconds into the run.** Read from the run, not from the
+push.
+
+**And the step was moved to position 9 from position 30.** It needs nothing but
+the two checkouts, and it had been sitting behind the chromium install and every
+browser walk. On the last healthy full run (32261983527) the guard's answer
+arrived at 14:12:51, **six minutes and fifty-four seconds** after the job
+started; from position 9 it arrives in seven to thirteen seconds. Cheap checks
+that depend on nothing belong where a failure is answered in seconds.
+
+**A FAILURE THERE ALSO SUPPRESSED SEVEN GATES, WHICH IS THE REAL COST.** A
+failed step stops the ones after it, so on every red run steps 31 to 37 were
+`skipped`: `controls:check`, `collisions:check`, `adr:check`, `touch:check`,
+`notify:check`, `sample:check` and `storage:check`. **Seven gates were not
+running in CI at all for those runs**, and the run page said `skipped` rather
+than anything alarming.
+
+**The reason it went unseen: a push was verified and a RUN was not.** The push
+output has never once known whether CI passed.
+
+**SPINE IS GREEN — run 32298044605 on `aa028a3`, conclusion `success`, all 37
+steps, 9m37s.** The first fully green Spine on staging since the guard step was
+added, on the tree carrying 2.12.2. **Every one of the seven suppressed gates ran
+and passed**, along with the smoke walk (3m02s), the update walk, the rendered
+a11y audit (2m58s) and the reading budget.
+
+**THE `Install chromium` STEP WAS NOT STALLING, AND THIS SECTION SAID TWICE THAT
+IT WAS.** Completed observations, off the timestamps: **24s, 1m57s, 4m45s — all
+successful.** It varies, and that is all the evidence supports. The one long
+reading, 10m35s on run 32296164308, ended because that run was **cancelled by a
+subsequent push** and not because the step gave up. Three pushes inside ten
+minutes cancelled three runs in a row; the truncated observations were then read
+as evidence of stalling, when they are evidence of cancelling. **The pushes were
+mine.** `timeout-minutes` stays as headroom over the slowest completed run — a
+gate that never answers is worse than one that fails — but it is a net, not a
+fence around a known fault.
+
+**THREE claims in this section were wrong before they were right, all three
+stated from impression rather than read off the source.** "Eight consecutive
+pushes" for what the run list says is ten runs and seven failures. "25+ minutes"
+for what the timestamps say is 10m35s. And a *hang* for a step that has been
+observed completing three times. Recorded rather than quietly fixed, because the
+second happened after the lesson about the first was written and the third after
+the lesson about the second. The pattern is one thing: **a conclusion drawn from
+an observation that was never allowed to finish**, then written in the voice of a
+measurement.
+
+**Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
+releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one
+subject: the landing surface saying less.
+
+**2.12.2 — THE OFFER CARD STATES NO NUMBER THAT MOVES ON ITS OWN
+([ADR-0103](docs/adr/0103-the-card-states-no-moving-number.md)).** `#nextup-left`
+— *"About 2h 30m left today."*, called **the one permitted number** since V2
+stage 5 — is off the card. This settles the question 2.12.0's notes left open,
+and it was settled from material already in the repo rather than by taste.
+
+**Four things said it, and none of them had been put beside the others:**
+
+- **The card forbids exactly this three lines lower.** `nextFixedWords` names
+  the next unmoveable thing and is held by test to no number at all, on the
+  reasoning in `src/clock.ts` that a shrinking number against an aversive thing
+  adds aversion at the moment of approach. The remainder shrank every minute.
+- **The header clock is opt-in on that same reasoning** — *"a clock is the most
+  charged piece of chrome there is, because half the point of this app is that a
+  day is not a countdown"* (`src/ui/about.ts`, written when it was built). The
+  card said the same arithmetic to everybody, undeclinable, and nothing anywhere
+  argued why it was affordable there.
+- **With the clock on, the app said it twice at once** — header and card, two
+  phrasings, no coordination between them. That is ADR-0102's defect at line
+  granularity instead of block.
+- **Its own defence needed a second half that never shipped.** The line was
+  prospective — a fit judgement before an attempt — and a fit judgement needs
+  how long the thing takes. `rangeWords` renders in the detail sheet and nowhere
+  else. V2 stage 5 shipped a pair that never met.
+
+**And "Just one thing" had already decided it, one surface short.** The mode
+stripped this line with the reasoning that on the worst day every hour costs
+most. No paragraph ever argued the ordinary day. There is no property that
+distinguishes the two surfaces.
+
+**`timeLeftWords` is DELETED, not left exported.** ADR-0031: a projection nothing
+renders is the log lying rather than merely silent — and `src/duration.ts` is the
+file that was written with no reader and is named in `smoke.mjs` for it. An
+export kept warm "in case" is that state with a nicer story. `remainderWords` in
+`src/clock.ts` is untouched; the fact keeps the home entry 9 of
+`docs/nd-collisions.md` gives it.
+
+**Two gate repairs came out of the same work, and neither was the subject:**
+
+- **`adr:check` read one link per row and nothing else.** The `extends`/`narrows`
+  links under each row and every cross-reference inside a record were unchecked,
+  and **five were broken** — naming a plausible slug the file has never had, like
+  `0083-the-panel-stops-folding.md` for `0083-four-destinations.md`, which is
+  what that record is about rather than what it is called. Fixed, and the check
+  added; watched red on a plant that only the new check can see, four `ok` beside
+  one `FAIL`.
+- **`gates:audit` left its plant in the tree when it was killed.** `finally`
+  covers a throw and does not cover a signal, and a full audit is many minutes of
+  synchronous child processes. Observed: a run interrupted during the a11y plant
+  left `public/app.css` carrying `--line: #F3F0E8` — a near-invisible control
+  boundary in the deployed stylesheet, planted by the tool whose job is proving
+  defects get caught, and invisible to every gate that does not measure contrast.
+  The restore is now registered process-wide as well.
+
+**2.12.1 — "HOLD WHAT I COPIED" IS GONE, BECAUSE PASTE ALREADY DID ALL OF IT.**
+Reported as redundant, and checking settled it: `src/ui/app.ts` has a `paste`
+listener on the capture field that calls the SAME `takeText` the button called.
+Multi-line splitting, the *one thing per line* line and the *Hold it as one
+thing* escape all belong to paste; none of them belonged to the button. It read
+the clipboard for you and nothing else.
+
+**What it did buy was two taps on a tablet** — press it rather than tap the box,
+long-press, choose Paste. A real saving on the capture path, which is the one
+thing that must never break. Against that: a permanent control on the surface
+this app most wants quiet, duplicating a gesture every reader owns, for the less
+common way of putting something down. 2.10.0 counted thirty-one things asked
+before anything could happen and this was one of them.
+
+**The smoke block was repointed rather than deleted**, and that is the part
+worth copying. Every behaviour it asserted still exists via paste, so the block
+now drives a real paste and proves nothing was lost — plus one new assertion
+that the button is gone. **It also needed a REAL keyboard paste**: the handler
+returns early for a single line and lets the browser do the insertion, which a
+synthesised `ClipboardEvent` does not perform, so the first version left the
+field empty and timed out. The driver's limit, not the app's — the same
+instrument-cannot-reach-this-state shape found three times today.
+
+**EVERY GATE HAS NOW BEEN WATCHED FAILING** (`npm run gates:audit`). Twenty-one
+gate scripts; for each one, plant the defect it exists to catch, run the exact
+command CI runs, require a non-zero exit, restore, and require green again — a
+"gate" that fails on everything is equally useless and would sail through the
+first half of that.
+
+**All twenty-one are red on their plant and green again after.** That is the
+first time any of them has been held to the standard this repo already wrote
+down for the privacy gate: *wired means the exact CI command was seen red on a
+LOCAL plant.*
+
+**It found no broken gate. It found seven broken PLANTS, and that distinction is
+the whole value of the tool.** The first run blamed seven gates; every one was
+doing its job and being aimed at with the wrong lever:
+
+- `brand:check` measures declared colour PAIRS, not the wordmark and not the
+  icon file — rendering the assets is `npm run brand`, not `:check`.
+- `sample:check` builds its store from `src/big-sample.ts`, not `src/sample.ts`.
+  Two plants edited a file it never reads and it kept correctly reporting
+  16 node kinds of 16.
+- `emitters:check` tracks only nouns that exist in the CODE, so an invented
+  vocabulary entry is none of its business; the defect is a real kind losing
+  its entry.
+- `notify:check` inspects only files that actually call a notification API.
+  Nothing does yet, so it reports itself **armed and dormant** — banned copy in
+  an unrelated const is correctly ignored. It goes red the moment a real
+  emitter carries it.
+- `size:check` measures the BUILT app. A plant in `src/` without a rebuild never
+  reaches it, which is the gate being right about what a person actually reads.
+- `writegate:check` and `editions:check` were both aimed at the wrong artefact.
+
+**And the harness had the defect it was built to hunt, within the hour.**
+`String.replace` returns the original string when its pattern is not found —
+silently — so a plant written against a reworded line mutates nothing, the gate
+correctly stays green, and the audit reports the gate as broken. It now refuses
+a plant that changed no bytes. **That is the second instrument today to carry
+the fault it was made to find** (`tools/look.mjs` rendered a focus state no
+person can reach), which is worth saying plainly rather than quietly fixing.
+
+**2.12.0 — THE FRONT PAGE STOPPED BEING A LIST** ([ADR-0102](docs/adr/0102-the-inventory-is-folded.md)).
+Measured at 390px on the thirteen-item sample, whole page rendered: the runway
+was **4,247px** and `#held` was **2,387px of it — 56% of the landing surface was
+one list.** It is **2,228px** now.
+
+**Seven items were on that surface twice or three times** — the offer's head,
+its two also-available rows, the replan card and the with-someone card were all
+also rows in the inventory below. Two carried **different acts in the two
+places**: *Put the recycling out for collection* offered **Not this one** in
+*Needs a new plan* and **Work on this · Done** two screens down.
+
+**Collisions entry 1 has said this since it was written:** *"a long list raises
+the activation threshold of every item on it"*, and the single Next-up card is
+this app's stated answer to that entry. It was sitting on top of the pile rather
+than instead of it.
+
+**Why a fold and not a sheet, and why this is not the fold ADR-0083/0088
+refused.** Their finding was right and general — *"a fold changes how much stands
+in front of you and not how far you have to travel, and travel is what was
+expensive"* — and it was derived from SIBLING folds mid-surface, where opening
+one pushes the rest out of reach. `#held` is the LAST block; nothing follows but
+the footer, so the two quantities are the same one and closing it removes the
+travel rather than rearranging it. And a fold is **not a switch**: entry 6 says a
+forced transition can cost the day and ADR-0099 left scroll-versus-switch as the
+question nobody may settle from a chair. A sheet would have taken that trade.
+
+**No counts, and that is a rule.** ADR-0032: *"groups are headings, not counts of
+things undone. There is no tally."* ADR-0060 retired *"8 things are asking"* and
+put the honest totals in the gauge. A folded list captioned with numbers is that
+backlog headline rebuilt. The summary names the groups and states no number, read
+from `heldGroups` so a renamed group cannot leave it lying.
+
+**Every route into it opens it.** `#to-held` and the skip link both target
+`#cards`, which is inside — a jump to a closed fold lands on a heading, moves
+focus into something with no visible content, and reports success.
+
+**The separation gate caught a defect I introduced, first time it has stopped one
+arriving.** `#restore-go` and the new summary were **0.0px apart on every state**
+— the exact shape 2.9.3 was written for.
+
+**And the folded state is audited as its own state**, non-vacuity first: it is
+asserted closed AND asserted to be naming groups, because every other assertion
+is trivially true of a fold that was never closed.
+
+**Staging and production were level at 2.11.0.** Promoted 2026-08-19, `10d329f`,
+with the promoted tree asserted byte-identical to the verified staging tree —
+`e38fe6e` on both — rather than inferred from a clean merge. Four releases went
+in it: 2.10.1, 2.10.2, 2.10.3 and 2.11.0.
+
+**AND THE PICTURES CANNOT GO STALE WITHOUT SOMETHING REFUSING.** The gate that
+shipped with 2.11.0 only *detected* drift and asked a human to remember. Three
+layers now, and only the middle one is new work:
+
+**At the moment of the change** — `.branch-guard` gained `also=` in the hub, so
+the generated pre-commit hook runs repo-local checks before its branch rule, on
+every commit including a promote. Quietkeep declares
+`also=tools/hooks/tour-fresh.sh`, which refuses a commit whose staged diff
+changes what the pictures are OF while `public/tour/manifest.json` is unchanged.
+**Watched go red on a planted CSS edit, then green after the command it names.**
+It also refuses a manifest that is merely STAGED but records the old UI, which is
+what a reflexive `git add public/tour` produces if the regeneration failed.
+
+**One idempotent fix** — `npm run tour:shots -- --if-stale` compares the recorded
+hash first and does nothing when nothing moved, so the hook is never telling
+somebody to spend a minute they do not need.
+
+**In CI** — `tour:check` as the backstop, plus `branch-guard --repo .`, because
+`--no-verify` walks straight past any hook and a guard that is only local is on
+until the first time somebody is in a hurry.
+
+**OVER-FIRING IS THE SAFE DIRECTION HERE, and that is a real exception to this
+repo's own rule.** A gate that cries wolf normally gets satisfied by reflex — and
+that is dangerous because the reflex is to SUPPRESS. Here the reflex is to
+regenerate, which is the outcome wanted. A coarse hash firing on an edit that
+could not have changed a pixel costs a minute and leaves the tree correct; a
+missed change ships a lie.
+
+**What was deliberately NOT built: a CI job that re-renders and byte-compares.**
+It would have been the obvious design. Two of these pictures show things that
+legitimately differ run to run — whichever sample item is next in the queue, and
+the browser's real free-space figures — so regenerating with nothing changed
+still rewrites four of the ten files. That gate would be permanently red, and a
+gate that is always red is one everybody learns to ignore.
 
 **2.11.0 — THE WALKTHROUGH SHOWS YOU THE THING IT IS TALKING ABOUT.** Six steps
 described an app the reader was looking at and could not see yet — *"the box at
@@ -814,6 +1096,14 @@ today is left. It carries a shrinking number on the same card as a line
 (`nextFixedWords`) that is forbidden by test from carrying any number at all.
 It is already stripped in *Just one thing*. Whether it belongs on the ordinary
 card is a real question and it is not settled.
+
+**SETTLED IN 2.12.2 — the line is gone
+([ADR-0103](docs/adr/0103-the-card-states-no-moving-number.md)).** It was
+settleable the whole time from material already written down: the rule the card
+applies to the line beneath it, the reasoning that made the header clock opt-in,
+the duplicate that appears the moment the clock is on, and the fit judgement the
+card never had the other half of. **Nothing new had to be learned and nobody had
+to be asked** — the four facts had simply never been put beside each other.
 
 **AND THE LANDING PAGE IS 5.4 SCREENS, SHOWING EVERY ITEM TWICE.** Measured at
 390px on the thirteen-item sample, with the whole page finally rendered:

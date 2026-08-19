@@ -187,6 +187,26 @@ function paintJump(): void {
   }
 }
 
+/**
+ * Whether the inventory arrives open (2.12.0, ADR-0102). A VIEW preference, so
+ * it lives in kv beside the lens and the where-now and never in the log — it is
+ * a fact about this device, not about your things.
+ */
+const HELD_OPEN_KEY = 'view.held.open';
+
+/**
+ * Open the folded inventory. Every route that lands INSIDE it calls this first.
+ *
+ * A jump to a closed fold scrolls to a heading, moves focus into something with
+ * no visible content, and reports success — which is the false receipt this
+ * repo keeps finding in other costumes. `#to-held` and the skip link both point
+ * at `#cards`, which is inside.
+ */
+function openHeld(): void {
+  const fold = document.querySelector<HTMLDetailsElement>('#held-fold');
+  if (fold && !fold.open) fold.open = true;
+}
+
 function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: (id: string) => void,
                 onFocus?: (n: NodeState) => void): void {
   const list = $('#cards');
@@ -196,6 +216,18 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   // Computed ONCE for the whole render, not per card: a card can then say what it
   // is in or what it holds without each one re-scanning every node.
   const childCounts = liveChildCounts(st);
+
+  // WHAT IS IN THERE, WITHOUT COUNTING IT (2.12.0, ADR-0102). The fold's summary
+  // names every group that has anything in it, in the order ADR-0032 fixed —
+  // and states no number, because ADR-0032 says "groups are headings, not counts
+  // of things undone, there is no tally" and ADR-0060 already put the honest
+  // totals in the gauge three lines up. A folded list captioned with numbers
+  // would be the backlog headline both of them cleared off, rebuilt.
+  //
+  // Read from `groups` rather than from a written list, so a group that is added
+  // or renamed cannot leave this saying something the list does not.
+  const foldWhere = document.querySelector<HTMLElement>('#held-fold-where');
+  if (foldWhere) foldWhere.textContent = groups.map(g => g.title).join(' · ');
 
   // The lens (1.7.0, ADR-0054): a filter over the ROWS of this list and
   // nothing else. `groups` itself stays global — the gauge's "ready" number
@@ -983,7 +1015,14 @@ export async function main(edition?: Edition): Promise<void> {
   // No smooth behaviour: this is a jump, and an animated one both costs time
   // and moves a lot of the screen at once for a reader who may be here because
   // there is already too much moving.
+  //
+  // AND A JUMP INTO A FOLDED BLOCK OPENS IT (2.12.0, ADR-0102). The list is a
+  // disclosure now, closed on arrival. A route that scrolls to a closed fold
+  // lands on a heading, moves focus into something with no visible content, and
+  // reports success — the false-receipt shape this repo keeps finding. Every
+  // route to the list goes through `openHeld` for that reason.
   document.querySelector<HTMLButtonElement>('#to-held')?.addEventListener('click', () => {
+    openHeld();
     const cards = document.querySelector<HTMLElement>('#cards');
     if (!cards) return;
     cards.scrollIntoView({ block: 'start' });
@@ -1255,30 +1294,20 @@ export async function main(edition?: Edition): Promise<void> {
   // one job is worse than an absent one. iOS asks the reader to confirm the
   // paste, which is the gesture the platform requires and is also the right
   // shape: the app never reads the clipboard without being told to, twice.
-  const pasteIn = $<HTMLButtonElement>('#capture-paste');
-  if (typeof navigator.clipboard?.readText === 'function') pasteIn.hidden = false;
-  pasteIn.addEventListener('click', () => {
-    void (async () => {
-      let text = '';
-      try {
-        text = await navigator.clipboard.readText();
-      } catch {
-        // Declined, or the browser refused. Not an error and not framed as one:
-        // the reader either changed their mind or the platform said no, and
-        // neither is something they did wrong.
-        offer.textContent = 'Nothing was taken from the clipboard.';
-        offer.hidden = false;
-        return;
-      }
-      if (text.trim() === '') {
-        offer.textContent = 'There is nothing copied to hold.';
-        offer.hidden = false;
-        return;
-      }
-      takeText(text);
-      (many.hidden ? input : many).focus();
-    })();
-  });
+  // HOLD WHAT I COPIED WAS REMOVED IN 2.12.1, and what it did is worth recording
+  // so nobody rebuilds it. It read the clipboard and called `takeText` — the
+  // SAME function an ordinary paste into the field already calls, a few lines
+  // above. Multi-line splitting, the "one thing per line" offer and the "Hold it
+  // as one thing" escape all came with paste and none of them came with the
+  // button. It bought exactly one thing: on a tablet it saved
+  // tap-field, long-press, Paste down to one tap.
+  //
+  // That is not nothing on the capture path, which is the one thing that must
+  // never break. It is also a permanent control on the surface this app most
+  // wants quiet, duplicating a gesture every reader already owns, for a flow
+  // that is not the common one — capture is usually a thought being typed, not
+  // something being pasted. 2.10.0 counted thirty-one things asked before
+  // anything could happen; this was one of them.
 
   $<HTMLFormElement>('#capture-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -1395,6 +1424,27 @@ export async function main(edition?: Edition): Promise<void> {
   } catch {
     whereNow = null;
   }
+
+  // THE INVENTORY'S FOLD, REMEMBERED (2.12.0, ADR-0102). Somebody who wants the
+  // list open should not have to say so on every load: a preference re-asked
+  // every visit is the app arguing with an answer it already has. Contained the
+  // way every device preference here is — a store that cannot be read costs the
+  // remembered state, never the app, and the default is closed.
+  const heldFold = document.querySelector<HTMLDetailsElement>('#held-fold');
+  if (heldFold) {
+    try {
+      if ((await session.store.getKv<boolean>(HELD_OPEN_KEY)) === true) heldFold.open = true;
+    } catch { /* folded, and the app still starts */ }
+    heldFold.addEventListener('toggle', () => {
+      void session.store.setKv(HELD_OPEN_KEY, heldFold.open).catch(() => { /* view pref only */ });
+    });
+  }
+
+  // AND THE SKIP LINK LANDS SOMEWHERE VISIBLE. It points at `#cards`, which is
+  // inside the fold. Chromium expands a `<details>` for a fragment navigation;
+  // that is not something to rely on across browsers, and the whole point of
+  // this route is that it works for somebody who cannot see where they landed.
+  document.querySelector<HTMLAnchorElement>('a.skip')?.addEventListener('click', () => { openHeld(); });
   setWhereNow(whereNow);
   document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
     whereNow = (e.target as HTMLSelectElement).value || null;

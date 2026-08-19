@@ -99,19 +99,16 @@ export const estimateWords = (n: NodeState): string | null => {
   return e === null ? null : `You said about ${minutesWords(e)}.`;
 };
 
-/**
- * THE ONE PERMITTED NUMBER (V2 stage 5): prospective clock arithmetic.
+/* `timeLeftWords` LIVED HERE AND IS DELETED, NOT ORPHANED (2.12.2, ADR-0103).
  *
- * "About 2h 30m left today." Said BEFORE an attempt, where it can still change
- * what somebody picks up. It is arithmetic on the clock and the day boundary —
- * two facts about the world — and it contains nothing about the person.
+ * It rendered "About 2h 30m left today." at `#nextup-left`, and that line has
+ * come off the offer card. Deleting the projection rather than leaving it for a
+ * future caller is this file's own lesson: ADR-0031 is that a projection nothing
+ * renders is the log lying rather than merely silent, and `src/duration.ts` is
+ * the file that was written with no reader and is named in smoke.mjs for it.
+ * An export kept warm "in case" is the same state with a nicer story.
  *
- * `minutesLeft` comes from `clockFace`, which already asks whose day it is, so
- * at 00:30 with a 3am boundary this reads 2h 29m rather than 23h 59m.
- *
- * Null past the end, rather than "0 minutes left": a day that has run out has
- * nothing useful to say, and saying it in a countdown's voice would be pressure
- * at the hour it costs most.
- */
-export const timeLeftWords = (minutesLeft: number): string | null =>
-  minutesLeft <= 0 ? null : `About ${minutesWords(minutesLeft)} left today.`;
+ * The remainder of the day is still computed and still spoken — by
+ * `remainderWords` in `src/clock.ts`, on the opt-in header clock, which is the
+ * home entry 9 of `docs/nd-collisions.md` gives it. `minutesWords` below stays;
+ * `rangeWords` is its reader. */

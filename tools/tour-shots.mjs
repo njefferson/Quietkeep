@@ -24,6 +24,21 @@
 // So these come out of the running app, and `--check` refuses to pass once the
 // files that decide what the app looks like have changed underneath them.
 //
+// NOT BYTE-REPRODUCIBLE, and that is a property to know rather than a defect to
+// chase. Two of these pictures show things that legitimately differ run to run:
+// the sorting card holds whichever sample item is next in the queue, and the
+// storage panel reports the browser's real figures for free space. Regenerating
+// with nothing changed still rewrites four of the ten files.
+//
+// So there is deliberately NO "CI re-renders and compares the bytes" check. It
+// would be permanently red, and a gate that is always red is a gate everybody
+// learns to ignore — which is worse than the staleness it was meant to catch.
+// Freshness is enforced at the moment of the change instead, by the pre-commit
+// hook (`--staged`), with `--check` as the cheap backstop in CI.
+//
+// It also means `--if-stale` earns its keep: an unconditional regeneration on
+// every build would put four changed binaries in every single diff.
+//
 // WHAT IT DOES NOT DO: write the alt text. That is in `src/ui/tour.ts`, by hand,
 // because alt text says what a picture MEANS to somebody who cannot see it, and
 // nothing that crops a rectangle knows that.
@@ -39,6 +54,33 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(root, 'public/tour');
 const MANIFEST = join(OUT, 'manifest.json');
 const CHECK = process.argv.includes('--check');
+/** Refuse a commit whose staged diff changes what the pictures are OF without
+ *  refreshing them. Run from the generated pre-commit hook — see
+ *  `tools/hooks/tour-fresh.sh` and `also=` in `.branch-guard`. */
+const STAGED = process.argv.includes('--staged');
+/** Regenerate only if the recorded hash no longer matches. Idempotent and cheap
+ *  when nothing has moved, so it is safe to run at any time — which is what
+ *  makes it a reasonable thing for a hook to tell somebody to run. */
+const IF_STALE = process.argv.includes('--if-stale');
+
+// AN UNKNOWN FLAG IS A FAILURE, NEVER A FALL-THROUGH. This file shipped once
+// with `--staged` and `--if-stale` documented in its own header and absent from
+// its code: a `git reset --hard` during a test reverted the tool while leaving
+// the hook that calls it in place, and the hook then ran a full ten-picture
+// browser regeneration on EVERY commit and exited 0 every time. It looked
+// installed, it was watched refusing a planted change BEFORE the reset, and it
+// had refused nothing since.
+//
+// So the argument list is closed. A flag this file does not implement stops it
+// rather than quietly selecting the default behaviour.
+const KNOWN = new Set(['--check', '--staged', '--if-stale']);
+for (const arg of process.argv.slice(2)) {
+  if (arg.startsWith('--') && !KNOWN.has(arg)) {
+    console.error(`\n  ${arg} is not a flag this tool has.`);
+    console.error(`  Known: ${[...KNOWN].join(', ')}\n`);
+    process.exit(2);
+  }
+}
 
 /**
  * The files that decide what is IN these pictures. If any of them moves, the
@@ -183,6 +225,53 @@ async function seed(page) {
   await page.waitForTimeout(400);
 }
 
+// --- refusing a commit that would leave the pictures stale ------------------
+//
+// OVER-FIRING IS THE SAFE DIRECTION HERE, and that is a deliberate answer to
+// this repo's own rule that a gate which cries wolf gets satisfied by reflex.
+// The usual danger is that the reflex SUPPRESSES the check. Here the reflex is
+// to regenerate the pictures — exactly the outcome wanted — so a hash that
+// fires on an edit which could not have changed a pixel costs a minute and
+// leaves the tree correct. A missed change ships a lie.
+if (STAGED) {
+  const { execFileSync } = await import('node:child_process');
+  const staged = execFileSync('git', ['diff', '--cached', '--name-only'], { encoding: 'utf8' })
+    .split('\n').map((l) => l.trim()).filter(Boolean);
+  if (staged.length === 0) process.exit(0);
+
+  const touched = SOURCES.filter((src) => staged.includes(src));
+  if (touched.length === 0) process.exit(0);
+
+  // The manifest is rewritten by every generation, so its presence in the same
+  // commit is the assertion that the pictures were re-rendered against this
+  // change. Checking the PNGs instead would pass on a change that happened to
+  // produce identical bytes while the manifest still recorded the old UI.
+  //
+  // AND IT MUST AGREE WITH THE WORKING TREE, not merely be present. Staging a
+  // manifest generated before the change is the same stale record in a costume,
+  // and it is what a reflexive `git add public/tour` produces when the
+  // regeneration failed.
+  const recorded = existsSync(MANIFEST) ? JSON.parse(readFileSync(MANIFEST, 'utf8')).ui : null;
+  if (staged.includes('public/tour/manifest.json') && recorded === uiHash()) process.exit(0);
+  if (recorded === uiHash()) process.exit(0);
+
+  console.error('');
+  console.error("  REFUSED — this commit changes what the walkthrough's pictures are OF,");
+  console.error('  and the pictures have not been re-rendered.');
+  console.error('');
+  for (const t of touched) console.error(`      ${t}`);
+  console.error('');
+  console.error('  The walkthrough ships photographs of this app. One of a version that no');
+  console.error('  longer exists is worse than none: stale writing reads as stale, and a');
+  console.error('  screenshot reads as proof.');
+  console.error('');
+  console.error('      npm run tour:shots -- --if-stale && git add public/tour');
+  console.error('');
+  console.error('  It takes about a minute and does nothing if nothing moved.');
+  console.error('');
+  process.exit(1);
+}
+
 // --- the drift check, which needs no browser -------------------------------
 if (CHECK) {
   let failed = 0;
@@ -223,6 +312,16 @@ if (CHECK) {
 }
 
 // --- generating -------------------------------------------------------------
+//
+// `--if-stale` exists so the command the hook names is idempotent: it is telling
+// somebody to spend a minute, and it should not spend one that is not needed. It
+// also keeps ten changed binaries out of every unrelated diff, which matters
+// because these are not byte-reproducible — see the header.
+if (IF_STALE && existsSync(MANIFEST)
+  && JSON.parse(readFileSync(MANIFEST, 'utf8')).ui === uiHash()) {
+  console.log('\n  The walkthrough pictures are already of this app. Nothing to do.\n');
+  process.exit(0);
+}
 mkdirSync(OUT, { recursive: true });
 for (const f of readdirSync(OUT)) if (f.endsWith('.png')) rmSync(join(OUT, f));
 

@@ -79,6 +79,35 @@ const dupes = rows.map((r) => r.file).filter((f, i, a) => a.indexOf(f) !== i);
 if (dupes.length === 0) ok('no record is listed twice');
 else fail(`listed more than once: ${[...new Set(dupes)].join(', ')}`);
 
+// --- AND EVERY OTHER LINK RESOLVES TOO (2.12.2) ------------------------------
+//
+// The three checks above read one link per row — the `- **[NNNN](file)**` that
+// opens it. Every OTHER link to a record was unchecked: the `extends` /
+// `narrows` / `supersedes` links in the Status line beneath each row, and the
+// cross-references inside the records themselves. Those are the ones written
+// from memory, and five of them were broken when this was added.
+//
+// The failure is invisible in the same way a missing row is: a link is a link
+// on the page, and it reads as a live cross-reference right up until somebody
+// presses it. Two were in the index's own Status lines and three inside
+// records, all naming a plausible slug the file has never had —
+// `0083-the-panel-stops-folding.md` for `0083-four-destinations.md`, which is
+// what the record is ABOUT rather than what it is CALLED.
+const linkers = [...files, 'README.md'];
+const broken = [];
+for (const from of linkers) {
+  const text = readFileSync(join(ADR, from), 'utf8');
+  for (const m of text.matchAll(/\]\((\d{4}-[a-z0-9-]+\.md)\)/g)) {
+    if (!present.has(m[1])) broken.push({ from, to: m[1] });
+  }
+}
+if (broken.length === 0) {
+  ok(`every cross-reference between records resolves (${linkers.length} files read)`);
+} else {
+  fail(`${broken.length} link(s) to a record that does not exist:`);
+  for (const b of broken) console.log(`          ${b.from} -> ${b.to}`);
+}
+
 if (failed > 0) {
   console.error(`\n${failed} problem(s) with the index.\n`);
   console.error('An ADR that is not in the index is a decision nobody browsing');

@@ -364,6 +364,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const writeStart = Date.now();
   await page.click('#capture-form button[type=submit]');
   await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+
+  // THE INVENTORY ARRIVES FOLDED (2.12.0, ADR-0102), so every assertion below
+  // about `.card` needs it opened first — and this walk timed out on exactly
+  // that, which is the gate working. Opened through the control a finger uses,
+  // not by setting the attribute: a fold that only script can open is not the
+  // route anybody takes.
+  //
+  // ASSERTED CLOSED FIRST. "Open the fold then check the cards are there" would
+  // pass just as well against a fold that was never closed, which is the whole
+  // point of the release.
+  is(await page.locator('#cards .card').first().isVisible(), false,
+    'the inventory arrives folded — the landing surface is not a list');
+  const foldWords = (await page.locator('#held-fold-summary').textContent()) ?? '';
+  is(/Not sorted yet|Ready now|Coming up|Later|On the Menu|Done/.test(foldWords), true,
+    `and the fold says which groups are in there ("${foldWords.trim().replace(/\s+/g, ' ').slice(0, 62)}")`);
+  is(/\d/.test(foldWords), false,
+    'and states no number — ADR-0032 has no tally, and the gauge already holds the totals');
+  await page.click('#held-fold-summary');
   await page.waitForSelector('.card');
   const writeMs = Date.now() - writeStart;
   is(await page.locator('.card').count(), 1, 'one card after capture');
@@ -510,7 +528,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // reference platform, so anything copied elsewhere arrives only if somebody
   // opens Quietkeep and puts it in. This is that door, and the thing it must
   // never do is write.
-  console.log('\nHold what I copied — a way in that lands in the right place');
+  // DRIVEN BY A REAL PASTE SINCE 2.12.1, when the `Hold what I copied` button
+  // was removed. Every behaviour below belonged to `takeText`, which an ordinary
+  // paste into the field has always called — the button only read the clipboard
+  // for you. So this block is not deleted with it; it is pointed at the route
+  // that remains, which is what actually proves nothing was lost.
+  console.log('\nPasting into capture — a way in that lands in the right place');
+  //
+  // A REAL KEYBOARD PASTE, not a synthesised ClipboardEvent. The handler returns
+  // early for a single line and lets the BROWSER do the insertion — which a
+  // dispatched event does not perform, so the synthetic version left the field
+  // empty and timed out. That was the driver's limit, not the app's, and it is
+  // exactly the shape this repo keeps finding: an instrument reproducing a state
+  // no person can reach. Pressing the keys covers both paths.
+  const pasteInto = async (text) => {
+    await page.evaluate((t) => navigator.clipboard.writeText(t), text);
+    await page.focus('#capture');
+    await page.keyboard.press('ControlOrMeta+KeyV');
+  };
   const countEvents = async () => page.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -519,26 +554,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const clipBefore = await countEvents();
-  await page.evaluate(() => navigator.clipboard.writeText(
-    'ring the school\nbins out\nbook the car in'));
-  await page.click('#capture-paste');
+  await pasteInto('ring the school\nbins out\nbook the car in');
   await page.waitForSelector('#capture-many:not([hidden])');
   await page.waitForFunction(() =>
     (document.querySelector('#capture-many')?.value ?? '').includes('bins out'));
   is((await page.locator('#capture-many').inputValue()).split('\n').length, 3,
     'what was copied arrives intact, one line per line');
   is(await countEvents(), clipBefore,
-    'and NOTHING is written by pressing it — the button fills the box, it does not capture');
+    'and NOTHING is written by pasting — it fills the box, it does not capture');
   is(await page.locator('#capture-offer').isVisible(), true,
     'it says what pressing Hold it will do, rather than deciding for you');
+  is(await page.locator('#capture-paste').count(), 0,
+    'and the clipboard button is gone — paste already did all of this (2.12.1)');
   // A single line is the other reading, and must not open the room.
   await page.fill('#capture-many', '');
   await page.click('#capture-room');
-  await page.evaluate(() => navigator.clipboard.writeText('one thing only'));
-  await page.click('#capture-paste');
-  // The handler is async — the click returns when it is DISPATCHED, not when the
-  // clipboard read resolves. Asserting straight after read an empty box and
-  // reported a defect in working code.
+  await pasteInto('one thing only');
   await page.waitForFunction(() =>
     document.querySelector('#capture')?.value === 'one thing only');
   is(await page.locator('#capture').inputValue(), 'one thing only',
@@ -1225,20 +1256,53 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openSurface(tpage, 'about');
   await tpage.click('#about-close');
 
-  console.log('\nHow long things take (V2 stage 5)');
-  // The two ENDS and never an average, and the ONE permitted number. Asserted
-  // on the built app because a projection nothing renders is the log lying
-  // rather than merely silent (ADR-0031) — src/duration.ts was written with no
-  // reader, which is exactly the defect this repo has already shipped once.
-  const leftLine = await tpage.evaluate(() => {
-    const el = document.querySelector('#nextup-left');
-    return { hidden: el?.hidden, text: el?.textContent ?? '' };
+  console.log('\nThe offer card states no number that moves on its own (2.12.2)');
+  // "THE ONE PERMITTED NUMBER" WAS `#nextup-left` AND IT IS GONE (ADR-0103).
+  //
+  // Asserted on the BUILT app, from the screen, because that is where the defect
+  // was: the element and its projection could each be deleted while a stale
+  // build kept rendering the line, and this walk is the only thing here that
+  // looks at what is actually on the page.
+  //
+  // Both halves. The line is absent from the card, AND the fact it carried is
+  // still reachable — it lives on the opt-in header clock, which is the home
+  // entry 9 of docs/nd-collisions.md gives it. A removal that also deleted the
+  // fact would be a different change from the one that was decided.
+  const cardNumbers = await tpage.evaluate(() => {
+    const card = document.querySelector('#nextup');
+    const visible = [...(card?.querySelectorAll('p, span, li') ?? [])]
+      .filter(el => el.checkVisibility?.() ?? !el.hidden)
+      .map(el => el.textContent ?? '');
+    return {
+      leftPresent: !!document.querySelector('#nextup-left'),
+      sayingLeftToday: visible.filter(t => /left today/i.test(t)),
+    };
   });
-  is(leftLine.hidden, false, 'the offer says how much of the day is left');
-  is(/left today/.test(leftLine.text), true,
-    `and says it in words ("${leftLine.text}")`);
-  is(/%|\bof\b.*\bdone\b|should|hurry|only|behind/i.test(leftLine.text), false,
+  is(cardNumbers.leftPresent, false,
+    'the day-remainder line is not in the card markup at all');
+  is(cardNumbers.sayingLeftToday.length, 0,
+    `and nothing on the card says how much of today is left (found ${
+      JSON.stringify(cardNumbers.sayingLeftToday)})`);
+
+  // The fact still has a home: switch the clock on and read it there. It is
+  // opt-in on the stated reasoning that "a day is not a countdown", which is
+  // exactly why the card may not say it unasked.
+  await openSurface(tpage, 'sheet-group-extras');
+  await tpage.click('#clock-on');
+  await tpage.waitForFunction(() => {
+    const el = document.querySelector('#clock');
+    return !!el && !el.hidden;
+  });
+  const clockLine = await tpage.evaluate(() =>
+    document.querySelector('#clock-words')?.textContent ?? '');
+  is(/left/.test(clockLine), true,
+    `and the clock, once asked for, still says what is left of the day ("${clockLine}")`);
+  is(/%|should|hurry|only|behind/i.test(clockLine), false,
     'with no percentage, no instruction and no judgement in it');
+  await tpage.click('#clock-off');
+  await tpage.waitForFunction(() => document.querySelector('#clock')?.hidden === true);
+  await openSurface(tpage, 'about');
+  await tpage.click('#about-close');
 
   console.log('\nWhen your day ends (V2 stage 5)');
   // Everything meaning "today" asks this, and a preference you must restate

@@ -2,7 +2,7 @@
 
 **Status:** Accepted · **Date:** 2026-08-18 · **Shipped:** 2.9.0 ·
 **Follows:** [0099](0099-the-first-screen.md) ·
-**Touches:** [0083](0083-destinations.md), [0090](0090-the-way-past-the-stack.md), [0093](0093-a-way-to-each-part-of-the-page.md)
+**Touches:** [0083](0083-four-destinations.md), [0090](0090-a-way-past-the-stack.md), [0093](0093-a-way-to-each-part-of-the-page.md)
 
 ## Decision
 

@@ -1,6 +1,54 @@
 # ADR-0025 · The mark is drawn as SVG; the social background is generated
 
-**Status:** Accepted · **Date:** 2026-07-28
+**Status:** Accepted, and **the mark it chose is now known to fail its own rule** ·
+**Date:** 2026-07-28 · **Finding added:** 2026-08-19
+
+> **The drawn mark reads as a prison cell.** A warm arched form inside a dark
+> rounded square, on four sides. Reported from use.
+>
+> This record already rejected a candidate whose silhouette — round top,
+> straight sides, flat base — read as a **headstone**, and called that "the worst
+> reading available for an app whose promise is that nothing you put in is lost".
+> The fix below made the outer form a rounded square and kept the arch "only in
+> the warm opening". **So the disqualifying silhouette was never removed; it was
+> moved inward and then enclosed.** For an app whose users are people who feel
+> trapped by what they are carrying, a cell fails for the same reason the spiral
+> does.
+>
+> **And there is an argument that it is worse than a cell — an inference, not a
+> measurement.** `docs/nd-collisions.md` entry 3 — the thesis, and the
+> best-evidenced entry in the catalogue — is that *a thing that leaves the visual
+> field leaves existence; visible is the only kind of remembered; filed means
+> gone*. Read against that, a warm form shut inside a dark box is a picture of
+> something put away where it can no longer cue you. Against the reading: the
+> intent was a *lit opening*, and light coming out of a shelter is not a lid going
+> on. **Both readings are available, which is itself the problem with the mark.**
+> Either way a replacement is briefed on *stays in view*, not on *held safely* —
+> which retires vessels, cradles, boxes and stacks as a family.
+>
+> **The enclosure is ENTAILED BY THE COLOUR, and there is no bug under it.**
+> `--warm` is `#7A4E00` in light mode and `#F5C978` in dark. On the icon's paper
+> field `#F4F1E9` those measure 6.38:1 and 1.38:1, so `#F5C978` cannot describe a
+> shape on paper and any mark carrying it must supply a dark ground — which is the
+> box. That constraint is real, and it is why every open composition attempted in
+> that amber failed on contrast before it was judged on taste.
+>
+> **This paragraph previously said the icon was using the dark-mode value on a
+> light ground — "a colour error" — and that was FALSE.** Measured on the rendered
+> artwork: 82% of the amber's border is the navy `#33425F` and the remaining 18%
+> are antialiasing blends between the two; **it touches the paper field nowhere**,
+> and sits on navy at 6.48:1. The mark is internally correct. The earlier figure
+> that suggested otherwise came from a probe counting blend pixels as *not navy* —
+> a tolerance artefact read as a finding, and committed to this record on the day
+> it was hunting exactly that kind of defect. **There is no token to fix**, so a
+> replacement that must not enclose has to change the COLOUR, not the geometry.
+>
+> A replacement is OPEN, not decided. Six directions have been tried and every
+> one collided with a well-known glyph — see
+> [`docs/brand-collisions.md`](../brand-collisions.md), which is the checklist to
+> work from and is the durable part of that attempt. The reasoning in this record
+> about geometry versus illustration, about three flat colours, and about
+> measuring rather than eyeballing all still stands and binds any replacement.
 
 ## Decision
 

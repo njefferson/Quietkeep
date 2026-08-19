@@ -205,7 +205,6 @@
        clipboard — a control that cannot do its one job is worse than an absent
        one. Nothing is written by it: the text lands in the field above, where
        it can be seen, and the ordinary button commits it. -->
-  <button type="button" id="capture-paste" class="ghost" hidden>Hold what I copied</button>
 </div>
   <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
        Both were collapsed lines here, directly under capture: `bother-entry`
@@ -389,13 +388,13 @@
          caused the other. "Fewer, while…" names two facts about the same
          period. "Fewer, because…" would be the app explaining you to yourself. -->
     <p id="nextup-load" class="nextup-count" hidden></p>
-    <!-- THE ONE PERMITTED NUMBER (V2 stage 5). "About 2h 30m left today" —
-         arithmetic on the clock and the day boundary, two facts about the
-         world, read BEFORE an attempt where it can still change what somebody
-         picks up. No bar, no colour, no instruction, and nothing at all once
-         the day has run out: a countdown to zero at that hour is pressure
-         where it costs most. -->
-    <p id="nextup-left" class="nextup-count" hidden></p>
+    <!-- "THE ONE PERMITTED NUMBER" WAS HERE AND IS GONE (2.12.2, ADR-0103).
+         `#nextup-left` said "About 2h 30m left today" on every ordinary offer.
+         The fact is not gone — it is where this app already put it, on the
+         opt-in header clock. Removed because the same arithmetic was on screen
+         twice for anyone who had switched the clock on, and because the clock
+         is opt-in on the reasoning that "a day is not a countdown", which this
+         line ignored while being on for everybody. -->
     <!-- The next fixed thing today, BY NAME (collisions 7 and 9). Hyperfocus
          eats the day and waiting mode consumes the hours before an appointment;
          both are answered by naming the one thing that is not moveable, so an
@@ -755,7 +754,40 @@
     </div>
   </div>
 
-  <div id="cards" class="cards" tabindex="-1"></div>
+  <!-- FOLDED ON ARRIVAL (2.12.0, ADR-0102). Measured at 390px on the sample:
+       the runway was 4,247px and this list was 2,387px of it — fifty-six per
+       cent of the landing surface was one list, holding the offered thing, the
+       replan card and the with-someone card all over again. Seven items
+       appeared twice or three times, two of them offering DIFFERENT acts in the
+       two places.
+
+       Collisions entry 1: "a long list raises the activation threshold of every
+       item on it", and the single Next-up card is this app's stated answer to
+       that entry. It was sitting on top of the pile rather than instead of it.
+
+       NOT THE FOLD ADR-0083 AND ADR-0088 REFUSED. Their finding — "a fold
+       changes how much stands in front of you and not how far you have to
+       travel, and travel is what was expensive" — was about SIBLING folds mid
+       surface, where opening one pushes the rest out of reach. This is the LAST
+       block; nothing follows it but the footer, so the two quantities are the
+       same one and closing it removes the travel rather than rearranging it.
+
+       AND A FOLD IS NOT A SWITCH, which is why this is not a sheet. Entry 6
+       says a forced transition can cost the day, and ADR-0099 left scroll
+       versus switch as the question nobody may settle from a chair. A
+       disclosure opens in place, on this surface, with focus where it was.
+
+       NO COUNTS IN THE SUMMARY. ADR-0032: "groups are headings, not counts of
+       things undone. There is no tally." ADR-0060 retired "8 things are asking"
+       and put the honest totals in the gauge. A folded list captioned with
+       numbers would rebuild the backlog headline both of them cleared off. -->
+  <details id="held-fold" class="held-fold">
+    <summary id="held-fold-summary">
+      <span class="held-fold-label">Every one of them</span>
+      <span id="held-fold-where" class="held-fold-where"></span>
+    </summary>
+    <div id="cards" class="cards" tabindex="-1"></div>
+  </details>
 
   <!-- THE WAY BACK (2.1.0, ADR-0091). The jump above sends you up to five
        screens down and there was NOTHING to come back to the top with —

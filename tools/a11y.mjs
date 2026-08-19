@@ -315,7 +315,6 @@ const REGISTRY = {
     // Hold what I copied (1.41.0). It is revealed only where the browser can
     // read a clipboard — Chromium can, so it is visible here and is audited on
     // the state a reader meets first, beside the box it fills.
-    '#capture-paste',
     // Search is a tool that is always on screen even before anything is held,
     // so its input and placeholder are audited here where they first appear.
     '.search-input', { sel: '#search-input', pseudo: '::placeholder' },
@@ -425,6 +424,11 @@ const REGISTRY = {
   // after a capture. Added to THIS entry rather than a second 'with cards' key:
   // a duplicate key in an object literal silently wins, and the registry would
   // have shrunk to one selector while still reporting a pass.
+  // THE INVENTORY, FOLDED (2.12.0, ADR-0102) — the state it arrives in, which
+  // is now the one a reader actually meets. Registered in the same commit that
+  // created it: a new surface that does not join this list ships unmeasured
+  // (hub LESSONS §28), and this one is the whole landing surface's shape.
+  'inventory folded': ['#held-heading', '.held-fold-label', '.held-fold-where'],
   'with cards': ['.card-title', '.card-when', '#status', '.group-head',
     // The way to anywhere (2.3.0, ADR-0093). BOTH doors, because there are two
     // and a registry that names one of them measures half a control pair — the
@@ -490,11 +494,11 @@ const REGISTRY = {
   'do now offered': ['.donow', '.donow-label', '.donow-done'],
   // Work mode. The "why" lines and the behind-list are the lowest-contrast text
   // on these surfaces, so they are named rather than left to axe alone.
-  // `#nextup-left` (V2 stage 5) is the one permitted number, and it sits with
-  // the other count lines on the work surface. It is HERE and not in the
-  // always-measured list because it is hidden once the day has run out — an
-  // entry in that list must match something on every state, and the first-run
-  // dialog proved it does not.
+  // `#nextup-left` (V2 stage 5, "the one permitted number") WAS listed here and
+  // the element is gone from the card (2.12.2, ADR-0103). Its cautionary value
+  // is not — every note below citing it is about a registry entry matching
+  // nothing, which is what it did before it was moved into this list, and that
+  // lesson outlives the element.
   // `#nextup-fixed` (the next fixed thing today, collisions 7 and 9) is
   // DELIBERATELY not listed, and this note is here so nobody "fixes" that by
   // adding it — `#nextup-left` was put in the always-measured list on exactly
@@ -511,7 +515,7 @@ const REGISTRY = {
   // AND the list has rows, which is exactly what 'next up' stages. A registry
   // entry matching nothing visible is the false receipt `#nextup-left` cost a
   // release for, so it goes where it is actually on screen.
-  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count', '#nextup-left',
+  'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
     // When you cannot start (1.24.0). The heavy control is on the card whenever
     // there is a head, so it belongs in this state. THE INVITATION IS NOW ONE
@@ -1622,7 +1626,7 @@ try {
     await auditNames(page, 'empty store', theme);
     await auditSeparationAndTargets(page, 'empty store', theme);
     await auditFocusRings(page, 'empty store', theme,
-      ['#capture', '#capture-form button[type=submit]', '#capture-paste',
+      ['#capture', '#capture-form button[type=submit]',
         'button.info', '.skip', '#restore-go']);
 
     // AND NOTHING IS INVENTED TO DO OVER AN EMPTY PLANNER (2.10.3). Found by
@@ -1764,6 +1768,40 @@ try {
     await auditFocusRings(page, 'the door onto the inbox', theme, ['#triage-open']);
 
     await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+
+    // THE INVENTORY ARRIVES FOLDED (2.12.0, ADR-0102), and that state is audited
+    // before it is opened — `<summary>` is a real control a finger has to reach,
+    // and a disclosure nobody measured is how the walkthrough's own buttons came
+    // to be breaking mid-word for every release but the first.
+    //
+    // NON-VACUITY FIRST: everything below is trivially true of a fold that was
+    // never closed, and "the list is not on screen" is also what a broken render
+    // looks like. So the summary is asserted to be naming groups.
+    const folded = await page.evaluate(() => {
+      const f = document.querySelector('#held-fold');
+      const sum = document.querySelector('#held-fold-summary');
+      return {
+        closed: Boolean(f) && !f.open,
+        words: (sum?.textContent ?? '').replace(/\s+/g, ' ').trim(),
+        cardShowing: Boolean(document.querySelector('#cards .card')
+          ?.checkVisibility({ contentVisibilityAuto: true })),
+      };
+    });
+    (folded.closed && !folded.cardShowing ? pass : fail)(
+      `${theme}/inventory folded: the landing surface arrives without the list on it`);
+    (/Not sorted yet|Ready now|Coming up|Later|On the Menu|Done/.test(folded.words) ? pass : fail)(
+      `${theme}/inventory folded: and it names what is in there ("${folded.words.slice(0, 58)}")`);
+    (!/\d/.test(folded.words) ? pass : fail)(
+      `${theme}/inventory folded: and counts nothing — ADR-0032 has no tally, the gauge holds the totals`);
+    await auditContrast(page, 'inventory folded', theme);
+    await auditAxe(page, 'inventory folded', theme);
+    await auditNames(page, 'inventory folded', theme);
+    await auditSeparationAndTargets(page, 'inventory folded', theme);
+    await auditFocusRings(page, 'inventory folded', theme, ['#held-fold-summary']);
+
+    // Opened the way a finger opens it, not by setting the attribute — a fold
+    // only script can open is not the route anybody takes.
+    await page.click('#held-fold-summary');
     await page.waitForSelector('.card');
     await auditContrast(page, 'with cards', theme);
     await auditAxe(page, 'with cards', theme);

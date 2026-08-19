@@ -333,6 +333,12 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0101](0101-the-frame-stands-down.md)**
   - Decision: Past half the viewport the frame stops being a frame and the document scrolls again, rather than scrolling inside itself and cutting the proof line through the middle of its own sentence; two thresholds, so a height near the line cannot flip on every measurement
   - Status: Accepted · shipped 2.9.2 · amends [0100](0100-the-frame-stays.md)
+- **[0102](0102-the-inventory-is-folded.md)**
+  - Decision: What you are holding keeps everything and stops standing open — its body is a disclosure, closed on arrival, whose summary names every non-empty group and carries no counts. Measured: the runway was 4,247px with this list 2,387px of it, and seven items appeared on the landing surface twice or three times. Not the fold ADR-0083/0088 refused, because for the LAST block "how much stands in front of you" and "how far you have to travel" are the same quantity; and a fold is not a switch, which is why it is not a sheet
+  - Status: Accepted · shipped 2.12.0 · extends [0032](0032-held-list-grouped.md), [0099](0099-the-first-screen.md) · narrows [0083](0083-four-destinations.md), [0088](0088-the-claim-and-the-tree-are-places.md)
+- **[0103](0103-the-card-states-no-moving-number.md)**
+  - Decision: The offer card states no number that moves on its own — `#nextup-left` ("About 2h 30m left today", the one permitted number) comes off, and the remainder of the day keeps the home it already had on the opt-in header clock. The card forbade exactly this for the line beneath it, the clock is opt-in because "a day is not a countdown" while the card said it to everybody, the two rendered the same arithmetic at once for anyone with the clock on, and the line's own prospective defence needed the item's duration, which renders only in the detail sheet
+  - Status: Accepted · shipped 2.12.2 · narrows [0059](0059-presence-not-progress.md), [0010](0010-decay-primitive.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

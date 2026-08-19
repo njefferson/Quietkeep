@@ -81,15 +81,18 @@ export const PLAIN_HIDDEN = [
   // thirteen-item sample: eight things survived the strip and three of them
   // were these.
   //
-  // `#nextup-left`  — "About 22h 16m left today." Its own markup comment calls
-  //                   it "the one permitted number" and warns that a countdown
-  //                   to zero is "pressure where it costs most". On the day this
-  //                   mode exists for, every hour of it costs most.
   // `#nextup-fixed` — the next unmoveable thing, by name. Correct on an ordinary
   //                   day and one more thing to hold on this one.
   // `#nextup-written` — when it was captured. Context, which is information,
   //                   which is the cost being cut.
-  '#nextup-left', '#nextup-fixed', '#nextup-written',
+  //
+  // THE THIRD WAS `#nextup-left` AND IT IS NOW GONE FROM THE CARD (2.12.2,
+  // ADR-0103). Stripping it here was right and stopped one surface short: the
+  // reason given was that on the worst day every hour costs most, and no
+  // paragraph ever said why the number was affordable on an ordinary one. The
+  // remainder lives on the opt-in header clock, which `PLAIN_CHROME_HIDDEN`
+  // below still strips — so the mode's answer to this fact is unchanged.
+  '#nextup-fixed', '#nextup-written',
 ] as const;
 
 /**
@@ -147,7 +150,6 @@ export const PLAIN_KEPT = [
  */
 export const PLAIN_CHROME_HIDDEN = [
   '#capture-room',    // a capture accessory, and directly in the path to the offer
-  '#capture-paste',   // the same
   '#contents-open',   // navigation. On this day you are not navigating.
   '#clock',           // a clock face, the time, and how much of today is left
 ] as const;

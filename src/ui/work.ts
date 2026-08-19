@@ -30,8 +30,7 @@ import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
-import { timeLeftWords } from '../duration.ts';
-import { clockFace, nextFixedToday, nextFixedWords } from '../clock.ts';
+import { nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
 import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
@@ -146,7 +145,6 @@ export function mountWork(
   // sentence, and taking Next up down with it would cost the app's whole
   // purpose. Same containment every optional element on this surface gets.
   const LOADNOTE = document.querySelector<HTMLElement>('#nextup-load');
-  const LEFT = document.querySelector<HTMLElement>('#nextup-left');
   const FIXED = document.querySelector<HTMLElement>('#nextup-fixed');
   // The two things you can do when you cannot start (1.24.0). Soft-bound like
   // LOADNOTE and PLACE: a missing control costs that control, never the offer.
@@ -731,19 +729,15 @@ export function mountWork(
         LOADNOTE.textContent = lw;
         LOADNOTE.hidden = lw === '';
       }
-      // THE ONE PERMITTED NUMBER (V2 stage 5). Arithmetic on the clock and the
-      // person's own day boundary — nothing about them, and nothing about what
-      // they have done. `clockFace` already asks whose day it is, so at 00:30
-      // under a 3am boundary this reads 2h 29m rather than 23h 59m.
+      // "THE ONE PERMITTED NUMBER" STOOD HERE AND IS GONE (2.12.2, ADR-0103).
+      // It read "About 2h 30m left today." on every ordinary offer, and it was
+      // defended as prospective — a fit judgement made before the attempt. The
+      // card never carried the other half of that judgement: how long the
+      // offered thing takes is `rangeWords`, and `rangeWords` renders only in
+      // the detail sheet. A remainder with nothing to measure against is not a
+      // fit judgement, it is a countdown — which is the thing the header clock
+      // is opt-in to avoid imposing.
       //
-      // It is here rather than on the item because it is prospective: it exists
-      // to inform what somebody picks up, and the same number after the attempt
-      // is a verdict on it.
-      if (LEFT) {
-        const lw = timeLeftWords(clockFace(session.state(), nowIso(), session.zone).minutesLeft);
-        LEFT.textContent = lw ?? '';
-        LEFT.hidden = lw === null;
-      }
       // THE NEXT FIXED THING TODAY, by name (collisions 7 and 9). An absorbed
       // person can catch this peripherally; somebody whose afternoon is being
       // eaten by a 3pm appointment can see what it actually is. No countdown —
@@ -839,7 +833,6 @@ export function mountWork(
           : `${undated} things are here without a date. They are waiting on you to decide, not the other way round.`;
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
-        if (LEFT) { LEFT.textContent = ''; LEFT.hidden = true; }
         if (FIXED) { FIXED.textContent = ''; FIXED.hidden = true; }
       } else {
         REGION.hidden = true;
