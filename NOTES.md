@@ -665,11 +665,46 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.2**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.3**
 - **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
   `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
   `fda790c` on both — rather than inferred from a clean merge)
+
+**2.9.3 — NO TWO CONTROLS TOUCH.** Reported from a device: *Bring a copy back*
+and *What's on this page* overlap. Measured: **0.0px apart at every viewport and
+every text size, and always.** `.about-actions` carries a top margin and no
+bottom one, `#cards` is empty on a fresh store so margins collapse straight
+through it, and `.contents-open.jump-shaped` had no top margin either.
+
+**Four more of the same shape came out of looking:** the two `.nextup-actions`
+rows, `.replan-card`'s door and its skip, `.comms-actions` stacked on the closing
+surface, and the bars inside `#triage-undo`. Every one a pair of full-size
+targets with 0.0px between them.
+
+**Nothing was checking it, which is why a person found it.** Every check in
+`a11y.mjs` asked whether a control was big enough; none asked whether it was
+SEPARATE. `auditSeparation` runs at every state the target audit already covers —
+one call site, so there is no second list of states to keep in step.
+
+**The check was wrong twice before it was right, and both are recorded in it:**
+
+- v1 asked whether boxes INTERSECTED and reported "none" on the very defect it
+  was written for, because they abutted rather than overlapped.
+- v2 clipped each box to what was visible, which killed a false positive (it had
+  claimed the capture box overlapped a people row by 237px — a control scrolled
+  out of the runway still reporting where its box would be) and introduced a
+  worse one: **planted with the reported defect it went GREEN**, because those
+  two buttons are below the fold in every state the walk drives.
+- v3 groups controls by their nearest scrolling ancestor and compares in that
+  scroller's CONTENT coordinates. Nothing is skipped for being scrolled away, and
+  two things in different scrollers are never compared because they cannot share
+  pixels however either is scrolled. Planted: it names `restore-go /
+  contents-open-end are 0.0px apart, inside held`.
+
+Inline controls are exempt from the TOUCH half only — an Undo inside running
+prose is separated by line-height, which is a typographic fact and not a layout
+one. They stay in the overlap half.
 
 **2.9.2 — THE FRAME STANDS DOWN RATHER THAN CUTTING ITSELF IN HALF** (ADR-0101).
 Reported from a device at a larger text size: the proof line was sliced through

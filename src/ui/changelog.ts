@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.9.3',
+    kind: 'ITERATION',
+    date: '2026-08-19',
+    notes: [
+      '**Buttons that were touching each other now have room between them.** Reported from a device: *Bring a copy back* and *What’s on this page* overlap. They were **0.0 pixels apart — at every screen size, at every text size, and always had been.** Two controls with nothing between them read as one, and a finger on the seam gets whichever is on top with no way to tell which you pressed.',
+      '**Looking for that one found four more of exactly the same thing:** the two rows of buttons under what you are offered, the door and the way past it on a card that needs a new plan, *Have a look* and *Carry on* when a session closes, and the buttons in the undo line. All of them sat directly against each other.',
+      '**Nothing was checking this, which is why you found it.** Every check in this app asked whether a control was big enough to press; none asked whether it was separate from the next one. There is one now, and it runs on every screen the checks already cover — it names the two controls and the box they are in, so the next one is a minute rather than an afternoon.',
+      '**And the check itself was wrong twice before it was right.** Its first version asked whether the boxes *overlapped* and reported nothing wrong about the very buttons you reported, because they were touching rather than overlapping. Its second version only looked at what was on screen, so planting your exact defect back in made it go green — those two buttons are below the fold. It compares within each scrolling area now, so nothing is missed for being out of view.',
+    ],
+  },
+  {
     triplet: '2.9.2',
     kind: 'ITERATION',
     date: '2026-08-18',

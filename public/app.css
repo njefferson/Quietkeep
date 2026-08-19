@@ -645,10 +645,19 @@ button.ghost {
 .detail-row input::placeholder,
 #detail-context::placeholder { color: var(--ink-soft); opacity: 1; }
 
+/* SEPARATION ON BOTH SIDES (2.9.3). Reported from a device: "Bring a copy back"
+   and "What's on this page" overlap. Measured — they are 0.0px apart, at EVERY
+   viewport and every text size, and always have been. `.about-actions` carries a
+   top margin and no bottom one, `#cards` is empty on a fresh store so margins
+   collapse straight through it, and this rule carried no top margin either. Two
+   full-width controls with nothing between them read as one, and a finger on the
+   seam cannot tell which it pressed.
+   Adjacent siblings' vertical margins COLLAPSE to the larger rather than summing,
+   so where two of these sit together the gap is still 0.9rem and nothing moved. */
 .jump {
   display: block;
   width: 100%;
-  margin: 0 0 0.9rem;
+  margin: 0.9rem 0;
   padding: 0.5rem 0.75rem;
   min-height: var(--target);
   text-align: left;
@@ -703,7 +712,7 @@ button.ghost {
 .contents-open.jump-shaped {
   display: block;
   width: 100%;
-  margin: 0 0 0.9rem;
+  margin: 0.9rem 0;
   text-align: left;
 }
 
@@ -945,13 +954,25 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * take it back. Every colour here is already registered against these
  * backgrounds — ink-soft on the page, and `.linklike` for the button — so no new
  * contrast pair is introduced. */
-.triage-undo { margin: 0.25rem 0 0.5rem; }
+/* A COLUMN WITH A GAP (2.9.3). This region holds one bar per undo, and each bar
+   carries real targets — the date box and the two link-shaped buttons. As a
+   plain block the bars stacked with nothing between them, so controls in
+   adjacent bars were 0.0px and 0.3px apart. The gate named this element, which
+   is the only reason it was found rather than guessed at. */
+.triage-undo { margin: 0.25rem 0 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
 .triage-undo:empty { margin: 0; }
 .triage-undo-bar {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 0.5rem;
+  /* AND A BIGGER ROW GAP THAN COLUMN GAP (2.9.3), because `align-items: baseline`
+     positions items by their text rather than their box — so an item with a 44px
+     minimum height extends past its own flex line and into the next one. Measured
+     at 0.0px and 0.3px between the date box and the two link-shaped buttons.
+     Baseline is kept: it is why the words on this bar line up. The row simply
+     needs room for boxes that are taller than the text they are aligned by. */
+  row-gap: 0.75rem;
   margin: 0;
 }
 .triage-undo-where { color: var(--ink-soft); font-size: 0.9375rem; }
@@ -1107,6 +1128,10 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  /* The card's own door and the way past it are both full targets, stacked, and
+     with no gap they were 0.0px apart (2.9.3) — a finger on the seam gets one of
+     them and cannot tell which. */
+  gap: 0.5rem;
 }
 .replan-skip { padding-left: 0.75rem; }
 
@@ -1229,7 +1254,12 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 }
 .nextup-title { margin: 0 0 0.25rem; font-size: 1.0625em; overflow-wrap: anywhere; }
 .nextup-why { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
-.nextup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+/* A bottom margin, because two of these sit one under the other — Done/Not this
+   in one, and heavy/enough/just-one-thing in the next — and with none they were
+   0.0px apart (2.9.3). Same defect as the reported one, found by the same gate
+   in the same run. The value matches the row's own gap, so a wrapped row and two
+   stacked rows are separated by the same amount. */
+.nextup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
 .nextup-actions button { min-height: var(--target); }
 
 /* --- the two things you can do when you cannot start (1.24.0) --------------
@@ -2363,7 +2393,10 @@ summary::-webkit-details-marker { display: none; }
    the most effective piece of shame-by-arithmetic in software, and this app
    cannot see your messages anyway. */
 .comms-words { margin: 0 0 0.75rem; color: var(--ink); font-size: 0.9375rem; }
-.comms-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+/* A bottom margin for the same reason `.nextup-actions` has one (2.9.3): the
+   closing surface stacks two of these — the thread's pair and Carry on — and
+   without it `close-thread-open` and `close-ok` were 0.0px apart. */
+.comms-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
 .comms-actions button { min-height: var(--target); max-width: 100%;
   white-space: normal; overflow-wrap: anywhere; }
 #comms-start, #comms-stop { min-height: var(--target); }

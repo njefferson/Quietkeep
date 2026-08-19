@@ -1042,6 +1042,111 @@ async function auditNames(page, stateName, theme) {
 }
 
 /**
+ * NO TWO CONTROLS SHARE PIXELS, AND NONE MERELY TOUCH (2.9.3).
+ *
+ * Reported from a device: "Bring a copy back" and "What's on this page" overlap.
+ * Measured: 0.0px apart, at every viewport and every text size, and always. A
+ * human found it because nothing here was looking — every check in this file
+ * asked whether a control was big enough, never whether it was SEPARATE from the
+ * next one.
+ *
+ * Two full-width controls with nothing between them read as one, and a finger on
+ * the seam gets whichever is on top with no way to tell which was pressed. That
+ * is worse than a target being small: a small target is a miss, and this is a
+ * silent hit on the wrong thing — the same objection that removed the floating
+ * Contents button.
+ *
+ * TOUCHING COUNTS, not only overlapping. The first version of this asked whether
+ * the boxes intersected and reported "none" on the very defect it was written
+ * for, because they did not intersect — they abutted. Asking the narrower
+ * question and getting a green answer is how a check gets written and still
+ * measures nothing.
+ *
+ * Only pairs that share a COLUMN: two controls side by side are a row and their
+ * horizontal gap is a different question. Nesting is skipped — a button inside a
+ * label legitimately shares space.
+ */
+async function auditSeparation(page, stateName, theme) {
+  const found = await page.evaluate(() => {
+    const vis = el => el.checkVisibility({ contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true });
+    const name = el => el.id || (typeof el.className === 'string' && el.className.trim()
+      ? '.' + el.className.trim().split(/\s+/)[0] : el.tagName.toLowerCase());
+    const between = (a, b) => {
+      let n = a;
+      while (n && !n.contains(b)) n = n.parentElement;
+      if (!n) return 'no common parent';
+      const cs = getComputedStyle(n);
+      const g = cs.rowGap === 'normal' ? '0' : cs.rowGap;
+      return `${name(n)} [${cs.display}, row-gap ${g}, margin-bottom ${cs.marginBottom}]`;
+    };
+
+    // EACH SCROLLER'S OWN CONTENT SPACE, and this is the whole correctness of it.
+    //
+    // Two earlier versions were both wrong, in opposite directions.
+    //
+    // Viewport coordinates alone reported that the capture box overlapped a
+    // people row by 237px — it does not and never has; that is a control scrolled
+    // up out of the runway, still reporting where its box WOULD be. A gate that
+    // fires on correct work teaches everybody to route around the red.
+    //
+    // Clipping each box to what is visible fixed that and introduced something
+    // worse: anything below the fold was never compared at all. Planted with the
+    // exact defect that was reported from a device, the gate went GREEN — the two
+    // buttons sit past the bottom of the runway in every state the walk drives.
+    //
+    // So elements are grouped by their nearest scrolling ancestor and compared in
+    // that scroller's content coordinates. Nothing is skipped for being scrolled
+    // away, and two things in different scrollers are never compared, because
+    // they cannot share pixels however either one is scrolled.
+    const scrollerOf = (el) => {
+      for (let n = el.parentElement; n; n = n.parentElement) {
+        const cs = getComputedStyle(n);
+        if (/auto|scroll/.test(cs.overflowY)) return n;
+      }
+      return document.documentElement;
+    };
+
+    const groups = new Map();
+    for (const el of document.querySelectorAll('button, input, select, textarea, summary, a[href], [role=button]')) {
+      if (!vis(el) || el.closest('dialog')) continue;
+      const sc = scrollerOf(el);
+      const scr = sc.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      const box = {
+        top: r.top - scr.top + sc.scrollTop,
+        bottom: r.bottom - scr.top + sc.scrollTop,
+        left: r.left - scr.left + sc.scrollLeft,
+        right: r.right - scr.left + sc.scrollLeft,
+      };
+      if (box.bottom - box.top < 1 || box.right - box.left < 1) continue;
+      if (!groups.has(sc)) groups.set(sc, []);
+      groups.get(sc).push({ el, box });
+    }
+
+    const out = new Set();
+    for (const items of groups.values()) {
+      for (let i = 0; i < items.length; i += 1) {
+        for (let j = i + 1; j < items.length; j += 1) {
+          const a = items[i].el, b = items[j].el;
+          if (a.contains(b) || b.contains(a)) continue;
+          const ra = items[i].box, rb = items[j].box;
+          const dx = Math.min(ra.right, rb.right) - Math.max(ra.left, rb.left);
+          const dy = Math.min(ra.bottom, rb.bottom) - Math.max(ra.top, rb.top);
+          if (dx <= 1) continue;
+          if (dy > 1) { out.add(`${name(a)} × ${name(b)} overlap by ${Math.round(dx)}×${Math.round(dy)}px`); continue; }
+          const gap = ra.top < rb.top ? rb.top - ra.bottom : ra.top - rb.bottom;
+          if (gap >= -1 && gap < 3) out.add(`${name(a)} / ${name(b)} are ${gap.toFixed(1)}px apart, inside ${between(a, b)}`);
+        }
+      }
+    }
+    return [...out];
+  });
+  (found.length === 0 ? pass : fail)(
+    `${theme}/${stateName}: no two controls overlap or touch`
+    + `${found.length ? ` — ${found.slice(0, 6).join('; ')}` : ''}`);
+}
+
+/**
  * OPEN A SURFACE THE WAY A READER DOES (2.8.1, ADR-0099).
  *
  * Three entries came off the runway and are reached from Contents now. This
@@ -1081,6 +1186,14 @@ async function openViaContents(page, id) {
     fail(`#${id}'s row in Contents does not open it`);
     throw new Error(`#${id} did not open`);
   });
+}
+
+/** Separation and size together, at every state the walk already drives.
+ *  ONE call site, deliberately: a second list of states to keep in step is the
+ *  defect this file has paid for three times (doors, element types, surfaces). */
+async function auditSeparationAndTargets(page, stateName, theme) {
+  await auditSeparation(page, stateName, theme);
+  await auditTargets(page, stateName, theme);
 }
 
 async function auditTargets(page, stateName, theme) {
@@ -1310,7 +1423,7 @@ try {
     await auditContrast(page, 'walkthrough', theme);
     await auditAxe(page, 'walkthrough', theme);
     await auditNames(page, 'walkthrough', theme);
-    await auditTargets(page, 'walkthrough', theme);
+    await auditSeparationAndTargets(page, 'walkthrough', theme);
     // Step to the end. The last step's "Get started" hands off to the (i) panel
     // for the storage step, which is exactly what State 1 audits.
     // Driven to the END rather than clicked a fixed number of times. Four clicks
@@ -1337,7 +1450,7 @@ try {
     await auditContrast(page, 'your data', theme);
     await auditAxe(page, 'your data', theme);
     await auditNames(page, 'your data', theme);
-    await auditTargets(page, 'your data', theme);
+    await auditSeparationAndTargets(page, 'your data', theme);
     await auditFocusRings(page, 'your data', theme,
       ['#export', '#storage-ask', '#notnow-open', '#sheet-group-data-close']);
 
@@ -1350,21 +1463,21 @@ try {
     await auditContrast(page, 'help', theme);
     await auditAxe(page, 'help', theme);
     await auditNames(page, 'help', theme);
-    await auditTargets(page, 'help', theme);
+    await auditSeparationAndTargets(page, 'help', theme);
     await auditFocusRings(page, 'help', theme, ['.help-q summary', '#sheet-group-help-close']);
 
     await openSurface(page, 'sheet-group-why');
     await auditContrast(page, 'how it works', theme);
     await auditAxe(page, 'how it works', theme);
     await auditNames(page, 'how it works', theme);
-    await auditTargets(page, 'how it works', theme);
+    await auditSeparationAndTargets(page, 'how it works', theme);
     await auditFocusRings(page, 'how it works', theme, ['#sheet-group-why-close']);
 
     await openSurface(page, 'sheet-group-actions');
     await auditContrast(page, 'things you can do', theme);
     await auditAxe(page, 'things you can do', theme);
     await auditNames(page, 'things you can do', theme);
-    await auditTargets(page, 'things you can do', theme);
+    await auditSeparationAndTargets(page, 'things you can do', theme);
     await auditFocusRings(page, 'things you can do', theme,
       ['#calendar', '#today-print', '#sample', '#sheet-group-actions-close']);
 
@@ -1372,7 +1485,7 @@ try {
     await auditContrast(page, 'settings', theme);
     await auditAxe(page, 'settings', theme);
     await auditNames(page, 'settings', theme);
-    await auditTargets(page, 'settings', theme);
+    await auditSeparationAndTargets(page, 'settings', theme);
     await auditFocusRings(page, 'settings', theme,
       ['#badge-toggle', '#day-boundary-set', '#sheet-group-extras-close']);
 
@@ -1381,7 +1494,7 @@ try {
     // must keep it, and the note must state the scope — this app, this device —
     // because scope is the entire request.
     await auditContrast(page, 'app size', theme);
-    await auditTargets(page, 'app size', theme);
+    await auditSeparationAndTargets(page, 'app size', theme);
     const before = await page.evaluate(() => document.documentElement.style.fontSize);
     await page.selectOption('#ui-scale', '1.3');
     await page.waitForTimeout(120);
@@ -1432,7 +1545,7 @@ try {
     await auditContrast(page, 'clearing out', theme);
     await auditAxe(page, 'clearing out', theme);
     await auditNames(page, 'clearing out', theme);
-    await auditTargets(page, 'clearing out', theme);
+    await auditSeparationAndTargets(page, 'clearing out', theme);
     // `#purge-go` ships DISABLED and stays that way until the word is typed, so
     // it is genuinely not focusable and auditing it as-is would report a defect
     // about a control behaving exactly as designed. The word is typed to reach
@@ -1469,14 +1582,14 @@ try {
     await auditContrast(page, 'first-run dialog', theme);
     await auditAxe(page, 'first-run dialog', theme);
     await auditNames(page, 'first-run dialog', theme);
-    await auditTargets(page, 'first-run dialog', theme);
+    await auditSeparationAndTargets(page, 'first-run dialog', theme);
     await page.click('#about-close');
 
     // State 2: the empty store.
     await auditContrast(page, 'empty store', theme);
     await auditAxe(page, 'empty store', theme);
     await auditNames(page, 'empty store', theme);
-    await auditTargets(page, 'empty store', theme);
+    await auditSeparationAndTargets(page, 'empty store', theme);
     await auditFocusRings(page, 'empty store', theme,
       ['#capture', '#capture-form button[type=submit]', '#capture-paste',
         'button.info', '.skip', '#restore-go']);
@@ -1497,7 +1610,7 @@ try {
     await auditContrast(page, 'more', theme);
     await auditAxe(page, 'more', theme);
     await auditNames(page, 'more', theme);
-    await auditTargets(page, 'more', theme);
+    await auditSeparationAndTargets(page, 'more', theme);
     await auditFocusRings(page, 'more', theme, ['.more-go', '#more-close']);
     await page.click('#more-close');
 
@@ -1515,7 +1628,7 @@ try {
     await auditContrast(page, 'more room', theme);
     await auditAxe(page, 'more room', theme);
     await auditNames(page, 'more room', theme);
-    await auditTargets(page, 'more room', theme);
+    await auditSeparationAndTargets(page, 'more room', theme);
     await auditFocusRings(page, 'more room', theme,
       ['#capture-many', '#capture-form button[type=submit]']);
     await page.fill('#capture-many', '');
@@ -1539,7 +1652,7 @@ try {
     await auditContrast(page, 'update stuck', theme);
     await auditAxe(page, 'update stuck', theme);
     await auditNames(page, 'update stuck', theme);
-    await auditTargets(page, 'update stuck', theme);
+    await auditSeparationAndTargets(page, 'update stuck', theme);
     // Put the strip back so every later state sees what it saw before.
     await page.evaluate(() => {
       document.querySelector('#update-words').textContent = 'A newer version is ready.';
@@ -1556,7 +1669,7 @@ try {
     await auditContrast(page, 'the door onto the inbox', theme);
     await auditAxe(page, 'the door onto the inbox', theme);
     await auditNames(page, 'the door onto the inbox', theme);
-    await auditTargets(page, 'the door onto the inbox', theme);
+    await auditSeparationAndTargets(page, 'the door onto the inbox', theme);
     await auditFocusRings(page, 'the door onto the inbox', theme, ['#triage-open']);
 
     await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
@@ -1564,7 +1677,7 @@ try {
     await auditContrast(page, 'with cards', theme);
     await auditAxe(page, 'with cards', theme);
     await auditNames(page, 'with cards', theme);
-    await auditTargets(page, 'with cards', theme);
+    await auditSeparationAndTargets(page, 'with cards', theme);
     await auditCardContainment(page, 'with cards', theme);
     // Only .card-open exists here: an unrouted capture belongs to triage and is
     // deliberately given no Done control. The tick-off button is audited in the
@@ -1579,7 +1692,7 @@ try {
     await auditContrast(page, 'search results', theme);
     await auditAxe(page, 'search results', theme);
     await auditNames(page, 'search results', theme);
-    await auditTargets(page, 'search results', theme);
+    await auditSeparationAndTargets(page, 'search results', theme);
     await auditFocusRings(page, 'search results', theme, ['#search-input', '#search-results .search-open']);
     await fillSearch('');          // leave the box as we found it
     await page.waitForSelector('#search-results .search-open', { state: 'detached' });
@@ -1600,7 +1713,7 @@ try {
     await auditContrast(page, 'heat pass', theme);
     await auditAxe(page, 'heat pass', theme);
     await auditNames(page, 'heat pass', theme);
-    await auditTargets(page, 'heat pass', theme);
+    await auditSeparationAndTargets(page, 'heat pass', theme);
     await auditFocusRings(page, 'heat pass', theme, ['#triage-actions .route']);
 
     // Drain the sweep — every item hot — which is what ends it and hands the
@@ -1624,7 +1737,7 @@ try {
     await auditContrast(page, 'clarify', theme);
     await auditAxe(page, 'clarify', theme);
     await auditNames(page, 'clarify', theme);
-    await auditTargets(page, 'clarify', theme);
+    await auditSeparationAndTargets(page, 'clarify', theme);
     await auditFocusRings(page, 'clarify', theme, ['#triage-actions .route']);
 
     // State 3b-ii: WHERE does it go. Reached BY NAME; Back returns, so the walk
@@ -1641,7 +1754,7 @@ try {
     await auditContrast(page, 'place picker', theme);
     await auditAxe(page, 'place picker', theme);
     await auditNames(page, 'place picker', theme);
-    await auditTargets(page, 'place picker', theme);
+    await auditSeparationAndTargets(page, 'place picker', theme);
     await auditFocusRings(page, 'place picker', theme, ['#triage-actions .route']);
 
     // State 3b-iii: the filed receipt, carrying the question and its answer
@@ -1654,7 +1767,7 @@ try {
     await auditContrast(page, 'filed receipt', theme);
     await auditAxe(page, 'filed receipt', theme);
     await auditNames(page, 'filed receipt', theme);
-    await auditTargets(page, 'filed receipt', theme);
+    await auditSeparationAndTargets(page, 'filed receipt', theme);
     await auditFocusRings(page, 'filed receipt', theme, ['.triage-place-when', '.triage-place-set']);
     await page.locator('.triage-undo-btn').click();
     await page.waitForSelector('#triage-actions .route .route-hint');
@@ -1692,7 +1805,7 @@ try {
     await auditContrast(page, 'do now offered', theme);
     await auditAxe(page, 'do now offered', theme);
     await auditNames(page, 'do now offered', theme);
-    await auditTargets(page, 'do now offered', theme);
+    await auditSeparationAndTargets(page, 'do now offered', theme);
     await auditFocusRings(page, 'do now offered', theme, ['.donow-done']);
 
     // State 3c-iii: the last-action undo. Routing the card above raised it, and it
@@ -1702,7 +1815,7 @@ try {
     await auditContrast(page, 'route undo', theme);
     await auditAxe(page, 'route undo', theme);
     await auditNames(page, 'route undo', theme);
-    await auditTargets(page, 'route undo', theme);
+    await auditSeparationAndTargets(page, 'route undo', theme);
     await auditFocusRings(page, 'route undo', theme, ['.triage-undo-btn']);
 
     // State 3d: Work mode — Next up, then the coverage list opened.
@@ -1710,7 +1823,7 @@ try {
     await auditContrast(page, 'next up', theme);
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
-    await auditTargets(page, 'next up', theme);
+    await auditSeparationAndTargets(page, 'next up', theme);
     await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held', '#to-top', '#nextup-title']);
 
     // State 3c1: SETTLED (1.35.0). Reached the way anybody reaches it — finish
@@ -1721,7 +1834,7 @@ try {
     await auditContrast(page, 'settled', theme);
     await auditAxe(page, 'settled', theme);
     await auditNames(page, 'settled', theme);
-    await auditTargets(page, 'settled', theme);
+    await auditSeparationAndTargets(page, 'settled', theme);
     await auditFocusRings(page, 'settled', theme, ['#nextup-resume']);
     await page.click('#nextup-resume');
     await page.waitForFunction(() =>
@@ -1736,7 +1849,7 @@ try {
     await auditContrast(page, 'one thing', theme);
     await auditAxe(page, 'one thing', theme);
     await auditNames(page, 'one thing', theme);
-    await auditTargets(page, 'one thing', theme);
+    await auditSeparationAndTargets(page, 'one thing', theme);
     await auditFocusRings(page, 'one thing', theme, ['#nextup-plain-off']);
     await page.click('#nextup-plain-off');
     await page.waitForFunction(() =>
@@ -1752,7 +1865,7 @@ try {
     await auditContrast(page, 'first step named', theme);
     await auditAxe(page, 'first step named', theme);
     await auditNames(page, 'first step named', theme);
-    await auditTargets(page, 'first step named', theme);
+    await auditSeparationAndTargets(page, 'first step named', theme);
     await auditFocusRings(page, 'first step named', theme, ['#nextup-bite-done']);
     await page.click('#nextup-bite-done');
     await page.waitForSelector('#nextup-bite', { state: 'hidden' });
@@ -1768,7 +1881,7 @@ try {
     await auditContrast(page, 'load entry', theme);
     await auditAxe(page, 'load entry', theme);
     await auditNames(page, 'load entry', theme);
-    await auditTargets(page, 'load entry', theme);
+    await auditSeparationAndTargets(page, 'load entry', theme);
     await auditFocusRings(page, 'load entry', theme,
       ['#sheet-load-entry-close', '#pebble-text', '#capacity-level', '#pebble-weight']);
     await page.fill('#pebble-text', 'the thing with the roof');
@@ -1790,7 +1903,7 @@ try {
     await auditContrast(page, 'load carried', theme);
     await auditAxe(page, 'load carried', theme);
     await auditNames(page, 'load carried', theme);
-    await auditTargets(page, 'load carried', theme);
+    await auditSeparationAndTargets(page, 'load carried', theme);
     await auditFocusRings(page, 'load carried', theme, ['#pebble-list li button']);
     // Leave the surface as this section found it: the weight comes off, so the
     // offer is back to its ordinary shape for every state after this one.
@@ -1808,7 +1921,7 @@ try {
     await auditContrast(page, 'coverage open', theme);
     await auditAxe(page, 'coverage open', theme);
     await auditNames(page, 'coverage open', theme);
-    await auditTargets(page, 'coverage open', theme);
+    await auditSeparationAndTargets(page, 'coverage open', theme);
     await auditFocusRings(page, 'coverage open', theme, ['.coverage-open', '#sheet-coverage-close']);
     // Left as it was found: everything below this reads the surface underneath,
     // and a modal sheet makes it inert.
@@ -1831,7 +1944,7 @@ try {
     await auditContrast(page, 'contents open', theme);
     await auditAxe(page, 'contents open', theme);
     await auditNames(page, 'contents open', theme);
-    await auditTargets(page, 'contents open', theme);
+    await auditSeparationAndTargets(page, 'contents open', theme);
     await auditFocusRings(page, 'contents open', theme, ['.contents-go', '#sheet-contents-close']);
     const contents = await page.evaluate(() => ({
       rows: [...document.querySelectorAll('#contents-list .contents-go')]
@@ -1962,7 +2075,7 @@ try {
     await auditContrast(page, 'where you are', theme);
     await auditAxe(page, 'where you are', theme);
     await auditNames(page, 'where you are', theme);
-    await auditTargets(page, 'where you are', theme);
+    await auditSeparationAndTargets(page, 'where you are', theme);
     await auditFocusRings(page, 'where you are', theme, ['#where']);
     // WHO IT IS FOR (2.6.0, ADR-0096), driven the same way and for the same
     // reason: a role planted into the store would prove the readout renders and
@@ -1984,13 +2097,13 @@ try {
     await page.click('#detail-close');
     await page.waitForSelector('#roles-open:not([hidden])');
     await auditContrast(page, 'where the attention is', theme);
-    await auditTargets(page, 'where the attention is', theme);
+    await auditSeparationAndTargets(page, 'where the attention is', theme);
     await page.click('#roles-open');
     await page.waitForSelector('#sheet-roles[open]');
     await auditContrast(page, 'roles open', theme);
     await auditAxe(page, 'roles open', theme);
     await auditNames(page, 'roles open', theme);
-    await auditTargets(page, 'roles open', theme);
+    await auditSeparationAndTargets(page, 'roles open', theme);
     await auditFocusRings(page, 'roles open', theme, ['#sheet-roles-close']);
     const readout = await page.evaluate(() => ({
       rows: [...document.querySelectorAll('#roles-list .roles-row')].map(r => ({
@@ -2036,7 +2149,7 @@ try {
     await auditContrast(page, 'detail sheet', theme);
     await auditAxe(page, 'detail sheet', theme);
     await auditNames(page, 'detail sheet', theme);
-    await auditTargets(page, 'detail sheet', theme);
+    await auditSeparationAndTargets(page, 'detail sheet', theme);
     await auditFocusRings(page, 'detail sheet', theme, ['#detail-date-set', '#detail-close', '#detail-feeds']);
     // Put the field back, so the states after this one meet an ordinary sheet
     // rather than one carrying a half-made decision.
@@ -2052,7 +2165,7 @@ try {
     await auditContrast(page, 'arrangement group', theme);
     await auditAxe(page, 'arrangement group', theme);
     await auditNames(page, 'arrangement group', theme);
-    await auditTargets(page, 'arrangement group', theme);
+    await auditSeparationAndTargets(page, 'arrangement group', theme);
     await auditFocusRings(page, 'arrangement group', theme, ['#detail-arrangement-set']);
 
     // 1.4.0: the per-node history, open. The item on this sheet was captured,
@@ -2065,7 +2178,7 @@ try {
     await auditContrast(page, 'detail sheet, history open', theme);
     await auditAxe(page, 'detail sheet, history open', theme);
     await auditNames(page, 'detail sheet, history open', theme);
-    await auditTargets(page, 'detail sheet, history open', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, history open', theme);
     await page.click('#detail-history summary');
 
     // B-04's hardest case, for the densest surface in the app.
@@ -2249,7 +2362,7 @@ try {
     await auditContrast(page, 'replan', theme);
     await auditAxe(page, 'replan', theme);
     await auditNames(page, 'replan', theme);
-    await auditTargets(page, 'replan', theme);
+    await auditSeparationAndTargets(page, 'replan', theme);
     await auditFocusRings(page, 'replan', theme, ['.replan-open', '.replan-skip']);
 
     await page.click('.replan-open');
@@ -2257,7 +2370,7 @@ try {
     await auditContrast(page, 'replan sheet', theme);
     await auditAxe(page, 'replan sheet', theme);
     await auditNames(page, 'replan sheet', theme);
-    await auditTargets(page, 'replan sheet', theme);
+    await auditSeparationAndTargets(page, 'replan sheet', theme);
     await auditFocusRings(page, 'replan sheet', theme,
       ['.replan-choice', '#replan-new-date', '.replan-set', '#replan-close']);
 
@@ -2288,7 +2401,7 @@ try {
     await page.waitForSelector('#bother-text');
     await auditContrast(page, 'bother entry', theme);
     await auditNames(page, 'bother entry', theme);
-    await auditTargets(page, 'bother entry', theme);
+    await auditSeparationAndTargets(page, 'bother entry', theme);
     await auditFocusRings(page, 'bother entry', theme,
       ['#bother-text', '#sheet-bother-entry-close']);
     await page.fill('#bother-text', 'the thing with the roof');
@@ -2297,7 +2410,7 @@ try {
     await auditContrast(page, 'bother', theme);
     await auditAxe(page, 'bother', theme);
     await auditNames(page, 'bother', theme);
-    await auditTargets(page, 'bother', theme);
+    await auditSeparationAndTargets(page, 'bother', theme);
     await auditFocusRings(page, 'bother', theme, ['.bother-choice']);
     // Three stacked choices, each a label over a hint, at 320px and 200%.
     await page.setViewportSize({ width: 320, height: 568 });
@@ -2343,7 +2456,7 @@ try {
     await auditContrast(page, 'menu open', theme);
     await auditAxe(page, 'menu open', theme);
     await auditNames(page, 'menu open', theme);
-    await auditTargets(page, 'menu open', theme);
+    await auditSeparationAndTargets(page, 'menu open', theme);
     await auditFocusRings(page, 'menu open', theme, ['.menu-item', '#sheet-menu-close']);
     await page.click('#sheet-menu-close');    // closed again, so later states are clean
     await page.waitForSelector('#sheet-menu[open]', { state: 'detached' });
@@ -2384,7 +2497,7 @@ try {
     await auditContrast(page, 'reentry', theme);
     await auditAxe(page, 'reentry', theme);
     await auditNames(page, 'reentry', theme);
-    await auditTargets(page, 'reentry', theme);
+    await auditSeparationAndTargets(page, 'reentry', theme);
     await auditFocusRings(page, 'reentry', theme, ['#reentry-amnesty-go', '#reentry-dismiss']);
     // B-04's hardest case for the surface someone meets after a fortnight away —
     // the one screen where a horizontal scrollbar would be least forgivable.
@@ -2408,7 +2521,7 @@ try {
     await page.waitForSelector('#comms-start:not([hidden])');
     await auditContrast(page, 'comms opt-in', theme);
     await auditNames(page, 'comms opt-in', theme);
-    await auditTargets(page, 'comms opt-in', theme);
+    await auditSeparationAndTargets(page, 'comms opt-in', theme);
     await auditFocusRings(page, 'comms opt-in', theme, ['#comms-start']);
     await page.click('#comms-start');
     await page.waitForTimeout(350);
@@ -2440,7 +2553,7 @@ try {
     await auditContrast(page, 'comms ramp', theme);
     await auditAxe(page, 'comms ramp', theme);
     await auditNames(page, 'comms ramp', theme);
-    await auditTargets(page, 'comms ramp', theme);
+    await auditSeparationAndTargets(page, 'comms ramp', theme);
     await auditFocusRings(page, 'comms ramp', theme, ['#comms-done', '#comms-later']);
     await page.click('#comms-later');
     await page.waitForTimeout(250);
@@ -2462,7 +2575,7 @@ try {
     await auditContrast(page, 'detail sheet, carried', theme);
     await auditAxe(page, 'detail sheet, carried', theme);
     await auditNames(page, 'detail sheet, carried', theme);
-    await auditTargets(page, 'detail sheet, carried', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, carried', theme);
     await auditFocusRings(page, 'detail sheet, carried', theme,
       ['#detail-suspense', '#detail-suspense-set']);
     await page.click('#detail-close');
@@ -2470,7 +2583,7 @@ try {
     await auditContrast(page, 'portfolio', theme);
     await auditAxe(page, 'portfolio', theme);
     await auditNames(page, 'portfolio', theme);
-    await auditTargets(page, 'portfolio', theme);
+    await auditSeparationAndTargets(page, 'portfolio', theme);
     await auditFocusRings(page, 'portfolio', theme, ['.portfolio-open']);
 
     // State 3f1: the person lens. Reached the way a person reaches it — route
@@ -2496,7 +2609,7 @@ try {
     await auditContrast(page, 'people', theme);
     await auditAxe(page, 'people', theme);
     await auditNames(page, 'people', theme);
-    await auditTargets(page, 'people', theme);
+    await auditSeparationAndTargets(page, 'people', theme);
     await auditFocusRings(page, 'people', theme, ['.people-open']);
 
     // And the sheet's write side, with a name actually attached — the state in
@@ -2510,7 +2623,7 @@ try {
     await auditContrast(page, 'detail sheet, with someone', theme);
     await auditAxe(page, 'detail sheet, with someone', theme);
     await auditNames(page, 'detail sheet, with someone', theme);
-    await auditTargets(page, 'detail sheet, with someone', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, with someone', theme);
     await auditFocusRings(page, 'detail sheet, with someone', theme,
       ['#detail-person', '#detail-relation', '#detail-person-set']);
     await page.click('#detail-close');
@@ -2523,7 +2636,7 @@ try {
     await auditContrast(page, 'focus', theme);
     await auditAxe(page, 'focus', theme);
     await auditNames(page, 'focus', theme);
-    await auditTargets(page, 'focus', theme);
+    await auditSeparationAndTargets(page, 'focus', theme);
     await auditFocusRings(page, 'focus', theme,
       ['#focus-interrupt', '#focus-done', '#focus-stop']);
     // THE AMBIENT HORIZON (2.7.1, collisions entry 7). Its own driven state,
@@ -2607,7 +2720,7 @@ try {
     await auditContrast(page, 'focus sheet', theme);
     await auditAxe(page, 'focus sheet', theme);
     await auditNames(page, 'focus sheet', theme);
-    await auditTargets(page, 'focus sheet', theme);
+    await auditSeparationAndTargets(page, 'focus sheet', theme);
     await auditFocusRings(page, 'focus sheet', theme,
       ['#focus-cue', '#focus-sheet-stop', '#focus-sheet-cancel']);
     // B-04's hardest case for a sheet carrying a free-text box.
@@ -2634,7 +2747,7 @@ try {
     await auditContrast(page, 'close strip', theme);
     await auditAxe(page, 'close strip', theme);
     await auditNames(page, 'close strip', theme);
-    await auditTargets(page, 'close strip', theme);
+    await auditSeparationAndTargets(page, 'close strip', theme);
     await auditFocusRings(page, 'close strip', theme, ['#close-ok']);
     await page.click('#close-ok');
     await page.waitForSelector('#close', { state: 'hidden' });
@@ -2675,7 +2788,7 @@ try {
     await auditContrast(page, 'review', theme);
     await auditAxe(page, 'review', theme);
     await auditNames(page, 'review', theme);
-    await auditTargets(page, 'review', theme);
+    await auditSeparationAndTargets(page, 'review', theme);
     await auditFocusRings(page, 'review', theme, ['.review-open']);
 
     // And the sheet once something IS inside something — the only state in which
@@ -2697,7 +2810,7 @@ try {
       await auditContrast(page, 'detail sheet, inside something', theme);
       await auditAxe(page, 'detail sheet, inside something', theme);
       await auditNames(page, 'detail sheet, inside something', theme);
-      await auditTargets(page, 'detail sheet, inside something', theme);
+      await auditSeparationAndTargets(page, 'detail sheet, inside something', theme);
     } else {
       fail(`${theme}: nothing could be put under anything — the containment state went unaudited`);
     }
@@ -2710,7 +2823,7 @@ try {
     await auditContrast(page, 'detail sheet, creating a place', theme);
     await auditAxe(page, 'detail sheet, creating a place', theme);
     await auditNames(page, 'detail sheet, creating a place', theme);
-    await auditTargets(page, 'detail sheet, creating a place', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, creating a place', theme);
     await auditFocusRings(page, 'detail sheet, creating a place', theme, ['#detail-parent-create']);
     await page.fill('#detail-parent-filter', '');
 
@@ -2724,7 +2837,7 @@ try {
     await auditContrast(page, 'weight', theme);
     await auditAxe(page, 'weight', theme);
     await auditNames(page, 'weight', theme);
-    await auditTargets(page, 'weight', theme);
+    await auditSeparationAndTargets(page, 'weight', theme);
     await auditFocusRings(page, 'weight', theme, ['#detail-weight-heavy', '#detail-weight-clear']);
     await page.click('#detail-weight-clear');
     await page.waitForFunction(() =>
@@ -2734,7 +2847,7 @@ try {
     await auditContrast(page, 'situation field', theme);
     await auditAxe(page, 'situation field', theme);
     await auditNames(page, 'situation field', theme);
-    await auditTargets(page, 'situation field', theme);
+    await auditSeparationAndTargets(page, 'situation field', theme);
     await auditFocusRings(page, 'situation field', theme, ['#detail-situation-set']);
     // And the box emptied again, because clearing it is the removal verb and the
     // control has to stay reachable in the state a person removes from.
@@ -2742,7 +2855,7 @@ try {
 
     await auditContrast(page, 'put it down', theme);
     await auditNames(page, 'put it down', theme);
-    await auditTargets(page, 'put it down', theme);
+    await auditSeparationAndTargets(page, 'put it down', theme);
     await auditFocusRings(page, 'put it down', theme, ['#detail-release']);
     // And the way back, which only exists once something IS down. Put it down,
     // measure, then pick it straight back up so nothing downstream in the walk
@@ -2751,7 +2864,7 @@ try {
     await page.waitForSelector('#detail-reclaim:not([hidden])');
     await auditContrast(page, 'picked back up', theme);
     await auditNames(page, 'picked back up', theme);
-    await auditTargets(page, 'picked back up', theme);
+    await auditSeparationAndTargets(page, 'picked back up', theme);
     await auditFocusRings(page, 'picked back up', theme, ['#detail-reclaim']);
     await page.click('#detail-reclaim');
     await page.waitForFunction(() =>
@@ -2788,7 +2901,7 @@ try {
       await auditContrast(page, 'waits for', theme);
       await auditAxe(page, 'waits for', theme);
       await auditNames(page, 'waits for', theme);
-      await auditTargets(page, 'waits for', theme);
+      await auditSeparationAndTargets(page, 'waits for', theme);
       await auditFocusRings(page, 'waits for', theme, ['#detail-after-set', '#detail-after-clear']);
       // Put it back, so nothing downstream in the walk inherits an anchor it
       // did not ask for.
@@ -2847,14 +2960,14 @@ try {
     await auditContrast(page, 'sort picker', theme);
     await auditAxe(page, 'sort picker', theme);
     await auditNames(page, 'sort picker', theme);
-    await auditTargets(page, 'sort picker', theme);
+    await auditSeparationAndTargets(page, 'sort picker', theme);
     await auditFocusRings(page, 'sort picker', theme, ['.sort-choice', '#sort-query']);
     await page.locator('.sort-choice').first().click();
     await page.waitForSelector('#sort-card-region:not([hidden])');
     await auditContrast(page, 'sort card', theme);
     await auditAxe(page, 'sort card', theme);
     await auditNames(page, 'sort card', theme);
-    await auditTargets(page, 'sort card', theme);
+    await auditSeparationAndTargets(page, 'sort card', theme);
     await auditFocusRings(page, 'sort card', theme, ['#sort-card', '#sort-actions .route']);
 
     // Wholesale (1.5.0): open the block, audit the verbs, then reveal the
@@ -2867,7 +2980,7 @@ try {
     await auditContrast(page, 'sort bulk verbs', theme);
     await auditAxe(page, 'sort bulk verbs', theme);
     await auditNames(page, 'sort bulk verbs', theme);
-    await auditTargets(page, 'sort bulk verbs', theme);
+    await auditSeparationAndTargets(page, 'sort bulk verbs', theme);
     await auditFocusRings(page, 'sort bulk verbs', theme, ['#sort-bulk-verbs .route', '#sort-bulk-export']);
     await page.waitForFunction(() => {
       const b = [...document.querySelectorAll('#sort-bulk-verbs .route')]
@@ -2879,7 +2992,7 @@ try {
     await auditContrast(page, 'sort bulk confirm', theme);
     await auditAxe(page, 'sort bulk confirm', theme);
     await auditNames(page, 'sort bulk confirm', theme);
-    await auditTargets(page, 'sort bulk confirm', theme);
+    await auditSeparationAndTargets(page, 'sort bulk confirm', theme);
     await auditFocusRings(page, 'sort bulk confirm', theme, ['#sort-bulk-word']);
     await page.click('#sort-bulk-cancel');
     await page.waitForSelector('#sort-bulk', { state: 'hidden' });
@@ -2917,7 +3030,7 @@ try {
     await auditContrast(page, 'tree open', theme);
     await auditAxe(page, 'tree open', theme);
     await auditNames(page, 'tree open', theme);
-    await auditTargets(page, 'tree open', theme);
+    await auditSeparationAndTargets(page, 'tree open', theme);
     await auditFocusRings(page, 'tree open', theme, ['.tree-open-row', '#sheet-tree-close']);
     await page.click('#sheet-tree-close');
     await page.waitForSelector('#sheet-tree[open]', { state: 'detached' });
@@ -2931,7 +3044,7 @@ try {
     await auditContrast(page, 'lens row', theme);
     await auditAxe(page, 'lens row', theme);
     await auditNames(page, 'lens row', theme);
-    await auditTargets(page, 'lens row', theme);
+    await auditSeparationAndTargets(page, 'lens row', theme);
     await auditFocusRings(page, 'lens row', theme, ['#lens']);
     await page.selectOption('#lens', { index: 0 });
     await page.waitForSelector('#lens-note', { state: 'hidden' });
@@ -2943,7 +3056,7 @@ try {
     await page.waitForSelector('#today-start:not([hidden])');
     await auditContrast(page, 'today opt-in', theme);
     await auditNames(page, 'today opt-in', theme);
-    await auditTargets(page, 'today opt-in', theme);
+    await auditSeparationAndTargets(page, 'today opt-in', theme);
     await auditFocusRings(page, 'today opt-in', theme, ['#today-start']);
     await page.click('#today-start');
     await page.waitForFunction(() => /^On\./.test(
@@ -2965,7 +3078,7 @@ try {
     await auditContrast(page, 'composed strip', theme);
     await auditAxe(page, 'composed strip', theme);
     await auditNames(page, 'composed strip', theme);
-    await auditTargets(page, 'composed strip', theme);
+    await auditSeparationAndTargets(page, 'composed strip', theme);
     await auditFocusRings(page, 'composed strip', theme, ['.composed-open']);
     await openSurface(page, 'sheet-group-extras');
     await page.click('#today-stop');
@@ -2985,7 +3098,7 @@ try {
     await page.waitForSelector('#clock-on:not([hidden])');
     await auditContrast(page, 'clock opt-in', theme);
     await auditNames(page, 'clock opt-in', theme);
-    await auditTargets(page, 'clock opt-in', theme);
+    await auditSeparationAndTargets(page, 'clock opt-in', theme);
     await auditFocusRings(page, 'clock opt-in', theme, ['#clock-on']);
     // THE WAY IN FROM OUTSIDE (V2 stage 6). Driven with the copy actually
     // pressed, so the note has words in it — a status line measured while empty
@@ -2997,7 +3110,7 @@ try {
       (document.querySelector('#capture-endpoint-note')?.textContent || '').length > 0);
     await auditContrast(page, 'capture address', theme);
     await auditNames(page, 'capture address', theme);
-    await auditTargets(page, 'capture address', theme);
+    await auditSeparationAndTargets(page, 'capture address', theme);
     await auditFocusRings(page, 'capture address', theme, ['#capture-endpoint-copy']);
 
     // WHEN YOUR DAY ENDS (V2 stage 5) — driven with a real choice made, because a
@@ -3010,7 +3123,7 @@ try {
       /3am/.test(document.querySelector('#day-boundary-note')?.textContent || ''));
     await auditContrast(page, 'day boundary', theme);
     await auditNames(page, 'day boundary', theme);
-    await auditTargets(page, 'day boundary', theme);
+    await auditSeparationAndTargets(page, 'day boundary', theme);
     await auditFocusRings(page, 'day boundary', theme, ['#day-boundary-set']);
     // Back to midnight, so nothing after this walks a shifted day.
     await page.selectOption('#day-boundary', '0');
@@ -3036,7 +3149,7 @@ try {
     await auditContrast(page, 'clock on', theme);
     await auditAxe(page, 'clock on', theme);
     await auditNames(page, 'clock on', theme);
-    await auditTargets(page, 'clock on', theme);
+    await auditSeparationAndTargets(page, 'clock on', theme);
     await openSurface(page, 'sheet-group-extras');
     await page.click('#clock-off');
     await page.waitForSelector('#clock-on:not([hidden])');
@@ -3083,7 +3196,7 @@ try {
     await auditContrast(page, 'detail sheet, folding', theme);
     await auditAxe(page, 'detail sheet, folding', theme);
     await auditNames(page, 'detail sheet, folding', theme);
-    await auditTargets(page, 'detail sheet, folding', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, folding', theme);
     await auditFocusRings(page, 'detail sheet, folding', theme, ['#detail-merge', '#detail-merge-set']);
     await page.selectOption('#detail-merge', { index: 1 });
     await page.click('#detail-merge-set');
@@ -3091,7 +3204,7 @@ try {
     await auditContrast(page, 'detail sheet, folded away', theme);
     await auditAxe(page, 'detail sheet, folded away', theme);
     await auditNames(page, 'detail sheet, folded away', theme);
-    await auditTargets(page, 'detail sheet, folded away', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, folded away', theme);
     await auditFocusRings(page, 'detail sheet, folded away', theme, ['#detail-unmerge']);
     await page.click('#detail-close');
     await fillSearch('same errand');
@@ -3103,7 +3216,7 @@ try {
     await auditContrast(page, 'detail sheet, survivor', theme);
     await auditAxe(page, 'detail sheet, survivor', theme);
     await auditNames(page, 'detail sheet, survivor', theme);
-    await auditTargets(page, 'detail sheet, survivor', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, survivor', theme);
     await auditFocusRings(page, 'detail sheet, survivor', theme, ['#detail-merged-list button']);
     await page.locator('#detail-merged-list button').first().click();
     await page.waitForSelector('#detail-merged-group[hidden]', { state: 'attached' });
@@ -3128,7 +3241,7 @@ try {
     await auditContrast(page, 'detail sheet, who cares', theme);
     await auditAxe(page, 'detail sheet, who cares', theme);
     await auditNames(page, 'detail sheet, who cares', theme);
-    await auditTargets(page, 'detail sheet, who cares', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, who cares', theme);
     await auditFocusRings(page, 'detail sheet, who cares', theme, ['#detail-stakeholder-list button']);
     await page.fill('#detail-decision', 'we ship on the 12th');
     await page.click('#detail-decision-set');
@@ -3137,7 +3250,7 @@ try {
     await auditContrast(page, 'detail sheet, decisions', theme);
     await auditAxe(page, 'detail sheet, decisions', theme);
     await auditNames(page, 'detail sheet, decisions', theme);
-    await auditTargets(page, 'detail sheet, decisions', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, decisions', theme);
     await auditFocusRings(page, 'detail sheet, decisions', theme, ['#detail-decision', '#detail-decision-set']);
 
     // A person's own sheet (1.12.0). Link somebody as owing something, then
@@ -3153,7 +3266,7 @@ try {
     await auditContrast(page, 'detail sheet, a person', theme);
     await auditAxe(page, 'detail sheet, a person', theme);
     await auditNames(page, 'detail sheet, a person', theme);
-    await auditTargets(page, 'detail sheet, a person', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, a person', theme);
     await auditFocusRings(page, 'detail sheet, a person', theme, ['#detail-person-group button']);
     await page.click('#detail-close');
 
@@ -3175,7 +3288,7 @@ try {
     await auditContrast(page, 'detail sheet, declined', theme);
     await auditAxe(page, 'detail sheet, declined', theme);
     await auditNames(page, 'detail sheet, declined', theme);
-    await auditTargets(page, 'detail sheet, declined', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, declined', theme);
     await auditFocusRings(page, 'detail sheet, declined', theme, ['#detail-carry']);
     await page.click('#detail-close');
     await fillSearch('');
@@ -3186,7 +3299,7 @@ try {
     await auditContrast(page, 'ledger open', theme);
     await auditAxe(page, 'ledger open', theme);
     await auditNames(page, 'ledger open', theme);
-    await auditTargets(page, 'ledger open', theme);
+    await auditSeparationAndTargets(page, 'ledger open', theme);
     // The diagnostic (1.18.0, §7f). Driven, not assumed: the report only
     // exists once somebody asks for it, so a state registered without taking
     // one would match nothing and pass for the wrong reason.
@@ -3202,7 +3315,7 @@ try {
     await auditContrast(page, 'diagnostic taken', theme);
     await auditAxe(page, 'diagnostic taken', theme);
     await auditNames(page, 'diagnostic taken', theme);
-    await auditTargets(page, 'diagnostic taken', theme);
+    await auditSeparationAndTargets(page, 'diagnostic taken', theme);
     await auditFocusRings(page, 'diagnostic taken', theme, ['#diagnostic-show', '#diagnostic-copy']);
     // The journal's three states, walked in the order a person meets them.
     await openSurface(page, 'sheet-group-data');
@@ -3211,7 +3324,7 @@ try {
     await auditContrast(page, 'journal, no passphrase', theme);
     await auditAxe(page, 'journal, no passphrase', theme);
     await auditNames(page, 'journal, no passphrase', theme);
-    await auditTargets(page, 'journal, no passphrase', theme);
+    await auditSeparationAndTargets(page, 'journal, no passphrase', theme);
     await auditFocusRings(page, 'journal, no passphrase', theme, ['#journal-new', '#journal-set']);
     await page.fill('#journal-new', 'a passphrase for the audit');
     await page.click('#journal-set');
@@ -3223,14 +3336,14 @@ try {
     await auditContrast(page, 'journal, open', theme);
     await auditAxe(page, 'journal, open', theme);
     await auditNames(page, 'journal, open', theme);
-    await auditTargets(page, 'journal, open', theme);
+    await auditSeparationAndTargets(page, 'journal, open', theme);
     await auditFocusRings(page, 'journal, open', theme, ['#journal-text', '#journal-write']);
     await page.click('#journal-lock');
     await page.waitForSelector('#journal-locked:not([hidden])');
     await auditContrast(page, 'journal, closed', theme);
     await auditAxe(page, 'journal, closed', theme);
     await auditNames(page, 'journal, closed', theme);
-    await auditTargets(page, 'journal, closed', theme);
+    await auditSeparationAndTargets(page, 'journal, closed', theme);
     await auditFocusRings(page, 'journal, closed', theme, ['#journal-pass', '#journal-unlock']);
     await page.click('#journal-open');
 
@@ -3257,7 +3370,7 @@ try {
     await auditContrast(page, 'detail sheet, slot offered', theme);
     await auditAxe(page, 'detail sheet, slot offered', theme);
     await auditNames(page, 'detail sheet, slot offered', theme);
-    await auditTargets(page, 'detail sheet, slot offered', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, slot offered', theme);
     await auditFocusRings(page, 'detail sheet, slot offered', theme, ['#detail-slot-park']);
     await page.click('#detail-close');
     await fillSearch('');
@@ -3280,20 +3393,20 @@ try {
     await auditContrast(page, 'your data, return visit', theme);
     await auditAxe(page, 'your data, return visit', theme);
     await auditNames(page, 'your data, return visit', theme);
-    await auditTargets(page, 'your data, return visit', theme);
+    await auditSeparationAndTargets(page, 'your data, return visit', theme);
     await auditFocusRings(page, 'your data, return visit', theme, ['#export', '#notnow-open']);
 
     await openSurface(page, 'sheet-group-extras');
     await auditContrast(page, 'settings', theme);
     await auditAxe(page, 'settings', theme);
     await auditNames(page, 'settings', theme);
-    await auditTargets(page, 'settings', theme);
+    await auditSeparationAndTargets(page, 'settings', theme);
 
     await openSurface(page, 'sheet-group-actions');
     await auditContrast(page, 'things you can do', theme);
     await auditAxe(page, 'things you can do', theme);
     await auditNames(page, 'things you can do', theme);
-    await auditTargets(page, 'things you can do', theme);
+    await auditSeparationAndTargets(page, 'things you can do', theme);
     await auditFocusRings(page, 'things you can do', theme,
       ['#calendar', '#report-copy', '#sheet-group-actions-close']);
 
@@ -3301,7 +3414,7 @@ try {
     await auditContrast(page, 'dialog, return visit', theme);
     await auditAxe(page, 'dialog, return visit', theme);
     await auditNames(page, 'dialog, return visit', theme);
-    await auditTargets(page, 'dialog, return visit', theme);
+    await auditSeparationAndTargets(page, 'dialog, return visit', theme);
     await auditFocusRings(page, 'dialog, return visit', theme,
       ['#about-close', '#diagnostic-show']);
 
@@ -3317,7 +3430,7 @@ try {
     await auditContrast(page, 'log view', theme);
     await auditAxe(page, 'log view', theme);
     await auditNames(page, 'log view', theme);
-    await auditTargets(page, 'log view', theme);
+    await auditSeparationAndTargets(page, 'log view', theme);
     await auditFocusRings(page, 'log view', theme, ['#log-open']);
     await page.click('#log-open');
     await page.waitForSelector('#log-view', { state: 'hidden' });
@@ -3330,7 +3443,7 @@ try {
     await auditContrast(page, 'trash view', theme);
     await auditAxe(page, 'trash view', theme);
     await auditNames(page, 'trash view', theme);
-    await auditTargets(page, 'trash view', theme);
+    await auditSeparationAndTargets(page, 'trash view', theme);
     await auditFocusRings(page, 'trash view', theme, ['.trash-row']);
     await page.click('#trash-open');
     await page.waitForSelector('#trash-view', { state: 'hidden' });
@@ -3339,13 +3452,13 @@ try {
     await openSurface(page, 'sheet-group-actions');
     await auditContrast(page, 'today on paper', theme);
     await auditNames(page, 'today on paper', theme);
-    await auditTargets(page, 'today on paper', theme);
+    await auditSeparationAndTargets(page, 'today on paper', theme);
     await auditFocusRings(page, 'today on paper', theme, ['#today-print']);
 
     // The report controls, on the sheet that is already open.
     await auditContrast(page, 'report controls', theme);
     await auditNames(page, 'report controls', theme);
-    await auditTargets(page, 'report controls', theme);
+    await auditSeparationAndTargets(page, 'report controls', theme);
     await auditFocusRings(page, 'report controls', theme,
       ['#report-copy', '#report-markdown', '#report-csv', '#report-print']);
 
@@ -3367,7 +3480,7 @@ try {
     await auditContrast(page, 'import, file chosen', theme);
     await auditAxe(page, 'import, file chosen', theme);
     await auditNames(page, 'import, file chosen', theme);
-    await auditTargets(page, 'import, file chosen', theme);
+    await auditSeparationAndTargets(page, 'import, file chosen', theme);
     await auditFocusRings(page, 'import, file chosen', theme, ['#import-file', '#import-union', '#import-backup', '#import-go']);
     rmSync(validExport, { force: true });
 
