@@ -1,7 +1,7 @@
 {
   "capture": {
     "region": "document",
-    "ordinal": 7,
+    "ordinal": 4,
     "label": "What do you want to put down?"
   },
   "open-about": {
@@ -21,7 +21,7 @@
   },
   "menu-open": {
     "region": "document",
-    "ordinal": 45,
+    "ordinal": 39,
     "label": null
   }
 }

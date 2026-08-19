@@ -29,6 +29,61 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.9.4',
+    kind: 'ITERATION',
+    date: '2026-08-19',
+    notes: [
+      '**The report no longer tells you to back up an empty planner.** On a store with nothing in it, the first thing under *what is wrong* was “No copy has ever left this device — everything here exists in one place, and clearing website data would take it.” There is no everything, and nothing to take. A chore invented out of nothing is exactly what this app is not supposed to do, and it was doing it on the one screen whose whole job is to say only what is true.',
+      '**And the storage line now says what it is actually counting.** It read *Used by Quietkeep: 1.3 MB* next to a log of zero events, which looks like either a lie or a bug. It was neither: the browser counts the app’s own downloaded code and anything you have put in as one number and does not separate them. On an empty planner that figure is almost entirely the app. It says so now, and it is labelled *Used at this address*.',
+      '**Still true and still worth acting on:** the browser has not agreed to keep your planner. That warning stays on an empty store, because it is the thing to sort out **before** you rely on it rather than after.',
+    ],
+  },
+  {
+    triplet: '2.9.3',
+    kind: 'ITERATION',
+    date: '2026-08-19',
+    notes: [
+      '**Buttons that were touching each other now have room between them.** Reported from a device: *Bring a copy back* and *What’s on this page* overlap. They were **0.0 pixels apart — at every screen size, at every text size, and always had been.** Two controls with nothing between them read as one, and a finger on the seam gets whichever is on top with no way to tell which you pressed.',
+      '**Looking for that one found four more of exactly the same thing:** the two rows of buttons under what you are offered, the door and the way past it on a card that needs a new plan, *Have a look* and *Carry on* when a session closes, and the buttons in the undo line. All of them sat directly against each other.',
+      '**Nothing was checking this, which is why you found it.** Every check in this app asked whether a control was big enough to press; none asked whether it was separate from the next one. There is one now, and it runs on every screen the checks already cover — it names the two controls and the box they are in, so the next one is a minute rather than an afternoon.',
+      '**And the check itself was wrong twice before it was right.** Its first version asked whether the boxes *overlapped* and reported nothing wrong about the very buttons you reported, because they were touching rather than overlapping. Its second version only looked at what was on screen, so planting your exact defect back in made it go green — those two buttons are below the fold. It compares within each scrolling area now, so nothing is missed for being out of view.',
+    ],
+  },
+  {
+    triplet: '2.9.2',
+    kind: 'ITERATION',
+    date: '2026-08-18',
+    notes: [
+      '**The line saying nothing has gone quiet was being cut in half.** At a larger text size the strip at the top of the screen ran out of room and started scrolling inside itself, so the sentence was sliced through the middle. Reported from a device and reproduced: at 175% browser text it needed 474 pixels and had 422.',
+      '**A box cut in half is this app suggesting something has been lost, and it may not do that.** So past half the screen the top strip stops being a fixed strip: everything goes back to being ordinary page content and the whole page scrolls, exactly as it did before. You lose the convenience, never the sentence.',
+      '**Where that actually happens:** on a phone at ordinary text the strip takes about a third of the screen and stays. It stands down on a very small screen, or once your text is large enough that keeping it would cost more than it is worth.',
+      '**And it does not flicker.** It stands down past half the screen and only comes back below 42%, so a size sitting right on the line cannot flip the page back and forth while you read it.',
+    ],
+  },
+  {
+    triplet: '2.9.1',
+    kind: 'ITERATION',
+    date: '2026-08-18',
+    notes: [
+      '**Making the text bigger now makes the boxes bigger too.** Reported from a device, and it was true: a button’s words grew by half again while its box grew by about a quarter, so the letters ended up crowding the edges. **The capture box and the title of the thing you are offered did not grow at all.**',
+      '**Why:** every control’s padding, and the 44-pixel floor under every target, were measured against *the page’s* text size rather than *that control’s*. This app’s own size setting moves the page’s, so it worked there. Your browser’s own text setting does not move it — nor does a minimum font size, nor a text size set for every site — so under any of those the boxes stood still. They are measured against each control’s own text now, and the floor still holds for small print.',
+      '**One thing that was quietly broken and is now fixed:** at the app’s *smaller* setting the capture box’s text dropped below 16 pixels, which is the size at which iOS zooms the whole page the moment you tap into a box. It cannot go under that any more.',
+      '**And the diagnostic now says what your text is actually doing** — the size of the words, the size of the page they are measured against, and which of the three things moved them: this app’s setting, your browser’s, or a page zoom. That question could not be answered from a screenshot, and it cost a round trip.',
+    ],
+  },
+  {
+    triplet: '2.9.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-18',
+    notes: [
+      '**The capture box no longer scrolls away.** It, the line saying nothing has gone quiet, and the way to everywhere are now a frame the page moves underneath — so from anywhere in your list you can put something down without going anywhere first. That is what the last release measured and said could not be got by moving blocks about.',
+      '**The capture box is now the fourth control on the page; it was the seventh**, and **the Menu’s door is now the 39th; it was the 45th.** Nothing about either changed but the frame above them.',
+      '**Measured on a phone.** The frame takes about a quarter of the screen and never gives it back — 201 pixels of 844 empty, 225 with things in it. At the top that is a gain, since the same chrome used to take 304; deep in a list it is a loss, since it used to be gone. In exchange *Next up* begins **0.08 screens into the scrolling part** instead of 0.43 down the page.',
+      '**Nothing became unreachable, and that was checked rather than hoped:** every control was asked whether some scroll position brings its whole box into view — all of them, both sizes, empty and full. The last attempt at chrome that stays put was a floating button, and it failed exactly that test.',
+      '**Two smaller things moved with it.** *More room* and *Hold what I copied* now sit just under the frame rather than inside it, so from far down they need a trip back up. And “a newer version is ready” now appears **below** the capture box, so it can never push the box down. **If the frame is more in the way than it is worth, say so** — it comes off, and the numbers stay true either way.',
+    ],
+  },
+  {
     triplet: '2.8.1',
     kind: 'ITERATION',
     date: '2026-08-18',

@@ -46,8 +46,24 @@
    *
    * `max()` keeps both halves honest — it grows with the reader's text and never
    * goes under the physical floor. This is also what makes the scale control in
-   * Settings safe to build at all. */
-  --target: max(2.75rem, 44px);
+   * Settings safe to build at all.
+   *
+   * `em`, NOT `rem` (2.9.1). Reported from a device: making the text bigger
+   * resizes the letters and not the boxes. Reproduced by growing the text
+   * WITHOUT growing the root — which is what a browser's own text control does,
+   * and what a minimum-font-size setting does, and what any user stylesheet
+   * does. Measured at 390px: every button's text went ×1.50 while its box went
+   * ×1.27, because the padding and this floor are both root-relative and the
+   * root had not moved. The letters grew inside boxes that did not.
+   *
+   * `rem` asks "how big is the page", `em` asks "how big is THIS control's own
+   * text", and the second is the question a touch target is actually about.
+   * A custom property carrying `em` resolves against the element that USES it,
+   * so this one line re-anchors every `min-height: var(--target)` in the file.
+   *
+   * The floor still holds for small text: a 13px control gives 2.75em = 36px,
+   * and `max()` returns 44. Only controls whose text has actually grown grow. */
+  --target: max(2.75em, 44px);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -76,6 +92,155 @@ body {
   margin-inline: auto;
 }
 
+/* --- THE SHELL (2.9.0, ADR-0100) -----------------------------------------
+ *
+ * A flex column exactly the height of the viewport, with ONE scrolling child.
+ * The frame — capture, what just happened to it, and the proof — is a sibling
+ * of the scroller rather than the first thing inside it, so it cannot scroll
+ * away. No `position` value is involved anywhere in this and that is the point.
+ *
+ * This is not a new idea in this file. It is the shape `#about` has had since
+ * the way out was found scrolling off on the reference iPad TWICE under
+ * `position: sticky`, and that every sheet has had since 1.40.0 — read the
+ * comment at `.about-bar` for the two device findings that produced it. Its
+ * closing sentence is the whole argument for using it here: it "needs no
+ * support from any engine and cannot regress".
+ *
+ * `dvh` NOT `vh`. On a phone browser `100vh` is the viewport with the URL bar
+ * hidden, which is taller than what you can actually see, so the last band of
+ * the runway sits under the browser's own chrome — and in a layout whose whole
+ * claim is that the frame is always reachable, the bottom of the app being
+ * unreachable is the same defect one edge along. `dvh` is what is on screen now.
+ *
+ * WHAT THIS COSTS, because it is real and it is not measurable from here:
+ * a page that scrolls its own document lets iOS collapse the URL bar and hands
+ * back roughly 60px once you scroll. A page whose document does not scroll never
+ * triggers that, so in a BROWSER tab the reader keeps the URL bar as well as
+ * paying for the frame. Installed to the home screen there is no URL bar and the
+ * cost is zero — which is the way this app asks to be used (Doctrine §7e), and
+ * is now one more reason it does. Recorded as V-24 rather than assumed away. */
+/* The document must not scroll AT ALL. The body was already the viewport's
+   height, and it still reported a scrolling document on a seeded store — `html`
+   has no height of its own, so it grew to whatever the flex column asked for.
+   Measured, not assumed: the probe asks the page whether its document scrolls
+   and the answer has to be no, because a document that scrolls on iOS collapses
+   the URL bar and rubber-bands under a frame that is not supposed to move. */
+html { height: 100%; overflow: hidden; }
+
+/* AND THE WHOLE SHELL STANDS DOWN WHEN THE FRAME WILL NOT FIT (2.9.2, ADR-0101).
+ *
+ * The cap below was the right instinct and the wrong remedy. `overflow-y: auto`
+ * on a capped frame means that past the cap it scrolls INSIDE ITSELF, and what
+ * a reader sees is the proof line cut through the middle of its own sentence.
+ * Reported from a device; reproduced at 390px, where 175% browser text gives the
+ * frame 474px of content against a 422px cap, and the app's own 150% gives 468px.
+ *
+ * A box cut in half is this app implying something has been lost, which is the
+ * one thing it may not do. So past the threshold there is no frame: everything
+ * returns to ordinary page content and the document scrolls, exactly as it did
+ * before 2.9.0 — a layout that shipped for months and is known good. The reader
+ * loses a convenience rather than a sentence.
+ *
+ * On `<html>` rather than on `<body>` because the shell's `overflow` lives here,
+ * and `:has()` is not a dependency worth taking for something layout turns on. */
+html[data-frame="off"] { height: auto; overflow: visible; }
+html[data-frame="off"] body {
+  height: auto;
+  min-height: 100dvh;
+  display: block;
+  overflow: visible;
+  padding-bottom: max(calc(var(--gap) * 2), env(safe-area-inset-bottom));
+}
+html[data-frame="off"] .frame {
+  max-height: none;
+  overflow: visible;
+}
+html[data-frame="off"] .runway {
+  overflow: visible;
+  /* The scroller's own bottom padding belongs to the body again. */
+  padding-bottom: 0;
+}
+
+body {
+  min-height: 100dvh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* The scroller owns the bottom padding; the body must not also reserve it, or
+     the runway is short by that much at every scroll position. */
+  padding-bottom: 0;
+  /* A flex column will not let a child shrink below its content unless told.
+     Without this the runway grows to fit the whole list and the shell stops
+     being the viewport's height at all — the failure looks like "the frame
+     scrolled away" and is really "there is no scroller". */
+  overflow: hidden;
+}
+
+/* THE FRAME MAY NEVER TAKE MORE THAN HALF THE SCREEN.
+ *
+ * Without this cap the layout has a hard accessibility failure hiding in it: at
+ * 200% text on a narrow screen every row in the frame wraps, the frame grows,
+ * and — because it is `flex: 0 0 auto` — it grows by taking the runway's space.
+ * Far enough and the runway is a few pixels tall and the app has no content
+ * area at all. That is WCAG 1.4.4 and 1.4.10 failing in a way that only appears
+ * at the settings the people this app is for are most likely to use.
+ *
+ * So the runway is guaranteed half the viewport, and if the frame will not fit
+ * in the other half IT scrolls. Capture is the first thing in it and therefore
+ * the last thing to go, which is the right order: the box you type into stays,
+ * and at the extreme the proof line is one small scroll away rather than gone. */
+/* `flex: 0 0 auto` — SHRINK MUST BE ZERO, and this cost a measurement to learn.
+ *
+ * It was `0 1 auto`, which reads as harmless and is not: a flex line distributes
+ * negative free space in proportion to each item's BASIS, and with the runway on
+ * `flex-basis: auto` its basis is the height of the whole list. On the
+ * thirteen-item sample that is 4,501px against the frame's 165px, so the frame
+ * took its 3.5% share of a 3,800px overflow and **collapsed from 165px to 39px**
+ * — measured, on a phone viewport, with the empty store still reporting a
+ * perfect 165px beside it.
+ *
+ * That is the shape worth remembering: a layout that is correct until there is
+ * data in it, and whose first screen looks right on the store a walk starts
+ * from. The runway is `flex: 1 1 0` for the other half of the same fix — with a
+ * content-sized basis it claims space it should be taking as leftovers. */
+.frame {
+  flex: 0 0 auto;
+  max-height: 50dvh;
+  overflow-y: auto;
+}
+
+.runway {
+  /* Basis ZERO, not auto: the runway takes what is left over rather than
+     bidding for space with the height of its own contents. See `.frame`. */
+  flex: 1 1 0;
+  min-height: 0;
+  /* A CONTAINING BLOCK, and it is not decoration. Every `.visually-hidden`
+     label in this app is `position: absolute`, and an absolutely-positioned
+     element with no positioned ancestor is laid out against the INITIAL
+     containing block — so each one deep in a 4,477px list was extending the
+     document's own scroll area to 2,032px while the body sat at a correct 844.
+     The document's overflow is hidden, so nothing was visibly wrong; what it
+     produced was a page that reported itself scrollable, which is the fact the
+     whole frame depends on being false. Found by asking, not by looking. */
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* The scroll container is what a jump lands in, so the clearance a focused
+     thing needs from the top belongs here, not on the document. */
+  scroll-padding-top: 0.5rem;
+  padding-bottom: calc(var(--gap) * 2);
+  /* Room past the last card for the safe area on a device with a home bar. */
+  padding-bottom: max(calc(var(--gap) * 2), env(safe-area-inset-bottom));
+}
+
+/* The frame's own bottom edge, so the runway visibly begins somewhere. Not a
+   drop shadow: content sliding under a shadow reads as content being cut off,
+   and this app already refuses to imply that anything is being lost. */
+.frame {
+  border-bottom: 1px solid var(--rule, var(--line));
+  margin-bottom: 0.6rem;
+}
+
 /* Off-screen until focused, but it carries its full target size the whole time.
  * A skip link that only becomes 44px at the moment it is focused is a target
  * that was too small right up until it mattered. */
@@ -85,7 +250,7 @@ body {
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-  padding: 0.5rem 0.75rem;
+  padding: 0.5em 0.75em;
   color: var(--ink);
   background: var(--surface);
   border: 2px solid var(--accent);
@@ -111,20 +276,37 @@ body {
   border-radius: 4px;
 }
 
+/* ONE ROW ON A PHONE (2.9.0, ADR-0100), because every pixel here is spent at
+   every scroll position now rather than only at the top. Measured at 390px: the
+   row came to 412px against 358px of column, so `Contents` wrapped and the bar
+   was 132px. A smaller gap and a smaller wordmark bring it to 354px and one row.
+   `flex-wrap` STAYS — at 320px, or at 200% text, it must still wrap rather than
+   overflow, and the frame's own cap is what stops that eating the runway. */
 .bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--gap);
-  padding-block: 1.25rem 0.5rem;
+  gap: 0.5rem;
+  padding-block: 0.75rem 0.5rem;
   flex-wrap: wrap;
 }
 
+/* 1.5rem before the frame. It is still the largest text on the surface and
+   still the first thing read; it is no longer paying for that out of the
+   runway's height at every scroll position. */
 .wordmark {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.125rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+/* The two capture controls that left the frame. A row, directly under it. */
+.capture-extras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
 }
 
 /* --- the header clock (1.22.0) --------------------------------------------
@@ -198,7 +380,7 @@ body {
   min-width: 0;
   min-height: var(--target);
   padding: 0.5rem 0.75rem;
-  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  font-size: max(1.0625em, 16px); /* em so it follows the reader's own text; 16px floor because iOS zooms the page when a smaller input takes focus — and the app's OWN 'smaller' setting used to push it under that */
   color: var(--ink);
   background: var(--surface);
   border: 2px solid var(--line);
@@ -216,7 +398,7 @@ body {
   min-width: 0;
   padding: 0.5rem 0.75rem;
   font-family: inherit;
-  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  font-size: max(1.0625em, 16px); /* em so it follows the reader's own text; 16px floor because iOS zooms the page when a smaller input takes focus — and the app's OWN 'smaller' setting used to push it under that */
   line-height: 1.5;
   color: var(--ink);
   background: var(--surface);
@@ -236,10 +418,17 @@ body {
 }
 .capture-offer button { margin-left: 0.25rem; }
 
+/* PADDING IN `em` FOR THE SAME REASON `--target` IS (2.9.1): the space around a
+   control's words has to be measured in that control's words. In `rem` it is
+   measured in the page's, so a browser text control that grows the text and not
+   the root leaves every button's padding at exactly 8px while its label goes
+   half again as big — which is the reported "only the letters resized", and it
+   is true. Padding does not compound the way `font-size` does, so this is safe
+   where a blanket rem→em on type would not be. */
 button {
   min-height: var(--target);
   min-width: var(--target);
-  padding: 0.5rem 1rem;
+  padding: 0.5em 1em;
   font: inherit;
   font-weight: 600;
   color: var(--bg);
@@ -262,7 +451,7 @@ button.ghost {
   display: inline-flex;
   align-items: center;
   min-height: var(--target);
-  padding: 0 0.25rem;
+  padding: 0 0.25em;
   font: inherit;
   color: var(--accent);
   background: none;
@@ -290,10 +479,10 @@ button.ghost {
   border-radius: var(--radius);
 }
 .triage-gauge { margin: 0 0 0.5rem; color: var(--ink-soft); font-size: 0.9375rem; }
-.triage-prompt { margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; }
+.triage-prompt { margin: 0 0 0.5rem; font-size: 1.0625em; font-weight: 600; }
 .triage-card {
   margin: 0 0 1rem;
-  font-size: 1.0625rem;
+  font-size: 1.0625em;
   overflow-wrap: anywhere;   /* a long captured token must not overflow */
 }
 .triage-actions {
@@ -456,10 +645,19 @@ button.ghost {
 .detail-row input::placeholder,
 #detail-context::placeholder { color: var(--ink-soft); opacity: 1; }
 
+/* SEPARATION ON BOTH SIDES (2.9.3). Reported from a device: "Bring a copy back"
+   and "What's on this page" overlap. Measured — they are 0.0px apart, at EVERY
+   viewport and every text size, and always have been. `.about-actions` carries a
+   top margin and no bottom one, `#cards` is empty on a fresh store so margins
+   collapse straight through it, and this rule carried no top margin either. Two
+   full-width controls with nothing between them read as one, and a finger on the
+   seam cannot tell which it pressed.
+   Adjacent siblings' vertical margins COLLAPSE to the larger rather than summing,
+   so where two of these sit together the gap is still 0.9rem and nothing moved. */
 .jump {
   display: block;
   width: 100%;
-  margin: 0 0 0.9rem;
+  margin: 0.9rem 0;
   padding: 0.5rem 0.75rem;
   min-height: var(--target);
   text-align: left;
@@ -514,7 +712,7 @@ button.ghost {
 .contents-open.jump-shaped {
   display: block;
   width: 100%;
-  margin: 0 0 0.9rem;
+  margin: 0.9rem 0;
   text-align: left;
 }
 
@@ -756,13 +954,25 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * take it back. Every colour here is already registered against these
  * backgrounds — ink-soft on the page, and `.linklike` for the button — so no new
  * contrast pair is introduced. */
-.triage-undo { margin: 0.25rem 0 0.5rem; }
+/* A COLUMN WITH A GAP (2.9.3). This region holds one bar per undo, and each bar
+   carries real targets — the date box and the two link-shaped buttons. As a
+   plain block the bars stacked with nothing between them, so controls in
+   adjacent bars were 0.0px and 0.3px apart. The gate named this element, which
+   is the only reason it was found rather than guessed at. */
+.triage-undo { margin: 0.25rem 0 0.5rem; display: flex; flex-direction: column; gap: 0.75rem; }
 .triage-undo:empty { margin: 0; }
 .triage-undo-bar {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   gap: 0.5rem;
+  /* AND A BIGGER ROW GAP THAN COLUMN GAP (2.9.3), because `align-items: baseline`
+     positions items by their text rather than their box — so an item with a 44px
+     minimum height extends past its own flex line and into the next one. Measured
+     at 0.0px and 0.3px between the date box and the two link-shaped buttons.
+     Baseline is kept: it is why the words on this bar line up. The row simply
+     needs room for boxes that are taller than the text they are aligned by. */
+  row-gap: 0.75rem;
   margin: 0;
 }
 .triage-undo-where { color: var(--ink-soft); font-size: 0.9375rem; }
@@ -799,7 +1009,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   min-height: var(--target);
   padding: 0.5rem 0.75rem;
   font: inherit;
-  font-size: 1.0625rem; /* >=16px equivalent: iOS zooms the page below that */
+  font-size: max(1.0625em, 16px); /* em so it follows the reader's own text; 16px floor because iOS zooms the page when a smaller input takes focus — and the app's OWN 'smaller' setting used to push it under that */
   color: var(--ink);
   background: var(--surface);
   border: 2px solid var(--line);
@@ -918,6 +1128,10 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  /* The card's own door and the way past it are both full targets, stacked, and
+     with no gap they were 0.0px apart (2.9.3) — a finger on the seam gets one of
+     them and cannot tell which. */
+  gap: 0.5rem;
 }
 .replan-skip { padding-left: 0.75rem; }
 
@@ -1038,9 +1252,14 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
-.nextup-title { margin: 0 0 0.25rem; font-size: 1.0625rem; overflow-wrap: anywhere; }
+.nextup-title { margin: 0 0 0.25rem; font-size: 1.0625em; overflow-wrap: anywhere; }
 .nextup-why { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
-.nextup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+/* A bottom margin, because two of these sit one under the other — Done/Not this
+   in one, and heavy/enough/just-one-thing in the next — and with none they were
+   0.0px apart (2.9.3). Same defect as the reported one, found by the same gate
+   in the same run. The value matches the row's own gap, so a wrapped row and two
+   stacked rows are separated by the same amount. */
+.nextup-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
 .nextup-actions button { min-height: var(--target); }
 
 /* --- the two things you can do when you cannot start (1.24.0) --------------
@@ -2174,7 +2393,10 @@ summary::-webkit-details-marker { display: none; }
    the most effective piece of shame-by-arithmetic in software, and this app
    cannot see your messages anyway. */
 .comms-words { margin: 0 0 0.75rem; color: var(--ink); font-size: 0.9375rem; }
-.comms-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+/* A bottom margin for the same reason `.nextup-actions` has one (2.9.3): the
+   closing surface stacks two of these — the thread's pair and Carry on — and
+   without it `close-thread-open` and `close-ok` were 0.0px apart. */
+.comms-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
 .comms-actions button { min-height: var(--target); max-width: 100%;
   white-space: normal; overflow-wrap: anywhere; }
 #comms-start, #comms-stop { min-height: var(--target); }

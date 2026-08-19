@@ -665,12 +665,190 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.8.1**
-- **https://quietkeep.pages.dev** — production, **2.7.2** (promoted 2026-08-17,
-  `ce57b8f`, Deploy and Spine green, tree asserted identical to verified staging)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.4**
+- **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
+  `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
+  SHA; the promoted tree asserted byte-identical to the verified staging tree —
+  `fda790c` on both — rather than inferred from a clean merge)
 
-**Two candidates are stacked on staging: 2.8.0 and 2.8.1.** Neither has had a
-device pass. They are independent of each other and can be judged in one sitting.
+**2.9.4 — THE REPORT SAYS ONLY WHAT IS TRUE.** Found by reading a diagnostic
+sent from a device — a store with **0 events, 0 held, every count zero** — and
+noticing two things in it that do not hold up.
+
+**It told an empty store to back itself up.** The first line under WHAT IS WRONG
+was *"No copy has ever left this device. Everything here exists in one place, and
+clearing website data would take it."* There is no everything and nothing to
+take. `findings()` raised it on `!lastCopy(log)` with no check that there was
+anything to copy — a chore invented out of an empty store, on the one surface
+whose whole job is to say only what is true, and law 6 forbids exactly that.
+Guarded on the LOG rather than on what is held: a store whose every item has been
+let go still has a history worth a copy.
+
+**And "Used by Quietkeep: 1.3 MB" beside a log of 0 events.** Neither a lie nor a
+bug: `navigator.storage.estimate()` is per-ORIGIN and counts the app's own
+downloaded code alongside anything the reader put in, and the browser does not
+separate them. The LABEL was claiming a precision the number does not have. It
+reads *Used at this address* now, and says what is in it. Fixed in both places
+that state it — the report and the (i) panel's storage block.
+
+**Kept deliberately:** the not-persisted finding still fires on an empty store.
+That one is the thing to sort out BEFORE relying on the app rather than after.
+
+Both pinned, and the guard planted: reverting `!copy && log.length > 0` to
+`!copy` fails *"an empty log raises no missing-copy finding"*.
+
+**2.9.3 — NO TWO CONTROLS TOUCH.** Reported from a device: *Bring a copy back*
+and *What's on this page* overlap. Measured: **0.0px apart at every viewport and
+every text size, and always.** `.about-actions` carries a top margin and no
+bottom one, `#cards` is empty on a fresh store so margins collapse straight
+through it, and `.contents-open.jump-shaped` had no top margin either.
+
+**Four more of the same shape came out of looking:** the two `.nextup-actions`
+rows, `.replan-card`'s door and its skip, `.comms-actions` stacked on the closing
+surface, and the bars inside `#triage-undo`. Every one a pair of full-size
+targets with 0.0px between them.
+
+**Nothing was checking it, which is why a person found it.** Every check in
+`a11y.mjs` asked whether a control was big enough; none asked whether it was
+SEPARATE. `auditSeparation` runs at every state the target audit already covers —
+one call site, so there is no second list of states to keep in step.
+
+**The check was wrong twice before it was right, and both are recorded in it:**
+
+- v1 asked whether boxes INTERSECTED and reported "none" on the very defect it
+  was written for, because they abutted rather than overlapped.
+- v2 clipped each box to what was visible, which killed a false positive (it had
+  claimed the capture box overlapped a people row by 237px — a control scrolled
+  out of the runway still reporting where its box would be) and introduced a
+  worse one: **planted with the reported defect it went GREEN**, because those
+  two buttons are below the fold in every state the walk drives.
+- v3 groups controls by their nearest scrolling ancestor and compares in that
+  scroller's CONTENT coordinates. Nothing is skipped for being scrolled away, and
+  two things in different scrollers are never compared because they cannot share
+  pixels however either is scrolled. Planted: it names `restore-go /
+  contents-open-end are 0.0px apart, inside held`.
+
+Inline controls are exempt from the TOUCH half only — an Undo inside running
+prose is separated by line-height, which is a typographic fact and not a layout
+one. They stay in the overlap half.
+
+**2.9.2 — THE FRAME STANDS DOWN RATHER THAN CUTTING ITSELF IN HALF** (ADR-0101).
+Reported from a device at a larger text size: the proof line was sliced through
+the middle of its own sentence.
+
+**ADR-0100's cap was the right instinct and the wrong remedy.** `max-height: 50dvh`
+with `overflow-y: auto` means that past the cap the frame scrolls INSIDE ITSELF.
+Its own consequences section predicted *"the proof line is one small scroll away
+rather than gone"* — a guess about how a capped scroller would read, and wrong in
+a way only a device could show. Reproduced at 390px: 474px of content against a
+422px cap at 175% browser text, 530px at 200%, 468px at the app's own 150%.
+
+Past half the viewport there is now no frame: everything returns to ordinary page
+content and the document scrolls, exactly as before 2.9.0 — a layout that shipped
+for months. **Two thresholds** (down past 50%, back below 42%) so a height near
+the line cannot flip on every measurement and rebuild the page under the reader.
+
+Measured on the sample: phone 390x844 **34%, up**; phone with the address bar
+390x664 **43%, up**; iPad **18%, up**; 320x568 **59%, stood down**. No reader on
+a real device loses it at ordinary text.
+
+**And two gate assertions were measuring in a mode they could not name.** The
+contents jump reported 1,419px of error because it took the runway's top as its
+origin while the DOCUMENT was what had scrolled, then −8px because it allowed for
+a `scroll-padding-top` that only exists on the runway. Both read the mode first
+now and say which one they measured in.
+
+**2.9.1 — A CONTROL'S BOX IS MEASURED IN ITS OWN TEXT.** Reported from a device:
+*changing the font size does not resize anything but the letters.* Reproduced and
+measured at 390px by growing the text WITHOUT growing the root — which is what a
+browser's own text setting does, and a minimum font size, and a user stylesheet:
+
+- every button's words went **×1.50 while its box went ×1.27**, because
+  `--target` and every control's padding were `rem` and the root had not moved
+- **`#capture` and `#nextup-title` did not move at all** — both carried an
+  explicit `rem` font-size, so the app's most important control and the title of
+  the thing it is handing you were the two that stood completely still
+
+`--target` is `max(2.75em, 44px)` now and control padding is `em`. A custom
+property carrying `em` resolves against the element that USES it, so one line
+re-anchors every `min-height: var(--target)` in the file. The floor still holds
+for small print: 13px text gives 36px and `max()` returns 44. After: capture
+×1.50, buttons ×1.50, nothing overflowing.
+
+**A latent bug found on the way:** the capture box's `1.0625rem` dropped below
+16px at the app's own *smaller* setting — and 16px is the size under which iOS
+zooms the whole page when an input takes focus. It is `max(1.0625em, 16px)`.
+
+**Gated, and planted.** The a11y walk grows `body` rather than the root and
+asserts each control's box follows its own text. Reverted to `rem` it reports
+`#capture` box ×1.11 and the header controls ×1.27 against text ×1.50.
+
+**And the diagnostic now names the mechanism** (§7f): the text size, the root it
+is measured against, the box it sits in, and which of the three moved it. That
+question could not be answered from a screenshot and cost a round trip.
+
+**2.9.0 — THE FRAME STAYS** (ADR-0100). The page is a flex column of viewport
+height with exactly one scrolling child. Capture, the proof line and the three
+destinations sit outside the scroller and never move; `<main>` and the footer
+ride inside `.runway`.
+
+**The mechanism was chosen by the record, not by preference.** ADR-0099's
+measurement said the offer could not reach the top by moving blocks — it needed
+capture out of the scroll. Two ways to do that were already ruled out by
+measurements in this repo: `position: fixed` was the floating Contents button
+that overlapped ten controls and took the centre of three, and `position: sticky`
+was the (i) panel's way out that **did not hold on the reference iPad, found
+twice, on device**. What replaced sticky there is what this uses — a flex column
+whose bar is a sibling of the scroller — and every sheet has shipped that shape
+on his device since 1.40.0. Carried one level up, which is hub LESSONS 93.
+
+**Measured**, at 390x844 and 820x1180, empty store and the thirteen-item sample:
+
+- `#nextup` begins **0.08 screens into the runway** on a phone (0.05 on the
+  iPad). It was 0.43 screens down the page.
+- The frame costs **201px empty, 225px seeded** on a phone (23.8% / 26.7%) and
+  201px on the iPad (17.0%). A gain at the top — the same chrome took 304px —
+  and a loss deep in a list, where it used to be gone.
+- **Unreachable controls: zero**, both sizes, both stores. That is the test the
+  floating button failed, asked again of its replacement.
+- Document scroll area beyond its own box: **0px**.
+
+**Three defects the measurements found that reading would not have.** The frame
+collapsed 165px to 39px the moment there was data (`flex: 0 1 auto` distributes
+shrink by basis, and the runway's basis was the whole list) — with the empty
+store measuring a perfect 165px beside it. The document reported itself
+scrollable because every `.visually-hidden` label is absolutely positioned and
+escaped to the initial containing block. And `axe` failed all 33 states at once
+on landmarks, because lifting capture out of `<main>` left it in a bare wrapper.
+
+**And three gates were measuring the wrong origin**, one of which would have gone
+vacuous: the way-back assertion tests `scrollY === 0`, and `scrollY` is now
+permanently 0. Corrected at the origin rather than loosened at the tolerance.
+
+**The open cost is V-24**: a document that does not scroll never lets iOS
+collapse the URL bar, so browser use pays ~60px on top of the frame. Installed to
+the Home Screen it is zero. One look on the device settles it.
+
+**What to look at:** put something down from three screens into your list. Then
+decide whether a quarter of the screen is worth it — ADR-0100 says what happens
+if it is not, and the numbers stay true either way.
+
+**Promoted on his word rather than after a device pass**, which is his call to
+make and was made explicitly. Both 2.8.0 and 2.8.1 went in the same promote,
+neither having had a separate on-device sitting. What that means for the next
+session: the two things most worth hearing about from the device are the SIZE
+control's smallest setting (2.8.0 — whether *smaller* is actually readable in
+practice, which is the stated overturn condition for ADR-0098's lower bound) and
+whether **naming a worry at two taps** is one tap too far (2.8.1 — the stated
+overturn condition for ADR-0099, and the entries go back to the runway if it is).
+
+**A CI record correction that should not be repeated as green:** `92504fc`
+(2.8.0 on staging) had Deploy success, but its **Spine run was CANCELLED** by
+the push of `8971f50` a few hours later. Nothing shipped unverified — `8971f50`'s
+Spine covers the same tree plus 2.8.1, and `928c53a`'s covers it again on main —
+but 92504fc itself must not be cited as "Deploy and Spine green". Concurrency
+cancellation makes a run's absence look like a run's success in any listing that
+reads only the newest conclusion per workflow.
 
 **2.8.1 — THE FIRST SCREEN, AND WHAT A REARRANGEMENT CAN AND CANNOT BUY**
 (ADR-0099). Three doors leave the runway and become rows in **Contents** — the

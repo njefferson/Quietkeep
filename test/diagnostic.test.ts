@@ -40,7 +40,11 @@ const wellDevice = (over: Partial<DeviceReading> = {}): DeviceReading => ({
   origin: 'https://quietkeep.pages.dev',
   device: 'd0', zone: TZ, installed: true,
   storageSupported: true, persisted: true, quotaMb: 1024, usageMb: 2.4,
-  paired: false, unreadableEntries: null, ...over,
+  // A device at the default: 16px text on a 16px root, and the app's own size
+  // control untouched. The scaled cases get their own tests below.
+  paired: false, unreadableEntries: null,
+  type: { root: 16, text: 17, box: 47, chosen: null },
+  ...over,
 });
 
 // --- the privacy rule, which is the whole point ------------------------------
@@ -374,4 +378,76 @@ test('THE REPORT DOES NOT CONTRADICT ITSELF ABOUT CLOCKS', () => {
   assert.match(text, /Clocks in use:[^\n]*due 1/, 'the report counts a due clock');
   assert.doesNotMatch(text, /without a clock/i,
     'so nothing in it may call that same item clockless');
+});
+
+
+// --- what the text is doing, and by which mechanism (2.9.1) -----------------
+//
+// Reported from a device: "changing the font size does not resize anything but
+// the letters." There was no way to tell from here WHICH control had been used,
+// and the three mechanisms need different answers. The report names it now, and
+// what it names is asserted rather than eyeballed.
+
+test('the report states the text size, the root it is measured against, and the box', () => {
+  const r = diagnosticReport(emptyState(), [], wellDevice({ type: { root: 16, text: 17, box: 47, chosen: null } }), NOW);
+  assert.match(r, /Text size: 17px on a 16px root, in a 47px box/);
+  assert.match(r, /this app's own size setting: not used/);
+});
+
+test('a moved root is named as the app\'s own setting', () => {
+  // 1.15x on the root: 18.4px root, 19.55px text — the ratio holds at 1.0625.
+  const r = diagnosticReport(emptyState(), [], wellDevice({ type: { root: 18.4, text: 19.55, box: 54, chosen: 1.15 } }), NOW);
+  assert.match(r, /the root has moved — this is the app's own size setting/);
+  assert.match(r, /this app's own size setting: 115%/);
+});
+
+test('text that grew while the root did not is named as the BROWSER\'s setting', () => {
+  // This is the case that had no name and cost a round trip: the root is
+  // untouched at 16px and the text is half again as big, which no in-app
+  // control can produce.
+  const r = diagnosticReport(emptyState(), [], wellDevice({ type: { root: 16, text: 26, box: 70, chosen: null } }), NOW);
+  assert.match(r, /the text has grown but the root has not/);
+  assert.match(r, /browser's\n?\s*own text setting, a minimum font size, or a user stylesheet/);
+});
+
+test('it never guesses when there is nothing to read', () => {
+  const r = diagnosticReport(emptyState(), [], wellDevice({ type: null }), NOW);
+  assert.equal(/Text size:/.test(r), false);
+});
+
+
+// --- an empty store has nothing to lose (2.9.4) ------------------------------
+//
+// Sent from a device: a report whose log held ZERO events, whose every count was
+// 0, and whose first line under WHAT IS WRONG was "No copy has ever left this
+// device. Everything here exists in one place, and clearing website data would
+// take it." There is no everything. A chore invented out of an empty store is a
+// manufactured demand on the one surface whose whole job is to say only what is
+// true — and law 6 says this app does not do that anywhere.
+
+test('an empty log raises no missing-copy finding — there is nothing to copy', () => {
+  const f = findings(emptyState(), [], wellDevice());
+  assert.equal(f.some(x => /No copy has ever left this device/.test(x)), false,
+    `an empty store must not be told to back it up — got: ${f.join(' | ')}`);
+});
+
+test('and the moment there IS something, the finding comes back', () => {
+  // The guard is on the LOG, not on what is held: a store whose every item has
+  // been let go still has a history worth a copy.
+  const one = write(emptyState(), [ev('node.created', 'n1', { kind: 'action', title: 'x' })]);
+  const log = [ev('node.created', 'n2', { kind: 'action', title: 'y' })];
+  const f = findings(one, log, wellDevice());
+  assert.equal(f.some(x => /No copy has ever left this device/.test(x)), true,
+    `a store with events in it must still be told there is no copy — got: ${f.join(' | ')}`);
+});
+
+test('the storage line says what the number measures, not what it seems to', () => {
+  // `navigator.storage.estimate()` is per-ORIGIN and counts the app's own
+  // downloaded code. Labelled "Used by Quietkeep" it read as the reader's own
+  // things, and 1.3 MB beside a log of 0 events reads as a lie or a bug.
+  const r = diagnosticReport(emptyState(), [], wellDevice({ usageMb: 1.3 }), NOW);
+  assert.match(r, /Used at this address: 1\.3 MB/);
+  assert.match(r, /the app's own downloaded code as well as anything you have put in/);
+  assert.equal(/Used by Quietkeep/.test(r), false,
+    'the old label claimed a precision the number does not have');
 });

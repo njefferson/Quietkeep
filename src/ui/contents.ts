@@ -143,7 +143,12 @@ export function goTo(stop: Stop, doc: Document = document): void {
   closeSheet('sheet-contents');
   const focus = doc.querySelector<HTMLElement>(stop.focus);
   if (stop.id === 'top') {
-    doc.defaultView?.scrollTo({ top: 0, behavior: 'auto' });
+    // The runway, not the window (2.9.0, ADR-0100). The document no longer
+    // scrolls, so scrolling it is a call that moves nothing — and this row's
+    // whole job is to get somebody back to the capture box.
+    const runway = doc.querySelector<HTMLElement>('#runway');
+    if (runway) runway.scrollTop = 0;
+    else doc.defaultView?.scrollTo({ top: 0, behavior: 'auto' });
   } else {
     doc.getElementById(stop.id)?.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
