@@ -665,11 +665,28 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.9.4**
-- **https://quietkeep.pages.dev** — production, **2.8.1** (promoted 2026-08-18,
-  `928c53a`, Deploy, Spine and the push-on-main workflow all green on that exact
+- **https://staging.quietkeep.pages.dev** — level with production, **2.9.4**
+- **https://quietkeep.pages.dev** — production, **2.9.4** (promoted 2026-08-19,
+  `26e80dd`, Deploy, Spine and the push-on-main workflow all green on that exact
   SHA; the promoted tree asserted byte-identical to the verified staging tree —
-  `fda790c` on both — rather than inferred from a clean merge)
+  `fb2b498` on both — rather than inferred from a clean merge)
+
+**Staging and production are level at 2.9.4.** Nothing is waiting.
+
+**Five went in this promote — 2.9.0 through 2.9.4 — on his word rather than
+after a device sitting.** Four of the five exist BECAUSE of a device report, and
+the chain is worth reading as one thing: 2.9.0's frame was built on ADR-0099's
+measurement, and then the device found what the measurement could not. 2.9.1
+(boxes anchored to the page's text rather than their own), 2.9.2 (the frame
+clipping the proof line at large text) and 2.9.3 (controls 0.0px apart) were all
+reported from the device inside a day, and 2.9.4 came from reading a diagnostic
+he sent rather than from anything he said was wrong.
+
+**Still open and named as such: V-24.** A page whose document does not scroll
+never lets iOS collapse the URL bar, so browser use pays roughly 60px on top of
+the frame; installed to the Home Screen it is zero. One look in Safari settles
+it, and ADR-0100 says what happens if it dominates — the frame belongs to the
+installed app and the browser gets the old shell.
 
 **2.9.4 — THE REPORT SAYS ONLY WHAT IS TRUE.** Found by reading a diagnostic
 sent from a device — a store with **0 events, 0 held, every count zero** — and
