@@ -665,12 +665,53 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.11.0**
-- **https://quietkeep.pages.dev** — production, **2.10.0** (promoted 2026-08-19,
-  `c909104`, Deploy, Spine and the push-on-main workflow all green on that exact
-  SHA — read from the runs, not inferred from a clean merge)
+- **https://staging.quietkeep.pages.dev** — level with production, **2.11.0**
+- **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
+  `10d329f`; the promoted tree asserted byte-identical to the verified staging
+  tree — `e38fe6e` on both — rather than inferred from a clean merge. **The
+  workflow runs on that SHA had not been read when this line was written**, and
+  it says so rather than inheriting the previous promote's receipt: `c909104`
+  was green, and that is a fact about 2.10.0 and about nothing else.)
 
-**Staging is 2.11.0 and it is waiting on you.** Production is 2.10.0.
+**Staging and production are level at 2.11.0.** Promoted 2026-08-19, `10d329f`,
+with the promoted tree asserted byte-identical to the verified staging tree —
+`e38fe6e` on both — rather than inferred from a clean merge. Four releases went
+in it: 2.10.1, 2.10.2, 2.10.3 and 2.11.0.
+
+**AND THE PICTURES CANNOT GO STALE WITHOUT SOMETHING REFUSING.** The gate that
+shipped with 2.11.0 only *detected* drift and asked a human to remember. Three
+layers now, and only the middle one is new work:
+
+**At the moment of the change** — `.branch-guard` gained `also=` in the hub, so
+the generated pre-commit hook runs repo-local checks before its branch rule, on
+every commit including a promote. Quietkeep declares
+`also=tools/hooks/tour-fresh.sh`, which refuses a commit whose staged diff
+changes what the pictures are OF while `public/tour/manifest.json` is unchanged.
+**Watched go red on a planted CSS edit, then green after the command it names.**
+It also refuses a manifest that is merely STAGED but records the old UI, which is
+what a reflexive `git add public/tour` produces if the regeneration failed.
+
+**One idempotent fix** — `npm run tour:shots -- --if-stale` compares the recorded
+hash first and does nothing when nothing moved, so the hook is never telling
+somebody to spend a minute they do not need.
+
+**In CI** — `tour:check` as the backstop, plus `branch-guard --repo .`, because
+`--no-verify` walks straight past any hook and a guard that is only local is on
+until the first time somebody is in a hurry.
+
+**OVER-FIRING IS THE SAFE DIRECTION HERE, and that is a real exception to this
+repo's own rule.** A gate that cries wolf normally gets satisfied by reflex — and
+that is dangerous because the reflex is to SUPPRESS. Here the reflex is to
+regenerate, which is the outcome wanted. A coarse hash firing on an edit that
+could not have changed a pixel costs a minute and leaves the tree correct; a
+missed change ships a lie.
+
+**What was deliberately NOT built: a CI job that re-renders and byte-compares.**
+It would have been the obvious design. Two of these pictures show things that
+legitimately differ run to run — whichever sample item is next in the queue, and
+the browser's real free-space figures — so regenerating with nothing changed
+still rewrites four of the ten files. That gate would be permanently red, and a
+gate that is always red is one everybody learns to ignore.
 
 **2.11.0 — THE WALKTHROUGH SHOWS YOU THE THING IT IS TALKING ABOUT.** Six steps
 described an app the reader was looking at and could not see yet — *"the box at

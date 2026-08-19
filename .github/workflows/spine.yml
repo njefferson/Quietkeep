@@ -210,6 +210,19 @@ jobs:
       - name: The walkthrough shows this version of the app
         run: npm run tour:check
 
+      # AND THE HOOK THAT ENFORCES IT IS THE ONE THIS REPO DECLARES. The
+      # freshness rule is caught locally by the generated pre-commit hook, which
+      # `--no-verify` walks straight past — so the tracked hook is checked here
+      # against what `.branch-guard` says it should be. A guard that can be
+      # skipped locally and is not verified centrally is a guard that is on
+      # until the first time somebody is in a hurry.
+      #
+      # `.hub-gates` is where this job already checked the hub out — the sibling
+      # path this is run from locally does not exist in CI, and a step that
+      # cannot find its tool is a step that fails for the wrong reason.
+      - name: The commit guard is the one that was declared
+        run: node .hub-gates/branch-guard.mjs --repo .
+
       # WHERE THE CONTROLS ARE (V2 stage 7). The shape is fixed forever and the
       # contents change every time — a person's hands learn where Done is, and
       # moving it costs them that silently. A core control's position and label

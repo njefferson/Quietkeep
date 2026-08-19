@@ -24,6 +24,21 @@
 // So these come out of the running app, and `--check` refuses to pass once the
 // files that decide what the app looks like have changed underneath them.
 //
+// NOT BYTE-REPRODUCIBLE, and that is a property to know rather than a defect to
+// chase. Two of these pictures show things that legitimately differ run to run:
+// the sorting card holds whichever sample item is next in the queue, and the
+// storage panel reports the browser's real figures for free space. Regenerating
+// with nothing changed still rewrites four of the ten files.
+//
+// So there is deliberately NO "CI re-renders and compares the bytes" check. It
+// would be permanently red, and a gate that is always red is a gate everybody
+// learns to ignore — which is worse than the staleness it was meant to catch.
+// Freshness is enforced at the moment of the change instead, by the pre-commit
+// hook (`--staged`), with `--check` as the cheap backstop in CI.
+//
+// It also means `--if-stale` earns its keep: an unconditional regeneration on
+// every build would put four changed binaries in every single diff.
+//
 // WHAT IT DOES NOT DO: write the alt text. That is in `src/ui/tour.ts`, by hand,
 // because alt text says what a picture MEANS to somebody who cannot see it, and
 // nothing that crops a rectangle knows that.
