@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.10.0 — CAPABILITY
+
+*2026-08-19*
+
+- **Just one thing now quiets the whole screen, not only the card.** You said a screen showing exactly one task was terrifyingly busy and you did not want to begin in it. Counted at 390 pixels with the sample on: **thirty-one things were being asked of you before anything could happen** — nine controls, four lines to read, and eighteen things on the card that is supposed to be one thing. Turning this mode on changed **none** of the chrome. It is fifteen now.
+- **The card called “one thing” was showing four**, plus seven verbs and seven lines of prose. In this mode it is the thing, *Done*, *Not this*, *That is enough for now*, and the way back to everything.
+- **Three lines had been quietly slipping through for three releases:** how much of today is left, the next fixed thing, and when you wrote it. Each was added to the card after the strip’s list was written and none was ever added to it — so on the day this mode exists for, the app was still telling you the hours were going.
+- **And the strip now reaches the top bar** — *More room*, *Hold what I copied*, *Contents* and the clock all stand down with it. Capture never does, the line saying nothing has gone quiet never does, and *More* never does: a screen with no way to anywhere is a trap.
+- **Nothing can slip through again.** Every line on that card must now say whether it survives — a new one fails the build until it does — and the check reads the screen rather than the list, because one of these three was in the list and on screen at the same time.
+
 ## 2.9.4 — ITERATION
 
 *2026-08-19*

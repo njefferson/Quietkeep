@@ -1851,6 +1851,41 @@ try {
     await auditNames(page, 'one thing', theme);
     await auditSeparationAndTargets(page, 'one thing', theme);
     await auditFocusRings(page, 'one thing', theme, ['#nextup-plain-off']);
+
+    // AND THE STRIP ACTUALLY STRIPS (2.10.0) — every selector it names, gone.
+    //
+    // Reported from a device on a screen showing exactly one task: "terrifyingly
+    // busy, and I don't even want to begin in this." Counted at 390px: turning
+    // this mode ON changed nine controls and four lines of chrome into nine
+    // controls and four lines of chrome, because the strip only ever reached
+    // inside the card — and three lines added to the card in later releases were
+    // never added to its list either.
+    //
+    // SETTLED FIRST, and that is not politeness. `paintWritten` resolves a store
+    // lookup and un-hides itself in a LATER TICK than the strip, so it was in
+    // the list and on screen at the same time. A check that reads immediately
+    // after the click would have agreed with the list rather than with the
+    // screen.
+    await page.waitForTimeout(700);
+    const leaked = await page.evaluate(() => {
+      const out = [];
+      for (const sel of window.__PLAIN_STRIPPED ?? []) {
+        const el = document.querySelector(sel);
+        if (el && el.checkVisibility()) {
+          out.push(`${sel} "${(el.textContent || '').trim().slice(0, 36)}"`);
+        }
+      }
+      return out;
+    });
+    // Non-empty first: with no list to walk this reports green about a mode that
+    // has stopped stripping anything at all (hub LESSONS 100).
+    const stripCount = await page.evaluate(() => (window.__PLAIN_STRIPPED ?? []).length);
+    (stripCount >= 15 ? pass : fail)(
+      `${theme}/one thing: the strip has a list to walk (${stripCount} selectors)`);
+    (leaked.length === 0 ? pass : fail)(
+      `${theme}/one thing: nothing it strips is still on screen`
+      + `${leaked.length ? ` — ${leaked.slice(0, 6).join('; ')}` : ''}`);
+
     await page.click('#nextup-plain-off');
     await page.waitForFunction(() =>
       document.querySelector('#nextup-plain-bar')?.hidden === true);
