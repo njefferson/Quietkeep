@@ -220,8 +220,25 @@ jobs:
       # `.hub-gates` is where this job already checked the hub out — the sibling
       # path this is run from locally does not exist in CI, and a step that
       # cannot find its tool is a step that fails for the wrong reason.
+      #
+      # `--artefact` BECAUSE THIS STEP FAILED EVERY TIME WITHOUT IT, and did so
+      # from the commit that added it. The plain check also asserts that
+      # `.git/hooks/pre-commit` is installed and current, which is a fact about
+      # one CLONE — and `actions/checkout` leaves `.git/hooks` empty by
+      # definition, so it can never hold here. Eight consecutive pushes went out
+      # with this job red; the step was watched passing LOCALLY, where the hook
+      # is installed, which is the one place it proves nothing about CI.
+      #
+      # What CI can check, and what this now checks, is the tracked artefact
+      # against what `.branch-guard` declares — the drift that would leave every
+      # developer clone running a rule the repo no longer states. Verified by
+      # planting that drift and watching this exact command exit 1.
+      #
+      # Not `--install` first: that WRITES the tracked file, so a drifted
+      # artefact would be repaired on the spot and the check would pass over the
+      # one defect it exists to find.
       - name: The commit guard is the one that was declared
-        run: node .hub-gates/branch-guard.mjs --repo .
+        run: node .hub-gates/branch-guard.mjs --repo . --artefact
 
       # WHERE THE CONTROLS ARE (V2 stage 7). The shape is fixed forever and the
       # contents change every time — a person's hands learn where Done is, and
