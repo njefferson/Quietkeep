@@ -2098,12 +2098,21 @@ try {
     // second worker is waiting — so both of the app's two transient lines are on
     // screen at once, which is the honest worst case rather than the tidy one.
     //
-    // The nine: the ⓘ, More, the capture field and its button, the proof line,
-    // the update strip's two, and the footer's licence link and version.
-    // The twenty-one words: the wordmark (1), the capture receipt (7), the
-    // update strip (5) and the footer (8).
+    // The ten: the ⓘ, More, the capture field and its button, the proof line,
+    // the update strip's two, the way out, and the footer's licence link and
+    // version. The twenty-one words: the wordmark (1), the capture receipt (7),
+    // the update strip (5) and the footer (8).
     //
     // Before this release, on the same fixture: 20 controls and 65 words.
+    //
+    // 9 -> 10 WITHIN THIS RELEASE, and the +1 is an ACCOUNTING artefact rather
+    // than growth. `#nextup-plain-off` was inside the offer card and therefore
+    // not counted here; it moved out because the card hides whenever nothing is
+    // asking, which made "mode on, nothing to offer" a screen with no way back.
+    // Nothing was added to the screen — one control crossed the boundary this
+    // count is drawn around. The same shape as `size-check.mjs`'s 229 -> 230,
+    // and worth the same sentence: a budget that reads the wrong way round is
+    // still telling the truth about what it measures.
     //
     // NO HEADROOM, deliberately, like `tools/size-check.mjs`'s budgets. A number
     // that can drift by two is a number nobody edits and nobody reads. Raising
@@ -2113,7 +2122,7 @@ try {
     // WHAT IT COUNTED, on a failure and never on a pass. A ceiling that reports
     // only a number sends the next reader to reproduce the fixture by hand
     // before they can even see what grew.
-    const LEFT_CONTROLS = 9;
+    const LEFT_CONTROLS = 10;
     const LEFT_WORDS = 21;
     (left.controls <= LEFT_CONTROLS ? pass : fail)(
       `${theme}/one thing: ${left.controls} controls left outside the offer (ceiling ${LEFT_CONTROLS})`

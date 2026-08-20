@@ -689,7 +689,7 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.14.0**
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.14.1**
 - **https://quietkeep.pages.dev** — production, **2.13.0** (promoted 2026-08-20,
   `e3494c4`; the promoted tree asserted byte-identical to the verified staging
   tree rather than inferred from a clean merge. Deploy, Spine and the
@@ -802,6 +802,37 @@ rules were measured against the real violations and flagged 39, 138 and 227 file
 of honest prose — the shape of his speech and the shape of the product's voice
 are the same shape. Hub LESSONS §108.
 
+**2.14.1 — AND THE WAY OUT WAS INSIDE THE THING IT UNDOES.** Found by rendering
+the state the release had just made dangerous: **mode ON, nothing asking.** The
+offer card is hidden whenever nothing is being asked, and
+`#nextup-plain-off` lived inside it — so the screen was capture, the proof line,
+`More`, the ⓘ, the footer, and **no control anywhere that turns the mode off**.
+The mode survives a reload by design, so turning it on and then finishing or
+deferring the last thing is the whole route in.
+
+**It was survivable until 2.14.0 and not after.** With the work surface still
+standing underneath, the reader was stuck in a mode that had nothing left to
+strip; with the surface cleared, the same state is a blank screen. **The release
+did not create the defect. It changed what the defect costs**, which is the
+thing a release note about "what changed" cannot see, because nothing about that
+line changed.
+
+**The card's own comment said the exit must always be visible** — *"being unable
+to leave it would be a trap, and the reader who most needs this state is least
+able to go looking for the exit"* — written directly above the element, inside
+the container that hides. `tools/plain.mjs` asserts the CONTAINMENT now:
+`#nextup-plain-off` is not a descendant of `#nextup`, statically. A comment
+saying the exit must stay outside the card is what the card's comment already
+said.
+
+**A control that undoes a state must not live inside anything that state can
+hide.** That is the general form, and it is worth carrying to the siblings.
+
+**The a11y ceiling went 9 → 10 in the same release and the +1 is an ACCOUNTING
+artefact**: the exit was inside the card and therefore not counted outside it.
+Nothing was added to the screen; one control crossed the boundary the count is
+drawn around. Same shape as `size-check.mjs`'s 229 → 230.
+
 **2.14.0 — "JUST ONE THING" IS A FACT ABOUT THE SCREEN, NOT ABOUT THE CARD
 ([ADR-0104](docs/adr/0104-the-worst-day-is-the-whole-screen.md)).** The mode for
 the day when operating the tool is itself hard stripped the offer card and left
@@ -903,7 +934,7 @@ the state needs a review clock ALREADY PAST on a container, which no date contro
 in the app can set. It is seeded straight into the store for that reason, and the
 comment says so.
 
-**Staging is 2.14.0 and it is waiting on your on-device pass.** Production is
+**Staging is 2.14.1 and it is waiting on your on-device pass.** Production is
 2.13.0, promoted on 2026-08-20 and read off the runs rather than the push output:
 `e3494c4` concluded success on Deploy, on Push-on-main and on the Spine.
 

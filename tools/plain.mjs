@@ -119,6 +119,24 @@ const both = [...chrome].filter(id => chromeKept.has(id));
   'no region is declared as both stripped and surviving'
   + (both.length ? ` — ${both.join(', ')}` : ''));
 
+// AND THE WAY OUT IS NOT INSIDE THE THING IT UNDOES (2.14.0).
+//
+// `#nextup-plain-off` lived inside the offer card, which is hidden whenever
+// nothing is asking — so *mode on, nothing to offer* was a screen with capture,
+// the proof line and no way back. The mode survives a reload by design, so
+// turning it on and then finishing the last thing is the whole route in. It was
+// survivable while the work surface still stood underneath; the release that
+// took the surface away turned it into a blank screen.
+//
+// This asserts the CONTAINMENT, not the intention. A comment saying the exit
+// must stay outside the card is what the card's own comment said while the exit
+// was inside it.
+const offerStart = html.indexOf('<section id="nextup"');
+const offerEnd = html.indexOf('</section>', offerStart);
+const offer = html.slice(offerStart, offerEnd);
+(!offer.includes('id="nextup-plain-off"') ? ok : fail)(
+  'the way out of "Just one thing" is not inside the offer card, which hides when nothing is asking');
+
 // AND CAPTURE IS NEVER STRIPPED. Capture relief is unconditional (the thesis,
 // and Doctrine §7e), so a future edit that quietly adds it to the chrome list
 // would take away the one thing this app promises from every state.

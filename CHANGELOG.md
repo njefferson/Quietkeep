@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.14.1 — ITERATION
+
+*2026-08-20*
+
+- **The way out of "Just one thing" no longer disappears when there is nothing to do.** It sat on the offer card, and the offer card is not there when nothing is asking — so if you turned the mode on and then finished or put off the last thing, the button that undoes it went with the card.
+- **The last release is what made that serious.** Until it, everything else was still on the screen underneath, so you were stuck in a mode with a working app. With the surface cleared away, the same state left a screen with somewhere to put things down, the line saying nothing has gone quiet, and no way back.
+- **It is its own line now, below where the offer sits, and it is there for as long as the mode is.** Nothing else moved.
+
 ## 2.14.0 — CAPABILITY
 
 *2026-08-20*

@@ -141,8 +141,11 @@ export const PLAIN_KEPT = [
   '#nextup-skip',         // the way past, which records nothing
   '#nextup-enough',       // the symmetric exit — declining must end the session as completely as finishing
   '#nextup-plain',        // the way IN, hidden by its own rule while the mode is on
-  '#nextup-plain-bar',    // the standing "everything is still here"
-  '#nextup-plain-off',    // the way OUT, and it must be one visible tap
+  // THE WAY OUT MOVED OFF THE CARD IN 2.14.0 and is declared in
+  // `PLAIN_CHROME_KEPT` now. It was here, inside a card that hides whenever
+  // nothing is asking, which made *mode on, nothing to offer* a screen with no
+  // way back. A control that undoes a state cannot live inside anything that
+  // state can hide.
   '#nextup-live',         // the screen-reader announcement; visually hidden already
   '#nextup-settled',      // the after-state, which is not the offer
   '#nextup-settled-what',
@@ -263,6 +266,10 @@ export const PLAIN_CHROME_KEPT = [
   '#update',          // "a new version is waiting" (Doctrine §7h). Rare, and a
                       // reader stuck on a stale build has to be able to find out.
   '#nextup',          // the offer. The whole point.
+  '#nextup-plain-bar', // the way OUT, and it must be one visible tap. Outside the
+                      // offer since 2.14.0 — the card hides when nothing is
+                      // asking, and the exit went with it.
+  '#nextup-plain-off',
   '#focus',           // the session you are already inside: one thing, its acts,
                       // and a capture line that does not make you stop to use it.
   '#foot',            // the licence and the accessibility statement. Static, at

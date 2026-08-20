@@ -378,12 +378,6 @@
 
          Not timed, deliberately. A pause that expires is the app choosing when
          you have had enough of a rest. -->
-    <!-- The way out, and it is ALWAYS visible while the state is on. Entering it
-         is a choice; being unable to leave it would be a trap, and the reader
-         who most needs this state is least able to go looking for the exit. -->
-    <div id="nextup-plain-bar" class="nextup-plain-bar" hidden>
-      <button id="nextup-plain-off" type="button" class="ghost">Show me everything again</button>
-    </div>
     <div id="nextup-settled" class="nextup-settled" hidden>
       <p id="nextup-settled-what" class="nextup-settled-what"></p>
       <p id="nextup-settled-quiet" class="nextup-settled-quiet"></p>
@@ -416,6 +410,33 @@
     <ul id="nextup-behind" class="nextup-behind"></ul>
     <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
+
+<!-- THE WAY OUT OF "JUST ONE THING", AND IT IS OUTSIDE THE OFFER (2.14.0).
+     Always visible while the state is on. Entering it is a choice; being unable
+     to leave it would be a trap, and the reader who most needs this state is
+     least able to go looking for the exit.
+
+     It was INSIDE the offer card until 2.14.0, and the card is hidden whenever
+     nothing is asking — so the state *mode on, nothing to offer* put the reader
+     on a screen with capture, the proof line and no way back. Reachable: the
+     state survives a reload by design, so turning it on and then finishing or
+     deferring the last thing is all it takes. It was survivable while the whole
+     work surface still stood underneath; the release that took the surface away
+     turned it into a blank screen, and the measurement of that state is what
+     found it.
+
+     A control that undoes a state must not live inside anything that state can
+     hide. `tools/plain.mjs` asserts the containment rather than the intention —
+     `#nextup-plain-off` is not a descendant of `#nextup`, statically, so it
+     cannot move back in without saying so.
+
+     The id keeps its `nextup-` prefix: it is still the offer mode's bar, and
+     renaming it would touch the stylesheet, three gates and the edition build
+     for no fact. It is declared in `PLAIN_CHROME_KEPT` rather than `PLAIN_KEPT`,
+     which is where the gate now looks for it. -->
+  <div id="nextup-plain-bar" class="nextup-plain-bar" hidden>
+    <button id="nextup-plain-off" type="button" class="ghost">Show me everything again</button>
+  </div>
 
   <!-- THE WAY PAST THE STACK, ON TOUCH (2.0.8, ADR-0090).
        `.skip` at the top of this document has said "Skip to what you are
