@@ -412,6 +412,7 @@ decided by a session.**
     "when do I review my roles?" is answered by the same
     mountain-comes-to-you return as everything else. When roles land, they
     inherit that for free.
+  - Status: **Closed.** BUILT 2026-08-17 as 2.6.0 ([ADR-0096](docs/adr/0096-roles.md)). The model was right thirteen days before it was built, which is the lesson recorded above.
 - **Q-11 · No feeling of being shown the right things.** Reported 2026-08-04.
   **THIS ENTRY HAD NO HEADING UNTIL 2026-08-17 and that is most of why it sat.**
   Its text was run on to the end of Q-13's last bullet, so it was not a numbered
@@ -510,6 +511,7 @@ decided by a session.**
   - **What is genuinely unbuilt is the projection, not the levels.** `docs/horizon-models.md` says so: the review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts` and **do not reach the surfacing layer**, and a runway card does not print what it serves even though 1.20.0's place line already walks lineage on a different edge. That is law 4's other half — higher horizons project *downward* — and it is the thing worth building.
   - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theatre and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
 
+  - Status: **Closed.** Answered 2026-08-09 — every altitude asked about already existed. What is genuinely unbuilt is the projection, deferred on purpose until a real store holds a goal or an area.
 - **Q-10**
   - Question: Nothing in this app scopes a projection by vault. Should it?
   - Asked 2026-07-29: whether a second vault is for home tasks, and whether the app already separates work tasks some other way.
@@ -524,31 +526,40 @@ decided by a session.**
 - **Q-06**
   - Question: The astro app's naming was inconsistent — repo and URL said `clear-horizons`, the hub displayed **"Astro Planner"**, and the name The choice was appeared nowhere a visitor saw.
   - Answer: **The astro app is named Clear Horizons**, settled 2026-07-29. The app itself already used the name throughout (title, og tags, manifest); only the hub's two entries were stale, and both are fixed (`noahjefferson` @ `004fddd`). Nothing in the `clear-horizons` repo needed changing.
+  - Status: **Closed.** The astro app is Clear Horizons, settled 2026-07-29.
 - **Q-07**
   - Question: The hub undersold the astro app — the tile read *"Clear-sky & Seestar target windows"* and never mentioned recording your horizon, which the owner says is the thing no other astro app does.
   - Answer: **Closed with Q-06.** The tile now reads *"Plan your night against your real treeline, not a flat 0°"*, taken from the app's own README rather than invented.
+  - Status: **Closed.** Closed with Q-06 — the hub tile now states what the app is for.
 - **Q-01**
   - Question: Licence — brief said AGPL, Doctrine §8 says PolyForm Noncommercial
   - Answer: **PolyForm NC 1.0.0.** Confirmed 2026-07-27 as doctrinally correct. [ADR-0017](docs/adr/0017-licensing.md) is Accepted.
+  - Status: **Closed.** PolyForm Noncommercial 1.0.0, [ADR-0017](docs/adr/0017-licensing.md).
 - **Q-03**
   - Question: Work-vault policy line, given the GFE context
   - Answer: **No GFE context — the app is not for it.** The vault split is a convenience for separating content; what goes in it is the user's judgement, as with any personal app. The owner 2026-07-27.
+  - Status: **Closed.** There is no GFE context and the app is not for it, so the question did not apply.
 - **Q-05**
   - Question: Terminology skin default for the work vault
   - Answer: **Neutral vocabulary, skin opt-in.** The owner 2026-07-27. Matches what shipped.
+  - Status: **Closed.** Neutral vocabulary, skin opt-in, and that is what shipped.
 - **Q-08**
   - Question: How "Wynts" is pronounced
   - Answer: **Moot** — the name is withdrawn. The question was the right one; nobody answered it in time to catch that both readings were bad.
+  - Status: **Closed.** Moot: the name was withdrawn, so the pronunciation stopped mattering. The question was the right one and nobody answered it in time to catch that both readings were bad.
 - **Q-02**
   - Question: The app's name
   - Answer: **Quietkeep.** Chosen 2026-07-28, with nothing near it visible on the App Store. Cleared through all five checks — [ADR-0024](docs/adr/0024-name-quietkeep.md), [V-04](docs/verifications.md).
+  - Status: **Closed.** The name is Quietkeep, [ADR-0024](docs/adr/0024-name-quietkeep.md).
 - **Q-09**
   - Question: The four §10 repo-metadata values
   - Answer: **All four set, 2026-07-28.** Description, website, topics (he corrected `indexeddb` himself), and the **social preview uploaded**. Per §10 the repo is now *set up* — and his confirmation **is** the verification: a session cannot read this repo's live metadata at all ([V-11](docs/verifications.md)).
+  - Status: **Closed.** All four metadata values set 2026-07-28, per Doctrine §10.
 - **Q-04**
   - Question: Pages subdomain string
   - Answer: **`quietkeep.pages.dev`** — Confirmed it clean on his device, 2026-07-28. Production comes off `main`; `staging` gets `staging.quietkeep.pages.dev`, which turns the Doctrine §7 gate into a URL he can open on the iPad. The metadata half of this question is now **Q-09**, because it is a different kind of answer and was hiding behind the subdomain.
 
+  - Status: **Closed.** `quietkeep.pages.dev`, confirmed on the device 2026-07-28.
 ---
 
 ## Project facts

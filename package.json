@@ -45,6 +45,7 @@
     "touch:check": "node tools/touch-check.mjs",
     "notify:check": "node tools/notify-voice.mjs",
     "quotes:check": "node ../noahjefferson/quote-check.mjs --repo .",
+    "questions:check": "node tools/questions.mjs",
     "release:check": "node --experimental-strip-types tools/release-check.mjs",
     "size:check": "node tools/size-check.mjs",
     "prepare": "node ../noahjefferson/branch-guard.mjs --repo . --install >/dev/null 2>&1 || true"

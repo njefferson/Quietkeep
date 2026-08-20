@@ -309,6 +309,15 @@ const GATES = [
       'NOTES **Q-13**, 2026-08-04, recording the framing:\n\n> *"a planted quotation, for the gate audit and nothing else"*')),
   },
   {
+    name: 'questions:check',
+    catches: 'a question whose status contradicts its own contents',
+    // THE EXACT SHAPE Q-11 CARRIED for two days: a Status saying the question is
+    // open, four lines under a bullet recording its close.
+    plant: () => edit('NOTES.md', (s) => s.replace(
+      '  - Status: **Closed.** BUILT 2026-08-17 as 2.6.0',
+      '  - Status: **Open — asked, not answered.** BUILT 2026-08-17 as 2.6.0')),
+  },
+  {
     name: 'collisions:check',
     catches: 'a research entry whose routing mark or evidence grade is missing',
     plant: () => edit('docs/nd-collisions.md', (s) => s.replace('**EVIDENCE**', '**EVIDENCEX**')),
