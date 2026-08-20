@@ -386,7 +386,21 @@ const GATES = [
         ? 'the head triplet is not committed yet, so this gate has nothing to compare and passes unconditionally — audit it again after the release commit'
         : null;
     },
-    plant: () => edit('src/held.ts', (s) => `${s}\n// a change with no release\n`),
+    // THE PLANT MUST REACH A READER, and this one used to be a comment.
+    //
+    // `release:check` now compares the BUILT bundle for the `src/` portion
+    // rather than the file names, so a comment — or an unused export, which
+    // esbuild tree-shakes away — correctly changes nothing a reader receives and
+    // correctly does not fail. Both were tried as plants here and both passed,
+    // which would have reported this gate as broken when it had just become more
+    // exact. A plant that does not reach the thing the gate measures is the
+    // no-op plant this file's own header is about.
+    //
+    // So the plant edits a string the app renders. Changed, it changes the
+    // bundle; that is the whole claim.
+    plant: () => edit('src/clock.ts', (s) => s.replace(
+      '`Fixed today: ${next.title.trim()}.`',
+      '`PLANTED today: ${next.title.trim()}.`')),
   },
   {
     name: 'size:check',
