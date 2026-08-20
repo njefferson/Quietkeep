@@ -92,6 +92,7 @@ export function mountWork(
   // Soft, like LOADNOTE below: a missing place line costs one line of lineage,
   // never the work surface.
   const PLACE = q('#nextup-place');
+  const ALSO = q('#nextup-also');
   const WRITTEN = q('#nextup-written');
 
   /** Which node WRITTEN currently describes, so a repaint for the SAME card
@@ -600,6 +601,7 @@ export function mountWork(
       TITLE.hidden = true;
       WHY.textContent = '';
       if (PLACE) PLACE.hidden = true;
+        if (ALSO) ALSO.hidden = true;
       paintWritten(null);
       if (APPROACH) APPROACH.hidden = true;
       if (SITUATION) SITUATION.hidden = true;
@@ -669,6 +671,21 @@ export function mountWork(
         const line = [up.head.place, serves].filter(Boolean).join(' · ');
         PLACE.textContent = line;
         PLACE.hidden = line.length === 0;
+      }
+      // WHAT ELSE IS IN THERE (nd-collisions entry 3, the thesis's open half).
+      //
+      // Only on a `beneath` offer, which is the moment a horizon comes round —
+      // the projection returns nothing for every other reason, so this is one
+      // read of a field rather than a condition to keep in step with a tier.
+      //
+      // The wording says what it is and asks for nothing. These are named so
+      // they are SEEN; an act on any of them would turn a place returning into
+      // a queue arriving, which is the thing law 8 caps.
+      if (ALSO) {
+        const also = up.head.alsoHere ?? [];
+        const inWhat = up.head.alsoIn ? `Also in ${up.head.alsoIn}` : 'Also in there';
+        ALSO.textContent = also.length === 0 ? '' : `${inWhat}: ${also.join(' · ')}`;
+        ALSO.hidden = also.length === 0;
       }
       // WHEN IT WAS WRITTEN (2.0.3) — the triage card has said this since
       // 1.29.0 and this card never did.

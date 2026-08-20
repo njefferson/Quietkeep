@@ -477,11 +477,12 @@ test('with no zone it is unchanged, and a malformed instant does not throw', () 
 
 // --- what a calendar is allowed to claim ------------------------------------
 //
-// found on device, with ten events offered: *"it's literally everything in the
-// list that has just been given a date of today supposedly, I assume, because they
-// couldn't be blank?"* He was right. Routing to Next action sets a `review` clock
+// FOUND ON DEVICE, with ten events offered: every item that had just been given
+// a date of today appeared in the calendar file, and the guess about why was
+// right — they could not be blank. Routing to Next action sets a `review` clock
 // at end of tomorrow, so nine things routed in one afternoon became nine all-day
-// events on one day, each with a nine o'clock alarm, none of which he had dated.
+// events on one day, each with a nine o'clock alarm, and nobody had dated any of
+// them.
 
 test('THE ONE FOUND ON DEVICE: a review clock is the app talking to itself, not a date', () => {
   const s = st(...item('R', 'routed to next action', 1));

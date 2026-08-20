@@ -22,10 +22,10 @@ built, measured, and taken out.
 
 ### The question was asked first and answered wrongly
 
-The first thing ever asked of this app was *"the app is one long page, it needs
-pages or tabs, no?"*. It got neither, and the reasoning given leaned on product
-law 4: *"levels push down; the user never climbs — the runway is the only
-workspace."*
+The first thing ever asked of this app was **pages or tabs**: the runway was one
+long page with no way to reach any part of it. It got neither, and the reasoning
+given leaned on product law 4 — *"levels push down; the user never climbs — the
+runway is the only workspace."*
 
 **That is a misreading, and it is worth naming exactly.** Law 4 is about
 **altitude**. Its subject is goals, areas and outcomes, and what it says is that

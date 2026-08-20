@@ -800,8 +800,50 @@ rules were measured against the real violations and flagged 39, 138 and 227 file
 of honest prose — the shape of his speech and the shape of the product's voice
 are the same shape. Hub LESSONS §108.
 
-**Staging and production are both 2.12.2, and nothing is waiting on you.** The
-work since the promote is docs, tooling and CI — measured, not assumed:
+**2.13.0 — WHEN A PLACE COMES ROUND, YOU CAN SEE WHAT ELSE IS IN IT.** The
+thesis's open half, and the last routing proposal in `docs/nd-collisions.md`
+still reading *V2-candidate*. Entry 3 is the best-evidenced entry in the
+catalogue — cue-dependent prospective memory failure — and its claim is that a
+thing which leaves the visual field leaves existence. **Filed means gone.**
+
+Law 4's push-down was built and stopped one step short: when a horizon came
+round, the `beneath` tier offered ONE actionable thing from inside it and named
+the host, so the reader learned that something was in The flat and never learned
+what else was. **The place returned and its contents stayed filed** — the failure
+happening inside the fix for it.
+
+**A COUNT IS NOT CONTENTS.** `placeWords` already said "7 under it", which
+reports that seven things exist without making one of them visible. Naming three
+is the whole difference.
+
+**Bounded three ways**, because the tier's own restraint is that an area with two
+hundred descendants must not put two hundred things on screen: the output is
+capped at three, **the WALK is capped too** rather than trimming after building,
+and it is names only — no dates, no acts, nothing asking.
+
+**And it does not repeat the card.** The offered thing's own ancestors are
+already on the place line, so listing them would be one fact in two
+vocabularies — the defect the `serves` line beside it already guards against.
+
+**TWO THINGS WERE FOUND BY RENDERING IT, NEITHER BY THE TESTS.**
+
+- **The first render showed the project the card already names.** The ancestor
+  exclusion was written and the bundle was not rebuilt, so the picture was of the
+  previous build. `size:check`'s own comment warns about exactly this and it
+  still happened.
+- **"Also in there" was ambiguous.** With "in Get the kitchen tap fixed · under
+  The flat" directly above it, *there* could be either container. It names the
+  place now: **"Also in The flat: …"**.
+
+**`npm run look` renders it**, as a fifth picture, and prints the line it found
+or says the state did not arise. No walk could reach it: `beneath` is computed
+only when nothing else is asking, every walk fixture is a populated store, and
+the state needs a review clock ALREADY PAST on a container, which no date control
+in the app can set. It is seeded straight into the store for that reason, and the
+comment says so.
+
+**Staging is 2.13.0 and it is waiting on your on-device pass.** Production is
+2.12.2. The docs-and-tooling work before it changed no shipped byte — measured, not assumed:
 `git diff --name-only 6cbb5ab HEAD -- public/ src/` is empty, so the deployed
 artefact is byte-identical and there is no release to number. (This paragraph
 said *2.12.3* before that was checked, which is the fourth time in this session a
@@ -1237,9 +1279,10 @@ that had been registered against `next up` moved with it.
 above — the also-available list is ADR-0060 working as decided, and the
 `BEHIND_CAP` claim that appeared here was wrong.
 
-**2.10.0 — JUST ONE THING MEANS THE WHOLE SCREEN.** Reported from a device, on a
-screen showing exactly one task: *terrifyingly busy, and I don't even want to
-begin in this.* The honest response was a count, not an argument.
+**2.10.0 — JUST ONE THING MEANS THE WHOLE SCREEN.** Found on a device, on a
+screen showing exactly one task: **the screen was too busy to begin in, even
+though the offer on it was a single item.** The honest response was a count, not
+an argument.
 
 **Counted at 390px on the thirteen-item sample: 31 things asked before anything
 can happen.** Nine controls, four lines of standing text, and **eighteen things

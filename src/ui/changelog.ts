@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.13.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-20',
+    notes: [
+      '**When a place comes round, you can see what else is in it.** Quietkeep already brought you one thing to do when an area or a goal came back round, and told you which one it came from. It did not tell you what else was in there — so the place returned and everything else in it stayed out of sight.',
+      '**That is the one thing this app is most for.** A thing you cannot see is a thing you have stopped counting on; putting something away is the same as losing it. Bringing back one item and leaving the rest filed is the exact shape of the problem, happening inside the fix for it.',
+      '**Three names, and nothing else.** No dates, no buttons, nothing asking. They are there so you can see them, not so they become a list — and three is the cap, so a big area coming round can never empty itself onto the screen.',
+      '**It does not repeat what the card already says.** If you are being shown something in *Get the kitchen tap fixed*, that project is not also listed as what else is in there.',
+      '**Only when a place has come round**, which is when the app has nothing else to offer you. On an ordinary busy day you will never see this line.',
+    ],
+  },
+  {
     triplet: '2.12.2',
     kind: 'ITERATION',
     date: '2026-08-19',

@@ -115,6 +115,15 @@ export interface NextUpItem {
    *  day: a thing leaves, there is no telling where or whether it went, and no
    *  feeling of being shown the right things. Computed, never stored. */
   place: string | null;
+  /** WHAT ELSE THE HOST HOLDS, for a `beneath` offer only — see `alsoHere`.
+   *  Empty for every other reason, because entry 3's proposal is about the
+   *  moment a place comes round and not about every card. */
+  alsoHere?: string[];
+  /** WHICH place those contents are in, so the line can name it. Found by
+   *  looking at the rendered card: with a place line reading "in Kitchen ·
+   *  under Home" directly above, an unnamed "also in there" leaves the reader
+   *  to guess which of the two containers is meant. */
+  alsoIn?: string;
   /**
    * WHAT IT HOLDS UP, and what that implies about when it must start — "it
    * feeds 'Roster' — start it within 3 days" — or null, which is the ordinary
@@ -292,6 +301,81 @@ const arrivedClock = (n: NodeState, nowIso: string, day: DayShape): boolean =>
  * actually asked for it. `arrivedClock` is reused rather than reimplemented, so
  * a gate cure still cannot make a horizon "arrive" and `park` is still excluded.
  */
+/**
+ * WHAT ELSE IS IN THERE — the thesis's open half, and the last one it had.
+ *
+ * `docs/nd-collisions.md` entry 3 is this app's thesis and the best-evidenced
+ * entry in the catalogue: cue-dependent prospective memory failure. A thing that
+ * leaves the visual field leaves existence; **visible is the only kind of
+ * remembered; filed means gone.** Its routing proposal has read *V2-candidate,
+ * and it is already named as owed* since it was written: when a place's review
+ * comes round, its return card carries a bounded view of contents.
+ *
+ * The push-down half was built and stops one step short. When a horizon comes
+ * round, the `beneath` tier offers ONE actionable thing from inside it and names
+ * the host — so the reader learns that something is in Kitchen and never learns
+ * what else is. For this entry that is the failure exactly: the place returned,
+ * and its contents stayed filed.
+ *
+ * A COUNT IS NOT CONTENTS. `placeWords` already says "7 under it", and that is
+ * the sentence entry 3 is about — it reports that seven things exist without
+ * making one of them visible. Naming three of them is the whole difference.
+ *
+ * BOUNDED THREE WAYS, because the `beneath` tier's own restraint is that an area
+ * with two hundred descendants must not put two hundred things on screen — that
+ * is the pile arriving on a schedule, which is what law 8 exists to prevent.
+ *   - The output is capped (`ALSO_HERE_CAP`), matching `REVIEW_CAP`'s precedent
+ *     of exceptions capped at three.
+ *   - The WALK is capped too, not just the output: it stops as soon as it has
+ *     enough. A cap that trims a list after building it still walks the pile.
+ *   - Names only. No dates, no acts, no reasons — this is recognition, not work.
+ *     Law 6's demand-free reading and law 8's: a thing shown so it is not
+ *     forgotten must not thereby become something asking.
+ *
+ * Breadth-first, so the place's own immediate contents come before anything
+ * nested deeper — those are what "what is in here" means to a reader.
+ *
+ * PURE, like everything here, and stable: creation order is the app's default
+ * tie-break everywhere else, and a list that reshuffles between renders is a
+ * different list each time you look at it.
+ */
+export const ALSO_HERE_CAP = 3;
+
+function alsoHere(state: State, host: NodeState, offered: NodeState, cap: number): string[] {
+  // NOT THE ONES THE CARD ALREADY NAMES. The place line above reads "in Kitchen
+  // · under Home", so listing Kitchen as what else is in there is the card
+  // saying one fact twice in two vocabularies — the defect the `serves` line
+  // beside it already guards against. The offered thing's ancestors are exactly
+  // the ones the place line walked, so they are skipped along with the offered
+  // thing itself.
+  const named = new Set<string>([offered.id]);
+  for (const a of ancestors(state, offered.id)) named.add(a.id);
+  const kids = new Map<string, NodeState[]>();
+  for (const n of state.nodes.values()) {
+    if (!n.parent || !isHeld(n)) continue;
+    if (!kids.has(n.parent)) kids.set(n.parent, []);
+    kids.get(n.parent)!.push(n);
+  }
+  const out: string[] = [];
+  const seen = new Set<string>([host.id]);
+  let layer = [host];
+  while (layer.length > 0 && out.length < cap) {
+    const next: NodeState[] = [];
+    for (const parent of layer) {
+      for (const child of kids.get(parent.id) ?? []) {
+        if (seen.has(child.id)) continue;
+        seen.add(child.id);
+        next.push(child);
+        if (named.has(child.id)) continue;
+        out.push(child.title.trim() || '(untitled)');
+        if (out.length >= cap) return out;
+      }
+    }
+    layer = next;
+  }
+  return out;
+}
+
 function arrivedAncestor(
   state: State, n: NodeState, nowIso: string, day: DayShape,
 ): NodeState | null {
@@ -530,6 +614,8 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
         node: n, reason: 'beneath', pressure: pressureOf(n, nowIso, day),
         words: REASON_WORDS.beneath({ horizon: host.title }),
         place: lineageOf(state, n),
+        alsoHere: alsoHere(state, host, n, ALSO_HERE_CAP),
+        alsoIn: host.title.trim() || '(untitled)',
         approach: approachOf(state, n, nowIso, zone),
         situation: situationOf(n),
       });

@@ -29,8 +29,8 @@
 //
 // So a role is DESCRIPTIVE here: it says who a thing is for, on the thing. What
 // it is FOR is the readout that comes next — where attention actually went,
-// per role, which is the direct structural answer to the owner's recorded *"when
-// do I visit whether I'm putting enough energy into each?"*. That is a plot the
+// per role, which is the direct structural answer to the recorded question: HOW DO
+// YOU SEE whether enough energy is going into each role. That is a plot the
 // human reads (law 7), never a score and never a target (law 5).
 //
 // ## Nothing here is required, and nothing is inferred
