@@ -387,8 +387,8 @@ decided by a session.**
 ### Open
 
 - **Q-13 · Roles are IDENTITIES that cross multiple areas — how are they
-  modelled?** The owner, 2026-08-04, answering the roles-vs-areas question directly:
-  *"Roles are identities for me, that cross multiple areas."* That settles
+  modelled?** Settled 2026-08-04, answering the roles-vs-areas question
+  directly: **a role is an identity, and it crosses multiple areas.** That settles
   V2 decision 9 in the direction the vocabulary genuinely grows — **and rules
   out the cheap answer**: this data model's tree is single-parent, so a thing
   that crosses areas structurally CANNOT be a container. A role is a
@@ -1702,8 +1702,9 @@ store. That is the open half of Q-11, now stated with the numbers instead of as
 two abstract readings.
 
 **2.4.0 — A CARD SAYS WHAT IT IS** (ADR-0094). The second half of the same
-device report as 2.3.0: *"nothing indicates that some of these are projects or
-goals or anything other than todos"*. It was true everywhere. **Fourteen node
+device report as 2.3.0: **nothing on a card said which KIND of thing it was**, so
+a project, a goal, an area and an ordinary next action all read as todos. It was
+true everywhere. **Fourteen node
 kinds and not one reader-facing word for any of them** — `kind` was a
 discriminator the code branched on and reached a reader nowhere at all.
 
@@ -3308,10 +3309,10 @@ and the register classifies each one.
   under urgency: docs bound for `main` travel as a docs-only commit,
   cherry-picked — never as a branch push that happens to contain code.
 
-- **2026-08-04 — the owner answered the two open design questions from the V2
-  planning session.** Verbatim: *"1. Roles are identities for me, that cross
-  multiple areas. 2. You are right — it has to follow the principles of
-  ND-first planning."*
+- **2026-08-04 — the two open design questions from the V2 planning session
+  were answered.** Both settled in one pass: **a role is an identity and it
+  crosses multiple areas**, and **the design follows the principles of ND-first
+  planning**.
   · **Roles → Q-13** (above): identities crossing areas cannot be containers
   in a single-parent tree; they are a cross-cutting link, a real vocabulary
   addition, deferred behind stage-4 evidence with the shape named so it is

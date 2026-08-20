@@ -409,8 +409,9 @@ export function contentsWords(
  * what it is. One definition, so the list and any test agree.
  *
  * WHAT IT IS COMES FIRST (2.4.0, ADR-0094), and it is the half that was missing.
- * Reported from a device: *"nothing indicates that some of these are projects or
- * goals or anything other than todos"*. A project with children said "7 under
+ * Found on a device: nothing on a card said which KIND of thing it was, so a
+ * project, a goal and an ordinary next action all read as todos. A project with
+ * children said "7 under
  * it" — a number, not a name — and a project with none, a goal, an area and an
  * outcome said nothing whatever, so every row in the list drew identically.
  *

@@ -2987,9 +2987,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `the filed action shows the project it is in ("${places['draft the brief']}")`);
   // 2.4.0 (ADR-0094): it says WHAT IT IS first, then how much it holds. This
   // asserted '1 under it' — a number with no name on it, which is precisely the
-  // shape reported from a device as "nothing indicates that some of these are
-  // projects or goals". A container that only states a count is still drawn like
-  // an action.
+  // defect found on a device: a card never said which KIND of thing it was, so a
+  // project and an ordinary action drew identically. A container that only states
+  // a count is still drawn like an action.
   is(places['the quarterly report'], 'Project · 1 under it',
     `and the container names itself and says how many it holds ("${places['the quarterly report']}")`);
   // And the unmarked case is genuinely unchanged: `action` has no words, so the

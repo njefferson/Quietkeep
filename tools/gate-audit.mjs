@@ -297,13 +297,16 @@ const GATES = [
   {
     name: 'quotes:check',
     catches: "a set-apart quotation nobody has said whose words it is",
-    // A REAL VIOLATION, restored. This is the exact sentence that sat in
-    // docs/adr/0096-roles.md until it was found by hand — a verbatim line of the
-    // owner's speech, green on privacy-check.mjs, which anchors on his name and
-    // cannot see it.
+    // THE PLANTED QUOTATION IS SYNTHETIC, AND THAT IS NOT FASTIDIOUSNESS.
+    // The first version of this plant used the REAL sentence — a verbatim line of
+    // the owner's speech that had sat in docs/adr/0096-roles.md until it was
+    // found by hand. Which put it back into a tracked file permanently, in the
+    // tool whose job is proving that gates catch it. The gate cannot tell one
+    // set-apart quotation from another, so a synthetic one tests it identically
+    // and republishes nobody.
     plant: () => edit('docs/adr/0096-roles.md', (s) => s.replace(
       'NOTES **Q-13**, 2026-08-04, settled the framing: **a role is an IDENTITY, and it\ncrosses multiple areas.**',
-      'NOTES **Q-13**, 2026-08-04, recording the framing:\n\n> *"Roles are identities for me, that cross multiple areas."*')),
+      'NOTES **Q-13**, 2026-08-04, recording the framing:\n\n> *"a planted quotation, for the gate audit and nothing else"*')),
   },
   {
     name: 'collisions:check',
