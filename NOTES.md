@@ -689,14 +689,16 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.2**
-- **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
-  `10d329f`; the promoted tree asserted byte-identical to the verified staging
-  tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
-  Spine and the push-on-main workflow all green **on `10d329f` itself**, read
-  from the runs. This line briefly said the receipt had not been read yet, which
-  was the honest state at the time: the previous promote's green belongs to
-  `c909104` and is a fact about 2.10.0 and about nothing else.)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.14.0**
+- **https://quietkeep.pages.dev** — production, **2.13.0** (promoted 2026-08-20,
+  `e3494c4`; the promoted tree asserted byte-identical to the verified staging
+  tree rather than inferred from a clean merge. Deploy, Spine and the
+  push-on-main workflow all green **on `e3494c4` itself**, read from the runs.)
+- **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
+  and `handoff-check.mjs` is what noticed — because it asks whether the version
+  beside the URL is the CURRENT one, which is a question no reader of this file
+  thinks to ask about a line that looks maintained. The paragraph nine screens
+  down was current the whole time. One file, two answers, again.
 
 **AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
 WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
