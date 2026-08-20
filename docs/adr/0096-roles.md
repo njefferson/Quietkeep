@@ -56,10 +56,10 @@ So a role is descriptive on the thing, and its purpose is the readout.
 
 ## The readout, and what makes it legal
 
-**Where the attention is** answers the owner's recorded question — *"when do I
-visit whether I'm putting enough energy into each?"* — which ADR-0013's
-consequences and `docs/horizon-models.md` both name as needing exactly this, and
-which was never built.
+**Where the attention is** answers the recorded question — **how do you see
+whether enough energy is going into each role** — which ADR-0013's consequences
+and `docs/horizon-models.md` both name as needing exactly this, and which was
+never built.
 
 It is a **plot, never a verdict** (law 7 — the app plots, the human interprets):
 

@@ -8,7 +8,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import { admit, gateOptionsFor, coverageGauge } from '../src/gate.ts';
-import { nextUpQueue } from '../src/nextup.ts';
+import { nextUpQueue, ALSO_HERE_CAP } from '../src/nextup.ts';
 import { heldGroups, heldStatus } from '../src/held.ts';
 import type { AppEvent } from '../src/events.ts';
 import { atMidnight } from '../src/time.ts';
@@ -48,6 +48,70 @@ test('law 4 pushes DOWN: a horizon coming round offers the work beneath it', () 
   assert.equal(q[0]!.node.id, 'LEAF', 'the thing offered must be actionable work, never the horizon (law 4)');
   assert.equal(q[0]!.reason, 'beneath');
   assert.match(q[0]!.words, /Home/, 'the offer must name the horizon that asked for it');
+});
+
+/** The same horizon, holding several things, so "what else is in there" has
+ *  something to say. Breadth order: the project first, then its children. */
+function horizonHoldingSeveral(): State {
+  let s = horizonThatCameRound();
+  s = write(s, [ev('node.created', 'L2', { nodeKind: 'action', title: 'ring the plumber', parent: 'PROJ' })]);
+  s = write(s, [ev('node.created', 'L3', { nodeKind: 'action', title: 'clear under the sink', parent: 'PROJ' })]);
+  s = write(s, [ev('node.created', 'L4', { nodeKind: 'action', title: 'order a new filter', parent: 'PROJ' })]);
+  s = write(s, [ev('node.created', 'L5', { nodeKind: 'action', title: 'book the tiler', parent: 'PROJ' })]);
+  return s;
+}
+
+test('WHAT ELSE IS IN THERE: a place coming round names its contents, not just a count', () => {
+  // nd-collisions entry 3, the thesis and the best-evidenced entry: a thing that
+  // leaves the visual field leaves existence. The push-down brought ONE thing
+  // back and left the rest filed, and "filed means gone" is the entry's claim.
+  const q = nextUpQueue(horizonHoldingSeveral(), NOW, TZ);
+  const head = q[0]!;
+  assert.equal(head.reason, 'beneath');
+  const also = head.alsoHere ?? [];
+  assert.equal(also.length > 0, true, 'a place with several things in it says what they are');
+  assert.equal(also.includes(head.node.title), false,
+    'the thing being offered is not also listed as what else is in there');
+  // BREADTH FIRST — the place's own immediate contents are what "what is in
+  // here" means; something nested three deep is not.
+  // AND NOT WHAT THE CARD ALREADY SAYS. The place line reads "in Kitchen ·
+  // under Home", so naming Kitchen here would be one fact in two vocabularies.
+  assert.equal(also.includes('Kitchen'), false,
+    'the offered thing\'s own ancestors are already on the place line');
+  // Asserted as a PROPERTY, not a title. Which leaf heads the queue depends on
+  // the tier's own ordering, and a test that hard-codes one is asserting the
+  // fixture rather than the behaviour — it failed on exactly that when the
+  // fixture grew from one leaf to five.
+  const leaves = ['buy tap washers', 'ring the plumber', 'clear under the sink',
+    'order a new filter', 'book the tiler'];
+  assert.equal(leaves.includes(also[0]!), true,
+    `the first name is something else inside the place, got ${also[0]}`);
+  // AND IT NAMES WHICH PLACE. Found by rendering the card: with a place line
+  // reading "in Kitchen · under Home" directly above it, an unnamed "also in
+  // there" leaves the reader to guess which of the two containers holds them.
+  assert.equal(head.alsoIn, 'Home', 'the line names the place that came round');
+});
+
+test('and it is CAPPED, so a place with a pile in it does not deliver the pile', () => {
+  // The `beneath` tier's whole restraint is that an area with two hundred
+  // descendants must not put two hundred things on screen. A cap that trims
+  // after building still walks the pile, so the walk stops too.
+  const q = nextUpQueue(horizonHoldingSeveral(), NOW, TZ);
+  const also = q[0]!.alsoHere ?? [];
+  assert.equal(also.length <= ALSO_HERE_CAP, true,
+    `at most ${ALSO_HERE_CAP} names, got ${also.length}`);
+  assert.equal(ALSO_HERE_CAP, 3, 'and the cap is a real number, not whatever fitted');
+});
+
+test('every other reason says nothing about what else is in there', () => {
+  // The entry is about the moment a place comes round, not about every card.
+  let s = write(emptyState(), [ev('node.created', 'A', { nodeKind: 'action', title: 'a loose thing' })]);
+  s = write(s, [ev('clarify.routed', 'A', { route: 'next-action' })]);
+  for (const item of nextUpQueue(s, NOW, TZ)) {
+    if (item.reason === 'beneath') continue;
+    assert.equal((item.alsoHere ?? []).length, 0,
+      `${item.reason} must not carry contents — that is the beneath tier's business`);
+  }
 });
 
 test('the push-down never offers the container itself', () => {

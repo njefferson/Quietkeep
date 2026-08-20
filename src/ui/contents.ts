@@ -1,8 +1,8 @@
 /**
  * WHAT IS ON THIS PAGE, AND A WAY TO EACH OF IT (2.3.0, ADR-0093).
  *
- * The first thing ever asked of this app was *"it is one long page, it needs
- * pages or tabs"*. It got neither. The answer given at the time leaned on
+ * The first thing ever asked of this app was PAGES OR TABS — the runway was one
+ * long page and there was no way to reach any part of it. It got neither. The answer given at the time leaned on
  * product law 4 — *"the runway is the only workspace"* — and that is a
  * misreading of the law: law 4 is about ALTITUDE. It says a goal or an area is
  * an inspection mode rather than a place you go to work, so that levels push

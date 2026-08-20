@@ -163,6 +163,62 @@ if (reachable) {
   console.log('  (could not reach "Just one thing" — it is not on screen)');
 }
 
+// A PLACE THAT HAS COME ROUND, which no other tool can render (2.13.0).
+//
+// The `beneath` tier is a FALLBACK: it is computed only when nothing else is
+// asking. Every fixture the walks use is a populated store, so something is
+// always asking and this state never appears in any of them — and the line it
+// carries, "Also in <place>", was therefore going to ship without anybody
+// having seen it. That is the condition this whole file exists for.
+//
+// Seeded straight into the store rather than driven through the UI, and that is
+// the exception it looks like: the state needs a review clock ALREADY IN THE
+// PAST on a container, and no date control in the app can set one. Driving it
+// is not possible; rendering it is, and a state nobody can render is a state
+// nobody looks at.
+const past = new Date(Date.now() - 3 * 864e5).toISOString();
+let n = 0;
+const seed = (kind, node, payload) =>
+  ({ id: `look${++n}`, vault: 'personal', at: '2026-07-01T15:00:00.000Z',
+    device: 'd0', seq: n, kind, node, payload });
+try {
+  await page.evaluate(async (events) => {
+    const db = await new Promise((res, rej) => {
+      const r = indexedDB.open('quietkeep');
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    await new Promise((res, rej) => {
+      const tx = db.transaction('events', 'readwrite');
+      tx.objectStore('events').clear();
+      for (const e of events) tx.objectStore('events').put(e);
+      tx.oncomplete = res;
+      tx.onerror = () => rej(tx.error);
+    });
+  }, [
+    seed('node.created', 'AREA', { nodeKind: 'area', title: 'The flat' }),
+    seed('clock.set', 'AREA', { clockKind: 'review', at: past, source: 'me' }),
+    seed('node.created', 'PROJ', { nodeKind: 'project', title: 'Get the kitchen tap fixed', parent: 'AREA' }),
+    seed('node.created', 'L1', { nodeKind: 'action', title: 'ring the plumber back about the tap', parent: 'PROJ' }),
+    seed('node.created', 'L2', { nodeKind: 'action', title: 'clear under the sink', parent: 'PROJ' }),
+    seed('node.created', 'L3', { nodeKind: 'action', title: 'order a new filter', parent: 'PROJ' }),
+    seed('node.created', 'L4', { nodeKind: 'action', title: 'book the tiler', parent: 'PROJ' }),
+  ]);
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('body[data-ready=true]');
+  await page.waitForTimeout(800);
+  const also = await page.evaluate(() =>
+    document.querySelector('#nextup-also')?.textContent ?? '');
+  // SAY WHETHER THE STATE ACTUALLY AROSE. A picture of the ordinary card,
+  // filed under this name, is worse than no picture — it answers "have we
+  // looked at this" for everyone after.
+  if (also) console.log(`  the line reads: ${also}`);
+  else console.log('  (the place-came-round state did not arise — the picture is of something else)');
+  await shot('05-a-place-came-round');
+} catch (err) {
+  console.log(`  (could not stage a place coming round: ${err.message})`);
+}
+
 console.log('\nNow open them.\n');
 await browser.close();
 if (served.close) await served.close();

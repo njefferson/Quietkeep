@@ -1983,8 +1983,9 @@ try {
 
     // AND THE STRIP ACTUALLY STRIPS (2.10.0) — every selector it names, gone.
     //
-    // Reported from a device on a screen showing exactly one task: "terrifyingly
-    // busy, and I don't even want to begin in this." Counted at 390px: turning
+    // Found on a device on a screen showing exactly one task: the SCREEN was too
+    // busy to begin in, though the offer on it was a single item. Counted at
+    // 390px: turning
     // this mode ON changed nine controls and four lines of chrome into nine
     // controls and four lines of chrome, because the strip only ever reached
     // inside the card — and three lines added to the card in later releases were

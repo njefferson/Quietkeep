@@ -93,6 +93,14 @@ export const PLAIN_HIDDEN = [
   // remainder lives on the opt-in header clock, which `PLAIN_CHROME_HIDDEN`
   // below still strips — so the mode's answer to this fact is unchanged.
   '#nextup-fixed', '#nextup-written',
+  // `#nextup-also` — what else the returning place holds. It survives NOTHING,
+  // and the reasoning is the entry's own: the contents are named so a place
+  // coming round does not bring back one thing and leave the rest filed. On the
+  // worst day the reader is being given ONE thing, and three more names beside
+  // it is the pile arriving in miniature — which is what this mode exists to
+  // stop. Recognition is worth a line on an ordinary day and is a cost on this
+  // one.
+  '#nextup-also',
 ] as const;
 
 /**
@@ -135,10 +143,11 @@ export const PLAIN_KEPT = [
 /**
  * The app's own chrome, while the mode is on (2.10.0).
  *
- * Reported from a device, on a screen showing exactly one task: *"terrifyingly
- * busy, and I don't even want to begin in this."* Counted at 390px: nine
- * controls and four lines of standing text before the offer's title, and turning
- * this mode on changed NONE of them — it only ever reached inside the card.
+ * Found on a device, on a screen showing exactly one task: the SCREEN was too
+ * busy to begin in, even though the offer on it was a single item. Counted at
+ * 390px: nine controls and four lines of standing text before the offer's title,
+ * and turning this mode on changed NONE of them — it only ever reached inside
+ * the card.
  *
  * A mode for the day when operating the tool is itself hard, that leaves the
  * tool's own furniture untouched, answers the smaller half of the problem.
