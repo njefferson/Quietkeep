@@ -179,7 +179,7 @@ test('a single sync catches all the way up and reports the total moved', async (
 });
 
 test('keep-in-step syncs on a timer and when shown, never while hidden, never overlapping', async () => {
-  // The real fix for "I had to press Sync three times": a device syncs on its own
+  // The real fix for the three-presses defect: a device syncs on its own
   // while it is open. This proves the SCHEDULE without a timer or a DOM — the app
   // supplies a clock backed by setInterval and page visibility; here it is a fake.
   let visible = true;

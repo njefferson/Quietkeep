@@ -207,7 +207,7 @@ being free, this row reopens.**
 - **5**
   - Check: **App Store**
   - Instrument: **a real device, 2026-07-28**
-  - Result: *"there is nothing on the App Store that I see near it."* **Answered.**
+  - Result: **nothing near it on the App Store.** **Answered.**
 - **6**
   - Check: **`quietkeep.pages.dev`**
   - Instrument: **a real device, 2026-07-28**
