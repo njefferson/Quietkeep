@@ -77,6 +77,24 @@ const ATTRIBUTION = [
   // and were caught by the first draft of this rule.
   /\b(?:noah(?![.\w])|the owner)(?:'s|\u2019s)\s+(?:words|quote|message|complaint|wording|phrasing|screenshot|exact)\b/i,
 
+  // THE MIRROR IMAGE: QUOTE FIRST, ATTRIBUTION AFTER.
+  // Every rule above reads left to right — role, then colon or verb, then the
+  // quotation. The reverse order is the same act and went unseen for a month: a
+  // bolded sentence of his speech, closed, then the role and a date, in a repo's
+  // own question log, green on this file the whole time.
+  //
+  // The closing quote must carry a markdown EMPHASIS close. That is what
+  // separates a finished quotation from an HTML attribute, which opens its quote
+  // and carries no emphasis marker — the hub's own site metadata has six of
+  // those and this fired on all six without it.
+  //
+  // POSSESSIVES ARE EXCLUDED, deliberately. The role in the possessive is the
+  // anonymised form doing load-bearing work, which the note above says must stay
+  // sayable; it is the NAME that republishes a person. Measured with the
+  // exclusion: 0 hits in the hub across 41 files, 1 in the sibling across 363 —
+  // the real violation and nothing else.
+  /["\u201d][*_]{1,2}[,.]?\s{0,3}[\u2014\u2013-]?\s{0,3}(?:the owner|noah(?![.\w@-]))(?![\u2019']s)\b/i,
+
   // ATTRIBUTION WITHOUT QUOTATION MARKS. Every rule above requires a quote
   // character somewhere, and that was the defect.
   //
@@ -143,6 +161,10 @@ const PROBES = [
   'the owner: "[placeholder]"',
   'the owner said something like "[placeholder]"',
   "the owner's words",
+  // The MIRROR IMAGE: a finished quotation, then the role. Every other
+  // attribution probe reads role-first, which is exactly how the gap survived —
+  // the probes were written from the patterns rather than from the act.
+  '**"[placeholder]."** the owner',
   'his prescriptions',
   'a cpap machine',
   'I noticed in the shower that I need to order something',

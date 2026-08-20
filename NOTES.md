@@ -90,9 +90,10 @@ requires breaking one, that is a Doctrine §1 moment: flag it, don't slip it in.
 
 ## What VERSION 1 means — settled 2026-07-29
 
-> *"I will say we are at version 1 when we have all initial capabilities in place
-> to make this do all the things I specified. It is not a planner app until then,
-> and I will not name version 1 until it is ready."*
+**The rule for the first slot, settled 2026-07-29.** Version 1 is reached when
+every initial capability is in place — all of the specified behaviour, not a
+subset that feels close. Until then this is not a planner app, and the number is
+not claimed. Naming it is the owner's act and happens only once it is ready.
 
 **Binding, and it settles the first slot.** The VERSION slot is not reached by a
 big release, a large diff, or a session's judgement that things feel complete. It
@@ -178,8 +179,9 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 
 ### Trying it out, and starting over — settled 2026-07-29
 
-> *"I eventually want a set of test data i can import and the ability to purge the
-> whole set of tasks, select ranges, or anything else that may make sense?"*
+**Three capabilities asked for together, settled 2026-07-29:** importable test
+data to try the app on, a way to purge the whole set of tasks, and a way to
+select ranges rather than acting on everything or one thing.
 
 ~~Roadmapped, not built.~~ **ALL THREE ARE BUILT** — sample data (*Add some sample
 work*, *Make a set to try things on*), purging (*Clear what I'm holding*, with the
@@ -385,8 +387,8 @@ decided by a session.**
 ### Open
 
 - **Q-13 · Roles are IDENTITIES that cross multiple areas — how are they
-  modelled?** The owner, 2026-08-04, answering the roles-vs-areas question directly:
-  *"Roles are identities for me, that cross multiple areas."* That settles
+  modelled?** Settled 2026-08-04, answering the roles-vs-areas question
+  directly: **a role is an identity, and it crosses multiple areas.** That settles
   V2 decision 9 in the direction the vocabulary genuinely grows — **and rules
   out the cheap answer**: this data model's tree is single-parent, so a thing
   that crosses areas structurally CANNOT be a container. A role is a
@@ -410,6 +412,7 @@ decided by a session.**
     "when do I review my roles?" is answered by the same
     mountain-comes-to-you return as everything else. When roles land, they
     inherit that for free.
+  - Status: **Closed.** BUILT 2026-08-17 as 2.6.0 ([ADR-0096](docs/adr/0096-roles.md)). The model was right thirteen days before it was built, which is the lesson recorded above.
 - **Q-11 · No feeling of being shown the right things.** Reported 2026-08-04.
   **THIS ENTRY HAD NO HEADING UNTIL 2026-08-17 and that is most of why it sat.**
   Its text was run on to the end of Q-13's last bullet, so it was not a numbered
@@ -434,21 +437,32 @@ decided by a session.**
     question a session cannot answer from taste is not automatically the
     owner's; check whether the research already answered it.**
   - **HALF-ANSWERED 2026-08-17 by measurement rather than by asking (2.5.0,
-    ADR-0095).** The ranking reading is established: every tier of `nextup` is
-    temporal and the only tie-break inside a tier is pressure then creation
-    order, so the app had no notion of what anything is for. Law 4's downward
-    half is now built and both readings are served by it — the card says what it
-    serves, so the reasoning is checkable. **What remains is a policy decision
-    and it is the owner's:** whether serving a horizon should outrank serving
-    nothing in the offer's order. A session must not make that call — a loose
-    capture is very often the most important thing in the store.
-  - Status: **asked, not answered — and NOBODY PUT THE QUESTION TO HIM.**
-    That is the defect, not the caution. "Do not build past this on a guess" is
-    right and it is only half a decision: the other half is asking which reading
-    it is, and thirteen days passed with the answer one sentence away from
-    somebody who knew it. A question parked pending information nobody has gone
-    to get is not open, it is abandoned — the same shape as Q-10's close and
-    Q-13's deferral (hub LESSONS §96, §97).
+    ADR-0095), and SUPERSEDED by the close above two hours later.** Kept for the
+    measurement, which stands: every tier of `nextup` is temporal and the only
+    tie-break inside a tier is pressure then creation order, so the app had no
+    notion of what anything is for. Law 4's downward half is now built and both
+    readings are served by it. **Its closing claim did not stand** — that what
+    remained was a policy decision and the owner's, on whether serving a horizon
+    should outrank serving nothing. That is precisely the importance rank entry 5
+    refuses in terms, and the refusal was already written when this was typed.
+  - Status: **CLOSED 2026-08-17, and this line said otherwise until 2026-08-19.**
+    The close is the second bullet above; this line kept saying *asked, not
+    answered — and NOBODY PUT THE QUESTION TO HIM* for two days after the
+    question stopped being open. **Three files already carried the answer** —
+    `docs/nd-collisions.md` entry 5 refuses an importance rank in terms,
+    [ADR-0097](docs/adr/0097-the-offer-reads-interest.md) records the refusal as
+    the half about to be handed over as a policy question, and `src/nextup.ts`
+    says in a comment that *an importance rank is the wrong instrument* and that
+    Q-11's ranking reading is established by measurement rather than by asking.
+    Q-11 also contains its own argument against the alternative: a loose capture
+    is very often the most important thing in the store.
+  - **AND THE ORIGINAL STATUS LINE WAS RIGHT ABOUT THE WRONG THING.** It said the
+    defect was that nobody put the question to him, citing hub LESSONS §96 and
+    §97 — a question parked pending information nobody went to get. The
+    information was never outside the repo. **A question can be abandoned in the
+    other direction too: answered everywhere except in the file that tracks it**,
+    where the one line a person scans still says it is waiting on somebody. Four
+    places, three saying closed and the loudest saying open.
 - **Q-12 · `Not this` records nothing, deliberately. Is that trade still right?**
   Declining a suggestion writes no event, so the app can never keep score — which
   is correct for this audience and is why the rule exists. It also means the app
@@ -497,6 +511,7 @@ decided by a session.**
   - **What is genuinely unbuilt is the projection, not the levels.** `docs/horizon-models.md` says so: the review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts` and **do not reach the surfacing layer**, and a runway card does not print what it serves even though 1.20.0's place line already walks lineage on a different edge. That is law 4's other half — higher horizons project *downward* — and it is the thing worth building.
   - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theatre and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
 
+  - Status: **Closed.** Answered 2026-08-09 — every altitude asked about already existed. What is genuinely unbuilt is the projection, deferred on purpose until a real store holds a goal or an area.
 - **Q-10**
   - Question: Nothing in this app scopes a projection by vault. Should it?
   - Asked 2026-07-29: whether a second vault is for home tasks, and whether the app already separates work tasks some other way.
@@ -510,32 +525,41 @@ decided by a session.**
   - **It was nearly lost a third time.** ADR-0092's first draft stated that contexts appeared nowhere in the record. That came from searching for `context`, `@home` and `@work` — the vocabulary of the feature — while this entry is written in the vocabulary of the question: vault, lens, home, work. **The search that missed it is the same translation that lost it.** Corrected on being asked directly whether home vs work had ever been raised. (Hub LESSONS §96.)
 - **Q-06**
   - Question: The astro app's naming was inconsistent — repo and URL said `clear-horizons`, the hub displayed **"Astro Planner"**, and the name The choice was appeared nowhere a visitor saw.
-  - Answer: **"Astro Planner will be named Clear Horizons."** the owner, 2026-07-29. The app itself already used the name throughout (title, og tags, manifest); only the hub's two entries were stale, and both are fixed (`noahjefferson` @ `004fddd`). Nothing in the `clear-horizons` repo needed changing.
+  - Answer: **The astro app is named Clear Horizons**, settled 2026-07-29. The app itself already used the name throughout (title, og tags, manifest); only the hub's two entries were stale, and both are fixed (`noahjefferson` @ `004fddd`). Nothing in the `clear-horizons` repo needed changing.
+  - Status: **Closed.** The astro app is Clear Horizons, settled 2026-07-29.
 - **Q-07**
   - Question: The hub undersold the astro app — the tile read *"Clear-sky & Seestar target windows"* and never mentioned recording your horizon, which the owner says is the thing no other astro app does.
   - Answer: **Closed with Q-06.** The tile now reads *"Plan your night against your real treeline, not a flat 0°"*, taken from the app's own README rather than invented.
+  - Status: **Closed.** Closed with Q-06 — the hub tile now states what the app is for.
 - **Q-01**
   - Question: Licence — brief said AGPL, Doctrine §8 says PolyForm Noncommercial
   - Answer: **PolyForm NC 1.0.0.** Confirmed 2026-07-27 as doctrinally correct. [ADR-0017](docs/adr/0017-licensing.md) is Accepted.
+  - Status: **Closed.** PolyForm Noncommercial 1.0.0, [ADR-0017](docs/adr/0017-licensing.md).
 - **Q-03**
   - Question: Work-vault policy line, given the GFE context
   - Answer: **No GFE context — the app is not for it.** The vault split is a convenience for separating content; what goes in it is the user's judgement, as with any personal app. The owner 2026-07-27.
+  - Status: **Closed.** There is no GFE context and the app is not for it, so the question did not apply.
 - **Q-05**
   - Question: Terminology skin default for the work vault
   - Answer: **Neutral vocabulary, skin opt-in.** The owner 2026-07-27. Matches what shipped.
+  - Status: **Closed.** Neutral vocabulary, skin opt-in, and that is what shipped.
 - **Q-08**
   - Question: How "Wynts" is pronounced
   - Answer: **Moot** — the name is withdrawn. The question was the right one; nobody answered it in time to catch that both readings were bad.
+  - Status: **Closed.** Moot: the name was withdrawn, so the pronunciation stopped mattering. The question was the right one and nobody answered it in time to catch that both readings were bad.
 - **Q-02**
   - Question: The app's name
   - Answer: **Quietkeep.** Chosen 2026-07-28, with nothing near it visible on the App Store. Cleared through all five checks — [ADR-0024](docs/adr/0024-name-quietkeep.md), [V-04](docs/verifications.md).
+  - Status: **Closed.** The name is Quietkeep, [ADR-0024](docs/adr/0024-name-quietkeep.md).
 - **Q-09**
   - Question: The four §10 repo-metadata values
   - Answer: **All four set, 2026-07-28.** Description, website, topics (he corrected `indexeddb` himself), and the **social preview uploaded**. Per §10 the repo is now *set up* — and his confirmation **is** the verification: a session cannot read this repo's live metadata at all ([V-11](docs/verifications.md)).
+  - Status: **Closed.** All four metadata values set 2026-07-28, per Doctrine §10.
 - **Q-04**
   - Question: Pages subdomain string
   - Answer: **`quietkeep.pages.dev`** — Confirmed it clean on his device, 2026-07-28. Production comes off `main`; `staging` gets `staging.quietkeep.pages.dev`, which turns the Doctrine §7 gate into a URL he can open on the iPad. The metadata half of this question is now **Q-09**, because it is a different kind of answer and was hiding behind the subdomain.
 
+  - Status: **Closed.** `quietkeep.pages.dev`, confirmed on the device 2026-07-28.
 ---
 
 ## Project facts
@@ -750,7 +774,41 @@ the lesson about the second. The pattern is one thing: **a conclusion drawn from
 an observation that was never allowed to finish**, then written in the voice of a
 measurement.
 
-**Staging is 2.12.2 and it is waiting on you.** Production is 2.11.0. Three
+**2.12.2 IS IN PRODUCTION.** Promoted 2026-08-19, `864c30e`. The promoted tree
+was asserted byte-identical to the verified staging tree (`7e4e11b…`) rather than
+inferred from a clean merge. Deploy run 32305299449 success with every step run
+and the log reading *Deployed to PRODUCTION*; Push-on-main success; Spine on
+`3cf6f9f` — the tree that was promoted — success, all 37 steps.
+
+**AND SIX QUOTATIONS OF THE OWNER'S OWN SPEECH WERE FOUND IN THIS REPO, ALL
+GREEN ON EVERY GATE.** Found while checking `main` out to promote. The privacy
+rule has two clauses — never by name, never in what words — and
+`privacy-check.mjs` anchors every pattern on the NAME, so a verbatim sentence of
+his speech is invisible to it.
+
+- `ADR-0025` after *"Settled:"*, and `ADR-0093` after *"what was reported from
+  the device"*, which is the *who reported it* pattern the rule names in terms.
+- `ADR-0073`, `ADR-0094` and `ADR-0096` as blockquotes under an explicit
+  attribution line, plus two first-person paragraphs in this file — one carrying
+  a typo, which is what raw message text looks like.
+
+All six now state what was wrong and what it measured. **`quote-check.mjs` is the
+gate** (hub `4f2f362`, wired into the Spine beside the privacy gate and as
+`npm run quotes:check`): every set-apart quotation is declared in `.quote-allow`
+as *document*, *product-copy* or *analysis*. It is a LIST because three pattern
+rules were measured against the real violations and flagged 39, 138 and 227 files
+of honest prose — the shape of his speech and the shape of the product's voice
+are the same shape. Hub LESSONS §108.
+
+**Staging and production are both 2.12.2, and nothing is waiting on you.** The
+work since the promote is docs, tooling and CI — measured, not assumed:
+`git diff --name-only 6cbb5ab HEAD -- public/ src/` is empty, so the deployed
+artefact is byte-identical and there is no release to number. (This paragraph
+said *2.12.3* before that was checked, which is the fourth time in this session a
+claim was written before it was read off something. It was caught here rather
+than after it shipped, which is the only difference.)
+
+Three
 releases are stacked there now — 2.12.0, 2.12.1 and 2.12.2 — and they are one
 subject: the landing surface saying less.
 
@@ -1666,8 +1724,9 @@ store. That is the open half of Q-11, now stated with the numbers instead of as
 two abstract readings.
 
 **2.4.0 — A CARD SAYS WHAT IT IS** (ADR-0094). The second half of the same
-device report as 2.3.0: *"nothing indicates that some of these are projects or
-goals or anything other than todos"*. It was true everywhere. **Fourteen node
+device report as 2.3.0: **nothing on a card said which KIND of thing it was**, so
+a project, a goal, an area and an ordinary next action all read as todos. It was
+true everywhere. **Fourteen node
 kinds and not one reader-facing word for any of them** — `kind` was a
 discriminator the code branched on and reached a reader nowhere at all.
 
@@ -3272,10 +3331,10 @@ and the register classifies each one.
   under urgency: docs bound for `main` travel as a docs-only commit,
   cherry-picked — never as a branch push that happens to contain code.
 
-- **2026-08-04 — the owner answered the two open design questions from the V2
-  planning session.** Verbatim: *"1. Roles are identities for me, that cross
-  multiple areas. 2. You are right — it has to follow the principles of
-  ND-first planning."*
+- **2026-08-04 — the two open design questions from the V2 planning session
+  were answered.** Both settled in one pass: **a role is an identity and it
+  crosses multiple areas**, and **the design follows the principles of ND-first
+  planning**.
   · **Roles → Q-13** (above): identities crossing areas cannot be containers
   in a single-parent tree; they are a cross-cutting link, a real vocabulary
   addition, deferred behind stage-4 evidence with the shape named so it is

@@ -12,11 +12,10 @@ work each named role is carrying.
 
 ## Why
 
-NOTES **Q-13**, 2026-08-04, recording the owner's own framing:
+NOTES **Q-13**, 2026-08-04, settled the framing: **a role is an IDENTITY, and it
+crosses multiple areas.**
 
-> *"Roles are identities for me, that cross multiple areas."*
-
-That sentence settles the data model on its own. This tree is single-parent, so
+That settles the data model on its own. This tree is single-parent, so
 a thing that crosses areas **structurally cannot be a container** — it has to be
 a cross-cutting link, the shape `node.people` has used since 0.15.0. Q-13 said
 exactly that, named the mechanism, and then **deferred the build**:

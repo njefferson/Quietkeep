@@ -1,8 +1,8 @@
 // WHAT A THING IS, IN WORDS A READER HAS (2.4.0, ADR-0094).
 //
-// Reported from a device, looking at the work surface: *"nothing indicates that
-// some of these are projects or goals or anything other than todos"*. That was
-// exactly right, and it was true everywhere. The app has fourteen node kinds and
+// Found on a device, on the work surface: nothing on a card said which KIND of
+// thing it was — a project, a goal, an area and an ordinary next action all read
+// as todos. That was exactly right, and it was true everywhere. The app has fourteen node kinds and
 // **not one reader-facing word for any of them** — `kind` was a discriminator
 // the code branched on and nothing else. A project with children showed "7 under
 // it"; a project with none, a goal, an area and an outcome showed nothing at

@@ -1,0 +1,23 @@
+# Every set-apart quotation in this repo — a `> *"…` blockquote — and whose words
+# it is. Held by the hub's `quote-check.mjs`; see that file for why this is a list
+# and not a pattern.
+#
+# A quotation of the OWNER is not declarable and never becomes declarable. Write
+# what was wrong and what it measured — never who reported it, never in what
+# words. FIVE were found in this repo and one more in an ADR that had copied it,
+# every one of them surviving privacy-check.mjs, which anchors on his NAME and
+# cannot see a sentence of his speech.
+#
+#   file | document | product-copy | analysis | the quotation's opening words
+#
+NOTES.md | product-copy | It holds the rest, so you can rest.
+docs/adr/0092-contexts.md | analysis | what he is describing wants a lens — a filter you switch on
+docs/adr/0092-contexts.md | analysis | Binding constraint if a lens is built: law 1 does not bend f
+docs/adr/0095-what-a-thing-is-for.md | document | Levels push down; the user never climbs. Higher horizons pro
+docs/adr/0096-roles.md | analysis | Building role machinery now, before a single area or goal ex
+docs/adr/0097-the-offer-reads-interest.md | document | The heat pass is a two-tap interest read (`heat.set`, ADR-00
+docs/adr/0097-the-offer-reads-interest.md | document | ROUTING PROPOSAL — later, explicitly gated on Q-11 and Q-12.
+docs/adr/0097-the-offer-reads-interest.md | document | Activation follows Interest, Novelty, Challenge, Urgency, an
+docs/adr/0097-the-offer-reads-interest.md | document | Treat it as vocabulary, never as a rank.
+docs/verifications.md | analysis | Horizons and Clear Horizons, side by side on one index page,
+docs/verifications.md | analysis | Consequence if both are false: none. The design already assu

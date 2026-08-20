@@ -295,6 +295,29 @@ const GATES = [
       s.replace('<button id="menu-open"', '<button id="gate-audit-decoy" type="button">Decoy</button>\n  <button id="menu-open"')),
   },
   {
+    name: 'quotes:check',
+    catches: "a set-apart quotation nobody has said whose words it is",
+    // THE PLANTED QUOTATION IS SYNTHETIC, AND THAT IS NOT FASTIDIOUSNESS.
+    // The first version of this plant used the REAL sentence — a verbatim line of
+    // the owner's speech that had sat in docs/adr/0096-roles.md until it was
+    // found by hand. Which put it back into a tracked file permanently, in the
+    // tool whose job is proving that gates catch it. The gate cannot tell one
+    // set-apart quotation from another, so a synthetic one tests it identically
+    // and republishes nobody.
+    plant: () => edit('docs/adr/0096-roles.md', (s) => s.replace(
+      'NOTES **Q-13**, 2026-08-04, settled the framing: **a role is an IDENTITY, and it\ncrosses multiple areas.**',
+      'NOTES **Q-13**, 2026-08-04, recording the framing:\n\n> *"a planted quotation, for the gate audit and nothing else"*')),
+  },
+  {
+    name: 'questions:check',
+    catches: 'a question whose status contradicts its own contents',
+    // THE EXACT SHAPE Q-11 CARRIED for two days: a Status saying the question is
+    // open, four lines under a bullet recording its close.
+    plant: () => edit('NOTES.md', (s) => s.replace(
+      '  - Status: **Closed.** BUILT 2026-08-17 as 2.6.0',
+      '  - Status: **Open — asked, not answered.** BUILT 2026-08-17 as 2.6.0')),
+  },
+  {
     name: 'collisions:check',
     catches: 'a research entry whose routing mark or evidence grade is missing',
     plant: () => edit('docs/nd-collisions.md', (s) => s.replace('**EVIDENCE**', '**EVIDENCEX**')),

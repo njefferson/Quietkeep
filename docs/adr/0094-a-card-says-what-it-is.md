@@ -12,10 +12,9 @@ detail sheet's state line.
 
 ## Why
 
-Reported from a device, looking at the work surface:
-
-> *"Nothing indicates that some of these are projects or goals or anything other
-> than todos."*
+**Found on a device, on the work surface: nothing on a card said which KIND of
+thing it was.** A project, a goal, an area and an ordinary next action were
+indistinguishable — every one of them read as a todo.
 
 That was exactly right, and it was true everywhere. The app has **fourteen node
 kinds and had not one reader-facing word for any of them.** `kind` was a
