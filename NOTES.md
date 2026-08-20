@@ -3347,8 +3347,9 @@ and the register classifies each one.
 
 - **2026-08-04 — The privacy FAIL state: named by the owner, found already
   breached, gated. And a §7 breach committed during the repair, reverted.**
-  His standing rule, verbatim: *"Make sure you never record anything in the
-  repo that is personal or embarrassing for me. That is a FAIL state."*
+  **The standing rule: nothing personal or embarrassing about the owner is ever
+  recorded in a repo, and doing it is a FAIL state** — not a preference, not a
+  trade-off, and not something a session weighs against anything else.
   · **It had already happened.** In recording design conversation faithfully,
   a session had written sentences into this public file that attached
   personal facts to the owner rather than to the product or its users. They
@@ -3453,10 +3454,11 @@ and the register classifies each one.
   named research, what conventional systems do wrong, what this app already
   does (cited to its own ADRs), and a build/later/refuse routing. It was asked
   for it by name. Its refusals are as load-bearing as its builds.
-  · **The owner's design statements recorded verbatim this session, because sessions
-  keep paying for not writing them down:** *"Next up is literally all of those things,
-  though — I need to know when to see which one."* On recurring work: *"I
-  don't see where a recurring 'clean the bathroom sink' would go?"* — which
+  · **Two design statements recorded this session, because sessions keep paying
+  for not writing them down.** On the offer: **Next up already contains all of
+  those things — what is missing is knowing WHEN to see which one.** On recurring
+  work: **there was nowhere for a recurring standard like cleaning a sink to
+  go** — which
   produced the two-kinds-of-mattering frame (standards return by pressure,
   correctly; directed work returns by declaration, currently missing). On
   horizons: *"When do I review my goals? My roles? When do I visit whether I'm
@@ -5636,11 +5638,10 @@ and the register classifies each one.
   been given a number, and at that point in the walk it had been given `clear`.
   A guard on a state the fixture never reaches is not a check.
 
-- **2026-07-30** — **Clearing things out (0.23.0 CAPABILITY).** The owner, answering the
-  open question: *"I feel like both should be available so the user has control of
-  their data"* and *"there should be a verification that prevents it from being
-  easily done, however, and it should recommend a back up being done before it
-  happens with a button available at that point."*
+- **2026-07-30** — **Clearing things out (0.23.0 CAPABILITY).** Settled, answering the open
+  question: **both routes stay available, because the person controls their own
+  data** — and **a verification stands in front of the act so it cannot be done
+  easily, recommending a copy first, with the button to make one right there.**
   · **Two modes, because they are different promises.** *Clear what I'm holding*
   appends one `node.trashed` per held thing — the surfaces empty and the log still
   contains everything, so law 9 stays unqualified and an export taken afterwards is
