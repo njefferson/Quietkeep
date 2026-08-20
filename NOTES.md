@@ -800,6 +800,65 @@ rules were measured against the real violations and flagged 39, 138 and 227 file
 of honest prose — the shape of his speech and the shape of the product's voice
 are the same shape. Hub LESSONS §108.
 
+**2.14.0 — "JUST ONE THING" IS A FACT ABOUT THE SCREEN, NOT ABOUT THE CARD
+([ADR-0104](docs/adr/0104-the-worst-day-is-the-whole-screen.md)).** The mode for
+the day when operating the tool is itself hard stripped the offer card and left
+the app standing underneath it, for four releases, unmeasured.
+
+**RENDERED AND COUNTED AT 390×844 ON THE THIRTEEN-ITEM SAMPLE, WITH IT ON.** The
+card: five controls, two words. **Below the card: fourteen controls and 65 words
+of standing text — the same fourteen and the same 65 as with the mode off.** Not
+one of them moved. The runway ran to 2.18 screens.
+
+**The two hardest lines on the surface were among them.** *Needs a new plan — one
+date has gone by* and *one thing is with someone else*, printed underneath a card
+that had just had its reason line removed for being one thing too many to read.
+
+**The reasoning was already written, at one third the scale.** 2.13.0's own strip
+rule refuses `#nextup-also` because three names beside the offer are the pile
+arriving in miniature. The held list, the sort queue and the replan queue beneath
+it are the pile arriving whole, and no property makes three too many and a
+complete inventory acceptable.
+
+**After: five controls above, five on the card, two below — the footer's licence
+link and the version. 0.72 screens, entire.**
+
+**WHAT SURVIVES IS FIVE THINGS AND THE LIST IS SHORT ON PURPOSE.** Capture and
+its receipt (unconditional, from every state); the proof line (it is what makes
+everything being out of sight safe); `More` and the ⓘ (a screen with no way to
+anywhere is a trap); the update strip (Doctrine §7h); and a running focus
+session, which is the one thing rather than the pile.
+
+**THE COST, STATED RATHER THAN DISCOVERED: search is not on this screen**, and
+the work surface is its only route. On this day *where did I put it* is answered
+by leaving the mode. That is a real loss and it is the trade.
+
+**THE MECHANISM TOOK THREE GOES AND ONLY THE MEASUREMENT CAUGHT EITHER MISS.**
+A loop setting `hidden` at the top of `work.ts`'s refresh works for chrome
+nothing repaints and for nothing else — `paintJump` runs deliberately AFTER
+`work.refresh()`, and `triage.refresh()` is called from two places outside the
+refresh chain. Then a `<style>` element generated from the list at mount, which
+**the app's CSP refused** (`style-src 'self'`) while the console said so and the
+mode went on stripping nothing. The source read correctly through both. The rule
+lives in `public/app.css` now as a generated artefact of `PLAIN_CHROME_HIDDEN`,
+written by `node tools/plain.mjs --write` and held to the list by the gate.
+
+**AND THE LIST THAT WENT STALE IS NOW ACCOUNTABLE BOTH WAYS.** The card has had
+that pair since 2.10.0 and has not drifted since; the chrome had one list of
+three selectors and nothing checking it against the surface, which is how fifteen
+sections joined the worst day's screen without anybody deciding they should.
+`tools/a11y.mjs` walks the rendered header, `<main>` and the footer with the mode
+on and fails on any region declared in neither — **against the DOM, because
+reading nesting out of the markup with a regex is how a gate ends up agreeing
+with a file instead of a screen.** It found the wordmark undeclared on its first
+run. The same walk counts what is left outside the offer, with no headroom: nine
+controls and twenty-one words, against twenty and sixty-five before.
+
+**One thing `#upkeep` proves on its own:** it sat in the CARD's strip list from
+the day the mode was built, where the both-directions check could not see it
+because that check only validates ids beginning `nextup-`. The one runway section
+the mode did strip was the one nothing was checking.
+
 **2.13.0 — WHEN A PLACE COMES ROUND, YOU CAN SEE WHAT ELSE IS IN IT.** The
 thesis's open half, and the last routing proposal in `docs/nd-collisions.md`
 still reading *V2-candidate*. Entry 3 is the best-evidenced entry in the
@@ -842,8 +901,12 @@ the state needs a review clock ALREADY PAST on a container, which no date contro
 in the app can set. It is seeded straight into the store for that reason, and the
 comment says so.
 
-**Staging is 2.13.0 and it is waiting on your on-device pass.** Production is
-2.12.2. The docs-and-tooling work before it changed no shipped byte — measured, not assumed:
+**Staging is 2.14.0 and it is waiting on your on-device pass.** Production is
+2.13.0, promoted on 2026-08-20 and read off the runs rather than the push output:
+`e3494c4` concluded success on Deploy, on Push-on-main and on the Spine.
+
+**2.13.0 was waiting on that pass when this said so, and the paragraph below is
+what it said at the time.** The docs-and-tooling work before it changed no shipped byte — measured, not assumed:
 `git diff --name-only 6cbb5ab HEAD -- public/ src/` is empty, so the deployed
 artefact is byte-identical and there is no release to number. (This paragraph
 said *2.12.3* before that was checked, which is the fourth time in this session a

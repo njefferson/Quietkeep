@@ -19,7 +19,7 @@ import { coverageProof, heldWork } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
-import { PLAIN_MODULE, PLAIN_HIDDEN, PLAIN_CHROME_HIDDEN, plainIsOn } from '../plain.ts';
+import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
@@ -328,21 +328,54 @@ export function mountWork(
    * and a mode for the day when operating the tool is itself hard that leaves
    * the tool's own furniture alone answers the smaller half of the problem.
    *
-   * Restored the same way and for the same reason as the card's own: shown back
-   * unconditionally first, so each element's own rule still decides. `#clock`
-   * and `#capture-paste` both have owners that hide them for other reasons —
-   * the clock is off unless switched on, the paste button is absent where the
-   * browser cannot read a clipboard — and a restore that tried to be clever
-   * about which would be the way one of them ends up permanently on.
+   * It was restored the same way as the card's own — shown back and marked, so
+   * each element's own rule could still decide — because `#clock` and
+   * `#capture-room` both have owners that hide them for other reasons: the clock
+   * is off unless switched on, and the room button is absent where the browser
+   * cannot read a clipboard. Restoring either one on the way out is how a
+   * control ends up on for somebody who turned it off.
+   *
+   * That bookkeeping is gone as of 2.14.0 and the hazard with it, which is the
+   * argument for the mechanism below rather than a detail of it.
    */
-  const chrome = (hide: boolean): void => {
-    for (const sel of PLAIN_CHROME_HIDDEN) {
-      const el = q<HTMLElement>(sel);
-      if (!el) continue;
-      if (hide) { el.dataset.plainHid = '1'; el.hidden = true; }
-      else if (el.dataset.plainHid === '1') { delete el.dataset.plainHid; el.hidden = false; }
-    }
-  };
+  /**
+   * AND IT IS A STYLESHEET NOW, NOT A LOOP OVER `hidden` (2.14.0).
+   *
+   * The three selectors this list held until 2.14.0 were chrome nothing
+   * repaints — a clock, a Contents button, a capture accessory — so setting
+   * `hidden` on them from anywhere in the pass worked. The list is the whole
+   * work surface now, and every section on it has an owner: `replan`, `focus`,
+   * `reentry`, `bother`, `search` and `sort` all paint in `rerenderLists()`,
+   * `paintJump` paints `#to-held` deliberately AFTER `work.refresh()` because it
+   * has to read what everything else did, and `triage.refresh()` is called from
+   * two places that are not in the refresh chain at all.
+   *
+   * So there is no "last word" to hold. Any ordering that works today is one
+   * call site away from silently not working, which is this repo's oldest
+   * defect wearing its newest hat — and the failure is invisible, because the
+   * source still says the surface is stripped.
+   *
+   * A rule cannot be outrun by a repaint. Every owner may set `hidden` as often
+   * as it likes; while the attribute is on the body the elements are not
+   * displayed, and when it comes off each one is exactly where its own rule left
+   * it. There is no bookkeeping to restore, and so no way for the restore to
+   * hand back something that was never there — which the mark-and-restore
+   * version could do, and would have done to `#clock` for anybody who had
+   * switched it off.
+   *
+   * AND THE RULE IS IN `app.css`, NOT INJECTED. The first version of this built
+   * a `<style>` element from the list at mount, so there could be exactly one
+   * copy of the selectors. The app's CSP is `style-src 'self'` and refused it —
+   * correctly, and the browser said so in the console while the mode went on
+   * stripping nothing. A measurement caught it; reading the source would not
+   * have, because the source was right.
+   *
+   * So the block in `app.css` is a GENERATED ARTEFACT of this list, the same as
+   * CHANGELOG.md and the pre-commit hook are artefacts of their sources:
+   * `node tools/plain.mjs --write` writes it and the gate fails on any drift.
+   * A second copy held by a gate is not the same object as a second copy nobody
+   * checks, which is what this list's own history is about.
+   */
 
   const plainRestore = (): void => {
     for (const sel of PLAIN_HIDDEN) {
@@ -363,7 +396,8 @@ export function mountWork(
   };
 
   const paintPlainChrome = (on: boolean): void => {
-    chrome(on);
+    if (on) document.body.dataset.plain = '1';
+    else delete document.body.dataset.plain;
     REGION.classList.toggle('nextup-plain', on);
     const bar = q('#nextup-plain-bar');
     if (bar) bar.hidden = !on;
@@ -892,6 +926,8 @@ export function mountWork(
     // refreshes on open is a count that can be STALE the moment it is read,
     // which is worse than absent. Same `heldWork` set the rows come from.
     // THE LAST WORD, after everything that owns one of these has painted.
+    // The card's half only. The chrome's half is a stylesheet rule now and does
+    // not need a last word — see `mountPlainChromeRule`.
     if (plain) plainStrip();
 
     paintCoverageCount();

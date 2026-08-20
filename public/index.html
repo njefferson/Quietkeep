@@ -25,7 +25,7 @@
      own stated purpose, in the same commit that created it.
      `data-touch-partner` is what `tools/touch-check.mjs` reads: an off-canvas
      route must SAY how a finger gets to the same place, or the gate fails. -->
-<a class="skip" href="#cards" data-touch-partner="#to-held">Skip to what you are holding</a>
+<a id="skip-held" class="skip" href="#cards" data-touch-partner="#to-held">Skip to what you are holding</a>
 
 <!-- THE FRAME STAYS (2.9.0, ADR-0100).
      Everything from here to </div class="frame"> is the app's own chrome: it does
@@ -64,7 +64,7 @@
      because it was the only chrome there was. -->
 <header class="frame">
 <div class="bar">
-  <h1 class="wordmark">Quietkeep</h1>
+  <h1 id="wordmark" class="wordmark">Quietkeep</h1>
   <!-- The clock (1.22.0), off unless it is switched on in Extras. The DIAL is
        decorative — a screen reader gets the sentence in #clock-words, not a
        description of hands — so the svg is aria-hidden and carries no label.
@@ -1504,7 +1504,7 @@
   </div>
 </dialog>
 
-<footer class="foot">
+<footer id="foot" class="foot">
   <p>Local-first. No accounts, no telemetry, no server.
      <a href="https://noahjefferson.pages.dev/accessibility">Accessibility</a></p>
   <!-- The build, ON THE MAIN SCREEN and not only inside the (i) panel.

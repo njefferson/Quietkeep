@@ -31,9 +31,17 @@
 // themselves that the app then acts on, and this is the person operating their
 // own screen. The app still never shortens the offer on its own.
 //
-// **Not a reduced app.** Nothing is deleted, nothing goes silent, every
-// guarantee holds unchanged. It is a smaller VIEW of the same store, and the
-// held list, the search and the ⓘ are all exactly where they were.
+// **Not a reduced app.** Nothing is deleted, nothing goes silent, no guarantee
+// changes, and every route is one tap from here — the ⓘ and `More` are where
+// they always were, and one visible control brings the whole surface back.
+//
+// This paragraph used to end "and the held list, the search and the ⓘ are all
+// exactly where they were", which stopped being true in 2.10.0 when `Contents`
+// was stripped, and is not true of the list or the search now either. It is
+// rewritten rather than deleted because the sentence was doing real work: the
+// mode must not be a smaller app, and the way that promise is kept is that
+// nothing is DESTROYED and nothing is more than a tap away — never that every
+// surface stays rendered on the day the rendering is the problem.
 //
 // PURE, like every projection here.
 
@@ -74,7 +82,13 @@ export const PLAIN_OFFER_CAP = 1;
 export const PLAIN_HIDDEN = [
   '#nextup-why', '#nextup-place', '#nextup-approach', '#nextup-situation',
   '#nextup-bite', '#nextup-bite-form', '#nextup-behind', '#nextup-count',
-  '#nextup-load', '#upkeep', '#nextup-heavy', '#nextup-bite-open',
+  '#nextup-load', '#nextup-heavy', '#nextup-bite-open',
+  // `#upkeep` WAS HERE AND IS NOT A CARD ELEMENT (2.14.0). It is a section of
+  // the work surface, and it sat in this list from the day the mode was built —
+  // where `tools/plain.mjs`'s both-directions check could not see it, because
+  // that check only validates ids beginning `nextup-`. So the one runway section
+  // the mode did strip was the one nothing was checking. It is in
+  // `PLAIN_CHROME_HIDDEN` now, with the rest of the surface.
   // THREE THAT THIS LIST MISSED FOR THREE RELEASES (2.10.0). Each was added to
   // the offer card AFTER this list was written, and nobody came back to it — so
   // the mode built for the worst day left them standing. Measured on the
@@ -141,7 +155,8 @@ export const PLAIN_KEPT = [
 ] as const;
 
 /**
- * The app's own chrome, while the mode is on (2.10.0).
+ * The app's own chrome, while the mode is on (2.10.0, and the whole surface in
+ * 2.14.0).
  *
  * Found on a device, on a screen showing exactly one task: the SCREEN was too
  * busy to begin in, even though the offer on it was a single item. Counted at
@@ -152,13 +167,104 @@ export const PLAIN_KEPT = [
  * A mode for the day when operating the tool is itself hard, that leaves the
  * tool's own furniture untouched, answers the smaller half of the problem.
  *
- * WHAT DOES NOT GO, and the list is short on purpose: capture, because capture
- * relief is unconditional and is the one thing this app promises from every
- * state; the proof line, because it is what makes everything being out of sight
- * safe; and `More`, because a screen with no way to anywhere is a trap.
+ * ## AND THE FIX STOPPED AT THE OFFER (2.14.0)
+ *
+ * That sentence was written about the chrome ABOVE the card, three lines were
+ * added to this list, and nobody looked below. Rendered and counted at 390×844
+ * on the thirteen-item sample, with the mode ON: the card went from nine
+ * controls to five and from 44 words to 2 — and BELOW it stood fourteen
+ * controls and 65 words of standing text, which is exactly what stood there
+ * with the mode off. Not one of them moved.
+ *
+ * Two of those lines are the reason this matters more than a count. "Needs a new
+ * plan — one date has gone by" and "one thing is with someone else" are true,
+ * are correct on an ordinary day, and are the two hardest sentences on the
+ * surface to meet on this one. The mode was hiding a reason line on the card
+ * while printing those underneath it.
+ *
+ * The reasoning is `#nextup-also`'s, at full size: three names beside the offer
+ * were judged to be the pile arriving in miniature, so the held list, the sort
+ * queue and the replan queue beneath it are the pile arriving whole.
+ *
+ * WHAT DOES NOT GO, and the list is short on purpose: capture and its receipt,
+ * because capture relief is unconditional and is the one thing this app promises
+ * from every state; the proof line, because it is what makes everything being
+ * out of sight safe; `More` and the ⓘ, because a screen with no way to anywhere
+ * is a trap; the update strip, because a reader on a stale build has to be able
+ * to learn it (Doctrine §7h); and the session you are already inside, because
+ * that is the one thing, not the pile.
  */
 export const PLAIN_CHROME_HIDDEN = [
+  // Above the offer.
   '#capture-room',    // a capture accessory, and directly in the path to the offer
   '#contents-open',   // navigation. On this day you are not navigating.
   '#clock',           // a clock face, the time, and how much of today is left
+  '#skip-held',       // a route whose destination is stripped below. A bypass link
+                      // to a hidden section is a broken link, and this one has a
+                      // history of being reachable by nobody (hub LESSONS §95).
+  '#bother',          // the worry flow. One at a time, and still a queue of asks.
+  '#reentry',         // "Welcome back", how long you were away, and an amnesty
+                      // offer with two buttons — a greeting nobody arrived for.
+                      // It is not dismissed by being hidden; it is waiting when
+                      // the surface comes back.
+  // Below the offer, all of which stood untouched until 2.14.0.
+  '#to-held',         // a jump. Navigation, by the same rule as Contents.
+  '#triage',          // "Sort what you have put down", a gauge line, and a card
+                      // with verbs on it. Deciding is the thing this mode is
+                      // built to stop asking for.
+  '#triage-donow', '#triage-undo',   // triage's own attachments, and it is gone
+  '#replan',          // "Needs a new plan. One date has gone by."
+  '#comms', '#close', // the focus-exit ramp: two more asks and an after-word
+  '#portfolio',       // "Carrying" — a count and a list
+  '#people',          // "One thing is with someone else."
+  '#review',          // exceptions. True, and not today's problem.
+  '#composed',        // "Chosen for today" — chosen on a different day, by
+                      // somebody with more to spend than this reader has now.
+  '#upkeep',          // the small repeating things that have come round
+  '#menu-open',       // the Menu is demand-free and is still a door to a list
+  '#roles-open',      // the same, sliced by role
+  '#search',          // a route, and the only one to search — which is the cost
+                      // this entry is, stated rather than discovered: on this day
+                      // "where did I put it" is answered by leaving the mode.
+  '#held',            // the complete list of everything you are holding, with the
+                      // tree, the lens, the fold, Contents and Back to the top
+                      // inside it. This is the pile. The gauge above still says
+                      // nothing has gone quiet, and one tap brings it all back.
+] as const;
+
+/**
+ * AND WHAT SURVIVES THE WORST DAY, out loud, for the same reason `PLAIN_KEPT`
+ * exists (2.14.0).
+ *
+ * `PLAIN_HIDDEN` and `PLAIN_KEPT` together account for every element of the
+ * offer card, and `tools/plain.mjs` fails on anything in neither — which is why
+ * the card has not gone stale since. The chrome had no such pair: one
+ * hand-written list of three selectors, checked only for whether the elements
+ * still existed. So a section added to the work surface joined the worst day's
+ * screen silently, and fifteen of them had.
+ *
+ * With both lists the gate walks the rendered header, `<main>` and the footer
+ * and fails on any region in neither — so a new surface answers "does this
+ * survive the worst day" in the commit that creates it, rather than four
+ * releases later when somebody counts.
+ */
+export const PLAIN_CHROME_KEPT = [
+  '#wordmark',        // one word, and the surface has to say what it is. It had
+                      // no id until the accounting asked it this question.
+  '#open-about',      // the ⓘ. Doctrine §7e, and a route out.
+  '#open-more',       // a screen with no way to anywhere is a trap
+  '#capture-form',    // capture relief is unconditional. It is never stripped.
+  '#capture-offer',   // and its receipt — what happened to the thing you just
+                      // put down is the answer to an act the reader just took
+  '#status',          // the live region that says the write landed
+  '#gauge',           // THE PROOF LINE. What makes everything being out of
+                      // sight safe, and the reason stripping the list is not
+                      // the same as hiding it.
+  '#update',          // "a new version is waiting" (Doctrine §7h). Rare, and a
+                      // reader stuck on a stale build has to be able to find out.
+  '#nextup',          // the offer. The whole point.
+  '#focus',           // the session you are already inside: one thing, its acts,
+                      // and a capture line that does not make you stop to use it.
+  '#foot',            // the licence and the accessibility statement. Static, at
+                      // the very bottom, and an obligation rather than furniture.
 ] as const;

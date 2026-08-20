@@ -5361,18 +5361,32 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // had the first. On the day this is for, the offer's own furniture IS the load.
   await tpage.click('#nextup-plain');
   await tpage.waitForSelector('#nextup-plain-bar:not([hidden])');
-  const plainState = await tpage.evaluate(() => ({
-    title: (document.querySelector('#nextup-title')?.textContent || '').length,
-    why: document.querySelector('#nextup-why')?.hidden,
-    place: document.querySelector('#nextup-place')?.hidden,
-    behind: document.querySelector('#nextup-behind')?.hidden,
-    count: document.querySelector('#nextup-count')?.hidden,
-    upkeep: document.querySelector('#upkeep')?.hidden,
-    done: document.querySelector('#nextup-done')?.hidden,
-    skip: document.querySelector('#nextup-skip')?.hidden,
-    out: document.querySelector('#nextup-plain-off')?.hidden,
-    onBtn: document.querySelector('#nextup-plain')?.hidden,
-  }));
+  // OFF THE SCREEN, NOT `hidden === true` (2.14.0). The card's furniture is
+  // still stripped by the attribute; the app's own furniture is a stylesheet
+  // rule now, because the sections below the offer have owners that repaint
+  // them and a rule cannot be outrun by a repaint. `#upkeep` moved between the
+  // two lists in that release and this line went red reading `.hidden` on an
+  // element that was not displayed — which is the gate doing its job, and the
+  // reason to ask the screen rather than the attribute in the first place.
+  const plainState = await tpage.evaluate(() => {
+    const gone = (sel) => {
+      const el = document.querySelector(sel);
+      return el ? !el.checkVisibility() : undefined;
+    };
+    return {
+      title: (document.querySelector('#nextup-title')?.textContent || '').length,
+      why: gone('#nextup-why'), place: gone('#nextup-place'),
+      behind: gone('#nextup-behind'), count: gone('#nextup-count'),
+      upkeep: gone('#upkeep'),
+      done: gone('#nextup-done'), skip: gone('#nextup-skip'),
+      out: gone('#nextup-plain-off'), onBtn: gone('#nextup-plain'),
+      // The work surface below the offer — the release's whole subject.
+      triage: gone('#triage'), replan: gone('#replan'), people: gone('#people'),
+      held: gone('#held'), search: gone('#search'), jump: gone('#to-held'),
+      // And what must never go with it.
+      capture: gone('#capture-form'), proof: gone('#gauge'), more: gone('#open-more'),
+    };
+  });
   is(plainState.title > 0, true, 'there is still a thing to do, and it is named');
   is(plainState.done === false && plainState.skip === false, true,
     'and the two acts survive — a state with nothing to act on is a dead end, not a smaller view');
@@ -5383,6 +5397,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(plainState.out, false, 'the way out is on screen — this is the burnout state, and a trap would be worse than nothing');
   is(plainState.onBtn, true, 'and the way IN is gone, because it is already on');
 
+  // AND THE SURFACE UNDER IT (2.14.0). For four releases the mode stripped the
+  // card and left fourteen controls and 65 words standing underneath — the sort
+  // queue, "one date has gone by", "one thing is with someone else", and the
+  // whole held list. Counted at 390px with the mode ON, which is the only way
+  // anybody was ever going to find out.
+  is([plainState.triage, plainState.replan, plainState.people, plainState.held,
+    plainState.search, plainState.jump].every(g => g === true), true,
+  `and so is the surface under it: triage ${plainState.triage}, replan ${plainState.replan}, `
+    + `people ${plainState.people}, held ${plainState.held}, search ${plainState.search}, `
+    + `jump ${plainState.jump}`);
+  // THE THREE THAT NEVER GO. Capture relief is unconditional, the proof line is
+  // what makes everything being out of sight safe, and a screen with no way to
+  // anywhere is a trap.
+  is([plainState.capture, plainState.proof, plainState.more].every(g => g === false), true,
+    `capture, the proof line and More are still there: capture ${plainState.capture}, `
+    + `proof ${plainState.proof}, More ${plainState.more}`);
+
   // IT SURVIVES A RELOAD. A state you must re-enter every time the app reloads
   // is one more thing to operate on the day you can least afford it.
   await tpage.reload();
@@ -5391,16 +5422,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'still on after a full reload');
   is(await tpage.locator('#nextup-why').isHidden(), true, 'and still stripped');
 
-  // AND NOTHING WAS HIDDEN FROM THE STORE. The held list is untouched: this is a
-  // smaller view of the same store, not a smaller app.
+  // AND NOTHING WAS TAKEN FROM THE STORE. The list is off the screen from
+  // 2.14.0 and every card of it is still rendered, one attribute away — which is
+  // the whole difference between a smaller view and a smaller app. This used to
+  // read "still on the list below", which was true when the mode reached no
+  // further than the card and is not the claim being made now.
   is(await tpage.locator('#cards .card').count() > 1, true,
-    'everything you are holding is still on the list below');
+    'every card is still built and held — the view shrank, the store did not');
 
   await tpage.click('#nextup-plain-off');
   await tpage.waitForFunction(() =>
     document.querySelector('#nextup-plain-bar')?.hidden === true);
   is(await tpage.locator('#nextup-why').isHidden(), false,
     'and leaving it brings everything back in one act');
+  is(await tpage.evaluate(() => ['#held', '#triage', '#search', '#replan']
+    .map(s => document.querySelector(s))
+    .filter(Boolean).some(el => el.checkVisibility())), true,
+  'including the surface below it, which is on screen again');
 
   // --- THE MOMENT AFTER (1.35.0) --------------------------------------------
   //
