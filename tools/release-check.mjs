@@ -35,8 +35,9 @@
 // would make the common case red for no reason, which is how a gate teaches
 // people to ignore it.
 
-import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { readFileSync, rmSync, mkdirSync, existsSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { execFileSync, execSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CURRENT } from '../src/ui/changelog.ts';
@@ -97,9 +98,77 @@ console.log(`  introduced in: ${git('log', '-1', '--format=%h %s', introduced)}\
 const moved = git('diff', '--name-only', introduced, '--', ...SURFACE)
   .split('\n').filter(Boolean).filter((f) => !EXEMPT.has(f));
 
-if (moved.length === 0) {
+// A CHANGED SOURCE FILE IS NOT A CHANGED BUNDLE, and this gate used to treat
+// them as the same thing.
+//
+// `src/` is in SURFACE because all of it is bundled into the one `app.js` a
+// reader receives. That is right about WHY it matters and wrong about WHAT to
+// measure: a comment, a reflow or a renamed local changes the file and reaches
+// nobody. Two comment edits — a scrub removing quoted speech — failed this gate
+// on a production promote whose built `public/app.js` was byte-identical, hash
+// for hash, to the release it was said to be newer than.
+//
+// So for the `src/` portion the bundle itself is built from both trees and
+// compared. The static files stay an exact name diff: those ARE served, byte for
+// byte, with no build in between.
+//
+// This is `size:check`'s lesson arriving here — it measures the BUILT app for
+// the same reason, and its own comment says a plant in `src/` without a rebuild
+// never reaches it. Measuring the built output is the gate being right.
+//
+// A BUILD THAT FAILS IS A FAILURE, never a pass. If the old tree cannot be
+// built, this gate cannot answer its question, and answering anyway is the false
+// receipt the file's header is about.
+const TMP = '.release-check-build';
+const bundleHash = (entryPrefix, outfile) => {
+  execSync(
+    `npx --no-install esbuild ${entryPrefix}src/ui/entry.ts --bundle --format=esm `
+    + `--target=es2022 --outfile=${outfile} --log-level=error`,
+    { cwd: ROOT, stdio: 'pipe' },
+  );
+  // NORMALISE THE MODULE BANNERS FIRST. esbuild writes `// <path>` above each
+  // module, so a tree built from a subdirectory differs from the same tree built
+  // in place — in those comments and nothing else. Hashing without this compares
+  // where the files were, not what they say, and reports every source change as
+  // a bundle change, which is the false positive this whole block exists to
+  // remove. Found by diffing the two bundles instead of trusting the hashes.
+  const text = readFileSync(join(ROOT, outfile), 'utf8').split(`${TMP}/`).join('');
+  return createHash('sha256').update(text).digest('hex');
+};
+
+const srcMoved = moved.filter((f) => f.startsWith('src/'));
+const staticMoved = moved.filter((f) => !f.startsWith('src/'));
+let srcReachesReader = srcMoved.length > 0;
+
+if (srcMoved.length > 0) {
+  try {
+    rmSync(join(ROOT, TMP), { recursive: true, force: true });
+    mkdirSync(join(ROOT, TMP), { recursive: true });
+    execSync(`git archive ${introduced} src | tar -x -C ${TMP}`, { cwd: ROOT, stdio: 'pipe' });
+    const then = bundleHash(`${TMP}/`, `${TMP}/then.js`);
+    const now = bundleHash('', `${TMP}/now.js`);
+    srcReachesReader = then !== now;
+    if (!srcReachesReader) {
+      ok(`${srcMoved.length} source file(s) changed but the BUILT bundle is byte-identical `
+        + `(sha256 ${now.slice(0, 12)}) — no reader receives a different byte`);
+    }
+  } catch (err) {
+    fail(`could not build both trees to compare bundles: ${String(err.message).split('\n')[0]}`);
+    console.log('        This gate cannot answer its question without that comparison,');
+    console.log('        and a pass here would be a receipt for something never checked.');
+    rmSync(join(ROOT, TMP), { recursive: true, force: true });
+    process.exit(1);
+  } finally {
+    rmSync(join(ROOT, TMP), { recursive: true, force: true });
+  }
+}
+
+const reallyMoved = [...staticMoved, ...(srcReachesReader ? srcMoved : [])];
+
+if (reallyMoved.length === 0) {
   ok('no shipped file has changed since the triplet was cut');
 } else {
+  const moved = reallyMoved;
   fail(`${moved.length} shipped file(s) changed since ${triplet} was cut, so the triplet is stale:`);
   for (const f of moved) console.log(`          ${f}`);
   console.log('');

@@ -18,3 +18,6 @@ public/app.js.map
 # DAMAGE it records shows in `git status` on its own, which is the signal worth
 # seeing.
 .gate-audit-plant.json
+
+# release-check builds both trees to compare bundles; the directory is transient.
+.release-check-build/
