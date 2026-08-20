@@ -3320,10 +3320,10 @@ and the register classifies each one.
   routes the debt.
 
 - **2026-08-04 — docs/horizon-models.md: what exists for working at different
-  horizons, surveyed against the laws.** It was asked: *"What models exist for
-  different horizons? I know of the Army's Lines of Effort… those kinds of
-  views are NEVER offered in planning software. Each horizon is briefly
-  discussed by David Allen, but not in a way that leads to actual action."*
+  horizons, surveyed against the laws.** The question: **what models exist for
+  working at different horizons.** Lines of effort were named as a known example,
+  with the observation that **those kinds of view are never offered in planning
+  software**, and that the horizons get discussed without leading to action.
   Eighteen models surveyed — military doctrine, strategy deployment, OKRs,
   PARA and ND-community practice among them — each with its origin, its
   mechanism, why it does or does not lead to action, why planning software
@@ -5048,10 +5048,10 @@ and the register classifies each one.
 - **2026-08-01 (his second round of screenshots)** — **1.7.2** — the owner kept
   reading the panel and found five more, including two that had never been
   true anywhere.
-  · **The panel folds** ([ADR-0055](docs/adr/0055-the-panel-folds.md)): his
-  words — nothing separates the major sections, the panel carries too much,
-  "I think the section should collapse as well now, or we need a separate
-  settings". The fold is the smaller of his two offers: Help / Your data /
+  · **The panel folds** ([ADR-0055](docs/adr/0055-the-panel-folds.md)): nothing
+  separated the major sections and the panel carried too much, so **the sections
+  collapse** — the alternative on the table being a separate settings screen.
+  The fold is the smaller of the two options: Help / Your data /
   Extras / About behind real disclosure headers, closed by default, open set
   remembered per device (kv), the opening and the way out never folded, and
   the walkthrough's handoff unfolds Your data so its promise stays kept.
@@ -5818,9 +5818,9 @@ and the register classifies each one.
   on the store's unique-id index.
   · **Stated limit, not hidden**: edit the same field on both devices before
   exchanging and last-writer-wins picks one silently.
-  · **Not assumed for anyone else.** The owner has cellular on both devices and said
-  plainly *"you can't assume everyone will"* — so nothing here touches the
-  network, and the app is complete without ever opening this.
+  · **Not assumed for anyone else.** Connectivity on every device a person owns
+  cannot be assumed, so nothing here touches the network and the app is complete
+  without ever opening this.
   · Verified in **two real browser contexts** with separate IndexedDB stores:
   each captured its own items, one took in the other's copy, both sets survived,
   and a second exchange took nothing.

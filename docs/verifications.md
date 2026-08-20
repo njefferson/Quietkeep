@@ -1391,7 +1391,7 @@ against this row:**
 - **Say whether a worker is waiting**, per §7h.4 — `registration.waiting != null`
   and whether one controls the page.
 
-**Re-tested 2026-08-03, after It was said "pages.dev has been allowed now" —
+**Re-tested 2026-08-03, after word that pages.dev had been allowed —
 STILL DENIED from this session, and the distinction matters.** Both hosts were
 tried and both were refused at the gateway, logged by the proxy itself:
 
