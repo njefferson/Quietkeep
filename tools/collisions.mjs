@@ -129,6 +129,24 @@ for (const m of doc.matchAll(/^### (\d+)\./gm)) {
   const body = doc.slice(m.index, doc.indexOf('\n### ', m.index + 1) + 1 || undefined);
   if (/\*\*SINCE WRITTEN\*\* — \*\*SHIPPED/.test(body)) shipped.add(m[1]);
 }
+// AND WHICH RELEASE, not only whether (2026-08-20). The boolean above went green
+// while the list said 1.27.0 and the entry said 2.13.0 about the same proposal —
+// both SHIPPED, fourteen days and a different surface apart. A contradiction
+// check that compares one bit of a two-part fact reports agreement about the
+// half it looked at, and the description of it says "agrees about what shipped".
+//
+// The list's triplet must appear SOMEWHERE in the entry it points at. Not in the
+// routing bullet specifically: entry 2's proposal is refused while a different
+// shape of it shipped, which the entry explains at length and which a stricter
+// rule would call a contradiction. This is deliberately the weak version — it
+// catches a release named on one side of the file and nowhere on the other,
+// which is the whole of what went wrong.
+const bodyOf = (n) => {
+  const m = new RegExp(`^### ${n}\\.`, 'm').exec(doc);
+  if (!m) return '';
+  const next = doc.indexOf('\n### ', m.index + 1);
+  return doc.slice(m.index, next === -1 ? undefined : next);
+};
 let disagreed = 0;
 for (const m of top5.matchAll(/\(entry (\d+)\)\*\* — \*\*([^*]+)\*\*/g)) {
   const [, entry, claim] = m;
@@ -139,9 +157,16 @@ for (const m of top5.matchAll(/\(entry (\d+)\)\*\* — \*\*([^*]+)\*\*/g)) {
       + `(list: ${listSaysShipped ? 'SHIPPED' : 'not shipped'}, `
       + `entry: ${entrySaysShipped ? 'SHIPPED' : 'not shipped'})`);
     disagreed++;
+    continue;
+  }
+  const triplet = /\b(\d+\.\d+\.\d+)\b/.exec(claim)?.[1];
+  if (listSaysShipped && triplet && !bodyOf(entry).includes(triplet)) {
+    fail(`the TOP 5 list says entry ${entry} shipped in ${triplet} and the entry `
+      + `never mentions ${triplet} — one of the two is naming the wrong release`);
+    disagreed++;
   }
 }
-if (!disagreed) ok('the TOP 5 list agrees with every entry it points at about what shipped');
+if (!disagreed) ok('the TOP 5 list agrees with every entry it points at about what shipped, and in which release');
 
 console.log(failed
   ? `\n${failed} failure(s). The catalogue is claiming more than it can back.\n`
