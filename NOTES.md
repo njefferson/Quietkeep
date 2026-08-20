@@ -436,21 +436,32 @@ decided by a session.**
     question a session cannot answer from taste is not automatically the
     owner's; check whether the research already answered it.**
   - **HALF-ANSWERED 2026-08-17 by measurement rather than by asking (2.5.0,
-    ADR-0095).** The ranking reading is established: every tier of `nextup` is
-    temporal and the only tie-break inside a tier is pressure then creation
-    order, so the app had no notion of what anything is for. Law 4's downward
-    half is now built and both readings are served by it — the card says what it
-    serves, so the reasoning is checkable. **What remains is a policy decision
-    and it is the owner's:** whether serving a horizon should outrank serving
-    nothing in the offer's order. A session must not make that call — a loose
-    capture is very often the most important thing in the store.
-  - Status: **asked, not answered — and NOBODY PUT THE QUESTION TO HIM.**
-    That is the defect, not the caution. "Do not build past this on a guess" is
-    right and it is only half a decision: the other half is asking which reading
-    it is, and thirteen days passed with the answer one sentence away from
-    somebody who knew it. A question parked pending information nobody has gone
-    to get is not open, it is abandoned — the same shape as Q-10's close and
-    Q-13's deferral (hub LESSONS §96, §97).
+    ADR-0095), and SUPERSEDED by the close above two hours later.** Kept for the
+    measurement, which stands: every tier of `nextup` is temporal and the only
+    tie-break inside a tier is pressure then creation order, so the app had no
+    notion of what anything is for. Law 4's downward half is now built and both
+    readings are served by it. **Its closing claim did not stand** — that what
+    remained was a policy decision and the owner's, on whether serving a horizon
+    should outrank serving nothing. That is precisely the importance rank entry 5
+    refuses in terms, and the refusal was already written when this was typed.
+  - Status: **CLOSED 2026-08-17, and this line said otherwise until 2026-08-19.**
+    The close is the second bullet above; this line kept saying *asked, not
+    answered — and NOBODY PUT THE QUESTION TO HIM* for two days after the
+    question stopped being open. **Three files already carried the answer** —
+    `docs/nd-collisions.md` entry 5 refuses an importance rank in terms,
+    [ADR-0097](docs/adr/0097-the-offer-reads-interest.md) records the refusal as
+    the half about to be handed over as a policy question, and `src/nextup.ts`
+    says in a comment that *an importance rank is the wrong instrument* and that
+    Q-11's ranking reading is established by measurement rather than by asking.
+    Q-11 also contains its own argument against the alternative: a loose capture
+    is very often the most important thing in the store.
+  - **AND THE ORIGINAL STATUS LINE WAS RIGHT ABOUT THE WRONG THING.** It said the
+    defect was that nobody put the question to him, citing hub LESSONS §96 and
+    §97 — a question parked pending information nobody went to get. The
+    information was never outside the repo. **A question can be abandoned in the
+    other direction too: answered everywhere except in the file that tracks it**,
+    where the one line a person scans still says it is waiting on somebody. Four
+    places, three saying closed and the loudest saying open.
 - **Q-12 · `Not this` records nothing, deliberately. Is that trade still right?**
   Declining a suggestion writes no event, so the app can never keep score — which
   is correct for this audience and is why the rule exists. It also means the app
@@ -512,7 +523,7 @@ decided by a session.**
   - **It was nearly lost a third time.** ADR-0092's first draft stated that contexts appeared nowhere in the record. That came from searching for `context`, `@home` and `@work` — the vocabulary of the feature — while this entry is written in the vocabulary of the question: vault, lens, home, work. **The search that missed it is the same translation that lost it.** Corrected on being asked directly whether home vs work had ever been raised. (Hub LESSONS §96.)
 - **Q-06**
   - Question: The astro app's naming was inconsistent — repo and URL said `clear-horizons`, the hub displayed **"Astro Planner"**, and the name The choice was appeared nowhere a visitor saw.
-  - Answer: **"Astro Planner will be named Clear Horizons."** the owner, 2026-07-29. The app itself already used the name throughout (title, og tags, manifest); only the hub's two entries were stale, and both are fixed (`noahjefferson` @ `004fddd`). Nothing in the `clear-horizons` repo needed changing.
+  - Answer: **The astro app is named Clear Horizons**, settled 2026-07-29. The app itself already used the name throughout (title, og tags, manifest); only the hub's two entries were stale, and both are fixed (`noahjefferson` @ `004fddd`). Nothing in the `clear-horizons` repo needed changing.
 - **Q-07**
   - Question: The hub undersold the astro app — the tile read *"Clear-sky & Seestar target windows"* and never mentioned recording your horizon, which the owner says is the thing no other astro app does.
   - Answer: **Closed with Q-06.** The tile now reads *"Plan your night against your real treeline, not a flat 0°"*, taken from the app's own README rather than invented.
