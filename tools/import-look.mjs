@@ -77,7 +77,13 @@ for (let round = 0; round < 6; round += 1) {
     lines.push(`${area}${round ? ` ${round + 1}` : ''}:`);
     for (const item of items) {
       for (let k = 0; k < 4; k += 1) {
-        const title = item + SUFFIX[Math.floor(rnd() * SUFFIX.length)];
+        // UNIQUE, and the number is the point rather than decoration. Titles
+        // collided in the first version — three rows called the same thing —
+        // and the sustain check below flagged a finished item "returning" when
+        // it had simply offered a different row with the same name. The offer
+        // card carries no node id, so the title is the only handle this tool
+        // has, and a handle that cannot tell two things apart is not one.
+        const title = `${item}${SUFFIX[Math.floor(rnd() * SUFFIX.length)]} (${actions + 1})`;
         // Most carry a date, and every one of them has already gone — the shape
         // the record establishes for a real export.
         if (rnd() < 0.62) {
@@ -228,6 +234,64 @@ if (need) {
   await shot('02-the-whole-runway');
   await page.setViewportSize({ width: 390, height: 844 });
 }
+
+// ——— DOES IT SUSTAIN? ———
+// One good first screen is not a working app. The offer has to keep handing
+// things over as they are dealt with, and a pile of 882 is the case where a
+// per-round cost or an off-by-one would show. Ten rounds, alternating the two
+// acts, reporting what came next each time.
+console.log('TEN ROUNDS, ALTERNATING DONE AND NOT THIS\n');
+const seen = [];
+for (let i = 0; i < 10; i += 1) {
+  const before = await page.textContent('#nextup-title').catch(() => null);
+  if (!before) { console.log(`  round ${i + 1}: nothing offered — the flow stopped here`); break; }
+  const act = i % 2 === 0 ? '#nextup-done' : '#nextup-skip';
+  const reachable = await page.evaluate((sel) => {
+    const el = document.querySelector(sel);
+    return Boolean(el && el.checkVisibility());
+  }, act);
+  if (!reachable) { console.log(`  round ${i + 1}: ${act} is not on screen — the flow stopped here`); break; }
+  const t0 = Date.now();
+  await page.tap(act);
+  await page.waitForTimeout(700);
+  // READ WHAT IS ON SCREEN, not one element that may be hidden. A blank title
+  // is not a stopped flow: pressing Done can land the settled state, which is
+  // a different screen and a correct one.
+  const state = await page.evaluate(() => {
+    const vis = (x) => { const e = document.querySelector(x); return Boolean(e && e.checkVisibility()); };
+    const t = (x) => (vis(x) ? document.querySelector(x).textContent.trim().replace(/\s+/g, ' ') : null);
+    return {
+      title: t('#nextup-title'), why: t('#nextup-why'),
+      // BY ID, NOT BY TITLE. A repeated title is not a repeated item — this
+      // fixture generates duplicate names on purpose, and the record already
+      // holds a case where two real items shared one. Only the id can tell a
+      // defect (a finished thing coming back) from two things called the same.
+      id: document.querySelector('#nextup-title')?.dataset?.node
+        ?? document.querySelector('#nextup-title')?.getAttribute('data-node') ?? null,
+      settled: vis('#nextup-settled'), settledWhat: t('#nextup-settled-what'),
+      resume: vis('#nextup-resume'), heading: t('#nextup-heading'),
+    };
+  });
+  if (state.settled) {
+    console.log(`  ${String(i + 1).padStart(2)}  ${act === '#nextup-done' ? 'Done    ' : 'Not this'}  ->  `
+      + `SETTLED: ${(state.settledWhat ?? '').slice(0, 60)}`);
+    if (state.resume) { await page.tap('#nextup-resume'); await page.waitForTimeout(600); }
+    seen.push(`settled-${i}`);
+    continue;
+  }
+  const after = state.title;
+  const why = state.why;
+  seen.push(state.id ?? after);
+  console.log(`  ${String(i + 1).padStart(2)}  ${act === '#nextup-done' ? 'Done    ' : 'Not this'}  ->  `
+    + `${(after ?? '(nothing)').slice(0, 46).padEnd(46)}  ${(why ?? '').slice(0, 30)}  ${Date.now() - t0}ms`);
+}
+const distinct = new Set(seen.filter(Boolean)).size;
+console.log(`\n  ${distinct} distinct things offered across ${seen.length} rounds`
+  + (distinct === seen.length
+    ? ' — no repeats, and the fixture titles are unique so that means what it says'
+    : ' — SOMETHING REPEATED, and with unique fixture titles that is a real one'));
+const left = await page.evaluate(() => document.querySelector('#nextup-why')?.textContent ?? '');
+console.log(`  the reason line still reads: ${left.trim().slice(0, 70)}\n`);
 
 // ——— AND AFTER THE BOUNDARY THOSE CLOCKS CROSS ———
 // The cure sets one review clock per top-level project, at the end of the local
