@@ -248,6 +248,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run vocabulary
 
+      - name: The app has no pronoun for anybody
+        if: ${{ !cancelled() }}
+        run: npm run voice:pronouns
+
       # The closed list, checked against the DOCUMENT that governs it (1.9.1).
       # `isKnownKind` has always refused an unlisted kind at runtime, and
       # nothing ever asked whether the code's list and
