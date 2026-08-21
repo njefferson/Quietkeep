@@ -285,9 +285,37 @@ situations are the acceptance test — walked end to end, not asserted.
   **Phase 0 is complete in this repo.** What remains of it is in the hub.
 - **The hub's backlog is NOT done** — around 146 sites remain in its
   `LESSONS.md`. That file alone; everything else in the hub is clear.
-- **Phase 1 — the app can be entered.** NOT STARTED, and it is next. Its first
-  move is a rendering-and-reading job, not a build: drive a real import through
-  the app, render it, and walk the fourteen situations against that store.
+- **Phase 1 — the app can be entered.** STARTED. The rendering-and-reading step
+  is done and it CORRECTED THE PHASE'S OWN DESIGN — see below. `npm run
+  import:look` reproduces it. Not yet built: anything.
+
+### What the import actually showed, 2026-08-21
+
+**840 actions imported, and the offer said "Nothing is asking today."**
+
+Every part of that is working as designed. `src/taskpaper.ts` correctly refuses
+to turn 518 already-passed dates into 518 fresh demands, so nothing carries a
+clock, so nothing is asking. **Correct, and unusable**: an app whose promise is
+*one thing, chosen for you* held 882 things and offered none of them. The only
+route left was *Go to what you are holding*, which is the wall a person came
+here to escape.
+
+The reason line read *"882 things are here without a date. They are waiting on
+you to decide, not the other way round."* — a demand to sort 882 things,
+delivered at the moment of arrival. Collision 8 and collision 1 together, on the
+first screen.
+
+The runway was **1.3 screens and 19 controls**, so the screen was not busy. It
+was empty in the one place that matters. The gauge read *0 ready now* while
+holding 882 things: true, and the least useful true sentence the app could
+produce.
+
+**This corrects the phase's design.** Asking for a situational fact *in the flow*
+is useless when the flow never starts — the situational machinery being empty is
+downstream of this, not the cause of it. **The first thing an imported store
+needs is for the offer to have something honest to say**, without inventing the
+urgency the import was right to refuse. Contexts and roles come after that, not
+before.
 - **Last full Spine seen green:** `2ff380d` on `staging`; `74dca96` on `main`
   carrying 2.14.1 to production.
 - **Waiting on the owner:** the on-device pass, whenever convenient. Nothing is
