@@ -92,6 +92,11 @@ export function deserialiseState(raw: unknown): State {
       heat: n.heat ?? null,
       route: n.route ?? null,
       captured: n.captured ?? true,
+      // `?? false` and NOT `?? true`, which is the opposite of `captured`
+      // above it and deliberately so: a snapshot written before this field
+      // existed cannot have held an imported row, because nothing marked one.
+      // Defaulting it true would tell every old item it came from somewhere else.
+      arrived: n.arrived ?? false,
       resumeSpent: n.resumeSpent ?? false,
       resumeFor: n.resumeFor ?? null,
       resumeCue: n.resumeCue ?? null,

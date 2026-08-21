@@ -125,7 +125,11 @@ export interface Stamp {
 type Ev<K extends string, P> = Stamp & { kind: K; node: NodeId | null; payload: P };
 
 // --- A · node lifecycle -----------------------------------------------------
-export type NodeCreated      = Ev<'node.created',      { nodeKind: NodeKind; title: string; parent?: NodeId; provenance?: Provenance }>;
+/** `arrived` marks a row that came in from ANOTHER PLANNER rather than being
+ *  written here. It latches `captured`, which is what makes something an inbox
+ *  item — so an import lands in the inbox instead of nowhere. Additive and
+ *  optional: every existing log folds identically without it (law 9). */
+export type NodeCreated      = Ev<'node.created',      { nodeKind: NodeKind; title: string; parent?: NodeId; provenance?: Provenance; arrived?: true }>;
 export type NodeKindChanged  = Ev<'node.kind.changed', { from: NodeKind; to: NodeKind }>;
 export type NodeFieldSet     = Ev<'node.field.set',    { field: string; value: unknown }>;
 export type NodeRenamed      = Ev<'node.renamed',      { title: string }>;

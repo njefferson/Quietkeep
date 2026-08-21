@@ -275,79 +275,53 @@ situations are the acceptance test — walked end to end, not asserted.
 
 **Read this block first.** It is updated in the same commit as the work.
 
-- **Phase 0 — the ground.** DONE here. Landed: the third-person gate; this
-  file; the status page; this repo's entire third-person backlog (gate reports
-  zero); 2.14.2; the voice gate and ADR-0106; the four research entries (23-26);
-  the trademark ban given teeth in the `vocabulary` gate; `tools/surfaces.mjs`
-  and the `#upkeep` surface it found unmeasured; 2.14.3.
-  the `### Open` heading corrected and `questions.mjs` given a rule that refuses
-  a closed question filed under it; decision 6 closed on the evidence.
-  **Phase 0 is complete in this repo.** What remains of it is in the hub.
-- **The hub's backlog is NOT done** — around 146 sites remain in its
-  `LESSONS.md`. That file alone; everything else in the hub is clear.
-- **Phase 1 — the app can be entered.** STARTED. The rendering-and-reading step
-  is done and it CORRECTED THE PHASE'S OWN DESIGN — see below. `npm run
-  import:look` reproduces it. Not yet built: anything.
+- **Phase 0 — the ground.** DONE.
+- **Phase 1 — the app can be entered.** The core defect is FIXED in 2.15.0. An
+  import now lands in the inbox and the offer hands it over one at a time,
+  saying *this came in with your import*. Verified by `npm run import:look`: the
+  same 840-item fixture that produced "nothing is asking today" now produces a
+  named thing with a warrant, a triage door, 25 controls, 1.7 screens.
+  Not done in this phase: asking for a situational fact in the flow. That was
+  the original design and it is downstream of this — it can wait for a real
+  on-device pass rather than being guessed at.
+- Phase 2 through 8: not started.
+- **Last full Spine seen green:** `d82743a` on `staging`, all 41 steps.
+- **Waiting on the owner:** the on-device pass. Nothing is blocked on it.
 
-### What the import actually showed, 2026-08-21
+### What the import work established, and what it cost to get right
 
-**840 actions imported, and the offer said "Nothing is asking today."**
+**Two diagnoses were wrong before the right one.** First: "the offer is empty."
+Second, from source: "all 882 rows sit on one end-of-day timer and arrive
+together." Both were plausible and both were wrong. The log holds **42**
+clock.set events, one per project; the 840 actions are covered by law 1 clause
+(d) and never got clocks. And the next morning is IDENTICAL — the pile does not
+arrive at once, it does not arrive at all.
 
-Every part of that is working as designed. `src/taskpaper.ts` correctly refuses
-to turn 518 already-passed dates into 518 fresh demands, so nothing carries a
-clock, so nothing is asking. **Correct, and unusable**: an app whose promise is
-*one thing, chosen for you* held 882 things and offered none of them. The only
-route left was *Go to what you are holding*, which is the wall a person came
-here to escape.
+**The real defect:** `captured` is the latch that makes something an inbox item,
+and only a capture ever set it. An import reached no tier of the offer at all.
 
-The reason line read *"882 things are here without a date. They are waiting on
-you to decide, not the other way round."* — a demand to sort 882 things,
-delivered at the moment of arrival. Collision 8 and collision 1 together, on the
-first screen.
+**Two tests caught what reading did not.** Marking every imported row took rows
+with genuine FUTURE dates off the calendar — an unsorted inbox item is not a
+dated commitment, and only dateless rows belong in the inbox. And the
+three-place rule (clone, deserialise, old-snapshot default) named the field I
+had handled in one place of three.
 
-The runway was **1.3 screens and 19 controls**, so the screen was not busy. It
-was empty in the one place that matters. The gauge read *0 ready now* while
-holding 882 things: true, and the least useful true sentence the app could
-produce.
-
-**This corrects the phase's design.** Asking for a situational fact *in the flow*
-is useless when the flow never starts — the situational machinery being empty is
-downstream of this, not the cause of it. **The first thing an imported store
-needs is for the offer to have something honest to say**, without inventing the
-urgency the import was right to refuse. Contexts and roles come after that, not
-before.
-- **Last full Spine seen green:** `2ff380d` on `staging`; `74dca96` on `main`
-  carrying 2.14.1 to production.
-- **Waiting on the owner:** the on-device pass, whenever convenient. Nothing is
-  blocked on it.
-
-### What a fresh session should know about this run
+### Standing hazards for a fresh session
 
 **Compare every clone against its remote before writing.** The container rewound
-one clone's `.git` twice while leaving the other current, and it also rolled the
-scratchpad back, destroying four research documents that existed nowhere else.
-**Agent output lands in the repo in the same turn it is produced** — `/tmp` is
-not durable here, which is the same lesson as the V2 plan living in a session
-file, one layer out.
+a clone FOUR times in one session, and once rewound the scratchpad too,
+destroying four research documents. **Agent output lands in the repo in the same
+turn it is produced.** A subagent can also be rigorous, verify twice, and still
+report a false finding because its filesystem moved under it — one did, claiming
+a catalogue entry did not exist.
 
 **Renaming the speaker does not fix an attribution.** Swapping a pronoun for the
-role noun leaves the quotation standing. Three times, both repos, caught by
-`privacy-check.mjs` every time and by reading none.
+role noun leaves the quotation standing. Three times, caught by gate every time.
 
-**A plant that does not fire has tested nothing.** Twice in one day: a plant
-landed inside an HTML comment that merely *mentions* `<main>` in backticks, and
-a gate's own first draft counted a shared utility class as coverage so all
-seventeen surfaces looked measured. Both gates were right and both tests were
-empty. Plant, then check the plant fired.
+**A plant that does not fire has tested nothing.** Twice: one landed inside an
+HTML comment that merely mentions `<main>` in backticks; a gate's first draft
+counted a shared utility class as coverage. Plant, then check the plant fired.
 
 **One marker, two meanings, is a trap.** `privacy-gate:patterns-begin` means
-"this file mirrors the hub's disclosure patterns" to `privacy-mirror-check.mjs`
-and "skip this region" to `third-person-check.mjs`. Using it for the second
-turned the first red. Exemptions go in `.third-person-allow`.
-
-**`#upkeep` was unmeasured because it was unreachable, not because a list was
-short.** The a11y walk builds its own store by capturing items and never had an
-upkeep in it; the sample's one upkeep was comfortable by design. Seeding
-IndexedDB directly does NOT work — the app does not re-fold an appended event on
-reload. The fix was a second, ready fixture item plus an audit at the very end of
-each theme, where nothing downstream can be perturbed.
+"this file mirrors the hub's patterns" to one gate and "skip this region" to
+another. Exemptions go in `.third-person-allow`.

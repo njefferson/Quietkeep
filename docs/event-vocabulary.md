@@ -124,7 +124,12 @@ inspect and either complete or refuse. See [ADR-0011](adr/0011-no-silent-nodes-g
 ### A · Node lifecycle
 
 - **`node.created`**
-  - Payload: `nodeKind, title, parent?, provenance`
+  - Payload: `nodeKind, title, parent?, provenance, arrived?`
+  - `arrived` marks a row that came in from another planner carrying nothing to
+    go on — no date the app kept, no place in this app's vocabulary. It latches
+    `captured`, which is what makes something an inbox item, so an import lands
+    in the inbox and the offer can hand it over one at a time. Optional and
+    additive: every log written before it folds identically without it (law 9).
   - Silent risk: **yes — gated**
 - **`node.kind.changed`**
   - Payload: `from, to`

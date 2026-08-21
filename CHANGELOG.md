@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.15.0 — CAPABILITY
+
+*2026-08-21*
+
+- **Bring your work in from another planner and the app now has something to offer you.** Before this it did not. An import of a few hundred things left *Next up* saying "nothing is asking today" — that morning, and the next one, and every one after — while the list underneath held every one of them. Everything about that was working as designed and the result was an app you could not start using.
+- **What was wrong.** Things you write here go into an inbox, and the offer hands them back to you one at a time until you have said what they are. Things that arrive from somewhere else never joined that inbox, so nothing ever picked them up. They were held, they were safe, they were findable by searching — and they were never once handed to you.
+- **Now an import arrives in the inbox, and the offer says where it came from.** One thing at a time, in the order it arrived, ranked below anything with a real date on it. The card says *this came in with your import* rather than *you put this down*, because you did not.
+- **Nothing invents a date.** A date that had already gone by is still dropped rather than turned into something asking today — that was right and it has not changed. A date still ahead of you is still kept, and those things are not treated as unsorted, because you already said when.
+- **Nothing else moved.** On a store you built here, the offer behaves exactly as it did.
+
 ## 2.14.3 — ITERATION
 
 *2026-08-21*

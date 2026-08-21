@@ -169,6 +169,9 @@ export interface NodeState {
    *  NOT "any unrouted node", so a person/anchor/bother/promoted-Menu node never
    *  pollutes triage. A latch: set true at genesis, never cleared. */
   captured: boolean;
+  /** Came in from another planner rather than being written here. A latch,
+   *  like `captured`, and the reason the offer can say so honestly. */
+  arrived: boolean;
   /** A resume card that has been picked up, or that went cold. Either way the
    *  thread is no longer waiting for you, so it stops being offered. A latch. */
   resumeSpent: boolean;
@@ -648,7 +651,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       id, vault, kind: 'action', title: '', parent: null,
       trashed: false, mergedInto: null, clocks: {}, onMenu: null,
       lastDone: null, comfortWindowDays: null, intervalDays: null,
-      heat: null, route: null, sourceTags: [], captured: false, resumeSpent: false, contexts: [], roles: [],
+      heat: null, route: null, sourceTags: [], captured: false, arrived: false, resumeSpent: false, contexts: [], roles: [],
       resumeFor: null, resumeCue: null, interruptedFocus: null, interruptedAt: null,
       people: [], waitingOn: null, waitingFor: null, waitingSince: null, waitingOutcome: null,
       role: null, opr: null, saveTarget: null, saveSaved: null,
@@ -800,6 +803,17 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         if (e.payload.parent !== undefined && wins(n.stamps['parent'], o)) {
           n.parent = e.payload.parent; n.stamps['parent'] = o;
         }
+        // AN IMPORT LANDS IN THE INBOX. Latches, like `captured` above it, and
+        // for the same reason: being an inbox item is a genesis fact, not a
+        // field somebody can win a later write against.
+        //
+        // Without this, a row from another planner reached NO tier of the
+        // offer. Measured on a real import: 882 held things, and the surface
+        // said "nothing is asking" both that day and the next, because the
+        // `unsorted` tier asks for `captured` and only a capture ever set it.
+        // The app's whole promise is one thing chosen for you, and on the store
+        // somebody actually arrives with it had nothing to give.
+        if (e.payload.arrived) { n.captured = true; n.arrived = true; }
         break;
       }
       // Renaming competes with capture.recorded / node.created for the SAME

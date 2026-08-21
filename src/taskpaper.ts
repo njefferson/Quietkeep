@@ -298,12 +298,31 @@ export function taskPaperEvents(
       : ctx.id();
     const alreadyThere = line.kind === 'project' && projectByTitle.has(line.title);
 
+    // Does anything the file said about WHEN survive the past-date rule below?
+    // Computed here because `node.created` is stamped before the clocks are,
+    // and the answer decides whether this row lands in the inbox.
+    const keepsADate =
+      (line.due !== null && !isPastDay(line.due, ctx.at, ctx.zone))
+      || (line.start !== null && !isPastDay(line.start, ctx.at, ctx.zone));
+
     if (!alreadyThere) {
       stamp('node.created', id, {
         nodeKind: line.kind === 'project' ? 'project' : 'action',
         title: line.title,
         provenance: { for: 'self' },
         ...(parent === undefined ? {} : { parent }),
+        // ONLY A ROW THAT ARRIVES WITH NOTHING TO GO ON. `arrived` puts a row
+        // in the inbox so the offer can hand it over one at a time — and a row
+        // that kept a real future date needs none of that: it already carries a
+        // clock, is already covered, and already reaches the offer through
+        // `hard-date` or `ready`. Marking it too took it OFF THE CALENDAR,
+        // because an unsorted inbox item is not a dated commitment, which a
+        // test caught before this shipped.
+        //
+        // A project is excluded for a different reason: it is a container, and
+        // offering one is the alignment theatre `docs/horizon-models.md`
+        // refuses by name.
+        ...(line.kind === 'project' || keepsADate ? {} : { arrived: true as const }),
       });
     }
     lastItemId = id;
