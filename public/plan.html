@@ -89,36 +89,63 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 
 <h2>Right now</h2>
 <div class="card">
-  <div class="head"><span class="t">Phase 0 — the ground</span><span class="tag now">in progress</span></div>
-  <p>The third-person gate is built and both repos are being cleared with it.
-  Nothing about the app itself has changed yet.</p>
+  <div class="head"><span class="t">Phase 1 — the app can be entered</span><span class="tag now">core fixed</span></div>
+  <p><b>2.15.0.</b> Bring work in from another planner and the app now has
+  something to offer you. Before this it did not: an import left <em>Next up</em>
+  saying <em>nothing is asking today</em>, that morning and every morning after,
+  while the list underneath held every one of them.</p>
+  <p>Things written here go into an inbox and get handed back one at a time.
+  Things arriving from elsewhere never joined it, so nothing ever picked them
+  up. They were held, safe and findable — and never once offered.</p>
 </div>
 
 <h2>What is true today</h2>
 <ul class="facts">
-  <li><b>Production</b> — 2.14.1, promoted and green on Deploy, Push-on-main and Spine.</li>
-  <li><b>Staging</b> — carries the plan, the gate and the scrub so far.</li>
-  <li><b>Waiting on the owner</b> — nothing.</li>
-  <li><b>Found and NOT fixed</b> &mdash; nothing outstanding in this repo. The
-      footer wording is corrected in the tree and ships with the next release,
-      because it is visible copy rather than a comment.</li>
+  <li><b>Production</b> — 2.14.1. Everything since is on staging.</li>
+  <li><b>Staging</b> — 2.15.0, plus 2.14.2 and 2.14.3 behind it.</li>
+  <li><b>Last full Spine seen green</b> — <code>d82743a</code>, all 41 steps.
+      2.15.0's own run went red on the smoke walk and was fixed in
+      <code>3a305df</code>; that run is still going as this was written.</li>
+  <li><b>Waiting on the owner</b> — the on-device pass, whenever convenient.
+      Nothing is blocked on it.</li>
+  <li><b>Found and NOT fixed</b> — the hub's <code>LESSONS.md</code> still holds
+      about 146 third-person references. One file, a reading job, blocks nothing
+      here.</li>
+</ul>
+
+<h2>What the import work cost to get right</h2>
+<ul class="facts">
+  <li><b>Two diagnoses were wrong before the third.</b> First <em>the offer is
+      empty</em>; then, reasoned from the source, <em>all 882 rows sit on one
+      end-of-day timer and arrive together</em>. The log holds 42 clock events,
+      one per project — and the next morning is identical. The pile does not
+      arrive at once. It does not arrive.</li>
+  <li><b>Two tests caught what reading did not.</b> Marking every imported row
+      pulled rows with genuine future dates off the calendar. And a rule
+      requiring a new field to be handled on clone, on deserialise, and
+      defaulted for an old snapshot named the two places I had missed.</li>
+  <li><b>The Spine caught the third.</b> An import now fills the inbox, and the
+      smoke walk had two loops bounded on the assumption that it never would.</li>
 </ul>
 
 <h2>The phases</h2>
 
 <div class="card">
-  <div class="head"><span class="n">0</span><span class="t">The ground</span><span class="tag now">in progress</span></div>
+  <div class="head"><span class="n">0</span><span class="t">The ground</span><span class="tag done">done here</span></div>
   <p>A gate for third-person references, the historical backlog cleared, the
   a11y registry made self-deriving, this plan landed in the repo, and the
   research entries that later phases will be built on.</p>
 </div>
 
 <div class="card">
-  <div class="head"><span class="n">1</span><span class="t">The app can be entered</span><span class="tag wait">next</span></div>
-  <p>An imported store has a thousand actions and no contexts, roles, areas or
-  goals — so the place filter admits everything, the horizon layer is empty and
-  the offer is drawn from an undifferentiated wall. The machinery is built and
-  has nothing to work with. This is what has stopped use every time.</p>
+  <div class="head"><span class="n">1</span><span class="t">The app can be entered</span><span class="tag now">core fixed</span></div>
+  <p>An import lands in the inbox and the offer hands it over one at a time,
+  saying <em>this came in with your import</em>. Verified on the same 840-item
+  fixture that used to produce nothing, and driven ten rounds to check it keeps
+  going rather than working once.</p>
+  <p>Not done here: asking where you are at the moment it would change the
+  answer. That was the original design and it sits downstream of this — it can
+  wait for a real device rather than be guessed at.</p>
 </div>
 
 <div class="card">
