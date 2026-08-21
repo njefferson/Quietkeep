@@ -28,6 +28,18 @@ Epigraph: *"It holds the rest, so you can rest."*
 4. [`docs/verifications.md`](docs/verifications.md) — what has actually been
    checked and what merely looks checked. Consult before assuming a platform fact.
 
+## The credit is his money (Doctrine §11b)
+A session cannot see billing, the plan, the balance, or what a turn cost, so no
+warning will ever arrive and the restraint is unconditional. **This repo is the
+expensive one** — the a11y walk, the smoke walk, `look`, `tour-shots` and the
+update walk each drive a real browser, and the full Spine is minutes of compute.
+Run the narrowest thing that answers the question (`--only=`, one grep, one
+`sed -n` range), re-render only what changed, and **say what a long run will
+cost before starting it**. *Continue* resumes the work in front of you; it is
+not authority to start a sweep of your own. Mechanical work — find-and-replace,
+classifying a list against a stated rule, running a gate and reporting its exit
+code — goes to a cheaper model in a subagent. Top tier is for judgement.
+
 ## Rules specific to this app
 - **NOTHING PERSONAL ABOUT THE OWNER EVER LANDS IN THIS REPO — a FAIL state**
   (his instruction, 2026-08-04). No diagnosis, health fact, or identity
