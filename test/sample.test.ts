@@ -211,7 +211,7 @@ test('nothing in the content is trigger-list material or a personality', () => {
   const { events } = built();
   const text = JSON.stringify(events).toLowerCase();
   for (const bad of [
-    'getting things done', 'gtd', 'next actions list', 'tickler',
+    'getting things done', 'gtd', 'next actions list', 'tickler', // banned-word list
     'anxious', 'overwhelm', 'adhd', 'executive function', 'streak', 'reward',
     'mission', 'deploy', 'target', 'campaign',
   ]) {

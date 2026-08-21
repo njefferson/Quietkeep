@@ -378,7 +378,7 @@ test('big-sample: nothing in the content is trigger-list material or a personali
   assert.ok(authored.length > 400, `only ${authored.length} authored strings to check`);
   const text = authored.join(' | ').toLowerCase();
   for (const bad of [
-    'getting things done', 'gtd', 'next actions list', 'tickler',
+    'getting things done', 'gtd', 'next actions list', 'tickler', // banned-word list
     'anxious', 'overwhelm', 'adhd', 'executive function', 'streak', 'reward',
     'mission', 'deploy', 'target audience', 'campaign',
   ]) {

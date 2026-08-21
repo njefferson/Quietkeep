@@ -3601,7 +3601,8 @@ and the register classifies each one.
   the law-4 analogue of the coverage gauge — but only after Q-11 says whether the
   problem is ranking or trust.
   · **And the paradigm reading, which is why this matters beyond a feature list.**
-  GTD and everything downstream assumes the bottleneck is capture and
+  The dominant capture-and-organise paradigm, and everything downstream of it,
+  assumes the bottleneck is capture and
   organisation, because for the cognition those were designed around, retrieval
   and initiation are close to free. Quietkeep has built that half better than most
   commercial products — the write gate, the append-only log, the coverage proof,

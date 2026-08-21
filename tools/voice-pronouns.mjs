@@ -87,6 +87,13 @@ const visibleText = (html) => html
   .replace(/<style[\s\S]*?<\/style>/gi, ' ')
   .replace(/<[^>]+>/g, ' ');
 
+/** This line is pattern source, and it is declared in `.third-person-allow`
+ *  rather than wrapped in the family's `privacy-gate:patterns-*` sentinel. That
+ *  sentinel is not a general "skip this" marker: `privacy-mirror-check.mjs`
+ *  treats any file carrying it as a MIRROR of the hub's disclosure patterns and
+ *  compares the regex literals inside it against the canon. Wrapping this line
+ *  was tried and turned that gate red, claiming a stale mirror. Two gates, one
+ *  marker, different meanings — so the exemption goes in the list instead. */
 const GENDERED = /\b(?:he|him|his|she|her|hers)\b/i;
 const THIRD_PERSON_READER = /\bthe user\b/i;
 

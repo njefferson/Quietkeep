@@ -1,0 +1,14 @@
+# Third-person references that are NOT about the owner, declared for
+# `noahjefferson:third-person-check.mjs`. Format:
+#
+#   file | reason | the matched word
+#
+# A reference to the OWNER is never declarable and never becomes declarable.
+# Rewrite it: say the ROLE for a governance fact, and for anything else say what
+# was wrong and what it measured.
+#
+# Checked BOTH WAYS — a declaration matching nothing any more is a failure, so a
+# scrub cannot quietly un-cover a file by leaving a stale line here.
+tools/voice-pronouns.mjs | pattern-source | he
+tools/voice-pronouns.mjs | pattern-source | him
+tools/voice-pronouns.mjs | pattern-source | his

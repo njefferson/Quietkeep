@@ -29,7 +29,7 @@
     "build:sync": "node tools/editions.mjs",
     "editions:check": "node tools/editions.mjs --check",
     "workflows:check": "node tools/workflows.mjs",
-    "vocabulary": "if grep -rniE '\\b(overdue|streak)\\b' src/ | grep -viE 'no |never|banned|forbid|law 5'; then echo 'banned vocabulary found in src/ — see ADR-0010' >&2; exit 1; fi; echo clean",
+    "vocabulary": "if grep -rniE '\\b(overdue|streak)\\b' src/ | grep -viE 'no |never|banned|forbid|law 5'; then echo 'banned vocabulary found in src/ — see ADR-0010' >&2; exit 1; fi; if git ls-files | xargs grep -niE 'getting things done|\\bGTD\\b' 2>/dev/null | grep -viE 'never|banned|forbid|marks|copyrighted|ciphertext|base64|produced'; then echo 'the GTD marks are banned outright (CLAUDE.md) — name the practice, not the mark' >&2; exit 1; fi; echo clean",
     "storage:check": "if grep -rnE '\\b(localStorage|sessionStorage)\\b' src/ public/sw.js public/index.html | grep -viE 'banned|never|no localStorage|not localStorage'; then echo 'localStorage/sessionStorage found — storage is IndexedDB via Dexie, and the ban is outright' >&2; exit 1; fi; echo clean",
     "thesis": "node tools/thesis.mjs",
     "thesis:check": "node tools/thesis.mjs --check",
