@@ -275,35 +275,49 @@ situations are the acceptance test — walked end to end, not asserted.
 
 **Read this block first.** It is updated in the same commit as the work.
 
-- **Phase 0 — the ground.** IN PROGRESS. Done: the third-person gate
-  (`noahjefferson:third-person-check.mjs`), this file, the status page at
-  `public/plan.html`, and **this repo's entire third-person backlog — the gate
-  reports zero here**. Outstanding: `tools/a11y.mjs`'s REGISTRY made
-  self-deriving and the `#upkeep` gap it is hiding; the `### Open` heading in
-  NOTES.md, which still holds three questions that are each Status: Closed, and
-  the `questions.mjs` rule that should refuse that; the two research entries;
-  decision 6 closed on the evidence.
-- **The hub's backlog is NOT done** — around 144 sites remain in its
-  `LESSONS.md`. That file alone. Everything else in the hub is clear.
+- **Phase 0 — the ground.** Nearly done. Landed: the third-person gate; this
+  file; the status page; this repo's entire third-person backlog (gate reports
+  zero); 2.14.2; the voice gate and ADR-0106; the four research entries (23-26);
+  the trademark ban given teeth in the `vocabulary` gate; `tools/surfaces.mjs`
+  and the `#upkeep` surface it found unmeasured; 2.14.3.
+  Outstanding: the `### Open` heading in `NOTES.md`, which still holds three
+  questions that are each Status: Closed, and the `questions.mjs` rule that
+  should refuse that; decision 6 closed on the evidence.
+- **The hub's backlog is NOT done** — around 146 sites remain in its
+  `LESSONS.md`. That file alone; everything else in the hub is clear.
 - Phase 1 through 8: not started.
 - **Last full Spine seen green:** `2ff380d` on `staging`; `74dca96` on `main`
   carrying 2.14.1 to production.
-- **Waiting on the owner:** the on-device pass for 2.14.2, whenever convenient.
-  Nothing is blocked on it.
+- **Waiting on the owner:** the on-device pass, whenever convenient. Nothing is
+  blocked on it.
 
 ### What a fresh session should know about this run
 
-Two things cost time and are worth not repeating.
+**Compare every clone against its remote before writing.** The container rewound
+one clone's `.git` twice while leaving the other current, and it also rolled the
+scratchpad back, destroying four research documents that existed nowhere else.
+**Agent output lands in the repo in the same turn it is produced** — `/tmp` is
+not durable here, which is the same lesson as the V2 plan living in a session
+file, one layer out.
 
-**A container restart rewound one clone's `.git` while leaving the other
-current.** Three commits were built on a base eight commits stale; the push was
-refused as non-fast-forward, and the diff showed those commits would have
-reverted several hundred lines already on the remote. **After any restart,
-compare every clone against its remote before committing** — one repo was
-resynced and the other was not, and the unsynced one was the one pushed from.
+**Renaming the speaker does not fix an attribution.** Swapping a pronoun for the
+role noun leaves the quotation standing. Three times, both repos, caught by
+`privacy-check.mjs` every time and by reading none.
 
-**Renaming the speaker does not fix an attribution.** A mechanical pass rewrote
-reported speech by swapping the pronoun for the role noun, which leaves the
-quotation intact and still trips `privacy-check.mjs`. It happened three times,
-in both repos, and was caught by that gate every time rather than by reading.
-The fix is always to remove the quotation and state what it measured.
+**A plant that does not fire has tested nothing.** Twice in one day: a plant
+landed inside an HTML comment that merely *mentions* `<main>` in backticks, and
+a gate's own first draft counted a shared utility class as coverage so all
+seventeen surfaces looked measured. Both gates were right and both tests were
+empty. Plant, then check the plant fired.
+
+**One marker, two meanings, is a trap.** `privacy-gate:patterns-begin` means
+"this file mirrors the hub's disclosure patterns" to `privacy-mirror-check.mjs`
+and "skip this region" to `third-person-check.mjs`. Using it for the second
+turned the first red. Exemptions go in `.third-person-allow`.
+
+**`#upkeep` was unmeasured because it was unreachable, not because a list was
+short.** The a11y walk builds its own store by capturing items and never had an
+upkeep in it; the sample's one upkeep was comfortable by design. Seeding
+IndexedDB directly does NOT work — the app does not re-fold an appended event on
+reload. The fix was a second, ready fixture item plus an audit at the very end of
+each theme, where nothing downstream can be perturbed.

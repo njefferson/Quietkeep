@@ -49,7 +49,8 @@
     "release:check": "node --experimental-strip-types tools/release-check.mjs",
     "size:check": "node tools/size-check.mjs",
     "prepare": "node ../noahjefferson/branch-guard.mjs --repo . --install >/dev/null 2>&1 || true",
-    "voice:pronouns": "node tools/voice-pronouns.mjs"
+    "voice:pronouns": "node tools/voice-pronouns.mjs",
+    "surfaces:check": "node tools/surfaces.mjs"
   },
   "//build": "esbuild strips types and bundles src/ui into one ES module. It is the ONLY build step and it does no transpiling down — target es2022 is what the reference platform already runs. See ADR-0026 for why a build exists at all in a family that avoids them.",
   "//playwright": "1.56.0 ships chromium revision 1194, which is what /opt/pw-browsers/chromium-1194 is. These are a MATCHED PAIR — see the hub's LESSONS.md section 8. Bumping one without the other silently breaks every render with no useful error.",

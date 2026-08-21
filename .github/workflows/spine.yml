@@ -252,6 +252,10 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run voice:pronouns
 
+      - name: Every surface is on the accessibility walk
+        if: ${{ !cancelled() }}
+        run: npm run surfaces:check
+
       # The closed list, checked against the DOCUMENT that governs it (1.9.1).
       # `isKnownKind` has always refused an unlisted kind at runtime, and
       # nothing ever asked whether the code's list and

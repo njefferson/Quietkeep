@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.14.3',
+    kind: 'ITERATION',
+    date: '2026-08-21',
+    notes: [
+      '**The sample now has an upkeep that has actually come round.** It had one before, and it was deliberately not due yet — which meant the *Upkeep* strip stayed hidden, and if you loaded the sample to see what the app does, that was one thing it never showed you. There are two now: one comfortable, one ready, because the point of a rhythm is that it is not a deadline and you cannot see that from a single example.',
+      '**What this actually fixed is invisible to you and worth saying anyway.** Because nothing could reach that strip, none of the accessibility checks had ever measured it — not its contrast, not what a screen reader calls its chips, in either theme, for the whole life of the app. It passes now, and a new check refuses to let any part of the screen go unmeasured like that again.',
+      '**Nothing about the app itself changed.** The same strip, the same words, the same behaviour.',
+    ],
+  },
+  {
     triplet: '2.14.2',
     kind: 'ITERATION',
     date: '2026-08-21',

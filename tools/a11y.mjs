@@ -736,6 +736,16 @@ const REGISTRY = {
   // `#menu-open` left in 2.0.7 for the reason `#gauge` left 'coverage open': the
   // Menu is a sheet now and its control is on the inert surface underneath.
   'menu open': ['#sheet-menu-title', '#sheet-menu-close', '.menu-cat', '.menu-item', '.menu-title'],
+  // UPKEEP, and it took a coverage gate to notice it was missing. This section
+  // has a heading and its own chips, and it had NO entry here at all — contrast
+  // and accessible names were never checked on it, in either theme, for its
+  // whole life. Nobody forgot to add it so much as nobody could: the sample's
+  // one upkeep item was done 40 days into a 60-day rhythm, so it is comfortable
+  // and the section is correctly hidden, and no fixture in any walk ever
+  // reached the state. A surface no test can arrive at is a surface no test
+  // measures. The fixture now carries a ready upkeep and this is audited last
+  // in each theme, on the sample, where nothing downstream can be perturbed.
+  'upkeep ready': ['#upkeep-heading', '.chip', '.chip-title', '.chip-why'],
   // Coming back (law 8). The reassurance is the CONTENT, so it gets full ink;
   // the counts beneath it are the lesser fact and sit in the quiet token. There
   // is nothing here keyed to how long you were away — no colour, no threshold —
@@ -3876,6 +3886,40 @@ try {
     (cap.h >= 44 && cap.w >= 100 ? pass : fail)(
       `${theme}/320px @ 200%: capture is ${cap.w}x${cap.h} — still a usable target`);
     await auditAxe(page, 'page @ 320/200', theme);
+
+    // UPKEEP READY, and it is LAST on purpose.
+    //
+    // This section had no REGISTRY entry for its whole life, so its contrast and
+    // its accessible names had never been measured in either theme. Not an
+    // oversight in the list: an unreachable state. This walk builds its own
+    // store by capturing items, and never had an upkeep in it at all, so there
+    // was no moment in the run where the section was on screen to be sampled.
+    //
+    // Two things were tried before this and are worth not repeating. Seeding a
+    // ready item straight into IndexedDB does nothing — the app does not re-fold
+    // an appended event on reload. Auditing at 'with cards' timed out, because
+    // by then the walk's own earlier steps have moved the store on.
+    //
+    // So it runs at the very END of the theme, on the sample fixture, where
+    // there is nothing downstream left to perturb. The viewport is put back
+    // first: the step above leaves it at 320px under a 200% zoom, which is a
+    // deliberately hostile layout and not the one this section should be
+    // measured in.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() => document.querySelector('#more')?.showModal());
+    await page.waitForSelector('#more[open]');
+    await page.click('.more-go[data-go="group-actions"]');
+    await page.waitForSelector('#sheet-group-actions[open]');
+    await page.click('#sample');
+    await page.waitForTimeout(2500);
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.waitForSelector('#upkeep:not([hidden])');
+    await auditContrast(page, 'upkeep ready', theme);
+    await auditAxe(page, 'upkeep ready', theme);
+    await auditNames(page, 'upkeep ready', theme);
+    await auditSeparationAndTargets(page, 'upkeep ready', theme);
 
     await ctx.close();
   }

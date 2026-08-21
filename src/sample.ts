@@ -132,6 +132,20 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   stamp('upkeep.interval.set', filter, { intervalDays: 60, comfortWindowDays: 14 });
   stamp('done.marked', filter, { at: day(-40) });
 
+  // AND ONE THAT IS ACTUALLY READY, because a fixture that never reaches a
+  // surface is a surface nothing measures. With only the filter above — done 40
+  // days into a 60-day rhythm, comfortable by design — `#upkeep` was hidden in
+  // every walk this repo runs, so its contrast and its accessible names had
+  // never been checked in either theme. Found by `tools/surfaces.mjs`.
+  //
+  // Both are kept: the comfortable one demonstrates that a rhythm is not a
+  // deadline, and this one demonstrates what a rhythm looks like when it comes
+  // round. Past its window rather than exactly on it, so the chip carries real
+  // pressure words rather than the boundary case.
+  const sheets = node('upkeep', 'Change the bed sheets');
+  stamp('upkeep.interval.set', sheets, { intervalDays: 14, comfortWindowDays: 7 });
+  stamp('done.marked', sheets, { at: day(-25) });
+
   // --- the Menu: wanted, not owed ------------------------------------------
   //
   // Demand-free kinds carry no clocks (law 6). Something here must be genuinely

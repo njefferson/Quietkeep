@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.14.3 — ITERATION
+
+*2026-08-21*
+
+- **The sample now has an upkeep that has actually come round.** It had one before, and it was deliberately not due yet — which meant the *Upkeep* strip stayed hidden, and if you loaded the sample to see what the app does, that was one thing it never showed you. There are two now: one comfortable, one ready, because the point of a rhythm is that it is not a deadline and you cannot see that from a single example.
+- **What this actually fixed is invisible to you and worth saying anyway.** Because nothing could reach that strip, none of the accessibility checks had ever measured it — not its contrast, not what a screen reader calls its chips, in either theme, for the whole life of the app. It passes now, and a new check refuses to let any part of the screen go unmeasured like that again.
+- **Nothing about the app itself changed.** The same strip, the same words, the same behaviour.
+
 ## 2.14.2 — ITERATION
 
 *2026-08-21*
