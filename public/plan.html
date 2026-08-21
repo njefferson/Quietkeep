@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Quietkeep — where the work is</title>
+<!--
+  THE LIVE STATUS PAGE for the situated-app plan (Doctrine §7i).
+
+  It lives in `public/` rather than anywhere else for one reason: it redeploys
+  with the branch, at the same URL, with nothing to approve and nothing to
+  re-publish. Chat scrolls, and a plan agreed on Monday is unreachable by
+  Wednesday on a tablet.
+
+  NOT LINKED FROM THE APP, and `noindex` on purpose. It is a working page for
+  one reader, not a surface — which is why it is not in the a11y walk's state
+  list and does not need to be. If it ever gains a route from the app it becomes
+  a surface and joins that list in the same commit (hub LESSONS §28).
+
+  Hand-written and self-contained. No build step, no fetch, nothing to go stale
+  except the words, which are updated in the same commit as the work they
+  describe — the same rule `docs/plan-situated.md` carries.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #F7F5F0; --ink: #23262B; --quiet: #5A6068;
+    --rule: #D8D3C8; --card: #FFFFFF; --accent: #33425F;
+    --done: #2F6B4F; --now: #8A5A1F; --wait: #6B6560;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16181C; --ink: #E8E6E1; --quiet: #A2A8B0;
+      --rule: #2E333A; --card: #1D2025; --accent: #A8BBDD;
+      --done: #7FBF9D; --now: #E0AC63; --wait: #9A948E;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 1.5rem 1.15rem 4rem;
+    background: var(--paper); color: var(--ink);
+    font: 1rem/1.6 ui-serif, Georgia, "Times New Roman", serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 42rem; margin: 0 auto; }
+  h1 { font-size: 1.5rem; line-height: 1.25; margin: 0 0 .2rem; letter-spacing: -.01em; }
+  .sub { color: var(--quiet); margin: 0 0 1.8rem; font-size: .95rem; }
+  h2 {
+    font-size: .78rem; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--quiet); margin: 2.2rem 0 .7rem;
+    font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 600;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 10px; padding: .85rem 1rem; margin: 0 0 .6rem;
+  }
+  .card p { margin: .4rem 0 0; font-size: .93rem; color: var(--quiet); }
+  .head { display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
+  .n { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8rem; color: var(--quiet); }
+  .t { font-weight: 600; }
+  .tag {
+    margin-left: auto; font-size: .7rem; letter-spacing: .07em;
+    text-transform: uppercase; font-family: ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700; white-space: nowrap;
+  }
+  .tag.done { color: var(--done); }
+  .tag.now { color: var(--now); }
+  .tag.wait { color: var(--wait); }
+  .facts { list-style: none; padding: 0; margin: 0; }
+  .facts li { padding: .45rem 0; border-bottom: 1px solid var(--rule); font-size: .93rem; }
+  .facts li:last-child { border-bottom: 0; }
+  .facts b { font-weight: 600; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .87em; background: color-mix(in srgb, var(--accent) 10%, transparent);
+    padding: .1em .35em; border-radius: 4px;
+  }
+  footer { margin-top: 2.5rem; color: var(--quiet); font-size: .85rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Quietkeep — where the work is</h1>
+<p class="sub">The situated app. This page is updated in the same commit as the
+work it describes, so it is never a summary of what somebody meant to do.</p>
+
+<h2>Right now</h2>
+<div class="card">
+  <div class="head"><span class="t">Phase 0 — the ground</span><span class="tag now">in progress</span></div>
+  <p>The third-person gate is built and both repos are being cleared with it.
+  Nothing about the app itself has changed yet.</p>
+</div>
+
+<h2>What is true today</h2>
+<ul class="facts">
+  <li><b>Production</b> — 2.14.1, promoted and green on Deploy, Push-on-main and Spine.</li>
+  <li><b>Staging</b> — carries the plan, the gate and the scrub so far.</li>
+  <li><b>Waiting on the owner</b> — nothing.</li>
+  <li><b>Found and NOT fixed</b> — the footer in <code>public/index.html</code>
+      still reads <em>how to reach him</em>. It is shipped copy, so it earns a
+      real release rather than riding inside a scrub commit.</li>
+</ul>
+
+<h2>The phases</h2>
+
+<div class="card">
+  <div class="head"><span class="n">0</span><span class="t">The ground</span><span class="tag now">in progress</span></div>
+  <p>A gate for third-person references, the historical backlog cleared, the
+  a11y registry made self-deriving, this plan landed in the repo, and the
+  research entries that later phases will be built on.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">1</span><span class="t">The app can be entered</span><span class="tag wait">next</span></div>
+  <p>An imported store has a thousand actions and no contexts, roles, areas or
+  goals — so the place filter admits everything, the horizon layer is empty and
+  the offer is drawn from an undifferentiated wall. The machinery is built and
+  has nothing to work with. This is what has stopped use every time.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">2</span><span class="t">The horizon comes down</span><span class="tag wait">not started</span></div>
+  <p>A goal or an area gets a clock, so <em>haven't moved on this in a while</em>
+  arrives as the same rising insistence everything else uses. No promote button,
+  no screen to climb to.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">3</span><span class="t">The situation</span><span class="tag wait">not started</span></div>
+  <p>Place is already done. The missing input is time — how long is available —
+  and what is <em>due</em> today rather than what exists.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">4</span><span class="t">The other direction</span><span class="tag wait">not started</span></div>
+  <p>What someone is waiting on from you, which the app has never modelled, and
+  a screen for a person that shows both directions at once.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">5</span><span class="t">The situated view</span><span class="tag wait">not started</span></div>
+  <p>One surface with inputs, arrived at by answering the situation and never
+  picked from a list of named screens.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">6</span><span class="t">Coming back</span><span class="tag wait">not started</span></div>
+  <p>What moved since you were last here, cut at an anchor. A week away must not
+  produce a wall.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">7</span><span class="t">The menu and the unformed</span><span class="tag wait">not started</span></div>
+  <p>Things that need shaping rather than doing, and a menu of what would
+  actually help rather than what is owed.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">8</span><span class="t">The whole thing, looked at</span><span class="tag wait">not started</span></div>
+  <p>Every surface rendered and read on an imported store, walked against all
+  fourteen situations end to end.</p>
+</div>
+
+<footer>
+  The plan itself is <code>docs/plan-situated.md</code> in the repo, with a
+  resume-state block at the bottom. This page is the same information at a URL
+  that does not scroll away.
+</footer>
+
+</main>
+</body>
+</html>
