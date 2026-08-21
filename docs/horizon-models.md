@@ -209,7 +209,7 @@ The fragments worth stealing, each with the law that admits it and the Quietkeep
 - **The descriptive delta instead of the grade** (the honest kernel of the OKR check-in and of the staff-call). Law 7. Rides the delta report (fold-vs-fold, ADR-0041) cut at demand-free anchors (ADR-0068): "what moved under this goal since the anchor" — plotted, never scored.
 - **The attention/balance readout** (Wheel of Life; Covey's role balance). Law 7, and named in ADR-0013's consequences. Plots where attention went per role/area; the human reads the lopsidedness. This is the direct structural answer to the recorded question of how you see whether enough energy is going into each.
 - **Effects versus tasks** (EBO's surviving distinction). Law 7 admits the descriptive half. Rides the existing `outcome`/`action` kinds — vocabulary already present, gated behind stage-4 evidence rather than built on an empty noun.
-- **Obstacles named inside the plan** (V2MOM). Law 7. Already running as the Block register — what ended the day, about the app, never about him.
+- **Obstacles named inside the plan** (V2MOM). Law 7. Already running as the Block register — what ended the day, about the app, never about the person.
 
 ## 3. What is refused, by name
 

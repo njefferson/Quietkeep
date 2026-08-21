@@ -275,9 +275,35 @@ situations are the acceptance test — walked end to end, not asserted.
 
 **Read this block first.** It is updated in the same commit as the work.
 
-- Phase 0: IN PROGRESS. This file landed. Everything else in phase 0 outstanding.
-- Phase 1: not started.
-- Phase 2 through 8: not started.
-- Last full Spine seen green: `2ff380d` on `staging`, and `74dca96` on `main`
+- **Phase 0 — the ground.** IN PROGRESS. Done: the third-person gate
+  (`noahjefferson:third-person-check.mjs`), this file, the status page at
+  `public/plan.html`, and **this repo's entire third-person backlog — the gate
+  reports zero here**. Outstanding: `tools/a11y.mjs`'s REGISTRY made
+  self-deriving and the `#upkeep` gap it is hiding; the `### Open` heading in
+  NOTES.md, which still holds three questions that are each Status: Closed, and
+  the `questions.mjs` rule that should refuse that; the two research entries;
+  decision 6 closed on the evidence.
+- **The hub's backlog is NOT done** — around 144 sites remain in its
+  `LESSONS.md`. That file alone. Everything else in the hub is clear.
+- Phase 1 through 8: not started.
+- **Last full Spine seen green:** `2ff380d` on `staging`; `74dca96` on `main`
   carrying 2.14.1 to production.
-- Waiting on the owner: nothing.
+- **Waiting on the owner:** the on-device pass for 2.14.2, whenever convenient.
+  Nothing is blocked on it.
+
+### What a fresh session should know about this run
+
+Two things cost time and are worth not repeating.
+
+**A container restart rewound one clone's `.git` while leaving the other
+current.** Three commits were built on a base eight commits stale; the push was
+refused as non-fast-forward, and the diff showed those commits would have
+reverted several hundred lines already on the remote. **After any restart,
+compare every clone against its remote before committing** — one repo was
+resynced and the other was not, and the unsynced one was the one pushed from.
+
+**Renaming the speaker does not fix an attribution.** A mechanical pass rewrote
+reported speech by swapping the pronoun for the role noun, which leaves the
+quotation intact and still trips `privacy-check.mjs`. It happened three times,
+in both repos, and was caught by that gate every time rather than by reading.
+The fix is always to remove the quotation and state what it measured.

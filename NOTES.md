@@ -102,9 +102,9 @@ is reached when **every item in the v1 Must list below exists** — and the owne
 Two consequences a session must not get wrong:
 
 1. **Do not propose 1.0.0.** Not as a suggestion, not as "this looks like it has
-   reached that level". He has ruled on the criterion; the only thing left is
-   whether the list is done, which is a fact about the list.
-2. **Until then it is not a planner**, in his words, and no copy anywhere may
+   reached that level". The owner has ruled on the criterion; the only thing left
+   is whether the list is done, which is a fact about the list.
+2. **Until then it is not a planner**, and no copy anywhere may
    describe it as a finished one. The app says what it does, not what it will do.
 
 Progress toward it is therefore measured against the Must list and nothing else.
@@ -150,12 +150,12 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 > **Every item on this list is now built, as of 0.17.0 on `staging`.**
 >
 > That is a statement about the list, and it is deliberately not a statement
-> about a version. **The owner alone decides what is a VERSION** and he has said he
-> will not name v1 until he has used it and agrees it does all the things he
-> specified — his ruling is recorded below under *What VERSION 1 means*. Sessions
+> about a version. **The owner alone decides what is a VERSION**, and v1 will not
+> be named until it has been used and is agreed to do all the things
+> specified — the owner's ruling is recorded below under *What VERSION 1 means*. Sessions
 > do not propose `1.0.0`, and this line is not a proposal.
 >
-> What is left before that judgement is his to make, not code: the on-device pass
+> What is left before that judgement is the owner's to make, not code: the on-device pass
 > (Doctrine §7). **V-14 is no longer among them — it was answered YES on device
 > on 2026-08-09** and is closed.
 
@@ -240,7 +240,7 @@ is not obvious when you come to build them.
 - **A preview before it runs, stating the count.** And for anything destructive,
   the same auto-export rule as purging.
 
-**What else makes sense, and is not on his list:**
+**What else makes sense, and is not on the owner's list:**
 - **Export a range**, not just everything — the export is currently all-or-nothing,
   and "send me last quarter" is a real request the status report half-answers.
 - **A dry run for import.** The surface already says what a file holds before you
@@ -367,15 +367,15 @@ being ignored. **An absent record of success is not an absent attempt.**
 What follows from the correction, and it changes the ordering of everything:
 
 - **There is no "get the gate started" work. There never was.** The work is
-  finding out what ends his day, on the day it ends.
+  finding out what ends a day, on the day it ends.
 - **The failures are the dataset and this repo has none of them.** Every day
-  that reset is a defect report nobody wrote down. Sessions have been asking him
+  that reset is a defect report nobody wrote down. Sessions have been asking the owner
   for a *promote* and an *on-device pass* — the wrong two questions. The one that
-  matters is what stopped him.
+  matters is what stopped the day.
 - **This is what the 1.18.0 diagnostic is actually for.** Not tidiness, and not
   §7f compliance: it is the instrument for capturing a bad day while it is
-  happening, in text, without him having to write an essay when he is already
-  out of patience.
+  happening, in text, rather than requiring an essay written in the moment,
+  when patience is already gone.
 
 ---
 
@@ -404,9 +404,9 @@ decided by a session.**
     call to make about somebody else's planner.** Third instance in one audit,
     after Q-10 and Q-11 (hub LESSONS §96, §97).
   - **Deliberately deferred, with the shape named.** Building role machinery
-    now, before a single area or goal exists in his store, repeats the
+    now, before a single area or goal exists in the store, repeats the
     eleven-empty-nouns mistake the azimuth check just caught. Stage 4's
-    evidence (does he make containers at all at two-tap cost?) gates this.
+    evidence (are containers made at all at two-tap cost?) gates this.
   - **What is NOT deferred:** the mechanism roles will ride is already
     settled — a role node carries its own review clock like any horizon, and
     "when do I review my roles?" is answered by the same
@@ -424,16 +424,16 @@ decided by a session.**
   - **If ranking:** the wrong items are surfacing, and the fix is in what
     `nextUp` considers (see the azimuth finding below — everything it ranks on
     is temporal).
-  - **If trust:** the right items are surfacing and nothing gives him grounds to
-    believe it. The fix is a law-4 analogue of the coverage gauge: a visible
+  - **If trust:** the right items are surfacing and nothing makes that visible.
+    The fix is a law-4 analogue of the coverage gauge: a visible
     proof of judgement, the way the gauge is a visible proof of integrity.
-  - **CLOSED 2026-08-17 (2.7.0, ADR-0097) — by research, not by asking him.**
+  - **CLOSED 2026-08-17 (2.7.0, ADR-0097) — by research, not by asking the owner.**
     The remaining half was a ranking decision, and `docs/nd-collisions.md` entry
     5 had already routed it and gated the routing on this very question. With
     the ranking reading established by measurement, the gate discharged and the
     mechanism was already named: heat breaking the tie inside `ready`. The
     entry also REFUSES the alternative — an importance rank — in terms, which is
-    the half that was about to be handed to him as a policy question. **A
+    the half that was about to be handed to the owner as a policy question. **A
     question a session cannot answer from taste is not automatically the
     owner's; check whether the research already answered it.**
   - **HALF-ANSWERED 2026-08-17 by measurement rather than by asking (2.5.0,
@@ -447,7 +447,7 @@ decided by a session.**
     refuses in terms, and the refusal was already written when this was typed.
   - Status: **CLOSED 2026-08-17, and this line said otherwise until 2026-08-19.**
     The close is the second bullet above; this line kept saying *asked, not
-    answered — and NOBODY PUT THE QUESTION TO HIM* for two days after the
+    answered — and NOBODY PUT THE QUESTION TO THE OWNER* for two days after the
     question stopped being open. **Three files already carried the answer** —
     `docs/nd-collisions.md` entry 5 refuses an importance rank in terms,
     [ADR-0097](docs/adr/0097-the-offer-reads-interest.md) records the refusal as
@@ -457,7 +457,7 @@ decided by a session.**
     Q-11 also contains its own argument against the alternative: a loose capture
     is very often the most important thing in the store.
   - **AND THE ORIGINAL STATUS LINE WAS RIGHT ABOUT THE WRONG THING.** It said the
-    defect was that nobody put the question to him, citing hub LESSONS §96 and
+    defect was that nobody put the question to the owner, citing hub LESSONS §96 and
     §97 — a question parked pending information nobody went to get. The
     information was never outside the repo. **A question can be abandoned in the
     other direction too: answered everywhere except in the file that tracks it**,
@@ -466,7 +466,7 @@ decided by a session.**
 - **Q-12 · `Not this` records nothing, deliberately. Is that trade still right?**
   Declining a suggestion writes no event, so the app can never keep score — which
   is correct for this audience and is why the rule exists. It also means the app
-  can never learn what matters to him, which is one of the two candidate causes
+  can never learn what matters, which is one of the two candidate causes
   of Q-11. The shame-avoidance this protects is a standing design commitment of
   this app (see [`docs/nd-collisions.md`](docs/nd-collisions.md)), not a
   theoretical one; the question is whether "records nothing" is the only way to
@@ -619,8 +619,8 @@ decided by a session.**
   it, because no gate asks "is every tracked file supposed to be here". Recorded in the
   hub's LESSONS: a working tree with concurrent writers is not safe to stage wholesale.
 - **Previously `main` was at `0.6.0` (`392372f`), promoted 2026-07-29** — the owner's word to promote and keep
-  going", onto watched-green spine run 38; deploy run 35 confirmed production serves it.
-  This promote carried **0.5.1**, which fixed a fault that was live on his device: one
+  going, onto watched-green spine run 38; deploy run 35 confirmed production serves it.
+  This promote carried **0.5.1**, which fixed a fault that was live in production: one
   malformed date threw out of the render path before capture's submit handler was
   attached, so the form fell back to a native GET navigation and destroyed typed text
   silently. Earlier real §7 passes: `87dbeb9` (0.4.0, run 31), `d4b40f7` (0.3.0, run 28),
@@ -635,8 +635,8 @@ decided by a session.**
   The versions on each are stated once, under **Staged and waiting on the owner**
   below — not here as well.
 - **PRODUCTION HAS BEEN READ — [V-15](docs/verifications.md) is CLOSED,
-  2026-08-04.** The owner's §7f diagnostic, taken on the instance installed on his
-  home screen and confirmed by him to be the plain production sync host, reported
+  2026-08-04.** The owner's §7f diagnostic, taken on the instance installed on the
+  home screen and confirmed to be the plain production sync host, reported
   `Service worker cache: quietkeep-sync-1.18.0` — read from live Cache Storage,
   per-origin, created by the `sw.js` the browser fetched, whose name is derived
   from the release triplet by `tools/editions.mjs:132`. The deployed `sw.js` on
@@ -651,11 +651,11 @@ decided by a session.**
   falsified by a container thirty-nine seconds old. **Do not spend another session
   re-testing this.** It no longer blocks anything: the app carries the instrument
   now, and Doctrine §7f is the route — put the check where the device runs it.
-- **`main` was promoted to troubleshoot, and it worked** (promoted on the owner's word). Nothing would load on his iPad at the time, so the §7 pass could
+- **`main` was promoted to troubleshoot, and it worked** (promoted on the owner's word). Nothing would load on the iPad at the time, so the §7 pass could
   not happen first. The promote gave the Pages project its **first production deployment**,
   the apex URL came up, and the pass then happened on the real device — captured,
   force-quit, reopened, data intact. `main` reached a fair state in the wrong order, which
-  is recorded rather than tidied away, but the promote was the right call and it was his.
+  is recorded rather than tidied away, but the promote was the right call and it was the owner's.
 - **Normal flow resumes:** `staging` branches off `main` for future development, promoted
   on the owner's word (Doctrine §7). `main` is the baseline.
 - **Hub wiring: DONE.** The hub links Quietkeep — verified against
@@ -666,7 +666,7 @@ decided by a session.**
   halves had landed — the seam audit's record-drift pass caught it.)
 - **Repo metadata: all four §10 values are set** — description, website, topics, social
   preview (2026-07-28). **Quietkeep's repo is "set up"**, and this is the first time
-  that can be said without a caveat. His confirmation is the verification and there is no
+  that can be said without a caveat. The owner's confirmation is the verification and there is no
   other: a session cannot read this repo's live metadata — the search API serves a stale
   cached index and the direct API 403s through the proxy ([V-11](docs/verifications.md)).
 - **Brand:** the mark is `public/brand/icon.svg` — drawn, not generated, because an icon is
@@ -785,8 +785,8 @@ and the log reading *Deployed to PRODUCTION*; Push-on-main success; Spine on
 **AND SIX QUOTATIONS OF THE OWNER'S OWN SPEECH WERE FOUND IN THIS REPO, ALL
 GREEN ON EVERY GATE.** Found while checking `main` out to promote. The privacy
 rule has two clauses — never by name, never in what words — and
-`privacy-check.mjs` anchors every pattern on the NAME, so a verbatim sentence of
-his speech is invisible to it.
+`privacy-check.mjs` anchors every pattern on the NAME, so a verbatim quoted
+sentence is invisible to it.
 
 - `ADR-0025` after *"Settled:"*, and `ADR-0093` after *"what was reported from
   the device"*, which is the *who reported it* pattern the rule names in terms.
@@ -799,7 +799,7 @@ gate** (hub `4f2f362`, wired into the Spine beside the privacy gate and as
 `npm run quotes:check`): every set-apart quotation is declared in `.quote-allow`
 as *document*, *product-copy* or *analysis*. It is a LIST because three pattern
 rules were measured against the real violations and flagged 39, 138 and 227 files
-of honest prose — the shape of his speech and the shape of the product's voice
+of honest prose — the shape of ordinary speech and the shape of the product's voice
 are the same shape. Hub LESSONS §108.
 
 **2.14.1 — AND THE WAY OUT WAS INSIDE THE THING IT UNDOES.** Found by rendering
@@ -1416,14 +1416,14 @@ things, and `BEHIND_CAP = 5` means the card headed "one thing, chosen for you"
 lists up to six. That is a design decision with ADR-0060 behind it, and it wants
 its own release rather than being folded into this one.
 
-**Five went in the previous promote — 2.9.0 through 2.9.4 — on his word rather than
+**Five went in the previous promote — 2.9.0 through 2.9.4 — on the owner's word rather than
 after a device sitting.** Four of the five exist BECAUSE of a device report, and
 the chain is worth reading as one thing: 2.9.0's frame was built on ADR-0099's
 measurement, and then the device found what the measurement could not. 2.9.1
 (boxes anchored to the page's text rather than their own), 2.9.2 (the frame
 clipping the proof line at large text) and 2.9.3 (controls 0.0px apart) were all
 reported from the device inside a day, and 2.9.4 came from reading a diagnostic
-he sent rather than from anything he said was wrong.
+rather than from anything the owner said was wrong.
 
 **Still open and named as such: V-24.** A page whose document does not scroll
 never lets iOS collapse the URL bar, so browser use pays roughly 60px on top of
@@ -1560,7 +1560,7 @@ that overlapped ten controls and took the centre of three, and `position: sticky
 was the (i) panel's way out that **did not hold on the reference iPad, found
 twice, on device**. What replaced sticky there is what this uses — a flex column
 whose bar is a sibling of the scroller — and every sheet has shipped that shape
-on his device since 1.40.0. Carried one level up, which is hub LESSONS 93.
+on the reference device since 1.40.0. Carried one level up, which is hub LESSONS 93.
 
 **Measured**, at 390x844 and 820x1180, empty store and the thirteen-item sample:
 
@@ -1593,7 +1593,7 @@ the Home Screen it is zero. One look on the device settles it.
 decide whether a quarter of the screen is worth it — ADR-0100 says what happens
 if it is not, and the numbers stay true either way.
 
-**Promoted on his word rather than after a device pass**, which is his call to
+**Promoted on the owner's word rather than after a device pass**, which is the owner's call to
 make and was made explicitly. Both 2.8.0 and 2.8.1 went in the same promote,
 neither having had a separate on-device sitting. What that means for the next
 session: the two things most worth hearing about from the device are the SIZE
@@ -1767,7 +1767,7 @@ lineage 2.5.0 had just built. It was drafted, and it was going to be put to the
 owner as a policy question. Entry 5 forbids it in terms: activation follows
 interest, novelty, challenge, urgency and passion, **not importance**, and the
 Eisenhower top row is *"a dead letter for this nervous system"*. It did not need
-his ruling. It needed the catalogue read.
+the owner's ruling. It needed the catalogue read.
 
 Three more refusals bind it, each with its evidence grade: entry 12 (moderate) —
 no manufactured novelty, so the frozen offer is not fixed by randomising, and a
@@ -2001,7 +2001,7 @@ There was no way back anywhere in the app. There is now.
   task. Verified in `src/ui/app.ts`: a card renders title, status, place and
   contents, and never the kind.
 
-**Nothing is waiting.** 2.0.7, 2.0.8 and 2.0.9 were promoted together on his
+**Nothing is waiting.** 2.0.7, 2.0.8 and 2.0.9 were promoted together on the owner's
 word, 2026-08-12, as `65e8d19`. The production deploy was verified on that exact
 sha — Deploy and Spine green, the deploy steps run rather than skipped, and the
 log's own words: `Deployed to PRODUCTION: https://quietkeep.pages.dev`. The
@@ -2116,7 +2116,7 @@ correction, two gates and a permission rule — not one byte under `src/` or
 `public/`. A promote is allowed to change nothing on screen; what it must never
 do is leave this block saying otherwise.
 
-**Nothing is waiting.** Both carry the same build. 2.0.5 was promoted on his
+**Nothing is waiting.** Both carry the same build. 2.0.5 was promoted on the owner's
 word, 2026-08-12, and this is the first entry in this block written after the
 production deploy was read rather than before it.
 
@@ -2144,9 +2144,9 @@ surface. That is a separate decision and it is not made.
 **Also still a fold: the Menu**, at 2,597px — the whole of the 2,609px that
 separates the post-change claim-plus-tree-plus-Menu figure from the untouched
 workspace. Two of the three inline expanders moved; this is the third, and it
-was left because the change he asked for named two.
+was left because the change the owner asked for named two.
 
-**Everything through 2.0.4 was promoted 2026-08-11**, on his word. What went to
+**Everything through 2.0.4 was promoted 2026-08-11**, on the owner's word. What went to
 `main` that day was tests, a research correction, two gates and a permission
 rule — not one byte under `src/` or `public/`. A promote is allowed to change
 nothing on screen; what it must never do is leave this block saying otherwise.
@@ -2949,7 +2949,7 @@ promoted SHA, its steps RAN rather than skipped, and its log printed
 `Deployed to PRODUCTION: https://quietkeep.pages.dev` — but this environment
 cannot reach pages.dev (tested this session, not assumed: the proxy returns
 403, V-15 still holds). Workflow-green is not the site serving it (LESSONS
-§53). His device is the check.
+§53). The device is the check.
 
 **What to look at:** everything offered now carries a place line — "in Errands
 · under Home" — on the suggestion, the rows behind it, and the upkeep chips.
@@ -2987,11 +2987,11 @@ It is in the patch notes too, so a reader is not left to work it out.
 **That paste has been made and [V-15](docs/verifications.md) is CLOSED.** The owner's
 diagnostic from the production sync host read `quietkeep-sync-1.18.0`, which is
 the first time production has ever been read in this project. Nothing is
-outstanding for him on the release itself.
+outstanding on the release itself.
 
-**Nothing is outstanding for him.** The app's own "WHAT IS WRONG" section tells
-its reader what needs attention, on his screen, in his words — a session
-repeating those lines back to him adds nothing and is not a repo to-do. See
+**Nothing is outstanding.** The app's own "WHAT IS WRONG" section tells
+its reader what needs attention, on screen, in plain words — a session
+repeating those lines back adds nothing and is not a repo to-do. See
 hub LESSONS §36.
 
 This block exists because `handoff-check.mjs` failed the repo for not having
@@ -3011,7 +3011,7 @@ a trap.** The original definition asked for "one line per ended day: the date,
 what ended it" — which invites somebody's actual day into a public file. It was
 about to receive one: a morning's worth of medication, a medical device,
 appointments, a workplace matter and a family's weekend, offered to shape the
-product and very nearly written down here as evidence. He stopped it. The
+product and very nearly written down here as evidence. The owner stopped it. The
 instrument was correct about needing evidence and wrong about what evidence is.
 
 **What an entry records, and it is never an instance.** The SHAPE of what
@@ -3021,8 +3021,8 @@ failure mode is silence has no noun — hard block — answered in 1.21.0."* Tha
 line is worth more than the thirty days ADR-0019 talks about, and it contains
 nothing about anybody.
 
-**Where the instance lives: with him, not here.** A session may READ what he
-describes and design from its shape. It may not write the particulars down —
+**Where the instance lives: outside the repo, not here.** A session may READ what is
+described and design from its shape. It may not write the particulars down —
 not in this register, not in an ADR, not in a commit message, not as a test
 fixture, and not as an "illustrative example", which is the form it would creep
 back in as. Enforced by the HIS_LIFE class in GATE hub:privacy-check.mjs.
@@ -3103,7 +3103,7 @@ and the register classifies each one.
   prints there.
 
   What went out: the smaller-bite line and "This one is heavy" on the offer
-  card; the five defects his own screenshots found, including the source comment
+  card; five defects found in the on-device pass, including the source comment
   that had been painting under the accessibility link on every screen; and a way
   past a card in triage.
 
@@ -3299,7 +3299,7 @@ and the register classifies each one.
   toggle's state rather than on the wording of a status line.
 
 - **2026-08-05 — 1.20.2 (ITERATION) cut and PROMOTED: the Install control was
-  dead on his device.** Reported on an iPad: the Install control was pressed
+  dead on device.** Reported on an iPad: the Install control was pressed
   ten times with no visible effect, and the update landed only after a force
   close and reopen. An installed app on
   iPadOS will not reliably let a waiting worker take over while the app is
@@ -3355,19 +3355,19 @@ and the register classifies each one.
   commits and 1659 blobs. Spine and Deploy green on `main` and `staging`.
   **The hub was NOT rewritten and did not need to be** — its apparent hits
   were the gate's own documentation matching its own pattern, meta-prose about
-  the rule rather than anything about him. That was reported as exposure twice
+  the rule rather than a personal disclosure. That was reported as exposure twice
   before anyone read what had matched.
-  **Still open and still his:** a force-push does not delete the old commits
+  **Still open:** a force-push does not delete the old commits
   from GitHub — they stay reachable by full SHA until GitHub collects them, so
   making the repo private, or asking GitHub Support to purge, is the only
-  thing that closes that. Also left deliberately: a sustainability remark of
-  his, removed from the tree at the old `ce6448f` but still in history. It is a
-  design statement, no pattern catches it, and widening scope was not his
+  thing that closes that. Also left deliberately: a sustainability remark,
+  removed from the tree at the old `ce6448f` but still in history. It is a
+  design statement, no pattern catches it, and widening scope was not the owner's
   instruction.
 
 - **2026-08-04 — 1.20.0 PROMOTED to `main` on the owner's word.** `main` had carried
   a revert of the 1.20.0 code since `c6e7182`, because it had reached `main`
-  once without his word; `staging` reapplied it at `002e195`. The promote is a
+  once without the owner's word; `staging` reapplied it at `002e195`. The promote is a
   merge of `staging` `d6e36be` into `main`, and the check that matters is that
   `main`'s tree came out IDENTICAL to the staging tree that was verified —
   asserted with `git diff --quiet`, not assumed from a clean merge. 974 tests,
@@ -3393,7 +3393,7 @@ and the register classifies each one.
   **Still outstanding and the owner's call: the same sentences remain in git
   HISTORY on both repos, in several commits and two commit messages.** A
   pattern-based rewrite is written and unrun; it force-pushes `main` and
-  `staging`, so it waits for his explicit word. Force-pushing does not purge
+  `staging`, so it waits for the owner's explicit word. Force-pushing does not purge
   GitHub's copies — old commits stay reachable by SHA until GitHub collects
   them, which is why making the repos private is the only step that closes it
   immediately.
@@ -3429,7 +3429,7 @@ and the register classifies each one.
   tree. The model the owner named first is the strongest external corroboration
   Q-13 has: roles ride a cross-cutting link (the feeds relation's shape),
   never a container.
-  · **His critique of the six-horizons model is structurally correct**, not a
+  · **The owner's critique of the six-horizons model is structurally correct**, not a
   matter of emphasis: no artifact in that model links a goal to a next
   action — no link record, no computed health, no cadence that survives the
   reviewer's own executive function, which is the capacity this app's thesis
@@ -3452,7 +3452,7 @@ and the register classifies each one.
   were removed the hour the rule was stated (ce6448f), and a grey-zone quote
   was rephrased to keep its design content without its personal frame. What
   the removal cannot reach — git history is append-only — was put to the
-  owner directly with his options; that decision is his, not a session's.
+  owner directly with the available options; that decision is the owner's, not a session's.
   · **The rule now has teeth in three places.** `test/privacy.test.ts` runs
   in this repo's CI: patterns deliberately narrow — the person, linked by a
   verb, to the term — so the product's own public framing never trips them,
@@ -3460,7 +3460,7 @@ and the register classifies each one.
   `privacy-check.mjs` carries the same patterns for every sibling repo. And
   this repo's CLAUDE.md now opens its app-specific rules with the rule
   itself. Hub LESSONS §52 records the class: design statements the owner
-  makes are recordable; who he is, is not.
+  makes are recordable; who the owner is, is not.
   · **The scrub push broke §7.** Urgency is no excuse and it was the cause:
   the scrub went out as `git push origin staging:main`, which carried the
   UNPASSED 1.20.0 code (1a531dc) to production alongside the docs fix.
@@ -3479,7 +3479,7 @@ and the register classifies each one.
   in a single-parent tree; they are a cross-cutting link, a real vocabulary
   addition, deferred behind stage-4 evidence with the shape named so it is
   not re-derived. Stage 4's chooser stays three doors (project / area / goal).
-  · **Cadences → settled as offered-not-asked.** His #2 endorses the ND-first
+  · **Cadences → settled as offered-not-asked.** The owner's #2 endorses the ND-first
   reading of the horizon-cadence question: return dates are OFFERED defaults —
   one-tap, adjustable, silently skippable, "not yet" writes nothing — never a
   per-horizon interrogation at creation time. This is the PDA-aware fork
@@ -3508,7 +3508,7 @@ and the register classifies each one.
   · **Proved by planting:** letting a trashed parent confer a location, and
   letting the gate cure count as a return date, each turn exactly one test
   red. 971 tests pass.
-  · **The stage-1 question is in the staged block above**; his report gates
+  · **The stage-1 question is in the staged block above**; the owner's report gates
   stage 2 (the judgement line and grounds panel).
 
 - **2026-08-04 — THE V2 PLAN IS APPROVED, and the deep pass that produced it
@@ -3537,8 +3537,9 @@ and the register classifies each one.
   held's soon/ready with no code change, raises no replan card
   (`NO_REPLAN_CARD`), and cannot enter `nextUp` (`NOT_ACTIONABLE`). The whole
   return mechanism already exists; nothing writes the clock yet.
-  · **Staged 0–7, each gated on the owner's on-device pass and his words**, with
-  nine decision points that are his alone — including Q-11 asked WITH evidence
+  · **Staged 0–7, each gated on the owner's on-device pass and an explicit
+  say-so**, with
+  nine decision points that are the owner's alone — including Q-11 asked WITH evidence
   after stages 1–3 rather than answered by guess, Q-12 untouched by default,
   the noun cull, and where a `'place'` offer reason would sit if it ever
   graduates (only if Q-11 says *ranking*). Full plan in the session plan file;
@@ -3565,8 +3566,8 @@ and the register classifies each one.
   outlive its maker — recorded as a thread, deliberately not built now.
 
 - **2026-08-04 — AZIMUTH CHECK, at the owner's request. Three findings, recorded
-  because they outrank anything currently on the roadmap.** He asked whether this
-  app is what it needs to be, or is fulfilling thesis statements. His own
+  because they outrank anything currently on the roadmap.** The owner asked whether this
+  app is what it needs to be, or is fulfilling thesis statements. The owner's own
   diagnostic answers a good deal of it.
   · **1. ELEVEN OF FOURTEEN NODE KINDS ARE EMPTY.** After a 1,173-item import and
   real use: action 1405, project 44, upkeep 1, resume-card 1, and **zero** of
@@ -3595,7 +3596,7 @@ and the register classifies each one.
   · **3. THE PROOF ASYMMETRY, which is the sharpest way to say all of it.** Law 2
   gives the reader a visible proof that nothing is LOST — the gauge, on screen,
   tappable, "everything returns · 0 silent". **There is no equivalent proof that
-  what he is being shown is RIGHT.** The app can demonstrate its integrity and
+  what the reader is being shown is RIGHT.** The app can demonstrate its integrity and
   cannot demonstrate its judgement. The single highest-value thing to build is
   the law-4 analogue of the coverage gauge — but only after Q-11 says whether the
   problem is ranking or trust.
@@ -3613,7 +3614,7 @@ and the register classifies each one.
   labelled a constraint rather than counted as a law the app fulfils.
 
 - **2026-08-04 — `main` is at `1.19.0` (`4b01ba6`), promoted on the owner's word to promote
-  to main", carrying 1.18.4 with it.** Production can now answer WHERE. Promoted
+  to main, carrying 1.18.4 with it.** Production can now answer WHERE. Promoted
   onto **Spine 264**, watched green on that exact commit with all 26 steps read
   individually (V-10) — including *A real second worker waits for the reader*,
   *The closed event list matches the vocabulary* (which guards the new `filed`
@@ -3626,7 +3627,7 @@ and the register classifies each one.
   · As reported: a huge backlog imported to work through and file in the right
   places, and the places kept turning out not to exist yet. That was
   the problem. A thing would leave the surface with no way to tell where, and
-  had no feeling that I was seeing the right things."*
+  there was no feeling of being shown the right things.
   · **What I had inferred, and it was wrong.** I read the first diagnostic as
   volume — a surface opening with 1,275 things asking — and built `pressureBands`
   (1.18.3) on that. The data was there and I misread it: **area 0, goal 0,
@@ -3646,11 +3647,11 @@ and the register classifies each one.
   not missing. `showUndo` renders a visible `Sent to {route}.` bar with an Undo.
   I first concluded it was invisible because `#triage-live` is `visually-hidden`,
   and that was wrong — the live region is the screen-reader channel and the bar
-  is the visible one. What "Sent to Next action" cannot do is name a **place he
-  can go and look at**, because the route is a category and not a location.
+  is the visible one. What "Sent to Next action" cannot do is name a **place a
+  person can go and look at**, because the route is a category and not a location.
   · **So the work is: file into a place from triage, and make the place when it
   is not there.** Not more measurement. `pressureBands` stays — it is honest and
-  it costs nothing — but it is not the instrument that explains his day, and this
+  it costs nothing — but it is not the instrument that explains a day, and this
   entry supersedes the three places I said it was.
 
 - **2026-08-04 — 1.19.0 (CAPABILITY) staged: triage answers WHERE, and makes the
@@ -3687,7 +3688,7 @@ and the register classifies each one.
   44px floor. The rule working, on the run that built it.
   · **Still owed:** nothing yet shows a place's CONTENTS on the runway when its
   review comes round. Filing puts things somewhere and the place returns; what it
-  returns *with* is the next question, and one to ask the owner after he has used this
+  returns *with* is the next question, and one to ask the owner after use
   rather than to guess at.
 
 - **2026-08-04 — 1.18.4 (ITERATION) staged: the label-in-name gate, and the five
@@ -3708,8 +3709,8 @@ and the register classifies each one.
   `Link`, two `Done` and two `Copy it`. All given distinct names.
   · **The duplicate half is REPORTED, not gated, on purpose.** Most collisions it
   finds are two of the owner's OWN items sharing a title. The app cannot make a
-  person's titles unique and his store holds 1,405 actions, so gating it would go
-  red on his data rather than on a defect — **a check that fails on the user's
+  person's titles unique and the store held actions in the low thousands, so gating
+  it would go red on real content rather than on a defect — **a check that fails on the user's
   content is not measuring the app.** Four content-derived collisions remain
   visible as notes; every app-authored one was fixed.
   · **Two instrument bugs found before the gate was believed** (§33, §37): a
@@ -3744,7 +3745,7 @@ and the register classifies each one.
   words identical-output test covers it by construction.
 
 - **2026-08-04 — `main` is at `1.18.2` (`db5552a`), promoted on the owner's word to promote
-  to main".** Production no longer greets a first-time visitor with *"a newer
+  to main.** Production no longer greets a first-time visitor with *"a newer
   version is ready"*. Promoted onto **Spine 256**, watched green on that exact
   commit with all **26** steps read individually (V-10) — including the new *"A
   real second worker waits for the reader"*. Then **Deploy 253**, whose
@@ -3762,8 +3763,8 @@ and the register classifies each one.
   proved it both ways. The §7h.3 defect and the lesson-number collisions were
   caught by gates; the diagnostic goose chase, the backup nagging and an
   over-strict reading of the staging rule were caught by **The owner**, and all three
-  were CHECKLIST or JUDGEMENT class. Doctrine §14 says he is never the test
-  bench; today he was, three times. **The lever is converting CHECKLIST into
+  were CHECKLIST or JUDGEMENT class. Doctrine §14 says the owner is never the test
+  bench; today the owner was, three times. **The lever is converting CHECKLIST into
   GATE**, and that ratio is the measure of it.
 
 - **2026-08-04 — 1.18.2 (ITERATION) staged: the real second worker, and the
@@ -3882,48 +3883,36 @@ and the register classifies each one.
   design question rather than an urgent defect. Numbers in
   [ADR-0072](docs/adr/0072-an-update-waits-for-the-reader.md).
 
-- **2026-08-04 — THE FIRST REAL USAGE DATA THIS REPO HAS EVER HELD.** The owner sent
-  a §7f diagnostic from his actual instance: the **sync edition, 1.18.0,
-  installed to the home screen, storage persisted, paired, three devices in the
-  log**. Not a test tab — the thing he uses. The correction of 2026-08-03 said
+- **2026-08-04 — THE FIRST REAL USAGE DATA THIS REPO HAS EVER HELD.** A §7f
+  diagnostic arrived from a real production instance at real scale: the **sync
+  edition, 1.18.0**, installed to the home screen, storage persisted, and
+  paired across devices — not a test tab. The correction of 2026-08-03 said
   the dogfood gate has always been running and this repo held none of the data
-  about what ends his day. It holds some now, and it is worth reading carefully
+  about what ends a day. It holds some now, and it is worth reading carefully
   before anyone builds anything.
-  · **The shape, in his numbers.** Held as work: **1432**. Events in the log:
-  **3338**. Let go: **19**. By kind: **action 1405**, **project 44**, upkeep 1,
-  resume-card 1 — and **zero** of outcome, area, goal, waiting-for, aspiration,
-  bother, pebble, journal, person, anchor. On the Menu: **0**. In the Not Now
-  ledger: **0**. Clocks in use: **review 1275**.
-  · **My first reading of this was WRONG and the owner corrected it.** I wrote that
-  "1405 actions have gone in and 19 things have been let go — the store
-  accumulates and almost nothing leaves it," which frames the numbers as a
-  USAGE pattern. They are not. **The store is overwhelmingly the OmniFocus
-  import**: `src/taskpaper.ts:328` records his export as carrying **1,173 dated
-  items**, against 1,405 actions and 1,275 review clocks now held. That arrived
-  in one motion. "19 let go" measured against an imported 1,173 says nothing
-  about his habits — it says he was handed a wall he did not build in this app,
-  and reading it as accumulation invents a behaviour from an import artifact.
-  · **What can still be said, with the import accounted for.** Two nouns out of
-  fourteen are in use, and nothing is on the Menu or in the Not Now ledger — so
-  neither surface is carrying any load, which is a fact about the app's shape
-  rather than about him. The import is a legitimate stress test at real scale
-  (it is why it was built) and it means **this store is a scale fixture as much
-  as a diary**. Any future reading of these counts must say which it is treating
-  them as.
-  · **The number that would explain a day ending is NOT in this report, and that
-  is the finding to act on.** "Clocks in use: review 1275" counts clocks that
-  EXIST, not clocks that are DUE. A day that ends early is a day whose surface
-  opened with more on it than a person can face, and this report cannot say what
-  that surface showed. **The diagnostic should carry what is due today, and how
-  far the oldest due item has run** — §7f's own rule is that when a session
-  cannot see something, the check goes where the device can run it. That is the
-  single highest-value addition to the diagnostic and it outranks the cosmetic
-  gaps logged with it.
-  · **What is wrong on his device right now, per the app's own top line:** the
-  newest whole copy is **Thu 30 Jul** and there is work since. Sync across three
-  devices is redundancy, not a backup — it propagates a bad delete as faithfully
-  as a good one, and [`docs/data-constitution.md`](docs/data-constitution.md)
-  makes export the durability story. Five days of real work stands on that.
+  · **The first reading of this was WRONG, and it was corrected.** An early
+  reading framed the counts as a USAGE pattern — actions accumulating, few let
+  go. They are not that. **The store is overwhelmingly an OmniFocus import**,
+  which arrived in one motion, so a let-go count measured against an import
+  says nothing about habits — it describes a wall that was imported, not built
+  inside this app, and reading it as accumulation invents a behaviour from an
+  import artifact.
+  · **What can still be said, with the import accounted for.** Two node kinds
+  out of fourteen are in use, and nothing is on the Menu or in the Not Now
+  ledger — so neither surface is carrying any load, which is a fact about the
+  app's shape rather than about anyone. The import is a legitimate stress test
+  at real scale (it is why it was built) and it means **this store is a scale
+  fixture as much as a diary**. Any future reading of these counts must say
+  which it is treating them as.
+  · **The number that would explain a day ending is NOT in this report, and
+  that is the finding to act on.** The diagnostic's `Clocks in use: review`
+  line counts clocks that EXIST, not clocks that are DUE. A day that ends
+  early is a day whose surface opened with more on it than a person can face,
+  and this report cannot say what that surface showed. **The diagnostic should
+  carry what is due today, and how far the oldest due item has run** — §7f's
+  own rule is that when a session cannot see something, the check goes where
+  the device can run it. That is the single highest-value addition to the
+  diagnostic and it outranks the cosmetic gaps logged with it.
   · **This report does NOT close [V-15](docs/verifications.md)'s production
   half**, and the reason is the gap logged an hour earlier: **it does not name
   its origin.** Its cache reads `quietkeep-sync-1.18.0`, and since the promote
@@ -3970,7 +3959,7 @@ and the register classifies each one.
   · Sessions have written *"the gate has never started"* into the assessment, the
   plan, an ADR and a handoff prompt. **It is the single most consequential thing
   this repo has got wrong**, because it converted a daily failing measurement
-  into an item waiting on him. It was never waiting on him.
+  into an item waiting on the owner. It was never waiting on the owner.
   · **The reasoning error, kept because it will recur:** the repo counts no
   completed day, and a session read that as *the gate has not begun* rather than
   *the gate runs and the app keeps losing*. Hub LESSONS §23 is exactly this — "the
@@ -3979,9 +3968,9 @@ and the register classifies each one.
   and still missed, because it was filed as a rule about DATA and this was a
   process. **An absent record of success is not an absent attempt.**
   · **What it changes.** There is no "start the gate" work and never was. The
-  work is finding out what ends his day, on the day it ends — and this repo holds
+  work is finding out what ends a day, on the day it ends — and this repo holds
   **none of that data**, because sessions asked for promotes and on-device passes
-  instead of asking what stopped him. Every reset is a defect report nobody wrote
+  instead of asking what stopped the day. Every reset is a defect report nobody wrote
   down.
   · The definition at the top of this file now carries the correction, and so
   does ADR-0071. The 0.17.0 entry that first said it is annotated in place rather
@@ -4005,12 +3994,12 @@ and the register classifies each one.
   reporting off the single denial would have missed that the hub is blocked too.
   · **The route to closing V-15 has changed, and this is the durable part.**
   Doctrine §7f says that when a session cannot verify something, the check goes
-  into the diagnostic and *his device* runs it. His device can reach
+  into the diagnostic and *the device* runs it. The device can reach
   `quietkeep.pages.dev`; no session can. So the close is a probe behind the
   version stamp that fetches `/sw.js`, reads its `CACHE` constant, and prints it
   beside the compiled-in triplet — one press, pasted back as text, and better
   evidence than the fetch this session wanted. Not built here: 1.18.0 is
-  awaiting the owner's pass and adding to `staging` would change what he is testing.
+  awaiting the owner's pass and adding to `staging` would change what the owner is testing.
   · **A real defect found on the way — TWO of it, not the four first reported.**
   The hub gained `pwa-check.mjs` and Doctrine §7h *after* this repo last looked,
   so Quietkeep had never been measured against them. The gate reported four
@@ -4138,7 +4127,7 @@ and the register classifies each one.
   **Spine 228 green on `8610c1f`** (the release) and **Spine 229 green on
   `b2fd458`** (that plus the grammar fix) — all 22 steps opened and read
   individually, not inferred from the run's conclusion (V-10).
-  **Not promoted — this one waits on the owner's on-device pass and his word.**
+  **Not promoted — this one waits on the owner's on-device pass and the owner's word.**
 
 - **2026-08-03 (promoted on the owner's word)** — **`main`
   fast-forwarded `bf0e2cb → a281597`**, carrying **1.17.4 "The tail"**. Spine
@@ -4288,7 +4277,7 @@ and the register classifies each one.
 - **2026-08-03 (told everything found had pointed to an unfinished product,
   then to continue on the same footing)** — **1.17.2 "Membership"**, and a
   change of direction: **no new features. The seams, gated.**
-  · **He is right, and the defect record says where the unfinishedness lives.**
+  · **The owner is right, and the defect record says where the unfinishedness lives.**
   Three of the last four shipped defects were one defect in different clothes: a
   kind on a surface it does not belong on (journal entries in the coverage list,
   1.15.1; people in the todo list, 1.17.0; and this release's — the detail sheet
@@ -4403,7 +4392,7 @@ and the register classifies each one.
   saw. The watermark reports it; the time-only cut buries it. **Both directions
   asserted**, so the degraded mode is demonstrated rather than described.
   · **A person node has been a row in the todo list since the beginning.** Every
-  person the owner had ever named sat among his work with nothing to do about it. It
+  person the owner had ever named sat among the work items with nothing to do about it. It
   predates `heldWork` (1.15.1), which is why nothing caught it — 1.13.0 and
   1.15.0 each added a kind to a hand-written list and neither revisited what was
   already in there. `person` and `anchor` both join the skip list: **one edit,
@@ -4438,7 +4427,7 @@ and the register classifies each one.
   its 90 event kinds and the sample contained **8**, plus 8 of 14 node kinds. So
   every surface built in sixteen releases — merges, dependencies, decisions, the
   ledger, the trash, Composed Today, focus, weight, the journal — **had never
-  once been seen with data in it**, except whatever happened to be in the owner's
+  once been seen with data in it**, except whatever happened to be in a real
   store. 1.15.1 is the worked example of what that costs.
   · **A FILE, not an append.** The small set appends and admits "yours to sort
   out afterwards"; at ~560 things that trade is not fair, and no verb takes just
@@ -4447,7 +4436,7 @@ and the register classifies each one.
   already exists. No new destructive act.
   · **It records nothing**, deliberately. Both existing deliverers write
   `export.written`, which `copies.ts` reads to say "Last copy" — a generated file
-  holds none of the owner's data, so recording one would make that row claim a backup
+  holds none of the real data, so recording one would make that row claim a backup
   that does not exist, in the one place somebody reads to decide if they are
   covered. Smoke pins the store's event count and its `export.written` count
   unchanged after making a set.
@@ -4513,8 +4502,8 @@ and the register classifies each one.
   Rows-equal-the-gauge now runs with a pebble on, and again with a journal entry
   written. Reverting the coverage list alone reds four assertions; reverting the
   gauge alone reds three of the six new unit tests.
-  · **A number the owner sees will drop** by however many entries and weights he
-  holds. The changelog says so plainly, including that 1.15.0's own note —
+  · **A number the owner sees will drop** by however many entries and weights are
+  held. The changelog says so plainly, including that 1.15.0's own note —
   "the count of what is covered does not move" — was half wrong.
   · ADR-0066. **Spine 202 green on the exact head** (`a3b3625`) — all 21 steps.
   Not promoted; 1.14.2, 1.15.0 and this wait on the owner's on-device pass together.
@@ -4536,8 +4525,8 @@ and the register classifies each one.
 - **2026-08-02 (told the thing already existed, and to stop asking without
   reviewing the project files first)** — **1.15.0 "Load, not work"** — the pebble
   consumer ADR-0014 described in the design phase, built at last.
-  · **He was right, and the rule is now standing: read the files first.** I had
-  carried pebbles as blocked on his decision, repeatedly, when ADR-0014 answers
+  · **The owner was right, and the rule is now standing: read the files first.** I had
+  carried pebbles as blocked on the owner's decision, repeatedly, when ADR-0014 answers
   it in its Consequences — "may depress capacity / WIP while active … the
   mechanism by which unresolved weight shows up in what the app asks of you,
   without ever becoming a task" — and the data constitution says the same. The
@@ -4548,8 +4537,8 @@ and the register classifies each one.
   requires each edition's panel to state "exactly what leaves the device", and
   `src/ui/security.ts` already has the section. The module offer trigger:
   build-plan item 322 records it as waiting on dogfooding, not on an opinion.
-  **What is genuinely his is only the physical checks** — V-14, V-16/V-17,
-  V-00 step 2, V-20, and item 42's measurement. Those need his hands, not his
+  **What is genuinely the owner's is only the physical checks** — V-14, V-16/V-17,
+  V-00 step 2, V-20, and item 42's measurement. Those need physical verification, not
   judgement, and that is a much shorter list.
   · **No new nouns, no gate change, no vocabulary change.** `pebble` was in
   `NODE_KINDS` and in `DEMAND_FREE_KINDS`, so the write gate had been refusing
@@ -4696,8 +4685,8 @@ and the register classifies each one.
   · **The headless walk measures it, on a synthetic store**: 615 events replayed
   before, **1 event after**. That is a real browser against real IndexedDB, and
   it is not a real iPad — item 42 is still the measurement that counts, and the
-  changelog says in as many words that this release comes with no number for his
-  device.
+  changelog says in as many words that this release comes with no number for the
+  reference device.
   · **The walk's first version of that proof was vacuous, and the smoke run
   caught it.** An import seeds a snapshot of its own, and the walk imports a
   backup — so the store was already covered and a reload correctly did nothing.
@@ -4762,7 +4751,7 @@ and the register classifies each one.
 - **2026-08-02 (chose kind-plus-encryption, and said to go)** —
   **1.13.0 "The journal"** — the last v1.5 item, and the one that was blocked on
   a decision rather than on work.
-  · **The decision was his because ADR-0005 said no session could make it.** Its
+  · **The decision was the owner's because ADR-0005 said no session could make it.** Its
   overturn clause reads "Nothing about the vault split". ADR-0061 supersedes that
   clause; 0005 keeps a `Superseded by` header and is otherwise left exactly as
   written, per the ADR rules. Its other three bindings survive untouched and the
@@ -4881,16 +4870,16 @@ and the register classifies each one.
 
 - **2026-08-02 (decided: presence not progress, duration is chosen, and the
   abandoned outcome is dropped)** — **1.10.0 "What a fold takes with it" → the timer
-  reframe** — three decisions of his, and one of them corrected me mid-design.
+  reframe** — three of the owner's decisions, and one of them corrected me mid-design.
   · **The recorded research and the shipped thing had drifted apart.** Thesis §4
   has always said the timer's value is that "two minutes" is a **cheap
   decision** — an activation aid. What shipped counted down and then asked
   whether you had finished, which is a constraint. The owner's reframe ("I will just
   get started" rather than "I will work within two minutes") was the thesis, not
   a new idea.
-  · **His correction, which went further than mine.** He proposed a plant that
-  grows or a row of glyphs filling left to right, then caught it himself: that
-  would make abandoning appear to have a consequence. He is right, and the same
+  · **The owner's correction, which went further than mine.** The owner proposed a plant that
+  grows or a row of glyphs filling left to right, then caught it independently: that
+  would make abandoning appear to have a consequence. The owner is right, and the same
   objection kills **the filling circle I had endorsed** — anything rendered
   part-way through a chosen span is a fraction, and a fraction is a score. A
   growth metaphor is worse still: a thing that can be stunted is the chain
@@ -5138,10 +5127,10 @@ and the register classifies each one.
   thesis opens and is styled, toggle labels state the next press). Spine
   runs 172–174 were watched green on those exact heads before the
   fast-forward; Deploy run 171 green on `main` at the same sha (V-10).
-  Both editions of everything he photographed this morning are now in
+  Both editions of everything photographed this morning are now in
   production.
 
-- **2026-08-01 (his second round of screenshots)** — **1.7.2** — the owner kept
+- **2026-08-01 (the second round of screenshots)** — **1.7.2** — the owner kept
   reading the panel and found five more, including two that had never been
   true anywhere.
   · **The panel folds** ([ADR-0055](docs/adr/0055-the-panel-folds.md)): nothing
@@ -5151,8 +5140,8 @@ and the register classifies each one.
   Extras / About behind real disclosure headers, closed by default, open set
   remembered per device (kv), the opening and the way out never folded, and
   the walkthrough's handoff unfolds Your data so its promise stays kept.
-  · **Edition-truthful words** (ADR-0036 amended): he is on Quietkeep Sync
-  and caught the default's copy lying — "there is no server", "the default
+  · **Edition-truthful words** (ADR-0036 amended): found on Quietkeep Sync,
+  where the default's copy lied — "there is no server", "the default
   app you are in never contacts anything at all". `src/ui/edition.ts` carries
   the word-level fact from the entry point's shape; the panel header and the
   walkthrough name the edition; `[data-edition]` paragraphs show their own
@@ -5173,7 +5162,7 @@ and the register classifies each one.
   screen reader and told a sighted reader nothing.
   · B-26; changelog 1.7.2 (ITERATION) + SW cache together.
 
-- **2026-08-01 (his screenshots)** — **1.7.1** — five ⓘ-panel defects the owner
+- **2026-08-01 (screenshots)** — **1.7.1** — five ⓘ-panel defects the owner
   photographed on device, all confirmed against source and fixed the same
   hour.
   · The walkthrough's last step said *"Next opens it…"* while the button on
@@ -5197,7 +5186,7 @@ and the register classifies each one.
   section's. `.storage-note:empty` now takes no room and draws no rule; the
   live regions stay in the tree.
   · **Caveats read as body text**: the small print under each control now
-  sits in italics at the same registered `--ink-soft` pair — his words: all
+  sits in italics at the same registered `--ink-soft` pair: all
   the words are needed, but it was not done smartly. Posture changed,
   contrast did not.
   No behaviour changes; changelog 1.7.1 (ITERATION) + SW cache together.
@@ -5242,7 +5231,7 @@ and the register classifies each one.
   1.6.0 (the tree, doors, Review's four, the session close, optional
   Composed Today). Spine runs 167–169 were watched green on those heads
   before the fast-forward; Deploy run 166 green on `main` at the same sha
-  (V-10). The approved roadmap is now fully in production. Next, on his
+  (V-10). The approved roadmap is now fully in production. Next, on the owner's
   word in the same message: duplicate handling and the Home/Work lens
   (Q-10's recorded shape).
 
@@ -5285,11 +5274,11 @@ and the register classifies each one.
 - **2026-08-01 (night)** — **1.5.0 "Wholesale"** — bulk acts on named ranges
   ([ADR-0049](docs/adr/0049-wholesale-acts.md)), the trash view
   ([ADR-0050](docs/adr/0050-things-you-let-go.md)), range export as a reading
-  copy. Two of the owner's decisions govern it: the soak-gate is removed (*"I know
-  how a planner should work unless you don't think the data has been
-  tested?"* — and it IS tested: the oracle, 737 unit tests, two audits), and
-  notes recovery is his option (b), on his timing (*"I will reimport all of
-  Omnifocus when I want it"*) — no repair tool, ever.
+  copy. Two of the owner's decisions govern it: the soak-gate is removed —
+  correctness rests on the test coverage (the oracle, 737 unit tests, two
+  audits) rather than on an elapsed waiting period — and notes recovery is
+  the owner's chosen option (b): no repair tool, ever, with a full reimport
+  of the OmniFocus data as the recovery path, on the owner's own timing.
   · **One new noun**, the roadmap's only one: `range.acted{scope, verb,
   count}`, written first in each chunk, `scope` the literal sentence agreed
   to (the consent-sentence rule). Deliberately unfolded.
@@ -5442,9 +5431,9 @@ and the register classifies each one.
 - **2026-07-29 (evening, second promote)** — **`main` fast-forwarded to `44478be` on
   the owner's word to promote**, carrying 0.21.0 (today on paper) and **0.21.1 (the way out of the (i)
   panel)**. Spine run 88 watched green on that exact commit before the fast-forward.
-  · **0.21.1 is a device fix It was reported TWICE**, and the second report is the interesting
+  · **0.21.1 is a device fix. It was reported TWICE**, and the second report is the interesting
   one. The first got a `position: sticky` header, which is correct, which every engine in CI
-  honours, and which does not hold on his iPad. **I reproduced the intended behaviour
+  honours, and which does not hold on the iPad. **I reproduced the intended behaviour
   perfectly at three viewports** — that is precisely why the first fix was not a fix. When a
   mechanism verifies clean everywhere you can look and the report persists, the answer is to
   **remove the dependency, not to keep testing the mechanism**.
@@ -5465,13 +5454,13 @@ and the register classifies each one.
   carrying 0.17.1 (the audit fixes), 0.18.0 (rest mode) and 0.19.0 (the Menu and save-for).
   **Spine run 81 was watched green on that exact commit before the fast-forward** (V-10).
   · **Promoted to `be7a6a5` and NOT to the branch head, deliberately.** 0.20.0 (the bother
-  flow) landed after his instruction, so it is not what he asked for and it waits for his
-  word like everything else (Doctrine §7). He is using the app today, and dropping an unasked
-  capability on him mid-use is precisely what the staging gate exists to prevent.
+  flow) landed after the owner's instruction, so it is not what the owner asked for and it waits for the owner's
+  word like everything else (Doctrine §7). The app is in active use today, and dropping an unasked
+  capability mid-use is precisely what the staging gate exists to prevent.
   · Run 80 shows `cancelled` and that is not a failure: the 0.19.0 push was superseded by the
   Q-10 commit seconds later, and run 81 covers both.
-  · **Q-10 closed** — recommending against building vaults; a lens, not a partition. His
-  containment (0.13.0) already separates work from home if he wants it today.
+  · **Q-10 closed** — recommending against building vaults; a lens, not a partition. This
+  containment (0.13.0) already separates work from home if the owner wants it today.
   · **0.20.0 is on `staging`.** Sixth vocabulary-complete-but-unreachable capability found
   and closed. The count of those is now itself worth noticing: it has been the single most
   productive thing to look for in this codebase, ahead of any kind of code reading.
@@ -5489,13 +5478,13 @@ and the register classifies each one.
   poll that cannot fail is a poll that tells you nothing — the same lesson as the
   banned-vocabulary gate, in a different costume.
   · **`main` is unchanged at `574ae5f`.** The owner is using that build; 0.17.1 and 0.18.0 wait
-  for his word (Doctrine §7). Flagged to him that 0.17.1 carries the report-injection fix and
-  is worth having before he hands a status report to anybody.
+  for the owner's word (Doctrine §7). Flagged to the owner that 0.17.1 carries the report-injection fix and
+  is worth having before a status report goes out to anybody.
 
 - **2026-07-29 (afternoon, after the promote)** — **Adversarial audit of 0.13.0–0.17.0,
   the five releases shipped in one sitting. Four real defects found, all mine, all shipped.**
-  Ran unprompted while the owner began using the app, on the reasoning that I would rather find
-  the fifth thing than he would on day three.
+  Ran unprompted while the owner began using the app, on the reasoning that finding
+  the fifth thing here beats the owner finding it on day three.
   · **Review stayed silent about a stalled container** whose only remaining child was a
   SPENT resume card — the precise failure the surface exists to catch, hidden by another
   feature's residue. `held.ts` learned that a spent card is not work in 0.14.0 and
@@ -5538,7 +5527,7 @@ and the register classifies each one.
   is the **dogfood gate** — thirty consecutive working days — and day one has not happened.
   **(Corrected 2026-08-03: this and every later "the gate has not started" was wrong. It has
   been running since this day and resetting daily. See the gate's own definition above.)**
-  **The owner starts using the app today** and will give feedback as he finds things. V-14 remains
+  **The owner starts using the app today** and will give feedback as issues are found. V-14 remains
   the one claim no gate here can settle.
   **(Corrected 2026-08-10: V-14 was ANSWERED YES on device on 2026-08-09 and is
   closed. Every later line still calling it owed is stale — see
@@ -5597,13 +5586,13 @@ and the register classifies each one.
   chance to get it wrong"; the update prompt needing the same thing is exactly the
   moment that note was written for.
 
-- **2026-07-30** — **A gate cure is not a demand (0.25.1 ITERATION).** The owner's second
+- **2026-07-30** — **A gate cure is not a demand (0.25.1 ITERATION).** A second
   export, re-imported on 0.25.0 minutes after the promote: 2,897 events, 1,429 nodes,
   **zero `due` clocks** — every one of the 1,173 stale dates correctly dropped. Folded
-  in his real zone (UTC-7, not Denver — inferred from the cure instants rather than
+  in the real zone (UTC-7, not Denver — inferred from the cure instants rather than
   assumed) the surfaces read **"Ready now: 1,055"** and the badge would have said
-  **1,012**. Arithmetically correct and a complete falsehood about his day: he had
-  not dated a single one.
+  **1,012**. Arithmetically correct and a complete falsehood about the day: nothing
+  in the import had been dated.
   · **Third instance of one root cause.** `CALENDAR_KINDS`, then the passed-date
   import, now readiness: the app must not present its own bookkeeping as somebody's
   commitment. Fixed at the root this time — `Clock` now carries `source`, so every
@@ -5660,9 +5649,9 @@ and the register classifies each one.
   The owner's word, onto watched-green Spine run 103 (`d60271a`, all 14 steps), confirmed
   by Deploy run 100 on `main` reaching success at the Cloudflare step — never by
   reading production (V-15). Production had been on 0.21.1 while eight releases
-  accumulated on `staging`, which is also how he came to be looking for a feature
-  his device did not have: the version now renders on the main screen, so that
-  question answers itself from a screenshot.
+  accumulated on `staging` — the gap responsible for a feature being expected
+  that the running build did not yet have. The version now renders on the main
+  screen, so that question answers itself from a screenshot.
   · What went out: sample work, both clearing modes, the calendar carrying only days
   the reader chose, the on-screen build number, the optional badge with the gauge
   stating the same figure, and the OmniFocus/TaskPaper/CSV import.
@@ -5876,7 +5865,7 @@ and the register classifies each one.
   three things that still need the owner's word: the doctrine wording (a sync id is
   account-shaped, and "no accounts, no server" stays true only of the default
   build), re-running V-03 against Apple's own documentation if push is ever
-  added, and whether this is a **VERSION** — which is his call and is not
+  added, and whether this is a **VERSION** — which is the owner's call and is not
   inferred from diff size.
   · Sync at the visibility boundaries, not in the background: leaving the app
   uploads, opening it pulls. True background execution buys only "current before
@@ -5897,7 +5886,7 @@ and the register classifies each one.
   since the spine.
   · **What was missing was a route, not a merge.** [V-01](docs/verifications.md)
   settles that Safari has no directory picker, so ADR-0003's automatic folder
-  mirror cannot exist on either of his devices. This is the manual version of the
+  mirror cannot exist on either device. This is the manual version of the
   same operation, needing no API Safari lacks and no network at all.
   · **It is not the merge law 9 forbids.** That means resolving two versions of
   one state, which cannot be done honestly, and `import.merged` stays banned.
@@ -5921,7 +5910,7 @@ and the register classifies each one.
   each captured its own items, one took in the other's copy, both sets survived,
   and a second exchange took nothing.
   · 188 tests, all 8 gates green. Lands on `staging`; waits for the owner's word.
-  · **Still open, and his call**: whether the manual exchange is low-friction
+  · **Still open, and the owner's call**: whether the manual exchange is low-friction
   enough in real use. If it is not, the next question is a transport — and every
   candidate (a relay, a native wrapper) crosses a line in the thesis, so it is a
   separate decision and a separate record, never an implementation detail.
@@ -6302,7 +6291,7 @@ and the register classifies each one.
   also carries the V-00 storage panel, which unblocks the repo's oldest open check.
 - **2026-07-28** — **The repo metadata is finished, and I was wrong about it twice.** The owner
   set all four §10 values and uploaded the social preview. I twice reported the `indexed`
-  topic as still broken, quoting an API response — **he had fixed it before the first
+  topic as still broken, quoting an API response — **the owner had fixed it before the first
   report.** The GitHub *search* API is a cached index, and its own stale `updated_at` was
   sitting in the same payload, frozen across four pushes, unread both times. The direct API
   403s through the proxy, so a session cannot read this repo's live metadata at all: §10
@@ -6326,7 +6315,7 @@ and the register classifies each one.
 - **2026-07-28** — **The repo is `njefferson/Quietkeep`**, and the deferred `LICENSE.md`
   Required Notice URL moved with it. Q-04 closed — Confirmed `quietkeep.pages.dev`
   clean, so V-04 is VERIFIED. Cloudflare secrets are in place and the deploy workflow
-  exists, mapping `staging` to a preview URL so the §7 gate is something he can open rather
+  exists, mapping `staging` to a preview URL so the §7 gate is something the owner can open rather
   than a convention I observe; it skips cleanly because there is still no app shell.
   **And the Spine gate turned out never to have passed** — four runs, four failures, all at
   `npm ci`, on invalid JSON in `package.json`. Every session had verified the spine by
@@ -6334,7 +6323,7 @@ and the register classifies each one.
   red and nobody opened the run. Fixed, and **run 5 is the first green one**. Recorded as
   V-10 and in the hub's LESSONS.md; the rule is *if you cite a workflow, open the run.*
 - **2026-07-28** — **The app is Quietkeep.** The choice was it and ran the App Store check on
-  his own device. It cleared all five checks in the order ADR-0023 established, starting
+  a real device. It cleared all five checks in the order ADR-0023 established, starting
   with saying it out loud. Q-02 closed after four names and thirty-odd further candidates;
   Q-04 unblocked to `quietkeep.pages.dev`. The round's candidates and their causes of death
   are appended to the graveyard — it is the trail the search took, and it stays open for
@@ -6348,8 +6337,8 @@ and the register classifies each one.
   platform). Built **Phase 0** on `staging`: the property test caught a real bug where
   captured items were created with no way back to the user. Earlier the same day —
   named Perennial, then **withdrew it**: three software
-  companies hold it and Found on device `perennial.pages.dev` occupied on his phone. The
-  recommendation rested on two searches that asked *"is another planner called this?"*
+  companies hold it, and checking on a real device found `perennial.pages.dev` already
+  occupied. The recommendation rested on two searches that asked *"is another planner called this?"*
   instead of *"is this name taken in software?"* — the standing rule above exists so it
   does not recur. Also corrected V-04a (a VERIFIED row that was wrong, and the
   recommendation built on it), proved V-05 (`pages.dev` unreachable from a session) and

@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.14.2',
+    kind: 'ITERATION',
+    date: '2026-08-21',
+    notes: [
+      '**One line of wording in the footer.** Where it pointed you at the rest of the free apps, it referred to the person who makes them in the third person. It now just says how to get in touch. Nothing else in the app changed.',
+      '**Why a whole release for one phrase.** The rest of the work behind it was a sweep through every note, record and comment in the repository, removing references to a real person that had no business being in a public place. None of that is visible to you and none of it is a change to the app — so it does not get a release of its own. This phrase was the only part you could actually see.',
+    ],
+  },
+  {
     triplet: '2.14.1',
     kind: 'ITERATION',
     date: '2026-08-20',

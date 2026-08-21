@@ -3524,7 +3524,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // media. The button worked and the result was unusable.
   // --- The way out of the panel (found on device, twice) -------------------
   // The header was `position: sticky` inside the dialog's own scroll container.
-  // Correct, honoured by every engine in CI, and it did not hold on his iPad:
+  // Correct, honoured by every engine in CI, and it did not hold on the iPad:
   // the bar scrolled away with the content and both ways out ended up at the
   // extremes of a panel thousands of pixels tall.
   //
@@ -4663,7 +4663,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // a copy does), so the panel is already gone and waiting for its X would hang.
 
   console.log('\nThe build is on the main screen, without opening anything');
-  // a reader could not tell which build his device was running, because the version
+  // a reader could not tell which build the device was running, because the version
   // lived only inside the (i) panel's title. A screenshot of the app has to say
   // it. Read with the panel SHUT, and matched against the changelog head so the
   // two cannot drift.

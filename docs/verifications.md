@@ -177,7 +177,7 @@ below), and by this file's own status table a question with a leg deferred-with-
 PARTIAL, not VERIFIED. The name is safe to build on; it is not certified.
 
 Every check a session could run has run, and **both checks that only a real device could
-run came back from him** — the App Store search and `quietkeep.pages.dev`, on 2026-07-28.
+run came back from the owner** — the App Store search and `quietkeep.pages.dev`, on 2026-07-28.
 
 **The USPTO knockout was not run, and that is a decision rather than a gap.** Trademark
 protects against confusion **in commerce**; Quietkeep is free, has no paid tier, and is
@@ -277,8 +277,7 @@ a half-remembered name landing on a neighbour. Recorded in ADR-0022.
 Perennial was reported here as "un-killed" on the strength of two searches that **asked
 the wrong question**. It is in fact held by **three** software companies — Perennial Labs
 (DeFi, and serving `perennial.pages.dev`), Perennial Systems (web dev/fintech), and
-Perennial Software (security). Found on device the subdomain occupant himself, on his phone,
-in seconds.
+Perennial Software (security). Found on a real device, in seconds.
 
 The two failing queries were scoped to the app's own category
 (`app task planner productivity App Store`) and to the SEO-poisoned `trademark class 9`
@@ -338,7 +337,7 @@ recorded.
 "horizons" was *decorative* in the astro app and that the planner had the better claim to
 the word. That assumption was never checked. The owner corrected it: **recording your actual
 horizon, and using it to compute what is genuinely visible from where you stand, is that
-app's core differentiating feature** — something he says no other astro app does. Its
+app's core differentiating feature** — something the owner says no other astro app does. Its
 claim is literal; the planner's was figurative.
 
 **Kept visible rather than rewritten.** A wrong `VERIFIED` row is worse than an open one,
@@ -373,7 +372,7 @@ granting persistent storage under managed Edge policy. It was recorded as gating
 work half.
 
 **Withdrawn because the app is not for that machine.** Stated 2026-07-27: not intended
-or designed for GFE. Personal iPad only is my personal intent."* There is nothing to
+or designed for GFE — personal iPad only. There is nothing to
 check, because there is no supported configuration to check it in.
 
 **Kept rather than deleted**, so that a future reader finds the question already
@@ -381,8 +380,8 @@ considered and closed instead of raising it again as an oversight.
 
 > **One thing deliberately not claimed.** The owner expects managed-device storage policy
 > would block the app anyway if someone tried. That is a reasonable expectation and it
-> is **unverified** — no session can test it and no one has. It is recorded here as his
-> expectation and **nothing in the design relies on it as a control**. The scope
+> is **unverified** — no session can test it and no one has. It is recorded here as the
+> owner's expectation and **nothing in the design relies on it as a control**. The scope
 > statement in [`data-constitution.md`](data-constitution.md) does that work. An
 > unverified technical guess is not a safeguard, and treating it as one would be exactly
 > the false-confidence failure Doctrine §5 names.
@@ -525,7 +524,7 @@ Cloudflare secrets not configured — skipping deploy.
 > **Same error as V-11, one hour later.** There, a cached index was read as the current
 > state of the repo. Here, an unset variable was read as the absence of a credential. Both
 > times an instrument's silence got reported as a fact about the world, and both times it
-> was used to tell the owner something about his own setup that was not true.
+> was used to tell the owner something that was not true about the repo's own setup.
 
 **Settled:** the stored value is a **scoped API token** under the name
 `CLOUDFLARE_API_KEY`. Deploy run 9 authenticated with `Bearer` and shipped, so the
@@ -614,7 +613,7 @@ landed as the first step of Phase 3, with its own suite, one release later.
 > reasoning. It was a guess about someone else's setup, presented as an analysis — the same
 > failure as [V-11](#v-11--reading-this-repos-metadata-from-a-session--you-cannot)'s cached
 > index and the empty `RAW_TOKEN`, in a third costume. **An instrument I did not consult
-> him about is not evidence, and a screenshot is an instrument.**
+> the owner about is not evidence, and a screenshot is an instrument.**
 >
 > It also had a cost beyond being wrong: it argued *against* the explanation that actually
 > fits, and it called the promote "probably unnecessary" when the promote is the one thing
@@ -650,20 +649,20 @@ so wrong.
 > half stands, and settling it needs the repo's raw HTML and a look at the `og:image` host.
 >
 > **What does NOT change is the rule underneath.** Doctrine §10 still says list the values
-> and ask him to confirm each, and the failure this row exists to record was never really
-> "the API was unreachable" — it was *contradicting him about his own repo on the strength of
+> and ask the owner to confirm each, and the failure this row exists to record was never really
+> "the API was unreachable" — it was *contradicting the owner about the owner's own repo on the strength of
 > a stale read, twice*. A working read is not permission to do that again; it is one more
-> witness, and the weaker one when it disagrees with him.
+> witness, and the weaker one when it disagrees with the owner.
 
 **What happened.** Two sessions running reported the `indexed` topic still needed fixing.
-He had already fixed it, before the first of those reports. The report was not a guess — it
+The owner had already fixed it, before the first of those reports. The report was not a guess — it
 was quoted from an API response, which is what made it convincing and what made it wrong.
 
 **The instrument.** GitHub's **search API is a cached index, not a read of current state.**
 The tell was in the same payload both times and neither read it:
 
 ```
-updated_at: 2026-07-28T15:31:07Z    ← frozen, across four subsequent pushes and his edit
+updated_at: 2026-07-28T15:31:07Z    ← frozen, across four subsequent pushes and one further edit
 topics:     [... "indexed" ...]      ← stale
 ```
 
@@ -675,20 +674,20 @@ response was a snapshot of a moment hours earlier, presented with no indication 
 [V-05](#v-05--pagesdev-is-unreachable-from-a-session--and-that-is-now-proven) and V-04.
 
 **Therefore:** a session **cannot** verify this repo's description, website, topics, or
-social preview. Doctrine §10 says list the values and ask the owner to confirm each. **His
+social preview. Doctrine §10 says list the values and ask the owner to confirm each. **The owner's
 confirmation is the verification.** There is no second opinion available, and the thing
 being treated as one was a cache.
 
 > **The error worth remembering is not the stale read — it is what the stale read was used
 > for.** "Read back from the API, not assumed" was reported as a *stronger* check than the
-> owner's word. It was a weaker one, and it was used to contradict him about his own repo,
+> owner's word. It was a weaker one, and it was used to contradict the owner about the owner's own repo,
 > twice. When the only available witness is the owner, the job is to ask clearly and then
 > believe the answer.
 
 ---
 
 ## V-21 · Can a link open into the installed app at all, or only Safari? — **CLOSED 2026-08-10: ONLY SAFARI, and there is no scheme that changes it**
-· raised 2026-08-09 · settled on device, on the owner's iPad, by the only witness there is
+· raised 2026-08-09 · settled on device, on the reference iPad, by the only witness there is
 
 **The answer.** It opened **Safari**, not the installed app. The address bar read
 `quietkeep-sync.pages.dev`, the app rendered inside a Safari tab, and the capture
@@ -1134,13 +1133,13 @@ there able to retry.
 > pending on time passing rather than on anything being built. Step 4, the
 > stable-`UID` update-rather-than-duplicate claim, is also untouched.
 >
-> **CLOSED ON HIS WORD, and his word is the verification.** He used it on his own
+> **CLOSED ON THE OWNER'S WORD, and the owner's word is the verification.** The owner used it on a real
 > device and reported it working. The export opens, iOS accepts it, it lands on
 > the right day, and the alert reads *On day of event (09:00)* — which also
 > disposes of the old doubt about whether `TRIGGER;RELATED=START:PT9H` resolved
 > to 09:00 local rather than UTC or midnight. It does.
 >
-> **DO NOT RE-OPEN THIS.** Not by asking for a step 3, not by asking him to watch
+> **DO NOT RE-OPEN THIS.** Not by asking for a step 3, not by asking the owner to watch
 > for an alarm, not by re-hedging the copy on the grounds that a session has not
 > personally observed one. It was asked, it was answered, and it was then asked
 > again — repeatedly — which is the same failure
@@ -1215,8 +1214,8 @@ statement in this row's title is no longer true, and that is the point.**
 · closed by the §7f diagnostic running on a real device, not by a session
 
 **PRODUCTION, READ. The bytes, and where each came from.** After 1.18.0 was
-promoted on 2026-08-04, the owner sent a diagnostic from the instance installed on his
-home screen and confirmed in his own words that its URL is the plain one — the
+promoted on 2026-08-04, the owner sent a diagnostic from the instance installed on the
+home screen and confirmed that its URL is the plain one — the
 production sync host, `quietkeep-sync.pages.dev`, not staging. It reported:
 
     Build: 1.18.0
@@ -1230,7 +1229,7 @@ row has been asking for six releases:
   `globalThis.caches?.keys()` — not from a compiled-in constant. A version stamp
   would prove nothing here; §7f and §7h both say so.
 - Cache Storage is **per-origin**, so the cache read is the one belonging to the
-  host he named.
+  host the owner named.
 - The cache is created by the service worker the browser **fetched over the
   network**, and its name is the `CACHE` constant inside that fetched `sw.js`.
 - That constant carries the release triplet and is bumped with it, and the sync
@@ -1265,7 +1264,7 @@ first thing to add to the diagnostic — a report that cannot say where it came
 from cannot close a verification on its own.
 
 **What closed the staging half, and it took no new code.** The owner sent the §7f
-diagnostic from his device on 2026-08-03. It reported:
+diagnostic from a real device on 2026-08-03. It reported:
 
     Build: 1.18.0
     Service worker cache: quietkeep-1.18.0
@@ -1281,7 +1280,7 @@ exactly the assertion this row said no session could make.
 **Stated precisely, because the distinction is the whole point of this file.**
 At the time, only this much was proven: the origin serving build 1.18.0 served a
 `sw.js` whose `CACHE` was `quietkeep-1.18.0`, matching `staging`'s commit, at the
-moment the worker installed on his device. That the origin was
+moment the worker installed on the device. That the origin was
 `staging.quietkeep.pages.dev` was **inferred, not read** — 1.18.0 existed only on
 `staging`, so the inference was sound, and it was still an inference. Production
 was untouched: it served 1.17.4, which ships no diagnostic at all, so no report
@@ -1321,8 +1320,8 @@ host). So the chain a session can actually observe ends one step short:
 Production is 1.17.4 and **1.17.4 has no diagnostic** — the surface shipped in
 1.18.0, which is still on `staging`. There is no control to press on
 `quietkeep.pages.dev` and no report to take from it. A session asked the owner for one
-anyway on 2026-08-03; he answered *"there's no way to get data from main since it
-doesn't have that ability"*, and he was right. Checked afterwards rather than
+anyway on 2026-08-03; the answer was that `main` has no way to produce that data,
+and the answer was correct. Checked afterwards rather than
 before: `origin/main` carries no diagnostic source at all, and its only
 `caches.keys()` is the eviction sweep inside `sw.js`, which no page can read.
 
@@ -1352,10 +1351,10 @@ mechanism works; only the production instance is unmeasured, and the promote is
 what measures it.
 
 **The missing origin line has now cost a verification, one hour after it was
-logged.** On 2026-08-04, after the promote, the owner sent a diagnostic from his real
-instance reading `Service worker cache: quietkeep-sync-1.18.0`. Since the promote
+logged.** On 2026-08-04, after the promote, the owner sent a diagnostic from a real
+production instance reading `Service worker cache: quietkeep-sync-1.18.0`. Since the promote
 BOTH `quietkeep-sync.pages.dev` and `staging.quietkeep-sync.pages.dev` serve
-1.18.0, so that string cannot say which one he was standing on — and before the
+1.18.0, so that string cannot say which one the read came from — and before the
 promote only staging did, which is what makes the question live rather than
 pedantic. **The production half stays open on a one-line omission**, in a report
 that otherwise carries everything needed to close it. Promote the origin line
@@ -1473,4 +1472,4 @@ Two lessons from sibling apps apply to every future row here:
   costume — the failure is trusting an instrument's *fluency* instead of asking
   what it actually measures and when it last measured it.
 - **When the only witness is the owner, ask clearly and believe the answer.**
-  V-11 again: a weaker instrument was used to contradict him about his own repo.
+  V-11 again: a weaker instrument was used to contradict the owner about the owner's own repo.

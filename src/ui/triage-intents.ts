@@ -247,7 +247,7 @@ export function undoRouteEvents(
  * a person can go and look.
  *
  * **The place is made HERE when it does not exist**, which is law 4: levels push
- * down and the user never climbs. Making him leave triage to create a project
+ * down and the user never climbs. Making somebody leave triage to create a project
  * and come back is the climb the law forbids, and across 1,173 imported items it
  * is the whole difficulty.
  *
