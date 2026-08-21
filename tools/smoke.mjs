@@ -5057,8 +5057,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // heat card in front is somebody else's — the first version clicked "Just sort
   // it" on whatever happened to be showing and then asserted about the item it
   // had captured, which is two different items and a check that could only fail.
+  //
+  // THE BOUND HAS TO EXCEED WHAT THIS WALK ITSELF PUT IN THE INBOX (2.15.0).
+  // It was 30, which held while only captures reached the inbox. An import now
+  // lands there too — that is the whole point of 2.15.0, and it is why the
+  // offer has something to hand over on a store that arrived from another
+  // planner — and this walk imports 60 rows a few hundred lines above. Sixty is
+  // more than thirty, so the loop ran out before reaching its own item and four
+  // assertions failed downstream of that one fact.
+  //
+  // Derived from the import above rather than another magic number, so the two
+  // cannot drift apart again: raise the import and this rises with it.
   let onMine = false;
-  for (let i = 0; i < 30 && !onMine; i++) {
+  const bound = cap_many.length + 40;
+  for (let i = 0; i < bound && !onMine; i++) {
     const card = await tpage.locator('#triage-card').textContent();
     if (/a thing to sort without heat/.test(card || '')) { onMine = true; break; }
     const skip = tpage.locator('#triage-actions .route', { hasText: 'Not this one' });
@@ -5228,8 +5240,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // repaints the action row underneath a locator click. This drains until the
   // named item is out of triage, which is the condition that actually matters,
   // and says what it was looking at if it cannot get there.
+  //
+  // BOUNDED BY WHAT THIS WALK IMPORTED, for the same reason as the loop above
+  // (2.15.0): an import now lands in the inbox, so a fixed 40 no longer clears
+  // a queue this walk filled with 60.
+  //
+  // TIMES TWO, and that is arithmetic rather than padding: this loop spends one
+  // pass setting heat on a card and a SECOND routing it, so every item in front
+  // of the named one costs two iterations. One times the import cleared the
+  // first assertion and left the second still short.
   const routeUntilOut = async (title) => {
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < cap_many.length * 2 + 40; i++) {
       if (await tpage.locator('#triage:not([hidden]) .route').count() === 0) return;
       const card = await tpage.locator('#triage-card').textContent().catch(() => '');
       const done = await tpage.evaluate(() => {
