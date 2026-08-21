@@ -275,17 +275,19 @@ situations are the acceptance test — walked end to end, not asserted.
 
 **Read this block first.** It is updated in the same commit as the work.
 
-- **Phase 0 — the ground.** Nearly done. Landed: the third-person gate; this
+- **Phase 0 — the ground.** DONE here. Landed: the third-person gate; this
   file; the status page; this repo's entire third-person backlog (gate reports
   zero); 2.14.2; the voice gate and ADR-0106; the four research entries (23-26);
   the trademark ban given teeth in the `vocabulary` gate; `tools/surfaces.mjs`
   and the `#upkeep` surface it found unmeasured; 2.14.3.
-  Outstanding: the `### Open` heading in `NOTES.md`, which still holds three
-  questions that are each Status: Closed, and the `questions.mjs` rule that
-  should refuse that; decision 6 closed on the evidence.
+  the `### Open` heading corrected and `questions.mjs` given a rule that refuses
+  a closed question filed under it; decision 6 closed on the evidence.
+  **Phase 0 is complete in this repo.** What remains of it is in the hub.
 - **The hub's backlog is NOT done** — around 146 sites remain in its
   `LESSONS.md`. That file alone; everything else in the hub is clear.
-- Phase 1 through 8: not started.
+- **Phase 1 — the app can be entered.** NOT STARTED, and it is next. Its first
+  move is a rendering-and-reading job, not a build: drive a real import through
+  the app, render it, and walk the fourteen situations against that store.
 - **Last full Spine seen green:** `2ff380d` on `staging`; `74dca96` on `main`
   carrying 2.14.1 to production.
 - **Waiting on the owner:** the on-device pass, whenever convenient. Nothing is

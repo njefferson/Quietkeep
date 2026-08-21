@@ -386,6 +386,14 @@ decided by a session.**
 
 ### Open
 
+**Nothing is open.** All fourteen questions below are closed, and this heading
+says so rather than leaving it to be inferred from an empty list — a heading
+reading *Open* over three closed questions is the same false receipt the
+Status lines were added to fix, one level up. `tools/questions.mjs` refuses a
+closed question filed under this heading now, so the two cannot drift again.
+
+### Closed
+
 - **Q-13 · Roles are IDENTITIES that cross multiple areas — how are they
   modelled?** Settled 2026-08-04, answering the roles-vs-areas question
   directly: **a role is an identity, and it crosses multiple areas.** That settles
@@ -499,7 +507,6 @@ decided by a session.**
   - Status: **Closed.** The trade is right. `Not this` and `Not now` record
     nothing, forever.
 
-### Closed
 
 - **Q-14**
   - Question, asked 2026-08-09: is there worth in distinguishing raw input from formed tasks, with a runway for execution, a projects level, an areas / goals / roles / lines-of-effort level, and a stratosphere for amorphous ideas that either get pulled down to where they can drive action or are allowed to disappear?
@@ -3029,13 +3036,30 @@ back in as. Enforced by the HIS_LIFE class in GATE hub:privacy-check.mjs.
 
 - *(no entries yet)*
 
-**Proposed, awaiting the owner's word (decision 6 of the V2 plan):** the dogfood
-gate keeps its definition and its counter untouched, and is RESTYLED as the
-*full-product gate* — not runnable until the full product is declared to
-exist, with this register as the primary instrument until then. This reconciles
-the 2026-08-03 correction (the gate has always been running) with the 2026-08-04
-statement (no stability test is possible yet): the resets are measurements,
-and the register classifies each one.
+**CLOSED 2026-08-21 by evidence, not by asking (decision 6 of the V2 plan).**
+The proposal was to keep the dogfood gate's definition and its counter untouched
+and RESTYLE it as the *full-product gate* — not runnable until the full product
+is declared to exist, with this register as the primary instrument until then.
+It sat proposed for seventeen days.
+
+It is closed on a fact that arrived on 2026-08-21 and settles it without an
+opinion being needed. **No session of real use has ever gone past a fresh import
+or a handful of sample items.** So the counter has never had anything to count:
+every recorded reset was the app being unenterable at the door, not a stability
+failure under use. That is a test which never started rather than a test which
+failed, and it reconciles the two entries the proposal was written to reconcile —
+the 2026-08-03 correction (the gate has always been running) and the 2026-08-04
+statement (no stability test is possible yet). Both were true of different
+things.
+
+**The restyle is adopted as proposed**, because the evidence says exactly what
+the proposal guessed: the gate becomes runnable when the app becomes enterable,
+which is phase 1 of `docs/plan-situated.md`. The definition and the counter are
+untouched. Until then the Block register is the instrument, and the resets it
+holds are measurements of the door, not of the product.
+
+Closed the same route Q-11 took — by research rather than by putting a question
+to the owner that the record could already answer.
 
 ### Log
 
