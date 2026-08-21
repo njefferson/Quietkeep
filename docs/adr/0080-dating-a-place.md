@@ -94,5 +94,5 @@ When a dated place comes round, it arrives as itself — a row saying the place 
 ready. **It does not yet show what is inside it.** That is the collision
 catalogue's top-ranked proposal (entry 3, place-return-with-contents) and the
 other half of this promise; it is deliberately left until the owner has used
-dating, because the catalogue's own routing says to ask him after he has filed
+dating, because the catalogue's own routing says to ask the owner after filing
 rather than to guess at the shape.

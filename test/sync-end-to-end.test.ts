@@ -371,7 +371,7 @@ test('erasing clears the mark too, so a later pairing cannot skip events', async
 //
 // Reported from an iPad and a phone: pairing worked while no data synced.
 //
-// His exports told the whole story. The iPad held 2900 events and sent ZERO; the
+// The exports told the whole story. The iPad held 2900 events and sent ZERO; the
 // phone held one event it had written itself, and that one crossed. The cause:
 // `exchangeOnce` offered only events THIS DEVICE AUTHORED, and every one of the
 // iPad's 2900 was authored by the plain Quietkeep app and had arrived in the Sync

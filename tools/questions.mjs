@@ -4,7 +4,7 @@
 //   node tools/questions.mjs        (exits non-zero on a question that does not)
 //
 // `NOTES.md`'s question list is where a session looks to answer "what is waiting
-// on him". It could not answer that.
+// on the owner". It could not answer that.
 //
 // **TEN OF FOURTEEN QUESTIONS HAD NO STATUS LINE AT ALL**, so open was inferred
 // from absence — and every one of the ten was in fact closed, several of them
@@ -13,7 +13,7 @@
 //
 // **AND THE ONE THAT DID SAY WAS WRONG.** Q-11 carried a `CLOSED` bullet and,
 // four lines below it, a Status line reading *asked, not answered — and NOBODY
-// PUT THE QUESTION TO HIM*. Three other files already held the answer: the
+// PUT THE QUESTION TO THE OWNER*. Three other files already held the answer: the
 // research entry that refuses the alternative in terms, the ADR recording that
 // refusal, and a source comment saying the ranking reading was established by
 // measurement rather than by asking. The question was answered everywhere except
@@ -106,7 +106,7 @@ console.log(`\n  ${open} question(s) currently open, ${starts.length - open} set
 
 if (failed > 0) {
   console.error('\nThe question list is where somebody looks to answer "what is waiting');
-  console.error('on him". Ten of fourteen once had no status at all, and every one of');
+  console.error('on the owner". Ten of fourteen once had no status at all, and every one of');
   console.error('the ten was already closed.\n');
   process.exit(1);
 }

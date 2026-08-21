@@ -1039,7 +1039,7 @@ async function auditNames(page, stateName, theme) {
   // title: a card in a list and the same card in search, or two errands both
   // called "the same errand twice". The app cannot make a person's titles
   // unique, and a real store holds 1,405 actions, so a gate on this would
-  // go red on his data rather than on a defect. **A check that fails on the
+  // go red on real data rather than on a defect. **A check that fails on the
   // user's content is not measuring the app.**
   //
   // It stays visible because the app-authored collisions are real and worth

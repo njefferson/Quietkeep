@@ -64,7 +64,7 @@ check and still had to be withdrawn.
   not that word, and this app is free and licensed against being sold, so trademark's
   confusion-in-commerce test does not reach it. Written down anyway.
 
-**Not yet run:** `quietkeep.pages.dev` (Q-04, ten seconds on his device) and a USPTO
+**Not yet run:** `quietkeep.pages.dev` (Q-04, ten seconds on a device) and a USPTO
 knockout in classes 9 and 42 if wanted — the lowest-priority check for a noncommercial
 app, per [V-04](../verifications.md). This record is Accepted, not "cleared for print".
 

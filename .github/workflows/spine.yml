@@ -71,7 +71,7 @@ jobs:
 
       # THE SECOND HALF OF THE PRIVACY RULE. privacy-check.mjs anchors
       # every pattern on the owner's NAME or role, so it cannot see a verbatim
-      # sentence of his speech — five of those were in this repo, and one more in
+      # sentence of ordinary speech — five of those were in this repo, and one more in
       # an ADR that had copied one, all of them green on every gate. This holds
       # every set-apart quotation to a declaration saying whose words it is.
       # Runs beside the privacy gate because it is the same rule.

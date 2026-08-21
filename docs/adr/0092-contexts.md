@@ -19,10 +19,9 @@ so.** NOTES.md **Q-10**: *"whether a second vault is for home tasks, and whether
 the app already separates work tasks some other way."* The session that answered
 it diagnosed the design correctly and wrote it down:
 
-> *"what he is describing wants a **lens** — a filter you switch on and off over
-> one list — and not a partition."*
-> *"Binding constraint if a lens is built: law 1 does not bend for it. A thing
-> filtered out of view still has its clock and still comes back."*
+The shape wanted was a **lens** — a filter you switch on and off over one list —
+and not a partition. The binding constraint it recorded: law 1 does not bend for
+it, so a thing filtered out of view still has its clock and still comes back.
 
 That is this record's decision and this record's central rule, written nineteen
 days earlier. **It was then closed** — correctly, as a decision not to build

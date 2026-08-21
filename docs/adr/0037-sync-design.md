@@ -12,16 +12,17 @@
    claim** — the default is never weakened to accommodate it. The sharpest of the
    six rules it added: *an id is account-shaped and must be called what it is.*
    Do not say "no account" because the word was technically avoided.
-2. **No push. Exchange when the app opens, and it just works.** His words:
+2. **No push. Exchange when the app opens, and it just works.** The stated want:
    *"Exchange when it opens and just works."* This is a **much smaller build than
    the one this ADR was scoped for** and it removes the entire push tier:
    - no notification permission, no subscription, no VAPID keys, no waking a
      device, and **V-03 is no longer on the path** (it gated push only);
    - the relay becomes a pure transport with no ability to initiate anything.
-   The earlier reading — that he wanted push — came from him saying he did not
-   want to think about it. That reason is about **his data being current wherever
-   he picks up**, which exchange-on-open delivers completely. Push is a different
-   want (*a reminder reaching him when Quietkeep is shut*), it is still the job
+   The earlier reading — that push was wanted — came from a stated wish not to
+   have to think about it. That reason is about **the data being current wherever
+   the app is picked up**, which exchange-on-open delivers completely. Push is a
+   different
+   want (*a reminder arriving when Quietkeep is shut*), it is still the job
    the calendar export does today, and ~~**V-14 remains unverified** for it~~ —
    **V-14 was answered YES on device on 2026-08-09 and is closed**, so the
    calendar route is now a verified delivery mechanism rather than an assumed
@@ -141,12 +142,12 @@ new record and not an enhancement.
   implementation detail:
   1. **The doctrine text.** "No accounts, no telemetry, no server-side user data"
      stays exactly true of Quietkeep and becomes partly false of Quietkeep Sync.
-     A sync id is account-shaped. The wording is his.
+     A sync id is account-shaped. The wording came from the owner.
   2. **[V-03](../verifications.md) re-run** against Apple's own documentation.
      Required only if push is ever added, but recorded now so it is not
      discovered late.
   3. **Whether this is a VERSION** (Doctrine §7, first slot). It changes what the
-     app *is* for anyone who opts in. That judgement is his and is not inferred
+     app *is* for anyone who opts in. That judgement is the owner's and is not inferred
      from diff size.
 - The relay is the only server this project has ever had. It ships with the
   Worker source in this repo, so what it does is readable by the person trusting

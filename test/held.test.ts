@@ -409,7 +409,7 @@ test('the tick-off control matches the groups exactly — including the Menu', (
 // one so none would be silent (law 1), each cure landing at the end of that day —
 // and because "ready" was inferred from any arrived clock, the heading read
 // **"Ready now: 1,055"** and the icon badge said 1,012. Arithmetically correct,
-// and a complete falsehood about his day: he had not dated a single one.
+// and a complete falsehood about the day: not one of them had been dated.
 //
 // The fix is the same insight as `CALENDAR_KINDS` and the replan predicate, in a
 // third place: the app must not present its own bookkeeping as somebody's

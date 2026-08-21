@@ -219,7 +219,7 @@ test('a quoted CSV field with commas and newlines survives', () => {
 });
 
 test('doubled quotes inside a quoted field are one quote', () => {
-  assert.deepEqual(parseCsv('Name\n"He said ""no"""\n')[1], ['He said "no"']);
+  assert.deepEqual(parseCsv('Name\n"Reply was ""no"""\n')[1], ['Reply was "no"']);
 });
 
 test('CSV columns are found by NAME, so a reordered export still works', () => {
