@@ -53,7 +53,7 @@ check and still had to be withdrawn.
 - **5**
   - Check: **App Store**
   - Instrument: **a real device**
-  - Result: *"there is nothing on the App Store that I see near it."* Blocked from a session and proven so ([V-05](../verifications.md)); handed over, and it came back answered.
+  - Result: **nothing near it on the App Store.** Blocked from a session and proven so ([V-05](../verifications.md)); handed over, and it came back answered.
 
 **Recorded rather than omitted — the nearest live neighbours:**
 

@@ -2016,6 +2016,121 @@ try {
       `${theme}/one thing: nothing it strips is still on screen`
       + `${leaked.length ? ` — ${leaked.slice(0, 6).join('; ')}` : ''}`);
 
+    // AND EVERY REGION OF THE SURFACE HAS ANSWERED (2.14.0).
+    //
+    // The card has had this since 2.10.0 and has not gone stale since: two lists
+    // that must together account for every element of it, checked by
+    // `tools/plain.mjs`. The chrome had one list of three selectors and nothing
+    // checking it against the surface, so fifteen sections joined the worst
+    // day's screen without anybody deciding they should — including the two
+    // hardest lines on it, "one date has gone by" and "one thing is with
+    // someone else".
+    //
+    // It is HERE rather than in `tools/plain.mjs` because the question is about
+    // the rendered tree and the answer has to be too. Reading nesting out of
+    // `public/index.html` with a regex is how a gate ends up agreeing with a
+    // file instead of with a screen, which is the failure this whole state
+    // exists to catch.
+    //
+    // WHAT IS IN SCOPE, said out loud so a gap cannot be mistaken for one:
+    // the header, `<main>`, and the two loose regions either side of them. The
+    // sheets are not — a dialog is not on the work surface, and opening one
+    // while the mode is on is a deliberate act, not something the screen did.
+    const unaccounted = await page.evaluate(() => {
+      const declared = new Set([...(window.__PLAIN_STRIPPED ?? []), ...(window.__PLAIN_SURVIVES ?? [])]
+        .filter(s => s.startsWith('#')).map(s => s.slice(1)));
+      const out = [];
+      const walk = (parent, path) => {
+        for (const el of parent.children) {
+          if (el.id && declared.has(el.id)) continue;
+          // A container whose parts are declared separately — the header's own
+          // bar is one — is walked into rather than demanded of.
+          if ([...declared].some(id => el.querySelector(`#${CSS.escape(id)}`))) {
+            walk(el, `${path} > ${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}`);
+            continue;
+          }
+          out.push(`${path} > <${el.tagName.toLowerCase()}>${el.id ? ` #${el.id}` : ' (no id — give it one)'}`);
+        }
+      };
+      const header = document.querySelector('header.frame');
+      const main = document.querySelector('main');
+      if (header) walk(header, 'header');
+      if (main) walk(main, 'main');
+      for (const sel of ['#skip-held', '#foot']) {
+        const el = document.querySelector(sel);
+        if (!el) out.push(`${sel} is not in the page`);
+        else if (!declared.has(sel.slice(1))) out.push(`${sel} is in neither list`);
+      }
+      return out;
+    });
+    (unaccounted.length === 0 ? pass : fail)(
+      `${theme}/one thing: every region of the work surface says whether it survives`
+      + (unaccounted.length
+        ? ` — ${unaccounted.slice(0, 8).join('; ')}. Add each to PLAIN_CHROME_HIDDEN or`
+          + ' PLAIN_CHROME_KEPT in src/plain.ts, then `node tools/plain.mjs --write`.'
+        : ''));
+
+    // AND WHAT IS LEFT ON THE SCREEN, counted (2.14.0). The lists above can be
+    // complete and still wrong — a region declared as surviving that should not
+    // have been is a decision, and this is the number that makes it one anybody
+    // can see. Ceilings, not targets: they exist to make growth deliberate.
+    const left = await page.evaluate(() => {
+      const off = (el) => !el.closest('#nextup') && !el.closest('dialog') && el.checkVisibility();
+      const controls = [...document.querySelectorAll('button, input, select, textarea, summary, a[href]')]
+        .filter(el => off(el) && !el.classList.contains('visually-hidden'));
+      let words = 0;
+      const lines = [];
+      for (const el of document.querySelectorAll('p, h1, h2, h3, li')) {
+        if (!off(el) || el.closest('button, a, summary, label')) continue;
+        if (el.classList.contains('visually-hidden')) continue;
+        if (el.querySelector('p, h1, h2, h3, li')) continue;
+        const n = ((el.textContent || '').trim().match(/\S+/g) ?? []).length;
+        if (n === 0) continue;
+        words += n;
+        lines.push(`${el.id ? `#${el.id}` : el.tagName.toLowerCase()} (${n}w)`);
+      }
+      return {
+        controls: controls.length, words, lines,
+        names: controls.map(el => el.id ? `#${el.id}` : `<${el.tagName.toLowerCase()}>`),
+      };
+    });
+    // Measured at 2.14.0 on this fixture, where a capture has just landed AND a
+    // second worker is waiting — so both of the app's two transient lines are on
+    // screen at once, which is the honest worst case rather than the tidy one.
+    //
+    // The ten: the ⓘ, More, the capture field and its button, the proof line,
+    // the update strip's two, the way out, and the footer's licence link and
+    // version. The twenty-one words: the wordmark (1), the capture receipt (7),
+    // the update strip (5) and the footer (8).
+    //
+    // Before this release, on the same fixture: 20 controls and 65 words.
+    //
+    // 9 -> 10 WITHIN THIS RELEASE, and the +1 is an ACCOUNTING artefact rather
+    // than growth. `#nextup-plain-off` was inside the offer card and therefore
+    // not counted here; it moved out because the card hides whenever nothing is
+    // asking, which made "mode on, nothing to offer" a screen with no way back.
+    // Nothing was added to the screen — one control crossed the boundary this
+    // count is drawn around. The same shape as `size-check.mjs`'s 229 -> 230,
+    // and worth the same sentence: a budget that reads the wrong way round is
+    // still telling the truth about what it measures.
+    //
+    // NO HEADROOM, deliberately, like `tools/size-check.mjs`'s budgets. A number
+    // that can drift by two is a number nobody edits and nobody reads. Raising
+    // either of these means writing down what was added and why it earns a place
+    // on the day the screen is the problem.
+    //
+    // WHAT IT COUNTED, on a failure and never on a pass. A ceiling that reports
+    // only a number sends the next reader to reproduce the fixture by hand
+    // before they can even see what grew.
+    const LEFT_CONTROLS = 10;
+    const LEFT_WORDS = 21;
+    (left.controls <= LEFT_CONTROLS ? pass : fail)(
+      `${theme}/one thing: ${left.controls} controls left outside the offer (ceiling ${LEFT_CONTROLS})`
+      + (left.controls > LEFT_CONTROLS ? ` — ${left.names.join(', ')}` : ''));
+    (left.words <= LEFT_WORDS ? pass : fail)(
+      `${theme}/one thing: ${left.words} words of standing text left outside the offer (ceiling ${LEFT_WORDS})`
+      + (left.words > LEFT_WORDS ? ` — ${left.lines.join(', ')}` : ''));
+
     await page.click('#nextup-plain-off');
     await page.waitForFunction(() =>
       document.querySelector('#nextup-plain-bar')?.hidden === true);

@@ -339,6 +339,12 @@ Status · Date · Decision · Why · Consequences · What would overturn it
 - **[0103](0103-the-card-states-no-moving-number.md)**
   - Decision: The offer card states no number that moves on its own — `#nextup-left` ("About 2h 30m left today", the one permitted number) comes off, and the remainder of the day keeps the home it already had on the opt-in header clock. The card forbade exactly this for the line beneath it, the clock is opt-in because "a day is not a countdown" while the card said it to everybody, the two rendered the same arithmetic at once for anyone with the clock on, and the line's own prospective defence needed the item's duration, which renders only in the detail sheet
   - Status: Accepted · shipped 2.12.2 · narrows [0059](0059-presence-not-progress.md), [0010](0010-decay-primitive.md)
+- **[0104](0104-the-worst-day-is-the-whole-screen.md)**
+  - Decision: "Just one thing" is a fact about the screen, not about the card — the work surface below the offer is not displayed while it is on, leaving capture and its receipt, the proof line, More and the ⓘ, the update strip and a running focus session. Measured at 390×844 with the mode ON: five controls on the card and fourteen controls and 65 words standing underneath it, the same fourteen and the same 65 as with the mode off, for four releases. The strip is a stylesheet rule generated from the list, because every section below the offer has an owner that repaints it and a rule cannot be outrun by a repaint
+  - Status: Accepted · shipped 2.14.0 · extends [0090](0090-a-way-past-the-stack.md)
+- **[0105](0105-the-exit-is-not-inside-the-state.md)**
+  - Decision: A control that undoes a state does not live inside anything that state can hide — the bar carrying the only way out of "Just one thing" moves out of the offer card, which is hidden whenever nothing is asking. Rendered: mode on with nothing to offer left capture, the proof line, More, the ⓘ and the footer, and no control anywhere that turns the mode off. The defect predates ADR-0104 and its cost does not; nothing about the exit's markup changed in that release, which is why no diff and no release note could see it. The containment is asserted statically now, not stated in a comment written inside the container it forbids
+  - Status: Accepted · shipped 2.14.1 · consequence of [0104](0104-the-worst-day-is-the-whole-screen.md)
 
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a

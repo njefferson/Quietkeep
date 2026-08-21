@@ -20,6 +20,14 @@ start();
 // against themselves, and hard-coding them in `tools/a11y.mjs` would be a fourth
 // copy of exactly the list that went stale three times. One source, read at
 // runtime.
-import { PLAIN_HIDDEN, PLAIN_CHROME_HIDDEN } from '../plain.ts';
-(globalThis as unknown as { __PLAIN_STRIPPED?: readonly string[] }).__PLAIN_STRIPPED =
-  [...PLAIN_HIDDEN, ...PLAIN_CHROME_HIDDEN];
+import { PLAIN_HIDDEN, PLAIN_KEPT, PLAIN_CHROME_HIDDEN, PLAIN_CHROME_KEPT } from '../plain.ts';
+(globalThis as unknown as {
+  __PLAIN_STRIPPED?: readonly string[];
+  __PLAIN_SURVIVES?: readonly string[];
+}).__PLAIN_STRIPPED = [...PLAIN_HIDDEN, ...PLAIN_CHROME_HIDDEN];
+// AND THE OTHER HALF (2.14.0). `tools/plain.mjs` walks the rendered header,
+// `<main>` and the footer and fails on a region in neither list, so it needs
+// both — and for the same reason as above, read from the one source rather than
+// copied into the gate.
+(globalThis as unknown as { __PLAIN_SURVIVES?: readonly string[] }).__PLAIN_SURVIVES =
+  [...PLAIN_KEPT, ...PLAIN_CHROME_KEPT];

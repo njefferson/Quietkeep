@@ -26,8 +26,8 @@
    **V-14 was answered YES on device on 2026-08-09 and is closed**, so the
    calendar route is now a verified delivery mechanism rather than an assumed
    one. That strengthens this argument rather than weakening it.
-3. **NOT a version.** *"No version until I've ensured it actually all works."*
-   Consistent with his v1 ruling. Sessions do not number this.
+3. **NOT a version.** No version number until the whole thing is verified to
+   work. Consistent with the v1 ruling. Sessions do not number this.
 
 ## The constraint that shapes everything, stated plainly
 
@@ -66,8 +66,8 @@ shards between themselves through a **relay that holds only ciphertext**.
 
 ## Why not background
 
-*"Walk out of my office and pick up on the other device"* is satisfied by syncing
-when the app loses and gains visibility:
+**Leaving one device and picking up on another** is satisfied by syncing when
+the app loses and gains visibility:
 
 - leaving the iPad → upload on `pagehide`, with `keepalive` so the request
   survives the page being backgrounded

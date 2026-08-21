@@ -159,7 +159,8 @@ export interface AutoSyncClock {
 /**
  * Keep two open devices converging without a press.
  *
- * This is the actual fix for "I opened both and had to press Sync three times":
+ * This is the actual fix for the defect where opening both devices still took
+ * three presses of Sync:
  * a single open does one round, and the cross-device handoff (A uploads, then B
  * pulls) needs each side to act after the other. So while a device is visible it
  * syncs on a timer AND the instant it is shown — which is the common case,

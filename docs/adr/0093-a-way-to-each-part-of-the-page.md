@@ -79,9 +79,8 @@ their time in was markup with no region, announced by a screen reader as a
 heading belonging to nothing and invisible to any navigation built on the page's
 own structure.
 
-That is also why the surface reads, as reported from a device, as *"just one very
-very long to-do list"*: nothing named the list, so nothing distinguished it from
-the page.
+That is also why the surface read, on a device, as **one very long to-do list**:
+nothing named the list, so nothing distinguished it from the page.
 
 ## Why the door is not fixed, which is the part that was got wrong first
 

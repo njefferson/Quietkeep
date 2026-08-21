@@ -31,7 +31,7 @@ candidate for v1.5"*, with containment offered in the meantime.
 
 **The question was answered about the MECHANISM that was guessed at rather than
 the NEED that was described.** "Should the vault scope projections?" got a
-thorough, correct answer. "How do I keep home out of my work list?" did not get
+thorough, correct answer. **Keeping home out of the work list** did not get
 built, and the record then read as settled because a numbered question had a
 Status line on it.
 

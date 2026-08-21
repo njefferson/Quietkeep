@@ -29,6 +29,30 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.14.1',
+    kind: 'ITERATION',
+    date: '2026-08-20',
+    notes: [
+      '**The way out of "Just one thing" no longer disappears when there is nothing to do.** It sat on the offer card, and the offer card is not there when nothing is asking — so if you turned the mode on and then finished or put off the last thing, the button that undoes it went with the card.',
+      '**The last release is what made that serious.** Until it, everything else was still on the screen underneath, so you were stuck in a mode with a working app. With the surface cleared away, the same state left a screen with somewhere to put things down, the line saying nothing has gone quiet, and no way back.',
+      '**It is its own line now, below where the offer sits, and it is there for as long as the mode is.** Nothing else moved.',
+    ],
+  },
+  {
+    triplet: '2.14.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-20',
+    notes: [
+      '**"Just one thing" now clears the whole screen, not only the card.** Turning it on gave you one task with nothing around it — and then left everything else standing underneath: the sorting queue, *needs a new plan*, *with other people*, the Menu, the search box and your whole held list. Counted on a phone: five things on the card, and fourteen buttons and 65 words below it.',
+      '**Which means it was doing the opposite of its job to the two hardest lines on the page.** *One date has gone by* and *one thing is with someone else* were printed underneath a card that had just had its explanation removed for being one thing too many to read.',
+      '**Now there is the thing, the two buttons, and the way back.** Below the offer there is nothing at all. On a phone the whole screen is now shorter than one screenful, where it used to run to more than two.',
+      '**Four things never go, whatever else does.** Putting something down still works from here — that never depends on anything. The line that tells you nothing has gone quiet is still there, because it is what makes the rest being out of sight safe. *More* and the ⓘ stay, because a screen you cannot leave is worse than a busy one. And if you are in the middle of working on something, that stays too.',
+      '**Nothing was taken away.** Everything is still held, every card is still there, and one tap on *Show me everything again* brings the whole surface straight back.',
+      '**The cost, stated: search is not on this screen.** While the mode is on, *where did I put that* is answered by leaving it. That is a real loss and it was the trade made on purpose — on this day, a box asking you to remember a word is one more thing asking.',
+      '**The welcome-back greeting and the worry flow are held back too**, rather than dismissed. They are waiting when you come out.',
+    ],
+  },
+  {
     triplet: '2.13.0',
     kind: 'CAPABILITY',
     date: '2026-08-20',

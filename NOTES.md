@@ -689,14 +689,16 @@ decided by a session.**
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.12.2**
-- **https://quietkeep.pages.dev** — production, **2.11.0** (promoted 2026-08-19,
-  `10d329f`; the promoted tree asserted byte-identical to the verified staging
-  tree — `e38fe6e` on both — rather than inferred from a clean merge. Deploy,
-  Spine and the push-on-main workflow all green **on `10d329f` itself**, read
-  from the runs. This line briefly said the receipt had not been read yet, which
-  was the honest state at the time: the previous promote's green belongs to
-  `c909104` and is a fact about 2.10.0 and about nothing else.)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.14.1**
+- **https://quietkeep.pages.dev** — production, **2.13.0** (promoted 2026-08-20,
+  `e3494c4`; the promoted tree asserted byte-identical to the verified staging
+  tree rather than inferred from a clean merge. Deploy, Spine and the
+  push-on-main workflow all green **on `e3494c4` itself**, read from the runs.)
+- **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
+  and `handoff-check.mjs` is what noticed — because it asks whether the version
+  beside the URL is the CURRENT one, which is a question no reader of this file
+  thinks to ask about a line that looks maintained. The paragraph nine screens
+  down was current the whole time. One file, two answers, again.
 
 **AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
 WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
@@ -800,6 +802,96 @@ rules were measured against the real violations and flagged 39, 138 and 227 file
 of honest prose — the shape of his speech and the shape of the product's voice
 are the same shape. Hub LESSONS §108.
 
+**2.14.1 — AND THE WAY OUT WAS INSIDE THE THING IT UNDOES.** Found by rendering
+the state the release had just made dangerous: **mode ON, nothing asking.** The
+offer card is hidden whenever nothing is being asked, and
+`#nextup-plain-off` lived inside it — so the screen was capture, the proof line,
+`More`, the ⓘ, the footer, and **no control anywhere that turns the mode off**.
+The mode survives a reload by design, so turning it on and then finishing or
+deferring the last thing is the whole route in.
+
+**It was survivable until 2.14.0 and not after.** With the work surface still
+standing underneath, the reader was stuck in a mode that had nothing left to
+strip; with the surface cleared, the same state is a blank screen. **The release
+did not create the defect. It changed what the defect costs**, which is the
+thing a release note about "what changed" cannot see, because nothing about that
+line changed.
+
+**The card's own comment said the exit must always be visible** — *"being unable
+to leave it would be a trap, and the reader who most needs this state is least
+able to go looking for the exit"* — written directly above the element, inside
+the container that hides. `tools/plain.mjs` asserts the CONTAINMENT now:
+`#nextup-plain-off` is not a descendant of `#nextup`, statically. A comment
+saying the exit must stay outside the card is what the card's comment already
+said.
+
+**A control that undoes a state must not live inside anything that state can
+hide.** That is the general form, and it is worth carrying to the siblings.
+
+**The a11y ceiling went 9 → 10 in the same release and the +1 is an ACCOUNTING
+artefact**: the exit was inside the card and therefore not counted outside it.
+Nothing was added to the screen; one control crossed the boundary the count is
+drawn around. Same shape as `size-check.mjs`'s 229 → 230.
+
+**2.14.0 — "JUST ONE THING" IS A FACT ABOUT THE SCREEN, NOT ABOUT THE CARD
+([ADR-0104](docs/adr/0104-the-worst-day-is-the-whole-screen.md)).** The mode for
+the day when operating the tool is itself hard stripped the offer card and left
+the app standing underneath it, for four releases, unmeasured.
+
+**RENDERED AND COUNTED AT 390×844 ON THE THIRTEEN-ITEM SAMPLE, WITH IT ON.** The
+card: five controls, two words. **Below the card: fourteen controls and 65 words
+of standing text — the same fourteen and the same 65 as with the mode off.** Not
+one of them moved. The runway ran to 2.18 screens.
+
+**The two hardest lines on the surface were among them.** *Needs a new plan — one
+date has gone by* and *one thing is with someone else*, printed underneath a card
+that had just had its reason line removed for being one thing too many to read.
+
+**The reasoning was already written, at one third the scale.** 2.13.0's own strip
+rule refuses `#nextup-also` because three names beside the offer are the pile
+arriving in miniature. The held list, the sort queue and the replan queue beneath
+it are the pile arriving whole, and no property makes three too many and a
+complete inventory acceptable.
+
+**After: five controls above, five on the card, two below — the footer's licence
+link and the version. 0.72 screens, entire.**
+
+**WHAT SURVIVES IS FIVE THINGS AND THE LIST IS SHORT ON PURPOSE.** Capture and
+its receipt (unconditional, from every state); the proof line (it is what makes
+everything being out of sight safe); `More` and the ⓘ (a screen with no way to
+anywhere is a trap); the update strip (Doctrine §7h); and a running focus
+session, which is the one thing rather than the pile.
+
+**THE COST, STATED RATHER THAN DISCOVERED: search is not on this screen**, and
+the work surface is its only route. On this day *where did I put it* is answered
+by leaving the mode. That is a real loss and it is the trade.
+
+**THE MECHANISM TOOK THREE GOES AND ONLY THE MEASUREMENT CAUGHT EITHER MISS.**
+A loop setting `hidden` at the top of `work.ts`'s refresh works for chrome
+nothing repaints and for nothing else — `paintJump` runs deliberately AFTER
+`work.refresh()`, and `triage.refresh()` is called from two places outside the
+refresh chain. Then a `<style>` element generated from the list at mount, which
+**the app's CSP refused** (`style-src 'self'`) while the console said so and the
+mode went on stripping nothing. The source read correctly through both. The rule
+lives in `public/app.css` now as a generated artefact of `PLAIN_CHROME_HIDDEN`,
+written by `node tools/plain.mjs --write` and held to the list by the gate.
+
+**AND THE LIST THAT WENT STALE IS NOW ACCOUNTABLE BOTH WAYS.** The card has had
+that pair since 2.10.0 and has not drifted since; the chrome had one list of
+three selectors and nothing checking it against the surface, which is how fifteen
+sections joined the worst day's screen without anybody deciding they should.
+`tools/a11y.mjs` walks the rendered header, `<main>` and the footer with the mode
+on and fails on any region declared in neither — **against the DOM, because
+reading nesting out of the markup with a regex is how a gate ends up agreeing
+with a file instead of a screen.** It found the wordmark undeclared on its first
+run. The same walk counts what is left outside the offer, with no headroom: nine
+controls and twenty-one words, against twenty and sixty-five before.
+
+**One thing `#upkeep` proves on its own:** it sat in the CARD's strip list from
+the day the mode was built, where the both-directions check could not see it
+because that check only validates ids beginning `nextup-`. The one runway section
+the mode did strip was the one nothing was checking.
+
 **2.13.0 — WHEN A PLACE COMES ROUND, YOU CAN SEE WHAT ELSE IS IN IT.** The
 thesis's open half, and the last routing proposal in `docs/nd-collisions.md`
 still reading *V2-candidate*. Entry 3 is the best-evidenced entry in the
@@ -842,8 +934,12 @@ the state needs a review clock ALREADY PAST on a container, which no date contro
 in the app can set. It is seeded straight into the store for that reason, and the
 comment says so.
 
-**Staging is 2.13.0 and it is waiting on your on-device pass.** Production is
-2.12.2. The docs-and-tooling work before it changed no shipped byte — measured, not assumed:
+**Staging is 2.14.1 and it is waiting on your on-device pass.** Production is
+2.13.0, promoted on 2026-08-20 and read off the runs rather than the push output:
+`e3494c4` concluded success on Deploy, on Push-on-main and on the Spine.
+
+**2.13.0 was waiting on that pass when this said so, and the paragraph below is
+what it said at the time.** The docs-and-tooling work before it changed no shipped byte — measured, not assumed:
 `git diff --name-only 6cbb5ab HEAD -- public/ src/` is empty, so the deployed
 artefact is byte-identical and there is no release to number. (This paragraph
 said *2.12.3* before that was checked, which is the fourth time in this session a
@@ -3320,10 +3416,10 @@ and the register classifies each one.
   routes the debt.
 
 - **2026-08-04 — docs/horizon-models.md: what exists for working at different
-  horizons, surveyed against the laws.** It was asked: *"What models exist for
-  different horizons? I know of the Army's Lines of Effort… those kinds of
-  views are NEVER offered in planning software. Each horizon is briefly
-  discussed by David Allen, but not in a way that leads to actual action."*
+  horizons, surveyed against the laws.** The question: **what models exist for
+  working at different horizons.** Lines of effort were named as a known example,
+  with the observation that **those kinds of view are never offered in planning
+  software**, and that the horizons get discussed without leading to action.
   Eighteen models surveyed — military doctrine, strategy deployment, OKRs,
   PARA and ND-community practice among them — each with its origin, its
   mechanism, why it does or does not lead to action, why planning software
@@ -3347,8 +3443,9 @@ and the register classifies each one.
 
 - **2026-08-04 — The privacy FAIL state: named by the owner, found already
   breached, gated. And a §7 breach committed during the repair, reverted.**
-  His standing rule, verbatim: *"Make sure you never record anything in the
-  repo that is personal or embarrassing for me. That is a FAIL state."*
+  **The standing rule: nothing personal or embarrassing about the owner is ever
+  recorded in a repo, and doing it is a FAIL state** — not a preference, not a
+  trade-off, and not something a session weighs against anything else.
   · **It had already happened.** In recording design conversation faithfully,
   a session had written sentences into this public file that attached
   personal facts to the owner rather than to the product or its users. They
@@ -3453,10 +3550,11 @@ and the register classifies each one.
   named research, what conventional systems do wrong, what this app already
   does (cited to its own ADRs), and a build/later/refuse routing. It was asked
   for it by name. Its refusals are as load-bearing as its builds.
-  · **The owner's design statements recorded verbatim this session, because sessions
-  keep paying for not writing them down:** *"Next up is literally all of those things,
-  though — I need to know when to see which one."* On recurring work: *"I
-  don't see where a recurring 'clean the bathroom sink' would go?"* — which
+  · **Two design statements recorded this session, because sessions keep paying
+  for not writing them down.** On the offer: **Next up already contains all of
+  those things — what is missing is knowing WHEN to see which one.** On recurring
+  work: **there was nowhere for a recurring standard like cleaning a sink to
+  go** — which
   produced the two-kinds-of-mattering frame (standards return by pressure,
   correctly; directed work returns by declaration, currently missing). On
   horizons: *"When do I review my goals? My roles? When do I visit whether I'm
@@ -5046,10 +5144,10 @@ and the register classifies each one.
 - **2026-08-01 (his second round of screenshots)** — **1.7.2** — the owner kept
   reading the panel and found five more, including two that had never been
   true anywhere.
-  · **The panel folds** ([ADR-0055](docs/adr/0055-the-panel-folds.md)): his
-  words — nothing separates the major sections, the panel carries too much,
-  "I think the section should collapse as well now, or we need a separate
-  settings". The fold is the smaller of his two offers: Help / Your data /
+  · **The panel folds** ([ADR-0055](docs/adr/0055-the-panel-folds.md)): nothing
+  separated the major sections and the panel carried too much, so **the sections
+  collapse** — the alternative on the table being a separate settings screen.
+  The fold is the smaller of the two options: Help / Your data /
   Extras / About behind real disclosure headers, closed by default, open set
   remembered per device (kv), the opening and the way out never folded, and
   the walkthrough's handoff unfolds Your data so its promise stays kept.
@@ -5636,11 +5734,10 @@ and the register classifies each one.
   been given a number, and at that point in the walk it had been given `clear`.
   A guard on a state the fixture never reaches is not a check.
 
-- **2026-07-30** — **Clearing things out (0.23.0 CAPABILITY).** The owner, answering the
-  open question: *"I feel like both should be available so the user has control of
-  their data"* and *"there should be a verification that prevents it from being
-  easily done, however, and it should recommend a back up being done before it
-  happens with a button available at that point."*
+- **2026-07-30** — **Clearing things out (0.23.0 CAPABILITY).** Settled, answering the open
+  question: **both routes stay available, because the person controls their own
+  data** — and **a verification stands in front of the act so it cannot be done
+  easily, recommending a copy first, with the button to make one right there.**
   · **Two modes, because they are different promises.** *Clear what I'm holding*
   appends one `node.trashed` per held thing — the surfaces empty and the log still
   contains everything, so law 9 stays unqualified and an export taken afterwards is
@@ -5817,9 +5914,9 @@ and the register classifies each one.
   on the store's unique-id index.
   · **Stated limit, not hidden**: edit the same field on both devices before
   exchanging and last-writer-wins picks one silently.
-  · **Not assumed for anyone else.** The owner has cellular on both devices and said
-  plainly *"you can't assume everyone will"* — so nothing here touches the
-  network, and the app is complete without ever opening this.
+  · **Not assumed for anyone else.** Connectivity on every device a person owns
+  cannot be assumed, so nothing here touches the network and the app is complete
+  without ever opening this.
   · Verified in **two real browser contexts** with separate IndexedDB stores:
   each captured its own items, one took in the other's copy, both sets survived,
   and a second exchange took nothing.

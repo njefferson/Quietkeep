@@ -64,9 +64,9 @@ not sure whether they already did, so that path has to cost nothing.
 - **Not conflict resolution.** Edit the same field on both devices before
   exchanging and last-writer-wins picks one, silently. That is inherent to the
   model and is stated rather than hidden.
-- **Not a network feature.** It works with no connectivity at all. The owner uses
-  cellular on both devices, but *"you can't assume everyone will"* (2026-07-29) —
-  so nothing here may depend on being online.
+- **Not a network feature.** It works with no connectivity at all. Connectivity
+  on every device a person owns cannot be assumed (settled 2026-07-29), so
+  nothing here may depend on being online.
 
 ## Consequences
 

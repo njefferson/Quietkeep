@@ -100,10 +100,10 @@ superseded rather than stretched.
 ## Amendment — 2026-08-01 (1.7.2): the words follow the edition, on the owner's word
 
 The wording gap this record listed for the owner resolved itself the honest way: he
-opened Quietkeep Sync and caught the default's copy lying to him — "there is no
-server" and "the default app you are in never contacts anything at all", both
-false in that build. On his instruction ("these two lie… these need to match
-the version"):
+the default's copy was caught lying — "there is no server" and "the default app
+you are in never contacts anything at all", both false in that build. **Both
+lines had to be made to match the edition actually running**, which is what the
+following does:
 
 - `src/ui/edition.ts` carries the word-level edition fact, set once by the
   entry point's own shape (the sync entry passes its mount; the default passes
