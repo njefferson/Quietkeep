@@ -167,6 +167,49 @@ console.log(`  with other people  ${survey.people ?? '(hidden)'}`);
 console.log(`  the Menu           ${survey.menu ?? '(hidden)'}`);
 console.log(`  worth a look       ${survey.review ?? '(hidden)'}\n`);
 
+// ——— WHAT THE GATE DID TO IT ———
+// The screen says nothing is asking. That is a claim about CLOCKS, so ask the
+// log rather than the surface: an import goes through `admit()`, and a
+// `node.created` with no other coverage is cured with a review clock. If that
+// clock is the same one for every row, the pile is not absent — it is queued.
+const cured = await page.evaluate(async () => {
+  const db = await new Promise((res, rej) => {
+    const r = indexedDB.open('quietkeep');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  });
+  const all = await new Promise((res, rej) => {
+    const q = db.transaction('events').objectStore('events').getAll();
+    q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error);
+  });
+  const clocks = all.filter((e) => e.kind === 'clock.set');
+  const bySource = {};
+  for (const e of clocks) bySource[e.payload?.source ?? '(none)'] =
+    (bySource[e.payload?.source ?? '(none)'] ?? 0) + 1;
+  const gateSet = clocks.filter((e) => String(e.payload?.source ?? '').startsWith('gate:'));
+  const whens = [...new Set(gateSet.map((e) => e.payload?.at))];
+  return {
+    events: all.length,
+    clocks: clocks.length,
+    bySource,
+    gateSet: gateSet.length,
+    distinctTimes: whens.length,
+    when: whens.slice(0, 3),
+    kinds: [...new Set(gateSet.map((e) => e.payload?.clockKind))],
+  };
+});
+console.log('WHAT THE GATE DID TO THE IMPORT\n');
+console.log(`  events in the log        ${cured.events}`);
+console.log(`  clock.set events         ${cured.clocks}`);
+for (const [src, n] of Object.entries(cured.bySource)) console.log(`    ${String(n).padStart(5)}  ${src}`);
+console.log(`  set by the gate's cure   ${cured.gateSet} (kind: ${cured.kinds.join(', ')})`);
+console.log(`  distinct times among them ${cured.distinctTimes}`);
+console.log(`  and that time is         ${cured.when.join(' | ')}`);
+console.log(`  now is                   ${new Date().toISOString()}\n`);
+if (cured.gateSet > 100 && cured.distinctTimes === 1) {
+  console.log('  >> The pile is not absent. It is QUEUED, every row on one clock,');
+  console.log('     and it arrives together when that clock does.\n');
+}
+
 const shot = async (name) => {
   await settle();
   await page.screenshot({ path: join(OUT, `${name}.png`) });
@@ -184,6 +227,69 @@ if (need) {
   await page.waitForTimeout(800);
   await shot('02-the-whole-runway');
   await page.setViewportSize({ width: 390, height: 844 });
+}
+
+// ——— AND AFTER THE BOUNDARY THOSE CLOCKS CROSS ———
+// The cure sets one review clock per top-level project, at the end of the local
+// day. What the app does when those arrive cannot be read from the log — it
+// depends on the offer's tiers — so the clock is moved forward and the surface
+// is asked again. This is the half that decides whether an import is a wall.
+try {
+  await page.clock.install({ time: new Date(Date.now() + 26 * 3600e3) });
+  await page.reload({ waitUntil: 'load' });
+  await page.waitForSelector('body[data-ready=true]');
+  await page.waitForTimeout(2500);
+  await settle();
+  const after = await page.evaluate(() => {
+    const vis = (el) => el.checkVisibility() && el.getBoundingClientRect().height > 0;
+    const t = (s) => document.querySelector(s)?.textContent?.trim().replace(/\s+/g, ' ') ?? null;
+    const runway = document.querySelector('#runway');
+    return {
+      sections: [...document.querySelectorAll('main section[id]')].filter(vis).map((s) => s.id),
+      controls: [...document.querySelectorAll('button, input, select, summary, a[href]')]
+        .filter((e) => vis(e) && !e.closest('dialog')).length,
+      offer: t('#nextup-title'),
+      why: t('#nextup-why'),
+      count: t('#nextup-count'),
+      gauge: t('#gauge'),
+      review: t('#review-count'),
+      screens: runway ? +(runway.scrollHeight / window.innerHeight).toFixed(1) : null,
+    };
+  });
+  // DID THE CLOCK ACTUALLY MOVE? A time trick that silently fails would make
+  // every conclusion below wrong in the same direction, so it is asserted rather
+  // than assumed — the same reason a planted gate has to be watched going red.
+  const seen = await page.evaluate(() => new Date().toISOString());
+  console.log(`  the page now believes it is ${seen}`);
+  const arrived = await page.evaluate(async () => {
+    const db = await new Promise((res, rej) => {
+      const r = indexedDB.open('quietkeep');
+      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+    const all = await new Promise((res, rej) => {
+      const q = db.transaction('events').objectStore('events').getAll();
+      q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error);
+    });
+    const now = Date.now();
+    const clocks = all.filter((e) => e.kind === 'clock.set');
+    return {
+      total: clocks.length,
+      past: clocks.filter((e) => Date.parse(e.payload?.at) <= now).length,
+    };
+  });
+  console.log(`  cure clocks now in the past: ${arrived.past} of ${arrived.total}\n`);
+  console.log('THE NEXT MORNING, AFTER THOSE CLOCKS ARRIVE\n');
+  console.log(`  visible sections   ${after.sections.join(', ')}`);
+  console.log(`  controls on screen ${after.controls}`);
+  console.log(`  runway             ${after.screens} screens`);
+  console.log(`  the one thing      ${after.offer ?? '(nothing offered)'}`);
+  console.log(`  and it says why    ${after.why ?? '(no reason line)'}`);
+  console.log(`  behind it          ${after.count ?? '(no count)'}`);
+  console.log(`  the proof line     ${after.gauge ?? '(none)'}`);
+  console.log(`  worth a look       ${after.review ?? '(hidden)'}\n`);
+  await shot('03-the-next-morning');
+} catch (err) {
+  console.log(`  (could not move the clock forward: ${err.message})\n`);
 }
 
 await browser.close();
