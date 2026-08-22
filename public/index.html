@@ -1251,8 +1251,14 @@
       <button id="detail-parent-set" type="button">Put it under</button>
       <button id="detail-unparent" type="button" class="ghost">On its own</button>
     </div>
-    <div class="detail-row">
-      <button id="detail-parent-create" type="button" class="ghost" hidden></button>
+    <!-- WHAT KIND OF CONTAINER, asked in the same breath as its name (2.16.0).
+         Hidden and shown with the create button beside it, because a choice
+         about a thing nobody is making is furniture. `project` is selected, so
+         the ordinary path is unchanged and costs no extra tap. -->
+    <div class="detail-row" id="detail-parent-new" hidden>
+      <label class="detail-inline" for="detail-parent-kind">as</label>
+      <select id="detail-parent-kind"></select>
+      <button id="detail-parent-create" type="button" class="ghost"></button>
     </div>
     <div class="detail-row">
       <button id="detail-make-project" type="button" class="ghost">This is bigger than one step</button>

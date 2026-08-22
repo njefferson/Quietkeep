@@ -43,7 +43,7 @@ import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
 import { dependencyView, dependencyWords, wouldCycle } from '../dependencies.ts';
-import { legalParents, childrenOf, placeWords, isContainer } from '../tree.ts';
+import { legalParents, childrenOf, placeWords, isContainer, CONTAINER_ORDER, CONTAINER_DEFAULT } from '../tree.ts';
 import { eventWords, isCure } from '../log-words.ts';
 import { choosable, chosenToday, composedFull, todayIsOn } from '../composed.ts';
 import { canHold, legalMergeTargets, mergePlan, unmergeEvents } from './merge-intents.ts';
@@ -103,6 +103,8 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   const afterClear = q<HTMLButtonElement>('#detail-after-clear');
   const afterNow = q<HTMLElement>('#detail-after-now');
   const parentCreate = q<HTMLButtonElement>('#detail-parent-create');
+  const parentNewRow = q<HTMLElement>('#detail-parent-new');
+  const parentKind = q<HTMLSelectElement>('#detail-parent-kind');
   const startInput = q<HTMLInputElement>('#detail-start');
   const estimateInput = q<HTMLInputElement>('#detail-estimate');
   const noteInput = q<HTMLTextAreaElement>('#detail-note');
@@ -222,7 +224,16 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         .some(t => normalize(t.title || '') === normalize(clean));
       const offer = clean !== '' && !exact;
       parentCreate.hidden = !offer;
-      if (offer) parentCreate.textContent = `New project named “${clean}” — put it under that`;
+      if (parentNewRow) parentNewRow.hidden = !offer;
+      if (offer) {
+        // The button says what the picker is set to, so the two cannot disagree
+        // on screen — a control reading "New project" while the select says
+        // Goal is a receipt for something that is not about to happen.
+        const chosen = (parentKind?.value ?? CONTAINER_DEFAULT) as NodeKind;
+        const word = CONTAINER_ORDER.find(([k]) => k === chosen)?.[1] ?? 'Project';
+        parentCreate.textContent =
+          `New ${word.split(' — ')[0]!.toLowerCase()} named “${clean}” — put it under that`;
+      }
     }
   }
 
@@ -1298,6 +1309,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   // and files this under it, one gated commit — the gate cures the fresh
   // container with a same-day clock exactly as it cures any creation.
   parentFilter?.addEventListener('input', () => { if (current) paintParents(current); });
+  // AND THE PICKER REPAINTS THE BUTTON TOO. Without this the button kept saying
+  // "New project" after Goal was chosen — measured, not imagined — which is a
+  // control claiming something other than what pressing it does. The write was
+  // correct; the sentence above it was not, and the sentence is the part
+  // somebody reads before deciding.
+  parentKind?.addEventListener('change', () => { if (current) paintParents(current); });
   afterFilter?.addEventListener('input', () => { if (current) paintAfter(current); });
   btn('#detail-after-set')?.addEventListener('click', () => {
     if (!AFTER || !current) return;
@@ -1314,13 +1331,27 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => clearAfterEvents(ctx, current!.id),
       'No longer waiting — it is back with you now.');
   });
+  // FILLED FROM `CONTAINER_ORDER`, never from a list written out here — a second
+  // copy of the kinds is a second thing to keep in step, and this repo has paid
+  // for that shape more than once.
+  if (parentKind && parentKind.options.length === 0) {
+    for (const [kind, words] of CONTAINER_ORDER) {
+      const o = document.createElement('option');
+      o.value = kind;
+      o.textContent = words;
+      parentKind.append(o);
+    }
+    parentKind.value = CONTAINER_DEFAULT;
+  }
+
   parentCreate?.addEventListener('click', () => {
     if (!current || !parentFilter) return;
     const title = cleanTitle(parentFilter.value);
     if (!title) return;
     const prior = current.parent;
     parentFilter.value = '';
-    void run(ctx => createParentEvents(ctx, current!.id, title, prior),
+    const chosen = (parentKind?.value ?? CONTAINER_DEFAULT) as NodeKind;
+    void run(ctx => createParentEvents(ctx, current!.id, title, prior, chosen),
       `Made “${title}” and put this under it.`);
   });
   btn('#detail-make-project')?.addEventListener('click', () => {

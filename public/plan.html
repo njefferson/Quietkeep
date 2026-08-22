@@ -89,28 +89,35 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 
 <h2>Right now</h2>
 <div class="card">
-  <div class="head"><span class="t">Phase 1 — the app can be entered</span><span class="tag now">core fixed</span></div>
-  <p><b>2.15.0.</b> Bring work in from another planner and the app now has
-  something to offer you. Before this it did not: an import left <em>Next up</em>
-  saying <em>nothing is asking today</em>, that morning and every morning after,
-  while the list underneath held every one of them.</p>
-  <p>Things written here go into an inbox and get handed back one at a time.
-  Things arriving from elsewhere never joined it, so nothing ever picked them
-  up. They were held, safe and findable — and never once offered.</p>
+  <div class="head"><span class="t">Phase 2 — the horizon comes down</span><span class="tag now">first step in</span></div>
+  <p><b>2.16.0.</b> A goal or an area can now exist. Making a parent used to
+  always make a <em>project</em>, with no way to say <em>this one is a goal</em>
+  — so a task could never say what it was working toward, because there was
+  never anything above it to name.</p>
+  <p>Choose the kind when you make it: project, outcome, area or goal. Project
+  stays the default, so the common case costs you nothing. The line on the card
+  that reads <em>serves ⟨your goal⟩</em> has been shipped since 2.5.0 and has
+  never once had a goal to find.</p>
 </div>
 
 <h2>What is true today</h2>
 <ul class="facts">
   <li><b>Production</b> — 2.14.1. Everything since is on staging.</li>
-  <li><b>Staging</b> — 2.15.0, plus 2.14.2 and 2.14.3 behind it.</li>
-  <li><b>Last full Spine seen green</b> — <code>d82743a</code>, all 41 steps.
-      2.15.0's own run went red on the smoke walk and was fixed in
-      <code>3a305df</code>; that run is still going as this was written.</li>
+  <li><b>Staging</b> — 2.16.0, with 2.14.2, 2.14.3 and 2.15.0 behind it.</li>
+  <li><b>Last full Spine seen green</b> — <code>4df1d56</code>, all 41 steps.
+      2.16.0's own run is going as this was written.</li>
+  <li><b>Checked before pushing this one</b> — 1294 tests, 25 static gates, and
+      both browser walks run locally rather than left to the Spine, because the
+      last release's failure was a browser walk no static sweep could see.</li>
   <li><b>Waiting on the owner</b> — the on-device pass, whenever convenient.
-      Nothing is blocked on it.</li>
-  <li><b>Found and NOT fixed</b> — the hub's <code>LESSONS.md</code> still holds
-      about 146 third-person references. One file, a reading job, blocks nothing
-      here.</li>
+      Four releases are stacked on staging. Nothing here is blocked on it.</li>
+  <li><b>Found and fixed on the way</b> — the third-person gate was reporting
+      both repos clean while twelve real references stood in three files. It
+      skipped any line over 300 characters, a guard written for minified
+      bundles; the docs here are written one paragraph per line, so 632 of
+      them cleared that threshold as ordinary prose. It now tests for an
+      unbroken 80-character run instead, which is the thing it was actually
+      trying to avoid reading.</li>
 </ul>
 
 <h2>What the import work cost to get right</h2>
@@ -138,7 +145,7 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 </div>
 
 <div class="card">
-  <div class="head"><span class="n">1</span><span class="t">The app can be entered</span><span class="tag now">core fixed</span></div>
+  <div class="head"><span class="n">1</span><span class="t">The app can be entered</span><span class="tag done">core fixed</span></div>
   <p>An import lands in the inbox and the offer hands it over one at a time,
   saying <em>this came in with your import</em>. Verified on the same 840-item
   fixture that used to produce nothing, and driven ten rounds to check it keeps
@@ -149,10 +156,15 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 </div>
 
 <div class="card">
-  <div class="head"><span class="n">2</span><span class="t">The horizon comes down</span><span class="tag wait">not started</span></div>
-  <p>A goal or an area gets a clock, so <em>haven't moved on this in a while</em>
-  arrives as the same rising insistence everything else uses. No promote button,
-  no screen to climb to.</p>
+  <div class="head"><span class="n">2</span><span class="t">The horizon comes down</span><span class="tag now">first step in</span></div>
+  <p><b>Done:</b> a goal or an area can be made at all, and a design document
+  that proposed giving a <em>role</em> its own clock is corrected — the app
+  refuses that on purpose, because a thing that can be late is a demand and a
+  role is an identity. The clock rides the goal instead.</p>
+  <p><b>Still to come:</b> that clock, so <em>haven't moved on this in a
+  while</em> arrives as the same rising insistence everything else uses; a page
+  listing your goals and areas including the empty ones; and filing many things
+  under one goal at once. No promote button, no screen to climb to.</p>
 </div>
 
 <div class="card">

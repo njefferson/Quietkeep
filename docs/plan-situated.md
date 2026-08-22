@@ -284,9 +284,24 @@ situations are the acceptance test — walked end to end, not asserted.
   Not done in this phase: asking for a situational fact in the flow. That was
   the original design and it is downstream of this — it can wait for a real
   on-device pass rather than being guessed at.
-- Phase 2 through 8: not started.
-- **Last full Spine seen green:** `d82743a` on `staging`, all 41 steps.
-- **Waiting on the owner:** the on-device pass. Nothing is blocked on it.
+- **Phase 2 — the horizon comes down.** Step 1 DONE in 2.16.0: a container's
+  kind is chosen when it is made. The detail sheet's "make a parent" control now
+  offers project / outcome / area / goal, project still the default, and the
+  card afterwards reads *in ⟨that goal⟩*. Everything downstream of it was
+  already built and had never had data to run on — `servesNode`, the
+  *serves ⟨title⟩* line shipped in 2.5.0, `unfedGoals` and `quietAreas`.
+  Step 5 DONE in the same release: `docs/horizon-models.md` proposed a role
+  carrying its own review clock in two places, which the write boundary refuses
+  (a role is demand-free — law 6, ADR-0014); both now say the clock rides the
+  container the role labels.
+  Steps 2, 3 and 4 remain: a review clock on a container without converting it
+  to `upkeep`; a page listing goals and areas including the empty ones; and
+  `#sort-bulk-parent` accepting a container of any kind.
+- Phase 3 through 8: not started.
+- **Last full Spine seen green:** `4df1d56` on `staging`, all 41 steps.
+- **Waiting on the owner:** the on-device pass. 2.14.2, 2.14.3, 2.15.0 and
+  2.16.0 are all on `staging` and production is still 2.14.1. Nothing in the
+  plan is blocked on it.
 
 ### What the import work established, and what it cost to get right
 
@@ -322,6 +337,23 @@ role noun leaves the quotation standing. Three times, caught by gate every time.
 HTML comment that merely mentions `<main>` in backticks; a gate's first draft
 counted a shared utility class as coverage. Plant, then check the plant fired.
 
-**One marker, two meanings, is a trap.** `privacy-gate:patterns-begin` means
-"this file mirrors the hub's patterns" to one gate and "skip this region" to
-another. Exemptions go in `.third-person-allow`.
+**One marker, two meanings, is a trap** — and **naming it in prose is a second
+trap, which this paragraph fell into.** The `patterns-begin` / `patterns-end`
+pair (prefixed `privacy-gate:`) means "this file mirrors the hub's patterns" to
+one gate and "skip this region" to another. Writing the opening marker whole, as
+this paragraph did, OPENED a region that never closed: the fourteen lines after
+it were invisible to the privacy gate, silently, under a green run. The gates'
+own sources dodge it by building the marker with `+`, which prose cannot do, so
+prose writes the two halves apart. An unclosed region is now a FAILURE in both
+gates rather than a skip to end-of-file. Exemptions go in `.third-person-allow`.
+
+**A green gate over prose is worth re-checking once, because this plan is mostly
+prose.** The third-person gate reported both repos clean while twelve real
+references stood in three files, one of them `NOTES.md`. It skipped any line
+over 300 characters — a guard for minified bundles — and markdown here is
+written one paragraph per line, so 632 tracked lines cleared that threshold as
+ordinary prose and the rule never ran on them. Fixed in the hub on 2026-08-22:
+the test is an unbroken 80-character run, which is the hazard it was actually
+written for. Hub LESSONS 114. The general form, and the reason it belongs here:
+**a skip condition specified by a proxy for its hazard acquires whatever else
+shares the proxy**, and this plan's own output is the thing that shares it.

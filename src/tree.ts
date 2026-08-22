@@ -32,6 +32,28 @@ export const CONTAINER_KINDS: ReadonlySet<NodeKind> = new Set<NodeKind>([
  *  result is a separate act of thinking that this control must not fake. */
 export const CONTAINER_DEFAULT: NodeKind = 'project';
 
+/**
+ * THE CONTAINERS SOMEBODY CAN MAKE, in the order they are offered, with the
+ * words that appear on the control.
+ *
+ * Separate from `CONTAINER_DEFAULT` above, and the difference is the whole
+ * reason this list exists. That default belongs to the PROMOTION control —
+ * "this is bigger than one step" — which must not fake the act of naming a
+ * result. This list belongs where somebody is already typing a name, so
+ * choosing what kind of thing it is happens in the same breath as saying what
+ * it is called. Naming and classifying together is honest; classifying
+ * something you have not named is the thing that control refuses.
+ *
+ * `project` leads because it is the ordinary case and stays the default, so
+ * the common path costs no extra thought.
+ */
+export const CONTAINER_ORDER: ReadonlyArray<readonly [NodeKind, string]> = [
+  ['project', 'Project — work with steps'],
+  ['outcome', 'Outcome — a result to reach'],
+  ['area', 'Area — something ongoing'],
+  ['goal', 'Goal — something to move toward'],
+];
+
 export const isContainer = (n: NodeState): boolean =>
   CONTAINER_KINDS.has(n.kind as NodeKind);
 

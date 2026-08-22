@@ -244,13 +244,20 @@ export const estimateEvents = (ctx: StampContext, node: string, minutes: number)
  */
 export function createParentEvents(
   ctx: StampContext, node: string, title: string, priorParent?: string | null,
+  // WHAT KIND OF CONTAINER, chosen at the moment it is named. Defaulted, so the
+  // triage route and every existing caller keep making projects without saying
+  // so. Before this, `goal`, `area` and `outcome` were in the schema, in
+  // CONTAINER_KINDS and in ALTITUDE, and no route in the app could create one —
+  // so two of review.ts's four readings could never fire, and the offer card's
+  // "serves ⟨…⟩" line, shipped in 2.5.0, had nothing it could ever find.
+  kind: NodeKind = CONTAINER_DEFAULT,
 ): AppEvent[] {
   const clean = cleanTitle(title);
   if (!clean) return [];
   const parentId = ctx.id();
   return [
     base(ctx, 'node.created', parentId, {
-      nodeKind: CONTAINER_DEFAULT, title: clean, provenance: { for: 'self' },
+      nodeKind: kind, title: clean, provenance: { for: 'self' },
     }),
     base(ctx, 'node.parented', node, {
       parent: parentId, ...(priorParent ? { priorParent } : {}),

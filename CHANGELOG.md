@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.16.0 — CAPABILITY
+
+*2026-08-21*
+
+- **You can make a goal, an area or an outcome — not only a project.** When you type a name for something to put a thing under, there is now a choice of what kind of thing it is. Project stays the default, so nothing you already do changes or costs an extra tap.
+- **Which means a task can finally say what it is working toward.** The offer card has been able to say *serves ⟨something⟩* since 2.5.0 and has never once said it, because there was nothing above a project for it to find. Now there can be.
+- **And a goal with nothing under it can be seen.** The app has always worked out which goals have nothing feeding them and which areas have gone quiet — it just had no goals or areas to work it out about.
+- **What is deliberately not here.** No button that makes an empty goal for its own sake, no screen that asks you to build a structure before you can start, and nothing that scores or counts how much has moved under anything.
+
 ## 2.15.0 — CAPABILITY
 
 *2026-08-21*

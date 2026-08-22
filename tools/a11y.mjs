@@ -381,7 +381,14 @@ const REGISTRY = {
   'trash view': ['#trash-open', '#trash-total', '.trash-row'],
   // The picker's create-in-place offer, which only exists once unknown words
   // have been typed — a control someone meets mid-filing is still a control.
-  'detail sheet, creating a place': ['#detail-parent-filter', '#detail-parent-create'],
+  // The kind picker joins this in the SAME COMMIT it is built (hub LESSONS 28),
+  // which is the rule that exists because a surface added without its entry
+  // ships unmeasured and every gate stays green about it. Its label is checked
+  // too: a bare select answers to nothing.
+  'detail sheet, creating a place': [
+    '#detail-parent-filter', '#detail-parent-create',
+    '#detail-parent-kind', 'label[for="detail-parent-kind"]',
+  ],
   // The situation field (1.29.0). Scoped to its own group: `.detail-label`
   // unscoped answers for every group on the sheet, so a registry entry written
   // that way measures the note's label and reports the situation's as covered.
