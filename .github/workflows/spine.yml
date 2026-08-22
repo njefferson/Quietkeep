@@ -140,6 +140,19 @@ jobs:
       - name: The commit guard is the one that was declared
         run: node .hub-gates/branch-guard.mjs --repo . --artefact
 
+      # AND THE RECEIPT IN THE TREE IS FOR THIS MARKUP. `.a11y-stamp` records
+      # the UI hash the accessibility walk last passed against; the pre-commit
+      # hook refuses a UI change without a current one. This catches the commit
+      # that went round the hook — `--no-verify`, or a clone where it was never
+      # installed.
+      #
+      # BEFORE THE WALK, NOT AFTER. The walk WRITES this file, so a step placed
+      # after it compares the stamp against the tree the stamp was just made
+      # from and can only pass. Same shape as running branch-guard with
+      # `--install` in CI: the check repairs the thing it exists to find.
+      - name: The accessibility receipt is for the markup being committed
+        run: node tools/a11y-fresh.mjs
+
 
       - run: npm run typecheck
       - run: npm run test:only
