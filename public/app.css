@@ -2803,6 +2803,7 @@ body[data-plain="1"] #composed,
 body[data-plain="1"] #upkeep,
 body[data-plain="1"] #menu-open,
 body[data-plain="1"] #roles-open,
+body[data-plain="1"] #horizons-open,
 body[data-plain="1"] #search,
 body[data-plain="1"] #held
   { display: none !important; }

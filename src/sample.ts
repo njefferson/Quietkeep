@@ -168,6 +168,21 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   const admin = node('area', 'Household paperwork');
   const insurance = node('action', 'Compare the two insurance renewals', { parent: admin });
   due(insurance, 5);
+  // ON A RHYTHM, so "What you're working toward" has a row that reads
+  // "comes back every 30 days" beside one that reads "no rhythm set". A sample
+  // where every row says the same thing measures one state and looks like two.
+  stamp('upkeep.interval.set', admin, { intervalDays: 30, comfortWindowDays: 7 });
+
+  // --- a goal with NOTHING under it ---------------------------------------
+  //
+  // The case that surface exists for, and the one the store could not produce
+  // until 2.16.0 made a goal creatable at all. `unfedGoals` in `review.ts` has
+  // been live code since Review was built and has never had data to run on;
+  // this is the first time either it or the horizons list is exercised on
+  // something real. Deliberately left empty and deliberately given no rhythm:
+  // an empty goal is not a defect, it is a goal somebody has not decided about
+  // yet, and the app's job is to let them see it rather than to grade it.
+  node('goal', 'A calmer house');
 
   return out;
 }

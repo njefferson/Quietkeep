@@ -581,6 +581,15 @@ const REGISTRY = {
   'where the attention is': ['#roles-open'],
   'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
     '.roles-name', '.roles-held', '#roles-unnamed'],
+  // WHAT YOU ARE WORKING TOWARD (2.18.0). Its own entry rather than a fold into
+  // 'roles open': the two sheets share `.roles-name` and `.roles-held`, and a
+  // shared class is not coverage — `surfaces.mjs` records the draft that counted
+  // `.section` and reported all seventeen sections measured. The ids are what
+  // pin this surface, and the two shared classes ride along so the rows are
+  // measured where they actually render.
+  'what you are working toward': ['#horizons-open'],
+  'horizons open': ['#sheet-horizons-title', '#sheet-horizons-close',
+    '#horizons-words', '#horizons-list .roles-name', '#horizons-list .roles-held'],
   // THE AMBIENT HORIZON on the focus surface (2.7.1, collisions entry 7). It
   // shares `.focus-held`'s measured pair — the class adds nothing but a second
   // element — but it gets its own registry line because it renders only when a
@@ -2448,6 +2457,7 @@ try {
       `${theme}/roles open: the unnamed remainder is STATED — on a real store it is the biggest number`);
     (/not a target/.test(readout.words) ? pass : fail)(
       `${theme}/roles open: it says out loud that it is not a score (law 7 is what makes it legal)`);
+
     // NO BAR, NO METER, NO PROGRESS ELEMENT anywhere on this surface. A bar is a
     // machine for implying you are behind (law 5), and the check is structural
     // rather than a promise in a comment.
@@ -2457,6 +2467,93 @@ try {
       `${theme}/roles open: no bar, meter or progressbar on the readout (${bars} found)`);
     await page.click('#sheet-roles-close');
     await page.waitForSelector('#sheet-roles[open]', { state: 'detached' });
+
+    // WHAT YOU ARE WORKING TOWARD (2.18.0, the plan's phase 2 step 3).
+    //
+    // BUILT THROUGH THE APP, like the roles readout above and for the same
+    // reason: a goal planted into the store proves the list renders and nothing
+    // about whether one can be made. Four claims, in the order they can fail —
+    // the door is absent until a horizon EXISTS; the container picker makes a
+    // goal; the goal is listed with what it is carrying; and **it is still
+    // listed once that work is finished**.
+    //
+    // THAT LAST ONE IS THE ASSERTION THAT MATTERS. Everything else here would
+    // render identically if the list quietly dropped horizons with nothing under
+    // them — which is exactly what Review does, correctly, and exactly what this
+    // surface must not do. A goal whose work is done is the moment it would
+    // vanish, and it is the moment somebody most needs to see it.
+    const hDoorBefore = await page.evaluate(() =>
+      document.querySelector('#horizons-open')?.hidden ?? null);
+    (hDoorBefore === true ? pass : fail)(
+      `${theme}/horizons: the door is absent until a horizon exists (hidden=${hDoorBefore})`);
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-parent-filter', 'A calmer house');
+    await page.waitForSelector('#detail-parent-create:not([hidden])');
+    await page.selectOption('#detail-parent-kind', 'goal');
+    await page.click('#detail-parent-create');
+    await page.waitForTimeout(250);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.waitForSelector('#horizons-open:not([hidden])');
+    await auditContrast(page, 'what you are working toward', theme);
+    await auditSeparationAndTargets(page, 'what you are working toward', theme);
+    await page.click('#horizons-open');
+    await page.waitForSelector('#sheet-horizons[open]');
+    await auditContrast(page, 'horizons open', theme);
+    await auditAxe(page, 'horizons open', theme);
+    await auditNames(page, 'horizons open', theme);
+    await auditSeparationAndTargets(page, 'horizons open', theme);
+    await auditFocusRings(page, 'horizons open', theme, ['#sheet-horizons-close']);
+    const horizons = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('#horizons-list .roles-row')].map(r => ({
+        name: r.querySelector('.roles-name')?.textContent?.trim(),
+        held: r.querySelector('.roles-held')?.textContent?.trim(),
+      })),
+      words: document.querySelector('#horizons-words')?.textContent?.trim() ?? '',
+    }));
+    const goalRow = horizons.rows.find(r => /A calmer house/.test(r.name ?? ''));
+    (goalRow ? pass : fail)(
+      `${theme}/horizons open: the goal somebody just made is listed`);
+    (/ — goal/.test(goalRow?.name ?? '') ? pass : fail)(
+      `${theme}/horizons open: the row says what KIND it is — a list of bare titles is a list of projects`);
+    (/1 thing under it/.test(goalRow?.held ?? '') ? pass : fail)(
+      `${theme}/horizons open: carrying the thing it was made around ("${goalRow?.held ?? ''}")`);
+    (/no rhythm set/.test(goalRow?.held ?? '') ? pass : fail)(
+      `${theme}/horizons open: and the absence of a rhythm is STATED, not left blank`);
+    (horizons.rows.every(r => /thing|nothing/.test(r.held ?? '')) ? pass : fail)(
+      `${theme}/horizons open: every count is words, never a bare number`);
+    (/not a target/.test(horizons.words) ? pass : fail)(
+      `${theme}/horizons open: it says out loud that it is not a score (law 7 again)`);
+    await page.click('#sheet-horizons-close');
+    await page.waitForSelector('#sheet-horizons', { state: 'hidden' });
+
+    // AND NOW FINISH THE WORK UNDER IT. The goal must stay on the list holding
+    // nothing — the state Review raises as an exception and caps at three, and
+    // the state this surface exists to render as an ordinary fact.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.click('#detail-done');
+    await page.waitForTimeout(250);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.click('#horizons-open');
+    await page.waitForSelector('#sheet-horizons[open]');
+    const after = await page.evaluate(() =>
+      [...document.querySelectorAll('#horizons-list .roles-row')].map(r => ({
+        name: r.querySelector('.roles-name')?.textContent?.trim(),
+        held: r.querySelector('.roles-held')?.textContent?.trim(),
+      })));
+    const emptied = after.find(r => /A calmer house/.test(r.name ?? ''));
+    (emptied ? pass : fail)(
+      `${theme}/horizons emptied: the goal is STILL LISTED once its work is finished`);
+    (/nothing under it yet/.test(emptied?.held ?? '') ? pass : fail)(
+      `${theme}/horizons emptied: and it says so plainly ("${emptied?.held ?? ''}")`);
+    await auditContrast(page, 'horizons open', theme);
+    await auditNames(page, 'horizons open', theme);
+    await page.click('#sheet-horizons-close');
+    await page.waitForSelector('#sheet-horizons', { state: 'hidden' });
 
     // Back to everywhere, so every state after this sees the whole list.
     await page.selectOption('#where', '');

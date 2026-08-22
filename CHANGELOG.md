@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.18.0 — CAPABILITY
+
+*2026-08-22*
+
+- **A page for what you are working toward.** Your goals, areas and outcomes, each with what it is carrying and how often it comes back. Behind a control, never the screen you land on — you go and look when you want to, and it does not greet you with a list of your ambitions every morning.
+- **The empty ones are on it, and that is the point.** A goal with nothing under it yet is still a goal. The app has always been able to work out which ones have nothing feeding them, but only ever mentioned it as something needing attention — which is a different thing from being able to see what you have and decide what goes under it.
+- **It stays there when the work is done.** Finish everything under a goal and the goal remains on the list, saying it is holding nothing. That is the moment it would have vanished, and the moment you most need to see it.
+- **Nothing on it is a score.** No bars, no percentages, no counts that could be read as a grade — what each one is carrying is said in words, and an empty one is not a failure. Projects are counted but not listed: a page with every project on it is the whole tree by another name.
+
 ## 2.17.0 — CAPABILITY
 
 *2026-08-22*

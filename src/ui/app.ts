@@ -36,6 +36,10 @@ import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
 import { servesWords } from '../serves.ts';
 import { roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS } from '../roles.ts';
+import {
+  horizonRows, holdsWords, rhythmWords, horizonEmptyWords,
+  HORIZON_WORDS, HORIZON_READOUT_WORDS,
+} from '../horizons.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
@@ -573,6 +577,20 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
           if (anyRoles === 0) closeSheet('sheet-roles');
         }
       }
+      // WHAT YOU ARE WORKING TOWARD (2.18.0), on the same pass and by the same
+      // rules as the door above it: what it OPENS and no number, hidden until a
+      // horizon exists, and closed behind anybody standing in it when the last
+      // one goes. A count here would be a score on the landing surface, and a
+      // count of somebody's goals is the worst kind.
+      {
+        const horizonsBtn = document.querySelector<HTMLButtonElement>('#horizons-open');
+        const anyHorizons = horizonRows(st).rows.length;
+        if (horizonsBtn) {
+          horizonsBtn.hidden = anyHorizons === 0;
+          horizonsBtn.textContent = 'What you\u2019re working toward';
+          if (anyHorizons === 0) closeSheet('sheet-horizons');
+        }
+      }
       const rows: HTMLElement[] = [];
       for (const g of menuGroups(st)) {
         const h = document.createElement('h3');
@@ -1096,6 +1114,53 @@ export async function main(edition?: Edition): Promise<void> {
   wireSheetClose('sheet-roles');
   document.querySelector<HTMLButtonElement>('#roles-open')
     ?.addEventListener('click', () => { openSheet('sheet-roles'); });
+
+  // WHAT YOU ARE WORKING TOWARD (2.18.0, the plan's phase 2 step 3). Painted on
+  // open like every other sheet, because a list built once reports the store as
+  // it was when the app started.
+  //
+  // THE EMPTY ONES ARE THE POINT. Review already computes unfed goals and quiet
+  // areas and shows them capped at three, exceptions-first — the right shape for
+  // "what needs attention" and the wrong one for "what am I working toward".
+  // Somebody deciding what to put under a goal has to be able to see the goal.
+  const paintHorizons = (): void => {
+    const st = session.state();
+    const { rows, projects } = horizonRows(st);
+    const words = document.querySelector<HTMLElement>('#horizons-words');
+    if (words) words.textContent = HORIZON_READOUT_WORDS;
+    const list = document.querySelector<HTMLUListElement>('#horizons-list');
+    if (list) {
+      list.replaceChildren(...rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        // The KIND is said out loud beside the name. Without it a list of bare
+        // titles cannot be told from a list of projects, and the whole reason
+        // this surface exists is that those are different altitudes.
+        name.textContent = `${r.node.title || '(untitled)'} — ${HORIZON_WORDS[r.node.kind] ?? r.node.kind}`;
+        const held = document.createElement('span');
+        held.className = 'roles-held';
+        // WORDS, never a bare integer, and the rhythm stated even when absent.
+        // "no rhythm set" is a fact somebody can act on; a blank is a question.
+        held.textContent = `${holdsWords(r.holds)} · ${rhythmWords(r.everyDays)}`;
+        li.append(name, held);
+        return li;
+      }));
+    }
+    const empty = document.querySelector<HTMLElement>('#horizons-empty');
+    if (empty) {
+      // Shown only when the list is empty of ROWS. The door is hidden in that
+      // case, so this is reachable in one way: the last horizon went while
+      // somebody was standing here.
+      empty.textContent = horizonEmptyWords(projects);
+      empty.hidden = rows.length > 0;
+    }
+  };
+  onSheetOpen('sheet-horizons', paintHorizons);
+  wireSheetClose('sheet-horizons');
+  document.querySelector<HTMLButtonElement>('#horizons-open')
+    ?.addEventListener('click', () => { openSheet('sheet-horizons'); });
 
   onSheetOpen('sheet-contents', () => paintContents());
   wireSheetClose('sheet-contents');

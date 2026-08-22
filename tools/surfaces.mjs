@@ -30,10 +30,24 @@
 //
 // ## What counts as a surface, and why the definition is cheap
 //
-// A `<section id="…">` in `public/index.html`. That is the marker the app
-// already uses — seventeen of them, no nesting, every one with an id — so this
-// gate needs no browser and no new convention. A section is COVERED when any
-// REGISTRY selector names it or names something inside it.
+// A `<section id="…">` OR a `<dialog id="…">` in `public/index.html`. Both are
+// markers the app already uses — seventeen sections and twenty dialogs, no
+// nesting, every one with an id — so this gate needs no browser and no new
+// convention. A surface is COVERED when any REGISTRY selector names it or names
+// something inside it.
+//
+// **The dialogs were missing for the gate's first three weeks, and the omission
+// is instructive**: this gate was written BECAUSE a sheet shipped unmeasured,
+// and then defined a surface as a `<section>` — which is the one thing a sheet
+// is not. Every sheet in this app is a `<dialog>`. Nineteen of the twenty were
+// covered anyway, by REGISTRY entries somebody remembered to write, so the hole
+// cost nothing until a twentieth sheet was added and the gate stayed green over
+// it. Retrofitting cost nothing for the same reason.
+//
+// The general shape, and it is the one this file's header already argues
+// against: a list nothing checks goes stale. **A definition nothing checks goes
+// narrow** — and it goes narrow in the direction of whatever the author had in
+// front of them the day they wrote it.
 //
 // BOTH DIRECTIONS, like `plain.mjs`: a selector naming an id that no longer
 // exists is a rule that has quietly stopped applying, which is how coverage
@@ -80,20 +94,26 @@ console.log('\nEvery surface is on the accessibility walk\n');
 const markup = html.replace(/<!--[\s\S]*?-->/g, ' ');
 
 // ——— THE SURFACES ———
-const allSections = [...markup.matchAll(/<section id="([a-z0-9-]+)"[\s\S]*?<\/section>/g)]
-  .map((m) => ({
-    id: m[1],
-    html: m[0],
-    ids: [...new Set([...m[0].matchAll(/id="([a-z0-9-]+)"/g)].map((x) => x[1]))],
-    classes: [...new Set([...m[0].matchAll(/class="([^"]+)"/g)]
-      .flatMap((x) => x[1].trim().split(/\s+/)))],
-  }));
+/** Both markers, read the same way. `tag` is carried so the report can name
+ *  what a thing is — "#sheet-x is in no REGISTRY entry" is more useful when the
+ *  reader knows a sheet is what went unmeasured. */
+const surfacesOf = (tag) =>
+  [...markup.matchAll(new RegExp(`<${tag} id="([a-z0-9-]+)"[\\s\\S]*?</${tag}>`, 'g'))]
+    .map((m) => ({
+      id: m[1],
+      tag,
+      html: m[0],
+      ids: [...new Set([...m[0].matchAll(/id="([a-z0-9-]+)"/g)].map((x) => x[1]))],
+      classes: [...new Set([...m[0].matchAll(/class="([^"]+)"/g)]
+        .flatMap((x) => x[1].trim().split(/\s+/)))],
+    }));
+const allSections = [...surfacesOf('section'), ...surfacesOf('dialog')];
 
 /** Filled at runtime, so a static reader can see nothing inside it. Skipped and
  *  SAID rather than skipped and hidden — a silent skip is how a gate reports
  *  green about a surface it never looked at. */
 const runtimeOnly = allSections.filter((s) => !/<[a-z]/i.test(
-  s.html.replace(/^<section[^>]*>/, '').replace(/<\/section>$/, '')));
+  s.html.replace(new RegExp(`^<${s.tag}[^>]*>`), '').replace(new RegExp(`</${s.tag}>$`), '')));
 const sections = allSections.filter((s) => !runtimeOnly.includes(s));
 
 // ——— THE SELECTORS THE WALK ACTUALLY AUDITS ———

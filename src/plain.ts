@@ -226,6 +226,10 @@ export const PLAIN_CHROME_HIDDEN = [
   '#upkeep',          // the small repeating things that have come round
   '#menu-open',       // the Menu is demand-free and is still a door to a list
   '#roles-open',      // the same, sliced by role
+  '#horizons-open',   // and the same, sliced by what it is in service of. A day
+                      // that has been reduced to one thing is not a day for
+                      // looking at what you are working toward — that is the
+                      // altitude this mode exists to get somebody out of.
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.

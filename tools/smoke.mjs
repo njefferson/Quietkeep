@@ -3658,8 +3658,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-role', 'Parent').catch(() => {});
   await tpage.locator('#detail-role-set').click().catch(() => {});
   await tpage.waitForSelector('#detail-role-list li').catch(() => {});
+  // AND A HORIZON, in the same sheet and for the same reason as the role above:
+  // `#horizons-open` is hidden until one exists, so without this the sheet
+  // behind it reports "could not open it" — which is this check working, and a
+  // surface going unmeasured either way. Made through the container picker
+  // rather than planted, so the door being reachable at all is part of what
+  // this pass proves.
+  await tpage.fill('#detail-parent-filter', 'A calmer house').catch(() => {});
+  await tpage.waitForSelector('#detail-parent-create:not([hidden])').catch(() => {});
+  await tpage.selectOption('#detail-parent-kind', 'goal').catch(() => {});
+  await tpage.locator('#detail-parent-create').click().catch(() => {});
+  await tpage.waitForTimeout(120);
   await tpage.locator('#detail-close').click().catch(() => {});
   await tpage.waitForSelector('#roles-open:not([hidden])').catch(() => {});
+  await tpage.waitForSelector('#horizons-open:not([hidden])').catch(() => {});
 
   const seeThrough = [];
   for (const [surface, bodySel, closeSel, door] of SURFACES_WITH_A_WAY_OUT) {

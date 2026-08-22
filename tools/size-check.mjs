@@ -270,7 +270,15 @@ const BUDGET = {
   // paragraph. This budget counts controls in the markup and cannot see that,
   // which is the second time in three releases it has read the wrong way round;
   // the note is the record, as it is meant to be.
-  controls: 230,
+  //
+  // 230 -> 232 on 2026-08-22 (2.18.0): "What you're working toward" is a sheet,
+  // so it costs a door and a Close, the same two every sheet here costs. Neither
+  // is on the first screen at rest: the door is `hidden` until a horizon exists,
+  // which for a store that has never made one is always, and the Close lives
+  // inside the dialog. So the count goes up by two and what a new reader meets
+  // does not change at all — the third time in five releases this budget has
+  // read the wrong way round, and the note is the record.
+  controls: 232,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

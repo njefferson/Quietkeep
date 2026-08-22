@@ -305,8 +305,21 @@ situations are the acceptance test — walked end to end, not asserted.
   by reading: the same tree offered at the same moment, 0 items without the
   rhythm and 1 with it — work filed under a goal is silent under law 1 clause
   (d) until the goal's clock fetches it.
-  Steps 3 and 4 remain: a page listing goals and areas including the empty
-  ones, and `#sort-bulk-parent` accepting a container of any kind.
+  Step 3 DONE in 2.18.0: *What you're working toward*, a sheet listing every
+  goal, area and outcome with what it is carrying and how often it comes back —
+  **the empty ones included**, which is the whole difference between it and
+  Review. Review computes `unfedGoals` and `quietAreas` correctly and shows
+  them capped at three, exceptions-first; that is the right shape for "what
+  needs attention" and the wrong one for "what am I working toward". Behind a
+  door, hidden until a horizon exists, never a landing view (ADR-0013).
+  Projects are counted but never listed: 42 of them came out of one import, and
+  a page with all of those on it is the tree by another name — but a version
+  that said nothing about them would render blank on a real store and read as
+  broken, which is the cost `serves.ts` already records.
+  The assertion that matters, driven in both themes: a goal is **still listed
+  once the work under it is finished**. That is the moment it would vanish and
+  the moment somebody most needs to see it.
+  Step 4 remains: `#sort-bulk-parent` accepting a container of any kind.
 - Phase 3 through 8: not started.
 - **Last full Spine seen green:** `4df1d56` on `staging`, all 41 steps.
 - **Waiting on the owner:** the on-device pass. 2.14.2, 2.14.3, 2.15.0 and

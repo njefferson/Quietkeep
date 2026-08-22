@@ -684,6 +684,18 @@
        is broken. -->
   <button id="roles-open" class="gauge" type="button" hidden></button>
 
+  <!-- WHAT YOU ARE WORKING TOWARD (2.18.0). Beside the roles door and hidden by
+       the same rule: a surface that greets you every morning with a list of
+       your goals is a standing report card, and ADR-0013 refuses the tree as a
+       landing view. Reachable, never a destination.
+
+       Hidden until a horizon exists rather than shown-and-empty, because a
+       chooser with nothing in it teaches you the feature is broken — the lesson
+       the roles door above already carries. The EMPTY-STATE words inside the
+       sheet are for a different case: horizons exist, and none of them has
+       anything under it yet. -->
+  <button id="horizons-open" class="gauge" type="button" hidden></button>
+
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
@@ -2324,6 +2336,20 @@
     <p id="roles-unnamed" class="detail-hint"></p>
   </div>
   <button id="sheet-roles-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">
+  <h2 id="sheet-horizons-title" class="section">What you&rsquo;re working toward</h2>
+  <!-- `tabindex="0"` for the reason the roles body carries it: this body holds
+       no focusable thing at all — it is rows of words — and a scrolling region
+       with nothing focusable inside cannot be scrolled from a keyboard
+       (WCAG 2.1.1). -->
+  <div class="sheet-body" tabindex="0">
+    <p id="horizons-words" class="detail-hint"></p>
+    <ul id="horizons-list" class="roles-list"></ul>
+    <p id="horizons-empty" class="detail-hint" hidden></p>
+  </div>
+  <button id="sheet-horizons-close" type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
