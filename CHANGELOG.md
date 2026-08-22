@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.17.0 — CAPABILITY
+
+*2026-08-22*
+
+- **A goal or an area can come back on its own rhythm.** Say how often you want to look at it and it arrives when the time comes, with something from inside it — you never have to remember to go and check. Work filed under a goal with no rhythm stays quiet, which is the point: nothing nags until you have asked it to.
+- **Making a goal repeat used to quietly stop it being a goal.** The choice of kind arrived last release; the very next control in the same panel turned whatever you had made into a repeating chore, and the panel called it "Make it repeat" throughout. It no longer does. A goal that comes back is still a goal, and stopping it leaves it one too.
+- **The words changed to match.** On a goal or an area the control now says *Come back to this* rather than *Make it repeat*, because that is what it does — it brings the thing back to be looked at, not to be ticked off.
+- **And the way to stop was hidden.** Anything carrying a rhythm can now be told to stop carrying one. Before, that control appeared only on things the app called upkeeps, so a goal you had given a rhythm was in a state you could enter and not leave.
+- **Still broken, and worth knowing.** Taking something off the Menu turns it back into a plain task but leaves any rhythm it had running underneath. It will still come back on that rhythm while calling itself a task. The way to stop it is now reachable, which it was not before, but the underlying muddle is not fixed.
+
 ## 2.16.0 — CAPABILITY
 
 *2026-08-21*

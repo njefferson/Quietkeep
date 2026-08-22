@@ -40,6 +40,11 @@ import { existsSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { serve } from './serve.mjs';
+import { requireFreshBundle } from './bundle-fresh.mjs';
+
+// Every walk here serves the generated bundle; none of them used to check it
+// was current. See tools/bundle-fresh.mjs.
+requireFreshBundle(new URL('..', import.meta.url).pathname, 'the import walk');
 
 const OUT = '/tmp/quietkeep-import';
 mkdirSync(OUT, { recursive: true });

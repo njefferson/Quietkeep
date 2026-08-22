@@ -219,3 +219,92 @@ test('every edit intent leaves nothing silent (law 1, across all of them)', () =
     assert.equal(silentNodes(s).length, 0, `${name} leaves nothing silent`);
   }
 });
+
+// --- a rhythm on a container ------------------------------------------------
+//
+// The container-kind picker (2.16.0) made goals and areas creatable for the
+// first time. These assert that the rest of the sheet does not unmake them.
+
+/** A container of a given kind, made the way the picker makes one. */
+const containerOf = (id: string, kind: 'goal' | 'area' | 'project', title: string): State =>
+  write(emptyState(), [{
+    id: `k${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'node.created', node: id,
+    payload: { nodeKind: kind, title, provenance: { for: 'self' } },
+  } as AppEvent]);
+
+test('a rhythm on a goal leaves it a goal — the picker made one and Repeat unmade it', () => {
+  let s = containerOf('G', 'goal', 'Finish the novel');
+  assert.equal(s.nodes.get('G')!.kind, 'goal');
+
+  s = write(s, makeRepeatEvents(ctx(), 'G', s.nodes.get('G')!.kind, 90, 14));
+  const g = s.nodes.get('G')!;
+
+  // The defect this locks out: `node.kind.changed` from 'goal' to 'upkeep',
+  // emitted by the same control whose label read "Make it repeat". A goal was
+  // creatable for one release and destroyable by the next tap in the same sheet.
+  assert.equal(g.kind, 'goal', 'still a goal');
+  assert.equal(g.intervalDays, 90, 'and it carries the cadence');
+  assert.equal(g.comfortWindowDays, 14);
+  assert.ok(g.clocks.review, 'and a review clock, so law 1 is satisfied without a kind change');
+  assert.equal(silentNodes(s).length, 0);
+});
+
+test('every container kind survives its own rhythm, not only goal', () => {
+  for (const kind of ['goal', 'area', 'project'] as const) {
+    let s = containerOf('C', kind, 'a place work lives in');
+    s = write(s, makeRepeatEvents(ctx(), 'C', kind, 30, 7));
+    assert.equal(s.nodes.get('C')!.kind, kind, `${kind} survives`);
+  }
+});
+
+test('an ordinary item still becomes an upkeep — the fix narrowed nothing else', () => {
+  let s = captured('N', 'water the plant');
+  s = write(s, makeRepeatEvents(ctx(), 'N', s.nodes.get('N')!.kind, 7, 2));
+  assert.equal(s.nodes.get('N')!.kind, 'upkeep', 'unchanged for the case the control was built for');
+});
+
+test('stopping a goal’s rhythm leaves it a goal, not an action', () => {
+  let s = containerOf('G', 'goal', 'Finish the novel');
+  s = write(s, makeRepeatEvents(ctx(), 'G', s.nodes.get('G')!.kind, 90, 14));
+  s = write(s, stopRepeatEvents(ctx(), 'G', 'action', s.nodes.get('G')!.kind));
+
+  // Without the current kind, `stopRepeatEvents` writes `from: 'upkeep', to:
+  // 'action'` about a node that was never an upkeep — a false claim in an
+  // append-only log, and a goal silently demoted to a task.
+  const g = s.nodes.get('G')!;
+  assert.equal(g.kind, 'goal', 'still a goal');
+  assert.equal(g.intervalDays, 0, 'and the cadence is off');
+  assert.equal(pressureOf(g, AT, atMidnight(TZ)), null, 'no cadence, so no pressure');
+});
+
+test('an upkeep still returns to an action when its repeat stops', () => {
+  let s = captured('U', 'water the plant');
+  s = write(s, makeRepeatEvents(ctx(), 'U', s.nodes.get('U')!.kind, 7, 2));
+  s = write(s, stopRepeatEvents(ctx(), 'U', 'action', s.nodes.get('U')!.kind));
+  assert.equal(s.nodes.get('U')!.kind, 'action', 'unchanged for the case it was built for');
+});
+
+test('a goal’s rhythm is what brings the work under it back', () => {
+  // The claim the whole phase rests on, tested by difference rather than by
+  // reading: the same tree, offered at the same moment, with and without the
+  // rhythm. Nothing else about the action changes.
+  const build = (withRhythm: boolean): State => {
+    let s = containerOf('G', 'goal', 'Finish the novel');
+    const c = ctx();
+    s = write(s, [{
+      id: c.id(), vault: 'personal', at: AT, device: 'd0', seq: c.seq(),
+      kind: 'node.created', node: 'A',
+      payload: { nodeKind: 'action', title: 'Write the market scene', provenance: { for: 'self' } },
+    } as AppEvent, {
+      id: c.id(), vault: 'personal', at: AT, device: 'd0', seq: c.seq(),
+      kind: 'node.parented', node: 'A', payload: { parent: 'G' },
+    } as AppEvent]);
+    return withRhythm ? write(s, makeRepeatEvents(ctx(), 'G', 'goal', 90, 14)) : s;
+  };
+  const LATER = '2026-11-29T18:00:00.000Z';   // the 90 days have passed
+  const offered = (s: State): number => nextUpQueue(s, LATER, TZ).length;
+
+  assert.equal(offered(build(false)), 0, 'filed under a goal with no rhythm: silent, which is law 1 clause (d)');
+  assert.equal(offered(build(true)), 1, 'and the rhythm is what fetches it — the mountain comes down');
+});

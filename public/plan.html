@@ -89,28 +89,39 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 
 <h2>Right now</h2>
 <div class="card">
-  <div class="head"><span class="t">Phase 2 — the horizon comes down</span><span class="tag now">first step in</span></div>
-  <p><b>2.16.0.</b> A goal or an area can now exist. Making a parent used to
-  always make a <em>project</em>, with no way to say <em>this one is a goal</em>
-  — so a task could never say what it was working toward, because there was
-  never anything above it to name.</p>
-  <p>Choose the kind when you make it: project, outcome, area or goal. Project
-  stays the default, so the common case costs you nothing. The line on the card
-  that reads <em>serves ⟨your goal⟩</em> has been shipped since 2.5.0 and has
-  never once had a goal to find.</p>
+  <div class="head"><span class="t">Phase 2 — the horizon comes down</span><span class="tag now">half in</span></div>
+  <p><b>2.17.0.</b> A goal or an area comes back on its own rhythm. Say how
+  often you want to look at it and it arrives when the time comes, carrying
+  something from inside it. You never go and check; it comes to you.</p>
+  <p><b>2.16.0 made goals and 2.17.0 stopped the app unmaking them.</b> The
+  choice of kind arrived last release. The very next control in the same panel
+  turned whatever you had made into a repeating chore — and said <em>Make it
+  repeat</em> the whole time. A goal that comes back is still a goal now, and
+  the way to stop it coming back exists, which it did not before.</p>
 </div>
 
 <h2>What is true today</h2>
 <ul class="facts">
   <li><b>Production</b> — 2.14.1. Everything since is on staging.</li>
-  <li><b>Staging</b> — 2.16.0, with 2.14.2, 2.14.3 and 2.15.0 behind it.</li>
-  <li><b>Last full Spine seen green</b> — <code>4df1d56</code>, all 41 steps.
-      2.16.0's own run is going as this was written.</li>
+  <li><b>Staging</b> — 2.17.0, with 2.14.2, 2.14.3, 2.15.0 and 2.16.0 behind it.</li>
+  <li><b>Last full Spine seen green</b> — <code>b0bd13b</code>, 2.16.0, all 41
+      steps, deploy included. 2.17.0's own run is going as this was written.</li>
   <li><b>Checked before pushing this one</b> — 1294 tests, 25 static gates, and
       both browser walks run locally rather than left to the Spine, because the
       last release's failure was a browser walk no static sweep could see.</li>
   <li><b>Waiting on the owner</b> — the on-device pass, whenever convenient.
       Four releases are stacked on staging. Nothing here is blocked on it.</li>
+  <li><b>Found and NOT fixed</b> — taking something off the Menu turns it back
+      into a plain task but leaves any rhythm it had running underneath, so it
+      keeps coming back while calling itself a task. The way to stop it is now
+      reachable; the muddle behind it is not fixed and is written down rather
+      than smoothed over.</li>
+  <li><b>Found and fixed on the way</b> — every browser check here could measure
+      the <em>previous</em> app and pass. The built file they serve is generated
+      and ignored by git, and all six checked only that it existed, not that it
+      was current. The build server always rebuilt first, so the full run was
+      never wrong — but the local runs that decide whether something is safe to
+      push were. They now refuse to run on a stale build.</li>
   <li><b>Found and fixed on the way</b> — the third-person gate was reporting
       both repos clean while twelve real references stood in three files. It
       skipped any line over 300 characters, a guard written for minified
@@ -156,15 +167,15 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 </div>
 
 <div class="card">
-  <div class="head"><span class="n">2</span><span class="t">The horizon comes down</span><span class="tag now">first step in</span></div>
-  <p><b>Done:</b> a goal or an area can be made at all, and a design document
-  that proposed giving a <em>role</em> its own clock is corrected — the app
-  refuses that on purpose, because a thing that can be late is a demand and a
-  role is an identity. The clock rides the goal instead.</p>
-  <p><b>Still to come:</b> that clock, so <em>haven't moved on this in a
-  while</em> arrives as the same rising insistence everything else uses; a page
-  listing your goals and areas including the empty ones; and filing many things
-  under one goal at once. No promote button, no screen to climb to.</p>
+  <div class="head"><span class="n">2</span><span class="t">The horizon comes down</span><span class="tag now">half in</span></div>
+  <p><b>Done:</b> a goal or an area can be made, and it can carry a rhythm that
+  brings the work under it back. A design document that proposed giving a
+  <em>role</em> its own clock is corrected — the app refuses that on purpose,
+  because a thing that can be late is a demand and a role is an identity. The
+  clock rides the goal instead.</p>
+  <p><b>Still to come:</b> a page listing your goals and areas including the
+  empty ones, and filing many things under one goal at once. No promote button,
+  no screen to climb to.</p>
 </div>
 
 <div class="card">

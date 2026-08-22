@@ -17,7 +17,7 @@
 import type { AppEvent, MenuCategory, NodeKind } from '../events.ts';
 import type { StampContext } from './session.ts';
 import { endOfLocalDay, localDayKey, utcMs, atMidnight} from '../time.ts';
-import { CONTAINER_DEFAULT } from '../tree.ts';
+import { CONTAINER_DEFAULT, CONTAINER_KINDS } from '../tree.ts';
 
 const base = (ctx: StampContext, kind: string, node: string, payload: unknown): AppEvent => ({
   id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
@@ -274,6 +274,16 @@ export function createParentEvents(
  * The kind change is emitted only when it is a change; re-emitting it for a node
  * that is already an upkeep would be a no-op event, and the log should not carry
  * claims about changes that did not happen.
+ *
+ * **AND NEVER ON A CONTAINER.** A rhythm on a goal, an area, an outcome or a
+ * project is "come back to this", not "this is now a chore" — the thing keeps
+ * being the thing it was and acquires a cadence. Before 2.16.1 this converted
+ * every one of them to `upkeep`, which meant the container-kind picker shipped
+ * in 2.16.0 made goals that the very next control in the same sheet silently
+ * unmade: kind `goal` in, kind `upkeep` out, the label reading "Make it
+ * repeat" throughout. The two events that matter — the interval and the review
+ * clock — never needed the kind change; `pressureOf` is kind-agnostic and reads
+ * only `lastDone`, `intervalDays` and `comfortWindowDays`.
  */
 export function makeRepeatEvents(
   ctx: StampContext,
@@ -283,7 +293,7 @@ export function makeRepeatEvents(
   comfortWindowDays: number,
 ): AppEvent[] {
   const out: AppEvent[] = [];
-  if (fromKind !== 'upkeep') {
+  if (fromKind !== 'upkeep' && !CONTAINER_KINDS.has(fromKind)) {
     out.push(base(ctx, 'node.kind.changed', node, { from: fromKind, to: 'upkeep' as NodeKind }));
   }
   out.push(base(ctx, 'upkeep.interval.set', node, { intervalDays, comfortWindowDays }));
@@ -301,7 +311,11 @@ export function makeRepeatEvents(
  * one would mean opening the closed vocabulary for something already expressible:
  * an interval of 0 folds to `intervalDays = 0`, which `pressureOf` reads as "no
  * cadence" and returns null for. The kind moves back so the item leaves the
- * Upkeep chips.
+ * Upkeep chips — **unless it never left its own kind**, which is the container
+ * case: a goal that stops coming back on a rhythm is still a goal, and writing
+ * `from: 'upkeep'` about a node that was never an upkeep would be a claim about
+ * a change that did not happen. `currentKind` is what makes that decidable, and
+ * it is the same fact `makeRepeatEvents` already takes for the same reason.
  *
  * The `done.unmarked` is load-bearing, not tidying. An interval of 0 makes the
  * item non-recurring, and a non-recurring item that has EVER been completed is
@@ -311,9 +325,14 @@ export function makeRepeatEvents(
  * and Done did nothing. Clearing the completion is what keeps it live and
  * ordinary, and the audit found this exact shape.
  */
-export const stopRepeatEvents = (ctx: StampContext, node: string, toKind: NodeKind = 'action'): AppEvent[] => [
+export const stopRepeatEvents = (
+  ctx: StampContext, node: string, toKind: NodeKind = 'action',
+  currentKind: NodeKind = 'upkeep',
+): AppEvent[] => [
   base(ctx, 'upkeep.interval.set', node, { intervalDays: 0, comfortWindowDays: 0 }),
-  base(ctx, 'node.kind.changed', node, { from: 'upkeep' as NodeKind, to: toKind }),
+  ...(currentKind === 'upkeep'
+    ? [base(ctx, 'node.kind.changed', node, { from: 'upkeep' as NodeKind, to: toKind })]
+    : []),
   base(ctx, 'done.unmarked', node, {}),
 ];
 

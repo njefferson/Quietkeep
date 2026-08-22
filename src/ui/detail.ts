@@ -489,7 +489,14 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
     if (n.onMenu) bits.push('on the Menu');
     if (n.lastDone) bits.push('done');
-    if (n.kind === 'upkeep' && n.intervalDays) bits.push(`repeats ${everyDaysWords(n.intervalDays)}`);
+    // A CADENCE IS NOT A KIND. This read `kind === 'upkeep'`, so a goal or an
+    // area carrying a rhythm said nothing about it here — the one line in the
+    // sheet whose job is to tell you what this thing currently is.
+    if (n.intervalDays) {
+      bits.push(isContainer(n)
+        ? `comes back ${everyDaysWords(n.intervalDays)}`
+        : `repeats ${everyDaysWords(n.intervalDays)}`);
+    }
     // The quiet fact line (1.4.0): where a sorted thing went, in the sorting's
     // own words — the sheet is where "it feels lost" gets its answer.
     if (n.route && n.route !== 'trash') bits.push(`sorted as ${String(n.route).replace(/-/g, ' ')}`);
@@ -793,7 +800,11 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       const b = btn(sel);
       if (b) b.hidden = !on;
     };
-    const repeats = n.kind === 'upkeep' && (n.intervalDays ?? 0) > 0;
+    // Carrying a cadence, whatever kind it is. Gated on `kind === 'upkeep'`
+    // this hid "Stop repeating" from every container with a rhythm — a state
+    // you could enter and not leave, which is the shape §113 is about.
+    const repeats = (n.intervalDays ?? 0) > 0;
+    const isPlaceForWork = isContainer(n);
     // No temporal controls on a Menu item OR on a demand-free kind — and the
     // second clause was MISSING until 1.17.2, which was a shipped instance of
     // offered-then-refused (the 1.9.2 audit's F-B, a fourth time). The comment
@@ -818,6 +829,14 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     grp('#detail-date-group', temporal);
     grp('#detail-start-group', temporal);
     grp('#detail-repeat-group', temporal);
+    // The same two controls, and a container is not being told it will become a
+    // chore. What a goal does on a rhythm is come back to be looked at.
+    const repeatLabel = q('#detail-repeat-label');
+    if (repeatLabel) repeatLabel.textContent = isPlaceForWork ? 'Come back to this' : 'Make it repeat';
+    const repeatSet = btn('#detail-repeat-set');
+    if (repeatSet) repeatSet.textContent = isPlaceForWork ? 'Come back' : 'Repeat';
+    const repeatStop = btn('#detail-repeat-stop');
+    if (repeatStop) repeatStop.textContent = isPlaceForWork ? 'Stop coming back' : 'Stop repeating';
     // Only meaningful once something repeats: an arrangement IS an upkeep, and
     // saying "it runs itself" about a thing with no rhythm would be a marker
     // with nothing behind it.
@@ -1218,7 +1237,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => makeRepeatEvents(ctx, current!.id, current!.kind, i, c), `Repeats ${everyDaysWords(i)}.`);
   });
   btn('#detail-repeat-stop')?.addEventListener('click', () => {
-    void run(ctx => stopRepeatEvents(ctx, current!.id), 'It no longer repeats.');
+    // The node's OWN kind, so a goal that stops coming back is still a goal.
+    // Without it `stopRepeatEvents` writes `from: 'upkeep', to: 'action'` about
+    // a node that was never an upkeep — a false claim in an append-only log,
+    // and a goal quietly demoted to a task.
+    const wasContainer = current ? isContainer(current) : false;
+    void run(ctx => stopRepeatEvents(ctx, current!.id, 'action', current!.kind),
+      wasContainer ? 'It no longer comes back on its own.' : 'It no longer repeats.');
   });
   btn('#detail-arrangement-set')?.addEventListener('click', () => {
     void run(ctx => markArrangementEvents(ctx, current!.id),

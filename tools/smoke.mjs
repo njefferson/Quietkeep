@@ -16,12 +16,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { serve } from './serve.mjs';
 import { CURRENT } from '../src/ui/changelog.ts';
+import { requireFreshBundle } from './bundle-fresh.mjs';
 
 const ROOT = new URL('../public', import.meta.url).pathname;
-if (!existsSync(`${ROOT}/app.js`)) {
-  console.error('public/app.js is missing — run `npm run build` first.');
-  process.exit(1);
-}
+requireFreshBundle(new URL('..', import.meta.url).pathname, 'the smoke walk');
 
 const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
@@ -6871,8 +6869,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const sel of ['#detail-weight-light', '#detail-weight-ordinary', '#detail-weight-heavy',
                      '#detail-weight-clear', '#detail-date-clear', '#detail-start-clear',
                      '#detail-after-clear', '#detail-menu', '#detail-promote',
-                     '#detail-unparent', '#detail-untrack', '#detail-repeat-stop',
-                     '#detail-undone', '#detail-unmerge', '#detail-arrangement-set',
+                     '#detail-unparent', '#detail-untrack',
+                     // UNDONE BEFORE STOP, and the order is load-bearing.
+                     // `stopRepeatEvents` clears the completion on purpose — a
+                     // non-recurring thing that has ever been completed is
+                     // finished for good, so stopping a repeat on something
+                     // already ticked off would silently retire it. Pressing
+                     // stop first therefore hides `#detail-undone` before this
+                     // pass can reach it.
+                     //
+                     // It did not matter until 2.17.0 because stop was
+                     // UNREACHABLE here: `#detail-promote` forces the kind to
+                     // `action` while leaving the interval set, and the old
+                     // visibility predicate keyed on `kind === 'upkeep'`. So the
+                     // node carried a cadence, `pressureOf` read it, and the one
+                     // control that could stop it was hidden. This pass reached
+                     // `#detail-undone` only because of that hole.
+                     '#detail-undone', '#detail-repeat-stop',
+                     '#detail-unmerge', '#detail-arrangement-set',
                      '#detail-arrangement-depends', '#detail-arrangement-stop']) await press(sel);
   await press('#detail-close');
 

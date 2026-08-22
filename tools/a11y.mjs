@@ -26,6 +26,7 @@ import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { serve } from './serve.mjs';
+import { requireFreshBundle } from './bundle-fresh.mjs';
 
 /** ONE SURFACE AT A TIME (1.40.0) — see the note in tools/smoke.mjs. */
 const openSurface = async (pg, id) => {
@@ -71,10 +72,7 @@ const openSurface = async (pg, id) => {
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const AXE = join(ROOT, 'node_modules', 'axe-core', 'axe.min.js');
-if (!existsSync(join(ROOT, 'public', 'app.js'))) {
-  console.error('public/app.js is missing — run `npm run build` first.');
-  process.exit(1);
-}
+requireFreshBundle(ROOT, 'the a11y walk');
 
 const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
@@ -388,6 +386,19 @@ const REGISTRY = {
   'detail sheet, creating a place': [
     '#detail-parent-filter', '#detail-parent-create',
     '#detail-parent-kind', 'label[for="detail-parent-kind"]',
+  ],
+  // The sheet open on a CONTAINER, with a rhythm set on it (2.17.0). Its own
+  // state and not a fold of 'detail sheet', because these three controls carry
+  // DIFFERENT WORDS here — a goal is told it will come back, not that it will
+  // repeat — and words are what SC 2.5.3 and the name audits read. Measured on
+  // the variant a reader of a goal actually meets rather than on the default
+  // strings, which is the difference between auditing the markup and auditing
+  // the app. `#detail-repeat-stop` is in the list on purpose: it is revealed
+  // only once a cadence exists, and it was hidden from every container by a
+  // predicate keyed on kind — a state you could enter and not leave.
+  'detail sheet, a container with a rhythm': [
+    '#detail-repeat-label', '#detail-repeat-set', '#detail-repeat-stop',
+    '#detail-every', '#detail-slack', '#detail-repeat-hint',
   ],
   // The situation field (1.29.0). Scoped to its own group: `.detail-label`
   // unscoped answers for every group on the sheet, so a registry entry written
@@ -3141,6 +3152,31 @@ try {
     await auditSeparationAndTargets(page, 'detail sheet, creating a place', theme);
     await auditFocusRings(page, 'detail sheet, creating a place', theme, ['#detail-parent-create']);
     await page.fill('#detail-parent-filter', '');
+
+    // The sheet open on a CONTAINER, carrying a cadence (2.17.0). Driven rather
+    // than assumed: the three controls in the repeat group say something
+    // different here, and 2.16.0 shipped a picker that made goals which the
+    // very next control in this same sheet silently converted to upkeeps.
+    // Card 0 is the container made by the create-in-place step above.
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.locator('#cards .card-open').nth(0).click();
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.waitForSelector('#detail-repeat-group:not([hidden])');
+    const rWords = await page.locator('#detail-repeat-label').innerText();
+    if (!/come back/i.test(rWords)) {
+      fail(`${theme}: the sheet on a container still says "${rWords}" — the container wording went unmeasured`);
+    }
+    await page.fill('#detail-every', '90');
+    await page.fill('#detail-slack', '14');
+    await page.click('#detail-repeat-set');
+    await page.waitForSelector('#detail-repeat-stop:not([hidden])');
+    await auditContrast(page, 'detail sheet, a container with a rhythm', theme);
+    await auditAxe(page, 'detail sheet, a container with a rhythm', theme);
+    await auditNames(page, 'detail sheet, a container with a rhythm', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, a container with a rhythm', theme);
+    await auditFocusRings(page, 'detail sheet, a container with a rhythm', theme, ['#detail-repeat-stop']);
 
     // The situation field (1.29.0). Filled first, deliberately: the box is empty
     // in the ordinary case and an empty textarea has colours but no words, so a
