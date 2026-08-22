@@ -16,7 +16,7 @@ import { requestPersistence, ulid } from '../ids.ts';
 import { toCalendar, calendarCount } from '../ics.ts';
 import { exportFilename, inspectExport, importSeedingFresh, foldInShard, toJsonl } from '../portability.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, scaleNote, normaliseScale } from '../scale.ts';
-import { statusReport, renderReport, reportedBefore, type ReportFormat } from '../delta.ts';
+import { statusReport, renderReport, reportedBefore, periodWords, type ReportFormat } from '../delta.ts';
 import { commsNode } from '../comms.ts';
 import { printText } from './print.ts';
 import { startCommsSweepEvents, stopCommsSweepEvents } from './focus-intents.ts';
@@ -736,6 +736,54 @@ export async function mountAbout(
       reportNote.textContent = `That did not work — nothing left your device. (${(err as Error).message})`;
     }
   };
+
+  /**
+   * READING IS NOT REPORTING (2.22.0, the plan's phase 6).
+   *
+   * The same cut and the same text as `deliverReport`, and **it writes
+   * nothing**. Every other route here records `status.report.exported`, which
+   * moves the per-device mark so the next report starts from that moment —
+   * correct for a report somebody received, wrong for a glance.
+   *
+   * Until this existed, *what did I miss* could only be answered by exporting,
+   * which spent the period in order to read it: look twice and the second look
+   * was empty, with nothing on screen saying why.
+   *
+   * AND IT SAYS SO WHEN THERE IS NOTHING, rather than rendering a heading with
+   * no rows under it. On a store one person keeps on one device, a week away
+   * writes no events at all — you were not there to write any — so the honest
+   * answer to "what changed while I was gone" is usually *nothing did, and here
+   * is why that is not a bug*. A blank panel would read as broken, which is the
+   * failure `serves.ts` records and 2.18.0's empty state answers.
+   */
+  const showReport = async (): Promise<void> => {
+    if (!reportPreview) return;
+    const nowIso = new Date().toISOString();
+    const after = session.state();
+    const all = await session.store.all();
+    const picked = anchorPeriod?.value || '';
+    const firing = picked ? lastFiring(all, picked) : null;
+    const since = firing ? firing.at : after.lastReportAt;
+    const mark = firing ? firing.mark : after.lastReportMark;
+    const before = fold(reportedBefore(all, { at: since, upToSeqByDevice: mark }));
+    const r = statusReport(before, after, since, nowIso, session.zone);
+    const empty = r.changes.length === 0 && r.outstanding.length === 0
+      && r.ahead.length === 0 && r.decided.length === 0;
+    reportPreview.textContent = empty
+      ? `${periodWords(since, session.zone)}: nothing has moved.\n\n`
+        + 'That is an ordinary answer, not an empty one. This is built from what '
+        + 'was written down, and time passing writes nothing — a week away with '
+        + 'nobody touching it changes no records at all. What did change while '
+        + 'you were gone is which things came round, and Welcome back says that '
+        + 'when you have been away.'
+      // Plain text, not markdown: this goes into a `<pre>` for somebody to
+      // READ, and `#` and `-` markers are for a file somebody opens elsewhere.
+      : renderReport(r, 'print', session.zone);
+    reportPreview.hidden = false;
+    // NO `status.report.exported`. Deliberately, and it is the whole point.
+  };
+  document.querySelector<HTMLButtonElement>('#report-show')
+    ?.addEventListener('click', () => { void showReport(); });
 
   const REPORT_BUTTONS: [string, ReportFormat][] = [
     ['#report-copy', 'clipboard'], ['#report-markdown', 'markdown'],

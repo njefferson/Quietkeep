@@ -2059,6 +2059,17 @@
     What has changed since you last told anyone, plus what is still outstanding. You choose what goes in it.
   </p>
   <div class="about-actions">
+    <!-- READING IS NOT REPORTING (2.22.0, the plan's phase 6). Every other
+         control here HANDS THE REPORT OVER, and handing it over records
+         `status.report.exported`, which moves the mark — so the next report
+         starts from this moment. That is right for a report somebody received
+         and wrong for a glance.
+
+         Until this button, "what did I miss" could only be answered by
+         exporting, which spent the period to read it. Look twice and the second
+         look was empty, with nothing on screen explaining why. This one writes
+         NOTHING: same cut, same text, no event, no mark moved. -->
+    <button id="report-show" type="button">Show me</button>
     <button id="report-copy" type="button" aria-label="Copy it — the weekly look">Copy it</button>
     <button id="report-markdown" type="button" class="ghost">Save as Markdown</button>
     <button id="report-csv" type="button" class="ghost">Save as a spreadsheet</button>

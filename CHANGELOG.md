@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.22.0 — CAPABILITY
+
+*2026-08-22*
+
+- **You can look at what has changed without sending it to anybody.** *Show me*, beside the copy and save buttons. Until now the only way to read it was to copy it or save it — and doing that tells the app you have reported, so the next one starts from that moment. Look twice and the second look was empty, with nothing saying why.
+- **Looking costs you nothing.** It writes no record and moves nothing. Copy, save and print still do, because those are you handing it over, which is a different act.
+- **And when nothing has moved it says so, and says why.** Time passing does not write anything down — a week away with nobody touching it changes no records at all. That is an ordinary answer rather than an empty screen. What did change while you were gone is which things came round, and *Welcome back* is where that is said.
+
 ## 2.21.0 — CAPABILITY
 
 *2026-08-22*

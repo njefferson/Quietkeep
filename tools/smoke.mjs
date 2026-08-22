@@ -6298,6 +6298,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     window.__reports = [];
     navigator.clipboard.writeText = (t) => { window.__reports.push(t); return Promise.resolve(); };
   });
+  // READING IS NOT REPORTING (2.22.0). The contrast with the two exports below
+  // is the whole assertion: look twice and you see the same thing, because
+  // looking writes nothing; EXPORT twice and the second is empty, because
+  // handing it over moves the mark. Before this button, the only way to read
+  // what changed was to spend the period reading it.
+  await tpage.click('#report-show');
+  await tpage.waitForSelector('#report-preview:not([hidden])');
+  const look1 = (await tpage.locator('#report-preview').textContent()) ?? '';
+  is(/we ship on the 12th/.test(look1), true,
+    'Show me renders what changed, without handing it to anybody');
+  await tpage.click('#report-show');
+  await tpage.waitForTimeout(200);
+  const look2 = (await tpage.locator('#report-preview').textContent()) ?? '';
+  is(look2 === look1, true,
+    'AND LOOKING TWICE SHOWS THE SAME THING — reading does not spend the period');
+  is((await tpage.evaluate(() => (window.__reports ?? []).length)) === 0, true,
+    'and nothing was handed over by looking');
+
   await tpage.click('#report-copy');
   await tpage.waitForFunction(() => (window.__reports ?? []).length === 1);
   const report = await tpage.evaluate(() => window.__reports[0]);

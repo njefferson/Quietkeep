@@ -302,7 +302,12 @@ const BUDGET = {
   // the count rises by exactly the four the sheet itself costs — the same two
   // per sheet every other one here costs, plus the one control that makes a
   // situation recallable and nothing else.
-  controls: 237,
+  // 237 -> 238 on 2026-08-22 (2.22.0): "Show me" beside the report's four
+  // export buttons. It is inside the ⓘ panel, so nothing on the first screen
+  // changes — and it is the one control there that WRITES NOTHING, which is
+  // why it exists: every other route records the export and moves the mark, so
+  // reading the report cost you the period you read it for.
+  controls: 238,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

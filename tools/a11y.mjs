@@ -822,7 +822,7 @@ const REGISTRY = {
     '.detail-inline', '#detail-close'],
   // The status report's controls, in the panel that talks about handing things
   // over. Four buttons and the line that confirms one worked.
-  'report controls': ['#report-copy', '#report-markdown', '#report-csv', '#report-print',
+  'report controls': ['#report-show', '#report-copy', '#report-markdown', '#report-csv', '#report-print',
     '.about-p', '.about-section'],
   // The person lens. How long something has been with someone is the
   // lowest-contrast text here and it is load-bearing — it is the fact you use to

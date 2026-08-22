@@ -418,7 +418,28 @@ situations are the acceptance test — walked end to end, not asserted.
   been measured on — the `serves.ts` failure with a different noun. When it is
   built it needs the line saying what it is made of, the way 2.19.0 handled the
   same sparsity.
-- Phase 6 through 8: not started.
+- **Phase 6 — coming back.** DONE in 2.22.0, and the phase's own premise was
+  wrong in a way worth keeping. It said *the delta report cut at an anchor —
+  the machinery exists, the surface does not.* **The surface existed**: the ⓘ
+  panel has the anchor picker and four export routes, all measured. That is the
+  seventh already-built thing this plan has named as missing.
+  **And the delta is the wrong instrument for the question anyway.** It is
+  computed from the LOG, and being away writes no events — you were not there to
+  write any. On a store one person keeps on one device, "what changed while I
+  was gone" over the log is empty by construction. What you actually miss is
+  which things came round, which is clocks against time, and `#reentry` already
+  says that: how long you were away, how many things to sort, how many dates
+  went by, and the amnesty. Bounded BY SHAPE and deliberately never a list.
+  **What was genuinely missing is a way to READ it.** Every route was an
+  export, and exporting records `status.report.exported`, which moves the
+  per-device mark — so reading the report spent the period you read it for, and
+  a second look was empty with nothing on screen saying why. *Show me* renders
+  the same cut and the same text and **writes nothing**. The smoke walk proves
+  the contrast directly: look twice and it is identical; export twice and the
+  second is empty.
+  The empty case says so and says why, rather than rendering a heading with no
+  rows — the `serves.ts` failure 2.18.0's empty state already answers.
+- Phase 7 and 8: not started.
 - **Last full Spine seen green:** `7ed363d` on `staging` (2.21.0), every step
   and the deploy, read from the run rather than from the push output.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
