@@ -384,12 +384,12 @@ situations are the acceptance test — walked end to end, not asserted.
   something. It releases the undertaking and leaves the work, which is the
   assertion the smoke walk was seen RED on.
 - Phase 5 through 8: not started.
-- **Last full Spine seen green:** `5f0d45a` on `staging` (2.19.1), every step
+- **Last full Spine seen green:** `61aec1a` on `staging` (2.20.0), every step
   and the deploy, read from the run rather than from the push output.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
   `staging` carries nine releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
-  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0 and 2.19.1. Nothing in the plan is
-  blocked on it.
+  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1 and 2.20.0. Nothing in the
+  plan is blocked on it.
 
   **These two lines went stale for five releases while the phase notes above
   them were kept current**, which is the one-file-two-answers shape the hub's
