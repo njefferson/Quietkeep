@@ -649,6 +649,17 @@ const REGISTRY = {
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
     '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
     '#detail-context-hint',
+    // WHICH KIND OF WANT (2.23.0). Named rather than left to a class, for
+    // `#detail-written`'s reason: "it happens to match a selector already in
+    // the list" is how a control goes unmeasured the moment its markup changes.
+    // Safe to name here because it renders on every non-trashed node's sheet,
+    // unlike `#nextup-fixed` — the false-receipt trap this file already carries
+    // a note about.
+    '#detail-menu-category',
+    // A FIRST STEP, FROM ANYWHERE (2.23.0). The offer card's own invitation is
+    // registered in its own state; this is the second door, on the sheet, and
+    // it renders on every non-trashed node so naming it is safe.
+    '#detail-step-label', '#detail-step', '#detail-step-set', '#detail-step-hint',
     '.detail-hint', '#detail-name', '#detail-date', '#detail-every', '#detail-rename',
     '#detail-date-set', '#detail-close',
     // 1.3.0's verbs: the defer date, the estimate, and the picker's filter.
@@ -2720,6 +2731,16 @@ try {
     await auditContrast(page, 'detail sheet', theme);
     await auditAxe(page, 'detail sheet', theme);
     await auditNames(page, 'detail sheet', theme);
+    // WHICH KIND OF WANT (2.23.0). The six-value field was dead code in the
+    // shipped app: both routes a person uses wrote `read`, so the Menu's
+    // six-way grouping rendered one group on every store. Asserted rather than
+    // assumed — a picker that renders and is ignored looks identical to one
+    // that works.
+    const catOptions = await page.locator('#detail-menu-category option').count();
+    (catOptions === 6 ? pass : fail)(
+      `${theme}/detail sheet: the Menu category offers all six (${catOptions})`);
+    ((await page.locator('#detail-menu-category').inputValue()) === 'read' ? pass : fail)(
+      `${theme}/detail sheet: and defaults to read, so the common case is one tap`);
     await auditSeparationAndTargets(page, 'detail sheet', theme);
     await auditFocusRings(page, 'detail sheet', theme, ['#detail-date-set', '#detail-close', '#detail-feeds']);
     // Put the field back, so the states after this one meet an ordinary sheet

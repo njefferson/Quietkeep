@@ -1326,6 +1326,31 @@
       Bigger things hold smaller ones. Nothing is filed out of reach.
     </p>
     <ul id="detail-children" class="detail-feeds"></ul>
+
+    <!-- A FIRST STEP, FROM ANYWHERE (2.23.0, the plan's phase 7). *Get oil
+         change* is not stale and it is not a bad plan — it is UNFORMED, and the
+         thing that unblocks it is naming the first physical action.
+
+         That flow has existed since 1.24.0 and had exactly one route into it:
+         `#nextup-bite-open`, on the offer card. So you could shape the ONE
+         thing the app happened to hand you, and nothing else — a thing you knew
+         was unformed had no route unless it came round. Same machinery
+         (`biteEvents`), same event, second door.
+
+         An ordinary `action` under the thing, not a new kind and not a new
+         noun: it completes, decays, renders and can be let go like anything
+         else, which is what makes this cost nothing downstream. -->
+    <p class="detail-label" id="detail-step-label">Too big to start?</p>
+    <div class="detail-row" role="group" aria-labelledby="detail-step-label">
+      <label class="visually-hidden" for="detail-step">A smaller first step</label>
+      <input id="detail-step" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="ring the garage"
+             aria-describedby="detail-step-hint">
+      <button id="detail-step-set" type="button">Put it under this</button>
+    </div>
+    <p id="detail-step-hint" class="detail-hint">
+      It becomes an ordinary thing under this one. Nothing else changes.
+    </p>
   </div>
 
   <!-- Folding a duplicate (1.7.0, ADR-0053). The batch carries what the
@@ -1561,6 +1586,30 @@
       <button id="detail-done" type="button" aria-label="Done with this one">Done</button>
       <button id="detail-undone" type="button" class="ghost">Not done after all</button>
       <button id="detail-menu" type="button" class="ghost">Put on the Menu</button>
+      <!-- WHICH KIND OF WANT (2.23.0, the plan's phase 7, and it is what the
+           research allows and nothing more). `docs/nd-collisions.md` entry 26
+           REFUSES the packaged practice outright — no named feature, no
+           use-tracking, no "you haven't looked at your menu" prompt, no earned
+           or contingent framing, nothing algorithmic. What it permits is one
+           narrow thing, and calls it a verified defect: the category is a
+           six-value field that was dead code in the shipped app, because both
+           routes a person actually uses wrote `read` and nothing else. The
+           Menu groups by category, so a six-way grouping rendered one group,
+           always.
+
+           A TWO-TAP CHOICE at the moment the act happens — ADR-0029's shape,
+           the same one `#detail-parent-kind` uses — with `read` still the
+           default, so the common case costs nothing. Not a new surface, not a
+           rank, not a requirement. -->
+      <label class="visually-hidden" for="detail-menu-category">As what kind of thing</label>
+      <select id="detail-menu-category" hidden>
+        <option value="read">read</option>
+        <option value="try">try</option>
+        <option value="go">go</option>
+        <option value="make">make</option>
+        <option value="research">research</option>
+        <option value="save-for">save for</option>
+      </select>
       <button id="detail-promote" type="button" class="ghost">Bring back from the Menu</button>
       <button id="detail-trash" type="button" class="ghost">Let it go</button>
       <button id="detail-untrash" type="button" class="ghost">Keep it after all</button>

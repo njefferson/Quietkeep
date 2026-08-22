@@ -75,7 +75,17 @@ const BUDGET = {
   // screen goes DOWN by two rows and up by one door; this budget counts words
   // in the markup and cannot see that, which is the fourth time in six
   // releases it has read the wrong way round.
-  words: 3455,
+  // 3455 -> 3467 on 2026-08-22 (2.23.0): the six Menu category words and a
+  // hidden label, on a picker beside a button that already existed. The words
+  // were ALREADY in the app — the sort sheet's bulk picker has offered the same
+  // six since 1.3.1. This is the single-item route catching up with them.
+  // 3467 -> 3490 on 2026-08-22 (2.23.0): the six Menu category words, plus a
+  // label, placeholder and hint for the first-step field on the detail sheet.
+  // Neither is a new idea — the six have been in the sort sheet's bulk picker
+  // since 1.3.1, and the first-step flow has been on the offer card since
+  // 1.24.0. Both are single-item routes catching up with machinery that was
+  // already shipped and reachable from exactly one place.
+  words: 3490,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -307,7 +317,17 @@ const BUDGET = {
   // changes — and it is the one control there that WRITES NOTHING, which is
   // why it exists: every other route records the export and moves the mark, so
   // reading the report cost you the period you read it for.
-  controls: 238,
+  // 238 -> 239 on 2026-08-22 (2.23.0): one picker beside "Put on the Menu",
+  // inside the detail sheet. Nothing on the first screen changes. It is what
+  // `docs/nd-collisions.md` entry 26 permits and the whole of what it permits:
+  // the category chosen at write time instead of silently defaulting, fixing a
+  // six-value field that was dead code in the shipped app.
+  // 239 -> 241 on 2026-08-22 (2.23.0): the Menu category picker, and the
+  // first-step field and its button. All three are inside the detail sheet, so
+  // nothing on the first screen changes. The first-step flow had ONE route into
+  // it for eleven months — the offer card — so it could only shape whatever the
+  // app happened to hand you.
+  controls: 241,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

@@ -439,7 +439,31 @@ situations are the acceptance test — walked end to end, not asserted.
   second is empty.
   The empty case says so and says why, rather than rendering a heading with no
   rows — the `serves.ts` failure 2.18.0's empty state already answers.
-- Phase 7 and 8: not started.
+- **Phase 7 — the menu and the unformed.** DONE in 2.23.0, and BOTH bullets
+  turned out to be machinery with one route into it. Eighth and ninth.
+  **The reward-led menu: the research decided it, and it mostly said no.**
+  `docs/nd-collisions.md` entry 26 exists and grades the packaged practice
+  Community-at-best — it refuses any named feature, any use-tracking, any
+  "you haven't looked at your menu" prompt, any earned or contingent framing,
+  anything algorithmic. What it permits is one narrow thing and calls it a
+  VERIFIED DEFECT: the category chosen at write time rather than silently
+  defaulting. Measured — `MenuCategory` has six values, the two routes a person
+  actually uses (`triage-intents.ts:45` and the sheet's button) both wrote
+  `read`, and `menuGroups` groups by category, so a six-way grouping rendered
+  ONE GROUP on every store. A two-tap picker, `read` still the default,
+  ADR-0029's shape. Correctable in place, because `menu.item.added` is LWW on
+  the `menu` stamp — otherwise a wrong category would be a state you enter and
+  cannot leave (LESSONS 113).
+  **Needs shaping: the ACT was built and had one door.** `biteEvents`
+  (1.24.0) makes an ordinary action under the unformed thing — no new kind, no
+  new noun — and its only caller was the offer card. So you could shape the ONE
+  thing the app happened to hand you, and a thing you knew was unformed had no
+  route unless it came round. The same intent now has a second door on the
+  detail sheet.
+  **What is NOT built, deliberately: a LIST of unformed things.** A backlog of
+  your own vagueness is the shape law 5 and entry 26 both refuse, and the offer
+  card plus the sheet cover the act at the two moments it is wanted.
+- Phase 8: not started.
 - **Last full Spine seen green:** `7ed363d` on `staging` (2.21.0), every step
   and the deploy, read from the run rather than from the push output.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and

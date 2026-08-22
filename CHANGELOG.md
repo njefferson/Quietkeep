@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.23.0 — CAPABILITY
+
+*2026-08-22*
+
+- **When you put something on the Menu you can say what kind of thing it is** — read, try, go, make, look into, save for. The Menu already sorted itself into those six and everything you put there was filed as *read*, so it only ever showed one heading. Now it shows what you actually have.
+- **One tap unless you want the choice.** It still says *read* unless you change it, so nothing takes longer than it did.
+- **And you can change your mind afterwards**, on the thing itself. No taking it off the Menu and putting it back.
+- **And you can name a first step on anything, not just whatever you were handed.** *Get the oil change done* is not a bad plan and it is not stale — it is unformed, and what unblocks it is saying *ring the garage*. That has been on the offer card for a while and had no other way in, so it only worked on the one thing the app chose to show you. Now it is on every thing’s own panel.
+- **What is deliberately NOT here.** Nothing tracks whether you look at the Menu, nothing suggests items, nothing frames any of it as a reward you earned by doing something else. The research this came from refuses all of that by name, and the reason is that attaching strings to the one part of your list that never had any is how it stops working.
+
 ## 2.22.0 — CAPABILITY
 
 *2026-08-22*

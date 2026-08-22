@@ -7053,6 +7053,48 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#capture').isVisible(), true,
     'and the capture line is still there afterwards — nothing was left blocking the app');
 
+  // ————— A FIRST STEP, FROM ANYWHERE (2.23.0) —————
+  //
+  // The flow has existed since 1.24.0 with ONE route into it, on the offer
+  // card. So it could only shape whatever the app happened to hand you. This
+  // proves the second door writes the same thing: an ordinary action, under the
+  // thing, from that thing's own sheet.
+  console.log('\nA first step, from anywhere');
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.fill('#capture', 'Get the oil change done');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  {
+    const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
+    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+  }
+  await tpage.evaluate(() => {
+    const f = document.querySelector('#held-fold');
+    if (f && !f.open) f.open = true;
+  });
+  await tpage.waitForTimeout(120);
+  const oil = tpage.locator('#cards .card', { hasText: 'Get the oil change done' }).first();
+  if (await oil.count()) {
+    await oil.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await tpage.fill('#detail-step', 'Ring the garage');
+    await tpage.click('#detail-step-set');
+    await tpage.waitForTimeout(250);
+    const kids = await tpage.evaluate(() =>
+      (document.querySelector('#detail-children')?.textContent ?? ''));
+    is(/Ring the garage/.test(kids), true,
+      'a first step named on the sheet lands under the thing it belongs to');
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(200);
+    is(await tpage.locator('#cards .card', { hasText: 'Get the oil change done' }).count() > 0, true,
+      'and the unformed thing is still there — shaping it did not consume it');
+  } else {
+    is(false, true, 'the unformed item never reached the held list, so nothing was measured');
+  }
+
   // ————— THE OTHER DIRECTION, END TO END (2.20.0) —————
   //
   // The promise itself is unit-tested. What no unit reaches is the RELEASE

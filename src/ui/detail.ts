@@ -15,6 +15,7 @@
 // whom a surprising control is expensive.
 
 import type { Session } from './session.ts';
+import type { MenuCategory } from '../events.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
@@ -35,6 +36,7 @@ import { normalize } from '../search.ts';
 import { doneEvents } from './work.ts';
 import { declareFeedsEvents, releaseFeedsEvents } from './detail-intents.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
+import { biteEvents } from './work-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
@@ -1016,6 +1018,20 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     show('#detail-done', !n.lastDone && !n.trashed);
     show('#detail-undone', Boolean(n.lastDone));
     show('#detail-menu', !n.onMenu && !n.trashed);
+    // The picker stands with the button — AND STAYS once the thing is on the
+    // Menu, so a category chosen wrongly can be corrected in place. Without
+    // that it would be a state you can enter and not leave (LESSONS 113): the
+    // only way back would be to bring the thing off the Menu and put it on
+    // again, which writes two events to fix one word.
+    {
+      const cat = q<HTMLSelectElement>('#detail-menu-category');
+      if (cat) {
+        cat.hidden = n.trashed;
+        // Shows what it IS while it is on the Menu, and what it WOULD BE before
+        // that. Either way the control never disagrees with the surface.
+        cat.value = n.onMenu ?? 'read';
+      }
+    }
     show('#detail-promote', Boolean(n.onMenu));
     // Not on a merge SURVIVOR (1.17.3, the seam audit): trashing a node that
     // others folded into makes the folded-in nodes newly silent and the gate
@@ -1295,8 +1311,39 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => undoneEvents(ctx, current!.id), 'Back on the list.');
   });
   btn('#detail-menu')?.addEventListener('click', () => {
-    void run(ctx => toMenuEvents(ctx, current!.id), 'On the Menu — no clock, no demand.');
+    // WHICH KIND OF WANT (2.23.0). The picker beside the button, `read` by
+    // default — so nothing is required and the common case is one tap, which is
+    // the shape `docs/nd-collisions.md` entry 26 permits and the only thing it
+    // permits. Before this, both routes a person uses wrote `read`, so the
+    // Menu's six-way grouping rendered one group on every store.
+    const cat = q<HTMLSelectElement>('#detail-menu-category');
+    const chosen = (cat?.value || 'read') as MenuCategory;
+    void run(ctx => toMenuEvents(ctx, current!.id, chosen), 'On the Menu — no clock, no demand.');
   });
+  // CHANGING IT IN PLACE. `menu.item.added` is last-write-wins on the `menu`
+  // stamp, so re-emitting it with a different category is the correction —
+  // no new noun, no new control, and nothing to undo. Only while the thing is
+  // ALREADY on the Menu: before that the picker is an argument to the button
+  // beside it, and firing on change would put things on the Menu by accident.
+  q<HTMLSelectElement>('#detail-menu-category')?.addEventListener('change', (e) => {
+    if (!current?.onMenu) return;
+    const next = (e.target as HTMLSelectElement).value as MenuCategory;
+    if (next === current.onMenu) return;
+    void run(ctx => toMenuEvents(ctx, current!.id, next), 'Changed on the Menu.');
+  });
+
+  // A FIRST STEP, FROM ANYWHERE (2.23.0). The offer card's flow has had one
+  // route since 1.24.0 — you could shape the one thing you were handed and
+  // nothing else. Same intent, same event, second door.
+  btn('#detail-step-set')?.addEventListener('click', () => {
+    const input = q<HTMLInputElement>('#detail-step');
+    if (!input || !current) return;
+    const text = input.value.trim();
+    if (!text) { say('A first step first — a few words is enough.'); return; }
+    input.value = '';
+    void run(ctx => biteEvents(ctx, ctx.id(), current!.id, text), 'Put under this one.');
+  });
+
   btn('#detail-promote')?.addEventListener('click', () => {
     // The node's OWN kind decides what it comes back as — see `promotedKind`.
     // This used to force 'action', so a goal that had been rested on the Menu

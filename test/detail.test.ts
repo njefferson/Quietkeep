@@ -19,6 +19,7 @@ import {
   undoneEvents, untrashEvents, promoteFromMenuEvents, promoteNodeFromMenuEvents, toMenuEvents,
 } from '../src/ui/detail-intents.ts';
 import { promotedKind } from '../src/kinds.ts';
+import { menuGroups } from '../src/menu.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
 
@@ -358,4 +359,60 @@ test('promotedKind changes only the demand-free kinds', () => {
   for (const k of ['goal', 'area', 'outcome', 'project', 'upkeep', 'action', 'waiting-for'] as const) {
     assert.equal(promotedKind(k), k, `${k} keeps what it was`);
   }
+});
+
+// --- which kind of want (2.23.0) --------------------------------------------
+//
+// `docs/nd-collisions.md` entry 26 REFUSES the packaged reward-menu practice
+// outright and permits exactly one narrow thing: the category chosen at write
+// time instead of silently defaulting. It calls the current state a verified
+// defect — a six-value field that is dead code in the shipped app.
+
+test('the Menu category defaults to read, so the common case costs nothing', () => {
+  let s = captured('N', 'that novel everyone mentions');
+  s = write(s, toMenuEvents(ctx(), 'N'));
+  assert.equal(s.nodes.get('N')!.onMenu, 'read');
+});
+
+test('and any of the six can be chosen instead', () => {
+  for (const c of ['read', 'try', 'go', 'make', 'research', 'save-for'] as const) {
+    let s = captured('N', 'a want');
+    s = write(s, toMenuEvents(ctx(), 'N', c));
+    assert.equal(s.nodes.get('N')!.onMenu, c, `${c} lands`);
+  }
+});
+
+test('a category chosen wrongly is corrected in place, with no way out and back', () => {
+  // `menu.item.added` is last-write-wins on the `menu` stamp, so re-emitting it
+  // IS the correction. Without that the only route would be to bring the thing
+  // off the Menu and put it on again — two events to fix one word, and a state
+  // you enter and cannot leave (LESSONS 113).
+  let s = captured('N', 'that novel everyone mentions');
+  s = write(s, toMenuEvents(ctx(), 'N'));
+  const nodesBefore = s.nodes.size;
+
+  s = write(s, toMenuEvents(ctx(), 'N', 'research'));
+  assert.equal(s.nodes.get('N')!.onMenu, 'research');
+  assert.equal(s.nodes.size, nodesBefore, 'nothing was duplicated to do it');
+  assert.equal(silentNodes(s).length, 0);
+});
+
+test('the Menu groups by category, so more than one is more than one group', () => {
+  // The defect this closes, stated as the surface saw it: with every route
+  // writing `read`, a six-way grouping rendered one group on every store.
+  let s = captured('A', 'that novel');
+  s = write(s, [{
+    id: `m${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'capture.recorded', node: 'B', payload: { text: 'the pottery place', source: 'quick', sourceTags: [] },
+  } as AppEvent]);
+  s = write(s, [{
+    id: `r${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'clarify.routed', node: 'B', payload: { route: 'next-action' },
+  } as AppEvent]);
+  s = write(s, toMenuEvents(ctx(), 'A', 'read'));
+  s = write(s, toMenuEvents(ctx(), 'B', 'go'));
+
+  const groups = menuGroups(s);
+  assert.equal(groups.length, 2, 'two categories, two groups');
+  assert.deepEqual(groups.map(g => g.items.length), [1, 1]);
 });
