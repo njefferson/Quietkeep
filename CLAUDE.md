@@ -40,6 +40,16 @@ not authority to start a sweep of your own. Mechanical work — find-and-replace
 classifying a list against a stated rule, running a gate and reporting its exit
 code — goes to a cheaper model in a subagent. Top tier is for judgement.
 
+## An approved plan is authority for all of it (Doctrine §11c)
+Finishing one phase of a multi-phase plan and going idle to be told to continue
+is doing a fraction of what was asked. **Report what landed and start the next
+piece in the same turn.** If you genuinely must stop, the FIRST line says so in
+those words — *stopping here, waiting on you for X* — because "I'll hold" at the
+end of a long report reads as "I am continuing", and the silence gets discovered
+by being asked what happened. It happened three times in one session, twice
+after the behaviour had been ruled out. This does not license a sweep of your
+own: §11b still binds, and the authority is the plan's remaining phases.
+
 ## Rules specific to this app
 - **NOTHING PERSONAL ABOUT THE OWNER EVER LANDS IN THIS REPO — a FAIL state**
   (the owner's instruction, 2026-08-04). No diagnosis, health fact, or identity
