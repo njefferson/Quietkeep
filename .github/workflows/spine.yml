@@ -399,6 +399,16 @@ jobs:
       - name: Every off-canvas route names a way a finger can take it
         run: npm run touch:check
 
+      # AND THE OTHER HALF OF THE SAME QUESTION: not "can this be pressed" but
+      # "is it anywhere near the thing it acts on". `#situation-open` sets where
+      # you are and how long you have — both inputs to the offer — and shipped
+      # 2129px below that offer on a phone, 3.84 screens, inside the very
+      # section it narrows. Twenty-five static gates and eight browser walks and
+      # not one asked where a thing renders.
+      - name: Every filter stands in front of what it filters
+        if: ${{ !cancelled() }}
+        run: npm run narrows:check
+
       # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
       # somebody who did not open the app, on a lock screen, possibly in front of
       # other people, on a day they may be at their worst — and there is no

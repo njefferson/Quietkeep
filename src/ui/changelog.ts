@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.23.1',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**\u201cWhat\u2019s the situation?\u201d is now the first thing under the box you type in; it was down inside *What you are holding*.** So are the two lines telling you the list has been narrowed \u2014 *You are at home* and *You have 30 minutes*. They were 2129px below *Next up* on a phone, which is nearly four screenfuls of scrolling, and *Next up* is the thing they change. You could be handed something you cannot do where you are standing, with the way to say so four screens away.',
+      '**The Menu button is one place further down the tab order**, because there is one more button above it now. Nothing about it changed otherwise.',
+      '**What is still true and still not fixed.** Nothing else moved. The lens, the tree and the rest of *What you are holding* are exactly where they were.',
+    ],
+  },
+  {
     triplet: '2.23.0',
     kind: 'CAPABILITY',
     date: '2026-08-22',

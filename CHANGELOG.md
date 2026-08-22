@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.23.1 — ITERATION
+
+*2026-08-22*
+
+- **“What’s the situation?” is now the first thing under the box you type in; it was down inside *What you are holding*.** So are the two lines telling you the list has been narrowed — *You are at home* and *You have 30 minutes*. They were 2129px below *Next up* on a phone, which is nearly four screenfuls of scrolling, and *Next up* is the thing they change. You could be handed something you cannot do where you are standing, with the way to say so four screens away.
+- **The Menu button is one place further down the tab order**, because there is one more button above it now. Nothing about it changed otherwise.
+- **What is still true and still not fixed.** Nothing else moved. The lens, the tree and the rest of *What you are holding* are exactly where they were.
+
 ## 2.23.0 — CAPABILITY
 
 *2026-08-22*

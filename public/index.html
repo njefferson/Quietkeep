@@ -259,6 +259,46 @@
     <p id="reentry-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
 
+  <!-- THE SITUATION (2.21.0, MOVED HERE 2.23.1).
+
+       Where you are and how long you have are INPUTS TO THE OFFER — `app.ts`
+       hands both to `setWhereNow`/`setHowLong` and the card below reads them —
+       and for two releases the door that sets them rendered 2129px below that
+       card on a phone (3.84 screens) and 1983px below it on an iPad, measured
+       on the sample store. It sat inside `<section id="held">`, exactly where
+       the two `<select>`s had been, so the release that moved them out of the
+       pile put their door back into it. You could be offered something you
+       cannot do where you are standing and the control to say so was four
+       screens away.
+
+       Every gate passed. Twenty-five static checks and eight browser walks and
+       not one of them asks WHERE a thing renders — see `tools/narrows-check.mjs`,
+       which is the assertion that would have caught it, and `data-narrows`
+       below, which is the declaration it reads.
+
+       IT COSTS 56px ABOVE NEXT UP AND THAT IS PAID ON PURPOSE. Measured: the
+       offer's top moved from 64px to 120px, and the door now stands 64px above
+       it at both widths. ADR-0099 bought 92px back here by moving two shut
+       doors off this screen, and its rule was about doors that OFFER NOTHING
+       while shut. This one changes what the offer says. The two lines under it
+       cost nothing while shut, because they are hidden until a situation is
+       set — which is why they moved with it and not instead of it.
+
+       `whereWords` and `howLongWords` are the only things telling a reader that
+       what they are looking at has been narrowed. Behind a sheet nobody has
+       open, a filter is invisible, and an invisible filter is an app that looks
+       broken — which is the failure `serves.ts` records and 2.18.0's empty
+       state answers. So the control goes behind a door and the CONSEQUENCE
+       stays in front of it — and now both stand with the thing they narrow.
+
+       One door and not a list of named views: entry 16 is that twenty options
+       produce zero actions, so you arrive here by answering a question rather
+       than by picking a screen's name. -->
+  <button id="situation-open" class="gauge" type="button"
+          data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
+  <p id="where-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
+  <p id="how-long-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
+
   <!-- Next up: one thing, chosen for you, with a short capped list behind it.
        Hidden when nothing is asking — an empty morning says so. -->
   <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
@@ -777,33 +817,15 @@
        unfolded into the workspace for thirty-four releases regardless. -->
   <button id="tree-open" class="gauge" type="button">How it hangs together</button>
 
-  <!-- THE SITUATION (2.21.0). Both inputs moved into a sheet of their own —
-       see `#sheet-situation`. What stays HERE is the door and the two standing
-       lines, and that pairing is the load-bearing part of the move.
-
-       `whereWords` and `howLongWords` are the only things telling a reader that
-       what they are looking at has been narrowed. Behind a sheet nobody has
-       open, a filter is invisible, and an invisible filter is an app that looks
-       broken — which is the failure `serves.ts` records and 2.18.0's empty
-       state answers. So the control went behind a door and the CONSEQUENCE
-       stayed in front of it.
-
-       One door and not a list of named views: entry 16 is that twenty options
-       produce zero actions, so you arrive here by answering a question rather
-       than by picking a screen's name. -->
-  <button id="situation-open" class="gauge" type="button">What's the situation?</button>
-  <p id="where-note" class="detail-hint" hidden></p>
-  <p id="how-long-note" class="detail-hint" hidden></p>
-
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
        re-entry, Next up, and search are structurally unlensed. The line below
        states law 1 every time the lens is on. -->
-  <div id="lens-row" class="lens-row" hidden>
+  <div id="lens-row" class="lens-row" data-narrows="#cards" hidden>
     <label class="detail-inline" for="lens">Looking at</label>
     <select id="lens" aria-describedby="lens-note"></select>
   </div>
-  <p id="lens-note" class="detail-hint" hidden></p>
+  <p id="lens-note" class="detail-hint" data-narrows="#cards" hidden></p>
 
   <p id="empty" class="empty" hidden>
     Nothing yet. Whatever you put here comes back to you — you do not have to
