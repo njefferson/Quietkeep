@@ -533,9 +533,17 @@ situations are the acceptance test — walked end to end, not asserted.
   and the deploy, read from the run rather than from the push output.
   **2.23.1 (`516ff99`) went RED on the a11y walk** — the three moved regions
   were undeclared in `PLAIN_CHROME_HIDDEN`, so *Just one thing* rendered a
-  filter. 2.23.2 (`1627350`) is the fix and its run has not been read yet.
+  filter. 2.23.2 is the fix; the a11y walk was then run LOCALLY on that markup
+  and read green, both themes, zero failures. The head is `825aa12` and its
+  Spine is the one to read — the runs on `1627350` and `fe60e5f` were CANCELLED
+  by the pushes that followed them, which is not the same as failed and was
+  first reported here as if it were.
   The lesson is 126 in the hub: `plain:check` checked the offer card both ways
   and the chrome only one way, and the missing direction ran in a browser.
+  **A session cannot read the deployed site** — the network policy answers 403
+  to CONNECT for `*.pages.dev`. That is V-15, already verified and closed: the
+  device's own §7f diagnostic is what reads production, and a Deploy run's green
+  Cloudflare step is the weaker evidence a session can offer.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
   `staging` carries sixteen releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
   2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1, 2.20.0, 2.21.0, 2.22.0,
