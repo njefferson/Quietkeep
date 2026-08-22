@@ -50,6 +50,13 @@ by being asked what happened. It happened three times in one session, twice
 after the behaviour had been ruled out. This does not license a sweep of your
 own: §11b still binds, and the authority is the plan's remaining phases.
 
+**It is enforced by the harness now, because the paragraph did not hold.** It
+was broken a fourth time by the session that wrote it, on the sentence "I'm
+waiting on it". `.claude/hooks/stop-guard.sh` runs the hub's `stop-guard.mjs`
+as a `Stop` hook and REFUSES a turn that ends while saying something is still
+running without opening with the declaration. Wait for the thing and carry on;
+that is the way past it, and it is the one that was wanted all along.
+
 ## Rules specific to this app
 - **NOTHING PERSONAL ABOUT THE OWNER EVER LANDS IN THIS REPO — a FAIL state**
   (the owner's instruction, 2026-08-04). No diagnosis, health fact, or identity
