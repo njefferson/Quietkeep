@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.19.1',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**The work surface now says what today actually commits you to.** *Nothing is dated today* or *2 things are dated today* — the dates you set yourself, nothing inferred. It answers whether you can stop, and the answer that lets you stop is the one that used to be missing.',
+      '**It was already worked out and you could not get at it.** The app has counted this since the header clock, and only ever said it inside that clock — which is off unless you turn it on, and buries it after the time and how much of the day is left. Somebody wondering whether they can finish early should not have to switch on a clock to find out.',
+      '**Just the count, not the countdown.** How much of the day is left stays where it is. A number ticking down beside something you are avoiding makes it worse, which is why it came off this card in the first place.',
+      '**Gone when you have said enough, and gone in "Just one thing".** Settling for the day is finishing early, so the question has already been answered; and a day cut down to one thing is not a day for weighing the whole plate.',
+    ],
+  },
+  {
     triplet: '2.19.0',
     kind: 'CAPABILITY',
     date: '2026-08-22',

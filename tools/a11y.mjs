@@ -533,7 +533,16 @@ const REGISTRY = {
   // AND the list has rows, which is exactly what 'next up' stages. A registry
   // entry matching nothing visible is the false receipt `#nextup-left` cost a
   // release for, so it goes where it is actually on screen.
+  // `#nextup-dated` (2.19.1) IS listed, and the note about `#nextup-fixed` two
+  // paragraphs up is why the two differ rather than an argument against this.
+  // That one renders only when something is fixed today, so an entry naming it
+  // would match nothing on most runs — the false receipt `#nextup-left` cost a
+  // release for. This one renders on EVERY ordinary offer, zero included, so it
+  // always has content to measure. Named rather than left to `.nextup-count`,
+  // for `#nextup-written`'s reason: "it happens to match a selector already in
+  // the list" is how a surface goes unmeasured the moment its class changes.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
+    '#nextup-dated',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
     // When you cannot start (1.24.0). The heavy control is on the card whenever
     // there is a head, so it belongs in this state. THE INVITATION IS NOW ONE
@@ -1991,6 +2000,23 @@ try {
 
     // State 3d: Work mode — Next up, then the coverage list opened.
     await page.waitForSelector('#nextup:not([hidden])');
+    // WHAT TODAY COMMITS YOU TO (2.19.1). Asserted before the audits, because a
+    // registry entry naming an element that renders empty is a false receipt —
+    // the failure `#nextup-left` cost a release for, and the note on this
+    // entry's own line is about exactly that.
+    const datedLine = await page.evaluate(() => {
+      const el = document.querySelector('#nextup-dated');
+      return el && !el.hidden ? (el.textContent ?? '').trim() : '';
+    });
+    (/\bdated today\b/.test(datedLine) ? pass : fail)(
+      `${theme}/next up: the day's own commitments are stated ("${datedLine}")`);
+    (!/left today|remaining|behind|overdue/i.test(datedLine) ? pass : fail)(
+      `${theme}/next up: and it is a count of dates, never a remainder (ADR-0103)`);
+    // SAID PLAINLY: this measures the ZERO wording, because the sample dates
+    // nothing today. The one-thing and many-things wordings — and that zero
+    // carries no digit and no congratulation — are held by test/clock.test.ts,
+    // which has covered `datedWords` since the clock module. What was missing
+    // was never the words; it was any route to them outside an opt-in clock.
     await auditContrast(page, 'next up', theme);
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);

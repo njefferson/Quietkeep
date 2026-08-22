@@ -349,8 +349,19 @@ situations are the acceptance test — walked end to end, not asserted.
   The wiring is asserted in the browser, not only in units: the same tree with
   a ninety-minute job and an untimed one, narrowed to thirty and cleared again.
   Seen RED on a planted no-op `fitsWithin`, so the assertion can fail.
-  Still owed in this phase: *what is due today* rather than *what exists* — the
-  gap the diagnostic report was found unable to answer.
+  Second half DONE in 2.19.1: *what is due today* rather than *what exists*.
+  **And it was the fourth time in this plan that the answer already existed.**
+  `datedTodayCount` and `datedWords` have been in `clock.ts` since the clock
+  module, and rendered ONLY inside it — an opt-in ticking face, off by default,
+  with the fact third in a run-on sentence after the time and the remainder.
+  Live code with no route to it, exactly like `unfedGoals` in phase 2.
+  The count now renders on the work surface independently of that module. The
+  REMAINDER does not: "2h 30m left today" is what ADR-0103 took off this card
+  and it stays off. Hidden when settled — settling IS finishing early, so the
+  question has already been answered by the act — and stripped in *Just one
+  thing*, where weighing the whole plate is the cost being cut.
+
+  **Phase 3 is complete.**
 - Phase 4 through 8: not started.
 - **Last full Spine seen green:** `4df1d56` on `staging`, all 41 steps.
 - **Waiting on the owner:** the on-device pass. 2.14.2, 2.14.3, 2.15.0 and

@@ -106,7 +106,14 @@ export const PLAIN_HIDDEN = [
   // paragraph ever said why the number was affordable on an ordinary one. The
   // remainder lives on the opt-in header clock, which `PLAIN_CHROME_HIDDEN`
   // below still strips — so the mode's answer to this fact is unchanged.
-  '#nextup-fixed', '#nextup-written',
+  // `#nextup-dated` — how many things carry today's date (2.19.1). It answers
+  //                   "can I finish early", which is a question about the WHOLE
+  //                   day — and this mode has already answered it by existing.
+  //                   Somebody who has reduced the day to one thing is not
+  //                   weighing the plate; they are getting through the next
+  //                   fifteen minutes. A count of commitments there is a second
+  //                   thing to hold, which is the cost being cut.
+  '#nextup-fixed', '#nextup-written', '#nextup-dated',
   // `#nextup-also` — what else the returning place holds. It survives NOTHING,
   // and the reasoning is the entry's own: the contents are named so a place
   // coming round does not bring back one thing and leave the rest filed. On the

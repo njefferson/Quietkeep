@@ -407,6 +407,24 @@
          approach, and clocks here are day-granular so an hour would be
          fabricated (ADR-0010). -->
     <p id="nextup-fixed" class="nextup-count" hidden></p>
+    <!-- WHAT TODAY ACTUALLY COMMITS YOU TO (2.19.1, the plan's phase 3).
+         Answers "what is on my plate, enough to decide whether to finish
+         early" — and the useful answer is usually the zero one, which is why
+         it is stated rather than left as an absence.
+
+         The count and its words are `datedTodayCount` and `datedWords`, which
+         have existed since the clock module and rendered ONLY inside it: an
+         opt-in ticking clock face, off by default, with this fact third in a
+         run-on sentence after the time and how much of the day is left.
+         Somebody asking whether they can stop should not have to turn on a
+         clock to find out, and this app is careful about clocks for a reason.
+
+         The COUNT ONLY. `remainderWords` sits beside it in that sentence and
+         stays there: "2h 30m left today" is a remainder with nothing to
+         measure against, which is precisely what ADR-0103 took off this card.
+         A count of dates you set yourself is not a remainder and not a score —
+         it is what you already decided, said back to you. -->
+    <p id="nextup-dated" class="nextup-count" hidden></p>
     <ul id="nextup-behind" class="nextup-behind"></ul>
     <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
