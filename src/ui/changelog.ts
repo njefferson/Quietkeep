@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.24.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**\u201cWhere the attention is\u201d now shows where your time actually went.** That screen has been called that since it was built, and all it showed was how many things each of your roles is carrying \u2014 which is a different question. A role can be carrying nine things and have had none of your time, and that gap is the reason you would open it.',
+      '**It counts the work you finished too.** An hour spent on something you completed is still an hour of your attention. The list above it, of what each role is carrying, still leaves finished things out \u2014 that one is about what is still open.',
+      '**It comes from the timer, not from ticking things off.** Nothing here counts completions, so there is no way to make a number go up by finishing more.',
+      '**It says how many separate runs the time came from**, because ninety minutes in one sitting and ninety across nine are not the same thing about a day.',
+      '**In name order, never in order of size**, and with no target, no share of a whole and no bar. Ordering your own identities by how much each got is a ranking of your life.',
+      '**What is still true and still not fixed.** If you have never run a timer, every line reads zero \u2014 so it says so, and says what would fill it, rather than showing you a blank screen. And only timed work is in it, which makes it a sample of your attention rather than the whole of it. It says that too.',
+    ],
+  },
+  {
     triplet: '2.23.2',
     kind: 'ITERATION',
     date: '2026-08-22',

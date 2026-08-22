@@ -35,7 +35,10 @@ import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
 import { servesWords } from '../serves.ts';
-import { roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS } from '../roles.ts';
+import {
+  roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS,
+  roleAttention, roleAttentionWords, roleAttentionRowWords,
+} from '../roles.ts';
 import {
   horizonRows, holdsWords, rhythmWords, horizonEmptyWords,
   HORIZON_WORDS, HORIZON_READOUT_WORDS,
@@ -1180,6 +1183,33 @@ export async function main(edition?: Edition): Promise<void> {
         : `${unnamed === 1 ? '1 other thing' : `${unnamed} other things`} `
           + 'you are holding belong to no named role. That is ordinary — most things do not.';
       rest.hidden = false;
+    }
+
+    // WHERE THE TIME ACTUALLY WENT (2.24.0). The other half of this sheet's own
+    // title. `roleLoads` above answers what each role is CARRYING; this answers
+    // what each was GIVEN, from `do-now.timed` and never from completions.
+    //
+    // Painted whether or not there is anything to show. A readout that hides
+    // until it has data is a readout nobody discovers, and the empty words say
+    // what would fill it — the `serves.ts` failure, answered the way 2.19.0
+    // answered the same sparsity.
+    const att = roleAttention(st, heldWork);
+    const attWords = document.querySelector<HTMLElement>('#roles-attention-words');
+    if (attWords) attWords.textContent = roleAttentionWords(att.totalSessions, att.unnamed);
+    const attList = document.querySelector<HTMLUListElement>('#roles-attention-list');
+    if (attList) {
+      attList.replaceChildren(...att.rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        name.textContent = r.role.title || '(unnamed)';
+        const given = document.createElement('span');
+        given.className = 'roles-held';
+        given.textContent = roleAttentionRowWords(r);
+        li.append(name, given);
+        return li;
+      }));
     }
   };
   onSheetOpen('sheet-roles', paintRoles);

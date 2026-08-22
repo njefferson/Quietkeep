@@ -601,8 +601,14 @@ const REGISTRY = {
   // so registering them on a state whose store has none would be three false
   // receipts — the failure `#nextup-left` already cost a release for.
   'where the attention is': ['#roles-open'],
+  // WHERE THE TIME ACTUALLY WENT joined this in 2.24.0, by ID. The two lists in
+  // this sheet share `.roles-name` and `.roles-held`, and the note below is the
+  // reason that is not enough: a shared class is not coverage. Without these
+  // four ids the second readout would ride on the first one's classes and be
+  // reported as measured while nothing had looked at its headings or its words.
   'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
-    '.roles-name', '.roles-held', '#roles-unnamed'],
+    '.roles-name', '.roles-held', '#roles-unnamed',
+    '#roles-load-heading', '#roles-attention-heading', '#roles-attention-words'],
   // WHAT YOU ARE WORKING TOWARD (2.18.0). Its own entry rather than a fold into
   // 'roles open': the two sheets share `.roles-name` and `.roles-held`, and a
   // shared class is not coverage — `surfaces.mjs` records the draft that counted

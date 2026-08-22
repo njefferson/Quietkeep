@@ -2454,9 +2454,32 @@
        scrolling region with nothing focusable inside cannot be scrolled from a
        keyboard (WCAG 2.1.1). -->
   <div class="sheet-body" tabindex="0">
+    <h3 id="roles-load-heading" class="about-section">What each one is carrying</h3>
     <p id="roles-words" class="detail-hint"></p>
-    <ul id="roles-list" class="roles-list"></ul>
+    <ul id="roles-list" class="roles-list" aria-labelledby="roles-load-heading"></ul>
     <p id="roles-unnamed" class="detail-hint"></p>
+
+    <!-- WHERE THE ATTENTION ACTUALLY WENT (2.24.0, the plan's phase 5 item).
+         This sheet has been titled "Where the attention is" since 2.6.0 and has
+         shown a COUNT OF LIVE WORK, which answers a different question. Load is
+         what a role is carrying; attention is what it was given. A role can be
+         carrying nine things and have had none of your time, and that gap is
+         the reason somebody opens this.
+
+         Built on `do-now.timed` — time a timer actually measured — and NOT on
+         completions, which is what keeps it out of law 5's way. It deliberately
+         counts finished work too: an hour spent on something you finished is an
+         hour of your attention.
+
+         Sorted by name like the list above it, never by size. Ordering somebody's
+         own identities by how much each got is a ranking of their life.
+
+         It renders its own emptiness in words rather than hiding: on a store
+         that has never used the timer every row is zero, and a surface that goes
+         blank teaches the reader the feature is broken (`serves.ts`). -->
+    <h3 id="roles-attention-heading" class="about-section">Where your time actually went</h3>
+    <p id="roles-attention-words" class="detail-hint"></p>
+    <ul id="roles-attention-list" class="roles-list" aria-labelledby="roles-attention-heading"></ul>
   </div>
   <button id="sheet-roles-close" type="button" class="ghost">Close</button>
 </dialog>
