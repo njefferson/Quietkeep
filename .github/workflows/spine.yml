@@ -79,6 +79,29 @@ jobs:
         if: ${{ !cancelled() }}
         run: node .hub-gates/quote-check.mjs --repo .
 
+      # THE THIRD HALF, and it was enforced by nothing here until 2.18.1.
+      # privacy-check anchors on the NAME and quote-check finds the set-apart
+      # quotation; neither can see a sentence that refers to the owner with a
+      # pronoun and no name at all. A pass for those found 12 live references in
+      # this repo's own tracked files on 2026-08-22 — seven of them in NOTES.md,
+      # the file this repo's CLAUDE.md names first in "read these first".
+      #
+      # It had been run only when a session remembered to, which is the state the
+      # other two gates were in before they were wired. A rule enforced by
+      # memory is enforced on the days somebody has the memory to spare.
+      - name: No third-person reference to the owner
+        if: ${{ !cancelled() }}
+        run: node .hub-gates/third-person-check.mjs --repo .
+
+      # NO TABLES OR GRIDS, ANYWHERE THE OWNER READS (Doctrine 2). Markdown
+      # tables arrive on an iPad as pipes and dashes with the content lost, and
+      # the loss is silent — the prose around them looks fine. This repo was
+      # converted in full on 2026-07-29 and nothing has checked it since; the
+      # rule survived on the fact that nobody happened to write one.
+      - name: No grid in anything the owner reads
+        if: ${{ !cancelled() }}
+        run: node .hub-gates/docs-check.mjs .
+
       # THE HOOK THAT ENFORCES THE FRESHNESS RULE IS THE ONE THIS REPO DECLARES.
       # That rule is caught locally by the generated pre-commit hook, which
       # `--no-verify` walks straight past — so the tracked hook is checked here
