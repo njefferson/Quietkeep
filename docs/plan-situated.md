@@ -463,13 +463,80 @@ situations are the acceptance test — walked end to end, not asserted.
   **What is NOT built, deliberately: a LIST of unformed things.** A backlog of
   your own vagueness is the shape law 5 and entry 26 both refuse, and the offer
   card plus the sheet cover the act at the two moments it is wanted.
-- Phase 8: not started.
-- **Last full Spine seen green:** `7ed363d` on `staging` (2.21.0), every step
-  and the deploy, read from the run rather than from the push output.
+- **Phase 8 — the whole thing, looked at.** DONE in 2.23.1. Rendered at 390 and
+  at 768, on the sample store and on the import fixture, and READ rather than
+  counted. **768 had never been rendered once**, in an app whose reference
+  platform is a tablet.
+  **Looking found a defect twenty-five static gates and eight browser walks had
+  passed for two releases.** `#situation-open` — the door to where you are and
+  how long you have, both inputs to the offer — rendered 2129px below that offer
+  on a phone (3.84 screens) and 1983px below it on an iPad, inside
+  `<section id="held">`, the section it narrows. So did the two lines that say
+  the list has been narrowed. 2.21.0 moved the two choosers OUT of the pile and
+  put their door back into it, because that is where the choosers had been.
+  Fixed in 2.23.1: all three now stand 64px above the offer at both widths, at a
+  measured cost of 56px of shut door. `tools/narrows-check.mjs` is the
+  assertion, seen red on three plants including the real defect reproduced.
+  **Two defects in existing gates fell out of it.** `controls.mjs` read comments
+  as markup, so a `<section>` quoted in prose pushed a landmark that never
+  popped; and its manifest tracked five controls, none of them the one whose
+  placement was the defect. Both fixed in the same release.
+  **What the import fixture says, in its own numbers.** 840 actions under 42
+  projects, 518 dates already passed, and zero contexts, roles, areas, goals or
+  people. The app is enterable — 1.8 screens, 26 controls, one thing offered
+  with an honest reason, no repeats across ten rounds — and *Needs a new plan*,
+  *With other people*, *Worth a look* and the Menu all render EMPTY, because an
+  import carries none of what fills them. That is the plan's own opening finding,
+  measured on the real file rather than argued from the documents.
+
+  **The fourteen situations, walked. Eleven answered, three partly.**
+  - *What can I do where I am right now* — the situation door, now above the
+    offer. Answered.
+  - *What do I need in front of me during a recurring meeting* — a named
+    situation recalls the pair. Answered.
+  - *What is between me and this person who just walked in* — the person lens
+    and both directions of *With other people*. Answered.
+  - *What could I do with a free weekend* — **PARTLY.** `HOW_LONG_CHOICES` stops
+    at 120 minutes, so having a lot of time has no positive expression; the only
+    way to say it is *as long as it takes*, which is the default and therefore
+    says nothing. Not fixed — adding a choice is a product decision, not a
+    defect to patch under a looking phase.
+  - *What is on my plate, enough to decide whether to finish early* — the dated
+    line and the proof line. Answered.
+  - *Is there anything to follow up with anyone about* — the waiting-on half.
+    Answered.
+  - *Is anyone waiting on something from me* — the promised-to half, deliberately
+    without a duration. Answered.
+  - *Have I moved toward a long-running goal lately* — the horizons surface, and
+    *nothing is feeding it* when nothing has. Answered.
+  - *What needs planning rather than doing* — naming a first step, on the offer
+    card and on any thing's own panel. Answered.
+  - *What did I miss while I was away* — re-entry. Answered.
+  - *Which lines of work have projects under them, and which have none* — the
+    horizons surface says which are empty. Answered.
+  - *What can I do in a spare twenty minutes with no preparation* — **PARTLY.**
+    The twenty minutes is answered by the duration chooser; *with no preparation*
+    is not a question the app can be asked. The nearest thing is *ready now* on
+    the proof line, which means a clock has arrived, not that a thing is
+    startable.
+  - *What matters to me and to the people who matter to me* — roles and people.
+    Answered.
+  - *What could I do that would actually help, rather than what I owe* — the
+    demand-free kinds and the line saying nothing there is asking. Answered.
+
+  **Found by looking and NOT fixed, deliberately.** At 768 every card spans the
+  full width — there is no maximum measure on the reading column. On this
+  fixture no line actually runs long enough to hurt, so it is a hazard rather
+  than a defect, and it has never been measured at 1180 (iPad landscape), which
+  is the width most likely to expose it.
+- **Last full Spine seen green:** `4dfcbf2` on `staging` (2.23.0), every step
+  and the deploy, read from the run rather than from the push output. 2.23.1
+  (`31eebb4`) was pushed after it and its run must be read before anything
+  stacks on top.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
-  `staging` carries nine releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
-  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1, 2.20.0 and 2.21.0. Nothing
-  in the plan is blocked on it.
+  `staging` carries fifteen releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
+  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1, 2.20.0, 2.21.0, 2.22.0,
+  2.23.0 and 2.23.1. Nothing in the plan is blocked on it.
 
   **These two lines went stale for five releases while the phase notes above
   them were kept current**, which is the one-file-two-answers shape the hub's
