@@ -696,11 +696,13 @@ closed question filed under this heading now, so the two cannot drift again.
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.21.0**
-  (`7ed363d`, Spine and Deploy green on that SHA, read from the runs)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.23.2**
+  (`825aa12`, Spine and Deploy both green on that SHA, every step read and
+  none skipped or cancelled. `b8f1735` sits one docs-only commit past it and
+  its own run is going as this is written.)
 - **https://quietkeep.pages.dev** — production, **2.14.1** (promoted 2026-08-22,
   `74dca96`, and the version read back from `main`'s own `sw.js` rather than
-  from the promote's output. Twelve releases are staged past it.)
+  from the promote's output. Sixteen releases are staged past it.)
 - **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
   and `handoff-check.mjs` is what noticed — because it asks whether the version
   beside the URL is the CURRENT one, which is a question no reader of this file
