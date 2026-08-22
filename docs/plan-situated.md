@@ -363,10 +363,18 @@ situations are the acceptance test — walked end to end, not asserted.
 
   **Phase 3 is complete.**
 - Phase 4 through 8: not started.
-- **Last full Spine seen green:** `4df1d56` on `staging`, all 41 steps.
-- **Waiting on the owner:** the on-device pass. 2.14.2, 2.14.3, 2.15.0 and
-  2.16.0 are all on `staging` and production is still 2.14.1. Nothing in the
-  plan is blocked on it.
+- **Last full Spine seen green:** `5f0d45a` on `staging` (2.19.1), every step
+  and the deploy, read from the run rather than from the push output.
+- **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
+  `staging` carries nine releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
+  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0 and 2.19.1. Nothing in the plan is
+  blocked on it.
+
+  **These two lines went stale for five releases while the phase notes above
+  them were kept current**, which is the one-file-two-answers shape the hub's
+  own index has a paragraph about. They are the lines a fresh session reads
+  FIRST, so they are the worst two in the file to let drift. Update them in the
+  same commit as the work, like everything else in this block.
 
 ### What the import work established, and what it cost to get right
 
