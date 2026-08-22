@@ -107,6 +107,22 @@ gate.
 Release taxonomy and the `version.capability.iteration` triplet are Doctrine §7.
 The service-worker cache name carries the same triplet and is bumped with it.
 
+## Two commit guards, and both refuse rather than doing the work for you
+`.branch-guard` declares them with `also=`, so they run on EVERY commit —
+promotes included, because they are about WHAT is being committed.
+
+- **`tools/hooks/tour-fresh.sh`** — the walkthrough ships photographs of this
+  app. A picture of a version that no longer exists is worse than none.
+- **`tools/hooks/a11y-fresh.sh`** — a commit that changes the rendered app while
+  `.a11y-stamp` still records the previous markup is refused. **2.23.1 passed
+  twenty-five static gates and both picture-taking walks and went RED in CI on
+  the a11y walk**, which had never been run locally because nothing asked for
+  it. `npm run a11y` writes the receipt itself, and only on a clean run, so a
+  failing walk cannot be stamped. About four minutes. (Hub LESSONS 126.)
+
+Both name the one command instead of spending minutes inside a hook, because a
+hook that silently spends four minutes is a hook somebody disables.
+
 ## Accessibility
 WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the
 append-only register and it already records the design-time colour bindings —

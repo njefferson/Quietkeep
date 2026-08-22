@@ -3,3 +3,4 @@ work=staging
 promote=main
 escape=QUIETKEEP_PROMOTE
 also=tools/hooks/tour-fresh.sh
+also=tools/hooks/a11y-fresh.sh

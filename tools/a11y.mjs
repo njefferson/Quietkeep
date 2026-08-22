@@ -4281,3 +4281,14 @@ if (failures.length) {
   process.exit(1);
 }
 console.log('The rendered app passes: both themes, every state, stressed viewport, rings and placeholder measured.');
+
+// AND LEAVE THE RECEIPT (2.23.2). This walk measures things no static read can
+// reach — contrast per state, focus rings, target separation, axe, the
+// 320px/200% reflow — so a commit that changes the rendered app and has not run
+// it is a commit nobody has checked. `tools/hooks/a11y-fresh.sh` refuses that
+// commit; this is what tells it the walk was run against THIS markup.
+// Only on a clean run: a receipt for a failed walk would be a lie in a file
+// nobody reads. See tools/a11y-stamp.mjs and LESSONS 126.
+const { writeStamp } = await import('./a11y-stamp.mjs');
+writeStamp();
+console.log('  receipt written to .a11y-stamp — the commit hook reads this.');
