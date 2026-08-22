@@ -254,6 +254,11 @@ export function eventWords(
     case 'role.attached': return 'This belongs to that role.';
     case 'role.detached': return 'This is no longer part of that role.';
     case 'person.linked': return `Linked to ${name(p['person'])}.`;
+    // NO SHAME IN THE RECORD EITHER (2.20.0). The log is a thing somebody reads
+    // back about their own life, so this says what happened and stops: not
+    // "you broke a promise", not "unkept", not a duration. Releasing an
+    // undertaking is an ordinary act and the words treat it as one.
+    case 'promise.released': return `No longer promised to ${name(p['person'])}.`;
     case 'journal.sealed': return 'You set a passphrase for the journal.';
     case 'journal.entry.written': return 'A journal entry was written.';
     case 'journal.tag.attached': return 'A journal tag was attached.';

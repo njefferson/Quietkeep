@@ -703,7 +703,19 @@ agreed to survives a copy change (law 10).
   - Payload: `name` — vault-scoped
   - Silent risk: no
 - **`person.linked`**
-  - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned`
+  - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned | promised-to`
+- **`promise.released`**
+  - Payload: `person`
+  - Silent risk: no — a person link carries no coverage, so taking one off
+    removes none; the node was your own work before and after.
+  - **The second subtraction in the vocabulary**, and ADR-0057 calls
+    `stakeholder.removed` the only one. Deliberate: that event filtering on
+    `relation: 'promised-to'` would write a false sentence into an append-only
+    log. ADR-0057's rule is that a subtraction must be SCOPED, and this is —
+    one person, one relation, named in the noun.
+  - Load-bearing rather than tidy: a promise nobody can take back is a permanent
+    claim that you owe somebody something, which is the ledger `src/requests.ts`
+    says this app exists not to keep.
   - Silent risk: no
 - **`context.created`** (emitter 2.2.0, ADR-0092)
   - Payload: `name` — vault-scoped

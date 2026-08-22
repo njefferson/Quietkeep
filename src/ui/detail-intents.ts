@@ -645,6 +645,18 @@ export const removeStakeholderEvents = (
 ): AppEvent[] => [base(ctx, 'stakeholder.removed', node, { person })];
 
 /**
+ * "I am not promising that any more" (2.20.0).
+ *
+ * `removeStakeholderEvents`' shape, pointed at the other removable relation.
+ * The WORK IS UNTOUCHED — this takes the undertaking off, not the thing itself,
+ * so the node keeps its clock, its place and its date. Somebody who no longer
+ * owes Sam a thing may still intend to do it.
+ */
+export const releasePromiseEvents = (
+  ctx: StampContext, node: string, person: string,
+): AppEvent[] => [base(ctx, 'promise.released', node, { person })];
+
+/**
  * Log what was decided (1.9.0, ADR-0057).
  *
  * `cleanNote` rather than a cleaner of its own — ADR-0047's rule that two

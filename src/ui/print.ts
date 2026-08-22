@@ -74,6 +74,15 @@ export function mountPrint(session: Session, now: () => number): void {
       c.withOthers.map(w => [w.title, w.whom ? `— ${w.whom}` : null, w.how].filter(Boolean).join(' ')),
       c.withOthersTotal,
     ));
+    // AND WHAT SOMEBODY IS EXPECTING FROM YOU (2.20.0). A name, never a
+    // duration — the block above carries "for three weeks" about what is with
+    // other people, and the same words here would be a record of not having
+    // done your own work.
+    nodes.push(...listBlock(
+      'You said you would',
+      c.promised.map(w => [w.title, w.whom ? `— ${w.whom}` : null].filter(Boolean).join(' ')),
+      c.promisedTotal,
+    ));
     nodes.push(...listBlock('Coming up', c.ahead.map(a => `${a.day} — ${a.title}`), c.aheadTotal));
 
     // The line that keeps the paper honest, and it goes last where a reader ends.

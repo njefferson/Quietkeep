@@ -122,6 +122,18 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   // to go quiet, which is the entire point of the kind.
   stamp('clock.set', quote, { clockKind: 'suspense', at: day(4), source: 'sample' });
 
+  // --- AND THE OTHER DIRECTION (2.20.0) -----------------------------------
+  //
+  // What somebody is waiting on from YOU. The set has always carried the half
+  // where Alex owes you a quote; the half where you owe Alex something could
+  // not be expressed until `promised-to` existed, so "With other people" has
+  // only ever rendered one of its two lists — one shape measured, looking like
+  // two. It is an ordinary action with a name on it, because that is exactly
+  // what a promise is here: your own work, kept by doing it.
+  const prints = node('action', 'Send Alex the framed prints');
+  due(prints, 3);
+  stamp('person.linked', prints, { node: prints, person: alex, relation: 'promised-to' });
+
   // --- upkeep, which is a rhythm and not a deadline ------------------------
   //
   // One decay primitive runs everything temporal (law 5). No streaks, and

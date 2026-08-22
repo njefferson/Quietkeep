@@ -377,7 +377,33 @@ export type ShardCompacted   = Ev<'shard.compacted',    { device: DeviceId; thro
 
 // --- H · people and journal --------------------------------------------------
 export type PersonCreated    = Ev<'person.created',     { name: string }>;
-export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned' }>;
+export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned'|'promised-to' }>;
+/**
+ * "I am not promising that any more" (2.20.0).
+ *
+ * A SECOND SUBTRACTION, and ADR-0057 calls `stakeholder.removed` "the only
+ * subtraction in the vocabulary" — so this is a deliberate departure rather than
+ * an oversight. The cheaper move was an optional `relation` field on that one,
+ * additive and migration-free. It was refused because
+ * `stakeholder.removed{relation:'promised-to'}` writes a false sentence into an
+ * append-only log, and this repo already refuses claims about changes that did
+ * not happen.
+ *
+ * ADR-0057's actual rule is that a subtraction must be SCOPED — Sam can be the
+ * OPR and someone who cares how it goes, and taking one off must never strip the
+ * other. This is scoped by construction: one person, one relation, named in the
+ * noun.
+ *
+ * **And it is load-bearing rather than tidy.** Four of the five other relations
+ * cannot be removed at all, which is cosmetic for `mentioned` and is not here: a
+ * promise nobody can take back is a permanent claim that you owe somebody
+ * something, which is precisely the ledger `src/requests.ts` says this app
+ * exists not to keep.
+ *
+ * Not silent-risk. Removing a person link takes no coverage away — the node
+ * keeps every clock it had, and it was your own work before and after.
+ */
+export type PromiseReleased  = Ev<'promise.released',   { person: NodeId }>;
 // --- H2 · contexts (2.2.0, ADR-0092) ----------------------------------------
 //
 // `person.linked`'s shape exactly. A context is a node so it can be renamed and
@@ -501,7 +527,7 @@ export type AppEvent =
   | ModuleEnabled | ModuleDisabled | ConsentGranted | ConsentRevoked
   | SnapshotWritten | SchemaMigrated | ExportWritten | ImportSeeded | ShardFolded
   | TerminologySkinApplied | TemplateLoaded | ShardCompacted
-  | PersonCreated | PersonLinked
+  | PersonCreated | PersonLinked | PromiseReleased
   | ContextCreated | ContextAttached | ContextDetached
   | RoleCreated | RoleAttached | RoleDetached | JournalEntryWritten | JournalSealed | JournalTagAttached
   | MenuItemAdded | MenuItemRemoved | MenuItemPromoted | SaveForUpdated
@@ -530,7 +556,7 @@ export const EVENT_KINDS = [
   'module.enabled','module.disabled','consent.granted','consent.revoked',
   'snapshot.written','schema.migrated','export.written','import.seeded','shard.folded',
   'terminology.skin.applied','template.loaded','shard.compacted',
-  'person.created','person.linked','journal.entry.written','journal.sealed','journal.tag.attached',
+  'person.created','person.linked','promise.released','journal.entry.written','journal.sealed','journal.tag.attached',
   'context.created','context.attached','context.detached',
   'role.created','role.attached','role.detached',
   'menu.item.added','menu.item.removed','menu.item.promoted','save-for.updated',

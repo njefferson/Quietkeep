@@ -7035,6 +7035,69 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#capture').isVisible(), true,
     'and the capture line is still there afterwards — nothing was left blocking the app');
 
+  // ————— THE OTHER DIRECTION, END TO END (2.20.0) —————
+  //
+  // The promise itself is unit-tested. What no unit reaches is the RELEASE
+  // through the app: its whole claim is that the undertaking comes off and the
+  // work stays, and a release that quietly took the work with it would pass
+  // every projection test in the file.
+  //
+  // Built from nothing in its own block, so a change to a sequence above cannot
+  // leave it measuring a card that is not there.
+  console.log('\nThe other direction');
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.fill('#capture', 'Return the borrowed drill');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  {
+    const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
+    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+  }
+  await tpage.evaluate(() => {
+    const f = document.querySelector('#held-fold');
+    if (f && !f.open) f.open = true;
+  });
+  await tpage.waitForTimeout(120);
+  const drill = tpage.locator('#cards .card', { hasText: 'Return the borrowed drill' }).first();
+  if (await drill.count()) {
+    await drill.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await tpage.fill('#detail-person', 'Rowan');
+    await tpage.selectOption('#detail-relation', 'promised-to');
+    await tpage.click('#detail-person-set');
+    await tpage.waitForTimeout(200);
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(200);
+
+    const promisedRows = async () => tpage.evaluate(() =>
+      [...document.querySelectorAll('#people-promised li')].map(li => li.textContent ?? '').join(' | '));
+    is(/Return the borrowed drill/.test(await promisedRows()), true,
+      'a promise reaches "With other people", on the side that is about you');
+    is(/Rowan/.test(await promisedRows()), true, 'and it says who is expecting it');
+    is(/week|day|since|ago/i.test(await promisedRows()), false,
+      'and never how long — that would be a record of not having done your own work');
+
+    // NOW TAKE IT BACK. The control lives on the row in the sheet's people list.
+    await drill.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    const off = tpage.locator('#detail-people-list button', { hasText: 'No longer promised' }).first();
+    is(await off.count() > 0, true, 'a promise can be taken back — the control is on its row');
+    await off.click();
+    await tpage.waitForTimeout(200);
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(200);
+    is(/Return the borrowed drill/.test(await promisedRows()), false,
+      'released — it is off the list');
+    is(await tpage.locator('#cards .card', { hasText: 'Return the borrowed drill' }).count() > 0, true,
+      'AND THE WORK IS STILL HERE — the release took the undertaking, not the thing');
+  } else {
+    is(false, true, 'the promised item never reached the held list, so nothing was measured');
+  }
+
   // ————— HOW LONG YOU HAVE, END TO END (2.19.0) —————
   //
   // `fitsWithin` is unit-tested; this is the wiring, which no unit test reaches

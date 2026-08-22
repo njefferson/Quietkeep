@@ -936,6 +936,24 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         n.people = n.people.filter(l => !(l.person === person && l.relation === 'stakeholder'));
         break;
       }
+      // "I am not promising that any more" (2.20.0). `stakeholder.removed`'s
+      // shape exactly, pointed at the one other relation that can be taken
+      // back, and scoped the same way for the same reason: Sam can be promised
+      // one thing and be the OPR of another, and releasing one must never strip
+      // the other. A removal naming nobody is a no-op, never a remove-all —
+      // refused rather than guessed, which is ADR-0057's rule and the
+      // import-inspection rule in one.
+      //
+      // Convergent without an LWW slot, like the event above it: `fold` sorts
+      // totally before applying, so replay is a pure function of the event SET
+      // rather than of arrival order.
+      case 'promise.released': {
+        const n = ensureNode(s, e.node!, e.vault, touched);
+        const person = e.payload.person;
+        if (typeof person !== 'string' || !person) break;
+        n.people = n.people.filter(l => !(l.person === person && l.relation === 'promised-to'));
+        break;
+      }
       // The decision log (1.9.0, ADR-0057). APPEND-ONLY and idempotent by
       // event id — a log is not a slot, so LWW is wrong: two devices logging
       // different decisions must end with both. Never edited, never removed;

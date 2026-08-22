@@ -50,7 +50,10 @@ import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
   getHowLong, setHowLong,
 } from '../duration.ts';
-import { waitingOnAnyone, withWhom, waitingWords, peopleWords } from '../people.ts';
+import {
+  waitingOnAnyone, withWhom, waitingWords, peopleWords,
+  promisedToAnyone, promisedWords, promisedRowWords,
+} from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
@@ -738,6 +741,38 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         // hiding the row.
         w.textContent = [whom ? `With ${whom}` : 'Nobody named yet', how].filter(Boolean).join(' ') + '.';
         b.append(t, w);
+        if (openDetail) b.addEventListener('click', () => openDetail(line.node));
+        li.append(b);
+        return li;
+      }));
+    }
+
+    // THE OTHER DIRECTION (2.20.0). Same section, same question, and the
+    // section shows if EITHER half has something — so a day where nobody owes
+    // you anything and you owe two people still has somewhere to say so.
+    //
+    // The row is a name and nothing else. The list above it says "for three
+    // weeks"; `PromiseLine` has no `days` field to say it with, which is how
+    // this rule is kept by the shape rather than by anybody remembering it.
+    const promised = promisedToAnyone(session.state());
+    const pCount = document.querySelector<HTMLElement>('#people-promised-count');
+    const pList = document.querySelector<HTMLElement>('#people-promised');
+    if (region && pCount && pList) {
+      region.hidden = owed.length === 0 && promised.length === 0;
+      pCount.textContent = promisedWords(promised.length);
+      pList.replaceChildren(...promised.map(line => {
+        const li = document.createElement('li');
+        li.className = 'people-item';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'people-open';
+        const t2 = document.createElement('span');
+        t2.className = 'people-title';
+        t2.textContent = line.node.title || '(untitled)';
+        const w2 = document.createElement('span');
+        w2.className = 'people-why';
+        w2.textContent = promisedRowWords(line.person);
+        b.append(t2, w2);
         if (openDetail) b.addEventListener('click', () => openDetail(line.node));
         li.append(b);
         return li;

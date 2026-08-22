@@ -62,7 +62,11 @@ const BUDGET = {
   // sentences of scope, a label and the note. The scope sentences ARE the
   // feature — the request was for a size that touches this app and nothing else,
   // so a control that did not say so would be answering a different question.
-  words: 3390,
+  // 3390 -> 3394 on 2026-08-22 (2.20.0): two words in the relation picker
+  // ("I said I would") and the second count line in "With other people". The
+  // section was already there and already said what it was for; it had one of
+  // its two halves. This is the smaller half arriving, not a new surface.
+  words: 3394,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

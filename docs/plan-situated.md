@@ -362,7 +362,28 @@ situations are the acceptance test — walked end to end, not asserted.
   thing*, where weighing the whole plate is the cost being cut.
 
   **Phase 3 is complete.**
-- Phase 4 through 8: not started.
+- **Phase 4 — the other direction.** DONE in 2.20.0. Checked against the code
+  first: **the person screen was already built** — `#detail-person-group` has
+  rendered `personView`'s both directions since 1.12.0 — which is the FIFTH
+  already-built step in this plan. The promise itself really was absent;
+  `requested-by` records who asked, which is provenance, not an undertaking.
+  Built as a RELATION (`promised-to`) and never a kind: a promise is your own
+  work with a person attached, so it stays an ordinary node, is kept by doing
+  it, and `personView.involves` picked it up with no change at all. A kind
+  would have had to join every kind list, and phase 2 measured three of the four
+  sites that write a node's kind as wrong.
+  **The asymmetry is the whole design.** `PersonLine` carries `days` because
+  ageing somebody else's debt to you is a fact about a date; `PromiseLine`
+  carries none, because the same words pointed at yourself are the ledger
+  `src/requests.ts` says this app exists not to keep. Enforced by the SHAPE —
+  there is no field to render — and asserted in the rendered words by both walks.
+  `promise.released` is a second subtraction in a vocabulary ADR-0057 says has
+  one. Deliberate: `stakeholder.removed{relation:'promised-to'}` would write a
+  false sentence into an append-only log. It is load-bearing rather than tidy —
+  a promise nobody can take back is a permanent claim that you owe somebody
+  something. It releases the undertaking and leaves the work, which is the
+  assertion the smoke walk was seen RED on.
+- Phase 5 through 8: not started.
 - **Last full Spine seen green:** `5f0d45a` on `staging` (2.19.1), every step
   and the deploy, read from the run rather than from the push output.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and

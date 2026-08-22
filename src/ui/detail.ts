@@ -54,7 +54,7 @@ import { decisionsFor, foldedIntoDeep } from '../merged.ts';
 import { carryEvents, declineEvents, parkToSlotEvents } from './request-intents.ts';
 import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../requests.ts';
 import { personView, stakeholdersOf, type PersonLine } from '../people.ts';
-import { logDecisionEvents, removeStakeholderEvents } from './detail-intents.ts';
+import { logDecisionEvents, removeStakeholderEvents, releasePromiseEvents } from './detail-intents.ts';
 import { rangeWords, timedRange } from '../duration.ts';
 import { boundaryOf } from '../day.ts';
 
@@ -62,6 +62,7 @@ import { boundaryOf } from '../day.ts';
  *  closed set; these are what a person reads. */
 const RELATION_WORDS: Record<string, string> = {
   'waiting-on': 'they owe me this',
+  'promised-to': 'I said I would',
   'requested-by': 'they asked for it',
   'opr': 'they are running it',
   'stakeholder': 'they care about it',
@@ -640,6 +641,28 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
           setRest(true);
         });
         li.append(b);
+        // AND A PROMISE CAN BE TAKEN BACK (2.20.0). Only this relation gets the
+        // control, and the asymmetry is the point rather than an omission: the
+        // other four are notes about how somebody is involved, and a wrong one
+        // is cosmetic. A promise is a standing claim that you owe somebody
+        // something, and one nobody could take back would be the exact ledger
+        // `src/requests.ts` says this app exists not to keep.
+        //
+        // It releases the UNDERTAKING, never the work. The node keeps its clock,
+        // its place and its date — somebody who no longer owes Sam a thing may
+        // still intend to do it, and deleting their work would be the app
+        // deciding that for them.
+        if (l.relation === 'promised-to') {
+          const off = document.createElement('button');
+          off.type = 'button';
+          off.className = 'ghost';
+          off.textContent = 'No longer promised';
+          off.addEventListener('click', () => {
+            void run(ctx => releasePromiseEvents(ctx, n.id, l.person),
+              'No longer promised. The work is still here.');
+          });
+          li.append(off);
+        }
         return li;
       }));
 

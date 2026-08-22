@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.20.0 — CAPABILITY
+
+*2026-08-22*
+
+- **You can say you promised something, and see everything you promised.** Pick *I said I would* when you name a person, and it appears under *With other people* — the same place that already showed what other people owe you, now showing both directions.
+- **It never says how long.** The things other people owe you say *for three weeks*, because that is a fact about their side. Nothing on your side does, and nothing ever will: a running tally of how long you have kept somebody waiting is the one kind of record this app is built not to keep.
+- **You keep a promise by doing the thing.** There is no separate step and nothing to tick twice — mark the work done and the promise goes with it.
+- **And you can take one back without dropping the work.** *No longer promised* takes off the undertaking and leaves the thing exactly where it was, with its date and everything else. You might still mean to do it; that is yours to decide, not the app’s.
+- **It is on the printed card too**, beside what you are waiting on from other people.
+
 ## 2.19.1 — ITERATION
 
 *2026-08-22*

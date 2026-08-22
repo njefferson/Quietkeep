@@ -822,6 +822,13 @@ const REGISTRY = {
   // no colour that means "they have had this a while", and there will not be.
   'people': ['#people-heading', '.people-count', '.people-open',
     '.people-title', '.people-why'],
+  // THE OTHER DIRECTION (2.20.0). Its own entry, keyed on IDS, because the two
+  // lists in this section share every class — and a shared class is not
+  // coverage. `tools/surfaces.mjs` records the draft that counted `.section`
+  // and reported all seventeen sections measured; this is the same mistake one
+  // scale down, and the entry above would have made it silently.
+  'people, the other direction': ['#people-promised-count',
+    '#people-promised .people-title', '#people-promised .people-why'],
   // The sheet's write side. A free-text box with a datalist and a select are the
   // two smallest targets on it.
   'detail sheet, with someone': ['#detail-person',
@@ -3086,6 +3093,44 @@ try {
     await auditNames(page, 'people', theme);
     await auditSeparationAndTargets(page, 'people', theme);
     await auditFocusRings(page, 'people', theme, ['.people-open']);
+
+    // AND THE OTHER DIRECTION (2.20.0). Driven through the app rather than
+    // seeded: a promise planted into the store proves the list renders and
+    // nothing about whether one can be made. Built from a card of its own so a
+    // change to the sequence above cannot leave this measuring nothing.
+    //
+    // THE ASSERTION THAT MATTERS IS THE NEGATIVE ONE. Everything here would
+    // render identically if the row carried a duration, and a duration on this
+    // side is the ledger `src/requests.ts` says the app exists not to keep. It
+    // is checked in the rendered words, not only in the type.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-person', 'Rowan');
+    await page.selectOption('#detail-relation', 'promised-to');
+    await page.click('#detail-person-set');
+    await page.waitForTimeout(250);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.waitForSelector('#people-promised li');
+    const promised = await page.evaluate(() => ({
+      count: document.querySelector('#people-promised-count')?.textContent?.trim() ?? '',
+      rows: [...document.querySelectorAll('#people-promised li')].map(li => ({
+        title: li.querySelector('.people-title')?.textContent?.trim() ?? '',
+        why: li.querySelector('.people-why')?.textContent?.trim() ?? '',
+      })),
+    }));
+    (promised.rows.some(r => /Rowan/.test(r.why)) ? pass : fail)(
+      `${theme}/people other direction: what you said you would do is listed, for whom`);
+    (/said you would/.test(promised.count) ? pass : fail)(
+      `${theme}/people other direction: and the line says what it is ("${promised.count}")`);
+    const promisedWordsAll = promised.count + ' ' + promised.rows.map(r => r.why).join(' ');
+    (!/\bfor \d|week|day|month|since|ago|yesterday\b/i.test(promisedWordsAll) ? pass : fail)(
+      `${theme}/people other direction: NO duration anywhere on it ("${promisedWordsAll.slice(0, 70)}")`);
+    await auditContrast(page, 'people, the other direction', theme);
+    await auditAxe(page, 'people, the other direction', theme);
+    await auditNames(page, 'people, the other direction', theme);
+    await auditSeparationAndTargets(page, 'people, the other direction', theme);
 
     // And the sheet's write side, with a name actually attached — the state in
     // which the linked-people list renders at all.

@@ -632,7 +632,23 @@
   <section id="people" class="people" aria-labelledby="people-heading" hidden>
     <h2 id="people-heading" class="section" tabindex="-1">With other people</h2>
     <p id="people-count" class="people-count"></p>
-    <ul id="people-list" class="people-list"></ul>
+    <ul id="people-list" class="people-list" aria-labelledby="people-count"></ul>
+    <!-- THE OTHER DIRECTION (2.20.0). The same question — what is between me
+         and other people — so it belongs in the section already named for it
+         rather than in a new one: no new surface, no new plain-mode
+         declaration, and the two halves side by side where somebody asking
+         either one is already standing.
+
+         Its own count line, and each list labelled by its own, because two
+         unlabelled lists in one section are one list to a screen reader.
+
+         What it must NEVER carry is a duration. The list above says "With Sam
+         for three weeks" about what somebody owes you; the same words pointed
+         here would be a record of how long you have been failing, which is the
+         ledger `src/requests.ts` says this app exists not to keep. The
+         projection behind it has no `days` field to render. -->
+    <p id="people-promised-count" class="people-count"></p>
+    <ul id="people-promised" class="people-list" aria-labelledby="people-promised-count"></ul>
   </section>
 
   <!-- Review, as EXCEPTIONS ONLY (v1 Must). Never a list of your work — only
@@ -1426,6 +1442,11 @@
              aria-describedby="detail-person-hint">
       <select id="detail-relation" aria-label="How they are involved">
         <option value="waiting-on">they owe me this</option>
+        <!-- THE OTHER DIRECTION (2.20.0). Two rows apart from "they asked for
+             it" and genuinely a different fact: that one is where a thing came
+             from, this one is somebody now expecting it of you. Only this one
+             puts you on a standing list, and only this one can be released. -->
+        <option value="promised-to">I said I would</option>
         <option value="requested-by">they asked for it</option>
         <option value="opr">they are running it</option>
         <option value="stakeholder">they care about it</option>
