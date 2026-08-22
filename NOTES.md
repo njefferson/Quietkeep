@@ -696,16 +696,26 @@ closed question filed under this heading now, so the two cannot drift again.
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.14.1**
-- **https://quietkeep.pages.dev** — production, **2.13.0** (promoted 2026-08-20,
-  `e3494c4`; the promoted tree asserted byte-identical to the verified staging
-  tree rather than inferred from a clean merge. Deploy, Spine and the
-  push-on-main workflow all green **on `e3494c4` itself**, read from the runs.)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.21.0**
+  (`7ed363d`, Spine and Deploy green on that SHA, read from the runs)
+- **https://quietkeep.pages.dev** — production, **2.14.1** (promoted 2026-08-22,
+  `74dca96`, and the version read back from `main`'s own `sw.js` rather than
+  from the promote's output. Twelve releases are staged past it.)
 - **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
   and `handoff-check.mjs` is what noticed — because it asks whether the version
   beside the URL is the CURRENT one, which is a question no reader of this file
   thinks to ask about a line that looks maintained. The paragraph nine screens
   down was current the whole time. One file, two answers, again.
+- **AND IT SAID 2.14.1 AND 2.13.0 UNTIL 2026-08-22, through eleven releases and
+  one promote** — the same defect, in the same block, four days after the
+  paragraph above it was written about the same defect. What found it was hub
+  LESSONS 122 landing from another session while this one was working, not the
+  gate; `handoff-check.mjs` names it correctly and **is not in this repo's
+  Spine**, because the version check it carries is bundled with an
+  acknowledgement checklist no CI run can answer. So the one gate that catches
+  this is a gate somebody has to remember to run, which is the state the
+  third-person and no-grid rules were in until 2.18.2 wired them.
+  **A note recording a defect is not a fix for it.**
 
 **AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
 WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
@@ -2008,7 +2018,11 @@ There was no way back anywhere in the app. There is now.
   task. Verified in `src/ui/app.ts`: a card renders title, status, place and
   contents, and never the kind.
 
-**Nothing is waiting.** 2.0.7, 2.0.8 and 2.0.9 were promoted together on the owner's
+**Nothing was waiting on 2026-08-12** — and the present tense this said it in
+was stale within a week, which is hub LESSONS 122 exactly: a status sentence in
+a dated entry goes on reading as a status. Twelve releases are staged now; the
+live answer is the *Staged and waiting* block above, and this line is history.
+2.0.7, 2.0.8 and 2.0.9 were promoted together on the owner's
 word, 2026-08-12, as `65e8d19`. The production deploy was verified on that exact
 sha — Deploy and Spine green, the deploy steps run rather than skipped, and the
 log's own words: `Deployed to PRODUCTION: https://quietkeep.pages.dev`. The
