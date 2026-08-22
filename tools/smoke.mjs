@@ -7035,6 +7035,69 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#capture').isVisible(), true,
     'and the capture line is still there afterwards — nothing was left blocking the app');
 
+  // ————— HOW LONG YOU HAVE, END TO END (2.19.0) —————
+  //
+  // `fitsWithin` is unit-tested; this is the wiring, which no unit test reaches
+  // and no static sweep can see — the exact class of defect that took 2.15.0's
+  // Spine red. Built from nothing here rather than reusing an earlier item, so
+  // it cannot be broken by a change to a sequence somewhere above it.
+  //
+  // THREE CLAIMS: a thing longer than the time you have leaves the list; a
+  // thing you never put a time on STAYS, which is the rule that keeps the
+  // feature usable; and clearing the chooser brings the long one back, because
+  // this narrows what is shown and never what is held (law 1).
+  console.log('\nHow long you have');
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.fill('#capture', 'A ninety minute job');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  await tpage.fill('#capture', 'A job of unknown length');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  // Route both out of the inbox so they land on the held list.
+  for (let i = 0; i < 2; i += 1) {
+    const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
+    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+  }
+  await tpage.evaluate(() => {
+    const f = document.querySelector('#held-fold');
+    if (f && !f.open) f.open = true;
+  });
+  await tpage.waitForTimeout(120);
+  const longCard = tpage.locator('#cards .card', { hasText: 'A ninety minute job' }).first();
+  if (await longCard.count()) {
+    await longCard.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await tpage.fill('#detail-estimate', '90');
+    await tpage.click('#detail-estimate-set');
+    await tpage.waitForTimeout(150);
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(150);
+    const shown = async () => tpage.evaluate(() =>
+      [...document.querySelectorAll('#cards .card')].map(c => c.textContent ?? '').join(' | '));
+    const before = await shown();
+    is(/ninety minute/.test(before) && /unknown length/.test(before), true,
+      'both are on the list with no limit set');
+
+    await tpage.selectOption('#how-long', '30');
+    await tpage.waitForSelector('#how-long-note:not([hidden])');
+    const narrowed = await shown();
+    is(/ninety minute/.test(narrowed), false,
+      'a ninety-minute job is not shown when you have thirty');
+    is(/unknown length/.test(narrowed), true,
+      'and a thing you never put a time on IS — the app cannot say it does not fit');
+
+    await tpage.selectOption('#how-long', '');
+    await tpage.waitForTimeout(150);
+    is(/ninety minute/.test(await shown()), true,
+      'clearing it brings the long one back — nothing was taken away, only not shown');
+  } else {
+    is(false, true, 'the ninety-minute job never reached the held list, so nothing was measured');
+  }
+
   await tctx.close();
 } finally {
   await browser.close();

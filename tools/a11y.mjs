@@ -574,6 +574,11 @@ const REGISTRY = {
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
   'where you are': ['#where', '#where-note', '.card-where'],
+  // HOW LONG YOU HAVE (2.19.0). Its own entry, and the note is in it: the
+  // standing line only renders while the filter is ON, so an entry naming only
+  // the chooser would report the surface measured while the one line that says
+  // what is being hidden had never been looked at.
+  'how long you have': ['#how-long', 'label[for="how-long"]', '#how-long-note'],
   // WHO IT IS FOR (2.6.0, ADR-0096). Its own driven state for the reason 'where
   // you are' has one: the door and the readout render only once a role exists,
   // so registering them on a state whose store has none would be three false
@@ -2412,6 +2417,27 @@ try {
     await auditNames(page, 'where you are', theme);
     await auditSeparationAndTargets(page, 'where you are', theme);
     await auditFocusRings(page, 'where you are', theme, ['#where']);
+
+    // HOW LONG YOU HAVE (2.19.0, the plan's phase 3). The other half of the
+    // situation, driven the same way — chosen on the work surface, with the
+    // standing line waited for rather than assumed, because that line is the
+    // only thing telling a reader that what they are looking at is narrowed.
+    await page.selectOption('#how-long', '30');
+    await page.waitForSelector('#how-long-note:not([hidden])');
+    const howLongNote = await page.locator('#how-long-note').innerText();
+    (/never put a time on/.test(howLongNote) ? pass : fail)(
+      `${theme}/how long: the line says unestimated things are still shown ("${howLongNote.slice(0, 60)}")`);
+    (/\d/.test(howLongNote) && !/hidden|left|remaining/i.test(howLongNote) ? pass : fail)(
+      `${theme}/how long: it states the scope and never a count of what is hidden`);
+    await auditContrast(page, 'how long you have', theme);
+    await auditAxe(page, 'how long you have', theme);
+    await auditNames(page, 'how long you have', theme);
+    await auditSeparationAndTargets(page, 'how long you have', theme);
+    await auditFocusRings(page, 'how long you have', theme, ['#how-long']);
+    // Back to no limit, so every state after this sees the whole list — the
+    // rule the place chooser already follows two blocks down.
+    await page.selectOption('#how-long', '');
+    await page.waitForSelector('#how-long-note', { state: 'hidden' });
     // WHO IT IS FOR (2.6.0, ADR-0096), driven the same way and for the same
     // reason: a role planted into the store would prove the readout renders and
     // nothing about whether one can be made. Three claims, in the order they can

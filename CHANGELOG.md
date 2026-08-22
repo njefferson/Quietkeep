@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.19.0 — CAPABILITY
+
+*2026-08-22*
+
+- **You can say how long you have, and the app answers with things that fit.** Twenty minutes before you leave, five while the kettle boils. It sits beside *where you are* on the pile, and it narrows what the app offers you, not just what you can scroll.
+- **Anything you never put a time on still shows.** Most things never get one, and the app does not know how long they take — so it does not pretend they do not fit. The line under the chooser says exactly that, rather than leaving you to wonder why the list looks short.
+- **It uses your own estimate, never a correction of it.** If you said ten minutes and it took forty, it still counts as ten. What actually happened is on the thing itself for you to weigh; it is not the app’s to weigh for you.
+- **Nothing is hidden from you, only from this view.** Everything still has its clock, still counts, and still comes back. Clear the chooser and it is all there.
+
 ## 2.18.2 — ITERATION
 
 *2026-08-22*

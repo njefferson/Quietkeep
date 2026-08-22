@@ -33,6 +33,7 @@ import { treeRows } from '../tree-view.ts';
 import { nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
 import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
+import { getHowLong, fitsWithin } from '../duration.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
@@ -591,9 +592,21 @@ export function mountWork(
     // does becomes the head, and `total` counts what fits — a total that
     // counted things you cannot do from here would be the surface answering a
     // different question from the one the chooser asked.
+    //
+    // AND HOW LONG YOU HAVE (2.19.0, the plan's phase 3). The same treatment
+    // and in the same place, because it is the same kind of narrowing: what is
+    // filtered out still has its clock, still counts in the claim, and still
+    // comes back. An unestimated thing fits every answer, exactly as an
+    // unlabelled thing fits anywhere.
+    //
+    // THE OFFER IS THE HALF THAT MATTERS. Narrowing only the held list would
+    // leave the one thing the app actually hands you unfiltered — "I have
+    // twenty minutes" answered with a two-hour job is the feature not working,
+    // which is the reasoning `getWhereNow` already carries about place.
+    const within = getHowLong();
     const all = ((): typeof all0 => {
-      if (!here) return all0;
-      const fits = (i: NextUpItem) => fitsHere(state, i.node, here);
+      if (!here && within === null) return all0;
+      const fits = (i: NextUpItem) => fitsHere(state, i.node, here) && fitsWithin(i.node, within);
       const kept = [...(all0.head ? [all0.head] : []), ...all0.behind].filter(fits);
       return { head: kept[0] ?? null, behind: kept.slice(1), total: kept.length };
     })();

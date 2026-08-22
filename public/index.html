@@ -759,6 +759,22 @@
   </div>
   <p id="where-note" class="detail-hint" hidden></p>
 
+  <!-- HOW LONG HAVE YOU GOT (2.19.0). The other half of the situation: place
+       answers "what can I do here", this answers "what can I do in twenty
+       minutes". Same row shape, same standing line, same rule — it narrows what
+       is SHOWN and never what is held.
+
+       Not hidden behind a count of estimated things, unlike the place chooser
+       which is hidden until a place exists. An unestimated thing FITS every
+       answer here, so the chooser is useful on the first day: it is the
+       estimated ones it can act on, and it says so rather than leaving somebody
+       to infer that an empty-looking result means nothing fits. -->
+  <div id="how-long-row" class="lens-row">
+    <label class="detail-inline" for="how-long">How long you have</label>
+    <select id="how-long" aria-describedby="how-long-note"></select>
+  </div>
+  <p id="how-long-note" class="detail-hint" hidden></p>
+
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
        re-entry, Next up, and search are structurally unlensed. The line below

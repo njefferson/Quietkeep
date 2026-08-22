@@ -112,3 +112,68 @@ export const estimateWords = (n: NodeState): string | null => {
  * `remainderWords` in `src/clock.ts`, on the opt-in header clock, which is the
  * home entry 9 of `docs/nd-collisions.md` gives it. `minutesWords` below stays;
  * `rangeWords` is its reader. */
+
+// ————— HOW LONG HAVE YOU GOT (2.19.0, the plan's phase 3) —————
+//
+// The second half of the situation. Place shipped in 2.2.0 and answers *what
+// can I do here*; this answers *what can I do in twenty minutes*. It rides
+// `fitsHere`'s shape exactly — a pure predicate, a device preference that is
+// never an event, and a post-filter applied where the place filter already is —
+// so `nextup.ts` and every test over the ranking stay untouched. This narrows
+// what is OFFERED; it does not re-rank anything.
+
+/** The lengths worth offering, shortest first. Ordinary lengths of time, not a
+ *  scale: nobody has 47 minutes and thinks of it that way. */
+export const HOW_LONG_CHOICES: readonly number[] = [5, 15, 30, 60, 120];
+
+/**
+ * Does this fit in the time you have?
+ *
+ * `minutes === null` means the filter is off and everything fits.
+ *
+ * **WHAT THE PERSON SAID, and nothing else.** Not the timed range, which is
+ * evidence about what happened rather than a claim about what this is — using
+ * it here would be the app answering "you said ten minutes, but it took forty,
+ * so no". That is a correction, and this module's own header says the estimate
+ * is never derived, never corrected and never scored against what happened.
+ * The range is on the card for the reader to weigh; it is not the app's to
+ * weigh for them (law 7).
+ *
+ * **AN UNESTIMATED THING FITS.** The same rule as an unlabelled thing fitting
+ * anywhere, and for a stronger reason: most things are never estimated, so
+ * hiding them would empty the surface and read as broken the first time
+ * somebody tried the feature. The app does not know how long an unestimated
+ * thing takes, so it cannot honestly say it does not fit — and the standing
+ * line says exactly that rather than letting the reader assume otherwise.
+ */
+export const fitsWithin = (n: NodeState, minutes: number | null): boolean => {
+  if (minutes === null) return true;
+  const e = estimateOf(n);
+  return e === null || e <= minutes;
+};
+
+/**
+ * The standing line while the filter is on.
+ *
+ * States the SCOPE and never a count of what is hidden — `whereWords`' rule,
+ * and the reason is the same: an aggregate about work you are deliberately not
+ * looking at only ever rises.
+ */
+export const howLongWords = (minutes: number): string =>
+  `Showing what you said would fit in ${minutesWords(minutes)}, and anything you `
+  + 'have never put a time on. Everything else is still held and still comes back.';
+
+/** The device's answer to "how long have you got", like `where.now`.
+ *
+ *  A DEVICE VIEW PREFERENCE and not an event, for the reason `WHERE_KEY`
+ *  carries: how much time somebody had on a Tuesday is not a fact about their
+ *  work, and a stored trail of it is exactly the material law 7 keeps the app
+ *  out of. */
+export const HOW_LONG_KEY = 'how.long';
+
+/** The live answer, cached at module level — `whereNow`'s pattern, and needed
+ *  for the same reason: the shell narrows the held list and `work.ts` narrows
+ *  the OFFER, and `work.ts` cannot import `app.ts` without a cycle. */
+let howLongNow: number | null = null;
+export const getHowLong = (): number | null => howLongNow;
+export const setHowLong = (m: number | null): void => { howLongNow = m; };

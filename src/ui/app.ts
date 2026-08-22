@@ -46,6 +46,10 @@ import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
 import { WHERE_KEY, allContexts, contextNames, fitsHere, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
+import {
+  HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
+  getHowLong, setHowLong,
+} from '../duration.ts';
 import { waitingOnAnyone, withWhom, waitingWords, peopleWords } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
@@ -91,6 +95,9 @@ let lensRoot: string | null = null;
  *  somebody is is not a fact about their work and the log has no business
  *  keeping a history of it. */
 let whereNow: string | null = null;
+/** How long the reader says they have, in minutes, or null for no limit. A
+ *  device view preference like `whereNow` — see `HOW_LONG_KEY`. */
+let howLongNow: number | null = null;
 
 /**
  * THE WAY PAST THE STACK (2.0.8, ADR-0090) — shown when, and only when, there is
@@ -285,6 +292,29 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     }
   }
 
+  // HOW LONG HAVE YOU GOT (2.19.0). The place chooser's shape exactly, with one
+  // deliberate difference: it is never hidden. The place chooser is withheld
+  // until a place exists because it would filter by nothing; this one acts on
+  // estimates and an UNESTIMATED thing fits every answer, so it is useful from
+  // the first day and hiding it would be hiding a control that works.
+  const howLongSel = document.querySelector<HTMLSelectElement>('#how-long');
+  const howLongNote = document.querySelector<HTMLElement>('#how-long-note');
+  if (howLongSel) {
+    const keep = howLongNow === null ? '' : String(howLongNow);
+    howLongSel.replaceChildren(...[
+      Object.assign(document.createElement('option'), { value: '', textContent: 'as long as it takes' }),
+      ...HOW_LONG_CHOICES.map(m => Object.assign(document.createElement('option'), {
+        value: String(m), textContent: minutesWords(m),
+      })),
+    ]);
+    howLongSel.value = keep;
+  }
+  if (getHowLong() !== howLongNow) setHowLong(howLongNow);
+  if (howLongNote) {
+    howLongNote.hidden = howLongNow === null;
+    if (howLongNow !== null) howLongNote.textContent = howLongWords(howLongNow);
+  }
+
   const lensRootNode = lensRoot ? st.nodes.get(lensRoot) : undefined;
   const lensLive = Boolean(lensRootNode && !lensRootNode.trashed && !lensRootNode.mergedInto
     && lensRoots.some(r => r.id === lensRoot));
@@ -307,7 +337,12 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     // AND WHERE YOU ARE (2.2.0). Applied with the lens and before the cap, for
     // the same reason: a cap over an unfiltered set would lie about how many it
     // held back. Unlabelled things fit anywhere, so they always survive this.
-    const lensed = lensedOnly.filter(n => fitsHere(st, n, whereLive));
+    // AND HOW LONG YOU HAVE (2.19.0). Beside the place filter, before the cap,
+    // for the same reason. Unestimated things fit every answer, so they survive
+    // this exactly as unlabelled things survive the one above.
+    const lensed = lensedOnly
+      .filter(n => fitsHere(st, n, whereLive))
+      .filter(n => fitsWithin(n, howLongNow));
     if (lensed.length === 0) continue;
 
     const head = document.createElement('h3');
@@ -1489,6 +1524,16 @@ export async function main(edition?: Edition): Promise<void> {
   } catch {
     whereNow = null;
   }
+  try {
+    // Stored as a string like every other view preference. A stored value that
+    // is not one of the offered lengths is dropped rather than honoured: it
+    // would filter by a number no control can show or clear, which is a state
+    // somebody could be stuck in with nothing on screen explaining why.
+    const raw = Number(await session.store.getKv<string>(HOW_LONG_KEY));
+    howLongNow = HOW_LONG_CHOICES.includes(raw) ? raw : null;
+  } catch {
+    howLongNow = null;
+  }
 
   // THE INVENTORY'S FOLD, REMEMBERED (2.12.0, ADR-0102). Somebody who wants the
   // list open should not have to say so on every load: a preference re-asked
@@ -1516,6 +1561,15 @@ export async function main(edition?: Edition): Promise<void> {
     setWhereNow(whereNow);
     refreshAll();
     void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+  });
+
+  setHowLong(howLongNow);
+  document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
+    const v = (e.target as HTMLSelectElement).value;
+    howLongNow = v ? Number(v) : null;
+    setHowLong(howLongNow);
+    refreshAll();
+    void session.store.setKv(HOW_LONG_KEY, v).catch(() => { /* view pref only */ });
   });
 
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {

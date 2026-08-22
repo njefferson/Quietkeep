@@ -337,7 +337,21 @@ situations are the acceptance test — walked end to end, not asserted.
   what it touched.** Steps 1, 3 and 4 all found working machinery; step 2 found
   a route that existed and unmade the node it acted on. Reading the code first
   changed the work every time, and reading it was never the expensive part.
-- Phase 3 through 8: not started.
+- **Phase 3 — the situation.** HALF DONE in 2.19.0: *how long you have*. A
+  pure predicate (`fitsWithin`), a device preference beside `where.now`
+  (`how.long`), and a post-filter in `work.ts` beside the existing one —
+  `nextup.ts` and every test over the ranking untouched, exactly as the plan
+  specified. Two rules carry the weight: it reads the person's own estimate and
+  never the timed range (using what happened would be the app correcting them,
+  which `duration.ts`'s own header forbids), and **an unestimated thing FITS**,
+  because most things never get an estimate and hiding them would empty the
+  surface and read as broken.
+  The wiring is asserted in the browser, not only in units: the same tree with
+  a ninety-minute job and an untimed one, narrowed to thirty and cleared again.
+  Seen RED on a planted no-op `fitsWithin`, so the assertion can fail.
+  Still owed in this phase: *what is due today* rather than *what exists* — the
+  gap the diagnostic report was found unable to answer.
+- Phase 4 through 8: not started.
 - **Last full Spine seen green:** `4df1d56` on `staging`, all 41 steps.
 - **Waiting on the owner:** the on-device pass. 2.14.2, 2.14.3, 2.15.0 and
   2.16.0 are all on `staging` and production is still 2.14.1. Nothing in the

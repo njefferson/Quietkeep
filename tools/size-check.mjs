@@ -278,7 +278,13 @@ const BUDGET = {
   // inside the dialog. So the count goes up by two and what a new reader meets
   // does not change at all — the third time in five releases this budget has
   // read the wrong way round, and the note is the record.
-  controls: 232,
+  //
+  // 232 -> 233 on 2026-08-22 (2.19.0): "How long you have" is one chooser, and
+  // unlike the place chooser beside it, it is never hidden — an unestimated
+  // thing fits every answer, so it works on the first day and withholding it
+  // would be withholding a control that works. It sits inside `#held`, so it is
+  // one more control on the pile's own row and none on the first screen.
+  controls: 233,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM
