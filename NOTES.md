@@ -696,10 +696,11 @@ closed question filed under this heading now, so the two cannot drift again.
 
 ### Staged and waiting on the owner
 
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.23.2**
-  (`825aa12`, Spine and Deploy both green on that SHA, every step read and
-  none skipped or cancelled. `b8f1735` sits one docs-only commit past it and
-  its own run is going as this is written.)
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.24.0**
+  (`0cf5be8` was read fully green — 49 steps, 49 success, none skipped or
+  cancelled — and 2.24.0 sits on top of it with its own run going as this is
+  written. The a11y walk was run LOCALLY on 2.24.0's markup before the commit
+  and read green in both themes; the commit hook refuses it otherwise.)
 - **https://quietkeep.pages.dev** — production, **2.14.1** (promoted 2026-08-22,
   `74dca96`, and the version read back from `main`'s own `sw.js` rather than
   from the promote's output. Sixteen releases are staged past it.)

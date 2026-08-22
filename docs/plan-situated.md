@@ -401,7 +401,16 @@ situations are the acceptance test — walked end to end, not asserted.
   **Nothing records how often a situation is used** — no count, no last-used, no
   ordering by frequency — and the shape has nowhere to keep one, which is how
   that is enforced rather than remembered.
-  Still owed: the attention readout per role.
+  **The attention readout per role: BUILT in 2.24.0**, and this line said "still
+  owed" while a later line in this file said the plan was finished. The sheet had
+  been titled *Where the attention is* since 2.6.0 and showed a count of live
+  work, which is a different question — load is what a role is CARRYING,
+  attention is what it was GIVEN, and a role can carry nine things and have had
+  none of your time. Reads `do-now.timed` and never completions, counts finished
+  work where `roleLoads` must not, sorted by name, no proportion and no target.
+  The sparsity objection that held it up for three releases was already answered
+  in this plan — 2.19.0's shape, saying what the thing is made of — so it states
+  what would fill it rather than hiding.
 
   **The conflict phase 5 walks into, settled here so it is not rediscovered.**
   `src/roles.ts`'s header promises the readout — *where attention actually
@@ -524,6 +533,15 @@ situations are the acceptance test — walked end to end, not asserted.
   - *What could I do that would actually help, rather than what I owe* — the
     demand-free kinds and the line saying nothing there is asking. Answered.
 
+  **THE PLAN WAS REPORTED FINISHED WHILE TWO ITEMS WERE STILL OWED**, and the
+  record above said so the whole time. Eight of eight phases had landed their
+  headline work, which is what got reported; phase 5's attention readout and
+  phase 1's situational question in the capture flow were both written down as
+  outstanding and read past. **A resume block is only worth what somebody
+  re-reads before claiming to be done** — the check is cheap and was not made.
+  The readout is built (2.24.0). Phase 1's item is genuinely gated on a real
+  on-device pass rather than being guessed at, and stays open.
+
   **Found by looking and NOT fixed, deliberately.** At 768 every card spans the
   full width — there is no maximum measure on the reading column. On this
   fixture no line actually runs long enough to hurt, so it is a hazard rather
@@ -545,9 +563,9 @@ situations are the acceptance test — walked end to end, not asserted.
   device's own §7f diagnostic is what reads production, and a Deploy run's green
   Cloudflare step is the weaker evidence a session can offer.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
-  `staging` carries sixteen releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
+  `staging` carries seventeen releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
   2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1, 2.20.0, 2.21.0, 2.22.0,
-  2.23.0, 2.23.1 and 2.23.2. Nothing in the plan is blocked on it.
+  2.23.0, 2.23.1, 2.23.2 and 2.24.0. Nothing in the plan is blocked on it.
 
   **These two lines went stale for five releases while the phase notes above
   them were kept current**, which is the one-file-two-answers shape the hub's
