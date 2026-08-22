@@ -530,13 +530,16 @@ situations are the acceptance test — walked end to end, not asserted.
   than a defect, and it has never been measured at 1180 (iPad landscape), which
   is the width most likely to expose it.
 - **Last full Spine seen green:** `4dfcbf2` on `staging` (2.23.0), every step
-  and the deploy, read from the run rather than from the push output. 2.23.1
-  (`31eebb4`) was pushed after it and its run must be read before anything
-  stacks on top.
+  and the deploy, read from the run rather than from the push output.
+  **2.23.1 (`516ff99`) went RED on the a11y walk** — the three moved regions
+  were undeclared in `PLAIN_CHROME_HIDDEN`, so *Just one thing* rendered a
+  filter. 2.23.2 (`1627350`) is the fix and its run has not been read yet.
+  The lesson is 126 in the hub: `plain:check` checked the offer card both ways
+  and the chrome only one way, and the missing direction ran in a browser.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
-  `staging` carries fifteen releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
+  `staging` carries sixteen releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
   2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1, 2.20.0, 2.21.0, 2.22.0,
-  2.23.0 and 2.23.1. Nothing in the plan is blocked on it.
+  2.23.0, 2.23.1 and 2.23.2. Nothing in the plan is blocked on it.
 
   **These two lines went stale for five releases while the phase notes above
   them were kept current**, which is the one-file-two-answers shape the hub's

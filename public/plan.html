@@ -135,10 +135,18 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 <h2>What is true today</h2>
 <ul class="facts">
   <li><b>Production</b> — 2.14.1. Everything since is on staging.</li>
-  <li><b>Staging</b> — 2.23.1, with fifteen releases on it since production.</li>
+  <li><b>Staging</b> — 2.23.2, with sixteen releases on it since production.</li>
   <li><b>Last full Spine seen green</b> — <code>4dfcbf2</code>, 2.23.0, every
-      step and the deploy, read from the run itself. 2.23.1's own run is going
-      as this was written and has not been read yet.</li>
+      step and the deploy, read from the run itself. <b>2.23.1 went red</b> and
+      2.23.2 is the fix; its run is going as this was written.</li>
+  <li><b>What went red, and why it is worth saying</b> — moving the situation
+      control to the top of the screen left it standing in
+      <em>Just one thing</em>, the mode built for the worst day. That mode
+      exists to hand you one thing and take the choosing away, and it had grown
+      a control asking where you are and how long you have. Caught by the
+      accessibility walk, not by the twenty-five checks that run before a
+      commit — because the half of that check which notices an unaccounted-for
+      region only ran in a browser. It runs before the commit now.</li>
   <li><b>Checked before pushing this one</b> — 1345 tests, the static gates, the
       new placement check seen failing on three deliberate defects before it was
       trusted, the walkthrough photographs re-rendered, and the page itself
