@@ -10,6 +10,7 @@ import { fold } from '../src/fold.ts';
 import {
   horizonRows, holdsWords, rhythmWords, horizonEmptyWords, HORIZON_KINDS,
 } from '../src/horizons.ts';
+import { containerOptionWords } from '../src/tree.ts';
 import type { AppEvent } from '../src/events.ts';
 
 let seq = 0;
@@ -123,4 +124,47 @@ test('a trashed horizon is not listed, and neither is its work counted', () => {
   const { rows } = horizonRows(s);
   assert.equal(rows.length, 1, 'the let-go goal is gone from the list');
   assert.equal(rows[0]!.node.title, 'A calmer house');
+});
+
+// --- the place pickers ------------------------------------------------------
+//
+// Phase 2 step 4 said `#sort-bulk-parent` "needs to accept a container of any
+// kind, not only a project". Measured before building: it already did —
+// `isContainer` has covered all four kinds since the tree was written, and a
+// bulk put-under lands on a goal end to end. The third time this plan named
+// something missing that was already there.
+//
+// What WAS missing is what these lock in: the option text never said which kind
+// a place was. That cost nothing while every place in the list was a project.
+
+test('the place pickers say what KIND each place is', () => {
+  const s = fold([
+    ...made('G', 'goal', 'A calmer house'),
+    ...made('P', 'project', 'Re-do the hallway', 'G'),
+    ...made('A', 'action', 'Ring the plasterer', 'P'),
+  ]);
+  assert.equal(containerOptionWords(s, s.nodes.get('G')!), 'A calmer house — goal');
+  assert.equal(containerOptionWords(s, s.nodes.get('P')!),
+    'Re-do the hallway — project, in A calmer house');
+});
+
+test('a non-container keeps its plain words — the kind is only said when it is a place', () => {
+  // The merge picker shares this writer and lists anything foldable, so an
+  // action must not acquire " — action" on its way through.
+  const s = fold([
+    ...made('P', 'project', 'Re-do the hallway'),
+    ...made('A', 'action', 'Ring the plasterer', 'P'),
+  ]);
+  assert.equal(containerOptionWords(s, s.nodes.get('A')!),
+    'Ring the plasterer — in Re-do the hallway');
+});
+
+test('a place under a let-go parent does not claim to be in it', () => {
+  let s = fold([
+    ...made('G', 'goal', 'A calmer house'),
+    ...made('P', 'project', 'Re-do the hallway', 'G'),
+  ]);
+  assert.match(containerOptionWords(s, s.nodes.get('P')!), /in A calmer house/);
+  s = fold([ev('node.trashed', 'G', {})], s);
+  assert.equal(containerOptionWords(s, s.nodes.get('P')!), 'Re-do the hallway — project');
 });

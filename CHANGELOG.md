@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.18.1 — ITERATION
+
+*2026-08-22*
+
+- **When you pick a place to put something, it now says what kind of place it is.** *A calmer house — goal*, *Re-do the hallway — project, in A calmer house*. Until you could make goals and areas, every place in that list was a project and the names alone were enough; now they are not, and filing forty things at once is exactly where guessing wrong costs the most.
+- **Filing many things under a goal already worked.** It was on the list to build and it turned out to be there — the picker offered it, and the filing landed. What was missing was only the words on the option.
+
 ## 2.18.0 — CAPABILITY
 
 *2026-08-22*

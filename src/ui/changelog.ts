@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.18.1',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**When you pick a place to put something, it now says what kind of place it is.** *A calmer house — goal*, *Re-do the hallway — project, in A calmer house*. Until you could make goals and areas, every place in that list was a project and the names alone were enough; now they are not, and filing forty things at once is exactly where guessing wrong costs the most.',
+      '**Filing many things under a goal already worked.** It was on the list to build and it turned out to be there — the picker offered it, and the filing landed. What was missing was only the words on the option.',
+    ],
+  },
+  {
     triplet: '2.18.0',
     kind: 'CAPABILITY',
     date: '2026-08-22',

@@ -43,7 +43,10 @@ import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
 import { dependencyView, dependencyWords, wouldCycle } from '../dependencies.ts';
-import { legalParents, childrenOf, placeWords, isContainer, CONTAINER_ORDER, CONTAINER_DEFAULT } from '../tree.ts';
+import {
+  legalParents, childrenOf, placeWords, isContainer, CONTAINER_ORDER, CONTAINER_DEFAULT,
+  containerOptionWords,
+} from '../tree.ts';
 import { eventWords, isCure } from '../log-words.ts';
 import { choosable, chosenToday, composedFull, todayIsOn } from '../composed.ts';
 import { canHold, legalMergeTargets, mergePlan, unmergeEvents } from './merge-intents.ts';
@@ -187,11 +190,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       ? legal.filter(t => normalize(t.title || '').includes(query))
       : legal;
     const keep = PARENT.value;
-    const lineage = (t: NodeState): string => {
-      const p = t.parent ? st.nodes.get(t.parent) : undefined;
-      const alive = p && !p.trashed && !p.mergedInto;
-      return alive ? `${t.title || '(untitled)'} — in ${p.title || '(untitled)'}` : (t.title || '(untitled)');
-    };
+    // ONE writer for these words — see `containerOptionWords`, which replaced
+    // three identical copies, two of them in this file. They said the same
+    // thing in the same words by coincidence rather than by construction, which
+    // is the shape this repo keeps paying for: one concept, several places, and
+    // only one of them gets the fix. It names the KIND too, which stopped being
+    // optional the moment more than one kind could appear in a place picker.
+    const lineage = (t: NodeState): string => containerOptionWords(st, t);
     PARENT.replaceChildren(...[
       Object.assign(document.createElement('option'), {
         value: '',
@@ -315,11 +320,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     const query = normalize(mergeFilter?.value ?? '');
     const legal = legalMergeTargets(st, n);
     const shown = query ? legal.filter(t => normalize(t.title || '').includes(query)) : legal;
-    const lineage = (t: NodeState): string => {
-      const p = t.parent ? st.nodes.get(t.parent) : undefined;
-      const alive = p && !p.trashed && !p.mergedInto;
-      return alive ? `${t.title || '(untitled)'} — in ${p.title || '(untitled)'}` : (t.title || '(untitled)');
-    };
+    // ONE writer for these words — see `containerOptionWords`, which replaced
+    // three identical copies, two of them in this file. They said the same
+    // thing in the same words by coincidence rather than by construction, which
+    // is the shape this repo keeps paying for: one concept, several places, and
+    // only one of them gets the fix. It names the KIND too, which stopped being
+    // optional the moment more than one kind could appear in a place picker.
+    const lineage = (t: NodeState): string => containerOptionWords(st, t);
     const keep = mergeSel.value;
     mergeSel.replaceChildren(...[
       Object.assign(document.createElement('option'), {

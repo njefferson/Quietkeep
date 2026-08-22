@@ -31,7 +31,7 @@ import { rangeChoices, matchingQuery, sortable, type RangeChoice } from '../rang
 import { demandClocksOf, routeEvents, undoRouteEvents } from './triage-intents.ts';
 import { heldStatus } from '../held.ts';
 import { heldNodes } from '../gate.ts';
-import { isContainer } from '../tree.ts';
+import { isContainer, containerOptionWords } from '../tree.ts';
 import { normalize } from '../search.ts';
 import { deliverCopy, deliverRangeCopy } from './export-copy.ts';
 import {
@@ -387,11 +387,10 @@ export function mountSort(
     if (!BPARENT) return;
     const st = session.state();
     const query = normalize(BPFILTER?.value ?? '');
-    const lineage = (t: NodeState): string => {
-      const p = t.parent ? st.nodes.get(t.parent) : undefined;
-      const alive = p && !p.trashed && !p.mergedInto;
-      return alive ? `${t.title || '(untitled)'} — in ${p.title || '(untitled)'}` : (t.title || '(untitled)');
-    };
+    // ONE writer, shared with the detail sheet — see `containerOptionWords`.
+    // Filing forty things at once is precisely where not knowing whether the
+    // place is a goal or a project costs the most.
+    const lineage = (t: NodeState): string => containerOptionWords(st, t);
     const keep = BPARENT.value;
     const all = heldNodes(st).filter(isContainer)
       .sort((a, b) => (a.title || '').localeCompare(b.title || ''));

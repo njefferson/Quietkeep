@@ -2946,10 +2946,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   const parentOptions = await tpage.locator('#detail-parent option').allTextContents();
-  is(parentOptions.includes('the quarterly report'), true,
+  // THE KIND IS PART OF THE OPTION NOW (2.18.0). This matched the title
+  // exactly, which was unambiguous while every place in the list was a project
+  // and stopped being so the moment a goal could be one. Matched by prefix, and
+  // the kind asserted separately, so the walk fails on the right fact if either
+  // half changes.
+  const parentOption = parentOptions.find(o => o.startsWith('the quarterly report'));
+  is(Boolean(parentOption), true,
     `the container is offered as a parent (${parentOptions.join(', ')})`);
-  is(parentOptions.includes('draft the brief'), false, 'and never itself');
-  await tpage.selectOption('#detail-parent', { label: 'the quarterly report' });
+  is(/— project/.test(parentOption ?? ''), true,
+    `and the option says what KIND of place it is ("${parentOption ?? ''}")`);
+  is(parentOptions.some(o => o.startsWith('draft the brief')), false, 'and never itself');
+  await tpage.selectOption('#detail-parent', { label: parentOption });
   await tpage.click('#detail-parent-set');
   await tpage.waitForTimeout(300);
   const placeLine = await tpage.locator('#detail-place').textContent();
@@ -3048,7 +3056,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.locator('#cards .card:has-text("write the script") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
-  await tpage.selectOption('#detail-parent', { label: 'the migration' });
+  {
+    // Prefix again — the option carries its kind since 2.18.0.
+    const opts = await tpage.locator('#detail-parent option').allTextContents();
+    const label = opts.find(o => o.startsWith('the migration'));
+    is(Boolean(label), true, `"the migration" is offered as a place (${opts.join(', ')})`);
+    await tpage.selectOption('#detail-parent', { label });
+  }
   await tpage.click('#detail-parent-set');
   await tpage.waitForTimeout(300);
   await tpage.click('#detail-close');
@@ -6020,7 +6034,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const mergeOptions = await tpage.locator('#detail-merge option').allTextContents();
   is(mergeOptions.some(o => /banister/.test(o)), false,
     'the filter narrowed the targets to what was typed');
-  await tpage.selectOption('#detail-merge', { label: 'polish the SAMOVAR' });
+  {
+    const opts = await tpage.locator('#detail-merge option').allTextContents();
+    const label = opts.find(o => o.startsWith('polish the SAMOVAR'));
+    is(Boolean(label), true, `"polish the SAMOVAR" is offered to fold into (${opts.join(', ')})`);
+    await tpage.selectOption('#detail-merge', { label });
+  }
   const mergeLogBefore = await sortCount();
   await tpage.click('#detail-merge-set');
   await tpage.waitForFunction(() => /Folded into/.test(
@@ -6116,7 +6135,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-merge-filter', 'SHED');
   await tpage.waitForFunction(() => [...document.querySelectorAll('#detail-merge option')]
     .some(o => /SHED/.test(o.textContent ?? '')));
-  await tpage.selectOption('#detail-merge', { label: 'rewire the SHED light' });
+  {
+    const opts = await tpage.locator('#detail-merge option').allTextContents();
+    const label = opts.find(o => o.startsWith('rewire the SHED light'));
+    is(Boolean(label), true, `"rewire the SHED light" is offered to fold into (${opts.join(', ')})`);
+    await tpage.selectOption('#detail-merge', { label });
+  }
   await tpage.click('#detail-merge-set');
   await tpage.waitForFunction(() => /Folded into/.test(
     document.querySelector('#detail-live')?.textContent ?? ''));

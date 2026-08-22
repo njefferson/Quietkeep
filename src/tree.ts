@@ -57,6 +57,32 @@ export const CONTAINER_ORDER: ReadonlyArray<readonly [NodeKind, string]> = [
 export const isContainer = (n: NodeState): boolean =>
   CONTAINER_KINDS.has(n.kind as NodeKind);
 
+/**
+ * How one container reads in a picker: its title, WHAT KIND IT IS, and where it
+ * sits.
+ *
+ * ONE function, because there were two identical copies — the detail sheet's
+ * and the sort sheet's — and they said the same thing in the same words by
+ * coincidence rather than by construction. That is the shape this repo keeps
+ * paying for: one concept, two places, and only one of them gets the fix.
+ *
+ * THE KIND IS NEW, and it is new because it only just started mattering. Before
+ * 2.16.0 every option in both pickers was a `project`, so a bare list of titles
+ * was unambiguous. Now a goal, an area, an outcome and a project sit in the same
+ * list looking identical, and somebody filing forty things at once cannot see
+ * which altitude they are filing them to. Nothing about the pickers changed to
+ * cause that — the world under them did, which is the harder kind to notice.
+ */
+export function containerOptionWords(state: State, t: NodeState): string {
+  const title = t.title || '(untitled)';
+  const kind = CONTAINER_KINDS.has(t.kind as NodeKind) ? t.kind : null;
+  const p = t.parent ? state.nodes.get(t.parent) : undefined;
+  const alive = p && !p.trashed && !p.mergedInto;
+  const where = alive ? `in ${p.title || '(untitled)'}` : '';
+  const tail = [kind, where].filter(Boolean).join(', ');
+  return tail ? `${title} — ${tail}` : title;
+}
+
 const alive = (n: NodeState | undefined): n is NodeState =>
   isHeld(n);
 

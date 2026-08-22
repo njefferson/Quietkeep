@@ -319,7 +319,24 @@ situations are the acceptance test — walked end to end, not asserted.
   The assertion that matters, driven in both themes: a goal is **still listed
   once the work under it is finished**. That is the moment it would vanish and
   the moment somebody most needs to see it.
-  Step 4 remains: `#sort-bulk-parent` accepting a container of any kind.
+  Step 4 DONE in 2.18.1, and it was mostly already built — the THIRD step in
+  this phase that turned out to exist. `#sort-bulk-parent` filters on
+  `isContainer`, which has covered all four kinds since the tree was written,
+  and a bulk put-under lands on a goal end to end (measured, not read). What
+  was actually missing: the option text never said which KIND a place was, which
+  cost nothing while every place in the list was a project and costs the most
+  when somebody is filing forty things at once. `containerOptionWords` in
+  `tree.ts` now writes those words once for all three pickers — there were
+  three identical copies, two of them in the same file, agreeing by coincidence
+  rather than by construction.
+
+  **Phase 2 is complete.**
+
+  The pattern this phase kept producing, five times over: **the plan named
+  things missing that were built, and named one thing built that was destroying
+  what it touched.** Steps 1, 3 and 4 all found working machinery; step 2 found
+  a route that existed and unmade the node it acted on. Reading the code first
+  changed the work every time, and reading it was never the expensive part.
 - Phase 3 through 8: not started.
 - **Last full Spine seen green:** `4df1d56` on `staging`, all 41 steps.
 - **Waiting on the owner:** the on-device pass. 2.14.2, 2.14.3, 2.15.0 and
