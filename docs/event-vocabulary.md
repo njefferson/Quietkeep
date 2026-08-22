@@ -603,6 +603,20 @@ is a valid, unremarkable value, never nagged about.
     field every event already carries, so a device is known by having written
     something. There is no surface that lists devices and nothing that needs a
     label.
+- **`situation.saved`**
+  - Payload: `name, context, minutes` — either of the last two may be null
+  - Silent risk: no — it touches no node, so it can take no coverage away
+  - Folds to `State.situations`, a state-level map like `modules`. Saving under
+    an existing name replaces it: one name, one situation.
+  - **An event and not a device preference**, unlike `where.now` and
+    `how.long`. Those are preferences because where you are is not a fact about
+    your work and a stored trail of it is what law 7 keeps the app out of. A
+    situation you NAMED is something you recognise about how you work — nearer
+    a context or a role — and it should survive a new device.
+- **`situation.forgotten`**
+  - Payload: `name`
+  - Silent risk: no
+  - Scoped to one name, never a clear-all; naming nobody is a no-op.
 - **`module.enabled` / `.disabled`**
   - Payload: `module`
   - Silent risk: no

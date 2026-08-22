@@ -348,6 +348,22 @@ export type VaultCreated     = Ev<'vault.created',      { name: string; domain: 
 export type VaultLocked      = Ev<'vault.locked',       { method: 'passphrase' }>;
 export type VaultUnlocked    = Ev<'vault.unlocked',     { method: 'passphrase' }>;
 export type DeviceRegistered = Ev<'device.registered',  { device: DeviceId; label: string }>;
+/**
+ * A situation somebody NAMED, so it can be recalled (2.21.0).
+ *
+ * A place, a length of time, or both. Saving under an existing name replaces
+ * it; `situation.forgotten` is scoped to one name and never clears the set.
+ *
+ * Not silent-risk: neither noun touches a node, so neither can take coverage
+ * away from one.
+ *
+ * **It is an event and not a device preference, and the line matters.**
+ * `where.now` and `how.long` are preferences because where you are is not a
+ * fact about your work. A situation you named is a thing you recognise about
+ * how you work — nearer a context or a role — and it should survive a device.
+ */
+export type SituationSaved   = Ev<'situation.saved',    { name: string; context: string | null; minutes: number | null }>;
+export type SituationForgotten = Ev<'situation.forgotten', { name: string }>;
 export type ModuleEnabled    = Ev<'module.enabled',     { module: string }>;
 export type ModuleDisabled   = Ev<'module.disabled',    { module: string }>;
 /** `whatLeaves` is the literal sentence the user agreed to, stored so the record
@@ -528,6 +544,7 @@ export type AppEvent =
   | SnapshotWritten | SchemaMigrated | ExportWritten | ImportSeeded | ShardFolded
   | TerminologySkinApplied | TemplateLoaded | ShardCompacted
   | PersonCreated | PersonLinked | PromiseReleased
+  | SituationSaved | SituationForgotten
   | ContextCreated | ContextAttached | ContextDetached
   | RoleCreated | RoleAttached | RoleDetached | JournalEntryWritten | JournalSealed | JournalTagAttached
   | MenuItemAdded | MenuItemRemoved | MenuItemPromoted | SaveForUpdated
@@ -556,7 +573,7 @@ export const EVENT_KINDS = [
   'module.enabled','module.disabled','consent.granted','consent.revoked',
   'snapshot.written','schema.migrated','export.written','import.seeded','shard.folded',
   'terminology.skin.applied','template.loaded','shard.compacted',
-  'person.created','person.linked','promise.released','journal.entry.written','journal.sealed','journal.tag.attached',
+  'person.created','person.linked','promise.released','situation.saved','situation.forgotten','journal.entry.written','journal.sealed','journal.tag.attached',
   'context.created','context.attached','context.detached',
   'role.created','role.attached','role.detached',
   'menu.item.added','menu.item.removed','menu.item.promoted','save-for.updated',

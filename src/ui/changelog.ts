@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.21.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**One place to answer what your situation is.** *What\u2019s the situation?* holds where you are and how long you have — the two questions that change what the app should offer you. They were buried in the list of everything you are holding, which is the last place you would look when you have twenty minutes before you leave.',
+      '**And you can name a situation, so it comes back in one tap.** *The Tuesday standup* — at the office, fifteen minutes. Set it once, name it, and it is one tap after that. Nothing reminds you it exists, nothing counts how often you use it, and nothing notices when you stop.',
+      '**The line saying what is narrowed stays where you can see it.** The controls went behind a door; what they are doing did not. A filter you cannot see is an app that looks broken.',
+      '**Forgetting a situation leaves the situation set.** The shortcut goes, not the answer. Letting go of a place you named leaves the situations that mentioned it working — they simply stop mentioning it.',
+    ],
+  },
+  {
     triplet: '2.20.0',
     kind: 'CAPABILITY',
     date: '2026-08-22',

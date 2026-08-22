@@ -46,6 +46,8 @@ import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
 import { WHERE_KEY, allContexts, contextNames, fitsHere, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
+import { situationWords } from '../situations.ts';
+import { saveSituationEvents, forgetSituationEvents } from './detail-intents.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
   getHowLong, setHowLong,
@@ -1227,6 +1229,74 @@ export async function main(edition?: Edition): Promise<void> {
       empty.hidden = rows.length > 0;
     }
   };
+  // WHAT'S THE SITUATION (2.21.0, the plan's phase 5). The two inputs moved
+  // here out of the pile — the machinery was finished and the route was wrong:
+  // somebody answering "what is my situation" does not look inside the list of
+  // everything they are holding.
+  //
+  // The inputs themselves are painted with the shell, because they narrow the
+  // shell. What paints on OPEN is the saved list, for the reason every sheet
+  // here paints on open: a list built once reports the store as it was when the
+  // app started.
+  //
+  // No count of uses, no last-used, no ordering by how often. A situation is a
+  // shortcut somebody made for themselves, and any of those would turn it into
+  // a record of their habits — which is what law 7 keeps this app out of, and
+  // the nagging law 8 makes lapse-tolerant.
+  const paintSituations = (): void => {
+    const st = session.state();
+    const list = document.querySelector<HTMLUListElement>('#situation-list');
+    if (!list) return;
+    const names = [...st.situations.keys()].sort((a, b) => a.localeCompare(b));
+    list.replaceChildren(...names.map(nm => {
+      const saved = st.situations.get(nm)!;
+      const li = document.createElement('li');
+      li.className = 'roles-row';
+      const go = document.createElement('button');
+      go.type = 'button';
+      go.className = 'linklike';
+      go.textContent = nm;
+      go.addEventListener('click', () => {
+        // A GHOST PLACE MATCHES NOTHING. Recalling a situation whose context has
+        // been let go would empty every surface with nothing on screen saying
+        // why — the rule the shell already applies to `whereLive`. The place
+        // stands down; the time it named still applies.
+        const fresh = session.state();
+        const stillThere = saved.context && allContexts(fresh).some(c => c.id === saved.context);
+        setSituation(stillThere ? saved.context : null, saved.minutes);
+      });
+      const what = document.createElement('span');
+      what.className = 'roles-held';
+      what.textContent = situationWords(st, saved);
+      const off = document.createElement('button');
+      off.type = 'button';
+      off.className = 'ghost';
+      off.textContent = 'Forget it';
+      off.addEventListener('click', () => {
+        void session.commit(ctx => forgetSituationEvents(ctx, nm))
+          .then(() => { refreshAll(); paintSituations(); })
+          .catch(() => { /* the list simply does not change */ });
+      });
+      li.append(go, what, off);
+      return li;
+    }));
+  };
+  onSheetOpen('sheet-situation', paintSituations);
+  wireSheetClose('sheet-situation');
+  document.querySelector<HTMLButtonElement>('#situation-open')
+    ?.addEventListener('click', () => { openSheet('sheet-situation'); });
+
+  document.querySelector<HTMLButtonElement>('#situation-save')?.addEventListener('click', () => {
+    const input = document.querySelector<HTMLInputElement>('#situation-name');
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) return;
+    input.value = '';
+    void session.commit(ctx => saveSituationEvents(ctx, name, whereNow, howLongNow))
+      .then(() => paintSituations())
+      .catch(() => { /* nothing saved, and the inputs are untouched */ });
+  });
+
   onSheetOpen('sheet-horizons', paintHorizons);
   wireSheetClose('sheet-horizons');
   document.querySelector<HTMLButtonElement>('#horizons-open')
@@ -1591,20 +1661,32 @@ export async function main(edition?: Edition): Promise<void> {
   // this route is that it works for somebody who cannot see where they landed.
   document.querySelector<HTMLAnchorElement>('a.skip')?.addEventListener('click', () => { openHeld(); });
   setWhereNow(whereNow);
-  document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
-    whereNow = (e.target as HTMLSelectElement).value || null;
-    setWhereNow(whereNow);
-    refreshAll();
-    void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
-  });
-
   setHowLong(howLongNow);
-  document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
-    const v = (e.target as HTMLSelectElement).value;
-    howLongNow = v ? Number(v) : null;
+
+  /** ONE WRITER for the situation (2.21.0). Three routes set these two values —
+   *  each chooser, and recalling a saved situation — and before this each did
+   *  its own module cache, its own repaint and its own kv write. Three copies of
+   *  one act is how one of them comes to persist what it did not apply, which is
+   *  the shape `containerOptionWords` and `personName` are both the record of.
+   *
+   *  Persisted behind the repaint, the badge's rule: act now, store after. */
+  const setSituation = (place: string | null, minutes: number | null): void => {
+    whereNow = place;
+    howLongNow = minutes;
+    setWhereNow(whereNow);
     setHowLong(howLongNow);
     refreshAll();
-    void session.store.setKv(HOW_LONG_KEY, v).catch(() => { /* view pref only */ });
+    void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+    void session.store.setKv(HOW_LONG_KEY, howLongNow === null ? '' : String(howLongNow))
+      .catch(() => { /* view pref only */ });
+  };
+
+  document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
+    setSituation((e.target as HTMLSelectElement).value || null, howLongNow);
+  });
+  document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
+    const v = (e.target as HTMLSelectElement).value;
+    setSituation(whereNow, v ? Number(v) : null);
   });
 
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {

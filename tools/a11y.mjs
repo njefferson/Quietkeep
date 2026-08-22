@@ -588,6 +588,14 @@ const REGISTRY = {
   // the chooser would report the surface measured while the one line that says
   // what is being hidden had never been looked at.
   'how long you have': ['#how-long', 'label[for="how-long"]', '#how-long-note'],
+  // WHAT'S THE SITUATION (2.21.0). Its own entry rather than a fold into the
+  // two above: those name the inputs, which MOVED into this sheet, and this
+  // names the sheet's own chrome and the saved list. Keyed on IDs — the rows
+  // borrow `.roles-row` and `.roles-held` from two other sheets, and a shared
+  // class is not coverage.
+  'the situation': ['#situation-open', '#sheet-situation-title', '#sheet-situation-close',
+    '#situation-words', '#situation-save-label', '#situation-name', '#situation-save',
+    '#situation-save-hint', '#situation-list .linklike', '#situation-list .roles-held'],
   // WHO IT IS FOR (2.6.0, ADR-0096). Its own driven state for the reason 'where
   // you are' has one: the door and the readout render only once a role exists,
   // so registering them on a state whose store has none would be three false
@@ -2442,6 +2450,12 @@ try {
     await page.click('#detail-context-set');
     await page.waitForSelector('#detail-context-list li');
     await page.click('#detail-close');
+    // THROUGH THE DOOR (2.21.0). Both inputs moved out of the pile and into
+    // `#sheet-situation`, so this opens it — and opening it is now part of what
+    // the walk proves, rather than the chooser being assumed to be on screen.
+    await page.waitForSelector('#situation-open:not([hidden])');
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
     await page.waitForSelector('#where-row:not([hidden])');
     await page.selectOption('#where', { label: 'At home' });
     await page.waitForSelector('#where-note:not([hidden])');
@@ -2471,6 +2485,75 @@ try {
     // rule the place chooser already follows two blocks down.
     await page.selectOption('#how-long', '');
     await page.waitForSelector('#how-long-note', { state: 'hidden' });
+
+    // A SITUATION SOMEBODY NAMED (2.21.0). Saved through the app, recalled, and
+    // forgotten — the three acts, in the order they can fail.
+    await page.selectOption('#how-long', '15');
+    await page.waitForSelector('#how-long-note:not([hidden])');
+    await page.fill('#situation-name', 'The Tuesday standup');
+    await page.click('#situation-save');
+    await page.waitForSelector('#situation-list li');
+    const savedRow = await page.evaluate(() => {
+      const li = document.querySelector('#situation-list li');
+      return {
+        name: li?.querySelector('.linklike')?.textContent?.trim() ?? '',
+        what: li?.querySelector('.roles-held')?.textContent?.trim() ?? '',
+      };
+    });
+    (savedRow.name === 'The Tuesday standup' ? pass : fail)(
+      `${theme}/situation: a named situation is listed ("${savedRow.name}")`);
+    (/At home/.test(savedRow.what) && /15/.test(savedRow.what) ? pass : fail)(
+      `${theme}/situation: and it says what it recalls ("${savedRow.what}")`);
+    (!/used|last|times|often|ago/i.test(savedRow.what) ? pass : fail)(
+      `${theme}/situation: no record of how often it is used — a shortcut, not a habit log`);
+    await auditContrast(page, 'the situation', theme);
+    await auditAxe(page, 'the situation', theme);
+    await auditNames(page, 'the situation', theme);
+    await auditSeparationAndTargets(page, 'the situation', theme);
+    await auditFocusRings(page, 'the situation', theme, ['#situation-save']);
+
+    // RECALLED: it sets BOTH inputs, which is the whole point of naming one.
+    await page.selectOption('#how-long', '');
+    await page.selectOption('#where', '');
+    await page.waitForTimeout(200);
+    await page.click('#situation-list .linklike');
+    await page.waitForTimeout(250);
+    const recalled = await page.evaluate(() => ({
+      where: document.querySelector('#where')?.value ?? '',
+      how: document.querySelector('#how-long')?.value ?? '',
+    }));
+    (recalled.how === '15' && recalled.where !== '' ? pass : fail)(
+      `${theme}/situation: recalling it sets BOTH inputs (where="${recalled.where}", how="${recalled.how}")`);
+
+    // AND THE STANDING LINE IS OUTSIDE THE SHEET. This is what makes moving the
+    // controls safe: behind a sheet nobody has open, a filter is invisible, and
+    // an invisible filter is an app that looks broken.
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
+    const noteVisible = await page.evaluate(() => {
+      const n = document.querySelector('#how-long-note');
+      return Boolean(n && !n.hidden && (n.textContent ?? '').trim().length > 0);
+    });
+    (noteVisible ? pass : fail)(
+      `${theme}/situation: with the sheet CLOSED, the line still says the list is narrowed`);
+
+    // Forget it, and put both back so every state after this sees everything.
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
+    await page.click('#situation-list .ghost');
+    await page.waitForTimeout(250);
+    const goneCount = await page.locator('#situation-list li').count();
+    (goneCount === 0 ? pass : fail)(
+      `${theme}/situation: forgetting one takes it off the list (${goneCount} left)`);
+    await page.selectOption('#how-long', '');
+    await page.waitForSelector('#how-long-note', { state: 'hidden' });
+    // AND CLOSED BEHIND US. A modal dialog makes everything behind it inert,
+    // and an inert element is neither hidden nor disabled — so the next block's
+    // click does not fail, it TIMES OUT, which reads as a broken control rather
+    // than as a sheet left open. This file already carries that lesson about
+    // `#build-version`; leaving this one open reproduced it exactly.
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
     // WHO IT IS FOR (2.6.0, ADR-0096), driven the same way and for the same
     // reason: a role planted into the store would prove the readout renders and
     // nothing about whether one can be made. Three claims, in the order they can
@@ -2614,8 +2697,14 @@ try {
     await page.click('#sheet-horizons-close');
     await page.waitForSelector('#sheet-horizons', { state: 'hidden' });
 
-    // Back to everywhere, so every state after this sees the whole list.
+    // Back to everywhere, so every state after this sees the whole list. The
+    // chooser lives in `#sheet-situation` since 2.21.0, so this opens it, sets
+    // it and closes it again rather than reaching for a control on the shell.
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
     await page.selectOption('#where', '');
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
     await page.waitForSelector('#where-note', { state: 'hidden' });
 
     // State 3e: the detail sheet — the surface that makes this a planner.

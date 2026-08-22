@@ -652,6 +652,32 @@ export const removeStakeholderEvents = (
  * so the node keeps its clock, its place and its date. Somebody who no longer
  * owes Sam a thing may still intend to do it.
  */
+/**
+ * Name the situation you are in, so it can be recalled (2.21.0).
+ *
+ * Either half may be null — "at the office, however long" and "twenty minutes,
+ * anywhere" are both real situations, and demanding both would make the feature
+ * useful only to somebody who happens to want both.
+ *
+ * Saving under an existing name replaces it. One name, one situation, which is
+ * what a name is for.
+ */
+export const saveSituationEvents = (
+  ctx: StampContext, name: string, context: string | null, minutes: number | null,
+): AppEvent[] => {
+  const clean = name.trim();
+  if (!clean) return [];
+  // `null as never` for the node, the shape `enableModuleEvents` already uses:
+  // this is a state-level fact and belongs to no node.
+  return [base(ctx, 'situation.saved', null as never, { name: clean, context, minutes })];
+};
+
+/** "I do not recognise that situation any more." Scoped to one name, never a
+ *  clear-all — `removeStakeholderEvents`' rule. */
+export const forgetSituationEvents = (
+  ctx: StampContext, name: string,
+): AppEvent[] => (name ? [base(ctx, 'situation.forgotten', null as never, { name })] : []);
+
 export const releasePromiseEvents = (
   ctx: StampContext, node: string, person: string,
 ): AppEvent[] => [base(ctx, 'promise.released', node, { person })];

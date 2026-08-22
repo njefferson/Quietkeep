@@ -411,6 +411,26 @@ export interface State {
    */
   modules: Set<string>;
   /**
+   * Situations somebody has NAMED and can recall (2.21.0) — a place, a length
+   * of time, or both, under a name they chose.
+   *
+   * **STATE LEVEL, not a node**, and `modules` above is the precedent: a small
+   * named config that is not work. A node would drag in law 1, every kind list,
+   * and every control that writes a kind — and phase 2 measured three of the
+   * four such controls as wrong.
+   *
+   * **AN EVENT, unlike `where.now` and `how.long`**, which are device
+   * preferences precisely because where you are is not a fact about your work
+   * and a stored trail of it is what law 7 keeps the app out of. A situation
+   * you NAMED is not where you are; it is something you recognise about how you
+   * work, and it should survive a new device the way a context or a role does.
+   *
+   * Last write wins per NAME, reached by replay rather than by a stamp key —
+   * the `stakeholder.removed` discipline: fold sorts totally before applying,
+   * so the result is a pure function of the event set and not of arrival order.
+   */
+  situations: Map<string, { context: string | null; minutes: number | null }>;
+  /**
    * The one request slot, or null (1.8.0, ADR-0056). Stimulus control for
    * incoming demand: a weekday requests wait for, so they are not evaluated
    * at arrival. `recurrence` is 'weekly:mon'…'weekly:sun'; a cleared slot is
@@ -589,6 +609,7 @@ export const emptyState = (): State => ({
   lastReportMark: null,
   lastActivityAt: null,
   modules: new Set(),
+  situations: new Map(),
   requestSlot: null,
   requestSlotStamp: null,
   timerMinutes: null,
@@ -734,6 +755,7 @@ export function cloneShell(base: State): State {
     lastReportMark: base.lastReportMark ? { ...base.lastReportMark } : null,
     lastActivityAt: base.lastActivityAt,
     modules: new Set(base.modules),
+    situations: new Map(base.situations),
     // Both copied, like `lastReportMark` above (1.9.2). A stamp is replaced
     // wholesale on every write, so this is hygiene rather than a live bug —
     // but the rule is the rule, and the exception was never argued for.
@@ -1247,6 +1269,34 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
       case 'done.unmarked': {
         const n = ensureNode(s, e.node!, e.vault, touched);
         if (wins(n.stamps['lastDone'], o)) { n.lastDone = null; n.stamps['lastDone'] = o; }
+        break;
+      }
+
+      // A SITUATION SOMEBODY NAMED (2.21.0). Saving under a name that already
+      // exists replaces it — one name, one situation, which is what a name is
+      // for. Both fields may be null: "at the office, however long" and "twenty
+      // minutes, anywhere" are both real situations, and refusing either would
+      // make the feature useful only to somebody who happens to want both.
+      //
+      // A blank name is refused rather than stored, the import-inspection rule:
+      // a situation nobody can pick out of a list is one nobody can forget
+      // either, and it would sit there for ever.
+      case 'situation.saved': {
+        const name = e.payload.name;
+        if (typeof name !== 'string' || !name.trim()) break;
+        s.situations.set(name, {
+          context: typeof e.payload.context === 'string' && e.payload.context ? e.payload.context : null,
+          minutes: Number.isFinite(e.payload.minutes) && (e.payload.minutes as number) > 0
+            ? (e.payload.minutes as number) : null,
+        });
+        break;
+      }
+      // Scoped to one name, never a clear-all — `stakeholder.removed`'s rule,
+      // and a forget naming nobody is a no-op rather than a guess.
+      case 'situation.forgotten': {
+        const name = e.payload.name;
+        if (typeof name !== 'string' || !name) break;
+        s.situations.delete(name);
         break;
       }
 

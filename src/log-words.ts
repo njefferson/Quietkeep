@@ -259,6 +259,10 @@ export function eventWords(
     // "you broke a promise", not "unkept", not a duration. Releasing an
     // undertaking is an ordinary act and the words treat it as one.
     case 'promise.released': return `No longer promised to ${name(p['person'])}.`;
+    // A situation is a shortcut somebody made for themselves, so the record
+    // says what they did and nothing about whether they used it.
+    case 'situation.saved': return `You named a situation: ${String(p['name'] ?? '')}.`;
+    case 'situation.forgotten': return `You let go of the situation ${String(p['name'] ?? '')}.`;
     case 'journal.sealed': return 'You set a passphrase for the journal.';
     case 'journal.entry.written': return 'A journal entry was written.';
     case 'journal.tag.attached': return 'A journal tag was attached.';

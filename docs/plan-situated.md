@@ -383,7 +383,42 @@ situations are the acceptance test — walked end to end, not asserted.
   a promise nobody can take back is a permanent claim that you owe somebody
   something. It releases the undertaking and leaves the work, which is the
   assertion the smoke walk was seen RED on.
-- Phase 5 through 8: not started.
+- **Phase 5 — the situated view proper.** TWO OF THREE DONE in 2.21.0.
+  *Where you are* and *how long you have* were finished machinery on the wrong
+  route — two `<select>`s inside `<section id="held">`, which is the last place
+  somebody answering *what is my situation* would look. They MOVED into
+  `#sheet-situation` behind one door, and **the standing lines stayed outside
+  it**: `whereWords` and `howLongWords` are the only things telling a reader
+  the list is narrowed, and behind a sheet nobody has open a filter is
+  invisible. The walk asserts the line is still visible with the sheet closed.
+  Naming a situation is genuinely new — `situation.saved` and
+  `situation.forgotten`, folding to `State.situations`, a state-level map like
+  `modules` rather than a node. An EVENT and not a device preference, unlike
+  the two inputs it recalls: where you are is not a fact about your work, but a
+  situation you recognise about how you work is nearer a context or a role and
+  should survive a device. Three routes now set the pair and `setSituation` is
+  the one writer.
+  **Nothing records how often a situation is used** — no count, no last-used, no
+  ordering by frequency — and the shape has nowhere to keep one, which is how
+  that is enforced rather than remembered.
+  Still owed: the attention readout per role.
+
+  **The conflict phase 5 walks into, settled here so it is not rediscovered.**
+  `src/roles.ts`'s header promises the readout — *where attention actually
+  went, per role* — and `roleLoads` four hundred words later refuses to count
+  finished work because *"counting it would turn this into a record of output,
+  which is the shape law 5 refuses"*. Both are right, and the distinction the
+  plan never made is: **a record of output counts what you FINISHED; attention
+  is what you GAVE TIME TO, finished or not.** `do-now.timed` records exactly
+  that, with the chosen length deliberately absent so a shortfall cannot be
+  reconstructed by subtraction. So the readout is buildable on timings and is
+  NOT buildable on completions.
+  It is not built yet for a different reason: **it would render empty on any
+  store that has not used the do-now timer**, which is every store this app has
+  been measured on — the `serves.ts` failure with a different noun. When it is
+  built it needs the line saying what it is made of, the way 2.19.0 handled the
+  same sparsity.
+- Phase 6 through 8: not started.
 - **Last full Spine seen green:** `61aec1a` on `staging` (2.20.0), every step
   and the deploy, read from the run rather than from the push output.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and

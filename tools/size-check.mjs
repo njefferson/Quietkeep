@@ -66,7 +66,16 @@ const BUDGET = {
   // ("I said I would") and the second count line in "With other people". The
   // section was already there and already said what it was for; it had one of
   // its two halves. This is the smaller half arriving, not a new surface.
-  words: 3394,
+  // 3394 -> 3455 on 2026-08-22 (2.21.0): the situation sheet. A heading, one
+  // paragraph saying what the two inputs do and that nothing is taken away
+  // (the law-1 sentence every filter surface here carries), a label, a
+  // placeholder and a hint. **The two inputs themselves moved rather than
+  // arrived** — they were in the pile and the pile is the last place somebody
+  // answering "what is my situation" looks. What a reader meets on the first
+  // screen goes DOWN by two rows and up by one door; this budget counts words
+  // in the markup and cannot see that, which is the fourth time in six
+  // releases it has read the wrong way round.
+  words: 3455,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -288,7 +297,12 @@ const BUDGET = {
   // thing fits every answer, so it works on the first day and withholding it
   // would be withholding a control that works. It sits inside `#held`, so it is
   // one more control on the pile's own row and none on the first screen.
-  controls: 233,
+  // 233 -> 237 on 2026-08-22 (2.21.0): a door, a Close, a name field and its
+  // button. The two choosers moved into the sheet rather than being added, so
+  // the count rises by exactly the four the sheet itself costs — the same two
+  // per sheet every other one here costs, plus the one control that makes a
+  // situation recallable and nothing else.
+  controls: 237,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

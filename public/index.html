@@ -777,36 +777,22 @@
        unfolded into the workspace for thirty-four releases regardless. -->
   <button id="tree-open" class="gauge" type="button">How it hangs together</button>
 
-  <!-- WHERE YOU ARE (2.2.0, ADR-0092). The thing the app did not have.
-       The tree says where a thing LIVES; this says where it can be DONE, and
-       they are different questions. Set this and the offer and the list narrow
-       to what actually fits — plus everything unlabelled, which fits anywhere.
-       A FILTER, never a partition: law 1 does not bend for it. A thing not
-       shown here still has its clock, still counts in the claim above, and
-       still comes back. Anything else is an archive with a friendlier name,
-       which law 3 forbids — the same binding ADR-0054 put on the lens.
-       Hidden until at least one place has been named, because a chooser with
-       nothing in it is a control that teaches you the feature is broken. -->
-  <div id="where-row" class="lens-row" hidden>
-    <label class="detail-inline" for="where">Where you are</label>
-    <select id="where" aria-describedby="where-note"></select>
-  </div>
+  <!-- THE SITUATION (2.21.0). Both inputs moved into a sheet of their own —
+       see `#sheet-situation`. What stays HERE is the door and the two standing
+       lines, and that pairing is the load-bearing part of the move.
+
+       `whereWords` and `howLongWords` are the only things telling a reader that
+       what they are looking at has been narrowed. Behind a sheet nobody has
+       open, a filter is invisible, and an invisible filter is an app that looks
+       broken — which is the failure `serves.ts` records and 2.18.0's empty
+       state answers. So the control went behind a door and the CONSEQUENCE
+       stayed in front of it.
+
+       One door and not a list of named views: entry 16 is that twenty options
+       produce zero actions, so you arrive here by answering a question rather
+       than by picking a screen's name. -->
+  <button id="situation-open" class="gauge" type="button">What's the situation?</button>
   <p id="where-note" class="detail-hint" hidden></p>
-
-  <!-- HOW LONG HAVE YOU GOT (2.19.0). The other half of the situation: place
-       answers "what can I do here", this answers "what can I do in twenty
-       minutes". Same row shape, same standing line, same rule — it narrows what
-       is SHOWN and never what is held.
-
-       Not hidden behind a count of estimated things, unlike the place chooser
-       which is hidden until a place exists. An unestimated thing FITS every
-       answer here, so the chooser is useful on the first day: it is the
-       estimated ones it can act on, and it says so rather than leaving somebody
-       to infer that an empty-looking result means nothing fits. -->
-  <div id="how-long-row" class="lens-row">
-    <label class="detail-inline" for="how-long">How long you have</label>
-    <select id="how-long" aria-describedby="how-long-note"></select>
-  </div>
   <p id="how-long-note" class="detail-hint" hidden></p>
 
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
@@ -2391,6 +2377,59 @@
     <p id="roles-unnamed" class="detail-hint"></p>
   </div>
   <button id="sheet-roles-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<dialog id="sheet-situation" aria-labelledby="sheet-situation-title" data-door="#situation-open">
+  <h2 id="sheet-situation-title" class="section">What&rsquo;s the situation?</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="situation-words" class="detail-hint">Where you are and how long you
+      have. Both narrow what the app offers you and what the list shows &mdash;
+      nothing is taken away, and everything still comes back.</p>
+
+    <!-- WHERE YOU ARE (2.2.0, ADR-0092). The tree says where a thing LIVES;
+         this says where it can be DONE, and they are different questions. A
+         FILTER, never a partition: a thing not shown still has its clock, still
+         counts in the claim, and still comes back — anything else is an archive
+         with a friendlier name, which law 3 forbids.
+         Hidden until at least one place has been named, because a chooser with
+         nothing in it teaches you the feature is broken. -->
+    <div id="where-row" class="lens-row" hidden>
+      <label class="detail-inline" for="where">Where you are</label>
+      <select id="where" aria-describedby="where-note"></select>
+    </div>
+
+    <!-- HOW LONG YOU HAVE (2.19.0). Never hidden, unlike the chooser above:
+         an unestimated thing fits every answer, so this works on the first day
+         and withholding it would withhold a control that works. -->
+    <div id="how-long-row" class="lens-row">
+      <label class="detail-inline" for="how-long">How long you have</label>
+      <select id="how-long" aria-describedby="how-long-note"></select>
+    </div>
+
+    <!-- A SITUATION YOU RECOGNISE (2.21.0). Name what you have just set and it
+         comes back in one tap — which is what makes a Tuesday standup or a free
+         weekend recurring WITHOUT the app ever mentioning it again. Saving one
+         is a shortcut, never a schedule: nothing here reminds, detects, counts
+         or notices that you have not used it.
+
+         Named by you, so it is an event rather than a device preference — see
+         `situation.saved`. Where you are is not a fact about your work; a
+         situation you recognise about how you work is nearer a context or a
+         role, and it should survive a new device. -->
+    <p class="detail-label" id="situation-save-label">Recognise this one?</p>
+    <div class="detail-row" role="group" aria-labelledby="situation-save-label">
+      <label class="visually-hidden" for="situation-name">A name for it</label>
+      <input id="situation-name" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="the Tuesday standup"
+             aria-describedby="situation-save-hint">
+      <button id="situation-save" type="button">Remember it</button>
+    </div>
+    <p id="situation-save-hint" class="detail-hint">
+      Nothing has to be named. This only saves what you have set above.
+    </p>
+    <ul id="situation-list" class="roles-list"></ul>
+  </div>
+  <button id="sheet-situation-close" type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">

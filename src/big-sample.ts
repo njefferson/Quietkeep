@@ -530,6 +530,17 @@ export async function bigSampleEvents(
   stamp('waiting.opened', closed, { person: people[2]!, forWhat: 'the part', since: day(-20) });
   stamp('waiting.closed', closed, { outcome: 'It arrived, and it is the right one' });
 
+  // --- situations somebody named (2.21.0) -----------------------------------
+  //
+  // Two saved and one forgotten, because the forgetting is the half nothing
+  // else exercises. Both shapes are here — a place with a length, and a length
+  // with no place — since a set carrying only one would measure one and look
+  // like it measured two.
+  stamp('situation.saved', null, { name: 'The Tuesday standup', context: contexts[0] ?? null, minutes: 15 });
+  stamp('situation.saved', null, { name: 'A free weekend', context: null, minutes: 120 });
+  stamp('situation.saved', null, { name: 'Waiting somewhere', context: null, minutes: 5 });
+  stamp('situation.forgotten', null, { name: 'Waiting somewhere' });
+
   // --- the other direction: promises, kept and taken back (2.20.0) ----------
   //
   // Four standing, so "With other people" renders both its lists rather than

@@ -7145,7 +7145,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     is(/ninety minute/.test(before) && /unknown length/.test(before), true,
       'both are on the list with no limit set');
 
+    // THROUGH THE DOOR (2.21.0). The choosers moved out of the pile into
+    // `#sheet-situation`; the standing line stayed outside it, which is what
+    // this block goes on to rely on.
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
     await tpage.selectOption('#how-long', '30');
+    await tpage.click('#sheet-situation-close');
+    await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
     await tpage.waitForSelector('#how-long-note:not([hidden])');
     const narrowed = await shown();
     is(/ninety minute/.test(narrowed), false,
@@ -7153,10 +7160,46 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     is(/unknown length/.test(narrowed), true,
       'and a thing you never put a time on IS — the app cannot say it does not fit');
 
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
     await tpage.selectOption('#how-long', '');
+    await tpage.click('#sheet-situation-close');
+    await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
     await tpage.waitForTimeout(150);
     is(/ninety minute/.test(await shown()), true,
       'clearing it brings the long one back — nothing was taken away, only not shown');
+
+    // ————— A SITUATION YOU NAMED (2.21.0) —————
+    //
+    // Save, recall, forget. The recall is what no unit reaches: its whole claim
+    // is that ONE tap sets BOTH inputs, and a save that quietly stored only one
+    // of them would pass every fold test written for it.
+    console.log('\nA situation you named');
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
+    await tpage.selectOption('#how-long', '30');
+    await tpage.fill('#situation-name', 'A quiet half hour');
+    await tpage.click('#situation-save');
+    await tpage.waitForSelector('#situation-list li');
+    is(await tpage.locator('#situation-list li').count() > 0, true,
+      'naming the situation you are in puts it on the list');
+
+    await tpage.selectOption('#how-long', '');
+    await tpage.waitForTimeout(150);
+    await tpage.click('#situation-list .linklike');
+    await tpage.waitForTimeout(250);
+    is(await tpage.locator('#how-long').inputValue(), '30',
+      'recalling it sets the inputs back in one tap');
+
+    await tpage.click('#situation-list .ghost');
+    await tpage.waitForTimeout(250);
+    is(await tpage.locator('#situation-list li').count(), 0,
+      'and it can be forgotten');
+    is(await tpage.locator('#how-long').inputValue(), '30',
+      'AND FORGETTING IT LEAVES THE SITUATION SET — the shortcut goes, not the answer');
+    await tpage.selectOption('#how-long', '');
+    await tpage.click('#sheet-situation-close');
+    await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
   } else {
     is(false, true, 'the ninety-minute job never reached the held list, so nothing was measured');
   }
