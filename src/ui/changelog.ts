@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.23.2',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**\u201cJust one thing\u201d had grown a filter, and it should never have one.** Moving the situation control to the top of the screen last release accidentally left it standing in the mode built for the worst day \u2014 along with the two lines about what your list has been narrowed to. That mode exists to hand you one thing and take the choosing away; asking *where are you, how long have you got* is two more questions to answer before anything can start. All three are gone from it again.',
+      '**Nothing else about the mode changed**, and the control is exactly where it was on the ordinary screen.',
+    ],
+  },
+  {
     triplet: '2.23.1',
     kind: 'ITERATION',
     date: '2026-08-22',

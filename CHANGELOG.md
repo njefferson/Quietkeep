@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.23.2 — ITERATION
+
+*2026-08-22*
+
+- **“Just one thing” had grown a filter, and it should never have one.** Moving the situation control to the top of the screen last release accidentally left it standing in the mode built for the worst day — along with the two lines about what your list has been narrowed to. That mode exists to hand you one thing and take the choosing away; asking *where are you, how long have you got* is two more questions to answer before anything can start. All three are gone from it again.
+- **Nothing else about the mode changed**, and the control is exactly where it was on the ordinary screen.
+
 ## 2.23.1 — ITERATION
 
 *2026-08-22*

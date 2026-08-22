@@ -240,6 +240,21 @@ export const PLAIN_CHROME_HIDDEN = [
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.
+  // THE SITUATION, ALL THREE PIECES (2.23.2). They were inside `#held` until
+  // 2.23.1 and this list covered them by covering it; moving them above the
+  // offer made each its own region of the work surface, and the gate that
+  // exists for exactly that said so on the first run.
+  //
+  // The answer is not bookkeeping. **A filter is the opposite of what this mode
+  // is for.** Narrowing a list is an act of choosing between things, and the
+  // worst day is the day that act is unavailable — which is why the mode hands
+  // over ONE thing and takes the choosing away. A control asking *where are
+  // you, how long have you got* is two questions to answer before anything can
+  // begin, on the day nobody can answer them.
+  '#situation-open',  // the door. Two questions, on the day questions are the cost.
+  '#where-note',      // and its consequence: the list is narrowed by place.
+  '#how-long-note',   // and by time. Both say what the pile is doing, and this
+                      // mode has already stopped showing the pile.
   '#held',            // the complete list of everything you are holding, with the
                       // tree, the lens, the fold, Contents and Back to the top
                       // inside it. This is the pile. The gauge above still says
