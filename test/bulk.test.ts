@@ -102,7 +102,7 @@ test('PARITY: bring-back writes exactly what the single promotion writes', () =>
   const n = s.nodes.get('A')!;
   assert.deepEqual(
     facts(bulkItemEvents(ctx(), 'bring-back', n, {})),
-    facts(promoteFromMenuEvents(ctx(), 'A')),
+    facts(promoteFromMenuEvents(ctx(), 'A', 'action')),
     'the bulk promotion is the single promotion');
 });
 

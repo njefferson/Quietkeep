@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.18.2 — ITERATION
+
+*2026-08-22*
+
+- **Resting something on the Menu no longer changes what it is.** Put a goal on the Menu and bring it back and you got a plain task — the goal was gone, and nothing told you. A repeating thing came back as a task too, still quietly repeating underneath. Now everything comes back as whatever it was.
+- **Except a wish, which is the whole point of bringing one back.** Something you put down as *maybe one day* becomes real work when you pick it up. That was the only case this was ever meant to do, and it was doing it to everything.
+- **This was the thing last release said was still broken.** It turned out to be worse than described — not just a leftover rhythm, but the kind itself being rewritten every time.
+
 ## 2.18.1 — ITERATION
 
 *2026-08-22*
@@ -38,7 +46,7 @@ triplet and what it did for you.
 - **Making a goal repeat used to quietly stop it being a goal.** The choice of kind arrived last release; the very next control in the same panel turned whatever you had made into a repeating chore, and the panel called it "Make it repeat" throughout. It no longer does. A goal that comes back is still a goal, and stopping it leaves it one too.
 - **The words changed to match.** On a goal or an area the control now says *Come back to this* rather than *Make it repeat*, because that is what it does — it brings the thing back to be looked at, not to be ticked off.
 - **And the way to stop was hidden.** Anything carrying a rhythm can now be told to stop carrying one. Before, that control appeared only on things the app called upkeeps, so a goal you had given a rhythm was in a state you could enter and not leave.
-- **Still broken, and worth knowing.** Taking something off the Menu turns it back into a plain task but leaves any rhythm it had running underneath. It will still come back on that rhythm while calling itself a task. The way to stop it is now reachable, which it was not before, but the underlying muddle is not fixed.
+- **Still broken, and worth knowing.** Taking something off the Menu turns it back into a plain task but leaves any rhythm it had running underneath. It will still come back on that rhythm while calling itself a task. The way to stop it is now reachable, which it was not before, but the underlying muddle is not fixed. *Fixed in 2.18.2.*
 
 ## 2.16.0 — CAPABILITY
 

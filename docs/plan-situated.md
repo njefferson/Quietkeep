@@ -411,3 +411,21 @@ walk said the sheet "still says Make it repeat" — and nothing structural would
 have caught it, because a new audit added to a stale bundle measures the old
 markup and passes. Same shape as the length cap above: the check that exists,
 runs, and is narrower than the thing it is trusted for.
+
+**A control that quietly changes what a thing IS will not announce itself, and
+this phase found three.** `makeRepeatEvents` converted every kind to
+`upkeep`; `stopRepeatEvents` claimed a transition from a kind the node never
+had; `menu.item.promoted` rewrote the kind of everything it touched because
+`toKind` defaulted to `'action'` and both callers took the default. None of
+them was reachable by reading a diff: each is one parameter or one condition,
+sitting in a function whose name describes a different act entirely.
+
+**What surfaced all three was the same move** — creating a node of a kind that
+had never existed in this app before, then using the ordinary controls on it.
+Nothing else would have. The kinds were in the schema for the life of the
+project and no route made one, so every control that mishandled a goal had been
+mishandling nothing at all.
+
+**The check worth repeating whenever a new kind becomes creatable:** list every
+control that writes `node.kind.changed` or carries a `toKind`, and ask what
+each does to the new kind. There were four such sites; three were wrong.

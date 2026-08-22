@@ -26,7 +26,7 @@ import {
 } from './arrangement-intents.ts';
 import {
   setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
-  undoneEvents, untrashEvents, promoteFromMenuEvents, toMenuEvents, renameEvents,
+  undoneEvents, untrashEvents, promoteNodeFromMenuEvents, toMenuEvents, renameEvents,
   setStartEvents, clearStartEvents, estimateEvents, createParentEvents, cleanTitle,
   situationEvents, afterEvents, clearAfterEvents, releaseEvents, reclaimEvents, weightEvents,
   cleanNote, noteEvents, chooseTodayEvents, releaseTodayEvents,
@@ -1275,7 +1275,11 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => toMenuEvents(ctx, current!.id), 'On the Menu — no clock, no demand.');
   });
   btn('#detail-promote')?.addEventListener('click', () => {
-    void run(ctx => promoteFromMenuEvents(ctx, current!.id), 'Brought back as real work.');
+    // The node's OWN kind decides what it comes back as — see `promotedKind`.
+    // This used to force 'action', so a goal that had been rested on the Menu
+    // came back a task, and an upkeep came back a task still carrying its
+    // rhythm.
+    void run(ctx => promoteNodeFromMenuEvents(ctx, current!), 'Brought back as real work.');
   });
   btn('#detail-trash')?.addEventListener('click', () => {
     void run(ctx => [{

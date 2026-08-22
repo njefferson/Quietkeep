@@ -15,9 +15,11 @@
 // `session.commit`, which runs them through the gate.
 
 import type { AppEvent, MenuCategory, NodeKind } from '../events.ts';
+import type { NodeState } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { endOfLocalDay, localDayKey, utcMs, atMidnight} from '../time.ts';
 import { CONTAINER_DEFAULT, CONTAINER_KINDS } from '../tree.ts';
+import { promotedKind } from '../kinds.ts';
 
 const base = (ctx: StampContext, kind: string, node: string, payload: unknown): AppEvent => ({
   id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
@@ -354,8 +356,20 @@ export const untrashEvents = (ctx: StampContext, node: string): AppEvent[] =>
  * carrying no clock and no demand, and it only becomes a demand because someone
  * chose it. The gate cures the promotion with a clock.
  */
-export const promoteFromMenuEvents = (ctx: StampContext, node: string, toKind: NodeKind = 'action'): AppEvent[] =>
-  [base(ctx, 'menu.item.promoted', node, { toKind })];
+// `toKind` is REQUIRED, and that is the fix as much as `promotedKind` is. It
+// defaulted to 'action' for the life of the control, so every caller that had
+// nothing particular in mind destroyed the kind of whatever it touched — and
+// nothing at the call site said so. A default that is wrong for most kinds is
+// a trap set for the next caller.
+export const promoteFromMenuEvents = (
+  ctx: StampContext, node: string, toKind: NodeKind,
+): AppEvent[] => [base(ctx, 'menu.item.promoted', node, { toKind })];
+
+/** The same act, deciding the kind from what the node already IS — see
+ *  `promotedKind`. Every caller in the app uses this one; the explicit-kind
+ *  form above stays for the tests that assert a named transition. */
+export const promoteNodeFromMenuEvents = (ctx: StampContext, n: NodeState): AppEvent[] =>
+  promoteFromMenuEvents(ctx, n.id, promotedKind(n.kind));
 
 /** Putting something on the Menu from the detail sheet — the same demand-free
  *  landing the someday/reference routes use. */

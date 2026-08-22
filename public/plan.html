@@ -104,19 +104,22 @@ work it describes, so it is never a summary of what somebody meant to do.</p>
 <h2>What is true today</h2>
 <ul class="facts">
   <li><b>Production</b> — 2.14.1. Everything since is on staging.</li>
-  <li><b>Staging</b> — 2.18.1, with six releases behind it since production.</li>
-  <li><b>Last full Spine seen green</b> — <code>f56f0f5</code>, 2.18.0, all 41
-      steps, deploy included. 2.18.1's own run is going as this was written.</li>
+  <li><b>Staging</b> — 2.18.2, with seven releases behind it since production.</li>
+  <li><b>Last full Spine seen green</b> — <code>e6469cc</code>, all steps and the
+      deploy, and the two new checks in it confirmed as having actually run
+      rather than skipped. 2.18.2's own run is going as this was written.</li>
   <li><b>Checked before pushing this one</b> — 1294 tests, 25 static gates, and
       both browser walks run locally rather than left to the Spine, because the
       last release's failure was a browser walk no static sweep could see.</li>
   <li><b>Waiting on the owner</b> — the on-device pass, whenever convenient.
       Four releases are stacked on staging. Nothing here is blocked on it.</li>
-  <li><b>Found and NOT fixed</b> — taking something off the Menu turns it back
-      into a plain task but leaves any rhythm it had running underneath, so it
-      keeps coming back while calling itself a task. The way to stop it is now
-      reachable; the muddle behind it is not fixed and is written down rather
-      than smoothed over.</li>
+  <li><b>Found, written down, then fixed</b> — taking something off the Menu
+      turned it back into a plain task whatever it had been. Recorded last
+      release as still broken; on looking properly it was worse than described.
+      A goal rested on the Menu came back a task with the goal gone, and a
+      repeating thing came back a task still quietly repeating. Fixed in
+      2.18.2 — everything comes back as whatever it was, except a wish, which
+      is the one case bringing something back was ever meant to change.</li>
   <li><b>Found and fixed on the way</b> — one check crashed instead of
       answering. It builds a second copy of the app to prove its own test has
       teeth, and that copy just crossed the one-megabyte limit on how much

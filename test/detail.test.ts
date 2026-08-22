@@ -16,8 +16,9 @@ import { upkeepChips, nextUpQueue } from '../src/nextup.ts';
 import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
 import {
   endOfDayKey, setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
-  undoneEvents, untrashEvents, promoteFromMenuEvents, toMenuEvents,
+  undoneEvents, untrashEvents, promoteFromMenuEvents, promoteNodeFromMenuEvents, toMenuEvents,
 } from '../src/ui/detail-intents.ts';
+import { promotedKind } from '../src/kinds.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
 
@@ -211,7 +212,7 @@ test('every edit intent leaves nothing silent (law 1, across all of them)', () =
     ['stopRepeat', () => stopRepeatEvents(ctx(), 'N')],
     ['undone', () => undoneEvents(ctx(), 'N')],
     ['toMenu', () => toMenuEvents(ctx(), 'N')],
-    ['promote', () => promoteFromMenuEvents(ctx(), 'N')],
+    ['promote', () => promoteFromMenuEvents(ctx(), 'N', 'action')],
   ];
   for (const [name, make] of build) {
     let s = captured('N');
@@ -307,4 +308,54 @@ test('a goal’s rhythm is what brings the work under it back', () => {
 
   assert.equal(offered(build(false)), 0, 'filed under a goal with no rhythm: silent, which is law 1 clause (d)');
   assert.equal(offered(build(true)), 1, 'and the rhythm is what fetches it — the mountain comes down');
+});
+
+// --- coming back off the Menu ----------------------------------------------
+//
+// Promotion turns a WISH into work. Until 2.18.2 it rewrote the kind of
+// whatever it touched, because `toKind` defaulted to 'action' and both callers
+// took the default.
+
+test('a goal rested on the Menu comes back a goal', () => {
+  let s = containerOf('G', 'goal', 'A calmer house');
+  s = write(s, toMenuEvents(ctx(), 'G'));
+  assert.equal(s.nodes.get('G')!.kind, 'goal', 'the Menu itself never touched the kind');
+
+  s = write(s, promoteNodeFromMenuEvents(ctx(), s.nodes.get('G')!));
+  assert.equal(s.nodes.get('G')!.kind, 'goal', 'and neither does coming back');
+  assert.equal(s.nodes.get('G')!.onMenu, null, 'but it is off the Menu');
+});
+
+test('an upkeep comes back an upkeep, still carrying its rhythm honestly', () => {
+  // The worst of the three: it came back an `action` with intervalDays still 7,
+  // so it kept arriving on a rhythm while calling itself a task — and nothing
+  // in the app said either half of that.
+  let s = captured('U', 'water the plant');
+  s = write(s, makeRepeatEvents(ctx(), 'U', s.nodes.get('U')!.kind, 7, 2));
+  s = write(s, toMenuEvents(ctx(), 'U'));
+  s = write(s, promoteNodeFromMenuEvents(ctx(), s.nodes.get('U')!));
+  const n = s.nodes.get('U')!;
+  assert.equal(n.kind, 'upkeep', 'still an upkeep');
+  assert.equal(n.intervalDays, 7, 'and the rhythm it carries matches what it says it is');
+});
+
+test('a wish still becomes real work — the case the control was built for', () => {
+  let s = write(emptyState(), [{
+    id: `w${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'node.created', node: 'W',
+    payload: { nodeKind: 'aspiration', title: 'Learn to sail', provenance: { for: 'self' } },
+  } as AppEvent]);
+  s = write(s, toMenuEvents(ctx(), 'W'));
+  s = write(s, promoteNodeFromMenuEvents(ctx(), s.nodes.get('W')!));
+  assert.equal(s.nodes.get('W')!.kind, 'action', 'a demand-free kind genuinely does change');
+  assert.equal(silentNodes(s).length, 0, 'and the gate covered it on the way');
+});
+
+test('promotedKind changes only the demand-free kinds', () => {
+  for (const k of ['aspiration', 'pebble', 'person', 'journal', 'anchor', 'context', 'role'] as const) {
+    assert.equal(promotedKind(k), 'action', `${k} becomes work`);
+  }
+  for (const k of ['goal', 'area', 'outcome', 'project', 'upkeep', 'action', 'waiting-for'] as const) {
+    assert.equal(promotedKind(k), k, `${k} keeps what it was`);
+  }
 });

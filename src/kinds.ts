@@ -12,6 +12,7 @@
 // direction or the other.
 
 import type { NodeKind } from './events.ts';
+import { DEMAND_FREE_KINDS } from './events.ts';
 
 /**
  * Kinds that can never be "the next thing to do" (`nextup.ts`).
@@ -69,3 +70,29 @@ export const NO_REPLAN_CARD: ReadonlySet<NodeKind> = new Set<NodeKind>([
   ...[...NOT_ACTIONABLE].filter(k => k !== 'waiting-for'),
   'resume-card',
 ]);
+
+/**
+ * What a node becomes when it is brought back off the Menu.
+ *
+ * **PROMOTION TURNS A WISH INTO WORK. It has no business rewriting the kind of
+ * something that was already work** — and until 2.18.2 it rewrote every kind,
+ * because `menu.item.promoted` carried a hard-coded `toKind: 'action'` on both
+ * the single and the bulk path.
+ *
+ * Measured before the fix, on a Menu round trip that changes nothing else:
+ * a `goal` went out a goal and came back an `action`; an `upkeep` came back an
+ * `action` **still carrying `intervalDays: 7`**, so it kept arriving on a
+ * rhythm while calling itself a task. Only the third case — an `aspiration`
+ * becoming an `action` — was the thing the control was built for.
+ *
+ * The Menu itself never touched the kind: `menu.item.added` sets `onMenu` and
+ * nothing else, and `menu.item.removed`'s own comment says it "leaves the kind
+ * untouched". Promotion was the odd one out, and it was the odd one out
+ * silently, because nothing on the way in or out said what a thing had been.
+ *
+ * So the rule is the demand-free set and nothing more: those kinds refuse
+ * clocks by law 6, so becoming real work genuinely IS a change of kind for
+ * them. Everything else keeps what it was.
+ */
+export const promotedKind = (kind: NodeKind): NodeKind =>
+  (DEMAND_FREE_KINDS as readonly NodeKind[]).includes(kind) ? 'action' : kind;
