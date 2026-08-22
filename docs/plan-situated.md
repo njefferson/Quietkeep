@@ -419,12 +419,12 @@ situations are the acceptance test — walked end to end, not asserted.
   built it needs the line saying what it is made of, the way 2.19.0 handled the
   same sparsity.
 - Phase 6 through 8: not started.
-- **Last full Spine seen green:** `61aec1a` on `staging` (2.20.0), every step
+- **Last full Spine seen green:** `7ed363d` on `staging` (2.21.0), every step
   and the deploy, read from the run rather than from the push output.
 - **Waiting on the owner:** the on-device pass. Production is 2.14.1 and
   `staging` carries nine releases past it — 2.14.2, 2.14.3, 2.15.0, 2.16.0,
-  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1 and 2.20.0. Nothing in the
-  plan is blocked on it.
+  2.17.0, 2.18.0, 2.18.1, 2.18.2, 2.19.0, 2.19.1, 2.20.0 and 2.21.0. Nothing
+  in the plan is blocked on it.
 
   **These two lines went stale for five releases while the phase notes above
   them were kept current**, which is the one-file-two-answers shape the hub's
