@@ -90,6 +90,23 @@ const el = <K extends keyof HTMLElementTagNameMap>(
   return n;
 };
 
+/**
+ * Is this an INSTALLED launch — on the home screen rather than in a tab?
+ *
+ * The display mode is the honest signal, so there is no user-agent sniffing
+ * here. ONE definition: this was written out twice, once for the install steps
+ * and once for the §7f diagnostic, and two copies of a platform test is exactly
+ * the shape this repo keeps paying for — the day one grows a case the other
+ * does not, the panel and the report disagree about the same device and only
+ * one of them is ever looked at.
+ */
+export function isInstalled(): boolean {
+  try {
+    return globalThis.matchMedia?.('(display-mode: standalone)').matches === true
+      || (globalThis.navigator as { standalone?: boolean }).standalone === true;
+  } catch { return false; }
+}
+
 export async function mountAbout(
   session: Session,
   /** Opens the detail sheet — the trash view's rows lead there and nowhere
@@ -469,16 +486,18 @@ export async function mountAbout(
   // one — so there is no user-agent sniffing here. When it is not installed both
   // platforms' steps are shown, because a page cannot offer iOS an install button
   // (iOS fires no such event); the steps are all a browser can honestly give.
-  const installed = (() => {
-    try {
-      return globalThis.matchMedia?.('(display-mode: standalone)').matches === true
-        || (globalThis.navigator as { standalone?: boolean }).standalone === true;
-    } catch { return false; }
-  })();
+  const installed = isInstalled();
   const installSteps = document.querySelector<HTMLElement>('#install-steps');
   const installDone = document.querySelector<HTMLElement>('#install-done');
   if (installSteps) installSteps.hidden = installed;
   if (installDone) installDone.hidden = !installed;
+  // INSTALL FIRST, AND SAY SO BEFORE THE ASK RATHER THAN AFTER IT (2.31.0).
+  // The intro used to offer "Keep my data on this device", the browser refused
+  // in a tab, and the answer that appeared THEN mentioned the home screen. On
+  // the first screen anybody sees, a refusal with the remedy printed after it
+  // reads as the app not working.
+  const first = document.querySelector<HTMLElement>('#intro-install-first');
+  if (first) first.hidden = installed;
 
   const siblingP = document.querySelector<HTMLElement>('#sibling');
   if (siblingP) {
@@ -2118,8 +2137,7 @@ export async function mountAbout(
         origin: swOrigin,
         device: session.device,
         zone: session.zone,
-        installed: globalThis.matchMedia?.('(display-mode: standalone)').matches === true
-          || (globalThis.navigator as { standalone?: boolean }).standalone === true,
+        installed: isInstalled(),
         storageSupported: r.supported,
         persisted: r.persisted,
         quotaMb: r.quotaMb,

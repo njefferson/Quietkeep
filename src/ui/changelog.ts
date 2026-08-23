@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.31.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**The walkthrough now tells you to add Quietkeep to your home screen BEFORE it asks to keep your writing.** It used to offer the button, let the browser refuse, and only then mention the home screen. In a tab this browser nearly always says no; on the home screen it nearly always says yes. Being set up to fail and told why afterwards reads as the app being broken, on the first screen anybody sees.',
+      '**Button names look like buttons now, instead of being italic.** *Not this*, *Just one thing*, *Hold it* \u2014 the walkthrough named them in italics, which means emphasis and has never meant "this is a thing on the screen". They are set apart with an outline instead. Not the filled look of a real button, so a name in the middle of a sentence does not invite you to tap the sentence.',
+      '**The i button is introduced before it is relied on.** Two screens referred to it as though you already knew where it was and what it did. The last screen now says what it is, where it is, and what is behind it.',
+      '**And the walkthrough was written for somebody who already knew the app.** It explained why choices were made rather than what the app does. It reads as a welcome now: what this is, what the screen in front of you holds, what each button does, and what happens on a day you can do less.',
+      '**Nothing about how the app behaves has changed** \u2014 only what it tells you, and when.',
+    ],
+  },
+  {
     triplet: '2.30.2',
     kind: 'ITERATION',
     date: '2026-08-23',

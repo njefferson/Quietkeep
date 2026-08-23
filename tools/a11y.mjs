@@ -271,7 +271,13 @@ const REGISTRY = {
   // it is not registered here where it would match nothing visible (it shares
   // button.ghost with #tour-skip, which IS checked); it is exercised by the
   // driver stepping forward.
-  'walkthrough': ['#tour-progress', '#tour-heading', '.tour-p', '#tour-skip', '#tour-next'],
+  // `.ui-name` is a control's name inside a sentence (2.31.0) — `--ink` on the
+  // panel surface, one step stronger than the `--ink-soft` prose around it. It
+  // joins the registry in the commit that introduces it, which is this repo's
+  // rule for a new foreground/background pair: it passes comfortably today, and
+  // the point of registering it is that a later change to either token moves
+  // the check with it rather than past it.
+  'walkthrough': ['#tour-progress', '#tour-heading', '.tour-p', '.ui-name', '#tour-skip', '#tour-next'],
   // THE INTRO IS BACK, AND IT WAS NEVER MEANT TO BE GONE. This comment used to
   // say the intro "no longer shows" because the walkthrough owned first run —
   // recorded as a design consequence when it was a defect: `show(true)` had one

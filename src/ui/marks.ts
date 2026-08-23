@@ -67,19 +67,40 @@ export function segments(text: string, marker: string): Segment[] {
  * `segments()` rendered as nodes — every character arrives as a text node, and
  * a marked run becomes a real element. Nothing here parses HTML.
  */
-export function marked(text: string, marker: string, tag: string): Node[] {
+export function marked(text: string, marker: string, tag: string, className?: string): Node[] {
   return segments(text, marker).map(s => {
     if (!s.marked) return document.createTextNode(s.text);
     const e = document.createElement(tag);
     e.textContent = s.text;
+    if (className) e.className = className;
     return e;
   });
 }
 
 /**
  * The app's convention for naming a control inside a sentence: `*Not this*`
- * becomes `<em>Not this</em>`, which is what the ⓘ panel has always written by
- * hand. Named rather than inlined at each call site, so the convention is one
+ * becomes a marked run, which is what the ⓘ panel has always written by hand.
+ * Named rather than inlined at each call site, so the convention is one
  * decision rather than a habit two files happen to share.
+ *
+ * `.ui-name` AND NOT ITALIC ALONE — THE SAME DEFECT, REPORTED TWICE.
+ *
+ * The first report said the walkthrough named controls and the names read as
+ * ordinary words: "Not this moves past it" is a sentence about a button and
+ * nothing on screen said so. The fix set them in `<em>`, matching the panel.
+ *
+ * The second report, from a device, said the italics make it *harder*: a reader
+ * meeting the app for the first time cannot tell which italicised words are
+ * things on the screen and which are emphasis, and the copy refers to them as
+ * though where they are is obvious. Italic means EMPHASIS. It has never meant
+ * "this is a control", and using it for both is why one sentence could not be
+ * read two ways.
+ *
+ * So the run carries a class and the stylesheet gives it an outline, upright,
+ * slightly stronger than the prose around it — the shape of a thing on screen.
+ * DELIBERATELY NOT the filled look of a real button: a name inside a sentence
+ * that looks exactly like a button invites somebody to tap the sentence.
+ *
+ * The element stays `<em>` so nothing about the spoken output changes.
  */
-export const namedControls = (text: string): Node[] => marked(text, '*', 'em');
+export const namedControls = (text: string): Node[] => marked(text, '*', 'em', 'ui-name');

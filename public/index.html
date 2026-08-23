@@ -1783,13 +1783,13 @@
   <p class="about-p">
     Two things at a time, never a list, and never the same two by accident &mdash;
     they are picked to be unalike so you can prefer one rather than compare them.
-    <em>Not this</em> costs nothing and records nothing.
+    <em class="ui-name">Not this</em> costs nothing and records nothing.
   </p>
 
   <h3 class="about-section">Finishing, and stopping</h3>
   <p class="about-p">
     Finish something and the screen settles: it names what you did and waits.
-    Nothing arrives until you ask for it. <em>That is enough for now</em> ends the
+    Nothing arrives until you ask for it. <em class="ui-name">That is enough for now</em> ends the
     session the same way finishing does &mdash; stopping is not failing.
   </p>
 
@@ -1802,7 +1802,7 @@
 
   <h3 class="about-section">When the screen is too much</h3>
   <p class="about-p">
-    <em>Just one thing</em> shows a single item in larger type with nothing else &mdash;
+    <em class="ui-name">Just one thing</em> shows a single item in larger type with nothing else &mdash;
     no reasons, no counts, nothing moving. You turn it on and off; it is never
     turned on for you.
   </p>
@@ -1865,7 +1865,7 @@
     </details>
   <details class="disclosure help-q">
     <summary>How does it decide what to show me next?</summary>
-    <p class="about-p">It hands you one next thing with a short list behind it, never the whole pile. <em>Not this</em> costs nothing.</p>
+    <p class="about-p">It hands you one next thing with a short list behind it, never the whole pile. <em class="ui-name">Not this</em> costs nothing.</p>
     </details>
   <details class="disclosure help-q">
     <summary>What if a date has already gone by?</summary>
@@ -1873,7 +1873,7 @@
     </details>
   <details class="disclosure help-q">
     <summary>Will it remind me?</summary>
-    <p class="about-p">Not by itself — it sends nothing. Send the item to your calendar &mdash; <em>Send to my calendar</em>, under <em>Things you can do</em> &mdash; and the calendar reaches you.</p>
+    <p class="about-p">Not by itself — it sends nothing. Send the item to your calendar &mdash; <em class="ui-name">Send to my calendar</em>, under <em class="ui-name">Things you can do</em> &mdash; and the calendar reaches you.</p>
     </details>
   <details class="disclosure help-q">
     <summary>Is my writing private? Where does it live?</summary>
@@ -1887,7 +1887,7 @@
       collected.</p></details>
   <details class="disclosure help-q">
     <summary>How do I back it up, or move to a new device?</summary>
-    <p class="about-p"><em>Export a copy</em> under Your data saves everything as one file; <em>Bringing a copy back</em> reads it on the new device.</p>
+    <p class="about-p"><em class="ui-name">Export a copy</em> under Your data saves everything as one file; <em class="ui-name">Bringing a copy back</em> reads it on the new device.</p>
     </details>
   <details class="disclosure help-q">
     <summary>Can I keep two devices in step?</summary>
@@ -2361,7 +2361,7 @@
 
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">
-    How long the <em>Do now</em> timer runs. Set it here, calmly, rather than in the moment you are trying to start.
+    How long the <em class="ui-name">Do now</em> timer runs. Set it here, calmly, rather than in the moment you are trying to start.
   </p>
   <div class="about-actions">
     <label class="detail-inline" for="timer-length">A timer runs for</label>
@@ -2380,7 +2380,7 @@
 
   <h3 class="about-section">Reminders that reach you</h3>
   <p class="about-p">
-    Your calendar runs when Quietkeep does not, so it is the thing that can reach you. The button is <em>Send to my calendar</em>, under <em>Things you can do</em>.
+    Your calendar runs when Quietkeep does not, so it is the thing that can reach you. The button is <em class="ui-name">Send to my calendar</em>, under <em class="ui-name">Things you can do</em>.
   </p>
   <!-- The button itself now lives at the TOP of the panel, with the other verbs.
        It sat here, most of a 5,700-word document down, and the prose pointed at
@@ -2824,6 +2824,21 @@
        You do not have to remember to look.</p>
     <p>There is one thing worth setting up now: ask this browser to <em>keep</em>
        your writing rather than treat it as disposable.</p>
+    <!-- INSTALL FIRST, WHEN IT IS NOT INSTALLED (2.31.0). Reported from a
+         device: the panel invited the reader to press the ask, the browser
+         refused, and only THEN did the answer mention the home screen. In a
+         browser tab Safari almost always says no; on the home screen it almost
+         always says yes. Setting somebody up to fail and explaining afterwards
+         is the wrong order, and on the first screen anybody sees it reads as
+         the app being broken.
+         Shown only when the display mode says this is not an installed launch,
+         so an installed reader is not told to do something they have done. -->
+    <p id="intro-install-first" class="intro-aside" hidden><strong>Add it to
+       your home screen first.</strong> In a browser tab this browser will
+       usually refuse to keep your writing, because it treats a tab as
+       something you are passing through. Once Quietkeep is on your home
+       screen it nearly always agrees. The steps are a little further down
+       this panel, under <strong>Add it to your home screen</strong>.</p>
     <p class="intro-aside">On iPad it will ask to <strong>allow
        notifications</strong>. Allow it &mdash; that is what lets the browser keep
        your planner instead of clearing it, and it is the only reason it is asked.

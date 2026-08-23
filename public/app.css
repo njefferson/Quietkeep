@@ -1937,6 +1937,25 @@ dialog, dialog * { overflow-wrap: anywhere; }
 .tour-heading { margin: 0 0 0.75rem; font-size: 1.25rem; }
 /* The heading takes focus each step; its ring is the app's, not a stray outline. */
 .tour-heading:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+/* A CONTROL'S NAME INSIDE A SENTENCE (2.31.0).
+   Reported from a device: in the walkthrough the italicised names were the
+   hardest part to read, because italic is emphasis and a first-time reader
+   cannot tell an emphasised word from the name of a button they have never
+   seen. Upright, outlined, a little stronger than the prose — the shape of a
+   thing on screen.
+   OUTLINE AND NEVER A FILL: real buttons in this app are filled, and a name in
+   the middle of a sentence that looks exactly like a button invites a tap on
+   the sentence. No new colour pair — `--ink` on the panel surface and `--line`
+   are both already measured in ACCESSIBILITY.md. */
+.ui-name {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 0.3rem;
+  padding: 0.02em 0.3em;
+  white-space: nowrap;
+}
 .tour-p { margin: 0 0 0.7rem; color: var(--ink-soft); }
 .tour-p:last-child { margin-bottom: 0; }
 .tour-nav {

@@ -695,11 +695,12 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.30.2**. The
-  version stamp opened the diagnostic with its own controls scrolled 156px and
-  104px above the top of the panel — reported from the device with a
-  screenshot, and invisible to every gate because the walk reached that state
-  by the short route and never by the door.
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.31.0**. The
+  walkthrough was written for somebody who already knew the app: it invited the
+  storage ask before saying to install, set control names in italics on the one
+  screen where a reader cannot tell a name from emphasis, and referred to the i
+  button twice before introducing it. Rewritten as a welcome. 2.30.2, the
+  version stamp's landing, is in here too.
 - **CONFIRMED BY BYTES FROM THE DEVICE, 2026-08-23.** A §7f diagnostic on the
   installed instance reports `Build: 2.29.0` and `Service worker cache:
   quietkeep-sync-2.29.0`, a worker serving the page and no newer version

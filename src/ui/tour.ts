@@ -54,39 +54,43 @@ const stepsNow = (): readonly Step[] => [
   {
     heading: `Welcome to ${editionName()}`,
     body: [
-      'Put anything down and Quietkeep holds it, then brings it back on its own.',
-      'You never have to keep it in your head, or remember to look. That is the whole idea — everything else is just how it does it.',
+      'Quietkeep is somewhere to put things down so you can stop carrying them in your head.',
+      'It brings each one back to you when it is worth thinking about again, so you never have to remember to look.',
+      'Six short screens and you are done. You can leave at any point with *Skip*.',
     ],
   },
   {
     heading: 'Start with the box',
     body: [
-      'The box at the top is where everything begins. Type whatever is on your mind and press *Hold it*.',
-      'One line, nothing to fill in, no folder to choose. Get it out of your head first; the sorting comes later.',
+      'This is the whole app to begin with: a box at the top, and everything you have put down underneath it.',
+      'Type whatever is on your mind and press *Hold it*.',
+      'There is nothing else to fill in — no folder, no date, no category. Getting it out of your head is the point. Anything else can come later, or never.',
     ],
     picture: { step: 2, alt: 'The box at the top of the screen, with the words "ring the plumber back about the tap" typed into it, and a Hold it button beside it.' },
   },
   {
     heading: 'It sorts and times itself',
     body: [
-      'When you have a few, Quietkeep walks you through them one at a time, with a choice you cannot get wrong.',
-      'Then it gives each one a moment to come back to you, and hands you the single thing worth doing now. You never file anything or set a reminder by hand.',
+      'Once a few things are in there, Quietkeep takes them one at a time and asks what each one is. Every answer is a plain word, and none of them is wrong.',
+      'Then it works out when to bring each one back, and hands you the one thing worth doing now. You never set a reminder yourself.',
     ],
     picture: { step: 3, alt: 'One captured thing shown on its own, above eight plain choices: Do now, Next action, Waiting for, Someday, Reference, Trash, Put it somewhere, and Not this one. Each choice carries a short line saying what it means.' },
   },
   {
     heading: 'One thing at a time',
     body: [
-      'It offers you a small number of things — usually two, chosen to be unalike, so picking is a preference rather than a comparison. Each one says why it is here: a date arrived, something it was waiting on is done, a place it lives came round.',
-      '*Not this* moves past it, as often as you like, and records nothing at all. When you finish something the screen settles and waits — nothing new arrives until you ask for it. That gap is on purpose.',
+      'Instead of a list to get through, Quietkeep offers you one thing and says why it picked that one — a date arrived, or something it was waiting on is finished.',
+      '*Done* finishes it. *Not this* moves on, as often as you like, and records nothing at all.',
+      'When you finish something the screen goes quiet and waits. Nothing new arrives until you ask for it.',
     ],
     picture: { step: 4, alt: 'A card headed Next up, holding one task, with the reason it was chosen underneath it. Two buttons, Done and Not this, and then four quieter words: Start smaller, This one is heavy, That is enough for now, and Just one thing.' },
   },
   {
-    heading: 'Not every day is the same',
+    heading: 'On a harder day',
     body: [
-      'You can say how heavy a thing is, and how the day is going. Neither shortens the list — they change which things come forward, because being handed less on a bad day is the app deciding what you can manage.',
-      'And when the screen itself is too much, *Just one thing* strips it back to a single item and almost nothing else. Nothing turns that on for you. The ⓘ explains all of it, whenever you want it.',
+      'Some days you can do less than others. You can tell Quietkeep how heavy a thing feels, and how the day is going, and it changes which things it puts in front of you first.',
+      'It never takes anything away, and it never decides you have had enough. Everything you put down is still there.',
+      'If the screen itself is too much, *Just one thing* clears it down to a single item. You turn that on yourself, and off again the same way.',
     ],
     picture: { step: 5, alt: 'The same card with almost everything stripped away — the task, Done, Not this, That is enough for now, and a way back to the rest of the app.' },
   },
@@ -96,14 +100,15 @@ const stepsNow = (): readonly Step[] => [
       isSyncEdition()
         ? 'Everything stays on your devices — no account, no sign-in. What they trade to stay in step is sealed with a key only they hold.'
         : 'Everything stays on your device — no account, no sign-in, no server holding your writing.',
-      'The ⓘ at the top has how to install it, how to keep your data safe, and this walkthrough again whenever you want it. *Get started* opens that panel, so keeping your data safe is the first thing you do.',
+      'The round button marked i, at the top of the screen beside the name, is where everything else lives: how to add Quietkeep to your Home Screen, how to keep your writing safe, and this walkthrough again whenever you want it.',
+      '*Get started* opens it now, because keeping your writing safe is the one thing worth doing before anything else.',
       // Added in 1.14.0. NOT written for the returning reader specifically —
       // the empty screen behind this dialog now offers them the way back, and a
       // sentence here about data they may never have had would land oddly on
       // somebody genuinely new. What it does say is true for both: the exported
       // file is the copy that outlives the browser, and that is worth knowing on
       // day one rather than on the day it matters.
-      'That panel also writes you a copy of everything, as a file you keep. It is the one copy that survives a new device or a cleared browser, and bringing it back is one button in the same place.',
+      'It also writes you a copy of everything, as a file you keep. That file is the one copy that survives a new device or a cleared browser, and bringing it back is one button in the same place.',
     ],
     picture: { step: 6, alt: 'A short list of plain facts about where your writing is kept on this device, a sentence saying the browser has not yet promised to keep it, and two buttons: Ask the browser to keep it, and Export a copy.' },
   },
@@ -138,13 +143,9 @@ export function showTour(session: Session, onFinish?: () => void): void {
     // Rebuilt with text nodes only — innerHTML is banned here, and a
     // walkthrough of "it is only our own strings" is exactly where that erodes.
     //
-    // A CONTROL'S NAME IS SET IN `<em>`, which is what the ⓘ panel has always
-    // done in its own markup. Reported from a device: the walkthrough's
-    // references to buttons read as ordinary words — "Not this moves past it"
-    // and "Just one thing strips it back" are sentences about two controls, and
-    // nothing on screen said which words were the controls. It was the one
-    // surface not following the app's own convention, on the screen where a
-    // reader knows least about the app.
+    // A CONTROL'S NAME CARRIES `.ui-name` — see `marks.ts`, which records why
+    // it is an outline rather than italics, and why that is the same defect
+    // reported twice.
     bodyEl.replaceChildren(...step.body.map(text => {
       const p = document.createElement('p');
       p.className = 'tour-p';
