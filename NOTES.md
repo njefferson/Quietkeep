@@ -695,22 +695,25 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.24.0**
-  (`0cf5be8` was read fully green — 49 steps, 49 success, none skipped or
-  cancelled — and 2.24.0 sits on top of it with its own run going as this is
-  written. The a11y walk was run LOCALLY on 2.24.0's markup before the commit
-  and read green in both themes; the commit hook refuses it otherwise.)
-- **PRODUCTION READ FROM THE DEVICE, 2026-08-23.** A §7f diagnostic taken on the
-  installed instance reports `Build: 2.24.1` and
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.29.0** plus one
+  tooling commit (`0fa4888`, Spine run 565 read fully green — 48 steps, none
+  skipped or cancelled — and Deploy success). That commit changes no file under
+  `public/` or `src/`, so staging and production serve byte-identical apps and
+  the triplet is the same on both.
+- **PRODUCTION READ FROM THE DEVICE, 2026-08-23.** The installed instance
+  reports **2.29.0**. That is V-15's route again — a session still cannot fetch
+  any `pages.dev` host from here, the proxy answers 403 at CONNECT — and it is
+  the version read back, not the cache triplet, so it is a weaker reading than
+  the 2.24.1 one recorded below it and is recorded as weaker.
+- **https://quietkeep.pages.dev** — production, **2.29.0** (promoted 2026-08-23,
+  `6e37bba`, Spine and Deploy both success, and confirmed from the DEVICE rather
+  than from the promote's output or from `main`'s own `sw.js`).
+- **The 2.24.1 reading, kept because it is the stronger kind.** A §7f diagnostic
+  taken on the installed instance on 2026-08-23 reported `Build: 2.24.1` and
   `Service worker cache: quietkeep-sync-2.24.1`, on `quietkeep-sync.pages.dev`,
-  with no newer version waiting. The deployed worker carries the released
-  triplet, so the 2.24.1 promote is confirmed by bytes rather than by a green
-  Cloudflare step — V-15's route, used as V-15 says to use it, because a session
-  still cannot fetch any `pages.dev` host from here.
-- **https://quietkeep.pages.dev** — production, **2.24.1** (promoted 2026-08-23,
-  `0bb59a7`, Spine and Deploy both success, and the version read back from the
-  DEVICE rather than from the promote's output or from `main`'s own `sw.js`.)
+  with no newer version waiting — the deployed worker carrying the released
+  triplet, confirmed by bytes rather than by a green Cloudflare step. The
+  diagnostic is the route to ask for; the version alone answers less.
 - **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
   and `handoff-check.mjs` is what noticed — because it asks whether the version
   beside the URL is the CURRENT one, which is a question no reader of this file
@@ -726,6 +729,18 @@ closed question filed under this heading now, so the two cannot drift again.
   this is a gate somebody has to remember to run, which is the state the
   third-person and no-grid rules were in until 2.18.2 wired them.
   **A note recording a defect is not a fix for it.**
+- **AND IT SAID 2.24.0 AND 2.24.1 UNTIL 2026-08-23, through five releases and
+  two promotes** — the third time, in the same block, on the same day the second
+  paragraph above was written. Nothing found it: it was corrected only because a
+  production version arrived from the device and this block had to be opened to
+  record it. Two notes and no gate is what that produces.
+  **The fix is not a fourth note.** Every fact in the three lines above is
+  derivable without a network call — the triplet in `public/sw.js` at
+  `origin/main` and at `origin/staging`, and the two SHAs — so a gate can read
+  them and refuse a commit whose block names anything else, the way
+  `changelog.mjs --check` already holds the release triplet to three files. Not
+  built here: it is a new gate and nothing asked for one. Named so the next
+  session does not have to rediscover that this is the fourth recurrence.
 
 **AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
 WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten

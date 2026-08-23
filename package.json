@@ -41,6 +41,7 @@
     "emitters:check": "node --experimental-strip-types tools/emitters.mjs",
     "sample:check": "node --experimental-strip-types tools/sample-coverage.mjs",
     "plain:check": "node tools/plain.mjs",
+    "plain:surface": "node tools/plain-surface.mjs",
     "reasons:check": "node tools/reasons.mjs",
     "controls:check": "node tools/controls.mjs",
     "collisions:check": "node tools/collisions.mjs",
