@@ -264,12 +264,26 @@ export function personName(state: State, id: string | null): string | null {
  */
 export function fitsWith(state: State, n: NodeState, person: NodeId | null): boolean {
   if (person === null) return true;
-  const live = n.people.filter(l => {
+  const live = namedOn(state, n);
+  if (live.length === 0) return true;
+  return live.some(l => l.person === person);
+}
+
+/**
+ * The people actually named on a thing, trashed ones dropped.
+ *
+ * Extracted from `fitsWith` rather than copied beside it, so the diagnostic's
+ * census counts the very links the filter branches on. EVERY RELATION, for the
+ * reason `fitsWith` gives above — narrowing to one would answer a different
+ * question and the two would disagree about the same store.
+ */
+export function namedOn(
+  state: State, n: NodeState,
+): ReadonlyArray<{ person: NodeId; relation: string }> {
+  return n.people.filter(l => {
     const p = state.nodes.get(l.person);
     return p ? alive(p) : false;
   });
-  if (live.length === 0) return true;
-  return live.some(l => l.person === person);
 }
 
 /** Everyone the reader has named, for the chooser. Hidden until one exists —

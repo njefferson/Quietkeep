@@ -695,10 +695,11 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.29.0**. Level
-  with production: `0fa4888` and `9f58fdc` were promoted at `766b2d9`, and
-  neither touched `public/` or `src/`, so both branches serve byte-identical
-  apps and carry the same triplet.
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.30.0**. The
+  diagnostic now reports what an answer to the situation questions could
+  narrow — how much of a store is reached by a place, names somebody, or
+  carries an estimate — because a full store can have nothing for those
+  questions to bite on and the report could not say so.
 - **CONFIRMED BY BYTES FROM THE DEVICE, 2026-08-23.** A §7f diagnostic on the
   installed instance reports `Build: 2.29.0` and `Service worker cache:
   quietkeep-sync-2.29.0`, a worker serving the page and no newer version

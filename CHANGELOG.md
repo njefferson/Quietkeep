@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.30.0 — CAPABILITY
+
+*2026-08-23*
+
+- **The report now says whether the situation questions can narrow anything.** Under *What the situation can narrow*: how many things are reached by a place — their own or one they inherit — how many name somebody, and how many carry a time estimate.
+- **Because a full store can have nothing for those questions to bite on.** Anything unlabelled fits every answer, deliberately, so a store with one place answers *where are you* with almost everything. That is the design working. Until now nothing said so, and answering a question and seeing no change looked identical to a broken feature.
+- **It says where the leverage is.** A place on a project reaches everything inside it, so the report counts what sits inside something, and how many containers already carry a place. Those are the few answers that cover the most.
+- **A low number is never listed as a fault.** Filing is optional in this app, always. These are facts about a store, they sit with the other counts, and nothing about them appears under *What is wrong*.
+- **Still nothing you wrote.** Counts and states only — no place names, no people’s names, nothing else. The report is swept for every one of them on the way out.
+
 ## 2.29.0 — CAPABILITY
 
 *2026-08-23*
