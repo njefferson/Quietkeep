@@ -42,6 +42,7 @@
     "sample:check": "node --experimental-strip-types tools/sample-coverage.mjs",
     "plain:check": "node tools/plain.mjs",
     "plain:surface": "node tools/plain-surface.mjs",
+    "branch:state": "node tools/branch-state-check.mjs",
     "reasons:check": "node tools/reasons.mjs",
     "controls:check": "node tools/controls.mjs",
     "collisions:check": "node tools/collisions.mjs",
