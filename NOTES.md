@@ -699,21 +699,24 @@ closed question filed under this heading now, so the two cannot drift again.
   with production: `0fa4888` and `9f58fdc` were promoted at `766b2d9`, and
   neither touched `public/` or `src/`, so both branches serve byte-identical
   apps and carry the same triplet.
-- **PRODUCTION READ FROM THE DEVICE, 2026-08-23.** The installed instance
-  reports **2.29.0**. That is V-15's route again — a session still cannot fetch
-  any `pages.dev` host from here, the proxy answers 403 at CONNECT — and it is
-  the version read back, not the cache triplet, so it is a weaker reading than
-  the 2.24.1 one recorded below it and is recorded as weaker.
+- **CONFIRMED BY BYTES FROM THE DEVICE, 2026-08-23.** A §7f diagnostic on the
+  installed instance reports `Build: 2.29.0` and `Service worker cache:
+  quietkeep-sync-2.29.0`, a worker serving the page and no newer version
+  waiting. The deployed worker carries the released triplet. **The host actually
+  read is `quietkeep-sync.pages.dev`**, so this is direct evidence for the Sync
+  edition and strong evidence for `quietkeep.pages.dev`, which deploys from the
+  same push — recorded that way rather than as a reading of a host nobody read.
+  V-15's route: a session still cannot fetch any `pages.dev` host from here, the
+  proxy answers 403 at CONNECT.
 - **https://quietkeep.pages.dev** — production, **2.29.0** (2.29.0 promoted at
-  `6e37bba`, the gate and this record at `766b2d9`, Spine and Deploy success on
-  both, and the version confirmed from the DEVICE rather than from the promote's
-  output or from `main`'s own `sw.js`).
-- **The 2.24.1 reading, kept because it is the stronger kind.** A §7f diagnostic
-  taken on the installed instance on 2026-08-23 reported `Build: 2.24.1` and
-  `Service worker cache: quietkeep-sync-2.24.1`, on `quietkeep-sync.pages.dev`,
-  with no newer version waiting — the deployed worker carrying the released
-  triplet, confirmed by bytes rather than by a green Cloudflare step. The
-  diagnostic is the route to ask for; the version alone answers less.
+  `6e37bba`, the branch-state gate and this record at `2c5d7c0`, Spine and
+  Deploy success on every step between, and the triplet confirmed from the
+  DEVICE rather than from the promote's output or from `main`'s own `sw.js`).
+- **An earlier reading the same day said only "2.29.0", with no cache name, and
+  was recorded as the weaker kind.** It has been superseded rather than kept:
+  the cache triplet answers the question the bare version cannot, which is
+  whether the WORKER moved or only the page. Asking for the diagnostic is the
+  route; a version alone leaves a stale worker looking identical to a fresh one.
 - **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
   and `handoff-check.mjs` is what noticed — because it asks whether the version
   beside the URL is the CURRENT one, which is a question no reader of this file
