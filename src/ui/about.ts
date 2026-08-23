@@ -90,6 +90,23 @@ const el = <K extends keyof HTMLElementTagNameMap>(
   return n;
 };
 
+/**
+ * Is this an INSTALLED launch — on the home screen rather than in a tab?
+ *
+ * The display mode is the honest signal, so there is no user-agent sniffing
+ * here. ONE definition: this was written out twice, once for the install steps
+ * and once for the §7f diagnostic, and two copies of a platform test is exactly
+ * the shape this repo keeps paying for — the day one grows a case the other
+ * does not, the panel and the report disagree about the same device and only
+ * one of them is ever looked at.
+ */
+export function isInstalled(): boolean {
+  try {
+    return globalThis.matchMedia?.('(display-mode: standalone)').matches === true
+      || (globalThis.navigator as { standalone?: boolean }).standalone === true;
+  } catch { return false; }
+}
+
 export async function mountAbout(
   session: Session,
   /** Opens the detail sheet — the trash view's rows lead there and nowhere
@@ -469,16 +486,18 @@ export async function mountAbout(
   // one — so there is no user-agent sniffing here. When it is not installed both
   // platforms' steps are shown, because a page cannot offer iOS an install button
   // (iOS fires no such event); the steps are all a browser can honestly give.
-  const installed = (() => {
-    try {
-      return globalThis.matchMedia?.('(display-mode: standalone)').matches === true
-        || (globalThis.navigator as { standalone?: boolean }).standalone === true;
-    } catch { return false; }
-  })();
+  const installed = isInstalled();
   const installSteps = document.querySelector<HTMLElement>('#install-steps');
   const installDone = document.querySelector<HTMLElement>('#install-done');
   if (installSteps) installSteps.hidden = installed;
   if (installDone) installDone.hidden = !installed;
+  // INSTALL FIRST, AND SAY SO BEFORE THE ASK RATHER THAN AFTER IT (2.31.0).
+  // The intro used to offer "Keep my data on this device", the browser refused
+  // in a tab, and the answer that appeared THEN mentioned the home screen. On
+  // the first screen anybody sees, a refusal with the remedy printed after it
+  // reads as the app not working.
+  const first = document.querySelector<HTMLElement>('#intro-install-first');
+  if (first) first.hidden = installed;
 
   const siblingP = document.querySelector<HTMLElement>('#sibling');
   if (siblingP) {
@@ -2118,8 +2137,7 @@ export async function mountAbout(
         origin: swOrigin,
         device: session.device,
         zone: session.zone,
-        installed: globalThis.matchMedia?.('(display-mode: standalone)').matches === true
-          || (globalThis.navigator as { standalone?: boolean }).standalone === true,
+        installed: isInstalled(),
         storageSupported: r.supported,
         persisted: r.persisted,
         quotaMb: r.quotaMb,
@@ -2220,7 +2238,9 @@ export async function mountAbout(
   //
   // Focus lands on the REPORT rather than on the control that produced it,
   // because the report is the thing that was asked for. `#diagnostic-text`
-  // carries tabindex="0" already, so it can take focus and be read.
+  // carries tabindex="0" already, so it can take focus and be read. WHERE THE
+  // PAGE SCROLLS TO IS A SEPARATE QUESTION and 2.30.2 answers it separately —
+  // see `land` below.
   document.querySelector<HTMLButtonElement>('#build-version')?.addEventListener('click', () => {
     // The diagnostic is in the panel itself now — About is no longer a fold
     // inside it, because the ⓘ IS about (1.40.0).
@@ -2230,16 +2250,40 @@ export async function mountAbout(
     const out = document.querySelector<HTMLElement>('#diagnostic-text');
     if (!out) { btn.scrollIntoView({ block: 'center' }); btn.focus(); return; }
 
+    // SCROLL AND FOCUS ARE TWO DECISIONS, and 1.24.1 treated them as one
+    // (2.30.2). It moved the landing onto the report because the report is the
+    // thing that was asked for — true — and in doing so put the heading, the
+    // sentence saying what the report contains, and all three controls above
+    // the top of `#about-body`.
+    //
+    // `Copy it` and `Save it as a file` are `hidden` until the report exists,
+    // so that landing REVEALED them out of sight: measured by the walk at
+    // 156px and 104px above the scroller. A control that appears where nobody
+    // can see it is worse than one that is missing — the reader has no reason
+    // to suspect anything appeared, and the report they were just handed has
+    // no way out of the app.
+    //
+    // So the scroll goes to the ROW OF CONTROLS, which puts the report directly
+    // beneath them in the order it reads anyway, and the focus still goes to
+    // the report — with `preventScroll`, because without it focusing scrolls
+    // the report back to the top and silently restores the defect.
+    const row: Element = btn.closest('.about-actions') ?? out;
+    const land = (): void => {
+      row.scrollIntoView({ block: 'start' });
+      out.focus({ preventScroll: true });
+    };
+
     // Already showing: no second press. Pressing again would rebuild the report
     // and yank the scroll out from under somebody who is already reading one.
-    if (out.hidden === false) { out.scrollIntoView({ block: 'start' }); out.focus(); return; }
+    // Lands the same way — fixing only the asynchronous path below would leave
+    // half the defect, on the tap somebody makes second.
+    if (out.hidden === false) { land(); return; }
 
     // BUILDING IT IS ASYNCHRONOUS — it reads storage estimates, the cache
     // names and the worker state. So `hidden` is still true on the next line,
     // and a synchronous check here would have quietly reverted this fix to the
     // behaviour it replaces: report generating somewhere behind, focus parked
     // on the button that started it.
-    const land = (): void => { out.scrollIntoView({ block: 'start' }); out.focus(); };
     const obs = new MutationObserver(() => {
       if (out.hidden !== false) return;
       obs.disconnect();
