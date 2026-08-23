@@ -256,6 +256,11 @@ export const roleAttentionRowWords = (r: RoleAttention): string => {
   return r.sessions === 1 ? `${t}, in one go` : `${t}, across ${r.sessions} runs`;
 };
 
+// The opening sentence was "What each of these is carrying right now", which is
+// what the heading above it now says (2.24.0). Rendered and looked at, that read
+// as the same sentence twice — the heading only exists because this sheet holds
+// two readouts and they must be told apart, and once it exists this line's job
+// is the part a heading cannot do: saying what the numbers are NOT.
 export const ROLE_READOUT_WORDS =
-  'What each of these is carrying right now. It is a description, not a target — '
-  + 'nothing here is meant to be even, and nothing is keeping score.';
+  'A description, not a target — nothing here is meant to be even, and nothing '
+  + 'is keeping score.';

@@ -85,7 +85,20 @@ const BUDGET = {
   // since 1.3.1, and the first-step flow has been on the offer card since
   // 1.24.0. Both are single-item routes catching up with machinery that was
   // already shipped and reachable from exactly one place.
-  words: 3490,
+  // 3490 -> 3500 on 2026-08-23 (2.24.0): two <h3>s in the roles sheet, which now
+  // holds TWO readouts — what each role is carrying, and where the time actually
+  // went. This gate refused the release at 3498 and it was right to.
+  //
+  // The first answer was to drop both headings and name the lists with
+  // `aria-label`, which costs nothing here because an attribute is not shell
+  // text. Then the sheet was rendered and looked at: without headings it reads
+  // "Parent — 1 thing", a paragraph, "Parent — no timed work", with nothing
+  // saying those are two different readouts, which looks like a contradiction.
+  //
+  // So the words are bought deliberately, which is the only way this number is
+  // allowed to move. Nothing on the first screen changes — both headings are
+  // inside a sheet behind a door that is hidden until a role exists.
+  words: 3500,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
