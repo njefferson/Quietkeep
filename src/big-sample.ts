@@ -65,6 +65,74 @@ export interface BigSampleContext {
  */
 export const BIG_SAMPLE_SIZE = 420;
 
+/**
+ * THE PILE — the shape this set did not have, and the one that turned out to
+ * matter most (2.32.0).
+ *
+ * Everything above is built for COVERAGE: one of every event kind, and to get
+ * there the bulk is 75% parented and 55% carries a place. A store read from a
+ * real device is the opposite. 1,432 things, of which 1,255 have no parent, no
+ * place, nobody named and no estimate — each sitting on its own review clock.
+ * Forty-four containers held 177 items between them, and ONE context existed in
+ * the whole store.
+ *
+ * That difference is not cosmetic and it was not visible until the diagnostic
+ * started reporting it. Everything built the same week — the situational
+ * filters, inherited places, the reach census — works on this set and does
+ * almost nothing on that store, and this set is what it was judged against. A
+ * fixture that is tidier than reality does not fail; it agrees with you.
+ *
+ * So: the coverage core stays exactly as it is, and a pile goes on top of it.
+ * Plain captures, nothing attached, through the same write boundary as the
+ * rest.
+ *
+ * MEASURED AFTER, not estimated before. The set now folds to 1,530 things of
+ * which 1,198 are flat — 78%, against the real store's 88% — in 32 containers
+ * holding 332 items. It does not reproduce the store exactly and cannot: the
+ * core has to keep its structured items or `sample-coverage.mjs` fails, and it
+ * should. 179 things still carry a place where the real store had one, so the
+ * situational filters will bite harder here than they ever would on a real
+ * import; that is the remaining gap and it is stated rather than papered over.
+ * What the pile buys is the move from "mostly filed" to "mostly not", which is
+ * the side of the line real stores are on.
+ *
+ * ITS OWN GENERATOR STREAM, for the reason the role stream already gives
+ * further down: drawing from `rand` would shift every later draw and silently
+ * reshape a set dozens of assertions are written against.
+ */
+export const BIG_SAMPLE_PILE = 1000;
+
+/**
+ * The pile's words, combined rather than listed.
+ *
+ * A thousand items drawn from eighteen titles reads as a fixture at a glance,
+ * and the point of this pile is to be looked at hard. Two lists multiply into
+ * more distinct lines than the pile has items, which costs forty lines here
+ * instead of a thousand — and they are deliberately the flat, half-finished
+ * register of a dump nobody has sorted, because that is what the pile is.
+ */
+const PILE_DOING = [
+  'Ring', 'Email', 'Chase', 'Book', 'Cancel', 'Reschedule', 'Ask about',
+  'Find out about', 'Look up', 'Sort out', 'Follow up on', 'Check on',
+  'Sign off', 'Send back', 'Read through', 'Write up', 'Tidy up',
+  'Get a price for', 'Compare prices on', 'Return', 'Collect', 'Drop off',
+  'Order', 'Replace', 'Fix', 'Measure up for', 'Photograph', 'File',
+  'Print off', 'Scan in',
+] as const;
+
+const PILE_THING = [
+  'the boiler service', 'the parking permit', 'the dentist', 'the insurance renewal',
+  'the bins schedule', 'the loft hatch', 'the guttering quote', 'the bike service',
+  'the passport photos', 'the standing order', 'the broadband contract',
+  'the note from school', 'the leaking tap', 'the spare tyre', 'the shed roof',
+  'the recycling bags', 'the meter reading', 'the fence panel', 'the garage door',
+  'the hedge out front', 'the smoke alarm battery', 'the kitchen blind',
+  'the stair carpet', 'the immersion timer', 'the water bill', 'the vet appointment',
+  'the tumble dryer', 'the wardrobe rail', 'the paint for the hall',
+  'the second set of keys', 'the freezer drawer', 'the extractor filter',
+  'the doorbell battery', 'the guarantee paperwork', 'the old laptop',
+] as const;
+
 /** The journal in this set really is sealed, and this opens it. Stated beside
  *  the button, because a journal nobody can open demonstrates nothing — and
  *  inventing a passphrase the reader has to guess is worse than not shipping
@@ -281,6 +349,9 @@ export async function bigSampleEvents(
   const rand = rng(20260803);
   // A SECOND, INDEPENDENT STREAM for roles (2.6.0) — see the note at its use.
   const roleRand = rng(20260817);
+  // A THIRD, for the pile (2.32.0), and for the same reason: a thousand extra
+  // draws off `rand` would reshape every case above this line.
+  const pileRand = rng(20260823);
   const pick = <T>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!;
   const int = (lo: number, hi: number): number => lo + Math.floor(rand() * (hi - lo + 1));
 
@@ -861,6 +932,28 @@ export async function bigSampleEvents(
   stamp('anchor.defined', staffCall, { name: 'the staff call', recurrence: 'Thursdays' });
   stamp('anchor.fired', null, { anchor: staffCall, at: day(-7), upToSeqByDevice: { [ctx.device]: 40 } });
   stamp('anchor.defined', ctx.id(), { name: 'the monthly catch-up', recurrence: '' });
+
+  // --- THE PILE: what a store actually looks like ---------------------------
+  //
+  // Nothing attached. No parent, no place, nobody named, no estimate, no note —
+  // a review clock and the words somebody typed, which is how 1,255 of the 1,432
+  // things in the store this was measured against are held.
+  //
+  // The clock is the ordinary cure, not a special case: law 1 needs every node
+  // on a surface, under a clock, on the Menu or inside something under one, and
+  // an unsorted capture with none of the others gets a review clock like any
+  // other capture would. That is why the pile can be this plain and still be
+  // admitted by the real write boundary.
+  //
+  // The spread of dates is deliberately wide. A pile whose clocks all landed in
+  // one window would come back as one wall, and the thing being imitated is the
+  // slow drip of a store nobody has sorted for a year.
+  for (let i = 0; i < BIG_SAMPLE_PILE; i++) {
+    const doing = PILE_DOING[Math.floor(pileRand() * PILE_DOING.length)]!;
+    const thing = PILE_THING[Math.floor(pileRand() * PILE_THING.length)]!;
+    const a = node('action', `${doing} ${thing}`);
+    clock(a, 'review', 1 + Math.floor(pileRand() * 400));
+  }
 
   // --- Composed Today, last, and only for TODAY ----------------------------
   //
