@@ -591,5 +591,34 @@ export function importWords(s: ImportSummary): string {
   if (s.unreadable.length > 0) {
     out += ` ${s.unreadable.length === 1 ? 'One line' : `${s.unreadable.length} lines`} could not be read.`;
   }
+  // THE ARRIVAL IS A FACT, NOT A DEBT (2.25.0 — entry 23's routing proposal).
+  //
+  // Everything above this line counts what came. None of it says the thing a
+  // large import most needs said, which is that the pile is not a backlog the
+  // reader has already failed to clear. The catalogue's measured case is a
+  // 1,173-item import leaving eleven of fourteen node kinds at zero: the app
+  // arrives knowing how to filter by place, by person and by container, and
+  // none of it can do anything, because nobody has been asked for a word.
+  //
+  // MODELLED ON THE AMNESTY (ADR-0043) AND ON ITS ONE HARD CONSTRAINT: an
+  // amnesty that sounds like absolution implies there was something to forgive.
+  // So this states the fact and the reason and stops. It does not reassure, it
+  // does not say "don't worry", and it does not promise the reader will file it
+  // later — which would be the debt, restated politely.
+  //
+  // Last on purpose: after what came and what did not, because the sentence is
+  // about the whole arrival rather than about any one count in it.
+  //
+  // AND ONLY WHEN SOMETHING ARRIVED THAT FILING IS A QUESTION ABOUT. The first
+  // version appended unconditionally and an existing assertion caught it: the
+  // summary for a one-line file is held to exactly `Found 1 action.`, on the
+  // rule that it never claims more than the file held. That rule is right. One
+  // action is not a pile, nothing about it invites sorting, and a sentence
+  // explaining that it has not been sorted is clutter answering a question
+  // nobody asked. The entry's case is the pile; this is where the pile starts.
+  if (s.projects + s.actions > 1) {
+    out += ' Nothing is filed, because filing was never asked for — it all arrives'
+      + ' as work, in the words it was written in.';
+  }
   return out;
 }

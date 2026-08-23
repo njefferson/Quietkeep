@@ -124,7 +124,31 @@ export const estimateWords = (n: NodeState): string | null => {
 
 /** The lengths worth offering, shortest first. Ordinary lengths of time, not a
  *  scale: nobody has 47 minutes and thinks of it that way. */
-export const HOW_LONG_CHOICES: readonly number[] = [5, 15, 30, 60, 120];
+export const HOW_LONG_CHOICES: readonly number[] = [5, 15, 30, 60, 120, 240];
+
+/**
+ * THE LONG END IS A DIFFERENT QUESTION (2.25.0 — entry 24's second candidate).
+ *
+ * The list stopped at two hours, so a long block of open time had no expression
+ * at all. Adding a longer number and leaving it to `fitsWithin` would have been
+ * the exact thing that entry refuses: at four hours almost everything fits, so
+ * the filter does nothing and the reader gets a longer list, which mistakes the
+ * constraint.
+ *
+ * **A block of open time is rarely duration-limited. It is want-limited.** What
+ * is scarce on a free afternoon is not minutes, it is the thing you actually
+ * want to do — so the answer is the Menu (law 6) and its heat signal, both of
+ * which already exist, and NOT a bigger worklist.
+ *
+ * So this threshold does not filter anything. `fitsWithin` behaves exactly as
+ * it always has; what changes is only what the standing line SAYS, which routes
+ * rather than narrows.
+ */
+export const LONG_STRETCH = 240;
+
+/** Is the answer a block of open time rather than a window to fit something into? */
+export const isLongStretch = (minutes: number | null): boolean =>
+  minutes !== null && minutes >= LONG_STRETCH;
 
 /**
  * Does this fit in the time you have?
@@ -162,6 +186,30 @@ export const fitsWithin = (n: NodeState, minutes: number | null): boolean => {
 export const howLongWords = (minutes: number): string =>
   `Showing what you said would fit in ${minutesWords(minutes)}, and anything you `
   + 'have never put a time on. Everything else is still held and still comes back.';
+
+/**
+ * What the long end says instead of what it filtered.
+ *
+ * It names the Menu and says why, and it states plainly that nothing has been
+ * narrowed — because at four hours `fitsWithin` admits nearly everything, and a
+ * line claiming a filter is on when it is doing nothing is a lie the reader
+ * cannot see through.
+ *
+ * `menuCount` of zero is its own case: pointing at an empty Menu teaches the
+ * reader the feature is broken, which is the failure `serves.ts` records and the
+ * roles door already avoids by hiding until a role exists. Here the door cannot
+ * be hidden, so the words carry it instead.
+ */
+export const longStretchWords = (minutes: number, menuCount: number): string => {
+  const opening = `${minutesWords(minutes)} is not really a question about what fits. `
+    + 'Nothing has been narrowed — everything is still here.';
+  return menuCount === 0
+    ? `${opening} A stretch like this is usually about what you want rather than what `
+      + 'is asking, and the Menu is where that lives when you have put something on it.'
+    : `${opening} A stretch like this is usually about what you want rather than what `
+      + `is asking — the Menu has ${menuCount === 1 ? 'one thing' : `${menuCount} things`} on it, `
+      + 'and none of them are asking.';
+};
 
 /** The device's answer to "how long have you got", like `where.now`.
  *

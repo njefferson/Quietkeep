@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.25.0 — CAPABILITY
+
+*2026-08-23*
+
+- **Bringing a planner in no longer reads as a backlog you have already fallen behind on.** The summary now says that nothing is filed, and that filing was never asked for — because it was not. Everything arrives as work, in the words you wrote it in, and it is usable before you have sorted any of it.
+- **You can say you have a long stretch, and the app stops pretending that is a filter.** Four hours was not on the list at all. It is now, and choosing it does not narrow anything — it says so, and points at the Menu instead. A free afternoon is rarely short of time; it is short of the thing you actually want to do, and the Menu is the one list where nothing is asking.
+- **What is deliberately NOT here.** Nothing sorts your import for you, nothing guesses which things belong where, and there is no progress bar for how organised you are. The research this came from refuses all three by name.
+- **What is still true and still not fixed.** A place you put on a project still does not reach the things inside it, so labelling in bulk is not possible yet.
+
 ## 2.24.1 — ITERATION
 
 *2026-08-23*

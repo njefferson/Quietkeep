@@ -53,6 +53,7 @@ import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents } from './detail-intents.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
+  isLongStretch, longStretchWords,
   getHowLong, setHowLong,
 } from '../duration.ts';
 import {
@@ -320,7 +321,16 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   if (getHowLong() !== howLongNow) setHowLong(howLongNow);
   if (howLongNote) {
     howLongNote.hidden = howLongNow === null;
-    if (howLongNow !== null) howLongNote.textContent = howLongWords(howLongNow);
+    // THE LONG END ROUTES INSTEAD OF NARROWING (2.25.0, entry 24). At four hours
+    // `fitsWithin` admits nearly everything, so the ordinary line would claim a
+    // filter that is not doing anything. A block of open time is want-limited,
+    // not duration-limited, so the words point at the Menu — which is law 6's
+    // surface and already built — rather than at a longer list.
+    if (howLongNow !== null) {
+      howLongNote.textContent = isLongStretch(howLongNow)
+        ? longStretchWords(howLongNow, menuCount(st))
+        : howLongWords(howLongNow);
+    }
   }
 
   const lensRootNode = lensRoot ? st.nodes.get(lensRoot) : undefined;

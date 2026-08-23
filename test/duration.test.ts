@@ -181,3 +181,57 @@ test('the words never round to something friendlier than the truth', () => {
   assert.equal(minutesWords(90), '1h 30m');
   assert.equal(minutesWords(245), '4h 5m');
 });
+
+// ——— THE LONG END IS A DIFFERENT QUESTION (2.25.0, entry 24) ———
+//
+// The catalogue's second candidate for this axis: at the long end the right
+// answer is not a longer duration-sorted worklist, because a block of open time
+// is want-limited rather than duration-limited. These assert that the long
+// answer ROUTES and does not narrow — and that the filter itself is untouched,
+// which is the half most likely to be broken by "improving" this later.
+
+/** The two shapes this axis turns on: a thing with a stated estimate, and the
+ *  ordinary case of a thing with none. Built as plain projections rather than
+ *  through the fold, because `fitsWithin` reads exactly these two fields. */
+const withEstimate = (m: number) => ({ estimateMinutes: m, timedMinutes: [] } as unknown as Parameters<typeof duration.fitsWithin>[0]);
+const noEstimate = () => ({ estimateMinutes: null, timedMinutes: [] } as unknown as Parameters<typeof duration.fitsWithin>[0]);
+
+test('a long stretch does not narrow anything — fitsWithin is untouched', () => {
+  assert.equal(duration.fitsWithin(withEstimate(200), duration.LONG_STRETCH), true);
+  assert.equal(duration.fitsWithin(noEstimate(), duration.LONG_STRETCH), true);
+  // And the short end still does what it always did, or this "fix" has quietly
+  // turned the filter off for everybody.
+  assert.equal(duration.fitsWithin(withEstimate(200), 15), false, 'a 200-minute thing does not fit 15');
+  assert.equal(duration.fitsWithin(noEstimate(), 15), true, 'no estimate fits any window');
+});
+
+test('the long end is recognised, and the short end is not', () => {
+  assert.equal(duration.isLongStretch(duration.LONG_STRETCH), true);
+  assert.equal(duration.isLongStretch(duration.LONG_STRETCH + 60), true);
+  assert.equal(duration.isLongStretch(120), false, 'two hours is still a window to fit into');
+  assert.equal(duration.isLongStretch(null), false, 'no answer is not a long answer');
+});
+
+test('the long line says nothing was narrowed, because nothing was', () => {
+  const w = duration.longStretchWords(duration.LONG_STRETCH, 4);
+  assert.match(w, /Nothing has been narrowed/,
+    'claiming a filter is on while it admits everything is a lie the reader cannot see through');
+  assert.match(w, /Menu/, 'it routes somewhere, and the somewhere is law 6');
+  assert.match(w, /4 things/, 'and it says what is actually there');
+  assert.match(w, /none of them are asking/, 'the Menu’s whole promise, restated where it is offered');
+});
+
+test('an empty Menu is its own case — never point at nothing', () => {
+  const w = duration.longStretchWords(duration.LONG_STRETCH, 0);
+  assert.ok(!/0 things|no things/.test(w), 'it does not announce an empty list');
+  assert.match(w, /when you have put something on it/,
+    'it says what would fill it — pointing at an empty surface teaches the feature is broken');
+});
+
+test('the long line never tells anybody what to do with the time', () => {
+  for (const n of [0, 1, 7]) {
+    const w = duration.longStretchWords(duration.LONG_STRETCH, n);
+    assert.ok(!/should|ought|why not|make the most|productive|deserve/i.test(w),
+      `"${w}" carries a verdict about how the time is spent`);
+  }
+});

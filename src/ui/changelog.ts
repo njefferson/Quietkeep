@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.25.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**Bringing a planner in no longer reads as a backlog you have already fallen behind on.** The summary now says that nothing is filed, and that filing was never asked for \u2014 because it was not. Everything arrives as work, in the words you wrote it in, and it is usable before you have sorted any of it.',
+      '**You can say you have a long stretch, and the app stops pretending that is a filter.** Four hours was not on the list at all. It is now, and choosing it does not narrow anything \u2014 it says so, and points at the Menu instead. A free afternoon is rarely short of time; it is short of the thing you actually want to do, and the Menu is the one list where nothing is asking.',
+      '**What is deliberately NOT here.** Nothing sorts your import for you, nothing guesses which things belong where, and there is no progress bar for how organised you are. The research this came from refuses all three by name.',
+      '**What is still true and still not fixed.** A place you put on a project still does not reach the things inside it, so labelling in bulk is not possible yet.',
+    ],
+  },
+  {
     triplet: '2.24.1',
     kind: 'ITERATION',
     date: '2026-08-23',

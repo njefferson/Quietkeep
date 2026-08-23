@@ -23,17 +23,41 @@
 // and a disabled hook protects nothing. It names the one command.
 
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 
-/** The same list `tour-shots.mjs` watches: what the rendered app is made of. */
-export const UI_SOURCES = [
-  'public/index.html', 'public/app.css',
-  'src/ui/work.ts', 'src/ui/clarify.ts', 'src/ui/about.ts',
-];
+/**
+ * EVERYTHING THAT CAN CHANGE A RENDERED STATE — which is not the same list
+ * `tour-shots.mjs` watches, and the first version of this file borrowed that
+ * one by mistake.
+ *
+ * Tour-shots watches five files because those are what its ten PHOTOGRAPHS are
+ * of. The a11y walk measures every state in the app: contrast per state, focus
+ * rings, target separation, axe, the 320px-at-200% reflow. Any module that
+ * renders can break any of those.
+ *
+ * Caught by noticing rather than by a failure: 2.25.0 changed a standing line
+ * rendered from `src/ui/app.ts`, which was not on the borrowed list, so the
+ * receipt would have stayed valid across a change to what a reader sees. A
+ * guard whose input set is narrower than the thing it guards is a guard with a
+ * hole in the middle, and it reports green through it.
+ *
+ * The cost is real and accepted: nearly every product commit now needs the
+ * walk. That is four minutes against what 2.23.1 cost, which was a red CI, a
+ * follow-up release, and a filter shipped into the mode built for the worst day.
+ */
+export const uiSources = () => {
+  const dir = join(ROOT, 'src', 'ui');
+  const ui = readdirSync(dir).filter((f) => f.endsWith('.ts')).sort()
+    .map((f) => join('src', 'ui', f));
+  return ['public/index.html', 'public/app.css', ...ui];
+};
+
+/** Kept as a name for the two callers that print it. */
+export const UI_SOURCES = uiSources();
 
 export const STAMP = join(ROOT, '.a11y-stamp');
 
