@@ -583,6 +583,12 @@ const REGISTRY = {
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
   'where you are': ['#where', '#where-note', '.card-where'],
+  // ASK ONCE (2.28.0). Its own state, because it is only on screen BEFORE any
+  // place exists and the chooser above is only on screen after — the two are
+  // never visible together, so folding them into one entry would mean one of
+  // the two selectors always matched nothing.
+  'the first place, asked for': ['#where-first', 'label[for="where-first"]',
+    { sel: '#where-first', pseudo: '::placeholder' }, '#where-first-set', '#where-first-hint'],
   // WHO IS HERE (2.26.0) — its own entry rather than a fold into the two
   // above, because a shared class is not coverage and the ids are what pin a
   // surface. `#with-row` is hidden until somebody has been named, so it is not
@@ -2460,6 +2466,54 @@ try {
       `${theme}/contents open: pressing a row puts the block at the top, under its ${arrived.pad}px clearance`
       + ` — ${arrived.mode} (${arrived.top}px off)`);
     await page.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo({ top: 0, behavior: 'auto' }); });
+
+    // ASK ONCE, BEFORE ANY PLACE EXISTS (2.28.0, entry 23). Driven HERE, ahead of
+    // everything below, because this state only exists on a store that has never
+    // named a place — and the block underneath is what names the first one. Once
+    // it has run, this row is gone for the rest of the walk and a registry entry
+    // for it would match nothing, which is the false receipt 2.24.0 cost.
+    //
+    // Three claims in the order they can fail: the sheet asks rather than
+    // showing an empty chooser; naming one through it works and applies it; and
+    // the ask is REPLACED by the chooser afterwards rather than both being on
+    // screen, which is what the shared slot means.
+    await page.waitForSelector('#situation-open:not([hidden])');
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
+    await page.waitForSelector('#where-first-row:not([hidden])');
+    const chooserBefore = await page.evaluate(() =>
+      document.querySelector('#where-row')?.hidden ?? null);
+    (chooserBefore === true ? pass : fail)(
+      `${theme}/first place: with none named, the sheet ASKS instead of showing an empty chooser (chooser hidden=${chooserBefore})`);
+    const askHint = await page.locator('#where-first-hint').innerText();
+    (/Only if it helps/.test(askHint) ? pass : fail)(
+      `${theme}/first place: the ask is visibly declinable ("${askHint.slice(0, 48)}")`);
+    (!/must|need to|should|required|set this up/i.test(askHint) ? pass : fail)(
+      `${theme}/first place: and nothing in it reads as a demand`);
+    await auditContrast(page, 'the first place, asked for', theme);
+    await auditAxe(page, 'the first place, asked for', theme);
+    await auditNames(page, 'the first place, asked for', theme);
+    await auditSeparationAndTargets(page, 'the first place, asked for', theme);
+    await auditFocusRings(page, 'the first place, asked for', theme, ['#where-first', '#where-first-set']);
+    await page.fill('#where-first', 'At my desk');
+    await page.click('#where-first-set');
+    await page.waitForSelector('#where-row:not([hidden])');
+    const askAfter = await page.evaluate(() =>
+      document.querySelector('#where-first-row')?.hidden ?? null);
+    (askAfter === true ? pass : fail)(
+      `${theme}/first place: naming one replaces the ask with the chooser (ask hidden=${askAfter})`);
+    const appliedNote = await page.locator('#where-note').innerText();
+    // Case-insensitive on purpose: `whereWords` lowercases the first character
+    // so "At my desk" reads as "at my desk" mid-sentence, which is correct copy
+    // and which this assertion originally called a defect.
+    (/at my desk/i.test(appliedNote) ? pass : fail)(
+      `${theme}/first place: and it is APPLIED, not merely created ("${appliedNote.slice(0, 44)}")`);
+    // Back to everywhere, so nothing below is measured through a filter it did
+    // not ask for.
+    await page.selectOption('#where', '');
+    await page.waitForSelector('#where-note', { state: 'hidden' });
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
 
     // WHERE YOU ARE (2.2.0, ADR-0092), driven end to end: a place is named on a
     // thing's own sheet, then chosen on the work surface. Driven rather than

@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.28.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**The app asks where you are, once, at the moment it would matter.** Open *What\u2019s the situation?* before you have named anywhere and it now asks, instead of showing you a chooser with nothing in it. Name one and it is applied straight away \u2014 you do not have to go and find it again.',
+      '**It asks once and then never again.** The question is replaced by the ordinary chooser the moment a place exists, so there is nothing to dismiss and nothing that comes back.',
+      '**Saying no costs nothing.** Close the sheet, or do not type. Nothing needs a place, and anything without one turns up wherever you are \u2014 which the sheet says out loud rather than leaving you to find out.',
+      '**What is deliberately NOT here.** No setup screen, no template to pick, and nothing asking you to get organised before you can use the app. The research this came from refuses all three by name, and it refuses guessing a place from what you do even more firmly.',
+      '**And nothing similar was added for roles or projects**, though the plan had it. The place question works because you opened a screen to answer it and half the answer was missing. There is no equivalent moment for a role, and inventing one would be a setup prompt wearing a question mark.',
+    ],
+  },
+  {
     triplet: '2.27.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

@@ -277,6 +277,15 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   const whereRow = document.querySelector<HTMLElement>('#where-row');
   const whereNote = document.querySelector<HTMLElement>('#where-note');
   const places = allContexts(st);
+  // ASK ONCE, IN THE FLOW (2.28.0, entry 23). The chooser and the ask are the
+  // same slot in two states: with no place named there is nothing to choose
+  // between, and hiding the control taught the reader the app could not do this
+  // at all. Now the sheet asks for the first one, here, at the moment they came
+  // to answer exactly this question.
+  const firstRow = document.querySelector<HTMLElement>('#where-first-row');
+  const firstHint = document.querySelector<HTMLElement>('#where-first-hint');
+  if (firstRow) firstRow.hidden = places.length > 0;
+  if (firstHint) firstHint.hidden = places.length > 0;
   if (whereSel && whereRow) {
     whereRow.hidden = places.length === 0;
     const keep = whereNow ?? '';
@@ -1778,6 +1787,31 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
     const v = (e.target as HTMLSelectElement).value;
     setSituation(whereNow, v ? Number(v) : null);
+  });
+
+  // THE FIRST PLACE, NAMED AND APPLIED IN ONE GESTURE (2.28.0). Creating it is
+  // not enough on its own — a place nothing carries filters nothing — so this
+  // also SETS it as where you are, which is what the reader was here to do. The
+  // work of attaching it to anything is theirs and is cheap now that a place on
+  // a container reaches what is under it (2.27.0).
+  const nameFirstPlace = (): void => {
+    const input = document.querySelector<HTMLInputElement>('#where-first');
+    const name = input?.value.trim();
+    if (!name) return;
+    void session.commit(ctx => [{
+      id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+      kind: 'context.created', node: ctx.id(), payload: { name },
+    } as unknown as AppEvent]).then(() => {
+      if (input) input.value = '';
+      const made = allContexts(session.state()).find(c => c.title === name);
+      if (made) setSituation(made.id, howLongNow);
+      else refreshAll();
+    }).catch(() => { /* the sheet stays as it was */ });
+  };
+  document.querySelector<HTMLButtonElement>('#where-first-set')
+    ?.addEventListener('click', nameFirstPlace);
+  document.querySelector<HTMLInputElement>('#where-first')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); nameFirstPlace(); }
   });
 
   document.querySelector<HTMLSelectElement>('#with-who')?.addEventListener('change', (e) => {

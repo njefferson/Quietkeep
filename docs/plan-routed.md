@@ -92,6 +92,36 @@ a second one, riding the rule the `filed` route already settled (ADR-0073): a
 container gets made where work already is, never by promotion, never as a
 precondition.
 
+#### NOT BUILT, and the reason is the mechanism rather than the effort (2.28.0)
+
+Phase 1 shipped and this does not follow from it, because what makes phase 1
+legitimate does not exist here.
+
+**Place had a specific dead end.** Somebody opens the situation sheet to answer
+*what is my situation*, and the control for half the answer is not there. That
+is a real moment, they arrived at it voluntarily, and closing the sheet declines
+it. The ask occupies a slot that was already there and already empty.
+
+**Role has no such dead end.** Its door is `hidden` until a role exists, so
+nothing invites anybody toward a missing control — there is no moment of asking
+and not being able to. The route that does exist, on a thing's own sheet, is
+always available and hides nothing.
+
+Manufacturing a moment would mean a standing prompt on the work surface asking
+for a role, which is **a first-run organising flow in everything but name** —
+refused by entry 23's own proposal, by name, along with the setup wizard and the
+template chooser.
+
+**Filing a container is the same shape.** The only moment where the app could
+ask is the offer card, and that is where somebody goes to START something: entry
+1 makes it the hardest moment there is, and entry 15 is why a question there
+lands as the app asking for admin when you came to work.
+
+**What would change this** is a dead end appearing — a surface somebody opens
+expecting to answer a question about roles or containers, and finding it
+missing. None exists today. If one is built later, this phase's mechanism is
+phase 1's and should be copied rather than reinvented.
+
 ### Phase 3 — the arrival is a fact, not a debt
 
 **Entry 23, same proposal.** One line at import, modelled on the amnesty's own
@@ -277,7 +307,13 @@ and watch.
 
 ## Resume state
 
-- Phases 1 through 7: not started.
+- **Phases 3, 4, 5, 6 and 7: DONE** — 2.25.0, 2.26.0 and 2.27.0.
+- **Phase 1: DONE in 2.28.0.** The trigger the entry does not specify is the
+  situation sheet with no place named: a question asked, at the moment it would
+  change the answer, in a slot that was already empty. Small and reversible, as
+  entry 24 says to ship a mechanism whose comparison has never been tested.
+- **Phase 2: NOT BUILT, deliberately** — see its own section. The mechanism does
+  not transfer, and forcing it would build the flow entry 23 refuses by name.
 - **Production:** 2.24.1 (`0bb59a7`), Spine and Deploy both success, read from
   the runs. Production itself is unread and cannot be read from a session; the
   device's own diagnostic is the route (V-15).

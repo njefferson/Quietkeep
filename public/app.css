@@ -686,7 +686,14 @@ button.ghost,
  * and nothing had measured them because no registry entry named the pseudo.
  * Fixed for every input on the sheet rather than only the one that was
  * measured, since they all inherited the same default. */
+/* `opacity: 1` is the load-bearing half. Browsers apply their own reduced
+   opacity to a placeholder, which drops even `--ink-soft` below the 4.5:1 floor
+   — measured at 4.08:1 light and 3.78:1 dark when `.lens-row input` was added in
+   2.28.0 without joining this list. Adding the selector here rather than writing
+   a second rule: identical treatment belongs in one place, or the next change
+   reaches one of them and not the other. */
 .detail-row input::placeholder,
+.lens-row input::placeholder,
 #detail-context::placeholder { color: var(--ink-soft); opacity: 1; }
 
 /* SEPARATION ON BOTH SIDES (2.9.3). Reported from a device: "Bring a copy back"
@@ -2133,6 +2140,26 @@ summary::-webkit-details-marker { display: none; }
   font: inherit;
 }
 .detail-row input[type="number"] { width: 5rem; max-width: 100%; }
+
+/* THE ASK-ONCE FIELD (2.28.0). `.lens-row` had never held an `<input>` — only a
+   label and a `<select>`, which size themselves — so the new field rendered
+   185x21 and the target gate refused it: 21px against a 44px floor, which is a
+   control somebody's finger cannot reliably hit.
+   The same declarations as `.detail-row input` and deliberately not a shared
+   class: these two rows are different shapes with different rules, and merging
+   them to save eight lines is how one of them later inherits a change meant for
+   the other. No new colour pair — every token here is already in the gate. */
+.lens-row input {
+  min-height: var(--target);
+  padding: 0.4rem 0.6rem;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font: inherit;
+  flex: 1 1 8rem;
+  min-width: 0;
+}
 /* At 320px/200% the repeat row cannot fit "every [n] days, relaxed for [n]" on
    one line — the inline labels and fixed-width boxes overflowed by 121px. Let
    every child shrink, and let the row become a column when it must. */
