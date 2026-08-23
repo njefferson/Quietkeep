@@ -251,6 +251,10 @@ export const PLAIN_CHROME_HIDDEN = [
   // over ONE thing and takes the choosing away. A control asking *where are
   // you, how long have you got* is two questions to answer before anything can
   // begin, on the day nobody can answer them.
+  '#foot-manual',     // the manual link, and the separator with it (2.29.0). The
+                      // footer itself is KEPT below because the accessibility
+                      // statement is an obligation; a reference is not, and on
+                      // this day it is one more thing.
   '#situation-open',  // the door. Two questions, on the day questions are the cost.
   '#where-note',      // and its consequence: the list is narrowed by place.
   '#how-long-note',   // and by time. Both say what the pile is doing, and this

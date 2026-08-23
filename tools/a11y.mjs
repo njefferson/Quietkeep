@@ -2196,7 +2196,23 @@ try {
         if (!off(el) || el.closest('button, a, summary, label')) continue;
         if (el.classList.contains('visually-hidden')) continue;
         if (el.querySelector('p, h1, h2, h3, li')) continue;
-        const n = ((el.textContent || '').trim().match(/\S+/g) ?? []).length;
+        // `innerText`, NOT `textContent` (2.29.0). The two counters in this
+        // block disagreed about visibility: controls are filtered by
+        // `checkVisibility()` one at a time, while the words were read off
+        // `textContent`, which includes text inside HIDDEN descendants.
+        //
+        // So this counted words no reader can see. It surfaced when the footer's
+        // manual link was stripped for this mode — the control count correctly
+        // fell to ten and the word count stayed at twenty-five, still counting
+        // the stripped link's own words. Measuring what is on the screen is the
+        // whole point of this ceiling; a number that includes hidden text is
+        // measuring the markup instead.
+        //
+        // The ceiling is unchanged and still calibrated: on this fixture the
+        // three other lines are unaffected (a wordmark, a receipt and an update
+        // line have no hidden children), so this only removes what was wrongly
+        // added.
+        const n = ((el.innerText || '').trim().match(/\S+/g) ?? []).length;
         if (n === 0) continue;
         words += n;
         lines.push(`${el.id ? `#${el.id}` : el.tagName.toLowerCase()} (${n}w)`);

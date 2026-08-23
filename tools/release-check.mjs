@@ -57,6 +57,7 @@ const SURFACE = [
   'public/index.html',
   'public/app.css',
   'public/why.html',
+  'public/manual.html',
   'public/why.css',
   'public/manifest.webmanifest',
 ];
