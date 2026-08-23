@@ -48,7 +48,7 @@ import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
-import { WHERE_KEY, allContexts, contextNames, fitsHere, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
+import { WHERE_KEY, allContexts, contextNames, fitsHere, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents } from './detail-intents.ts';
 import {
@@ -1233,6 +1233,42 @@ export async function main(edition?: Edition): Promise<void> {
         : `${unnamed === 1 ? '1 other thing' : `${unnamed} other things`} `
           + 'you are holding belong to no named role. That is ordinary — most things do not.';
       rest.hidden = false;
+    }
+
+    // THE PLACES YOU HAVE (2.33.0) — see the note on the markup for why this
+    // lives on this sheet and why it is a readout. Reached-count, not
+    // attached-count: `placesReaching` walks ancestors, so a place on a project
+    // reports the work it actually covers.
+    const placesList = document.querySelector<HTMLUListElement>('#places-list');
+    const placesWords = document.querySelector<HTMLElement>('#places-words');
+    if (placesList && placesWords) {
+      const places = allContexts(st);
+      const work = heldWork(st);
+      if (places.length === 0) {
+        // IN WORDS RATHER THAN BLANK, the rule `serves.ts` already follows: a
+        // surface that renders nothing teaches the reader the feature is broken.
+        placesWords.textContent = 'You have not named anywhere yet. Nothing needs one —'
+          + ' anything without a place turns up wherever you are.';
+        placesList.replaceChildren();
+      } else {
+        placesWords.textContent = 'Where work can be done, and how much each one reaches.'
+          + ' A place on a project reaches everything inside it.';
+        placesList.replaceChildren(...places.map(c => {
+          const reached = work.filter(n => placesReaching(st, n).some(p => p.id === c.id)).length;
+          const li = document.createElement('li');
+          li.className = 'roles-row';
+          const name = document.createElement('span');
+          name.className = 'roles-name';
+          name.textContent = c.title || '(unnamed)';
+          const held = document.createElement('span');
+          held.className = 'roles-held';
+          held.textContent = reached === 0
+            ? 'nothing right now'
+            : reached === 1 ? '1 thing' : `${reached} things`;
+          li.append(name, held);
+          return li;
+        }));
+      }
     }
 
     // WHERE THE TIME ACTUALLY WENT (2.24.0). The other half of this sheet's own

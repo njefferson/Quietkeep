@@ -2487,6 +2487,26 @@
     <ul id="roles-list" class="roles-list" aria-labelledby="roles-load-heading"></ul>
     <p id="roles-unnamed" class="detail-hint"></p>
 
+    <!-- THE PLACES YOU HAVE, AND WHAT EACH REACHES (2.33.0).
+         Reported from a device: "I do not know how I would view my list of
+         projects to see what came through, or my contexts." `allContexts` was
+         called in exactly two places before this — the situation sheet's
+         chooser and an item's own panel — so a place existed only inside a
+         control that filters BY it. There was nowhere to ask what you have.
+         It sits on this sheet because this sheet already answers "what is
+         carrying what" for roles, and a second surface for the same question
+         is the thing to avoid. Counted through `placesReaching`, so a place on
+         a project reports everything inside it rather than the one node
+         wearing the label — which is the whole reason to put a place on a
+         container.
+         A READOUT AND NEVER A WORKSPACE: no acts, nothing to rearrange, sorted
+         by name and never by size. `docs/nd-collisions.md` entry 18 refuses
+         curation surfaces permanently, and the difference is that nothing here
+         can be done TO anything. -->
+    <h3 id="places-heading" class="about-section">The places you have</h3>
+    <p id="places-words" class="detail-hint"></p>
+    <ul id="places-list" class="roles-list" aria-labelledby="places-heading"></ul>
+
     <!-- WHERE THE ATTENTION ACTUALLY WENT (2.24.0, the plan's phase 5 item).
          This sheet has been titled "Where the attention is" since 2.6.0 and has
          shown a COUNT OF LIVE WORK, which answers a different question. Load is

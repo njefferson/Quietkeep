@@ -149,7 +149,16 @@ const BUDGET = {
   // 11,000px; it was cut to thirty-three and that budget passes untouched at
   // 10,893px, which is the version of "deliberate" this file actually wants —
   // raise the one that had to move, not both.
-  words: 3570,
+  // 3570 -> 3576 on 2026-08-23 (2.33.0): "The places you have", the heading over
+  // the new readout on the attention sheet. Four words plus its own id.
+  //
+  // Reported from a device: "I do not know how I would view my list of projects
+  // to see what came through, or my contexts." `allContexts` was called in
+  // exactly two places in the whole app — the situation sheet's chooser and an
+  // item's own panel — so a place existed only inside a control that filters BY
+  // it, and there was nowhere to ask what you have. A heading is what makes the
+  // block findable; the line under it is rendered, so it costs nothing here.
+  words: 3576,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
