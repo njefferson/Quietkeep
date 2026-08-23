@@ -228,6 +228,22 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run thesis:check
 
+      # The manual, the same way and for the same reason — generated from
+      # docs/manual.md by the same converter the thesis uses.
+      - name: Manual page in sync with the doc
+        if: ${{ !cancelled() }}
+        run: npm run manual:check
+
+      # AND THE MANUAL IS TRUE, not merely current. `--check` above proves the
+      # page matches its source and can say nothing about whether the source
+      # describes the app that exists. A manual that is merely current is the
+      # more dangerous of the two failures: it reads as authoritative and is
+      # wrong. Both directions — every surface a reader can meet is named, and
+      # nothing named has since been removed.
+      - name: The manual describes the app that exists
+        if: ${{ !cancelled() }}
+        run: npm run manual:coverage
+
       # The unit tests prove the spine folds. They cannot prove the bundle
       # loads, that Dexie opens in a browser, or that a captured thought comes
       # back — which is the app's one promise. Only driving the built page does

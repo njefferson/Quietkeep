@@ -348,6 +348,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await page.goto(`${url.replace(/\/$/, '')}/why.html`, { waitUntil: 'load' });
   is(/Planning for Humans/i.test(await page.locator('body').textContent() || ''), true,
     'the thesis page is really there and renders');
+  // THE MANUAL, THE SAME WAY (2.29.0). A second hosted page is a second chance
+  // at the navigation bug described above — it is in the worker's SHELL, and the
+  // fallback that once answered every navigation with the app shell is exactly
+  // what would make this land on the main screen instead. Asserted, not assumed.
+  await page.goto(`${url.replace(/\/$/, '')}/manual.html`, { waitUntil: 'load' });
+  const manualText = await page.locator('body').textContent() || '';
+  is(/How Quietkeep works/i.test(manualText), true,
+    'the manual is really there and renders');
+  is(/Every screen/i.test(manualText), true,
+    'and it is the whole page, not the app shell wearing its URL');
   await page.goto(url, { waitUntil: 'load' });
   await ready();
 

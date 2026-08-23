@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.29.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**There is a manual now — *How it works*, linked at the bottom of every screen.** Everything the app can do, what each screen is for, and where to look when something is not where you expected.',
+      '**It is written in three depths and you are meant to stop early.** *In a minute* is the whole idea in five points. *When you want to* is how to do a particular thing. *Every screen* is the complete list, for when something is in front of you and you do not know what it is.',
+      '**It is not in the ⓘ**, on purpose. That answers what this app is and how to install it; a reference is a different kind of reading, and burying it there would have made both harder to use.',
+      '**And it cannot quietly go out of date.** It is generated from one source, and a check refuses to build if any screen exists that the manual does not name, or if the manual names one that has been removed. A manual that is merely current would be worse than none — it reads as authoritative and is wrong.',
+      '**The reasoning is still separate**, in *Why it works this way*, which the manual links to. That is where the research, the sources and the things that turned out not to be true live.',
+    ],
+  },
+  {
     triplet: '2.28.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

@@ -128,7 +128,12 @@ const BUDGET = {
   //
   // Nothing on the first screen changes: the row is inside the situation sheet,
   // behind a door, and it is hidden the moment a place exists.
-  words: 3530,
+  // 3530 -> 3534 on 2026-08-23 (2.29.0): "How it works", the manual's link, in
+  // the footer beside the accessibility statement. Four words including the
+  // separator, on every screen, for a page that answers every question this app
+  // can be asked. The alternative was another destination inside the ⓘ, which
+  // is already six deep and held to 3,000px each.
+  words: 3534,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

@@ -1664,7 +1664,27 @@
 </dialog>
 
 <footer id="foot" class="foot">
+  <!-- THE MANUAL, IN THE FOOTER AND NOT IN THE (i) (2.29.0).
+       The ⓘ answers Doctrine §7e's list — what this is, what it is not, how to
+       install it, what changed, who to tell — and it is already six
+       destinations deep, each held to 3,000px of scroll by `size-check.mjs`. A
+       feature reference is a different kind of reading: you arrive knowing what
+       you want, scan for one heading, and leave. Filing it behind the ⓘ would
+       make both worse.
+       Here instead, beside the accessibility statement, which is the same kind
+       of link: permanent, quiet, on every screen, and never in the way. Two
+       words of the reading budget. -->
   <p>Local-first. No accounts, no telemetry, no server.
+     <!-- STRIPPED IN "JUST ONE THING" (2.29.0), and the separator goes with it.
+          The footer is KEPT in that mode because the accessibility statement is
+          an obligation rather than furniture. A manual link is neither: on the
+          worst day it is one more thing on a screen that exists to have almost
+          nothing on it. The gate caught this immediately — 11 controls against a
+          ceiling of 10, and 25 words of standing text against 21.
+          The separator is inside the span because it is four words that only
+          make sense with the link, and leaving it behind kept the count one over
+          the ceiling while looking like a stray middot. -->
+     <span id="foot-manual"><a href="/manual.html">How it works</a> · </span>
      <a href="https://noahjefferson.pages.dev/accessibility">Accessibility</a></p>
   <!-- The build, ON THE MAIN SCREEN and not only inside the (i) panel.
        It was only in the panel title, so a screenshot of the app could not say
