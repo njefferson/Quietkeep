@@ -701,9 +701,16 @@ closed question filed under this heading now, so the two cannot drift again.
   cancelled — and 2.24.0 sits on top of it with its own run going as this is
   written. The a11y walk was run LOCALLY on 2.24.0's markup before the commit
   and read green in both themes; the commit hook refuses it otherwise.)
-- **https://quietkeep.pages.dev** — production, **2.14.1** (promoted 2026-08-22,
-  `74dca96`, and the version read back from `main`'s own `sw.js` rather than
-  from the promote's output. Sixteen releases are staged past it.)
+- **PRODUCTION READ FROM THE DEVICE, 2026-08-23.** A §7f diagnostic taken on the
+  installed instance reports `Build: 2.24.1` and
+  `Service worker cache: quietkeep-sync-2.24.1`, on `quietkeep-sync.pages.dev`,
+  with no newer version waiting. The deployed worker carries the released
+  triplet, so the 2.24.1 promote is confirmed by bytes rather than by a green
+  Cloudflare step — V-15's route, used as V-15 says to use it, because a session
+  still cannot fetch any `pages.dev` host from here.
+- **https://quietkeep.pages.dev** — production, **2.24.1** (promoted 2026-08-23,
+  `0bb59a7`, Spine and Deploy both success, and the version read back from the
+  DEVICE rather than from the promote's output or from `main`'s own `sw.js`.)
 - **This block said 2.12.2 and 2.11.0 until 2026-08-20**, through two promotes,
   and `handoff-check.mjs` is what noticed — because it asks whether the version
   beside the URL is the CURRENT one, which is a question no reader of this file
