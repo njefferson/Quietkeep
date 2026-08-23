@@ -107,6 +107,11 @@ no record of what you looked for.
 **What you are holding** is the complete list, and the line above it — *nothing
 here has gone quiet* — is the standing proof that nothing was lost.
 
+The list itself is folded away until you ask for it. **Every one of them** opens
+it, in place, without leaving the screen; the quiet line underneath names the
+groups it holds. It is shut to begin with because on a full store it is longer
+than everything else put together.
+
 - **How it hangs together** shows the tree, on request. It is never the screen
   you land on.
 - **Looking at** narrows the list to one branch without hiding anything from
@@ -143,6 +148,36 @@ marked done, all of it retrievable.
 *Your data* exports everything as one file, and imports one back. An import
 always starts a fresh store and never merges. Nothing you write is ever lost to
 an update.
+
+### Everything else the app can do
+
+**Things you can do**, behind *More*, holds the things that do not belong on any
+screen you use daily:
+
+- **Send to my calendar** puts one item in your own calendar as an event. The
+  app never sends anything by itself and has no reminders of its own — the
+  calendar is what reaches you.
+- **Show the walkthrough again** replays the six screens you saw the first time.
+  Nothing is lost by watching it twice and it changes nothing.
+- **Print today** is one page: what is next, what else is ready, what is with
+  other people, and what is coming.
+- **Telling someone where things are** writes up what has changed since you last
+  told anyone, plus what is still outstanding, and you choose what goes in it.
+  **Show me** first, then **Copy it**, **Save as Markdown**, **Save as a
+  spreadsheet** or **Print it**.
+- **Getting things in from somewhere else** explains the way in from other apps.
+  Safari gives web apps no share sheet, so it is a Shortcut that opens this
+  address — a browser limit rather than a choice made here.
+
+And two sets of invented work, for trying the app on something:
+
+- **Add some sample work** puts a small, tidy set into the store you already
+  have. It is yours to sort out afterwards; nothing takes it back out.
+- **Make a set to try things on** is different in kind. It writes a *file* of
+  about fifteen hundred invented things — one of every kind the app has, and
+  most of them unsorted, which is what a real store actually looks like — and
+  changes nothing until you import it. Importing it replaces what is on the
+  device, so take a copy under *Your data* first. That is the way back.
 
 ### When something is wrong
 
@@ -221,6 +256,8 @@ It is titled with the thing itself rather than with a name of its own, which is
 why it is not in the list below.
 
 The named ones:
+- **Every one of them** — the fold that opens the complete list, at the bottom
+  of *What you are holding*.
 - **More** — the way to everything below.
 - **How it works** · **Help** · **Your data** · **Things you can do** ·
   **Settings** — the five destinations behind *More*.

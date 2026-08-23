@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.32.0 — CAPABILITY
+
+*2026-08-23*
+
+- **The invented set now looks like a real store, not a tidy one.** It was built to contain one of every kind, and to manage that three quarters of it sat inside a project and over half carried a place. A store read from a real device is the other way round — 1,432 things, 1,255 of them with no project, no place, nobody named and no estimate. The set is about fifteen hundred things now and most of them are unsorted.
+- **That matters because it is what everything gets judged against.** Anything that helps you narrow what you are offered works beautifully on a set where everything is labelled, and does almost nothing on a store where nothing is. A set tidier than reality does not fail — it agrees with you.
+- **The manual now covers *Things you can do*.** Sending an item to your calendar, replaying the walkthrough, printing today, telling someone where things are and its four formats, bringing work in from elsewhere, and both sets of invented work — including which one touches your store and which one only writes a file.
+- **And *Every one of them*** — the fold that opens the complete list — **is described at last.** The manual said *What you are holding* was the complete list without saying how to see it.
+
 ## 2.31.2 — ITERATION
 
 *2026-08-23*

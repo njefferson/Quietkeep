@@ -695,7 +695,12 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.31.2**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.32.0**. The
+  invented set was three-quarters filed where a real store is seven-eighths
+  not, so every narrowing feature was judged against data that flattered it;
+  it is about fifteen hundred things now, mostly unsorted. The manual gained
+  the *Things you can do* section it never had, and the fold.
+- **Superseded, and kept for the record: 2.31.2.** The
   walkthrough was written for somebody who already knew the app: it invited the
   storage ask before saying to install, set control names in italics on the one
   screen where a reader cannot tell a name from emphasis, and referred to the i
@@ -710,12 +715,13 @@ closed question filed under this heading now, so the two cannot drift again.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.30.1** (2.30.0 promoted at
-  `51ef0a6` so the new section could be read against a real store — the one
-  that prompted it lives here, not on staging — and 2.30.1, the manual, at
-  `7d6ca48`. Spine and Deploy success on both, read from the runs, and 2.30.1
-  confirmed by cache triplet from the device: `quietkeep-sync-2.30.1`, worker
-  serving, nothing newer waiting.)
+- **https://quietkeep.pages.dev** — production, **2.31.2** (2.30.2 through
+  2.31.2 promoted at `cd2a5a8`, Spine, Deploy and the push check all success,
+  read from the runs. Five releases, every one of them from a device report:
+  the version stamp's landing, the rewritten walkthrough, install-before-ask,
+  the control-name outlines, and the fold's chrome. 2.30.1 was the last reading
+  confirmed by cache triplet from the device — `quietkeep-sync-2.30.1`, worker
+  serving, nothing newer waiting — and this one is evidenced by the runs.)
 - **An earlier reading the same day said only "2.29.0", with no cache name, and
   was recorded as the weaker kind.** It has been superseded rather than kept:
   the cache triplet answers the question the bare version cannot, which is
