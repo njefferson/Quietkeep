@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.30.2',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**Tapping the version number no longer hides the report\u2019s own buttons.** It opened the report scrolled so far down that *Copy it* and *Save it as a file* sat above the top of the panel \u2014 measured at 156px and 104px out of sight. They appear only once the report exists, so they were being revealed where nobody could see them, and there was no way to get the report out of the app.',
+      '**It lands on the buttons now, with the report directly beneath them.** Which is the order it reads in anyway. What the keyboard and a screen reader land on has not changed \u2014 that is still the report itself.',
+      '**Both taps, not just the first.** Tapping the version number again while the report was already open landed the same wrong way, and fixing only the first would have left half of it.',
+      '**And the walk now takes that door.** Every check on the report passed throughout, because they all reached it the short way and measured the screen rather than the route. Arriving the way a finger does is its own thing to test, and it is tested now.',
+    ],
+  },
+  {
     triplet: '2.30.1',
     kind: 'ITERATION',
     date: '2026-08-23',

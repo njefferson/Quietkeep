@@ -2220,7 +2220,9 @@ export async function mountAbout(
   //
   // Focus lands on the REPORT rather than on the control that produced it,
   // because the report is the thing that was asked for. `#diagnostic-text`
-  // carries tabindex="0" already, so it can take focus and be read.
+  // carries tabindex="0" already, so it can take focus and be read. WHERE THE
+  // PAGE SCROLLS TO IS A SEPARATE QUESTION and 2.30.2 answers it separately —
+  // see `land` below.
   document.querySelector<HTMLButtonElement>('#build-version')?.addEventListener('click', () => {
     // The diagnostic is in the panel itself now — About is no longer a fold
     // inside it, because the ⓘ IS about (1.40.0).
@@ -2230,16 +2232,40 @@ export async function mountAbout(
     const out = document.querySelector<HTMLElement>('#diagnostic-text');
     if (!out) { btn.scrollIntoView({ block: 'center' }); btn.focus(); return; }
 
+    // SCROLL AND FOCUS ARE TWO DECISIONS, and 1.24.1 treated them as one
+    // (2.30.2). It moved the landing onto the report because the report is the
+    // thing that was asked for — true — and in doing so put the heading, the
+    // sentence saying what the report contains, and all three controls above
+    // the top of `#about-body`.
+    //
+    // `Copy it` and `Save it as a file` are `hidden` until the report exists,
+    // so that landing REVEALED them out of sight: measured by the walk at
+    // 156px and 104px above the scroller. A control that appears where nobody
+    // can see it is worse than one that is missing — the reader has no reason
+    // to suspect anything appeared, and the report they were just handed has
+    // no way out of the app.
+    //
+    // So the scroll goes to the ROW OF CONTROLS, which puts the report directly
+    // beneath them in the order it reads anyway, and the focus still goes to
+    // the report — with `preventScroll`, because without it focusing scrolls
+    // the report back to the top and silently restores the defect.
+    const row: Element = btn.closest('.about-actions') ?? out;
+    const land = (): void => {
+      row.scrollIntoView({ block: 'start' });
+      out.focus({ preventScroll: true });
+    };
+
     // Already showing: no second press. Pressing again would rebuild the report
     // and yank the scroll out from under somebody who is already reading one.
-    if (out.hidden === false) { out.scrollIntoView({ block: 'start' }); out.focus(); return; }
+    // Lands the same way — fixing only the asynchronous path below would leave
+    // half the defect, on the tap somebody makes second.
+    if (out.hidden === false) { land(); return; }
 
     // BUILDING IT IS ASYNCHRONOUS — it reads storage estimates, the cache
     // names and the worker state. So `hidden` is still true on the next line,
     // and a synchronous check here would have quietly reverted this fix to the
     // behaviour it replaces: report generating somewhere behind, focus parked
     // on the button that started it.
-    const land = (): void => { out.scrollIntoView({ block: 'start' }); out.focus(); };
     const obs = new MutationObserver(() => {
       if (out.hidden !== false) return;
       obs.disconnect();

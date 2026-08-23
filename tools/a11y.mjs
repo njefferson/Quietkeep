@@ -4112,6 +4112,62 @@ try {
     await auditNames(page, 'diagnostic taken', theme);
     await auditSeparationAndTargets(page, 'diagnostic taken', theme);
     await auditFocusRings(page, 'diagnostic taken', theme, ['#diagnostic-show', '#diagnostic-copy']);
+
+    // THE OTHER DOOR, DRIVEN — because the block above measures the ROOM and
+    // says nothing about the ROUTE (2.30.2).
+    //
+    // Everything above reaches the diagnostic the short way: `openSurface`,
+    // then a click straight on `#diagnostic-show`. The version stamp in the
+    // footer is the other door §7f asks for, it is the one a finger actually
+    // takes, and it is a completely different piece of code — it opens the
+    // panel, presses the button for you, waits for an ASYNC build and then
+    // scrolls. Every audit on the state passed for releases while that landing
+    // put the controls out of reach, because no assertion ever arrived by it.
+    //
+    // What it lands on is the whole point. `Copy it` and `Save it as a file`
+    // are `hidden` until the report exists, so they are REVEALED — into the
+    // region above the fold, if the landing scrolls to the report text. A
+    // control that appears where nobody can see it is worse than one that is
+    // missing: the reader has no reason to suspect anything appeared.
+    //
+    // MEASURED AGAINST THE SCROLLER, never the viewport — `#about-body` is the
+    // box that scrolls, the dialog's title bar above it never moves, and
+    // measuring from the viewport would report that bar's height as error on a
+    // landing that is perfect. Same correction ADR-0100 made for the runway.
+    await page.click('#about-close');
+    await page.waitForSelector('#about', { state: 'hidden' });
+    await page.click('#build-version');
+    await page.waitForSelector('#diagnostic-text:not([hidden])');
+    // The landing is scheduled off a MutationObserver, so the report being
+    // visible does not mean the scroll has happened yet.
+    await page.waitForTimeout(400);
+    const door = await page.evaluate(() => {
+      const body = document.querySelector('#about-body');
+      const origin = body ? body.getBoundingClientRect().top : 0;
+      const at = (sel) => {
+        const el = document.querySelector(sel);
+        if (!el || el.hidden) return null;
+        return Math.round(el.getBoundingClientRect().top - origin);
+      };
+      return {
+        focused: document.activeElement?.id ?? null,
+        copy: at('#diagnostic-copy'),
+        save: at('#diagnostic-save'),
+        report: at('#diagnostic-text'),
+      };
+    });
+    for (const [name, top] of [['Copy it', door.copy], ['Save it as a file', door.save]]) {
+      (top !== null && top >= -1 ? pass : fail)(
+        `${theme}/diagnostic by the version stamp: "${name}" is inside the panel`
+        + ` — ${top === null ? 'it is not even shown' : `${top}px from the top of the scroller`}`);
+    }
+    // And the report is still what the keyboard and a screen reader land on:
+    // the scroll moved, the focus did not. Two decisions, and the defect this
+    // block exists for was them being treated as one.
+    (door.focused === 'diagnostic-text' ? pass : fail)(
+      `${theme}/diagnostic by the version stamp: focus is on the report itself`
+      + ` (got ${door.focused ?? 'nothing'})`);
+
     // The journal's three states, walked in the order a person meets them.
     await openSurface(page, 'sheet-group-data');
     await page.click('#journal-open');

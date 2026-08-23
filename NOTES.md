@@ -695,10 +695,11 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.30.1**. The
-  manual now covers the diagnostic report, which it had never mentioned — what
-  it is, the two routes to it, that it carries counts and nothing anybody
-  wrote, and what the new situation-reach section is telling a reader.
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.30.2**. The
+  version stamp opened the diagnostic with its own controls scrolled 156px and
+  104px above the top of the panel — reported from the device with a
+  screenshot, and invisible to every gate because the walk reached that state
+  by the short route and never by the door.
 - **CONFIRMED BY BYTES FROM THE DEVICE, 2026-08-23.** A §7f diagnostic on the
   installed instance reports `Build: 2.29.0` and `Service worker cache:
   quietkeep-sync-2.29.0`, a worker serving the page and no newer version
@@ -708,11 +709,12 @@ closed question filed under this heading now, so the two cannot drift again.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.30.0** (promoted at
-  `51ef0a6`, Spine and Deploy success on `c1cc9a5` before the merge, read from
-  the runs. Promoted so the new section could be read against a real store —
-  the one that prompted it lives here, not on staging. The 2.29.0 reading
-  confirmed by cache triplet from the device stands below.)
+- **https://quietkeep.pages.dev** — production, **2.30.1** (2.30.0 promoted at
+  `51ef0a6` so the new section could be read against a real store — the one
+  that prompted it lives here, not on staging — and 2.30.1, the manual, at
+  `7d6ca48`. Spine and Deploy success on both, read from the runs, and 2.30.1
+  confirmed by cache triplet from the device: `quietkeep-sync-2.30.1`, worker
+  serving, nothing newer waiting.)
 - **An earlier reading the same day said only "2.29.0", with no cache name, and
   was recorded as the weaker kind.** It has been superseded rather than kept:
   the cache triplet answers the question the bare version cannot, which is
