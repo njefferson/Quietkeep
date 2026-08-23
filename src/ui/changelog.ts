@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.30.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**The report now says whether the situation questions can narrow anything.** Under *What the situation can narrow*: how many things are reached by a place \u2014 their own or one they inherit \u2014 how many name somebody, and how many carry a time estimate.',
+      '**Because a full store can have nothing for those questions to bite on.** Anything unlabelled fits every answer, deliberately, so a store with one place answers *where are you* with almost everything. That is the design working. Until now nothing said so, and answering a question and seeing no change looked identical to a broken feature.',
+      '**It says where the leverage is.** A place on a project reaches everything inside it, so the report counts what sits inside something, and how many containers already carry a place. Those are the few answers that cover the most.',
+      '**A low number is never listed as a fault.** Filing is optional in this app, always. These are facts about a store, they sit with the other counts, and nothing about them appears under *What is wrong*.',
+      '**Still nothing you wrote.** Counts and states only \u2014 no place names, no people\u2019s names, nothing else. The report is swept for every one of them on the way out.',
+    ],
+  },
+  {
     triplet: '2.29.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

@@ -13,7 +13,9 @@ import assert from 'node:assert/strict';
 
 import { admit, gateOptionsFor, silentNodes } from '../src/gate.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
-import { diagnosticReport, findings, kindCounts, clockCounts, pressureBands, type DeviceReading } from '../src/diagnostic.ts';
+import { diagnosticReport, findings, kindCounts, clockCounts, pressureBands, situationReach, type DeviceReading } from '../src/diagnostic.ts';
+import { fitsHere, reachedByAPlace } from '../src/contexts.ts';
+import { heldWork } from '../src/gate.ts';
 import { lastCopy } from '../src/copies.ts';
 import { NODE_KINDS } from '../src/events.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -61,6 +63,8 @@ const SECRETS = {
   declined: 'the school fundraiser thing',
   anchor: 'the Wednesday sprint natter',
   menuItem: 'learn the hurdy-gurdy',
+  place: 'the draughty upstairs office',
+  subProject: 'rewiring the back bedroom',
 };
 
 /** The same store, said in completely different words. Every string differs
@@ -76,6 +80,8 @@ const OTHER: typeof SECRETS = {
   declined: 'the raffle committee ask',
   anchor: 'the Monday standup natter',
   menuItem: 'take up the theremin',
+  place: 'the shed at the bottom of the garden',
+  subProject: 'relaying the patio slabs',
 };
 
 function loaded(SECRETS: Record<string, string>): { state: State; log: AppEvent[] } {
@@ -103,6 +109,18 @@ function loaded(SECRETS: Record<string, string>): { state: State; log: AppEvent[
   put([ev('node.created', 'M', { nodeKind: 'aspiration', title: SECRETS.menuItem })]);
   put([ev('menu.item.added', 'M', { category: 'try' })]);
   put([ev('clock.set', 'W', { clockKind: 'due', at: '2026-08-10T23:59:59.000Z', source: 'me' })]);
+  // A place on the PROJECT and never on the action, deliberately: W is reached
+  // by inheritance or it is not reached at all, so `situationReach` counting
+  // only `n.contexts` would report this store as placeless and disagree with
+  // `fitsHere` about the very same node.
+  put([ev('context.created', 'CTX', { name: SECRETS.place })]);
+  put([ev('context.attached', 'PRJ', { node: 'PRJ', context: 'CTX' })]);
+  put([ev('person.linked', 'W', { node: 'W', person: 'ADA', relation: 'stakeholder' })]);
+  // A container that INHERITS a place and carries none of its own. Without it
+  // the two ways of counting containers give the same answer on this store, and
+  // the assertion that they differ is untested — which is what a plant found.
+  put([ev('node.created', 'SUB', { nodeKind: 'project', title: SECRETS.subProject, parent: 'PRJ' })]);
+  put([ev('node.field.set', 'W', { field: 'estimateMinutes', value: 30 })]);
   return { state: s, log };
 }
 
@@ -122,6 +140,9 @@ test('diag-privacy: not one thing the reader wrote appears in the report', () =>
     'fixture: the note is in the log');
   assert.ok(log.some(e => JSON.stringify(e.payload).includes(SECRETS.journalCt)),
     'fixture: the sealed entry is in the log');
+  assert.equal(state.nodes.get('CTX')!.title, SECRETS.place, 'fixture: the place is in the store');
+  assert.ok(reachedByAPlace(state, state.nodes.get('W')!),
+    'fixture: the action inherits the project\'s place, so the census has an inherited case to get wrong');
 });
 
 test('diag-privacy: the report is a function of SHAPE — same store, different words, identical text', () => {
@@ -450,4 +471,111 @@ test('the storage line says what the number measures, not what it seems to', () 
   assert.match(r, /the app's own downloaded code as well as anything you have put in/);
   assert.equal(/Used by Quietkeep/.test(r), false,
     'the old label claimed a precision the number does not have');
+});
+
+// --- what the situation can narrow -------------------------------------------
+//
+// The census exists because a store can be full and still have nothing for the
+// three situation questions to bite on, and the report could not say so. Its
+// one hard property is that it AGREES with the filters rather than resembling
+// them: it counts `fitsHere`'s own clause, not a second reading of the fields.
+
+test('diag-reach: an inherited place counts, because that is what the filter does', () => {
+  const { state } = loaded(SECRETS);
+  const w = state.nodes.get('W')!;
+  assert.deepEqual(w.contexts, [], 'fixture: the action carries no place of its own');
+  assert.ok(reachedByAPlace(state, w), 'it is reached through the project');
+
+  const reach = situationReach(state);
+  assert.ok(reach.withPlace >= 2,
+    `the project and the action inheriting from it are both reached — got ${reach.withPlace}`);
+});
+
+test('diag-reach: the count AGREES with fitsHere rather than describing it', () => {
+  // The invariant that fails if the census and the behaviour ever drift.
+  //
+  // `fitsHere` accepts a thing when it is unreached (fits every answer) OR when
+  // it is reached BY THIS PLACE. So for any chosen place, the number it accepts
+  // is exactly (total − withPlace) + (those reached by that place). Anything
+  // that made the census read a different field would break this equality
+  // without breaking either side on its own.
+  const { state } = loaded(SECRETS);
+  const reach = situationReach(state);
+  const work = heldWork(state);
+
+  const accepted = work.filter(n => fitsHere(state, n, 'CTX')).length;
+  const reachedByThis = work.filter(n => reachedByAPlace(state, n)
+    && fitsHere(state, n, 'CTX')).length;
+  assert.equal(accepted, (reach.total - reach.withPlace) + reachedByThis,
+    'the census and fitsHere disagree about the same store');
+});
+
+test('diag-reach: containers are counted by their OWN place, not an inherited one', () => {
+  // This line counts the answers somebody would still have to give. A container
+  // already covered by its parent's place is not one of them, so counting
+  // inherited places here would understate the work and overstate the coverage.
+  const { state } = loaded(SECRETS);
+  const reach = situationReach(state);
+  assert.equal(reach.containers, 2, 'two projects in the fixture');
+  assert.equal(reach.containersWithPlace, 1,
+    'only the outer one carries a place of its own — the inner one merely inherits');
+  assert.ok(reachedByAPlace(state, state.nodes.get('SUB')!),
+    'fixture: the inner project IS reached, so the two ways of counting differ here');
+
+  // "Sitting inside something" is the leverage number — it says what one answer
+  // on one container would reach — so it needs an assertion of its own. W and
+  // SUB have PRJ as a parent; PRJ itself has none.
+  assert.equal(reach.parented, 2, 'the action and the inner project sit inside something');
+  assert.ok(reach.parented < reach.total, 'and the outer project does not');
+});
+
+test('diag-reach: an empty store reads "0 of 0" and never NaN', () => {
+  const text = diagnosticReport(emptyState(), [], wellDevice(), NOW);
+  assert.ok(text.includes('WHAT THE SITUATION CAN NARROW'), 'the section is present on an empty store');
+  assert.ok(/Reached by a place, their own or inherited: 0 of 0/.test(text));
+  assert.equal(/NaN|undefined|of Infinity/.test(text), false, text);
+});
+
+test('diag-reach: nothing labelled is a FACT, never a finding (law 5)', () => {
+  // Filing is optional in this app, always. A report that listed "you have not
+  // labelled anything" under WHAT IS WRONG would be scoring somebody for using
+  // the product exactly as promised. This is the guard against it becoming a
+  // nag in some later release, when the section looks like an obvious candidate
+  // for a warning.
+  let s = emptyState();
+  const put = (offered: AppEvent[]): void => { s = fold(admit(offered, s, gateOptionsFor(TZ)), s); };
+  for (let i = 0; i < 5; i += 1) {
+    put([ev('node.created', `U${i}`, { nodeKind: 'action', title: `thing ${i}` })]);
+  }
+  const reach = situationReach(s);
+  assert.equal(reach.withPlace, 0, 'fixture: nothing is labelled');
+  assert.ok(reach.total >= 5, 'fixture: and there is plenty of it');
+
+  for (const f of findings(s, [], wellDevice())) {
+    assert.equal(/place|label|situation|narrow|unlabelled/i.test(f), false,
+      `the report scolds somebody for not filing: "${f}"`);
+  }
+});
+
+test('diag-reach: the section says the numbers are not a fault', () => {
+  // The parenthetical is load-bearing product copy, not decoration: without it
+  // a reader sees three zeroes in a diagnostic report and concludes something
+  // is broken, which is the exact confusion this section was built to end.
+  const text = diagnosticReport(emptyState(), [], wellDevice(), NOW);
+  assert.ok(/fits every answer, deliberately/.test(text), text);
+  assert.ok(/not that anything is wrong/.test(text), text);
+});
+
+test('diag-reach: a trashed person stops counting, exactly as it stops filtering', () => {
+  // `fitsWith` resolves links through state so somebody trashed stops narrowing
+  // without a migration. The census shares that clause via `namedOn`; if it
+  // counted the raw links instead, the report would claim a store is labelled
+  // with people who are gone.
+  const { state, log } = loaded(SECRETS);
+  assert.equal(situationReach(state).withPerson, 1, 'fixture: one thing names somebody');
+
+  const after = fold(admit([ev('node.trashed', 'ADA', {})], state, gateOptionsFor(TZ)), state);
+  assert.equal(situationReach(after).withPerson, 0,
+    'the link is still in the log and the person is gone, so nothing is narrowed by them');
+  assert.ok(log.length > 0, 'fixture: the log is real');
 });

@@ -55,7 +55,11 @@
 import { NODE_KINDS, type ClockKind, type NodeKind } from './events.ts';
 import type { AppEvent } from './events.ts';
 import type { State } from './fold.ts';
-import { coverageGauge, heldNodes, silentNodes, trashedNodes } from './gate.ts';
+import { coverageGauge, heldNodes, heldWork, silentNodes, trashedNodes } from './gate.ts';
+import { allContexts, reachedByAPlace } from './contexts.ts';
+import { namedOn } from './people.ts';
+import { estimateOf } from './duration.ts';
+import { isContainer } from './tree.ts';
 import { changesSinceCopy, copyDayWords, lastCopy } from './copies.ts';
 import { journalSeal } from './journal.ts';
 import { menuCount } from './menu.ts';
@@ -249,6 +253,75 @@ export function kindCounts(state: State): Record<NodeKind, number> {
   return counts;
 }
 
+/**
+ * WHAT AN ANSWER TO THE SITUATION QUESTIONS COULD NARROW.
+ *
+ * The report already says what a store CONTAINS. This says how much of it is
+ * labelled, which is a different question and the one that decides whether the
+ * three situation questions do anything at all.
+ *
+ * It exists because of a store read from a device: 1,432 things, one place, no
+ * people. Answering *where are you* returned that one place's things plus every
+ * unlabelled one, which is all of them — correct, and load-bearing, since a
+ * filter that can empty the screen is a filter nobody trusts twice. But the
+ * person who answers and sees nothing change cannot tell whether the feature is
+ * broken, whether they did it wrong, or whether it is working exactly as
+ * designed on a store with nothing to bite on. This report is the artefact
+ * built for that moment and it could not say.
+ *
+ * NEVER A FINDING, and that is a decision rather than an oversight. Filing is
+ * optional in this app, always — the manual promises it in those words — so a
+ * low number here is a fact about a store and not a fault in anybody. Putting
+ * it under WHAT IS WRONG would be scoring somebody for using the product as
+ * promised, which is law 5.
+ *
+ * EVERY PREDICATE IS THE FILTER'S OWN. `reachedByAPlace` is the negation of
+ * `fitsHere`'s "fits every answer" clause, `namedOn` is the list `fitsWith`
+ * branches on, `estimateOf` is what `fitsWithin` reads. Counting a second
+ * reading of the same fields would let the census and the behaviour disagree
+ * about one store, which is the defect this whole file exists to make visible.
+ */
+export interface SituationReach {
+  total: number;
+  withPlace: number;
+  withPerson: number;
+  withEstimate: number;
+  parented: number;
+  containers: number;
+  containersWithPlace: number;
+}
+
+export function situationReach(state: State): SituationReach {
+  const work = heldWork(state);
+  // Hoisted out of the container branch below, where it was one full scan of
+  // `state.nodes` per container — 44 scans of 1,433 nodes on the store that
+  // prompted this. Correct and quadratic is still quadratic.
+  const livePlaces = new Set(allContexts(state).map(c => c.id));
+  const out: SituationReach = {
+    total: work.length,
+    withPlace: 0,
+    withPerson: 0,
+    withEstimate: 0,
+    parented: 0,
+    containers: 0,
+    containersWithPlace: 0,
+  };
+  for (const n of work) {
+    if (reachedByAPlace(state, n)) out.withPlace += 1;
+    if (namedOn(state, n).length > 0) out.withPerson += 1;
+    if (estimateOf(n) !== null) out.withEstimate += 1;
+    if (n.parent) out.parented += 1;
+    if (isContainer(n)) {
+      out.containers += 1;
+      // Its OWN places, not inherited: this line counts the answers somebody
+      // would have to give, and a container already covered by its parent's
+      // place is not one of them.
+      if (n.contexts.some(id => livePlaces.has(id))) out.containersWithPlace += 1;
+    }
+  }
+  return out;
+}
+
 /** Which clock kinds are in use, and how many of each. Clock kinds are the
  *  app's whole temporal vocabulary, so "which clocks exist here" is the first
  *  question about anything that came back at the wrong time. */
@@ -413,6 +486,19 @@ export function diagnosticReport(
   L.push(`  Clocks in use: ${Object.keys(clocks).length === 0
     ? 'none'
     : Object.entries(clocks).sort().map(([k, v]) => `${k} ${v}`).join(' · ')}`);
+  L.push('');
+
+  const reach = situationReach(state);
+  L.push('WHAT THE SITUATION CAN NARROW');
+  L.push(`  Reached by a place, their own or inherited: ${reach.withPlace} of ${reach.total}`);
+  L.push(`  With somebody named on them: ${reach.withPerson} of ${reach.total}`);
+  L.push(`  With a time estimate: ${reach.withEstimate} of ${reach.total}`);
+  L.push('    (whatever is not reached fits every answer, deliberately — a low number');
+  L.push('     here means the question narrows little yet, not that anything is wrong)');
+  L.push(`  Sitting inside something: ${reach.parented} of ${reach.total}`);
+  L.push(`  Containers that could carry a place: ${reach.containers}, and ${reach.containersWithPlace} do`);
+  L.push('    (a place on a container reaches everything inside it, so those are the');
+  L.push('     answers that would cover the most for the least)');
   L.push('');
 
   // The line above counts clocks that EXIST. This one counts what is ASKING,

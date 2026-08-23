@@ -112,6 +112,20 @@ export function placesReaching(state: State, n: NodeState): NodeState[] {
  * `where === null` means "everywhere" — the filter is off and everything fits.
  * An unlabelled thing fits any answer, per the note at the top.
  */
+/**
+ * Is this thing reached by ANY place — its own or an ancestor's?
+ *
+ * The negation of `fitsHere`'s "fits every answer" clause, named so the
+ * diagnostic can count it. It matters that this is the same call and not a
+ * second reading of `n.contexts`: a thing inheriting its project's place is
+ * reached, and a census that missed that would report a store as unlabelled
+ * while the filter treated it as labelled. Both go through `placesReaching`,
+ * and `test/diagnostic.test.ts` asserts the count agrees with `fitsHere`
+ * rather than merely resembling it.
+ */
+export const reachedByAPlace = (state: State, n: NodeState): boolean =>
+  placesReaching(state, n).length > 0;
+
 export function fitsHere(state: State, n: NodeState, where: NodeId | null): boolean {
   if (where === null) return true;
   // INHERITED, since 2.27.0 — see `placesReaching`. A thing reached by no place
