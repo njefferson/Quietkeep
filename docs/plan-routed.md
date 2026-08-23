@@ -191,6 +191,61 @@ because an unfiled thing has disappeared from it. The unlabelled-fits-everywhere
 default is what makes the filter safe on a store with almost no structure, and
 it is load-bearing rather than incidental.
 
+## The order, and why it is not 1 to 7
+
+The phases are numbered by where they come from, not by when to build them.
+Built in order of provenance, the design-blocked work would be done first and
+with the least information.
+
+1. **Phase 3** — the arrival sentence. One line and its test, no new machinery.
+2. **Phase 5** — the long answer routes to the Menu. Small, and both ends of it
+   already exist.
+3. **Phase 6** — presence as a third axis. This mirrors `fitsHere` and
+   `fitsWithin` almost line for line: a predicate, a device kv, one more clause
+   in a post-filter that already composes two. The most patterned work here.
+4. **Phase 4** — an import's volume must not out-rank a day. Touches ranking,
+   so it wants care rather than pattern-following.
+5. **Phase 7** — a place reaching what is under it. Structural, and ADR-0013's
+   position on the tree has to be read first.
+6. **Phase 1** — ask once, in the flow. LAST on purpose. Its trigger is
+   undesigned, the entry does not specify one, and the condition as written
+   cannot fire. Choosing it well depends on how much of the situated surface
+   exists to trigger against, so this is the phase that most benefits from
+   being decided late.
+7. **Phase 2** — the same mechanism for role and container. Depends on phase 1.
+
+## Effort, and what it is allowed to cost
+
+The compute here is not free and the expensive part is not the thinking — it is
+the browser. The a11y walk, the smoke walk, `look`, `tour:shots` and the update
+walk each drive a real Chromium, and a full Spine is minutes.
+
+**Group the phases into three releases, not seven.** Seven releases is seven
+Spine runs and seven walks; the grouping below is roughly half the browser time
+for the same work.
+
+- **Release A** — phases 3 and 5. Both are small, neither touches the other's
+  code, and neither changes a rendered surface enough to need its own walk.
+- **Release B** — phases 6 and 4. The axis and the ranking, which is where the
+  offer changes; one walk covers both.
+- **Release C** — phases 7, 1 and 2. The structural change and the mechanism
+  that rides on it.
+
+**What goes to a cheaper model, in a subagent** (Doctrine §11b): running a gate
+suite and reporting exit codes; find-and-replace across a known set of files;
+classifying a list against a stated rule; reading a CI log for the failing step;
+checking a claim against a file. All of it mechanical, all of it verifiable by
+its output rather than by trusting the worker.
+
+**What does not**: the trigger decision in phase 1; whether phase 7 is
+compatible with ADR-0013; every line of reader-facing copy; and judging a
+render, which is the step that caught three defects this run that no number
+caught.
+
+**And per commit, the narrowest thing that answers the question.** One grep, one
+`sed -n` range, `--only=` where a walk supports it. Re-render only what changed.
+The full Spine once per release, read from the run.
+
 ## Execution discipline
 
 Unchanged from `plan-situated.md`, plus what this run cost:
