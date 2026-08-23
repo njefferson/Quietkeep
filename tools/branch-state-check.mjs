@@ -1,0 +1,176 @@
+#!/usr/bin/env node
+// THE BLOCK THAT SAYS WHERE THE BRANCHES ARE MUST SAY WHERE THEY ARE. 2026-08-23.
+//
+// ## Why this exists — three recurrences, none of them found by anything
+//
+// `NOTES.md` carries a block naming the version on staging and the version in
+// production. It has been wrong three times:
+//
+//   said 2.12.2 / 2.11.0 until 2026-08-20, through two promotes
+//   said 2.14.1 / 2.13.0 until 2026-08-22, through eleven releases and a promote
+//   said 2.24.0 / 2.24.1 until 2026-08-23, through five releases and two promotes
+//
+// The third happened on the same day the paragraph recording the second was
+// written into the same block. Nothing caught any of them. The first was found
+// by `handoff-check.mjs`, which is not in this repo's Spine and has to be
+// remembered; the second by a lesson arriving from another repo's session; the
+// third only because a production version arrived from the device and the block
+// had to be opened to record it.
+//
+// A line that looks maintained is the one nobody re-reads. So this is not a
+// fourth note — every number in that block is derivable from git without a
+// network call, which makes it a gate's job.
+//
+// ## What it compares
+//
+// The STAGING line against `public/sw.js` in the working tree — what is being
+// committed, which is what staging is about to carry.
+//
+// The PRODUCTION line against `public/sw.js` at `origin/main` — what production
+// actually serves. Not the tree: on staging the tree is ahead of production by
+// definition, and taking the tree would make the two lines agree always and
+// mean nothing.
+//
+// ## What it does NOT compare, on purpose
+//
+// **The SHAs beside each version.** They are documentation. Gating the staging
+// SHA is impossible — a commit cannot name its own hash — and gating the
+// production SHA would make the block unfixable for a window after every
+// promote. The three recorded failures were all VERSION failures; the SHA was
+// never the thing that misled anybody.
+//
+// ## Why it is a commit guard and NOT a Spine step
+//
+// It reads `origin/main` as of the moment of the commit, which is the state
+// production is in while you are working. CI cannot reproduce that: on `main`
+// the Spine runs AT the promote, where `origin/main` is already the merge, so
+// the production line would name the version production had a second ago and
+// the step would be red by construction on every promote. A gate that is red
+// for a window teaches people to ignore red — the same reason the hub keeps
+// `doctrine-sync.mjs` out of CI, and the same shape as `branch-guard.mjs`'s
+// `.git/hooks` assertion, which the hub records as a fact about ONE CLONE that
+// can never hold on a runner.
+//
+// A commit guard is not the weak "somebody has to remember" state: `.branch-guard`
+// declares it with `also=`, so it runs on every commit including a promote.
+//
+// **It is deliberately NOT in `npm run check` either, and that is not an
+// oversight.** Hub LESSONS 127 is two gates that sat in the check chain and
+// never once ran on a runner, and its fix is a parity check comparing the chain
+// against the workflow's steps — to which a gate absent from CI on purpose
+// looks exactly like a gate absent by accident. `.branch-guard` is the list
+// this one belongs to, and this paragraph is here so the absence reads as a
+// decision when that parity check arrives.
+//
+//   node tools/branch-state-check.mjs
+
+import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
+const HEADING = '### Staged and waiting on the owner';
+
+let failed = 0;
+const ok = (m) => console.log(`  ok    ${m}`);
+const fail = (m) => { console.log(`  FAIL  ${m}`); failed++; };
+
+console.log('\n=== the branch-state block says where the branches are ===\n');
+
+// --- the block -------------------------------------------------------------
+
+const notes = readFileSync(join(ROOT, 'NOTES.md'), 'utf8');
+const at = notes.indexOf(HEADING);
+if (at < 0) {
+  console.log(`  FAIL  NOTES.md has no "${HEADING}" heading.`);
+  console.log('\n  Renamed or removed? This gate is anchored on it. Re-point the');
+  console.log('  HEADING constant in this file in the same commit.\n');
+  process.exit(1);
+}
+const rest = notes.slice(at + HEADING.length);
+const end = rest.search(/\n#{1,3} /);
+const block = end < 0 ? rest : rest.slice(0, end);
+
+/** The first bolded triplet on the bullet whose URL is exactly this one.
+ *  Start-anchored: `https://quietkeep.pages.dev` is a SUBSTRING of
+ *  `https://staging.quietkeep.pages.dev`, so a loose search reads the staging
+ *  bullet as the production one and the gate compares a line with itself. */
+const versionOn = (url) => {
+  const line = block
+    .split('\n- ')
+    .find((b) => b.startsWith(`**${url}**`));
+  if (line === undefined) return { missing: true };
+  const m = /\*\*(\d+\.\d+\.\d+)\*\*/.exec(line);
+  return m ? { version: m[1] } : { unversioned: true };
+};
+
+// --- what the branches actually carry --------------------------------------
+
+/** The release triplet out of a service worker's cache name. Anchored at the
+ *  END: the Sync edition's cache is `quietkeep-sync-<triplet>`, so a prefix
+ *  match returns `sync-2.29.0` and every comparison below fails obscurely. */
+const tripletIn = (sw, where) => {
+  const cache = /const CACHE = '([^']+)'/.exec(sw)?.[1];
+  const m = cache && /(\d+\.\d+\.\d+)$/.exec(cache);
+  if (!m) {
+    fail(`no release triplet in the cache name at ${where}`
+      + (cache ? ` — read "${cache}"` : ''));
+    return null;
+  }
+  return m[1];
+};
+
+const treeTriplet = tripletIn(
+  readFileSync(join(ROOT, 'public', 'sw.js'), 'utf8'), 'public/sw.js');
+
+let mainTriplet = null;
+let mainSha = null;
+try {
+  mainSha = execFileSync('git', ['rev-parse', '--short', 'origin/main'],
+    { cwd: ROOT, encoding: 'utf8' }).trim();
+  mainTriplet = tripletIn(execFileSync('git', ['show', 'origin/main:public/sw.js'],
+    { cwd: ROOT, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }), 'origin/main');
+} catch {
+  // NEVER A SKIP. A missing ref is the one condition under which this gate
+  // would silently agree with anything, which is the fail-open the whole
+  // mechanism exists to avoid.
+  fail('cannot read public/sw.js at origin/main — the ref is missing.'
+    + '\n        `git fetch origin main` and run this again.');
+}
+
+// --- the two comparisons ---------------------------------------------------
+
+const check = (label, url, actual) => {
+  if (actual === null) return;
+  const got = versionOn(url);
+  if (got.missing) {
+    fail(`no ${label} bullet starting "- **${url}**" in the block`);
+  } else if (got.unversioned) {
+    fail(`the ${label} bullet names no bolded triplet`);
+  } else if (got.version !== actual) {
+    fail(`${label} says ${got.version}, and ${url} carries ${actual}`);
+  } else {
+    ok(`${label} says ${got.version}, and that is what it carries`);
+  }
+};
+
+check('staging', 'https://staging.quietkeep.pages.dev', treeTriplet);
+check('production', 'https://quietkeep.pages.dev', mainTriplet);
+
+if (mainSha) {
+  console.log(`\n  production read at origin/main ${mainSha}, as last fetched.`);
+}
+
+if (failed) {
+  console.log('');
+  console.log('  Fix the block in NOTES.md, not this gate. If the production line');
+  console.log('  looks right to you, `git fetch origin main` first — a stale');
+  console.log('  remote-tracking ref makes this compare against yesterday.');
+  console.log('');
+  console.log('  This block has been wrong three times, through eighteen releases');
+  console.log('  and five promotes, and nothing ever found it. That is what this is.');
+}
+
+console.log(`\n${failed === 0 ? 'The block says where the branches are.' : `${failed} line(s) out of date.`}\n`);
+process.exit(failed === 0 ? 0 : 1);

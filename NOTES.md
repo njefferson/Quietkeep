@@ -695,19 +695,19 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.29.0** plus one
-  tooling commit (`0fa4888`, Spine run 565 read fully green — 48 steps, none
-  skipped or cancelled — and Deploy success). That commit changes no file under
-  `public/` or `src/`, so staging and production serve byte-identical apps and
-  the triplet is the same on both.
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.29.0**. Level
+  with production: `0fa4888` and `9f58fdc` were promoted at `766b2d9`, and
+  neither touched `public/` or `src/`, so both branches serve byte-identical
+  apps and carry the same triplet.
 - **PRODUCTION READ FROM THE DEVICE, 2026-08-23.** The installed instance
   reports **2.29.0**. That is V-15's route again — a session still cannot fetch
   any `pages.dev` host from here, the proxy answers 403 at CONNECT — and it is
   the version read back, not the cache triplet, so it is a weaker reading than
   the 2.24.1 one recorded below it and is recorded as weaker.
-- **https://quietkeep.pages.dev** — production, **2.29.0** (promoted 2026-08-23,
-  `6e37bba`, Spine and Deploy both success, and confirmed from the DEVICE rather
-  than from the promote's output or from `main`'s own `sw.js`).
+- **https://quietkeep.pages.dev** — production, **2.29.0** (2.29.0 promoted at
+  `6e37bba`, the gate and this record at `766b2d9`, Spine and Deploy success on
+  both, and the version confirmed from the DEVICE rather than from the promote's
+  output or from `main`'s own `sw.js`).
 - **The 2.24.1 reading, kept because it is the stronger kind.** A §7f diagnostic
   taken on the installed instance on 2026-08-23 reported `Build: 2.24.1` and
   `Service worker cache: quietkeep-sync-2.24.1`, on `quietkeep-sync.pages.dev`,
@@ -734,13 +734,20 @@ closed question filed under this heading now, so the two cannot drift again.
   paragraph above was written. Nothing found it: it was corrected only because a
   production version arrived from the device and this block had to be opened to
   record it. Two notes and no gate is what that produces.
-  **The fix is not a fourth note.** Every fact in the three lines above is
-  derivable without a network call — the triplet in `public/sw.js` at
-  `origin/main` and at `origin/staging`, and the two SHAs — so a gate can read
-  them and refuse a commit whose block names anything else, the way
-  `changelog.mjs --check` already holds the release triplet to three files. Not
-  built here: it is a new gate and nothing asked for one. Named so the next
-  session does not have to rediscover that this is the fourth recurrence.
+  **The fix was not a fourth note.** `tools/branch-state-check.mjs` reads the
+  triplet out of `public/sw.js` in the tree and at `origin/main` and refuses a
+  commit whose two URL bullets above name anything else — the shape
+  `changelog.mjs --check` already uses to hold one triplet to three files. It is
+  declared with `also=` in `.branch-guard`, so it runs on every commit including
+  a promote, and it is milliseconds rather than the minutes its two neighbours
+  would cost, so it does the work instead of refusing and naming a command.
+  **The SHAs beside each version are NOT gated**, deliberately: a commit cannot
+  name its own hash, and gating production's would leave this block unfixable
+  for a window after every promote. All three failures above were version
+  failures. **Nor is it a Spine step** — it reads `origin/main` as of the
+  commit, and on a runner at the promote `origin/main` is already the merge, so
+  it would be red by construction every time. That is the same reasoning the hub
+  gives for keeping `doctrine-sync.mjs` out of CI.
 
 **AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
 WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
