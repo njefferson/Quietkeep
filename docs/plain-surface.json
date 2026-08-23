@@ -1,0 +1,30 @@
+{
+  "(document)": {
+    "controls": 3,
+    "words": 1
+  },
+  "capture-form": {
+    "controls": 3,
+    "words": 0
+  },
+  "focus": {
+    "controls": 2,
+    "words": 2
+  },
+  "focus-interrupt-form": {
+    "controls": 2,
+    "words": 28
+  },
+  "foot": {
+    "controls": 2,
+    "words": 8
+  },
+  "nextup-plain-bar": {
+    "controls": 1,
+    "words": 0
+  },
+  "update": {
+    "controls": 3,
+    "words": 0
+  }
+}

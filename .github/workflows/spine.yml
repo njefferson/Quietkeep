@@ -363,6 +363,21 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run plain:check
 
+      # AND NOTHING NEW HAS JOINED IT. `plain:check` accounts for REGIONS: a new
+      # one in neither list fails, which forces a decision and is the design
+      # doing its job. It cannot see INSIDE a kept region — `#foot` is kept
+      # because the accessibility statement is an obligation, and a link added
+      # inside it needed no declaration because no new region appeared. It went
+      # straight into the mode for the day somebody can least afford a busy
+      # screen, and what caught it was the a11y walk, four minutes later.
+      #
+      # A baseline and a diff, not a second ceiling — the walk owns the ceilings
+      # and only it can, since visibility there depends on runtime state. This
+      # says NOW, and names what moved.
+      - name: Nothing new survives the worst day
+        if: ${{ !cancelled() }}
+        run: npm run plain:surface
+
       # THE WALKTHROUGH'S PICTURES ARE OF THIS APP (2.10.4). They are rendered
       # from the running app rather than drawn, and this fails once the markup,
       # the stylesheet or any renderer behind them has moved — because a help
