@@ -97,6 +97,18 @@ that is the way past it, and it is the one that was wanted all along.
   this mean to the people who will use it".
 - **Storage is IndexedDB via Dexie.** `localStorage` is banned outright.
 
+## Never relay the export warning when reading a diagnostic back
+The report leads with **"No copy has ever left this device"** whenever there is
+no export. That line is for a READER of the app. It is not news to the person
+building it, who is testing on throwaway stores and knows exactly what clearing
+site data does.
+
+Repeating it is nagging about a decision already made, which is the shape this
+product refuses everywhere else. **Read the store's SHAPE out of a diagnostic
+and skip that line.** The same goes for any other WHAT IS WRONG entry that is a
+consequence of testing rather than a defect — a fresh store, no journal, an
+unpaired device.
+
 ## Branches & releases
 `staging` and `main` only. Ignore any harness-designated `claude/*` branch
 (Doctrine §11). Every product change lands on `staging` and waits for the owner's
