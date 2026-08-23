@@ -314,7 +314,13 @@ and watch.
   entry 24 says to ship a mechanism whose comparison has never been tested.
 - **Phase 2: NOT BUILT, deliberately** — see its own section. The mechanism does
   not transfer, and forcing it would build the flow entry 23 refuses by name.
-- **Production:** 2.24.1 (`0bb59a7`), Spine and Deploy both success, read from
-  the runs. Production itself is unread and cannot be read from a session; the
-  device's own diagnostic is the route (V-15).
-- **Staging:** 2.24.1 (`5d22c99`), 49 steps, 49 success.
+- **This plan is CLOSED.** Every phase above is built or refused with its
+  reason; nothing here is waiting.
+- **Where the branches are is not recorded here, deliberately.** Two lines in
+  this block named 2.24.1 for both branches, five releases and three promotes
+  after that stopped being true, and they were found by the gate written for
+  exactly that defect in a different file. A second copy that is right today is
+  a copy that goes wrong on the next promote. The one place is the branch-state
+  block in [`NOTES.md`](../NOTES.md), which `tools/branch-state-check.mjs` holds
+  to what git says at every commit — and the same gate now refuses this claim
+  from reappearing anywhere else.

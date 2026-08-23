@@ -62,6 +62,20 @@
 // this one belongs to, and this paragraph is here so the absence reads as a
 // decision when that parity check arrives.
 //
+// ## And there is exactly ONE place that may say it
+//
+// Within minutes of this gate passing, `docs/plan-routed.md` was found carrying
+// its own "Production: 2.24.1 / Staging: 2.24.1" resume block — five releases
+// and three promotes out of date, in a file this gate does not read. The defect
+// had simply moved house.
+//
+// Policing every copy is the wrong answer; NOTES.md's own block complains about
+// "one file, two answers" three paragraphs above where it was itself wrong. So
+// the second half of this gate REFUSES the second copy: a present-tense claim
+// about what a branch carries, in any tracked markdown other than NOTES.md, is
+// a failure whatever version it names — including a correct one. A copy that is
+// right today is a copy that goes wrong on the next promote.
+//
 //   node tools/branch-state-check.mjs
 
 import { readFileSync } from 'node:fs';
@@ -73,8 +87,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const HEADING = '### Staged and waiting on the owner';
 
 let failed = 0;
+let staleBlock = 0;
 const ok = (m) => console.log(`  ok    ${m}`);
 const fail = (m) => { console.log(`  FAIL  ${m}`); failed++; };
+// The two halves fail for different reasons and want different advice. Printing
+// "fix the block in NOTES.md" at somebody whose block is correct and whose
+// SECOND COPY is stale sends them to the one file that is right.
+const failBlock = (m) => { fail(m); staleBlock++; };
 
 console.log('\n=== the branch-state block says where the branches are ===\n');
 
@@ -114,7 +133,7 @@ const tripletIn = (sw, where) => {
   const cache = /const CACHE = '([^']+)'/.exec(sw)?.[1];
   const m = cache && /(\d+\.\d+\.\d+)$/.exec(cache);
   if (!m) {
-    fail(`no release triplet in the cache name at ${where}`
+    failBlock(`no release triplet in the cache name at ${where}`
       + (cache ? ` — read "${cache}"` : ''));
     return null;
   }
@@ -135,7 +154,7 @@ try {
   // NEVER A SKIP. A missing ref is the one condition under which this gate
   // would silently agree with anything, which is the fail-open the whole
   // mechanism exists to avoid.
-  fail('cannot read public/sw.js at origin/main — the ref is missing.'
+  failBlock('cannot read public/sw.js at origin/main — the ref is missing.'
     + '\n        `git fetch origin main` and run this again.');
 }
 
@@ -145,11 +164,11 @@ const check = (label, url, actual) => {
   if (actual === null) return;
   const got = versionOn(url);
   if (got.missing) {
-    fail(`no ${label} bullet starting "- **${url}**" in the block`);
+    failBlock(`no ${label} bullet starting "- **${url}**" in the block`);
   } else if (got.unversioned) {
-    fail(`the ${label} bullet names no bolded triplet`);
+    failBlock(`the ${label} bullet names no bolded triplet`);
   } else if (got.version !== actual) {
-    fail(`${label} says ${got.version}, and ${url} carries ${actual}`);
+    failBlock(`${label} says ${got.version}, and ${url} carries ${actual}`);
   } else {
     ok(`${label} says ${got.version}, and that is what it carries`);
   }
@@ -162,7 +181,45 @@ if (mainSha) {
   console.log(`\n  production read at origin/main ${mainSha}, as last fetched.`);
 }
 
-if (failed) {
+// --- and nowhere else may say it -------------------------------------------
+
+/** Every tracked markdown file, so a new document cannot quietly open a second
+ *  copy. `git ls-files` rather than a directory walk: untracked scratch and
+ *  node_modules are not this gate's business, and a file has to be tracked
+ *  before it can go stale in anybody's clone. */
+const tracked = execFileSync('git', ['ls-files', '*.md'],
+  { cwd: ROOT, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })
+  .split('\n').filter(Boolean).filter((f) => f !== 'NOTES.md');
+
+/** A present-tense claim about what a branch carries. Deliberately narrow: the
+ *  bullet shape these blocks actually use, with a triplet on the same line. A
+ *  sentence of prose recounting what production HELD in the past is a different
+ *  kind of statement and stays legal — a false positive here would teach the
+ *  next session to route around the gate. */
+const CLAIM = /^\s*[-*]\s+\*\*(Production|Staging|Main)\b[^*]*\*\*[^\n]*?(\d+\.\d+\.\d+)/gm;
+
+const copies = [];
+for (const file of tracked) {
+  const text = readFileSync(join(ROOT, file), 'utf8');
+  for (const m of text.matchAll(CLAIM)) {
+    const line = text.slice(0, m.index).split('\n').length;
+    copies.push(`${file}:${line} says ${m[1]} is ${m[2]}`);
+  }
+}
+
+(copies.length === 0 ? ok : fail)(
+  'no second copy of what the branches carry'
+  + (copies.length ? `\n        ${copies.join('\n        ')}` : ''));
+
+if (copies.length) {
+  console.log('');
+  console.log('  NOTES.md\'s branch-state block is the one place that says this, and');
+  console.log('  it is the only one held to git. Delete the claim and point at it —');
+  console.log('  a copy that is right today goes wrong on the next promote, which');
+  console.log('  is how this defect moved out of NOTES.md and into a plan file.');
+}
+
+if (staleBlock) {
   console.log('');
   console.log('  Fix the block in NOTES.md, not this gate. If the production line');
   console.log('  looks right to you, `git fetch origin main` first — a stale');
