@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.30.1',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**The manual now covers the report the app writes about itself.** It never mentioned it at all \u2014 not what it is, not the two ways to reach it, not that it contains counts and nothing you wrote. *How it works* has a *When something is wrong* section now.',
+      '**Including what *What the situation can narrow* is telling you.** Those numbers explain something that otherwise looks broken: if almost nothing carries a place, answering *where are you* changes almost nothing, because anything unlabelled turns up wherever you are. That is the design, and now the manual says so as well as the report.',
+      '**And a pointer from where the question actually comes up** \u2014 the situation section of the manual now says where to look when an answer seems to do nothing.',
+      '**Nothing in the app changed.** This release is documentation of what already shipped.',
+    ],
+  },
+  {
     triplet: '2.30.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

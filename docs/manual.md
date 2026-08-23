@@ -90,6 +90,10 @@ They compose: answer two and you get both. Nothing is ever taken away — the
 line under the button says what has been narrowed, and everything still comes
 back.
 
+If you answer one and almost nothing changes, that is worth knowing rather than
+guessing at: the report described below counts how much of what you are holding
+any of these three questions can actually reach.
+
 **Recognise this one?** names what you have just set so it returns in one tap.
 That is for the meeting you have every Tuesday, or the shape of a free weekend.
 
@@ -139,6 +143,35 @@ marked done, all of it retrievable.
 *Your data* exports everything as one file, and imports one back. An import
 always starts a fresh store and never merges. Nothing you write is ever lost to
 an update.
+
+### When something is wrong
+
+The app can write out what it knows about itself. Open the ⓘ and find **If
+something is wrong**, then **Show me the report** — or tap the version stamp at
+the bottom of any screen, which goes to the same place.
+
+**It contains nothing you wrote.** No titles, no names, no notes, no journal
+text — counts and states only. You can read the whole thing before you decide to
+send it, and nothing goes anywhere on its own. **Copy it** or **Save it as a
+file** when you want to hand it on.
+
+It opens with what is actually wrong, if anything is, in plain sentences —
+work no copy holds yet, a version that has not finished installing, storage the
+browser has not agreed to keep. Then the shape of the store, so somebody helping
+can see the size and kind of what you are holding without seeing any of it.
+
+One section is worth knowing about even when nothing is wrong. **What the
+situation can narrow** says how much of what you are holding is reached by a
+place, names somebody, or carries a time estimate — and how many projects and
+other containers already carry a place. Those numbers explain something that
+otherwise looks broken: if almost nothing is labelled, answering *where are you*
+changes almost nothing, because anything unlabelled turns up wherever you are.
+That is the design and not a fault, and the section says so. It also points at
+where a little filing goes furthest, since a place on a container reaches
+everything inside it.
+
+If a problem really needs the actual data, the export under *Your data* is a
+complete copy — send that instead, and only if you want to.
 
 ---
 
@@ -193,6 +226,8 @@ The named ones:
   **Settings** — the five destinations behind *More*.
 - **Quietkeep** — the ⓘ: what this is, what it is not, how to install it, what
   changed, and the licence.
+- **If something is wrong** — inside the ⓘ: the report the app writes about
+  itself, which contains counts and states and nothing you wrote.
 - **Stopping for now** — ending a timer without ending the thing.
 
 ---
