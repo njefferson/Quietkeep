@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.31.1 — ITERATION
+
+*2026-08-23*
+
+- **The home-screen line is shorter.** Same thing said in half the words, because the first screen anybody sees is the worst place to add reading.
+
 ## 2.31.0 — CAPABILITY
 
 *2026-08-23*

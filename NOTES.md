@@ -695,7 +695,7 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.31.0**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.31.1**. The
   walkthrough was written for somebody who already knew the app: it invited the
   storage ask before saying to install, set control names in italics on the one
   screen where a reader cannot tell a name from emphasis, and referred to the i
