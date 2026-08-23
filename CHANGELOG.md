@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.30.1 — ITERATION
+
+*2026-08-23*
+
+- **The manual now covers the report the app writes about itself.** It never mentioned it at all — not what it is, not the two ways to reach it, not that it contains counts and nothing you wrote. *How it works* has a *When something is wrong* section now.
+- **Including what *What the situation can narrow* is telling you.** Those numbers explain something that otherwise looks broken: if almost nothing carries a place, answering *where are you* changes almost nothing, because anything unlabelled turns up wherever you are. That is the design, and now the manual says so as well as the report.
+- **And a pointer from where the question actually comes up** — the situation section of the manual now says where to look when an answer seems to do nothing.
+- **Nothing in the app changed.** This release is documentation of what already shipped.
+
 ## 2.30.0 — CAPABILITY
 
 *2026-08-23*

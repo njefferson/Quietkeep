@@ -695,11 +695,10 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.30.0**. The
-  diagnostic now reports what an answer to the situation questions could
-  narrow — how much of a store is reached by a place, names somebody, or
-  carries an estimate — because a full store can have nothing for those
-  questions to bite on and the report could not say so.
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.30.1**. The
+  manual now covers the diagnostic report, which it had never mentioned — what
+  it is, the two routes to it, that it carries counts and nothing anybody
+  wrote, and what the new situation-reach section is telling a reader.
 - **CONFIRMED BY BYTES FROM THE DEVICE, 2026-08-23.** A §7f diagnostic on the
   installed instance reports `Build: 2.29.0` and `Service worker cache:
   quietkeep-sync-2.29.0`, a worker serving the page and no newer version
@@ -709,10 +708,11 @@ closed question filed under this heading now, so the two cannot drift again.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.29.0** (2.29.0 promoted at
-  `6e37bba`, the branch-state gate and this record at `2c5d7c0`, Spine and
-  Deploy success on every step between, and the triplet confirmed from the
-  DEVICE rather than from the promote's output or from `main`'s own `sw.js`).
+- **https://quietkeep.pages.dev** — production, **2.30.0** (promoted at
+  `51ef0a6`, Spine and Deploy success on `c1cc9a5` before the merge, read from
+  the runs. Promoted so the new section could be read against a real store —
+  the one that prompted it lives here, not on staging. The 2.29.0 reading
+  confirmed by cache triplet from the device stands below.)
 - **An earlier reading the same day said only "2.29.0", with no cache name, and
   was recorded as the weaker kind.** It has been superseded rather than kept:
   the cache triplet answers the question the bare version cannot, which is
