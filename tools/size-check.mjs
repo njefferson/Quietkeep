@@ -98,7 +98,37 @@ const BUDGET = {
   // So the words are bought deliberately, which is the only way this number is
   // allowed to move. Nothing on the first screen changes — both headings are
   // inside a sheet behind a door that is hidden until a role exists.
-  words: 3500,
+  // 3500 -> 3506 on 2026-08-23 (2.26.0): the third filter axis. Six words —
+  // the "Who is here" label, and the sheet's opening sentence naming three
+  // things where it named two. Bought deliberately: the axis is entry 24's
+  // best-evidenced of the three, and a chooser nobody can read the purpose of
+  // is a control that does not work.
+  //
+  // Nothing on the first screen changes. Both live inside `#sheet-situation`,
+  // behind a door, and the chooser itself is hidden until somebody has been
+  // named.
+  // 3506 -> 3512 on 2026-08-23 (2.27.0): six words in the detail sheet's place
+  // hint, and they are honesty rather than polish. It read "a thing with no
+  // place at all can be done anywhere", which stopped being true the moment a
+  // place on a project began reaching the work inside it. A sheet that is
+  // quietly wrong about what the app does is worse than one that says less, and
+  // the first rewrite cost fifteen words before being cut to six.
+  // 3512 -> 3530 on 2026-08-23 (2.28.0): eighteen words for the ask-once row —
+  // a label, a button, and the sentence that makes it visibly declinable.
+  //
+  // That sentence is not decoration and is the reason this is not a smaller
+  // number. Entry 23 requires the ask be "worded as declinable as Not this
+  // already is", and entry 8 is why: a non-optional request produces resistance,
+  // and visibly preserving choice measurably reduces it. A bare field with a
+  // button is a demand wearing a question mark.
+  //
+  // The first draft cost twenty-four. The label now matches the chooser it
+  // replaces — same slot, same words, two states — and the hint lost a clause
+  // that repeated what the sentence after it already said.
+  //
+  // Nothing on the first screen changes: the row is inside the situation sheet,
+  // behind a door, and it is hidden the moment a place exists.
+  words: 3530,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -340,7 +370,15 @@ const BUDGET = {
   // nothing on the first screen changes. The first-step flow had ONE route into
   // it for eleven months — the offer card — so it could only shape whatever the
   // app happened to hand you.
-  controls: 241,
+  // 241 -> 242 on 2026-08-23 (2.26.0): one `<select>` — who is here — inside
+  // the situation sheet, beside the two choosers already there. Hidden until a
+  // person has been named, so on a store that has named nobody the control
+  // count of every screen is unchanged.
+  // 242 -> 244 on 2026-08-23 (2.28.0): the ask-once field and its button, inside
+  // the situation sheet. They REPLACE the place chooser rather than joining it —
+  // the two states are never on screen together — so the count on any one screen
+  // rises by one, not two, and only on a store that has never named a place.
+  controls: 244,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

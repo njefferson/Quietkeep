@@ -298,6 +298,7 @@
           data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
   <p id="where-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
   <p id="how-long-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
+  <p id="with-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
 
   <!-- Next up: one thing, chosen for you, with a short capped list behind it.
        Hidden when nothing is asking — an empty morning says so. -->
@@ -1429,9 +1430,16 @@
       <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
     </div>
     <datalist id="detail-contexts"></datalist>
+    <!-- The last clause changed in 2.27.0 and the change is honesty, not
+         polish. It read "a thing with no place at all can be done anywhere",
+         which stopped being true the moment a place on a project began reaching
+         the work inside it: a thing with none of its own can now be reached by
+         one it inherits. Leaving the old sentence would have made the sheet
+         quietly wrong about the app's behaviour, which is worse than saying
+         less. -->
     <p id="detail-context-hint" class="detail-hint">
-      As many as fit. Nothing here is required, and a thing with no place at all
-      can be done anywhere.
+      As many as fit, and none is required. With no place of its own, a thing
+      goes where it lives &mdash; or anywhere, if that has none.
     </p>
     <ul id="detail-context-list" class="detail-feeds"></ul>
   </div>
@@ -2498,9 +2506,9 @@
 <dialog id="sheet-situation" aria-labelledby="sheet-situation-title" data-door="#situation-open">
   <h2 id="sheet-situation-title" class="section">What&rsquo;s the situation?</h2>
   <div class="sheet-body" tabindex="0">
-    <p id="situation-words" class="detail-hint">Where you are and how long you
-      have. Both narrow what the app offers you and what the list shows &mdash;
-      nothing is taken away, and everything still comes back.</p>
+    <p id="situation-words" class="detail-hint">Where you are, how long you have,
+      and who is with you. Each narrows what the app offers you and what the
+      list shows &mdash; nothing is taken away, and everything still comes back.</p>
 
     <!-- WHERE YOU ARE (2.2.0, ADR-0092). The tree says where a thing LIVES;
          this says where it can be DONE, and they are different questions. A
@@ -2514,12 +2522,69 @@
       <select id="where" aria-describedby="where-note"></select>
     </div>
 
+    <!-- ASK ONCE, IN THE FLOW (2.28.0 — entry 23's routing proposal).
+         Shown only when NO place has ever been named, and replaced by the
+         chooser above the moment one has.
+
+         THE MOMENT, which the entry does not specify and which had to be
+         chosen. Its written condition — the first time an offer would differ by
+         place — cannot fire on a store with no places, because `fitsHere`
+         returns true for everything unlabelled and so the offer never differs.
+         The moment used instead is this one: somebody opened this sheet to
+         answer what their situation is, and the control for half the answer was
+         not there. That is the instant the answer would change, they arrived
+         voluntarily, and closing the sheet declines it.
+
+         NOT THE OFFER CARD, considered and refused. That is where somebody goes
+         to START something, which entry 1 makes the hardest moment there is, and
+         a question there lands as the app asking for admin when you came to
+         work (entry 15).
+
+         DECLINING COSTS NOTHING AND IS NOT RECORDED, because it does not need to
+         be: the ask disappears by itself the moment a place exists, so there is
+         no state to remember and nothing to come back and re-ask. That is what
+         makes this small and reversible, which is what entry 24 says to do with
+         a mechanism whose comparison has never been tested. -->
+    <div id="where-first-row" class="lens-row" hidden>
+      <label class="detail-inline" for="where-first">Where you are</label>
+      <input id="where-first" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="at work, at home, out"
+             aria-describedby="where-first-hint">
+      <button id="where-first-set" type="button">Name it</button>
+    </div>
+    <p id="where-first-hint" class="detail-hint" hidden>
+      Only if it helps. Anything with no place turns up wherever you are.
+    </p>
+
     <!-- HOW LONG YOU HAVE (2.19.0). Never hidden, unlike the chooser above:
          an unestimated thing fits every answer, so this works on the first day
          and withholding it would withhold a control that works. -->
     <div id="how-long-row" class="lens-row">
       <label class="detail-inline" for="how-long">How long you have</label>
       <select id="how-long" aria-describedby="how-long-note"></select>
+    </div>
+
+    <!-- WHO IS HERE (2.26.0, entry 24's third axis and the best evidenced of
+         the three: a specific person in front of somebody is the most
+         distinctive focal event-based cue there is).
+
+         `fitsWith`'s shape is `fitsHere`'s exactly, including the part that
+         looks like a weakness — a thing with nobody named on it fits every
+         answer. Without that, saying who is here on a store where almost
+         nothing names a person empties the screen, and an app that goes empty
+         on the first day is the one somebody stops trusting (entry 23).
+
+         Hidden until somebody has been named, like the place chooser and for
+         the same reason. The duration chooser above is never hidden because it
+         works from the first day; this one cannot.
+
+         A FILTER OVER THE ONE OFFER, composed with the other two — never its
+         own screen. That guardrail is entry 24's own and the other two axes
+         depend on it: a set of named situational destinations is entry 16's
+         twenty options producing zero actions. -->
+    <div id="with-row" class="lens-row" hidden>
+      <label class="detail-inline" for="with-who">Who is here</label>
+      <select id="with-who" aria-describedby="with-note"></select>
     </div>
 
     <!-- A SITUATION YOU RECOGNISE (2.21.0). Name what you have just set and it

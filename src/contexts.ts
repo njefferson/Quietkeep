@@ -26,6 +26,7 @@
 
 import type { NodeState, State } from './fold.ts';
 import type { NodeId } from './events.ts';
+import { ancestors } from './tree.ts';
 
 /** Every context the reader has named, by id, in a stable order.
  *
@@ -53,6 +54,59 @@ export const contextNames = (state: State, n: NodeState): string[] =>
   contextsOf(state, n).map(c => c.title || '(unnamed)');
 
 /**
+ * EVERY PLACE THAT REACHES THIS THING — its own, and every ancestor's (2.27.0).
+ *
+ * ## Why a container's place reaches its contents
+ *
+ * ADR-0013 is the argument, not an obstacle to it. That decision is that higher
+ * levels **project lineage and health downward** into the runway, and it
+ * requires every higher-level node to have a downward projection defined. Place
+ * is the one property that never got one: `src/gate.ts` already treats *parented
+ * to something under a clock* as satisfying law 1, so a parent confers RETURN on
+ * its children and conferred nothing else.
+ *
+ * The ADR's own complaint about every other system is the rest of the case:
+ * upper levels that require periodic manual attention go stale, because that
+ * attention is the first thing to lapse. Filing eight hundred actions one at a
+ * time is exactly that attention. Saying once that a project is work is not.
+ *
+ * ## Additive, never overriding
+ *
+ * A thing's own places are added to its ancestors', not replaced by them. A
+ * thing can honestly be reachable in two places, the same way it can carry two
+ * contexts of its own, and an override rule would mean a place set on an item
+ * silently cancelled the one it inherits — a rule nobody can see working.
+ *
+ * ## What this does NOT do
+ *
+ * `contextsOf` is unchanged: it still answers *what has this thing itself been
+ * told*, which is what a card shows and what the detail sheet edits. This is the
+ * filter's question, which is a different one — and keeping them apart means the
+ * sheet never displays a place somebody did not set on that item.
+ *
+ * The consequence, stated rather than discovered: a thing can be filtered by a
+ * place its own sheet does not list. The tree makes that inspectable — the thing
+ * is visibly inside the project, and the project visibly carries the place — but
+ * naming the inherited place on the item itself is owed and is recorded in
+ * `docs/plan-routed.md` rather than smuggled in here.
+ */
+export function placesReaching(state: State, n: NodeState): NodeState[] {
+  const live = new Map(allContexts(state).map(c => [c.id, c]));
+  const out = new Map<NodeId, NodeState>();
+  const take = (ids: readonly NodeId[]): void => {
+    for (const id of ids) {
+      const c = live.get(id);
+      if (c) out.set(c.id, c);
+    }
+  };
+  take(n.contexts);
+  // `ancestors` is bounded against a cycle that arrived from a shard exchange,
+  // so this cannot hang on a log this device never wrote whole.
+  for (const up of ancestors(state, n.id)) take(up.contexts);
+  return [...out.values()];
+}
+
+/**
  * Does this thing fit where you are?
  *
  * `where === null` means "everywhere" — the filter is off and everything fits.
@@ -60,7 +114,10 @@ export const contextNames = (state: State, n: NodeState): string[] =>
  */
 export function fitsHere(state: State, n: NodeState, where: NodeId | null): boolean {
   if (where === null) return true;
-  const live = contextsOf(state, n);
+  // INHERITED, since 2.27.0 — see `placesReaching`. A thing reached by no place
+  // at all, its own or its ancestors', still fits every answer: that default is
+  // load-bearing and inheritance narrows nothing on a store with no places.
+  const live = placesReaching(state, n);
   if (live.length === 0) return true;
   return live.some(c => c.id === where);
 }

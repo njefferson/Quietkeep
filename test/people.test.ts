@@ -15,6 +15,7 @@ import {
   people, personView, waitingOnAnyone, withWhom, openDays, waitingWords,
   peopleWords, isOpenWaiting, personName,
   promisedToAnyone, promisedWords, promisedRowWords,
+  fitsWith, withWords, allPeople,
 } from '../src/people.ts';
 import { silentNodes } from '../src/gate.ts';
 import {
@@ -357,4 +358,72 @@ test('the count line says what it is and never how long it has been so', () => {
 
 test('nobody named is said plainly, never invented and never hidden', () => {
   assert.equal(promisedRowWords(null), 'Nobody named yet.');
+});
+
+// ——— WHO IS HERE, the third filter axis (2.26.0, entry 24) ———
+//
+// The catalogue grades this the best-evidenced of the three axes: a specific
+// person in front of somebody is the most distinctive focal event-based cue.
+// These hold it to `fitsHere`'s shape, including the part that looks like a
+// weakness and is load-bearing.
+
+test('somebody named on a thing brings it through, and everyone else drops out', () => {
+  const s = fold([
+    ev('person.created', 'ALEX', { name: 'Alex' }),
+    ev('person.created', 'SAM', { name: 'Sam' }),
+    ev('node.created', 'a', { nodeKind: 'action', title: 'the guttering quote' }),
+    ev('node.created', 'b', { nodeKind: 'action', title: 'the other thing' }),
+    ev('stakeholder.added', 'a', { node: 'a', person: 'ALEX', relation: 'waiting-on' }),
+    ev('stakeholder.added', 'b', { node: 'b', person: 'SAM', relation: 'waiting-on' }),
+  ]);
+  assert.equal(fitsWith(s, s.nodes.get('a')!, 'ALEX'), true);
+  assert.equal(fitsWith(s, s.nodes.get('b')!, 'ALEX'), false);
+});
+
+test('a thing with nobody on it fits every answer — the load-bearing default', () => {
+  // `fitsHere`'s rule, deliberately copied. Without it, saying who is here on a
+  // store where almost nothing names a person empties the screen, and entry 23
+  // is the account of why an app that goes empty on the first day is the one
+  // somebody stops trusting. The cost is noise; the alternative is a filter
+  // nobody can rely on, which is worse and harder to notice.
+  const s = fold([
+    ev('person.created', 'ALEX', { name: 'Alex' }),
+    ev('node.created', 'loose', { nodeKind: 'action', title: 'nobody is on this' }),
+  ]);
+  assert.equal(fitsWith(s, s.nodes.get('loose')!, 'ALEX'), true);
+  assert.equal(fitsWith(s, s.nodes.get('loose')!, null), true, 'and no answer filters nothing');
+});
+
+test('every relation counts, not only waiting-on', () => {
+  // What is between two people is not only what one of them is owed. A thing
+  // promised to them and a thing merely involving them are both worth having in
+  // hand when they are standing there.
+  const s = fold([
+    ev('person.created', 'ALEX', { name: 'Alex' }),
+    ev('node.created', 'p', { nodeKind: 'action', title: 'the framed prints' }),
+    ev('stakeholder.added', 'p', { node: 'p', person: 'ALEX', relation: 'promised-to' }),
+  ]);
+  assert.equal(fitsWith(s, s.nodes.get('p')!, 'ALEX'), true);
+});
+
+test('a trashed person stops filtering, without a migration', () => {
+  const base = fold([
+    ev('person.created', 'ALEX', { name: 'Alex' }),
+    ev('node.created', 'a', { nodeKind: 'action', title: 'x' }),
+    ev('stakeholder.added', 'a', { node: 'a', person: 'ALEX', relation: 'waiting-on' }),
+  ]);
+  assert.equal(fitsWith(base, base.nodes.get('a')!, 'ALEX'), true);
+  const gone = fold([ev('node.trashed', 'ALEX', { at: NOW })], base);
+  // With the only named person gone the link is dead, so the thing reverts to
+  // fitting everything rather than to fitting nothing — `contextsOf`'s rule.
+  assert.equal(fitsWith(gone, gone.nodes.get('a')!, 'ALEX'), true);
+});
+
+test('the standing line states the scope and never a count of what is hidden', () => {
+  const w = withWords('Alex');
+  assert.match(w, /Alex/);
+  assert.match(w, /anything with nobody named on it/, 'the default is said out loud');
+  assert.match(w, /still held and still comes back/);
+  assert.ok(!/\d+ hidden|\d+ others|hiding/.test(w),
+    'an aggregate about work you are deliberately not looking at only ever rises');
 });

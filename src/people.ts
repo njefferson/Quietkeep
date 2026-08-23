@@ -13,6 +13,7 @@
 // PURE. `now` and `zone` are arguments.
 
 import type { NodeState, State } from './fold.ts';
+import type { NodeId } from './events.ts';
 import { heldNodes } from './gate.ts';
 import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
 import { boundaryOf } from './day.ts';
@@ -231,6 +232,76 @@ export function personName(state: State, id: string | null): string | null {
   const p = state.nodes.get(id);
   return p && alive(p) ? (p.title || '(unnamed)') : null;
 }
+
+/**
+ * WHO IS HERE — the third filter axis (2.26.0, entry 24's third candidate).
+ *
+ * The catalogue grades this the **best evidenced of the three**: a specific
+ * person standing in front of somebody is the most distinctive, focal
+ * event-based cue of the three, closer to Einstein & McDaniel's strongest case
+ * than a generic room ever is.
+ *
+ * ## The same pattern, deliberately, and not a better one
+ *
+ * `fitsHere`'s shape exactly, including the part that looks like a weakness:
+ * **a thing with nobody attached fits every answer.** That is the load-bearing
+ * default the place axis already carries — without it, saying who is here on a
+ * store where almost nothing names a person empties the screen, and entry 23 is
+ * the account of why an app that goes empty on the first day is the app somebody
+ * stops trusting. The cost is noise; the alternative cost is a filter nobody
+ * can rely on, which is worse and harder to notice.
+ *
+ * Resolved through state rather than trusting the stored ids, so a person who
+ * was trashed stops filtering without a migration — `contextsOf`'s rule, and
+ * `personName` already resolves the same way one node at a time.
+ *
+ * EVERY RELATION COUNTS, not just `waiting-on`. What is between two people is
+ * not only what one of them is owed: a thing they asked for, a thing promised to
+ * them, and a thing merely involving them are all things worth having in hand
+ * when they are standing there. Narrowing this to one relation would answer a
+ * different question, and the surface that answers THAT question — the person
+ * lens on the detail sheet — is already built and stays where it is.
+ */
+export function fitsWith(state: State, n: NodeState, person: NodeId | null): boolean {
+  if (person === null) return true;
+  const live = n.people.filter(l => {
+    const p = state.nodes.get(l.person);
+    return p ? alive(p) : false;
+  });
+  if (live.length === 0) return true;
+  return live.some(l => l.person === person);
+}
+
+/** Everyone the reader has named, for the chooser. Hidden until one exists —
+ *  a chooser with nothing in it teaches you the feature is broken. */
+export function allPeople(state: State): NodeState[] {
+  return [...state.nodes.values()]
+    .filter(n => n.kind === 'person' && alive(n))
+    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+}
+
+/**
+ * The standing line while the person filter is on.
+ *
+ * `whereWords`' register and `whereWords`' refusal: it states the SCOPE and
+ * never a count of what is hidden, because an aggregate about work somebody is
+ * deliberately not looking at only ever rises.
+ */
+export const withWords = (name: string): string =>
+  `Showing what involves ${name}, and anything with nobody named on it. `
+  + 'Everything else is still held and still comes back.';
+
+/** The device's answer to "who is here", like `where.now` and `how.long`.
+ *
+ *  A DEVICE VIEW PREFERENCE and never an event, for the reason both of those
+ *  carry and more sharply: a stored trail of who somebody was with, and when,
+ *  is the single most sensitive thing this app could accidentally keep. There
+ *  is no event for it and there must never be one. */
+export const WITH_KEY = 'with.now';
+
+let withNow: NodeId | null = null;
+export const getWithNow = (): NodeId | null => withNow;
+export const setWithNow = (id: NodeId | null): void => { withNow = id; };
 
 /** The name to show for whoever a waiting-for is with. */
 export function withWhom(state: State, n: NodeState): string | null {

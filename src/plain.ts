@@ -255,6 +255,13 @@ export const PLAIN_CHROME_HIDDEN = [
   '#where-note',      // and its consequence: the list is narrowed by place.
   '#how-long-note',   // and by time. Both say what the pile is doing, and this
                       // mode has already stopped showing the pile.
+  '#with-note',       // and by who is with you (2.26.0). Caught by the STATIC
+                      // half of this gate, which exists because the same class
+                      // of miss reached CI in 2.23.1 — three regions moved out
+                      // of a container that had covered them and nothing before
+                      // the walk noticed. The answer is unchanged and it is not
+                      // bookkeeping: narrowing is choosing between things, and
+                      // the worst day is the day that act is unavailable.
   '#held',            // the complete list of everything you are holding, with the
                       // tree, the lens, the fold, Contents and Back to the top
                       // inside it. This is the pile. The gauge above still says

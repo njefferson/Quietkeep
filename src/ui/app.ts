@@ -53,11 +53,13 @@ import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents } from './detail-intents.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
+  isLongStretch, longStretchWords,
   getHowLong, setHowLong,
 } from '../duration.ts';
 import {
   waitingOnAnyone, withWhom, waitingWords, peopleWords,
   promisedToAnyone, promisedWords, promisedRowWords,
+  allPeople, withWords, WITH_KEY, getWithNow, setWithNow,
 } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
@@ -103,6 +105,7 @@ let lensRoot: string | null = null;
  *  somebody is is not a fact about their work and the log has no business
  *  keeping a history of it. */
 let whereNow: string | null = null;
+let withNow: string | null = null;
 /** How long the reader says they have, in minutes, or null for no limit. A
  *  device view preference like `whereNow` — see `HOW_LONG_KEY`. */
 let howLongNow: number | null = null;
@@ -274,6 +277,15 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   const whereRow = document.querySelector<HTMLElement>('#where-row');
   const whereNote = document.querySelector<HTMLElement>('#where-note');
   const places = allContexts(st);
+  // ASK ONCE, IN THE FLOW (2.28.0, entry 23). The chooser and the ask are the
+  // same slot in two states: with no place named there is nothing to choose
+  // between, and hiding the control taught the reader the app could not do this
+  // at all. Now the sheet asks for the first one, here, at the moment they came
+  // to answer exactly this question.
+  const firstRow = document.querySelector<HTMLElement>('#where-first-row');
+  const firstHint = document.querySelector<HTMLElement>('#where-first-hint');
+  if (firstRow) firstRow.hidden = places.length > 0;
+  if (firstHint) firstHint.hidden = places.length > 0;
   if (whereSel && whereRow) {
     whereRow.hidden = places.length === 0;
     const keep = whereNow ?? '';
@@ -320,7 +332,45 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   if (getHowLong() !== howLongNow) setHowLong(howLongNow);
   if (howLongNote) {
     howLongNote.hidden = howLongNow === null;
-    if (howLongNow !== null) howLongNote.textContent = howLongWords(howLongNow);
+    // THE LONG END ROUTES INSTEAD OF NARROWING (2.25.0, entry 24). At four hours
+    // `fitsWithin` admits nearly everything, so the ordinary line would claim a
+    // filter that is not doing anything. A block of open time is want-limited,
+    // not duration-limited, so the words point at the Menu — which is law 6's
+    // surface and already built — rather than at a longer list.
+    if (howLongNow !== null) {
+      howLongNote.textContent = isLongStretch(howLongNow)
+        ? longStretchWords(howLongNow, menuCount(st))
+        : howLongWords(howLongNow);
+    }
+  }
+
+  // WHO IS HERE (2.26.0, entry 24's third axis). The place chooser's shape
+  // exactly — hidden until somebody has been named, because a chooser with
+  // nothing in it teaches you the feature is broken; stands down rather than
+  // filtering by a ghost if that person was trashed, because a ghost matches
+  // nothing and the surface would go empty.
+  const withSel = document.querySelector<HTMLSelectElement>('#with-who');
+  const withRow = document.querySelector<HTMLElement>('#with-row');
+  const withNote = document.querySelector<HTMLElement>('#with-note');
+  const named = allPeople(st);
+  if (withSel && withRow) {
+    withRow.hidden = named.length === 0;
+    const keep = withNow ?? '';
+    withSel.replaceChildren(...[
+      Object.assign(document.createElement('option'), { value: '', textContent: 'nobody in particular' }),
+      ...named.map(p => Object.assign(document.createElement('option'), {
+        value: p.id, textContent: p.title || '(unnamed)',
+      })),
+    ]);
+    if (keep === '' || named.some(p => p.id === keep)) withSel.value = keep;
+  }
+  const withLive = withNow && named.some(p => p.id === withNow) ? withNow : null;
+  if (getWithNow() !== withLive) setWithNow(withLive);
+  if (withNote) {
+    withNote.hidden = !withLive;
+    if (withLive) {
+      withNote.textContent = withWords(named.find(p => p.id === withLive)?.title || 'them');
+    }
   }
 
   const lensRootNode = lensRoot ? st.nodes.get(lensRoot) : undefined;
@@ -1660,6 +1710,15 @@ export async function main(edition?: Edition): Promise<void> {
     whereNow = null;
   }
   try {
+    // WHO IS HERE (2.26.0). A device view preference like the two above, and
+    // more pointedly than either: a stored trail of who somebody was with, and
+    // when, is the most sensitive thing this app could accidentally keep. It is
+    // a kv value and there is no event for it.
+    withNow = (await session.store.getKv<string>(WITH_KEY)) || null;
+  } catch {
+    withNow = null;
+  }
+  try {
     // Stored as a string like every other view preference. A stored value that
     // is not one of the offered lengths is dropped rather than honoured: it
     // would filter by a number no control can show or clear, which is a state
@@ -1692,6 +1751,7 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLAnchorElement>('a.skip')?.addEventListener('click', () => { openHeld(); });
   setWhereNow(whereNow);
   setHowLong(howLongNow);
+  setWithNow(withNow);
 
   /** ONE WRITER for the situation (2.21.0). Three routes set these two values —
    *  each chooser, and recalling a saved situation — and before this each did
@@ -1700,13 +1760,23 @@ export async function main(edition?: Edition): Promise<void> {
    *  the shape `containerOptionWords` and `personName` are both the record of.
    *
    *  Persisted behind the repaint, the badge's rule: act now, store after. */
-  const setSituation = (place: string | null, minutes: number | null): void => {
+  const setSituation = (place: string | null, minutes: number | null,
+                        person: string | null = withNow): void => {
     whereNow = place;
     howLongNow = minutes;
+    // THIRD AXIS, SAME WRITER (2.26.0). It defaults to what is already set so
+    // every existing caller keeps its meaning — recalling a saved situation
+    // restores a place and a length and says nothing about who is with you,
+    // because a saved situation has no person in it. Adding one would widen
+    // `situation.saved`'s payload, which is a schema change this release does
+    // not need and is recorded in the plan instead of smuggled in here.
+    withNow = person;
     setWhereNow(whereNow);
     setHowLong(howLongNow);
+    setWithNow(withNow);
     refreshAll();
     void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+    void session.store.setKv(WITH_KEY, withNow ?? '').catch(() => { /* view pref only */ });
     void session.store.setKv(HOW_LONG_KEY, howLongNow === null ? '' : String(howLongNow))
       .catch(() => { /* view pref only */ });
   };
@@ -1717,6 +1787,35 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
     const v = (e.target as HTMLSelectElement).value;
     setSituation(whereNow, v ? Number(v) : null);
+  });
+
+  // THE FIRST PLACE, NAMED AND APPLIED IN ONE GESTURE (2.28.0). Creating it is
+  // not enough on its own — a place nothing carries filters nothing — so this
+  // also SETS it as where you are, which is what the reader was here to do. The
+  // work of attaching it to anything is theirs and is cheap now that a place on
+  // a container reaches what is under it (2.27.0).
+  const nameFirstPlace = (): void => {
+    const input = document.querySelector<HTMLInputElement>('#where-first');
+    const name = input?.value.trim();
+    if (!name) return;
+    void session.commit(ctx => [{
+      id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+      kind: 'context.created', node: ctx.id(), payload: { name },
+    } as unknown as AppEvent]).then(() => {
+      if (input) input.value = '';
+      const made = allContexts(session.state()).find(c => c.title === name);
+      if (made) setSituation(made.id, howLongNow);
+      else refreshAll();
+    }).catch(() => { /* the sheet stays as it was */ });
+  };
+  document.querySelector<HTMLButtonElement>('#where-first-set')
+    ?.addEventListener('click', nameFirstPlace);
+  document.querySelector<HTMLInputElement>('#where-first')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); nameFirstPlace(); }
+  });
+
+  document.querySelector<HTMLSelectElement>('#with-who')?.addEventListener('change', (e) => {
+    setSituation(whereNow, howLongNow, (e.target as HTMLSelectElement).value || null);
   });
 
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {

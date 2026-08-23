@@ -453,3 +453,53 @@ test('a repeat-free file says nothing about rhythms', () => {
   assert.equal(s.repeats, 0);
   assert.doesNotMatch(importWords(s), /rhythm/);
 });
+
+// ——— THE ARRIVAL IS A FACT, NOT A DEBT (2.25.0, entry 23) ———
+//
+// The catalogue's measured case is a 1,173-item import leaving eleven of
+// fourteen node kinds at zero: the app arrives able to filter by place, person
+// and container, and none of it can do anything because nobody has been asked
+// for a word. What the summary never said is that this is not a backlog the
+// reader has already failed to clear.
+//
+// Modelled on the amnesty (ADR-0043) and held to its one hard constraint: an
+// amnesty that sounds like absolution implies there was something to forgive.
+
+test('the summary says nothing is filed, and says why, so the pile is not a debt', () => {
+  const { lines } = parseTaskPaper('Kitchen:\n\t- Fix the tap\n\t- Order a filter\n');
+  const w = importWords(importSummary(lines, []));
+  assert.match(w, /Nothing is filed/, 'it states the fact');
+  assert.match(w, /filing was never asked for/,
+    'and the reason, which is what stops it reading as a failure the reader already committed');
+  assert.match(w, /in the words it was written in/,
+    'and that the pile is usable as it stands');
+});
+
+test('the arrival line never reassures, because reassurance implies a fault', () => {
+  const { lines } = parseTaskPaper('Kitchen:\n\t- Fix the tap\n');
+  const w = importWords(importSummary(lines, []));
+  assert.ok(!/don.t worry|no need to|it.s fine|take your time|whenever you.re ready/i.test(w),
+    `"${w}" comforts, and an amnesty that sounds like absolution implies there was something to forgive`);
+  assert.ok(!/you can file|sort them|organise|tidy|clean up|get to it/i.test(w),
+    'and it never promises the reader will file it later, which is the debt restated politely');
+});
+
+test('one item is not a pile, so it gets no sentence about filing', () => {
+  // The existing exact-match assertion above is what caught this: `Found 1
+  // action.` and nothing else. One action invites no sorting, so explaining
+  // that it has not been sorted answers a question nobody asked.
+  const w = importWords(importSummary(parseTaskPaper('- One thing\n').lines, []));
+  assert.ok(!/Nothing is filed/.test(w), 'no arrival sentence for a single item');
+  const two = importWords(importSummary(parseTaskPaper('- One thing\n- Another\n').lines, []));
+  assert.match(two, /Nothing is filed/, 'and it appears as soon as there is a pile');
+});
+
+test('a file with nothing readable does not get the arrival line', () => {
+  // Nothing arrived, so there is nothing to say about how it arrived. The
+  // early return already handles this; asserted because a later edit that moves
+  // the sentence above the return would produce a cheerful line about an empty
+  // import, which is the shape LESSONS 100 calls a check about nothing.
+  const w = importWords(importSummary([], []));
+  assert.ok(!/Nothing is filed/.test(w), 'no arrival sentence when nothing arrived');
+  assert.match(w, /Nothing has been changed/);
+});

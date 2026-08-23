@@ -29,6 +29,52 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.28.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**The app asks where you are, once, at the moment it would matter.** Open *What\u2019s the situation?* before you have named anywhere and it now asks, instead of showing you a chooser with nothing in it. Name one and it is applied straight away \u2014 you do not have to go and find it again.',
+      '**It asks once and then never again.** The question is replaced by the ordinary chooser the moment a place exists, so there is nothing to dismiss and nothing that comes back.',
+      '**Saying no costs nothing.** Close the sheet, or do not type. Nothing needs a place, and anything without one turns up wherever you are \u2014 which the sheet says out loud rather than leaving you to find out.',
+      '**What is deliberately NOT here.** No setup screen, no template to pick, and nothing asking you to get organised before you can use the app. The research this came from refuses all three by name, and it refuses guessing a place from what you do even more firmly.',
+      '**And nothing similar was added for roles or projects**, though the plan had it. The place question works because you opened a screen to answer it and half the answer was missing. There is no equivalent moment for a role, and inventing one would be a setup prompt wearing a question mark.',
+    ],
+  },
+  {
+    triplet: '2.27.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**A place you put on a project now reaches everything inside it.** Before this, saying where something could be done meant saying it on every single item \u2014 which on a planner brought in from somewhere else is hundreds of statements, and nobody was ever going to make them. One statement on the project does it now, and it reaches down through however many levels are between.',
+      '**Nothing you already set has changed.** A thing keeps its own places as well as the ones it inherits, so a place put on an item is never cancelled by one further up.',
+      '**And a thing with no place anywhere above it still shows everywhere**, exactly as before. Saying where you are cannot empty the screen.',
+      '**The place field says this now**, because it used to say something that stopped being true: a thing with no place of its own goes where it lives.',
+      '**What is still true and still not fixed.** An item\u2019s own panel lists only the places you set on it, not the ones it inherits \u2014 so if something surprises you by showing up, the reason is on whatever it sits inside rather than on the thing itself.',
+    ],
+  },
+  {
+    triplet: '2.26.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**You can say who is with you, and the app answers with what is between you and them.** It sits beside *where you are* and *how long you have*, and the three work together on the one thing you are offered \u2014 never three separate screens to choose between. Anything with nobody named on it still shows, the same way anything with no place still shows, so saying who is here can never empty the screen.',
+      '**Something you wrote this morning is no longer buried under an imported file.** Things you have not sorted yet are offered last, and inside that group they were ordered by when they arrived \u2014 so a planner you brought in put hundreds of its own items ahead of anything you wrote afterwards, permanently. Your own captures come first now. Nothing imported is excluded; it is behind, not gone.',
+      '**What is deliberately NOT here.** Nothing counts who you spend time with, nothing is stored about who you were with or when, and there is no list of people ranked by anything. Who is with you is a setting on this device and never an event.',
+      '**What is still true and still not fixed.** A saved situation remembers where you are and how long you have, but not who is with you. And a place you put on a project still does not reach the things inside it.',
+    ],
+  },
+  {
+    triplet: '2.25.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**Bringing a planner in no longer reads as a backlog you have already fallen behind on.** The summary now says that nothing is filed, and that filing was never asked for \u2014 because it was not. Everything arrives as work, in the words you wrote it in, and it is usable before you have sorted any of it.',
+      '**You can say you have a long stretch, and the app stops pretending that is a filter.** Four hours was not on the list at all. It is now, and choosing it does not narrow anything \u2014 it says so, and points at the Menu instead. A free afternoon is rarely short of time; it is short of the thing you actually want to do, and the Menu is the one list where nothing is asking.',
+      '**What is deliberately NOT here.** Nothing sorts your import for you, nothing guesses which things belong where, and there is no progress bar for how organised you are. The research this came from refuses all three by name.',
+      '**What is still true and still not fixed.** A place you put on a project still does not reach the things inside it, so labelling in bulk is not possible yet.',
+    ],
+  },
+  {
     triplet: '2.24.1',
     kind: 'ITERATION',
     date: '2026-08-23',

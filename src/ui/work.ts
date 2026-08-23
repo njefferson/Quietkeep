@@ -20,6 +20,7 @@ import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
 import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
+import { fitsWith, getWithNow } from '../people.ts';
 import { MENU_WORDS } from '../menu.ts';
 import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
@@ -605,9 +606,16 @@ export function mountWork(
     // twenty minutes" answered with a two-hour job is the feature not working,
     // which is the reasoning `getWhereNow` already carries about place.
     const within = getHowLong();
+    const withWhoNow = getWithNow();
     const all = ((): typeof all0 => {
-      if (!here && within === null) return all0;
-      const fits = (i: NextUpItem) => fitsHere(state, i.node, here) && fitsWithin(i.node, within);
+      if (!here && within === null && !withWhoNow) return all0;
+      // WHO IS HERE joins the composition (2.26.0, entry 24's third axis, and
+      // the best evidenced of the three). Three predicates, composed, over the
+      // ONE offer — never three screens. That guardrail is the entry's own and
+      // the other two candidates depend on it: building any axis as its own
+      // destination is the same mistake regardless of which axis it is.
+      const fits = (i: NextUpItem) => fitsHere(state, i.node, here)
+        && fitsWithin(i.node, within) && fitsWith(state, i.node, withWhoNow);
       const kept = [...(all0.head ? [all0.head] : []), ...all0.behind].filter(fits);
       return { head: kept[0] ?? null, behind: kept.slice(1), total: kept.length };
     })();
