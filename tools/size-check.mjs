@@ -133,7 +133,23 @@ const BUDGET = {
   // separator, on every screen, for a page that answers every question this app
   // can be asked. The alternative was another destination inside the ⓘ, which
   // is already six deep and held to 3,000px each.
-  words: 3534,
+  // 3534 -> 3570 on 2026-08-23 (2.31.0): the intro now says to add Quietkeep to
+  // the home screen BEFORE offering to keep the data, shown only when the
+  // display mode says this is not an installed launch. 33 words.
+  //
+  // WORTH IT, and the trade is worth stating rather than assuming. Reported from
+  // a device: in a tab the browser refuses that ask nearly every time, and the
+  // panel's answer only mentioned the home screen AFTER the refusal. So the
+  // first screen anybody sees invited a press, produced a no, and printed the
+  // remedy underneath — which reads as the app being broken, on the one screen
+  // where a reader has no way to tell the difference.
+  //
+  // Thirty-three words that stop a failure are cheaper than the failure. The
+  // first draft was sixty and it also pushed the standing-prose budget past
+  // 11,000px; it was cut to thirty-three and that budget passes untouched at
+  // 10,893px, which is the version of "deliberate" this file actually wants —
+  // raise the one that had to move, not both.
+  words: 3570,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
