@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.24.1 — ITERATION
+
+*2026-08-23*
+
+- **Two headings on the roles screen, so you can tell its two lists apart.** It now shows what each role is carrying and where your time went, and without headings those read as one list saying two contradictory things about the same name.
+- **One sentence removed that said the same thing twice.** The line under the first heading opened by repeating the heading.
+- **What is still true and still not fixed.** If you have never run a timer the time list reads zero for everything — it says so, and says what would fill it.
+
 ## 2.24.0 — CAPABILITY
 
 *2026-08-22*

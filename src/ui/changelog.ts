@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.24.1',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**Two headings on the roles screen, so you can tell its two lists apart.** It now shows what each role is carrying and where your time went, and without headings those read as one list saying two contradictory things about the same name.',
+      '**One sentence removed that said the same thing twice.** The line under the first heading opened by repeating the heading.',
+      '**What is still true and still not fixed.** If you have never run a timer the time list reads zero for everything \u2014 it says so, and says what would fill it.',
+    ],
+  },
+  {
     triplet: '2.24.0',
     kind: 'CAPABILITY',
     date: '2026-08-22',

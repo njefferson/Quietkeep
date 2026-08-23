@@ -51,10 +51,6 @@ import { dirname, join } from 'node:path';
 import { serve } from './serve.mjs';
 import { requireFreshBundle } from './bundle-fresh.mjs';
 
-// Every walk here serves the generated bundle; none of them used to check it
-// was current. See tools/bundle-fresh.mjs.
-requireFreshBundle(new URL('..', import.meta.url).pathname, 'tour-shots');
-
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(root, 'public/tour');
 const MANIFEST = join(OUT, 'manifest.json');
@@ -327,6 +323,28 @@ if (IF_STALE && existsSync(MANIFEST)
   console.log('\n  The walkthrough pictures are already of this app. Nothing to do.\n');
   process.exit(0);
 }
+// THE BUNDLE CHECK GOES HERE, AND THE POSITION WAS BOUGHT TWICE (2.24.1).
+//
+// It was at module load, which made `--check` and `--staged` — static modes that
+// read a manifest and some file names and never open a browser — refuse whenever
+// `public/app.js` was missing. In CI that turned one failure into two:
+// `release:check` failed, GitHub SKIPPED `npm run build`, and `tour:check` then
+// reported the walkthrough as stale when its manifest hash matched its sources
+// exactly. A cascade wearing the costume of a real finding, and it cost a
+// diagnosis.
+//
+// So it moved down — and the first attempt put it just before `serve()`, which
+// is BELOW the two lines under this comment. Those lines DELETE every picture in
+// the directory. A planted missing bundle then wiped all ten and refused, and
+// the repo was left with no walkthrough at all: a tool that destroys its outputs
+// before it has established it can regenerate them.
+//
+// Here is the only correct place: after every early-exit mode, before anything
+// is removed. The general rule is not "put guards at the top" or "put them at
+// the bottom" — it is that a guard belongs immediately before the first
+// irreversible act it protects.
+requireFreshBundle(root, 'tour-shots');
+
 mkdirSync(OUT, { recursive: true });
 for (const f of readdirSync(OUT)) if (f.endsWith('.png')) rmSync(join(OUT, f));
 
