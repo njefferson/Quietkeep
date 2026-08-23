@@ -185,6 +185,26 @@ test('the tags somebody wrote come across as places, in their own words', () => 
   assert.equal(contextsOf(state, item).length, 2, 'and the item is attached to both');
 });
 
+test('a tag that CARRIES the place uses the value, never the word "context"', () => {
+  // Shipped wrong and caught an hour later by reading the regex against a real
+  // store's report: `@context(Office)` made a place called "context", holding
+  // everything, under a word nobody typed. The test beside this one asserted
+  // only what was DROPPED, so it passed the whole time.
+  const { lines } = parseTaskPaper('- Thing @context(Office)\n');
+  assert.deepEqual(lines[0]!.tags, ['Office']);
+
+  const many = parseTaskPaper('- Thing @tags(Errands, Phone)\n');
+  assert.deepEqual(many.lines[0]!.tags, ['Errands', 'Phone']);
+
+  // An empty one names nothing, and inventing a place from it would be a guess.
+  const bare = parseTaskPaper('- Thing @context\n');
+  assert.deepEqual(bare.lines[0]!.tags, []);
+  assert.deepEqual(bare.lines[0]!.dropped, ['context']);
+
+  const { state } = build('- Thing @context(Office)\n');
+  assert.deepEqual(allContexts(state).map(c => c.title), ['Office']);
+});
+
 test('one place, however many things carry it and however it was capitalised', () => {
   // Two nodes for one word would split the work between them and put the same
   // place twice in the chooser — and `allContexts` sorts by title, so the pair
