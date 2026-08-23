@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.33.1',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**A place written as `@context(Office)` is now called Office.** It was called "context" \u2014 the word, not your word \u2014 and everything tagged that way landed in one bucket under a name nobody typed. `@tags(Errands, Phone)` had the same fault and becomes two places.',
+      '**Shipped wrong an hour earlier and found by reading a real store\u2019s report.** The test beside it checked only what was thrown away, never what was kept, so it passed the entire time.',
+    ],
+  },
+  {
     triplet: '2.33.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

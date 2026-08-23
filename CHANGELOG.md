@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.33.1 — ITERATION
+
+*2026-08-23*
+
+- **A place written as `@context(Office)` is now called Office.** It was called "context" — the word, not your word — and everything tagged that way landed in one bucket under a name nobody typed. `@tags(Errands, Phone)` had the same fault and becomes two places.
+- **Shipped wrong an hour earlier and found by reading a real store’s report.** The test beside it checked only what was thrown away, never what was kept, so it passed the entire time.
+
 ## 2.33.0 — CAPABILITY
 
 *2026-08-23*

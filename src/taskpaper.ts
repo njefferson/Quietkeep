@@ -131,6 +131,16 @@ const TAG = /@([A-Za-z][A-Za-z0-9_-]*)(?:\(([^)]*)\))?/g;
  *  own word for where or how work gets done, which is what a context IS. */
 const NOT_A_PLACE = new Set(['flagged', 'repeat', 'repeatrule', 'estimate', 'estimated', 'duration']);
 
+/** Tag names that CARRY the place in their value rather than being one.
+ *
+ *  `@context(Office)` is the older OmniFocus spelling and `@tags(Errands, Phone)`
+ *  appears in exports and converters. The first version of this read the NAME in
+ *  both cases and created a place called "context" — a bucket holding everything,
+ *  under a word nobody typed. Found by reading the regex against a real store's
+ *  report an hour after it shipped; the test that should have caught it asserted
+ *  only what was DROPPED and never what was kept. */
+const PLACE_IS_THE_VALUE = new Set(['context', 'contexts', 'tag', 'tags']);
+
 /**
  * `@estimate(30m)` as minutes.
  *
@@ -249,6 +259,16 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
       //
       // The raw name, not the lowercased one: `@Errands` is how they wrote it.
       if (NOT_A_PLACE.has(name)) { dropped.push(name); continue; }
+      if (PLACE_IS_THE_VALUE.has(name)) {
+        // Several places in one value is the ordinary case for `@tags(...)`.
+        for (const one of (value ?? '').split(/[,;]/).map(t => t.trim()).filter(t => t !== '')) {
+          if (!tags.includes(one)) tags.push(one);
+        }
+        // A bare `@context` with nothing in it names nothing, and inventing a
+        // place from an empty value would be the guess this must not make.
+        if ((value ?? '').trim() === '') dropped.push(name);
+        continue;
+      }
       if (!tags.includes(raw)) tags.push(raw);
     }
 
