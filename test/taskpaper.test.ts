@@ -26,6 +26,8 @@ import { admit, gateOptionsFor, heldNodes, silentNodes } from '../src/gate.ts';
 import { fold, noteOf } from '../src/fold.ts';
 import { localDayKey, atMidnight} from '../src/time.ts';
 import { calendarCount } from '../src/ics.ts';
+import { allContexts, contextsOf, placesReaching } from '../src/contexts.ts';
+import { estimateOf } from '../src/duration.ts';
 import { replanAll } from '../src/replan.ts';
 
 const DENVER = 'America/Denver';
@@ -159,11 +161,77 @@ test('a flag is dropped ON PURPOSE, and reported rather than swallowed', () => {
   // This app has no priority field: pressure comes from the decay primitive, never
   // from a star set in a better mood. Recording a flag as a fake clock would invent
   // a demand nobody made — but discarding it silently would be a different lie.
+  //
+  // THIS TEST USED TO ASSERT `['context', 'estimate', 'flagged']` and that is the
+  // whole point of changing it (2.33.0). Two of those three were the person's own
+  // words and are carried now; only the flag is a decision this app gets to make.
   const { lines } = parseTaskPaper('- Thing @flagged @estimate(20m) @context(Office)\n');
-  assert.deepEqual(lines[0]!.dropped.sort(), ['context', 'estimate', 'flagged']);
+  assert.deepEqual(lines[0]!.dropped.sort(), ['flagged']);
   const words = importWords(importSummary(lines, []));
   assert.match(words, /will not come with them/);
-  for (const t of ['flagged', 'estimate', 'context']) assert.ok(words.includes(t), t);
+  assert.ok(words.includes('flagged'));
+});
+
+test('the tags somebody wrote come across as places, in their own words', () => {
+  // The defect this closes: an OmniFocus store's tags ARE its contexts, and they
+  // were dropped at the door. A 1,432-item import arrived carrying one context.
+  const { lines } = parseTaskPaper('- Ring the bank @Errands @Phone\n');
+  assert.deepEqual(lines[0]!.tags, ['Errands', 'Phone'], 'raw case, as written');
+
+  const { state } = build('- Ring the bank @Errands @Phone\n');
+  const places = allContexts(state).map(c => c.title).sort();
+  assert.deepEqual(places, ['Errands', 'Phone']);
+  const item = heldNodes(state).find(n => n.title === 'Ring the bank')!;
+  assert.equal(contextsOf(state, item).length, 2, 'and the item is attached to both');
+});
+
+test('one place, however many things carry it and however it was capitalised', () => {
+  // Two nodes for one word would split the work between them and put the same
+  // place twice in the chooser — and `allContexts` sorts by title, so the pair
+  // would not even sit beside each other.
+  const { state } = build('- One @Errands\n- Two @errands\n- Three @ERRANDS\n');
+  assert.equal(allContexts(state).length, 1);
+  assert.equal(allContexts(state)[0]!.title, 'Errands', 'the first spelling wins');
+  for (const t of ['One', 'Two', 'Three']) {
+    const n = heldNodes(state).find(x => x.title === t)!;
+    assert.equal(contextsOf(state, n).length, 1, t);
+  }
+});
+
+test('a place on a project reaches the work inside it', () => {
+  // Which is the whole reason to carry a tag on a container: one label covers
+  // everything under it, through `placesReaching`.
+  const { state } = build('Move house: @Home\n\t- Book the van\n');
+  const child = heldNodes(state).find(n => n.title === 'Book the van')!;
+  assert.equal(contextsOf(state, child).length, 0, 'nothing of its own');
+  assert.equal(placesReaching(state, child).length, 1, 'and one inherited');
+});
+
+test('an estimate comes across as an estimate, in every shape that appears', () => {
+  for (const [written, minutes] of [['20m', 20], ['1h', 60], ['1.5h', 90], ['90', 90], ['1h30m', 90]] as const) {
+    const { lines } = parseTaskPaper(`- Thing @estimate(${written})\n`);
+    assert.equal(lines[0]!.estimateMinutes, minutes, written);
+  }
+  const { state } = build('- Thing @estimate(45m)\n');
+  const n = heldNodes(state).find(x => x.title === 'Thing')!;
+  assert.equal(estimateOf(n), 45);
+});
+
+test('an estimate that cannot be read is dropped and named, never guessed', () => {
+  // A guessed duration is worse than an absent one — `estimateOf` refuses a
+  // non-positive value for the same reason.
+  const { lines } = parseTaskPaper('- Thing @estimate(a while)\n');
+  assert.equal(lines[0]!.estimateMinutes, null);
+  assert.deepEqual(lines[0]!.dropped, ['estimate']);
+});
+
+test('the CSV door carries the same labels as the tag door', () => {
+  // The same person's same labels arrive through whichever way they exported.
+  const csv = 'Name,Type,Project,Tags,Estimated Minutes\n'
+    + 'Ring the bank,Action,,Errands;Phone,20\n';
+  const { lines } = parseOmniFocusCsv(csv);
+  assert.deepEqual(lines[0]!.tags, ['Errands', 'Phone']);
+  assert.equal(lines[0]!.estimateMinutes, 20);
 });
 
 test('a line that is only tags is reported, not turned into "(untitled)"', () => {

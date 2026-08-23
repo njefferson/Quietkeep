@@ -117,6 +117,15 @@ than everything else put together.
 - **Looking at** narrows the list to one branch without hiding anything from
   the offer, the proof line or search.
 
+### See what you have named
+
+**Where the attention is** lists your roles, your time, and **The places you
+have** — every place you have named and how many things it reaches, counting
+everything inside a project that carries one. It is a readout: nothing on it can
+be changed from there.
+
+For projects and what sits inside what, **How it hangs together** is the tree.
+
 ### Say a thing belongs somewhere
 
 On a thing's own panel: give it a **place** where it can be done, a **person**
@@ -148,6 +157,13 @@ marked done, all of it retrievable.
 *Your data* exports everything as one file, and imports one back. An import
 always starts a fresh store and never merges. Nothing you write is ever lost to
 an update.
+
+Bringing work in from another planner keeps more than the words. Projects and
+what sits inside them come across, along with dates and notes — and **the tags
+you wrote come across as places**, in the words you wrote them in, so a store
+that had a context system arrives with it rather than flat. Anything saying how
+long a thing takes comes too. Flags do not: this app has no priority field, and
+the summary says so rather than dropping it quietly.
 
 ### Everything else the app can do
 
@@ -236,8 +252,8 @@ when there is a reason.
 
 - **What's the situation?** — where you are, how long you have, who is with you.
 - **What comes back, and when** — every held thing and the date it returns.
-- **Where the attention is** — what each role is carrying, and where your time
-  actually went.
+- **Where the attention is** — what each role is carrying, where your time
+  actually went, and **The places you have** with how much each one reaches.
 - **What you're working toward** — your goals, areas and outcomes, empty ones
   included.
 - **How it hangs together** — the tree, as an inspection, never a workspace.

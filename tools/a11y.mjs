@@ -626,7 +626,11 @@ const REGISTRY = {
   // reported as measured while nothing had looked at its headings or its words.
   'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
     '.roles-name', '.roles-held', '#roles-unnamed',
-    '#roles-load-heading', '#roles-attention-heading', '#roles-attention-words'],
+    '#roles-load-heading', '#roles-attention-heading', '#roles-attention-words',
+    // The places readout (2.33.0). Its rows reuse `.roles-name`/`.roles-held`
+    // above, but the heading and its line are their own ids — a shared class is
+    // not coverage, which is the note four lines down.
+    '#places-heading', '#places-words'],
   // WHAT YOU ARE WORKING TOWARD (2.18.0). Its own entry rather than a fold into
   // 'roles open': the two sheets share `.roles-name` and `.roles-held`, and a
   // shared class is not coverage — `surfaces.mjs` records the draft that counted

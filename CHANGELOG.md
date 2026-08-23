@@ -14,6 +14,17 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.33.0 — CAPABILITY
+
+*2026-08-23*
+
+- **The tags you wrote now come across as places.** They were dropped at the door. If you came from OmniFocus that is your whole context system — places, locations, people — and a store that had one arrived carrying a single context, with one sentence in the summary naming what had just been thrown away.
+- **Which is why nothing that narrows what you are offered seemed to do anything.** Anything unlabelled fits every answer, deliberately, so a store with no places is never shown an empty screen. That protection was working perfectly on a store that had places.
+- **A tag on a project comes too, and reaches everything inside it.** One label on a container is worth more than the same label on each of its children.
+- **How long something takes comes across as well**, from an estimate you had already written down. Flags still do not — this app has no priority field, and the summary says so rather than dropping it quietly.
+- **And there is somewhere to see what you have.** *Where the attention is* now lists **The places you have** and how much each one reaches. Until now a place existed only inside the control that filters by it, so there was nowhere to ask what you had named.
+- **Nothing here is guessed.** No setup screen, no template, no percentage of how organised you are, and nothing inferred from what you do — only words you typed, in the system you typed them in.
+
 ## 2.32.0 — CAPABILITY
 
 *2026-08-23*

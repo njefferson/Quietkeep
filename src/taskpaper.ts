@@ -75,6 +75,13 @@ export interface TaskLine {
   done: boolean;
   /** Tags present that this app deliberately does not carry. */
   dropped: string[];
+  /** Tags that ARE carried, as places, in the words they were written in
+   *  (2.33.0). OmniFocus tags are its context system, so this is where a
+   *  store's whole situational vocabulary lives — see the header. */
+  tags: string[];
+  /** `@estimate(30m)` in minutes, or null. Their own word about how long
+   *  something takes, which is exactly what `estimate.recorded` holds. */
+  estimateMinutes: number | null;
   /** A parent named EXPLICITLY rather than by indentation. OmniFocus CSV has a
    *  "Project" column instead of nesting, and rows can arrive before the project
    *  they belong to — so a name is resolved by lookup, and a project named by a
@@ -99,6 +106,14 @@ export interface ImportSummary {
   /** Dates that had already gone by at the moment of import, and therefore did NOT
    *  come across as dates. Counted so the summary can say so plainly. */
   staleDates: number;
+  /** Distinct places that came across, and how many things carry at least one
+   *  (2.33.0). Both, because "twelve places" and "nine hundred things placed"
+   *  answer different questions and a store can have a lot of one and little of
+   *  the other. */
+  places: number;
+  placed: number;
+  /** Things that arrived with their own estimate of how long they take. */
+  estimates: number;
   /** Rows whose repeat/rhythm was dropped-and-named. COUNTED (1.8.0): the bare
    *  tag list said "repeat" once for a file where sixty things repeat — the
    *  same unnumbered-loss shape as the pre-1.4.0 note bug. Rebuilding real
@@ -107,6 +122,44 @@ export interface ImportSummary {
 }
 
 const TAG = /@([A-Za-z][A-Za-z0-9_-]*)(?:\(([^)]*)\))?/g;
+
+/** Tag names that are NOT places, and must never become one.
+ *
+ *  `flagged` is a priority mark and this app has no priority field (see the
+ *  header). `repeat` is counted and reported separately, because rhythms are
+ *  not carried and the number matters. Everything else a person typed is their
+ *  own word for where or how work gets done, which is what a context IS. */
+const NOT_A_PLACE = new Set(['flagged', 'repeat', 'repeatrule', 'estimate', 'estimated', 'duration']);
+
+/**
+ * `@estimate(30m)` as minutes.
+ *
+ * The shapes that actually appear: `30m`, `1h`, `1.5h`, `90`, `1h30m`. A value
+ * that is not one of those is left alone and the tag falls through to `dropped`,
+ * because a guessed duration is worse than an absent one — `estimateOf` refuses
+ * a non-positive value for the same reason.
+ */
+export function minutesOf(value: string | undefined): number | null {
+  if (value === undefined) return null;
+  const v = value.trim().toLowerCase();
+  if (v === '') return null;
+  const hm = /^(\d+(?:\.\d+)?)\s*h(?:ours?)?\s*(?:(\d+(?:\.\d+)?)\s*m(?:in(?:ute)?s?)?)?$/.exec(v);
+  if (hm) {
+    const mins = Math.round(Number(hm[1]) * 60 + Number(hm[2] ?? 0));
+    return Number.isFinite(mins) && mins > 0 ? mins : null;
+  }
+  const m = /^(\d+(?:\.\d+)?)\s*m(?:in(?:ute)?s?)?$/.exec(v);
+  if (m) {
+    const mins = Math.round(Number(m[1]));
+    return Number.isFinite(mins) && mins > 0 ? mins : null;
+  }
+  const bare = /^(\d+(?:\.\d+)?)$/.exec(v);
+  if (bare) {
+    const mins = Math.round(Number(bare[1]));
+    return Number.isFinite(mins) && mins > 0 ? mins : null;
+  }
+  return null;
+}
 
 /** A real calendar date, not merely date-shaped: `2026-02-31` is refused. */
 export function isCalendarDay(text: string): boolean {
@@ -159,11 +212,14 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
     const body = raw.replace(/^[\t ]+/, '');
 
     const dropped: string[] = [];
+    const tags: string[] = [];
     let due: string | null = null;
     let start: string | null = null;
     let done = false;
+    let estimateMinutes: number | null = null;
     for (const m of body.matchAll(TAG)) {
-      const name = (m[1] ?? '').toLowerCase();
+      const raw = m[1] ?? '';
+      const name = raw.toLowerCase();
       const value = m[2];
       if (name === 'due') { due = dayOf(value); if (due === null && value !== undefined) dropped.push('due'); continue; }
       if (name === 'defer' || name === 'start') {
@@ -172,9 +228,28 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
         continue;
       }
       if (name === 'done' || name === 'completed') { done = true; continue; }
-      // Named rather than silently swallowed. A person who tagged everything
-      // `@flagged` deserves to be told that the flags did not come with them.
-      dropped.push(name);
+      if (name === 'estimate' || name === 'estimated' || name === 'duration') {
+        const mins = minutesOf(value);
+        if (mins === null) dropped.push(name);
+        else estimateMinutes = mins;
+        continue;
+      }
+      // A PLACE, IN THE WORDS IT WAS WRITTEN IN (2.33.0).
+      //
+      // This branch used to be `dropped.push(name)` for everything left, and
+      // the header said so — "@context, @tags other than the above are dropped
+      // for now". For a store that came out of OmniFocus that is the whole
+      // situational vocabulary: tags ARE contexts there, and places, and people.
+      // A 1,432-item import arrived carrying ONE context because of this line.
+      //
+      // Carrying it is not the inference `docs/nd-collisions.md` entry 23
+      // refuses — that refusal is about deducing a place from BEHAVIOUR. This is
+      // the person's own word, typed by them, in the system they typed it in,
+      // which is exactly what entry 24 says a context node is for.
+      //
+      // The raw name, not the lowercased one: `@Errands` is how they wrote it.
+      if (NOT_A_PLACE.has(name)) { dropped.push(name); continue; }
+      if (!tags.includes(raw)) tags.push(raw);
     }
 
     const title = body
@@ -199,7 +274,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
     lines.push({
       depth,
       kind: isProject ? 'project' : isAction ? 'action' : 'note',
-      title, due, start, done, dropped,
+      title, due, start, done, dropped, tags, estimateMinutes,
     });
   }
   return { lines, unreadable };
@@ -244,6 +319,24 @@ export function taskPaperEvents(
   /** Project title -> id, for the CSV shape where a parent is NAMED rather than
    *  nested, and can be named by a child before it is listed itself. */
   const projectByTitle = new Map<string, string>();
+
+  /** Place name -> id, created once and reused (2.33.0).
+   *
+   *  Matched case-insensitively but CREATED in the words it was first written
+   *  in: `@errands` and `@Errands` are one place to a reader, and making two
+   *  would put the same word twice in the chooser and split the work between
+   *  them. `allContexts` sorts by title, so the duplicate would not even sit
+   *  beside itself. */
+  const contextByName = new Map<string, string>();
+  const ensureContext = (name: string): string => {
+    const key = name.toLowerCase();
+    const found = contextByName.get(key);
+    if (found !== undefined) return found;
+    const id = ctx.id();
+    stamp('context.created', id, { name });
+    contextByName.set(key, id);
+    return id;
+  };
 
   /** A project named by a child but never listed. Created rather than dropped:
    *  the alternative is silently reparenting somebody's task to nothing, which is
@@ -332,6 +425,21 @@ export function taskPaperEvents(
     if (line.note !== undefined) {
       const value = cleanNote(line.note);
       if (value !== '') stamp('node.field.set', id, { field: 'note', value });
+    }
+
+    // THE PLACES THEY WROTE, ATTACHED (2.33.0). On projects as well as actions:
+    // a place on a container reaches everything inside it (`placesReaching`), so
+    // one tag on a project is worth more here than the same tag on each of its
+    // children — and OmniFocus tags projects routinely.
+    for (const tag of line.tags) {
+      const cid = ensureContext(tag);
+      stamp('context.attached', id, { node: id, context: cid });
+    }
+    // Their own word about how long, which is what `fitsWithin` reads. `guess`
+    // and not `prior`: it came from a field somebody filled in, not from this
+    // app watching them finish anything.
+    if (line.estimateMinutes !== null) {
+      stamp('estimate.recorded', id, { durationMinutes: line.estimateMinutes, basis: 'guess' });
     }
 
     if (line.kind === 'project') {
@@ -459,8 +567,20 @@ export function parseOmniFocusCsv(text: string): { lines: TaskLine[]; unreadable
     const completion = pick(row, at, 'Completion Date', 'Completed');
     const dropped: string[] = [];
     if (pick(row, at, 'Flagged').toLowerCase() === 'true') dropped.push('flagged');
-    for (const extra of ['Context', 'Tags', 'Estimated Minutes', 'Duration', 'Repeat']) {
-      if (pick(row, at, extra) !== '') dropped.push(norm(extra));
+    if (pick(row, at, 'Repeat') !== '') dropped.push(norm('Repeat'));
+
+    // THE SAME CARRY AS THE TAG PATH (2.33.0), because the same person's same
+    // labels arrive through whichever door they exported by. These two columns
+    // were read only to be named in the "will not come with them" list.
+    //
+    // OmniFocus writes several tags into one cell; comma and semicolon are both
+    // seen in the wild, and a tag can contain a space, so the split is on the
+    // separators rather than on whitespace.
+    const tags = pick(row, at, 'Tags', 'Context', 'Contexts')
+      .split(/[,;]/).map(t => t.trim()).filter(t => t !== '');
+    const estimateMinutes = minutesOf(pick(row, at, 'Estimated Minutes', 'Duration', 'Estimate'));
+    if (estimateMinutes === null && pick(row, at, 'Estimated Minutes', 'Duration', 'Estimate') !== '') {
+      dropped.push(norm('Estimated Minutes'));
     }
 
     const isProject = type === 'project' || (type === '' && projectName === '' && due === null);
@@ -469,7 +589,7 @@ export function parseOmniFocusCsv(text: string): { lines: TaskLine[]; unreadable
       kind: isProject ? 'project' : 'action',
       title, due, start,
       done: completion !== '' || status === 'completed' || status === 'done',
-      dropped,
+      dropped, tags, estimateMinutes,
       // Only for non-projects, and only when named — a project claiming itself as
       // its own parent would be a cycle the write boundary would rightly refuse.
       ...(isProject || projectName === '' || projectName === title ? {} : { parentName: projectName }),
@@ -514,7 +634,12 @@ export function importSummary(
     d !== null && nowIso !== undefined && zone !== undefined && isPastDay(d, nowIso, zone);
   const live = (l: TaskLine): boolean =>
     (l.due !== null && !gone(l.due)) || (l.start !== null && !gone(l.start));
+  const placeNames = new Set<string>();
+  for (const l of parsed) for (const t of l.tags) placeNames.add(t.toLowerCase());
   return {
+    places: placeNames.size,
+    placed: parsed.filter(l => l.tags.length > 0).length,
+    estimates: parsed.filter(l => l.estimateMinutes !== null).length,
     projects: parsed.filter(l => l.kind === 'project').length,
     actions: parsed.filter(l => l.kind === 'action').length,
     // Notes that actually ATTACH (1.4.0), counted the way the mapper WRITES
@@ -617,8 +742,21 @@ export function importWords(s: ImportSummary): string {
   // explaining that it has not been sorted is clutter answering a question
   // nobody asked. The entry's case is the pile; this is where the pile starts.
   if (s.projects + s.actions > 1) {
-    out += ' Nothing is filed, because filing was never asked for — it all arrives'
-      + ' as work, in the words it was written in.';
+    // ARRIVAL AS A FACT, NOT A DEBT — `docs/nd-collisions.md` entry 23, whose
+    // wording this follows. What changed in 2.33.0 is that half of it had
+    // become untrue: the tags somebody wrote now come across as places, so
+    // "nothing is filed" would be a sentence about a store that IS partly
+    // filed, and by their own hand rather than by this app's guess.
+    out += s.places > 0
+      ? ` ${s.places === 1 ? 'One place comes' : `${s.places} places come`} with them,`
+        + ` in the words you wrote — ${s.placed} of these things carry at least one.`
+        + ' Nothing else is filed, because filing was never asked for.'
+      : ' Nothing is filed, because filing was never asked for — it all arrives'
+        + ' as work, in the words it was written in.';
+  }
+  if (s.estimates > 0) {
+    out += ` ${s.estimates === 1 ? 'One says' : `${s.estimates} say`} how long`
+      + ` ${s.estimates === 1 ? 'it takes' : 'they take'}, and that comes too.`;
   }
   return out;
 }
