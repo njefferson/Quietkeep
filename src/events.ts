@@ -125,7 +125,11 @@ export interface Stamp {
 type Ev<K extends string, P> = Stamp & { kind: K; node: NodeId | null; payload: P };
 
 // --- A · node lifecycle -----------------------------------------------------
-export type NodeCreated      = Ev<'node.created',      { nodeKind: NodeKind; title: string; parent?: NodeId; provenance?: Provenance }>;
+/** `arrived` marks a row that came in from ANOTHER PLANNER rather than being
+ *  written here. It latches `captured`, which is what makes something an inbox
+ *  item — so an import lands in the inbox instead of nowhere. Additive and
+ *  optional: every existing log folds identically without it (law 9). */
+export type NodeCreated      = Ev<'node.created',      { nodeKind: NodeKind; title: string; parent?: NodeId; provenance?: Provenance; arrived?: true }>;
 export type NodeKindChanged  = Ev<'node.kind.changed', { from: NodeKind; to: NodeKind }>;
 export type NodeFieldSet     = Ev<'node.field.set',    { field: string; value: unknown }>;
 export type NodeRenamed      = Ev<'node.renamed',      { title: string }>;
@@ -344,6 +348,22 @@ export type VaultCreated     = Ev<'vault.created',      { name: string; domain: 
 export type VaultLocked      = Ev<'vault.locked',       { method: 'passphrase' }>;
 export type VaultUnlocked    = Ev<'vault.unlocked',     { method: 'passphrase' }>;
 export type DeviceRegistered = Ev<'device.registered',  { device: DeviceId; label: string }>;
+/**
+ * A situation somebody NAMED, so it can be recalled (2.21.0).
+ *
+ * A place, a length of time, or both. Saving under an existing name replaces
+ * it; `situation.forgotten` is scoped to one name and never clears the set.
+ *
+ * Not silent-risk: neither noun touches a node, so neither can take coverage
+ * away from one.
+ *
+ * **It is an event and not a device preference, and the line matters.**
+ * `where.now` and `how.long` are preferences because where you are is not a
+ * fact about your work. A situation you named is a thing you recognise about
+ * how you work — nearer a context or a role — and it should survive a device.
+ */
+export type SituationSaved   = Ev<'situation.saved',    { name: string; context: string | null; minutes: number | null }>;
+export type SituationForgotten = Ev<'situation.forgotten', { name: string }>;
 export type ModuleEnabled    = Ev<'module.enabled',     { module: string }>;
 export type ModuleDisabled   = Ev<'module.disabled',    { module: string }>;
 /** `whatLeaves` is the literal sentence the user agreed to, stored so the record
@@ -373,7 +393,33 @@ export type ShardCompacted   = Ev<'shard.compacted',    { device: DeviceId; thro
 
 // --- H · people and journal --------------------------------------------------
 export type PersonCreated    = Ev<'person.created',     { name: string }>;
-export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned' }>;
+export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned'|'promised-to' }>;
+/**
+ * "I am not promising that any more" (2.20.0).
+ *
+ * A SECOND SUBTRACTION, and ADR-0057 calls `stakeholder.removed` "the only
+ * subtraction in the vocabulary" — so this is a deliberate departure rather than
+ * an oversight. The cheaper move was an optional `relation` field on that one,
+ * additive and migration-free. It was refused because
+ * `stakeholder.removed{relation:'promised-to'}` writes a false sentence into an
+ * append-only log, and this repo already refuses claims about changes that did
+ * not happen.
+ *
+ * ADR-0057's actual rule is that a subtraction must be SCOPED — Sam can be the
+ * OPR and someone who cares how it goes, and taking one off must never strip the
+ * other. This is scoped by construction: one person, one relation, named in the
+ * noun.
+ *
+ * **And it is load-bearing rather than tidy.** Four of the five other relations
+ * cannot be removed at all, which is cosmetic for `mentioned` and is not here: a
+ * promise nobody can take back is a permanent claim that you owe somebody
+ * something, which is precisely the ledger `src/requests.ts` says this app
+ * exists not to keep.
+ *
+ * Not silent-risk. Removing a person link takes no coverage away — the node
+ * keeps every clock it had, and it was your own work before and after.
+ */
+export type PromiseReleased  = Ev<'promise.released',   { person: NodeId }>;
 // --- H2 · contexts (2.2.0, ADR-0092) ----------------------------------------
 //
 // `person.linked`'s shape exactly. A context is a node so it can be renamed and
@@ -497,7 +543,8 @@ export type AppEvent =
   | ModuleEnabled | ModuleDisabled | ConsentGranted | ConsentRevoked
   | SnapshotWritten | SchemaMigrated | ExportWritten | ImportSeeded | ShardFolded
   | TerminologySkinApplied | TemplateLoaded | ShardCompacted
-  | PersonCreated | PersonLinked
+  | PersonCreated | PersonLinked | PromiseReleased
+  | SituationSaved | SituationForgotten
   | ContextCreated | ContextAttached | ContextDetached
   | RoleCreated | RoleAttached | RoleDetached | JournalEntryWritten | JournalSealed | JournalTagAttached
   | MenuItemAdded | MenuItemRemoved | MenuItemPromoted | SaveForUpdated
@@ -526,7 +573,7 @@ export const EVENT_KINDS = [
   'module.enabled','module.disabled','consent.granted','consent.revoked',
   'snapshot.written','schema.migrated','export.written','import.seeded','shard.folded',
   'terminology.skin.applied','template.loaded','shard.compacted',
-  'person.created','person.linked','journal.entry.written','journal.sealed','journal.tag.attached',
+  'person.created','person.linked','promise.released','situation.saved','situation.forgotten','journal.entry.written','journal.sealed','journal.tag.attached',
   'context.created','context.attached','context.detached',
   'role.created','role.attached','role.detached',
   'menu.item.added','menu.item.removed','menu.item.promoted','save-for.updated',

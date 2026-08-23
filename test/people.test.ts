@@ -14,8 +14,12 @@ import { admit } from '../src/gate.ts';
 import {
   people, personView, waitingOnAnyone, withWhom, openDays, waitingWords,
   peopleWords, isOpenWaiting, personName,
+  promisedToAnyone, promisedWords, promisedRowWords,
 } from '../src/people.ts';
-import { linkPersonEvents, closeWaitingEvents } from '../src/ui/detail-intents.ts';
+import { silentNodes } from '../src/gate.ts';
+import {
+  linkPersonEvents, closeWaitingEvents, releasePromiseEvents,
+} from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
 import { atMidnight } from '../src/time.ts';
 
@@ -229,4 +233,128 @@ test('a person who was let go is not named anywhere', () => {
   assert.equal(personName(s, 'GHOST'), null, 'never existed');
   assert.equal(personName(s, null), null, 'nobody named');
   assert.equal(withWhom(s, s.nodes.get('W')!), null, 'and the waiting-for stops claiming who');
+});
+
+// --- the other direction (2.20.0) -------------------------------------------
+//
+// "Is anyone waiting on something from me." The mirror of the questions above,
+// and deliberately NOT their twin: `src/requests.ts` rules that a record of the
+// times you did not do your own work is the ledger this app exists not to keep,
+// so everything here that could age a promise is absent by construction.
+
+test('saying you promised something puts it on the list, for that person', () => {
+  const s0 = st(mk('A', 'action', 'Send Sam the photos'), clocked('A'));
+  const s = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+
+  const lines = promisedToAnyone(s);
+  assert.equal(lines.length, 1);
+  assert.equal(lines[0]!.node.id, 'A');
+  assert.equal(lines[0]!.person, 'Sam');
+  assert.equal(promisedRowWords(lines[0]!.person), 'For Sam.');
+});
+
+test('a promise carries NO duration — not in the words, not in the shape', () => {
+  // The constraint the whole feature is built under. "With Sam for three weeks"
+  // is a fact about somebody else's debt to you; the same words pointed here
+  // would be a record of how long you have been failing.
+  const s0 = st(mk('A', 'action', 'Send Sam the photos'), clocked('A'));
+  const s = apply(s0, linkPersonEvents(ctxAt(AGO(40)), 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+
+  const line = promisedToAnyone(s)[0]!;
+  // Enforced by the SHAPE: there is no field to render, so no surface can.
+  assert.equal('days' in line, false, 'PromiseLine has no days field');
+  const words = promisedRowWords(line.person) + ' ' + promisedWords(1);
+  assert.doesNotMatch(words, /\d/, `"${words}" has a number in it`);
+  assert.doesNotMatch(words, /week|day|month|since|ago|still|yet/i, `"${words}" ages the promise`);
+});
+
+test('doing the work keeps the promise — there is no separate closing', () => {
+  // Why this is a relation on an ordinary node rather than a kind of its own.
+  const s0 = st(mk('A', 'action', 'Send Sam the photos'), clocked('A'));
+  let s = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+  assert.equal(promisedToAnyone(s).length, 1);
+
+  s = apply(s, [ev('done.marked', 'A', { at: NOW })]);
+  assert.equal(promisedToAnyone(s).length, 0, 'kept by being done');
+});
+
+test('a promise can be taken back WITHOUT taking the work back', () => {
+  // A promise nobody can release is a permanent claim that you owe somebody
+  // something. Releasing it must not decide that you no longer intend the work.
+  const s0 = st(mk('A', 'action', 'Send Sam the photos'), clocked('A'));
+  let s = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+
+  s = apply(s, releasePromiseEvents(ctx, 'A', 'p1'));
+  const n = s.nodes.get('A')!;
+  assert.equal(promisedToAnyone(s).length, 0, 'off the list');
+  assert.equal(n.trashed, false, 'the work is still here');
+  assert.ok(n.clocks.review, 'and still covered — the release took no clock away');
+  assert.equal(silentNodes(s).length, 0);
+});
+
+test('releasing is SCOPED — one person, one relation, never a strip-all', () => {
+  // ADR-0057's rule for the only other subtraction in the vocabulary. Sam can
+  // be promised one thing and be running another, and neither may take the
+  // other off.
+  const s0 = st(mk('A', 'action', 'Send Sam the photos'), clocked('A'));
+  let s = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+  s = apply(s, linkPersonEvents(ctx, 'A', 'p1', 'opr'));
+  s = apply(s, linkPersonEvents(ctx, 'A', 'p2', 'promised-to', { createNamed: 'Ada' }));
+
+  s = apply(s, releasePromiseEvents(ctx, 'A', 'p1'));
+  const rels = s.nodes.get('A')!.people;
+  assert.ok(rels.some(l => l.person === 'p1' && l.relation === 'opr'),
+    'Sam is still running it');
+  assert.ok(rels.some(l => l.person === 'p2' && l.relation === 'promised-to'),
+    'and Ada is still promised it');
+  assert.equal(promisedToAnyone(s).length, 1);
+});
+
+test('a thing promised to two people is owed to both', () => {
+  // Two people are each expecting it, and an app that named only the first
+  // would be right half the time — which is worse than wrong.
+  const s0 = st(mk('A', 'action', 'Send the photos'), clocked('A'));
+  let s = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+  s = apply(s, linkPersonEvents(ctx, 'A', 'p2', 'promised-to', { createNamed: 'Ada' }));
+
+  const names = promisedToAnyone(s).map(l => l.person).sort();
+  assert.deepEqual(names, ['Ada', 'Sam']);
+});
+
+test('the list is ordered by title, never by age', () => {
+  // Sorting by age would rank your own lapses, and would do it silently —
+  // an ordering states nothing out loud.
+  const s0 = st(mk('A', 'action', 'Zebra'), clocked('A'), mk('B', 'action', 'Aardvark'), clocked('B'));
+  let s = apply(s0, linkPersonEvents(ctxAt(AGO(90)), 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+  s = apply(s, linkPersonEvents(ctx, 'B', 'p1', 'promised-to'));
+
+  assert.deepEqual(promisedToAnyone(s).map(l => l.node.title), ['Aardvark', 'Zebra'],
+    'the oldest promise is not put first');
+});
+
+test('a promise shows on the person’s own sheet, with nothing changed to do it', () => {
+  // `personView.involves` takes any relation, so the screen built in 1.12.0
+  // answers "what is between me and this person" in both directions the moment
+  // the relation exists.
+  const s0 = st(mk('A', 'action', 'Send Sam the photos'), clocked('A'));
+  const s = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+
+  const view = personView(s, 'p1', NOW, TZ)!;
+  assert.equal(view.owes.length, 0, 'they owe you nothing');
+  assert.equal(view.involves.length, 1);
+  assert.equal(view.involves[0]!.relation, 'promised-to');
+  assert.equal(view.involves[0]!.days, null, 'and no duration reaches the sheet either');
+});
+
+test('the count line says what it is and never how long it has been so', () => {
+  assert.equal(promisedWords(0), '', 'silence when there is nothing');
+  assert.match(promisedWords(1), /One thing you said you would do/);
+  assert.match(promisedWords(4), /^4 things/);
+  for (const n of [0, 1, 4, 17]) {
+    assert.doesNotMatch(promisedWords(n), /week|day|month|late|still|owe/i);
+  }
+});
+
+test('nobody named is said plainly, never invented and never hidden', () => {
+  assert.equal(promisedRowWords(null), 'Nobody named yet.');
 });

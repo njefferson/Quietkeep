@@ -28,6 +28,7 @@ export function serialiseState(s: State): unknown {
     lastReportMark: s.lastReportMark,
     lastActivityAt: s.lastActivityAt,
     modules: [...s.modules],
+    situations: [...s.situations].map(([name, v]) => ({ name, ...v })),
     requestSlot: s.requestSlot,
     requestSlotStamp: s.requestSlotStamp,
     timerMinutes: s.timerMinutes,
@@ -52,6 +53,7 @@ export function deserialiseState(raw: unknown): State {
     lastReportMark?: Record<string, number> | null;
     lastActivityAt?: string | null;
     modules?: string[];
+    situations?: { name: string; context: string | null; minutes: number | null }[];
     requestSlot?: State['requestSlot'];
     requestSlotStamp?: State['requestSlotStamp'];
     timerMinutes?: State['timerMinutes'];
@@ -92,6 +94,11 @@ export function deserialiseState(raw: unknown): State {
       heat: n.heat ?? null,
       route: n.route ?? null,
       captured: n.captured ?? true,
+      // `?? false` and NOT `?? true`, which is the opposite of `captured`
+      // above it and deliberately so: a snapshot written before this field
+      // existed cannot have held an imported row, because nothing marked one.
+      // Defaulting it true would tell every old item it came from somewhere else.
+      arrived: n.arrived ?? false,
       resumeSpent: n.resumeSpent ?? false,
       resumeFor: n.resumeFor ?? null,
       resumeCue: n.resumeCue ?? null,
@@ -172,6 +179,13 @@ export function deserialiseState(raw: unknown): State {
     // MUTABLE — copied on deserialise, like every other container here.
     lastReportMark: r.lastReportMark ? { ...r.lastReportMark } : null,
     lastActivityAt: r.lastActivityAt ?? null,
+    // A pre-2.21.0 snapshot stored no situations — none had been named, which
+    // is exactly what an empty map means. The three-place rule (clone,
+    // deserialise, old-snapshot default) named in phase 1: a new State field
+    // has to be handled in all three, and the compiler only catches two.
+    situations: new Map((r.situations ?? []).map(x => [x.name, {
+      context: x.context ?? null, minutes: x.minutes ?? null,
+    }])),
     // A pre-1.6.0 snapshot stored no modules — none were on, which is exactly
     // what an empty set says.
     modules: new Set(r.modules ?? []),

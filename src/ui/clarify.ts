@@ -638,7 +638,7 @@ export function mountTriage(
    * right places, and the places kept turning out not to exist yet. That was
    * the problem. The six routes above all answer WHEN. This one answers where,
    * and it MAKES the place when it is not there — law 4, levels push down and
-   * the user never climbs. Sending him off to create a project and come back is
+   * the user never climbs. Sending somebody off to create a project and come back is
    * the climb, and across a 1,173-item import it is the whole difficulty.
    *
    * The picker replaces the routes rather than opening over them: one decision

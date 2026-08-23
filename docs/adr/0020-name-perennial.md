@@ -89,7 +89,7 @@ are good names that lost to a better one, and they are written down so they can 
 reconsidered rather than re-discovered.
 
 *The military-vocabulary bar in the voice rules applies to what a **session** proposes.
-Where the owner proposed a term himself, it was checked on its merits and killed on other
+Where the owner proposed a term, it was checked on its merits and killed on other
 grounds or not at all.*
 
 - ****Sherpa**** — An ethnic group used as a word for a porter. Also heavily occupied in software (Sherpa the assistant app, Sherpa Digital Media, several logistics products).

@@ -62,7 +62,43 @@ const BUDGET = {
   // sentences of scope, a label and the note. The scope sentences ARE the
   // feature — the request was for a size that touches this app and nothing else,
   // so a control that did not say so would be answering a different question.
-  words: 3390,
+  // 3390 -> 3394 on 2026-08-22 (2.20.0): two words in the relation picker
+  // ("I said I would") and the second count line in "With other people". The
+  // section was already there and already said what it was for; it had one of
+  // its two halves. This is the smaller half arriving, not a new surface.
+  // 3394 -> 3455 on 2026-08-22 (2.21.0): the situation sheet. A heading, one
+  // paragraph saying what the two inputs do and that nothing is taken away
+  // (the law-1 sentence every filter surface here carries), a label, a
+  // placeholder and a hint. **The two inputs themselves moved rather than
+  // arrived** — they were in the pile and the pile is the last place somebody
+  // answering "what is my situation" looks. What a reader meets on the first
+  // screen goes DOWN by two rows and up by one door; this budget counts words
+  // in the markup and cannot see that, which is the fourth time in six
+  // releases it has read the wrong way round.
+  // 3455 -> 3467 on 2026-08-22 (2.23.0): the six Menu category words and a
+  // hidden label, on a picker beside a button that already existed. The words
+  // were ALREADY in the app — the sort sheet's bulk picker has offered the same
+  // six since 1.3.1. This is the single-item route catching up with them.
+  // 3467 -> 3490 on 2026-08-22 (2.23.0): the six Menu category words, plus a
+  // label, placeholder and hint for the first-step field on the detail sheet.
+  // Neither is a new idea — the six have been in the sort sheet's bulk picker
+  // since 1.3.1, and the first-step flow has been on the offer card since
+  // 1.24.0. Both are single-item routes catching up with machinery that was
+  // already shipped and reachable from exactly one place.
+  // 3490 -> 3500 on 2026-08-23 (2.24.0): two <h3>s in the roles sheet, which now
+  // holds TWO readouts — what each role is carrying, and where the time actually
+  // went. This gate refused the release at 3498 and it was right to.
+  //
+  // The first answer was to drop both headings and name the lists with
+  // `aria-label`, which costs nothing here because an attribute is not shell
+  // text. Then the sheet was rendered and looked at: without headings it reads
+  // "Parent — 1 thing", a paragraph, "Parent — no timed work", with nothing
+  // saying those are two different readouts, which looks like a contradiction.
+  //
+  // So the words are bought deliberately, which is the only way this number is
+  // allowed to move. Nothing on the first screen changes — both headings are
+  // inside a sheet behind a door that is hidden until a role exists.
+  words: 3500,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -270,7 +306,41 @@ const BUDGET = {
   // paragraph. This budget counts controls in the markup and cannot see that,
   // which is the second time in three releases it has read the wrong way round;
   // the note is the record, as it is meant to be.
-  controls: 230,
+  //
+  // 230 -> 232 on 2026-08-22 (2.18.0): "What you're working toward" is a sheet,
+  // so it costs a door and a Close, the same two every sheet here costs. Neither
+  // is on the first screen at rest: the door is `hidden` until a horizon exists,
+  // which for a store that has never made one is always, and the Close lives
+  // inside the dialog. So the count goes up by two and what a new reader meets
+  // does not change at all — the third time in five releases this budget has
+  // read the wrong way round, and the note is the record.
+  //
+  // 232 -> 233 on 2026-08-22 (2.19.0): "How long you have" is one chooser, and
+  // unlike the place chooser beside it, it is never hidden — an unestimated
+  // thing fits every answer, so it works on the first day and withholding it
+  // would be withholding a control that works. It sits inside `#held`, so it is
+  // one more control on the pile's own row and none on the first screen.
+  // 233 -> 237 on 2026-08-22 (2.21.0): a door, a Close, a name field and its
+  // button. The two choosers moved into the sheet rather than being added, so
+  // the count rises by exactly the four the sheet itself costs — the same two
+  // per sheet every other one here costs, plus the one control that makes a
+  // situation recallable and nothing else.
+  // 237 -> 238 on 2026-08-22 (2.22.0): "Show me" beside the report's four
+  // export buttons. It is inside the ⓘ panel, so nothing on the first screen
+  // changes — and it is the one control there that WRITES NOTHING, which is
+  // why it exists: every other route records the export and moves the mark, so
+  // reading the report cost you the period you read it for.
+  // 238 -> 239 on 2026-08-22 (2.23.0): one picker beside "Put on the Menu",
+  // inside the detail sheet. Nothing on the first screen changes. It is what
+  // `docs/nd-collisions.md` entry 26 permits and the whole of what it permits:
+  // the category chosen at write time instead of silently defaulting, fixing a
+  // six-value field that was dead code in the shipped app.
+  // 239 -> 241 on 2026-08-22 (2.23.0): the Menu category picker, and the
+  // first-step field and its button. All three are inside the detail sheet, so
+  // nothing on the first screen changes. The first-step flow had ONE route into
+  // it for eleven months — the offer card — so it could only shape whatever the
+  // app happened to hand you.
+  controls: 241,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

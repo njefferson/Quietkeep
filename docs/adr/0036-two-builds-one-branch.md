@@ -99,7 +99,7 @@ superseded rather than stretched.
 
 ## Amendment — 2026-08-01 (1.7.2): the words follow the edition, on the owner's word
 
-The wording gap this record listed for the owner resolved itself the honest way: he
+The wording gap this record listed for the owner resolved itself the honest way: it
 the default's copy was caught lying — "there is no server" and "the default app
 you are in never contacts anything at all", both false in that build. **Both
 lines had to be made to match the edition actually running**, which is what the

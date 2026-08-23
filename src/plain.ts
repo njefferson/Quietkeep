@@ -106,7 +106,14 @@ export const PLAIN_HIDDEN = [
   // paragraph ever said why the number was affordable on an ordinary one. The
   // remainder lives on the opt-in header clock, which `PLAIN_CHROME_HIDDEN`
   // below still strips — so the mode's answer to this fact is unchanged.
-  '#nextup-fixed', '#nextup-written',
+  // `#nextup-dated` — how many things carry today's date (2.19.1). It answers
+  //                   "can I finish early", which is a question about the WHOLE
+  //                   day — and this mode has already answered it by existing.
+  //                   Somebody who has reduced the day to one thing is not
+  //                   weighing the plate; they are getting through the next
+  //                   fifteen minutes. A count of commitments there is a second
+  //                   thing to hold, which is the cost being cut.
+  '#nextup-fixed', '#nextup-written', '#nextup-dated',
   // `#nextup-also` — what else the returning place holds. It survives NOTHING,
   // and the reasoning is the entry's own: the contents are named so a place
   // coming round does not bring back one thing and leave the rest filed. On the
@@ -226,9 +233,28 @@ export const PLAIN_CHROME_HIDDEN = [
   '#upkeep',          // the small repeating things that have come round
   '#menu-open',       // the Menu is demand-free and is still a door to a list
   '#roles-open',      // the same, sliced by role
+  '#horizons-open',   // and the same, sliced by what it is in service of. A day
+                      // that has been reduced to one thing is not a day for
+                      // looking at what you are working toward — that is the
+                      // altitude this mode exists to get somebody out of.
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.
+  // THE SITUATION, ALL THREE PIECES (2.23.2). They were inside `#held` until
+  // 2.23.1 and this list covered them by covering it; moving them above the
+  // offer made each its own region of the work surface, and the gate that
+  // exists for exactly that said so on the first run.
+  //
+  // The answer is not bookkeeping. **A filter is the opposite of what this mode
+  // is for.** Narrowing a list is an act of choosing between things, and the
+  // worst day is the day that act is unavailable — which is why the mode hands
+  // over ONE thing and takes the choosing away. A control asking *where are
+  // you, how long have you got* is two questions to answer before anything can
+  // begin, on the day nobody can answer them.
+  '#situation-open',  // the door. Two questions, on the day questions are the cost.
+  '#where-note',      // and its consequence: the list is narrowed by place.
+  '#how-long-note',   // and by time. Both say what the pile is doing, and this
+                      // mode has already stopped showing the pile.
   '#held',            // the complete list of everything you are holding, with the
                       // tree, the lens, the fold, Contents and Back to the top
                       // inside it. This is the pile. The gauge above still says

@@ -15,6 +15,7 @@
 // whom a surprising control is expensive.
 
 import type { Session } from './session.ts';
+import type { MenuCategory } from '../events.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
@@ -26,7 +27,7 @@ import {
 } from './arrangement-intents.ts';
 import {
   setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
-  undoneEvents, untrashEvents, promoteFromMenuEvents, toMenuEvents, renameEvents,
+  undoneEvents, untrashEvents, promoteNodeFromMenuEvents, toMenuEvents, renameEvents,
   setStartEvents, clearStartEvents, estimateEvents, createParentEvents, cleanTitle,
   situationEvents, afterEvents, clearAfterEvents, releaseEvents, reclaimEvents, weightEvents,
   cleanNote, noteEvents, chooseTodayEvents, releaseTodayEvents,
@@ -35,6 +36,7 @@ import { normalize } from '../search.ts';
 import { doneEvents } from './work.ts';
 import { declareFeedsEvents, releaseFeedsEvents } from './detail-intents.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
+import { biteEvents } from './work-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
@@ -43,7 +45,10 @@ import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
 import { dependencyView, dependencyWords, wouldCycle } from '../dependencies.ts';
-import { legalParents, childrenOf, placeWords, isContainer } from '../tree.ts';
+import {
+  legalParents, childrenOf, placeWords, isContainer, CONTAINER_ORDER, CONTAINER_DEFAULT,
+  containerOptionWords,
+} from '../tree.ts';
 import { eventWords, isCure } from '../log-words.ts';
 import { choosable, chosenToday, composedFull, todayIsOn } from '../composed.ts';
 import { canHold, legalMergeTargets, mergePlan, unmergeEvents } from './merge-intents.ts';
@@ -51,7 +56,7 @@ import { decisionsFor, foldedIntoDeep } from '../merged.ts';
 import { carryEvents, declineEvents, parkToSlotEvents } from './request-intents.ts';
 import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../requests.ts';
 import { personView, stakeholdersOf, type PersonLine } from '../people.ts';
-import { logDecisionEvents, removeStakeholderEvents } from './detail-intents.ts';
+import { logDecisionEvents, removeStakeholderEvents, releasePromiseEvents } from './detail-intents.ts';
 import { rangeWords, timedRange } from '../duration.ts';
 import { boundaryOf } from '../day.ts';
 
@@ -59,6 +64,7 @@ import { boundaryOf } from '../day.ts';
  *  closed set; these are what a person reads. */
 const RELATION_WORDS: Record<string, string> = {
   'waiting-on': 'they owe me this',
+  'promised-to': 'I said I would',
   'requested-by': 'they asked for it',
   'opr': 'they are running it',
   'stakeholder': 'they care about it',
@@ -103,6 +109,8 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   const afterClear = q<HTMLButtonElement>('#detail-after-clear');
   const afterNow = q<HTMLElement>('#detail-after-now');
   const parentCreate = q<HTMLButtonElement>('#detail-parent-create');
+  const parentNewRow = q<HTMLElement>('#detail-parent-new');
+  const parentKind = q<HTMLSelectElement>('#detail-parent-kind');
   const startInput = q<HTMLInputElement>('#detail-start');
   const estimateInput = q<HTMLInputElement>('#detail-estimate');
   const noteInput = q<HTMLTextAreaElement>('#detail-note');
@@ -185,11 +193,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       ? legal.filter(t => normalize(t.title || '').includes(query))
       : legal;
     const keep = PARENT.value;
-    const lineage = (t: NodeState): string => {
-      const p = t.parent ? st.nodes.get(t.parent) : undefined;
-      const alive = p && !p.trashed && !p.mergedInto;
-      return alive ? `${t.title || '(untitled)'} — in ${p.title || '(untitled)'}` : (t.title || '(untitled)');
-    };
+    // ONE writer for these words — see `containerOptionWords`, which replaced
+    // three identical copies, two of them in this file. They said the same
+    // thing in the same words by coincidence rather than by construction, which
+    // is the shape this repo keeps paying for: one concept, several places, and
+    // only one of them gets the fix. It names the KIND too, which stopped being
+    // optional the moment more than one kind could appear in a place picker.
+    const lineage = (t: NodeState): string => containerOptionWords(st, t);
     PARENT.replaceChildren(...[
       Object.assign(document.createElement('option'), {
         value: '',
@@ -222,7 +232,16 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         .some(t => normalize(t.title || '') === normalize(clean));
       const offer = clean !== '' && !exact;
       parentCreate.hidden = !offer;
-      if (offer) parentCreate.textContent = `New project named “${clean}” — put it under that`;
+      if (parentNewRow) parentNewRow.hidden = !offer;
+      if (offer) {
+        // The button says what the picker is set to, so the two cannot disagree
+        // on screen — a control reading "New project" while the select says
+        // Goal is a receipt for something that is not about to happen.
+        const chosen = (parentKind?.value ?? CONTAINER_DEFAULT) as NodeKind;
+        const word = CONTAINER_ORDER.find(([k]) => k === chosen)?.[1] ?? 'Project';
+        parentCreate.textContent =
+          `New ${word.split(' — ')[0]!.toLowerCase()} named “${clean}” — put it under that`;
+      }
     }
   }
 
@@ -304,11 +323,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     const query = normalize(mergeFilter?.value ?? '');
     const legal = legalMergeTargets(st, n);
     const shown = query ? legal.filter(t => normalize(t.title || '').includes(query)) : legal;
-    const lineage = (t: NodeState): string => {
-      const p = t.parent ? st.nodes.get(t.parent) : undefined;
-      const alive = p && !p.trashed && !p.mergedInto;
-      return alive ? `${t.title || '(untitled)'} — in ${p.title || '(untitled)'}` : (t.title || '(untitled)');
-    };
+    // ONE writer for these words — see `containerOptionWords`, which replaced
+    // three identical copies, two of them in this file. They said the same
+    // thing in the same words by coincidence rather than by construction, which
+    // is the shape this repo keeps paying for: one concept, several places, and
+    // only one of them gets the fix. It names the KIND too, which stopped being
+    // optional the moment more than one kind could appear in a place picker.
+    const lineage = (t: NodeState): string => containerOptionWords(st, t);
     const keep = mergeSel.value;
     mergeSel.replaceChildren(...[
       Object.assign(document.createElement('option'), {
@@ -478,7 +499,14 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
     if (n.onMenu) bits.push('on the Menu');
     if (n.lastDone) bits.push('done');
-    if (n.kind === 'upkeep' && n.intervalDays) bits.push(`repeats ${everyDaysWords(n.intervalDays)}`);
+    // A CADENCE IS NOT A KIND. This read `kind === 'upkeep'`, so a goal or an
+    // area carrying a rhythm said nothing about it here — the one line in the
+    // sheet whose job is to tell you what this thing currently is.
+    if (n.intervalDays) {
+      bits.push(isContainer(n)
+        ? `comes back ${everyDaysWords(n.intervalDays)}`
+        : `repeats ${everyDaysWords(n.intervalDays)}`);
+    }
     // The quiet fact line (1.4.0): where a sorted thing went, in the sorting's
     // own words — the sheet is where "it feels lost" gets its answer.
     if (n.route && n.route !== 'trash') bits.push(`sorted as ${String(n.route).replace(/-/g, ' ')}`);
@@ -615,6 +643,28 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
           setRest(true);
         });
         li.append(b);
+        // AND A PROMISE CAN BE TAKEN BACK (2.20.0). Only this relation gets the
+        // control, and the asymmetry is the point rather than an omission: the
+        // other four are notes about how somebody is involved, and a wrong one
+        // is cosmetic. A promise is a standing claim that you owe somebody
+        // something, and one nobody could take back would be the exact ledger
+        // `src/requests.ts` says this app exists not to keep.
+        //
+        // It releases the UNDERTAKING, never the work. The node keeps its clock,
+        // its place and its date — somebody who no longer owes Sam a thing may
+        // still intend to do it, and deleting their work would be the app
+        // deciding that for them.
+        if (l.relation === 'promised-to') {
+          const off = document.createElement('button');
+          off.type = 'button';
+          off.className = 'ghost';
+          off.textContent = 'No longer promised';
+          off.addEventListener('click', () => {
+            void run(ctx => releasePromiseEvents(ctx, n.id, l.person),
+              'No longer promised. The work is still here.');
+          });
+          li.append(off);
+        }
         return li;
       }));
 
@@ -782,7 +832,11 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       const b = btn(sel);
       if (b) b.hidden = !on;
     };
-    const repeats = n.kind === 'upkeep' && (n.intervalDays ?? 0) > 0;
+    // Carrying a cadence, whatever kind it is. Gated on `kind === 'upkeep'`
+    // this hid "Stop repeating" from every container with a rhythm — a state
+    // you could enter and not leave, which is the shape §113 is about.
+    const repeats = (n.intervalDays ?? 0) > 0;
+    const isPlaceForWork = isContainer(n);
     // No temporal controls on a Menu item OR on a demand-free kind — and the
     // second clause was MISSING until 1.17.2, which was a shipped instance of
     // offered-then-refused (the 1.9.2 audit's F-B, a fourth time). The comment
@@ -807,6 +861,14 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     grp('#detail-date-group', temporal);
     grp('#detail-start-group', temporal);
     grp('#detail-repeat-group', temporal);
+    // The same two controls, and a container is not being told it will become a
+    // chore. What a goal does on a rhythm is come back to be looked at.
+    const repeatLabel = q('#detail-repeat-label');
+    if (repeatLabel) repeatLabel.textContent = isPlaceForWork ? 'Come back to this' : 'Make it repeat';
+    const repeatSet = btn('#detail-repeat-set');
+    if (repeatSet) repeatSet.textContent = isPlaceForWork ? 'Come back' : 'Repeat';
+    const repeatStop = btn('#detail-repeat-stop');
+    if (repeatStop) repeatStop.textContent = isPlaceForWork ? 'Stop coming back' : 'Stop repeating';
     // Only meaningful once something repeats: an arrangement IS an upkeep, and
     // saying "it runs itself" about a thing with no rhythm would be a marker
     // with nothing behind it.
@@ -956,6 +1018,20 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     show('#detail-done', !n.lastDone && !n.trashed);
     show('#detail-undone', Boolean(n.lastDone));
     show('#detail-menu', !n.onMenu && !n.trashed);
+    // The picker stands with the button — AND STAYS once the thing is on the
+    // Menu, so a category chosen wrongly can be corrected in place. Without
+    // that it would be a state you can enter and not leave (LESSONS 113): the
+    // only way back would be to bring the thing off the Menu and put it on
+    // again, which writes two events to fix one word.
+    {
+      const cat = q<HTMLSelectElement>('#detail-menu-category');
+      if (cat) {
+        cat.hidden = n.trashed;
+        // Shows what it IS while it is on the Menu, and what it WOULD BE before
+        // that. Either way the control never disagrees with the surface.
+        cat.value = n.onMenu ?? 'read';
+      }
+    }
     show('#detail-promote', Boolean(n.onMenu));
     // Not on a merge SURVIVOR (1.17.3, the seam audit): trashing a node that
     // others folded into makes the folded-in nodes newly silent and the gate
@@ -1207,7 +1283,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => makeRepeatEvents(ctx, current!.id, current!.kind, i, c), `Repeats ${everyDaysWords(i)}.`);
   });
   btn('#detail-repeat-stop')?.addEventListener('click', () => {
-    void run(ctx => stopRepeatEvents(ctx, current!.id), 'It no longer repeats.');
+    // The node's OWN kind, so a goal that stops coming back is still a goal.
+    // Without it `stopRepeatEvents` writes `from: 'upkeep', to: 'action'` about
+    // a node that was never an upkeep — a false claim in an append-only log,
+    // and a goal quietly demoted to a task.
+    const wasContainer = current ? isContainer(current) : false;
+    void run(ctx => stopRepeatEvents(ctx, current!.id, 'action', current!.kind),
+      wasContainer ? 'It no longer comes back on its own.' : 'It no longer repeats.');
   });
   btn('#detail-arrangement-set')?.addEventListener('click', () => {
     void run(ctx => markArrangementEvents(ctx, current!.id),
@@ -1229,10 +1311,45 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => undoneEvents(ctx, current!.id), 'Back on the list.');
   });
   btn('#detail-menu')?.addEventListener('click', () => {
-    void run(ctx => toMenuEvents(ctx, current!.id), 'On the Menu — no clock, no demand.');
+    // WHICH KIND OF WANT (2.23.0). The picker beside the button, `read` by
+    // default — so nothing is required and the common case is one tap, which is
+    // the shape `docs/nd-collisions.md` entry 26 permits and the only thing it
+    // permits. Before this, both routes a person uses wrote `read`, so the
+    // Menu's six-way grouping rendered one group on every store.
+    const cat = q<HTMLSelectElement>('#detail-menu-category');
+    const chosen = (cat?.value || 'read') as MenuCategory;
+    void run(ctx => toMenuEvents(ctx, current!.id, chosen), 'On the Menu — no clock, no demand.');
   });
+  // CHANGING IT IN PLACE. `menu.item.added` is last-write-wins on the `menu`
+  // stamp, so re-emitting it with a different category is the correction —
+  // no new noun, no new control, and nothing to undo. Only while the thing is
+  // ALREADY on the Menu: before that the picker is an argument to the button
+  // beside it, and firing on change would put things on the Menu by accident.
+  q<HTMLSelectElement>('#detail-menu-category')?.addEventListener('change', (e) => {
+    if (!current?.onMenu) return;
+    const next = (e.target as HTMLSelectElement).value as MenuCategory;
+    if (next === current.onMenu) return;
+    void run(ctx => toMenuEvents(ctx, current!.id, next), 'Changed on the Menu.');
+  });
+
+  // A FIRST STEP, FROM ANYWHERE (2.23.0). The offer card's flow has had one
+  // route since 1.24.0 — you could shape the one thing you were handed and
+  // nothing else. Same intent, same event, second door.
+  btn('#detail-step-set')?.addEventListener('click', () => {
+    const input = q<HTMLInputElement>('#detail-step');
+    if (!input || !current) return;
+    const text = input.value.trim();
+    if (!text) { say('A first step first — a few words is enough.'); return; }
+    input.value = '';
+    void run(ctx => biteEvents(ctx, ctx.id(), current!.id, text), 'Put under this one.');
+  });
+
   btn('#detail-promote')?.addEventListener('click', () => {
-    void run(ctx => promoteFromMenuEvents(ctx, current!.id), 'Brought back as real work.');
+    // The node's OWN kind decides what it comes back as — see `promotedKind`.
+    // This used to force 'action', so a goal that had been rested on the Menu
+    // came back a task, and an upkeep came back a task still carrying its
+    // rhythm.
+    void run(ctx => promoteNodeFromMenuEvents(ctx, current!), 'Brought back as real work.');
   });
   btn('#detail-trash')?.addEventListener('click', () => {
     void run(ctx => [{
@@ -1298,6 +1415,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   // and files this under it, one gated commit — the gate cures the fresh
   // container with a same-day clock exactly as it cures any creation.
   parentFilter?.addEventListener('input', () => { if (current) paintParents(current); });
+  // AND THE PICKER REPAINTS THE BUTTON TOO. Without this the button kept saying
+  // "New project" after Goal was chosen — measured, not imagined — which is a
+  // control claiming something other than what pressing it does. The write was
+  // correct; the sentence above it was not, and the sentence is the part
+  // somebody reads before deciding.
+  parentKind?.addEventListener('change', () => { if (current) paintParents(current); });
   afterFilter?.addEventListener('input', () => { if (current) paintAfter(current); });
   btn('#detail-after-set')?.addEventListener('click', () => {
     if (!AFTER || !current) return;
@@ -1314,13 +1437,27 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     void run(ctx => clearAfterEvents(ctx, current!.id),
       'No longer waiting — it is back with you now.');
   });
+  // FILLED FROM `CONTAINER_ORDER`, never from a list written out here — a second
+  // copy of the kinds is a second thing to keep in step, and this repo has paid
+  // for that shape more than once.
+  if (parentKind && parentKind.options.length === 0) {
+    for (const [kind, words] of CONTAINER_ORDER) {
+      const o = document.createElement('option');
+      o.value = kind;
+      o.textContent = words;
+      parentKind.append(o);
+    }
+    parentKind.value = CONTAINER_DEFAULT;
+  }
+
   parentCreate?.addEventListener('click', () => {
     if (!current || !parentFilter) return;
     const title = cleanTitle(parentFilter.value);
     if (!title) return;
     const prior = current.parent;
     parentFilter.value = '';
-    void run(ctx => createParentEvents(ctx, current!.id, title, prior),
+    const chosen = (parentKind?.value ?? CONTAINER_DEFAULT) as NodeKind;
+    void run(ctx => createParentEvents(ctx, current!.id, title, prior, chosen),
       `Made “${title}” and put this under it.`);
   });
   btn('#detail-make-project')?.addEventListener('click', () => {

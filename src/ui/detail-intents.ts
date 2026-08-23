@@ -15,9 +15,11 @@
 // `session.commit`, which runs them through the gate.
 
 import type { AppEvent, MenuCategory, NodeKind } from '../events.ts';
+import type { NodeState } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { endOfLocalDay, localDayKey, utcMs, atMidnight} from '../time.ts';
-import { CONTAINER_DEFAULT } from '../tree.ts';
+import { CONTAINER_DEFAULT, CONTAINER_KINDS } from '../tree.ts';
+import { promotedKind } from '../kinds.ts';
 
 const base = (ctx: StampContext, kind: string, node: string, payload: unknown): AppEvent => ({
   id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
@@ -244,13 +246,20 @@ export const estimateEvents = (ctx: StampContext, node: string, minutes: number)
  */
 export function createParentEvents(
   ctx: StampContext, node: string, title: string, priorParent?: string | null,
+  // WHAT KIND OF CONTAINER, chosen at the moment it is named. Defaulted, so the
+  // triage route and every existing caller keep making projects without saying
+  // so. Before this, `goal`, `area` and `outcome` were in the schema, in
+  // CONTAINER_KINDS and in ALTITUDE, and no route in the app could create one —
+  // so two of review.ts's four readings could never fire, and the offer card's
+  // "serves ⟨…⟩" line, shipped in 2.5.0, had nothing it could ever find.
+  kind: NodeKind = CONTAINER_DEFAULT,
 ): AppEvent[] {
   const clean = cleanTitle(title);
   if (!clean) return [];
   const parentId = ctx.id();
   return [
     base(ctx, 'node.created', parentId, {
-      nodeKind: CONTAINER_DEFAULT, title: clean, provenance: { for: 'self' },
+      nodeKind: kind, title: clean, provenance: { for: 'self' },
     }),
     base(ctx, 'node.parented', node, {
       parent: parentId, ...(priorParent ? { priorParent } : {}),
@@ -267,6 +276,16 @@ export function createParentEvents(
  * The kind change is emitted only when it is a change; re-emitting it for a node
  * that is already an upkeep would be a no-op event, and the log should not carry
  * claims about changes that did not happen.
+ *
+ * **AND NEVER ON A CONTAINER.** A rhythm on a goal, an area, an outcome or a
+ * project is "come back to this", not "this is now a chore" — the thing keeps
+ * being the thing it was and acquires a cadence. Before 2.16.1 this converted
+ * every one of them to `upkeep`, which meant the container-kind picker shipped
+ * in 2.16.0 made goals that the very next control in the same sheet silently
+ * unmade: kind `goal` in, kind `upkeep` out, the label reading "Make it
+ * repeat" throughout. The two events that matter — the interval and the review
+ * clock — never needed the kind change; `pressureOf` is kind-agnostic and reads
+ * only `lastDone`, `intervalDays` and `comfortWindowDays`.
  */
 export function makeRepeatEvents(
   ctx: StampContext,
@@ -276,7 +295,7 @@ export function makeRepeatEvents(
   comfortWindowDays: number,
 ): AppEvent[] {
   const out: AppEvent[] = [];
-  if (fromKind !== 'upkeep') {
+  if (fromKind !== 'upkeep' && !CONTAINER_KINDS.has(fromKind)) {
     out.push(base(ctx, 'node.kind.changed', node, { from: fromKind, to: 'upkeep' as NodeKind }));
   }
   out.push(base(ctx, 'upkeep.interval.set', node, { intervalDays, comfortWindowDays }));
@@ -294,7 +313,11 @@ export function makeRepeatEvents(
  * one would mean opening the closed vocabulary for something already expressible:
  * an interval of 0 folds to `intervalDays = 0`, which `pressureOf` reads as "no
  * cadence" and returns null for. The kind moves back so the item leaves the
- * Upkeep chips.
+ * Upkeep chips — **unless it never left its own kind**, which is the container
+ * case: a goal that stops coming back on a rhythm is still a goal, and writing
+ * `from: 'upkeep'` about a node that was never an upkeep would be a claim about
+ * a change that did not happen. `currentKind` is what makes that decidable, and
+ * it is the same fact `makeRepeatEvents` already takes for the same reason.
  *
  * The `done.unmarked` is load-bearing, not tidying. An interval of 0 makes the
  * item non-recurring, and a non-recurring item that has EVER been completed is
@@ -304,9 +327,14 @@ export function makeRepeatEvents(
  * and Done did nothing. Clearing the completion is what keeps it live and
  * ordinary, and the audit found this exact shape.
  */
-export const stopRepeatEvents = (ctx: StampContext, node: string, toKind: NodeKind = 'action'): AppEvent[] => [
+export const stopRepeatEvents = (
+  ctx: StampContext, node: string, toKind: NodeKind = 'action',
+  currentKind: NodeKind = 'upkeep',
+): AppEvent[] => [
   base(ctx, 'upkeep.interval.set', node, { intervalDays: 0, comfortWindowDays: 0 }),
-  base(ctx, 'node.kind.changed', node, { from: 'upkeep' as NodeKind, to: toKind }),
+  ...(currentKind === 'upkeep'
+    ? [base(ctx, 'node.kind.changed', node, { from: 'upkeep' as NodeKind, to: toKind })]
+    : []),
   base(ctx, 'done.unmarked', node, {}),
 ];
 
@@ -328,8 +356,20 @@ export const untrashEvents = (ctx: StampContext, node: string): AppEvent[] =>
  * carrying no clock and no demand, and it only becomes a demand because someone
  * chose it. The gate cures the promotion with a clock.
  */
-export const promoteFromMenuEvents = (ctx: StampContext, node: string, toKind: NodeKind = 'action'): AppEvent[] =>
-  [base(ctx, 'menu.item.promoted', node, { toKind })];
+// `toKind` is REQUIRED, and that is the fix as much as `promotedKind` is. It
+// defaulted to 'action' for the life of the control, so every caller that had
+// nothing particular in mind destroyed the kind of whatever it touched — and
+// nothing at the call site said so. A default that is wrong for most kinds is
+// a trap set for the next caller.
+export const promoteFromMenuEvents = (
+  ctx: StampContext, node: string, toKind: NodeKind,
+): AppEvent[] => [base(ctx, 'menu.item.promoted', node, { toKind })];
+
+/** The same act, deciding the kind from what the node already IS — see
+ *  `promotedKind`. Every caller in the app uses this one; the explicit-kind
+ *  form above stays for the tests that assert a named transition. */
+export const promoteNodeFromMenuEvents = (ctx: StampContext, n: NodeState): AppEvent[] =>
+  promoteFromMenuEvents(ctx, n.id, promotedKind(n.kind));
 
 /** Putting something on the Menu from the detail sheet — the same demand-free
  *  landing the someday/reference routes use. */
@@ -603,6 +643,44 @@ export const setSaveForEvents = (
 export const removeStakeholderEvents = (
   ctx: StampContext, node: string, person: string,
 ): AppEvent[] => [base(ctx, 'stakeholder.removed', node, { person })];
+
+/**
+ * "I am not promising that any more" (2.20.0).
+ *
+ * `removeStakeholderEvents`' shape, pointed at the other removable relation.
+ * The WORK IS UNTOUCHED — this takes the undertaking off, not the thing itself,
+ * so the node keeps its clock, its place and its date. Somebody who no longer
+ * owes Sam a thing may still intend to do it.
+ */
+/**
+ * Name the situation you are in, so it can be recalled (2.21.0).
+ *
+ * Either half may be null — "at the office, however long" and "twenty minutes,
+ * anywhere" are both real situations, and demanding both would make the feature
+ * useful only to somebody who happens to want both.
+ *
+ * Saving under an existing name replaces it. One name, one situation, which is
+ * what a name is for.
+ */
+export const saveSituationEvents = (
+  ctx: StampContext, name: string, context: string | null, minutes: number | null,
+): AppEvent[] => {
+  const clean = name.trim();
+  if (!clean) return [];
+  // `null as never` for the node, the shape `enableModuleEvents` already uses:
+  // this is a state-level fact and belongs to no node.
+  return [base(ctx, 'situation.saved', null as never, { name: clean, context, minutes })];
+};
+
+/** "I do not recognise that situation any more." Scoped to one name, never a
+ *  clear-all — `removeStakeholderEvents`' rule. */
+export const forgetSituationEvents = (
+  ctx: StampContext, name: string,
+): AppEvent[] => (name ? [base(ctx, 'situation.forgotten', null as never, { name })] : []);
+
+export const releasePromiseEvents = (
+  ctx: StampContext, node: string, person: string,
+): AppEvent[] => [base(ctx, 'promise.released', node, { person })];
 
 /**
  * Log what was decided (1.9.0, ADR-0057).

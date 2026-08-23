@@ -30,9 +30,10 @@ import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
-import { nextFixedToday, nextFixedWords } from '../clock.ts';
+import { nextFixedToday, nextFixedWords, datedTodayCount, datedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
 import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
+import { getHowLong, fitsWithin } from '../duration.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
@@ -147,6 +148,7 @@ export function mountWork(
   // purpose. Same containment every optional element on this surface gets.
   const LOADNOTE = document.querySelector<HTMLElement>('#nextup-load');
   const FIXED = document.querySelector<HTMLElement>('#nextup-fixed');
+  const DATED = document.querySelector<HTMLElement>('#nextup-dated');
   // The two things you can do when you cannot start (1.24.0). Soft-bound like
   // LOADNOTE and PLACE: a missing control costs that control, never the offer.
   const BITE = q('#nextup-bite');
@@ -591,9 +593,21 @@ export function mountWork(
     // does becomes the head, and `total` counts what fits — a total that
     // counted things you cannot do from here would be the surface answering a
     // different question from the one the chooser asked.
+    //
+    // AND HOW LONG YOU HAVE (2.19.0, the plan's phase 3). The same treatment
+    // and in the same place, because it is the same kind of narrowing: what is
+    // filtered out still has its clock, still counts in the claim, and still
+    // comes back. An unestimated thing fits every answer, exactly as an
+    // unlabelled thing fits anywhere.
+    //
+    // THE OFFER IS THE HALF THAT MATTERS. Narrowing only the held list would
+    // leave the one thing the app actually hands you unfiltered — "I have
+    // twenty minutes" answered with a two-hour job is the feature not working,
+    // which is the reasoning `getWhereNow` already carries about place.
+    const within = getHowLong();
     const all = ((): typeof all0 => {
-      if (!here) return all0;
-      const fits = (i: NextUpItem) => fitsHere(state, i.node, here);
+      if (!here && within === null) return all0;
+      const fits = (i: NextUpItem) => fitsHere(state, i.node, here) && fitsWithin(i.node, within);
       const kept = [...(all0.head ? [all0.head] : []), ...all0.behind].filter(fits);
       return { head: kept[0] ?? null, behind: kept.slice(1), total: kept.length };
     })();
@@ -651,6 +665,15 @@ export function mountWork(
       if (biteDone) biteDone.hidden = true;
       BEHIND.replaceChildren();
       COUNT.textContent = '';
+      // AND THE DATED COUNT (2.19.1). A settled surface is one where nothing is
+      // being asked, and a count of today's dates is a demand however plainly it
+      // is worded. Settling IS finishing early, so the question this line
+      // answers has already been answered by the act.
+      //
+      // `#nextup-fixed` deliberately survives this branch and this one does not:
+      // that line NAMES one thing still ahead and is an ambient horizon, which
+      // is worth having on a settled afternoon. A count is not.
+      if (DATED) { DATED.textContent = ''; DATED.hidden = true; }
     }
     // The offer's controls are WITHHELD while settled, not greyed. A demand that
     // is present but disabled is still a demand on the screen.
@@ -817,6 +840,27 @@ export function mountWork(
         FIXED.textContent = fw ?? '';
         FIXED.hidden = fw === null;
       }
+      // WHAT TODAY ACTUALLY COMMITS YOU TO (2.19.1). "What is on my plate,
+      // enough to decide whether to finish early" — and the answer that lets
+      // somebody stop is the ZERO one, so it is stated rather than left as an
+      // absence. `datedWords` was written for exactly this and says so in its
+      // own docstring: zero is an ordinary fact, not an achievement and not a
+      // reproach.
+      //
+      // ALWAYS, not only when the clock module is on. This pair has existed
+      // since the clock and rendered only inside it — an opt-in ticking face,
+      // off by default, with this fact third in a sentence after the time and
+      // the remainder. Live code with no route to it, the same shape as the
+      // unfed-goal reading phase 2 found.
+      //
+      // NOT the remainder beside it. "2h 30m left today" is what ADR-0103 took
+      // off this card, and it stays off.
+      if (DATED) {
+        const n = datedTodayCount(
+          session.state(), nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) });
+        DATED.textContent = datedWords(n);
+        DATED.hidden = false;
+      }
       // Doors, not words-in-a-paragraph (1.6.0): each row opens its sheet, on
       // the FRESH node — a row built at refresh time can be clicked later. What
       // sits here is now the REST OF THE OFFER rather than a queue tail: one
@@ -885,6 +929,9 @@ export function mountWork(
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
         if (FIXED) { FIXED.textContent = ''; FIXED.hidden = true; }
+        // The settled branch already says "Nothing is asking today" above, so a
+        // second sentence about dates would be the same news twice.
+        if (DATED) { DATED.textContent = ''; DATED.hidden = true; }
       } else {
         REGION.hidden = true;
         TITLE.textContent = '';

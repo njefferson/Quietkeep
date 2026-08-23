@@ -20,7 +20,7 @@ sorted by urgency from end to end and never once be *filed*, and the only thing
 the app could say afterwards was `Sent to Next action` — a category, not
 somewhere a person can go and look.
 
-**And the places did not exist.** His first diagnostic reported **area 0, goal 0,
+**And the places did not exist.** The first diagnostic reported **area 0, goal 0,
 outcome 0, waiting-for 0** against 1,405 actions. An earlier session — mine —
 read that as an observation about which nouns were in use, and built a measure of
 how much was *asking* (`pressureBands`, 1.18.3) on the theory that the surface
@@ -63,7 +63,7 @@ with one (`cureFor`) in the same transaction. The item is then covered by clause
 
 That is the honest arrangement rather than a loophole: **the place comes back,
 and its contents come back with it.** It is what makes a filed thing findable
-again instead of merely gone, which is the half of his complaint that "Sent to
+again instead of merely gone, which is the half of the defect report that "Sent to
 Next action" could never answer.
 
 ## The clock detail that would have made filing useless
@@ -81,7 +81,7 @@ uses it. **Filing says where; the place's clock says when. One answer each.**
 ## Consequences
 
 - **`pressureBands` (1.18.3) stays but is demoted.** It is honest and costs
-  nothing, and it is not the instrument that explains his day. NOTES records the
+  nothing, and it is not the instrument that explains a day. NOTES records the
   correction in the three places the wrong inference was written down.
 - The picker joins the a11y gate's surface list **in the same commit** (hub
   LESSONS §28), and that gate immediately failed the new text field at 185x21
@@ -92,4 +92,4 @@ uses it. **Filing says where; the place's clock says when. One answer each.**
 - **Not done:** nothing yet shows a place's *contents* on the runway when its
   review comes round. Filing puts things somewhere and the place returns; what it
   returns *with* is the next question, and it is the one to ask the owner about after
-  he has used this.
+  the owner has used this.

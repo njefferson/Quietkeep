@@ -41,6 +41,11 @@ import { chromium } from 'playwright-core';
 import { serve } from './serve.mjs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { requireFreshBundle } from './bundle-fresh.mjs';
+
+// Every walk here serves the generated bundle; none of them used to check it
+// was current. See tools/bundle-fresh.mjs.
+requireFreshBundle(new URL('..', import.meta.url).pathname, 'the touch gate');
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const launchOpts = { args: ['--no-sandbox'] };

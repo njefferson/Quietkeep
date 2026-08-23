@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Quietkeep — where the work is</title>
+<!--
+  THE LIVE STATUS PAGE for the situated-app plan (Doctrine §7i).
+
+  It lives in `public/` rather than anywhere else for one reason: it redeploys
+  with the branch, at the same URL, with nothing to approve and nothing to
+  re-publish. Chat scrolls, and a plan agreed on Monday is unreachable by
+  Wednesday on a tablet.
+
+  NOT LINKED FROM THE APP, and `noindex` on purpose. It is a working page for
+  one reader, not a surface — which is why it is not in the a11y walk's state
+  list and does not need to be. If it ever gains a route from the app it becomes
+  a surface and joins that list in the same commit (hub LESSONS §28).
+
+  Hand-written and self-contained. No build step, no fetch, nothing to go stale
+  except the words, which are updated in the same commit as the work they
+  describe — the same rule `docs/plan-situated.md` carries.
+-->
+<style>
+  :root {
+    color-scheme: light dark;
+    --paper: #F7F5F0; --ink: #23262B; --quiet: #5A6068;
+    --rule: #D8D3C8; --card: #FFFFFF; --accent: #33425F;
+    --done: #2F6B4F; --now: #8A5A1F; --wait: #6B6560;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16181C; --ink: #E8E6E1; --quiet: #A2A8B0;
+      --rule: #2E333A; --card: #1D2025; --accent: #A8BBDD;
+      --done: #7FBF9D; --now: #E0AC63; --wait: #9A948E;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 1.5rem 1.15rem 4rem;
+    background: var(--paper); color: var(--ink);
+    font: 1rem/1.6 ui-serif, Georgia, "Times New Roman", serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 42rem; margin: 0 auto; }
+  h1 { font-size: 1.5rem; line-height: 1.25; margin: 0 0 .2rem; letter-spacing: -.01em; }
+  .sub { color: var(--quiet); margin: 0 0 1.8rem; font-size: .95rem; }
+  h2 {
+    font-size: .78rem; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--quiet); margin: 2.2rem 0 .7rem;
+    font-family: ui-sans-serif, system-ui, sans-serif; font-weight: 600;
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--rule);
+    border-radius: 10px; padding: .85rem 1rem; margin: 0 0 .6rem;
+  }
+  .card p { margin: .4rem 0 0; font-size: .93rem; color: var(--quiet); }
+  .head { display: flex; gap: .6rem; align-items: baseline; flex-wrap: wrap; }
+  .n { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .8rem; color: var(--quiet); }
+  .t { font-weight: 600; }
+  .tag {
+    margin-left: auto; font-size: .7rem; letter-spacing: .07em;
+    text-transform: uppercase; font-family: ui-sans-serif, system-ui, sans-serif;
+    font-weight: 700; white-space: nowrap;
+  }
+  .tag.done { color: var(--done); }
+  .tag.now { color: var(--now); }
+  .tag.wait { color: var(--wait); }
+  .facts { list-style: none; padding: 0; margin: 0; }
+  .facts li { padding: .45rem 0; border-bottom: 1px solid var(--rule); font-size: .93rem; }
+  .facts li:last-child { border-bottom: 0; }
+  .facts b { font-weight: 600; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: .87em; background: color-mix(in srgb, var(--accent) 10%, transparent);
+    padding: .1em .35em; border-radius: 4px;
+  }
+  footer { margin-top: 2.5rem; color: var(--quiet); font-size: .85rem; border-top: 1px solid var(--rule); padding-top: 1rem; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+
+<h1>Quietkeep — where the work is</h1>
+<p class="sub">The situated app. This page is updated in the same commit as the
+work it describes, so it is never a summary of what somebody meant to do.</p>
+
+<h2>Right now</h2>
+<div class="card">
+  <div class="head"><span class="t">Phase 5 — where your time actually went</span><span class="tag done">complete</span></div>
+  <p><b>2.24.0. The screen called &ldquo;Where the attention is&rdquo; now shows
+  where your attention went.</b> It has been called that since it was built and
+  all it showed was how many things each of your roles is carrying, which is a
+  different question &mdash; a role can be carrying nine things and have had none
+  of your time, and that gap is the reason you would open it.</p>
+  <p>It comes from the timer, never from ticking things off, so there is no
+  number you can raise by finishing more. It counts the work you <em>did</em>
+  finish, because an hour spent on something you completed is still an hour of
+  your attention. In name order, never by size.</p>
+  <p><b>This was written down as still owed and reported as finished anyway.</b>
+  The plan&rsquo;s own notes said so; the claim that all eight phases were done
+  was made without re-reading them. One item is genuinely still open and it is
+  waiting on the device rather than on the work: asking for a situational fact
+  while you are putting something down, which is better answered by using the app
+  than by guessing.</p>
+
+  <div class="head"><span class="t">Phase 8 — the whole thing, looked at</span><span class="tag done">complete</span></div>
+  <p><b>2.23.1. The plan is finished, and the last phase found a real defect
+  by looking at a picture.</b> &ldquo;What&rsquo;s the situation?&rdquo; &mdash;
+  the control that sets where you are and how long you have &mdash; was sitting
+  inside <em>What you are holding</em>, nearly four screenfuls below
+  <em>Next up</em>. Those two answers are what <em>Next up</em> is chosen from.
+  So the app could hand you something you cannot do where you are standing, and
+  the way to tell it where you are was four screens away. It is now the first
+  thing under the box you type in, and so are the two lines that say your list
+  has been narrowed.</p>
+  <p><b>Nothing measured it, and nothing was going to.</b> Twenty-five checks and
+  eight browser walks pass on every release. They ask whether a control exists,
+  can be reached by finger, can be read in both themes, is big enough to press,
+  and says the right words. None of them asks whether it is anywhere near the
+  thing it changes. There is a check for that now.</p>
+  <p><b>The tablet had never been rendered once</b>, in an app whose reference
+  platform is a tablet. It has been now, top to bottom, on the sample and on a
+  real import.</p>
+  <p><b>2.22.0.</b> Look at what has changed without sending it to anybody —
+  and looking costs nothing, where copying or saving used to spend the period
+  you were reading.</p>
+  <p><b>2.21.0.</b> One place to answer what your situation is, and a way to
+  name one so it comes back in a tap. The controls moved out of the pile;
+  the line telling you what is narrowed stayed where you can see it.</p>
+  <p><b>2.20.0.</b> You can say you promised somebody something, and see
+  everything you promised — under <em>With other people</em>, the place that
+  already showed what others owe you, now showing both directions. It never
+  says how long. A tally of how long you have kept somebody waiting is the one
+  record this app is built not to keep, so there is no field to hold one.</p>
+  <p>You keep a promise by doing the thing. And you can take one back without
+  dropping the work — the undertaking comes off and the thing stays exactly
+  where it was.</p>
+  <p><b>Phases 2, 3 and 4 are finished.</b> A page for what you are working toward — your goals, areas
+  and outcomes, each with what it is carrying and how often it comes back.
+  Behind a control, never the screen you land on.</p>
+  <p><b>The empty ones are on it, and that is the point.</b> A goal with nothing
+  under it yet is still a goal. The app could always work out which ones had
+  nothing feeding them, but only ever raised it as something needing attention —
+  which is a different thing from being able to look at what you have and decide
+  what goes under it. Finish everything under a goal and it stays on the list
+  saying it holds nothing, which is exactly when it would otherwise disappear.</p>
+</div>
+
+<h2>What is true today</h2>
+<ul class="facts">
+  <li><b>Production</b> — 2.14.1. Everything since is on staging.</li>
+  <li><b>Staging</b> — 2.24.0, with seventeen releases on it since production.</li>
+  <li><b>Last full Spine seen green</b> — <code>4dfcbf2</code>, 2.23.0, every
+      step and the deploy, read from the run itself. <b>2.23.1 went red</b> and
+      2.23.2 is the fix; its run is going as this was written.</li>
+  <li><b>What went red, and why it is worth saying</b> — moving the situation
+      control to the top of the screen left it standing in
+      <em>Just one thing</em>, the mode built for the worst day. That mode
+      exists to hand you one thing and take the choosing away, and it had grown
+      a control asking where you are and how long you have. Caught by the
+      accessibility walk, not by the twenty-five checks that run before a
+      commit — because the half of that check which notices an unaccounted-for
+      region only ran in a browser. It runs before the commit now.</li>
+  <li><b>Checked before pushing this one</b> — 1345 tests, the static gates, the
+      new placement check seen failing on three deliberate defects before it was
+      trusted, the walkthrough photographs re-rendered, and the page itself
+      rendered at both widths and looked at.</li>
+  <li><b>Waiting on the owner</b> — the on-device pass, whenever convenient.
+      Fifteen releases are stacked on staging. Nothing here is blocked on it.</li>
+  <li><b>Found by looking and deliberately NOT fixed</b> — a free weekend has no
+      way to be said: the &ldquo;how long have you got&rdquo; list stops at two
+      hours, and the only way to mean <em>a lot of time</em> is the default,
+      which means nothing. Adding a choice is a decision about the product, not
+      a repair, so it is written down and left. Two others are on the same
+      list: there is no way to ask for something that needs no preparation, and
+      on a wide screen nothing limits how long a line of text gets.</li>
+  <li><b>Found, written down, then fixed</b> — taking something off the Menu
+      turned it back into a plain task whatever it had been. Recorded last
+      release as still broken; on looking properly it was worse than described.
+      A goal rested on the Menu came back a task with the goal gone, and a
+      repeating thing came back a task still quietly repeating. Fixed in
+      2.18.2 — everything comes back as whatever it was, except a wish, which
+      is the one case bringing something back was ever meant to change.</li>
+  <li><b>Found and fixed on the way</b> — one check crashed instead of
+      answering. It builds a second copy of the app to prove its own test has
+      teeth, and that copy just crossed the one-megabyte limit on how much
+      output the check could hold — so it stopped with an error rather than a
+      verdict, which reads as a broken step and not as a finding.</li>
+  <li><b>Found and fixed on the way</b> — every browser check here could measure
+      the <em>previous</em> app and pass. The built file they serve is generated
+      and ignored by git, and all six checked only that it existed, not that it
+      was current. The build server always rebuilt first, so the full run was
+      never wrong — but the local runs that decide whether something is safe to
+      push were. They now refuse to run on a stale build.</li>
+  <li><b>Found and fixed on the way</b> — the third-person gate was reporting
+      both repos clean while twelve real references stood in three files. It
+      skipped any line over 300 characters, a guard written for minified
+      bundles; the docs here are written one paragraph per line, so 632 of
+      them cleared that threshold as ordinary prose. It now tests for an
+      unbroken 80-character run instead, which is the thing it was actually
+      trying to avoid reading.</li>
+</ul>
+
+<h2>What the import work cost to get right</h2>
+<ul class="facts">
+  <li><b>Two diagnoses were wrong before the third.</b> First <em>the offer is
+      empty</em>; then, reasoned from the source, <em>all 882 rows sit on one
+      end-of-day timer and arrive together</em>. The log holds 42 clock events,
+      one per project — and the next morning is identical. The pile does not
+      arrive at once. It does not arrive.</li>
+  <li><b>Two tests caught what reading did not.</b> Marking every imported row
+      pulled rows with genuine future dates off the calendar. And a rule
+      requiring a new field to be handled on clone, on deserialise, and
+      defaulted for an old snapshot named the two places I had missed.</li>
+  <li><b>The Spine caught the third.</b> An import now fills the inbox, and the
+      smoke walk had two loops bounded on the assumption that it never would.</li>
+</ul>
+
+<h2>The phases</h2>
+
+<div class="card">
+  <div class="head"><span class="n">0</span><span class="t">The ground</span><span class="tag done">done here</span></div>
+  <p>A gate for third-person references, the historical backlog cleared, the
+  a11y registry made self-deriving, this plan landed in the repo, and the
+  research entries that later phases will be built on.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">1</span><span class="t">The app can be entered</span><span class="tag done">core fixed</span></div>
+  <p>An import lands in the inbox and the offer hands it over one at a time,
+  saying <em>this came in with your import</em>. Verified on the same 840-item
+  fixture that used to produce nothing, and driven ten rounds to check it keeps
+  going rather than working once.</p>
+  <p>Not done here: asking where you are at the moment it would change the
+  answer. That was the original design and it sits downstream of this — it can
+  wait for a real device rather than be guessed at.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">2</span><span class="t">The horizon comes down</span><span class="tag done">complete</span></div>
+  <p><b>Done:</b> a goal or an area can be made, and it can carry a rhythm that
+  brings the work under it back. A design document that proposed giving a
+  <em>role</em> its own clock is corrected — the app refuses that on purpose,
+  because a thing that can be late is a demand and a role is an identity. The
+  clock rides the goal instead.</p>
+  <p><b>Filing many things under one goal at once</b> turned out to already
+  work — three of this phase's four steps did. What was missing there was only
+  that the list of places never said which kind of place each one was.</p>
+  <p>No promote button, no screen to climb to, and nothing counted or scored.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">3</span><span class="t">The situation</span><span class="tag done">complete</span></div>
+  <p><b>2.19.0.</b> You can say how long you have — twenty minutes before you
+  leave, five while the kettle boils — and the app answers with things that fit.
+  Anything you never put a time on still shows, because it does not know how
+  long those take and will not pretend otherwise.</p>
+  <p><b>2.19.1.</b> And the surface says what today actually commits you to —
+  <em>nothing is dated today</em>, or how many things are. The answer that lets
+  you stop is the one that used to be missing. It was already worked out and
+  you could only get at it by switching on a clock.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">4</span><span class="t">The other direction</span><span class="tag done">complete</span></div>
+  <p><b>2.20.0.</b> What somebody is waiting on from you. The screen for a
+  person showing both directions turned out to be built already — it has been
+  there since 1.12.0 and had nothing to put in one of its halves.</p>
+  <p>Nothing here ages. What other people owe you says <em>for three weeks</em>,
+  because that is about their side; nothing on your side does, and the shape
+  behind it has no field to say it with.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">5</span><span class="t">The situated view</span><span class="tag now">two of three</span></div>
+  <p><b>2.21.0.</b> One place to answer what your situation is — where you are
+  and how long you have, which were buried in the list of everything you are
+  holding. And you can name one, so <em>the Tuesday standup</em> comes back in
+  one tap. Nothing reminds you it exists and nothing counts how often you use
+  it.</p>
+  <p><b>Still to come:</b> where your attention actually went, per role.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">6</span><span class="t">Coming back</span><span class="tag done">complete</span></div>
+  <p><b>2.22.0.</b> You can look at what has changed without sending it to
+  anybody. Until now the only way to read it was to copy or save it — and doing
+  that tells the app you have reported, so the next one starts from that moment.
+  Look twice and the second look was empty, with nothing saying why.</p>
+  <p>The surface for handing it over was built already, and the report is not
+  really the answer to <em>what did I miss</em> anyway: it is built from what was
+  written down, and time passing writes nothing. What changed while you were
+  gone is which things came round — and <em>Welcome back</em> already says
+  that.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">7</span><span class="t">The menu and the unformed</span><span class="tag done">complete</span></div>
+  <p><b>2.23.0.</b> When you put something on the Menu you can say what kind of
+  thing it is. It already sorted itself into six kinds and everything was filed
+  as one of them, so it only ever showed one heading.</p>
+  <p>And you can name a first step on anything — <em>get the oil change done</em>
+  is not a bad plan and not stale, it is unformed, and what unblocks it is
+  <em>ring the garage</em>. That has been on the offer card for a while with no
+  other way in, so it only worked on whatever the app chose to show you.</p>
+  <p><b>What the research refused:</b> nothing tracks whether you look at the
+  Menu, nothing suggests items, and nothing frames any of it as a reward earned
+  by doing something else.</p>
+</div>
+
+<div class="card">
+  <div class="head"><span class="n">8</span><span class="t">The whole thing, looked at</span><span class="tag done">complete</span></div>
+  <p><b>2.23.1.</b> Every surface rendered at phone and tablet width, on the
+  sample and on a real import, and <em>opened and looked at</em> rather than
+  counted. That is what found the situation control sitting four screens below
+  the thing it decides.</p>
+  <p><b>The fourteen situations, walked end to end. Eleven answered.</b> Three
+  are answered partly and are written down above rather than quietly patched.</p>
+  <p><b>What a real import looks like, in its own numbers.</b> 840 things under
+  42 projects, 518 dates already gone by, and no places, roles, areas, goals or
+  people &mdash; because a file of tasks does not carry any. The app is usable
+  from the first morning: under two screens, one thing offered, an honest reason
+  under it, and ten different things across ten rounds. And four of its surfaces
+  are empty, because there is nothing yet to put on them. That was the finding
+  this whole plan was written from, and now it has been measured on the real
+  file instead of argued from the documents.</p>
+</div>
+
+<footer>
+  The plan itself is <code>docs/plan-situated.md</code> in the repo, with a
+  resume-state block at the bottom. This page is the same information at a URL
+  that does not scroll away.
+</footer>
+
+</main>
+</body>
+</html>

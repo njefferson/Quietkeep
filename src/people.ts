@@ -19,7 +19,20 @@ import { boundaryOf } from './day.ts';
 import { isHeld } from './fold.ts';
 
 /** The vocabulary's closed relation set. */
-export const RELATIONS = ['opr', 'stakeholder', 'waiting-on', 'requested-by', 'mentioned'] as const;
+// `promised-to` (2.20.0) is the OTHER DIRECTION, and it is a relation rather
+// than a kind on purpose: a promise is your own work with a person attached, so
+// it stays an ordinary node and is kept by doing it. A kind would have to join
+// `NOT_ACTIONABLE`, `DEMAND_FREE_KINDS`, `CONTAINER_KINDS`, `CALENDAR_KINDS`,
+// the plain lists and the altitude order — and phase 2 measured three of the
+// four sites that write a node's kind as wrong.
+//
+// It is NOT `requested-by` with better words. That one records who ASKED, which
+// is where a thing came from; this one records that you UNDERTOOK it, which is
+// a thing somebody is now expecting. The first is provenance and the second is
+// a standing claim about you, which is why only the second can be released.
+export const RELATIONS = [
+  'opr', 'stakeholder', 'waiting-on', 'requested-by', 'mentioned', 'promised-to',
+] as const;
 export type Relation = typeof RELATIONS[number];
 
 export interface PersonLine {
@@ -28,6 +41,30 @@ export interface PersonLine {
   /** For a waiting-for: how long it has been open, in calendar days. Null when
    *  nobody recorded a start, which is ordinary. */
   days: number | null;
+}
+
+/**
+ * One thing YOU said you would do for somebody.
+ *
+ * **IT CARRIES NO `days` FIELD, AND THAT IS THE DESIGN.** `PersonLine` above has
+ * one because ageing what somebody else owes you is a fact about a date:
+ * *"With Sam for three weeks"* describes their debt, and the app is entitled to
+ * describe it.
+ *
+ * Pointed the other way the same words become *"you have owed Sam this for three
+ * weeks"* — which is the ledger `src/requests.ts` says in terms this app exists
+ * NOT to keep (ADR-0042, restated in ADR-0056): a record of the times you did
+ * not do your own work. A promise carries no shame, no ageing score and no
+ * count of how long anybody has been waiting on you.
+ *
+ * Enforced by the SHAPE rather than by this paragraph. There is no field to
+ * render, so no surface can render one, and the omission is checkable by
+ * reading four lines instead of by remembering a rule.
+ */
+export interface PromiseLine {
+  node: NodeState;
+  /** Their name, or null when the person node has been let go. */
+  person: string | null;
 }
 
 export interface PersonView {
@@ -116,6 +153,67 @@ export function waitingOnAnyone(state: State, nowIso: string, zone: string): Per
     out.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, day) });
   }
   return out.sort((a, b) => (b.days ?? -1) - (a.days ?? -1) || (a.node.id < b.node.id ? -1 : 1));
+}
+
+/** Is this a promise still standing? Live work, not done, with somebody's name
+ *  on it. There is no separate open/closed state to fold: **doing the work IS
+ *  keeping the promise**, which is the whole reason this is a relation on an
+ *  ordinary node rather than a kind of its own. */
+export const isOpenPromise = (n: NodeState): boolean =>
+  alive(n) && !n.lastDone && n.people.some(l => l.relation === 'promised-to');
+
+/**
+ * Everything you said you would do, for anybody — the mirror of
+ * `waitingOnAnyone`, and deliberately not its twin.
+ *
+ * **ORDERED BY TITLE, never by age.** That one sorts longest-waiting first,
+ * because the thing you have been owed for three weeks is the thing worth
+ * mentioning when you next see them. Sorting these by age would rank your own
+ * lapses, which is the same forbidden ledger the missing `days` field is about —
+ * and it would do it silently, since an ordering states nothing out loud.
+ *
+ * A node promised to two people appears once per person, because two people are
+ * each expecting it and an app that mentioned only the first would be right half
+ * the time — which is worse than wrong, because you would trust it. That is
+ * `personView`'s own reasoning about the two ways of saying *waiting-on*.
+ */
+export function promisedToAnyone(state: State): PromiseLine[] {
+  const out: PromiseLine[] = [];
+  for (const n of heldNodes(state)) {
+    if (!isOpenPromise(n)) continue;
+    for (const l of n.people) {
+      if (l.relation !== 'promised-to') continue;
+      out.push({ node: n, person: personName(state, l.person) });
+    }
+  }
+  return out.sort((a, b) =>
+    (a.node.title || '').localeCompare(b.node.title || '')
+    || (a.person ?? '').localeCompare(b.person ?? '')
+    || (a.node.id < b.node.id ? -1 : 1));
+}
+
+/**
+ * The count line, mirroring `peopleWords` and ageing nothing.
+ *
+ * Says WHAT IT IS and never how long it has been so. "You said you would" is a
+ * statement about an undertaking; every word that could attach a duration or a
+ * lapse to it is deliberately absent.
+ */
+export function promisedWords(total: number): string {
+  if (total === 0) return '';
+  if (total === 1) return 'One thing you said you would do.';
+  return `${total} things you said you would do.`;
+}
+
+/**
+ * One row, in words: the name and nothing else.
+ *
+ * The waiting row beside it reads *"With Sam for three weeks."* — a name and a
+ * duration. This one is a name, full stop, and the difference between the two
+ * lines is the whole constraint this feature is built under.
+ */
+export function promisedRowWords(person: string | null): string {
+  return person ? `For ${person}.` : 'Nobody named yet.';
 }
 
 /**

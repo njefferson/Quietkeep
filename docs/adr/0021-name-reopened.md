@@ -24,7 +24,7 @@ Three software companies hold the name, and the subdomain is gone:
 - ****Perennial Systems**** — Web development and fintech consultancy
 - ****Perennial Software**** — Security / integration sector
 
-`perennial.pages.dev` was confirmed taken by the owner on his own device, 2026-07-28. Q-04 is
+`perennial.pages.dev` was confirmed taken in the on-device check, 2026-07-28. Q-04 is
 answered negatively.
 
 None of these is likely fatal on trademark grounds for a free, noncommercial app — they are
@@ -51,7 +51,7 @@ Neither found any of the three companies. A single properly-scoped query —
 > empty result for a name that is heavily occupied.
 
 This compounded a second failure: the `pages.dev` check was handed to the owner as a manual step
-without being attempted first, one message after he had corrected exactly that behaviour.
+without being attempted first, one message after that behaviour had been corrected.
 It could not in fact have been loaded from a session — the gateway blocks it, now proven in
 [V-05](../verifications.md) — but *searching* for the occupant was always possible and was
 never tried.

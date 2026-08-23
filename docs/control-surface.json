@@ -21,7 +21,12 @@
   },
   "menu-open": {
     "region": "document",
-    "ordinal": 39,
+    "ordinal": 40,
     "label": null
+  },
+  "situation-open": {
+    "region": "document",
+    "ordinal": 15,
+    "label": "What’s the situation?"
   }
 }

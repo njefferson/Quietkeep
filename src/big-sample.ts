@@ -530,6 +530,42 @@ export async function bigSampleEvents(
   stamp('waiting.opened', closed, { person: people[2]!, forWhat: 'the part', since: day(-20) });
   stamp('waiting.closed', closed, { outcome: 'It arrived, and it is the right one' });
 
+  // --- situations somebody named (2.21.0) -----------------------------------
+  //
+  // Two saved and one forgotten, because the forgetting is the half nothing
+  // else exercises. Both shapes are here — a place with a length, and a length
+  // with no place — since a set carrying only one would measure one and look
+  // like it measured two.
+  stamp('situation.saved', null, { name: 'The Tuesday standup', context: contexts[0] ?? null, minutes: 15 });
+  stamp('situation.saved', null, { name: 'A free weekend', context: null, minutes: 120 });
+  stamp('situation.saved', null, { name: 'Waiting somewhere', context: null, minutes: 5 });
+  stamp('situation.forgotten', null, { name: 'Waiting somewhere' });
+
+  // --- the other direction: promises, kept and taken back (2.20.0) ----------
+  //
+  // Four standing, so "With other people" renders both its lists rather than
+  // one. One RELEASED, because the release is the half nothing else exercises:
+  // its whole point is that the work survives it, and a fixture that only ever
+  // promised things would leave that unproven on any real store.
+  //
+  // No ageing anywhere near these, deliberately. `waiting.opened` above carries
+  // a `since` because how long somebody has owed YOU something is a fact about
+  // a date; the same field pointed this way would be a record of how long you
+  // have been failing, which is the ledger `src/requests.ts` refuses.
+  for (let i = 0; i < 4; i++) {
+    // No name in the TITLE — the name is on the link, and a title carrying one
+    // too would go stale the moment somebody is renamed. `personName` resolves
+    // it through state, which is the rule `withWhom` already follows.
+    const pr = node('action', `${pick(['Send', 'Write up', 'Return', 'Book'])} ${pick(['the photos', 'the notes', 'the borrowed drill', 'the table'])}`);
+    stamp('person.linked', pr, { node: pr, person: people[i % people.length]!, relation: 'promised-to' });
+    clock(pr, 'due', int(1, 21));
+  }
+  const letGo = node('action', 'Dig out the old photographs');
+  stamp('person.linked', letGo, { node: letGo, person: people[1]!, relation: 'promised-to' });
+  clock(letGo, 'due', 9);
+  // Not promised any more, and STILL HERE — the work outlives the undertaking.
+  stamp('promise.released', letGo, { person: people[1]! });
+
   // --- the meeting half: OPR, stakeholders, decisions, a report -------------
   stamp('opr.assigned', projects[0]!, { person: people[0]! });
   stamp('person.linked', projects[0]!, { node: projects[0]!, person: people[0]!, relation: 'opr' });

@@ -169,6 +169,9 @@ export interface NodeState {
    *  NOT "any unrouted node", so a person/anchor/bother/promoted-Menu node never
    *  pollutes triage. A latch: set true at genesis, never cleared. */
   captured: boolean;
+  /** Came in from another planner rather than being written here. A latch,
+   *  like `captured`, and the reason the offer can say so honestly. */
+  arrived: boolean;
   /** A resume card that has been picked up, or that went cold. Either way the
    *  thread is no longer waiting for you, so it stops being offered. A latch. */
   resumeSpent: boolean;
@@ -408,6 +411,26 @@ export interface State {
    */
   modules: Set<string>;
   /**
+   * Situations somebody has NAMED and can recall (2.21.0) — a place, a length
+   * of time, or both, under a name they chose.
+   *
+   * **STATE LEVEL, not a node**, and `modules` above is the precedent: a small
+   * named config that is not work. A node would drag in law 1, every kind list,
+   * and every control that writes a kind — and phase 2 measured three of the
+   * four such controls as wrong.
+   *
+   * **AN EVENT, unlike `where.now` and `how.long`**, which are device
+   * preferences precisely because where you are is not a fact about your work
+   * and a stored trail of it is what law 7 keeps the app out of. A situation
+   * you NAMED is not where you are; it is something you recognise about how you
+   * work, and it should survive a new device the way a context or a role does.
+   *
+   * Last write wins per NAME, reached by replay rather than by a stamp key —
+   * the `stakeholder.removed` discipline: fold sorts totally before applying,
+   * so the result is a pure function of the event set and not of arrival order.
+   */
+  situations: Map<string, { context: string | null; minutes: number | null }>;
+  /**
    * The one request slot, or null (1.8.0, ADR-0056). Stimulus control for
    * incoming demand: a weekday requests wait for, so they are not evaluated
    * at arrival. `recurrence` is 'weekly:mon'…'weekly:sun'; a cleared slot is
@@ -586,6 +609,7 @@ export const emptyState = (): State => ({
   lastReportMark: null,
   lastActivityAt: null,
   modules: new Set(),
+  situations: new Map(),
   requestSlot: null,
   requestSlotStamp: null,
   timerMinutes: null,
@@ -648,7 +672,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       id, vault, kind: 'action', title: '', parent: null,
       trashed: false, mergedInto: null, clocks: {}, onMenu: null,
       lastDone: null, comfortWindowDays: null, intervalDays: null,
-      heat: null, route: null, sourceTags: [], captured: false, resumeSpent: false, contexts: [], roles: [],
+      heat: null, route: null, sourceTags: [], captured: false, arrived: false, resumeSpent: false, contexts: [], roles: [],
       resumeFor: null, resumeCue: null, interruptedFocus: null, interruptedAt: null,
       people: [], waitingOn: null, waitingFor: null, waitingSince: null, waitingOutcome: null,
       role: null, opr: null, saveTarget: null, saveSaved: null,
@@ -731,6 +755,7 @@ export function cloneShell(base: State): State {
     lastReportMark: base.lastReportMark ? { ...base.lastReportMark } : null,
     lastActivityAt: base.lastActivityAt,
     modules: new Set(base.modules),
+    situations: new Map(base.situations),
     // Both copied, like `lastReportMark` above (1.9.2). A stamp is replaced
     // wholesale on every write, so this is hygiene rather than a live bug —
     // but the rule is the rule, and the exception was never argued for.
@@ -800,6 +825,17 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         if (e.payload.parent !== undefined && wins(n.stamps['parent'], o)) {
           n.parent = e.payload.parent; n.stamps['parent'] = o;
         }
+        // AN IMPORT LANDS IN THE INBOX. Latches, like `captured` above it, and
+        // for the same reason: being an inbox item is a genesis fact, not a
+        // field somebody can win a later write against.
+        //
+        // Without this, a row from another planner reached NO tier of the
+        // offer. Measured on a real import: 882 held things, and the surface
+        // said "nothing is asking" both that day and the next, because the
+        // `unsorted` tier asks for `captured` and only a capture ever set it.
+        // The app's whole promise is one thing chosen for you, and on the store
+        // somebody actually arrives with it had nothing to give.
+        if (e.payload.arrived) { n.captured = true; n.arrived = true; }
         break;
       }
       // Renaming competes with capture.recorded / node.created for the SAME
@@ -920,6 +956,24 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         const person = e.payload.person;
         if (typeof person !== 'string' || !person) break;
         n.people = n.people.filter(l => !(l.person === person && l.relation === 'stakeholder'));
+        break;
+      }
+      // "I am not promising that any more" (2.20.0). `stakeholder.removed`'s
+      // shape exactly, pointed at the one other relation that can be taken
+      // back, and scoped the same way for the same reason: Sam can be promised
+      // one thing and be the OPR of another, and releasing one must never strip
+      // the other. A removal naming nobody is a no-op, never a remove-all —
+      // refused rather than guessed, which is ADR-0057's rule and the
+      // import-inspection rule in one.
+      //
+      // Convergent without an LWW slot, like the event above it: `fold` sorts
+      // totally before applying, so replay is a pure function of the event SET
+      // rather than of arrival order.
+      case 'promise.released': {
+        const n = ensureNode(s, e.node!, e.vault, touched);
+        const person = e.payload.person;
+        if (typeof person !== 'string' || !person) break;
+        n.people = n.people.filter(l => !(l.person === person && l.relation === 'promised-to'));
         break;
       }
       // The decision log (1.9.0, ADR-0057). APPEND-ONLY and idempotent by
@@ -1215,6 +1269,34 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
       case 'done.unmarked': {
         const n = ensureNode(s, e.node!, e.vault, touched);
         if (wins(n.stamps['lastDone'], o)) { n.lastDone = null; n.stamps['lastDone'] = o; }
+        break;
+      }
+
+      // A SITUATION SOMEBODY NAMED (2.21.0). Saving under a name that already
+      // exists replaces it — one name, one situation, which is what a name is
+      // for. Both fields may be null: "at the office, however long" and "twenty
+      // minutes, anywhere" are both real situations, and refusing either would
+      // make the feature useful only to somebody who happens to want both.
+      //
+      // A blank name is refused rather than stored, the import-inspection rule:
+      // a situation nobody can pick out of a list is one nobody can forget
+      // either, and it would sit there for ever.
+      case 'situation.saved': {
+        const name = e.payload.name;
+        if (typeof name !== 'string' || !name.trim()) break;
+        s.situations.set(name, {
+          context: typeof e.payload.context === 'string' && e.payload.context ? e.payload.context : null,
+          minutes: Number.isFinite(e.payload.minutes) && (e.payload.minutes as number) > 0
+            ? (e.payload.minutes as number) : null,
+        });
+        break;
+      }
+      // Scoped to one name, never a clear-all — `stakeholder.removed`'s rule,
+      // and a forget naming nobody is a no-op rather than a guess.
+      case 'situation.forgotten': {
+        const name = e.payload.name;
+        if (typeof name !== 'string' || !name) break;
+        s.situations.delete(name);
         break;
       }
 

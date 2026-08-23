@@ -40,6 +40,11 @@ import { existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { serve } from './serve.mjs';
+import { requireFreshBundle } from './bundle-fresh.mjs';
+
+// Every walk here serves the generated bundle; none of them used to check it
+// was current. See tools/bundle-fresh.mjs.
+requireFreshBundle(new URL('..', import.meta.url).pathname, 'the look walk');
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 

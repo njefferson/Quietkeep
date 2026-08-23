@@ -6,7 +6,7 @@
 
 Asked 2026-08-03: for enough test data across every category and type to surface real data errors.
 
-`src/sample.ts` already existed — the "set of test data i can import" he asked
+`src/sample.ts` already existed — the "set of test data i can import" the owner asked
 for on 2026-07-29. It is relative-dated, it goes through the real `admit`, and
 it was right when it was written at 0.22.0.
 
@@ -22,7 +22,7 @@ uses:**
 
 So **every surface built since 0.22.0 had never once been seen with data in it**
 except whatever happened to be in one person's store. That is where the errors
-he is asking about live, and 1.15.1 is the worked example: the coverage list
+is being asked about live, and 1.15.1 is the worked example: the coverage list
 rendered every private journal entry as "(untitled) — held" for two releases,
 and the smoke assertion written to catch exactly that was green throughout,
 because the walk had no journal entry in it at the moment it looked.

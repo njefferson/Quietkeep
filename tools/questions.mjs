@@ -4,7 +4,7 @@
 //   node tools/questions.mjs        (exits non-zero on a question that does not)
 //
 // `NOTES.md`'s question list is where a session looks to answer "what is waiting
-// on him". It could not answer that.
+// on the owner". It could not answer that.
 //
 // **TEN OF FOURTEEN QUESTIONS HAD NO STATUS LINE AT ALL**, so open was inferred
 // from absence — and every one of the ten was in fact closed, several of them
@@ -13,7 +13,7 @@
 //
 // **AND THE ONE THAT DID SAY WAS WRONG.** Q-11 carried a `CLOSED` bullet and,
 // four lines below it, a Status line reading *asked, not answered — and NOBODY
-// PUT THE QUESTION TO HIM*. Three other files already held the answer: the
+// PUT THE QUESTION TO THE OWNER*. Three other files already held the answer: the
 // research entry that refuses the alternative in terms, the ADR recording that
 // refusal, and a source comment saying the ranking reading was established by
 // measurement rather than by asking. The question was answered everywhere except
@@ -24,6 +24,15 @@
 // and a gate that pretended to would be the false receipt the file already was.
 // What it can do is make the claim explicit and refuse a block that contradicts
 // itself, so a person reading the list can see what they are trusting.
+//
+// ## AND THE HEADING IS PART OF THE CLAIM (2026-08-21)
+//
+// The first version held every BLOCK to a Status and stopped there, so the file
+// passed while `### Open` sat above three questions that were each Status:
+// Closed. Every line was individually true and the section was a lie — the same
+// defect one level out, and exactly the shape the Status lines were added to
+// fix. Somebody scanning for what is waiting on them reads the HEADING first and
+// may never reach a Status line at all.
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -98,6 +107,32 @@ if (noStatus === 0) ok('every question states a Status');
 if (badStatus === 0) ok('every Status names one of Open, Closed, Answered, Deferred');
 if (contradiction === 0) ok('no question contradicts itself about whether it is open');
 
+// THE HEADING AND ITS CONTENTS MUST AGREE. A closed question filed under `Open`
+// is a false receipt for whoever scans headings, which is everybody.
+{
+  const openAt = lines.findIndex((l) => l.trim() === '### Open');
+  const closedAt = lines.findIndex((l) => l.trim() === '### Closed');
+  if (openAt < 0 || closedAt < 0) {
+    fail('NOTES.md no longer has both an `### Open` and a `### Closed` heading — this check cannot run');
+  } else {
+    const filed = [];
+    let current = null;
+    for (const l of lines.slice(openAt + 1, closedAt)) {
+      const m = /^- \*\*(Q-\d+)/.exec(l);
+      if (m) current = m[1];
+      if (current && /Status:/.test(l) && /\bclosed\b/i.test(l) && !filed.includes(current)) {
+        filed.push(current);
+      }
+    }
+    (filed.length === 0 ? ok : fail)(
+      'nothing under `### Open` is closed'
+      + (filed.length
+        ? ` — ${filed.join(', ')} ${filed.length === 1 ? 'is' : 'are'} Status: Closed and filed as open.`
+          + ' Move it under `### Closed`; a heading is read before any Status line is.'
+        : ''));
+  }
+}
+
 const open = starts.filter((s, k) => {
   const end = k + 1 < starts.length ? starts[k + 1] : lines.length;
   return lines.slice(s, end).some((l) => OPEN.test(l));
@@ -106,7 +141,7 @@ console.log(`\n  ${open} question(s) currently open, ${starts.length - open} set
 
 if (failed > 0) {
   console.error('\nThe question list is where somebody looks to answer "what is waiting');
-  console.error('on him". Ten of fourteen once had no status at all, and every one of');
+  console.error('on the owner". Ten of fourteen once had no status at all, and every one of');
   console.error('the ten was already closed.\n');
   process.exit(1);
 }

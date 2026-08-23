@@ -58,7 +58,7 @@ export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | '
  * What is closed is the SET of sentences, not the words inside a title
  * somebody wrote.
  */
-export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean }) => string> = {
+export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean; arrived?: boolean }) => string> = {
   'hard-date': () => 'a real date, and it is here',
   // YOUR five words when there are five words. Nothing this app composes beats
   // what you wrote at the moment you put it down.
@@ -82,7 +82,9 @@ export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?
   // down and have not said anything else about it. Not "unclassified", not
   // "needs attention", not a count of how many others are like it — the schema
   // word never reaches a surface and the state is not a reproach.
-  unsorted: () => 'you put this down',
+  unsorted: of => (of.arrived
+    ? 'this came in with your import'
+    : 'you put this down'),
 };
 
 /**
@@ -546,7 +548,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // to offering them at all, and the cap is what answers it.
     if (n.captured && n.route === null) {
       items.push({
-        node: n, reason: 'unsorted', pressure: p, words: REASON_WORDS.unsorted({}),
+        node: n, reason: 'unsorted', pressure: p, words: REASON_WORDS.unsorted({ arrived: n.arrived }),
         place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone),
         situation: situationOf(n),
       });

@@ -49,7 +49,7 @@ count starting again is the honest reading.
   order is driven by "what does day one of the gate need" rather than by what is
   most interesting to build.
 - Gate failures are **data, not defeat**. A reset should produce a note about
-  *what* sent him back to paper — that note is worth more than the thirty days.
+  *what* sent the work back to paper — that note is worth more than the thirty days.
 - v1.5's journal carries a binding condition from
   [ADR-0005](0005-vaults-and-journal-encryption.md): encryption ships in the same
   release, or the journal doesn't.

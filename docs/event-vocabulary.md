@@ -124,7 +124,12 @@ inspect and either complete or refuse. See [ADR-0011](adr/0011-no-silent-nodes-g
 ### A · Node lifecycle
 
 - **`node.created`**
-  - Payload: `nodeKind, title, parent?, provenance`
+  - Payload: `nodeKind, title, parent?, provenance, arrived?`
+  - `arrived` marks a row that came in from another planner carrying nothing to
+    go on — no date the app kept, no place in this app's vocabulary. It latches
+    `captured`, which is what makes something an inbox item, so an import lands
+    in the inbox and the offer can hand it over one at a time. Optional and
+    additive: every log written before it folds identically without it (law 9).
   - Silent risk: **yes — gated**
 - **`node.kind.changed`**
   - Payload: `from, to`
@@ -598,6 +603,20 @@ is a valid, unremarkable value, never nagged about.
     field every event already carries, so a device is known by having written
     something. There is no surface that lists devices and nothing that needs a
     label.
+- **`situation.saved`**
+  - Payload: `name, context, minutes` — either of the last two may be null
+  - Silent risk: no — it touches no node, so it can take no coverage away
+  - Folds to `State.situations`, a state-level map like `modules`. Saving under
+    an existing name replaces it: one name, one situation.
+  - **An event and not a device preference**, unlike `where.now` and
+    `how.long`. Those are preferences because where you are is not a fact about
+    your work and a stored trail of it is what law 7 keeps the app out of. A
+    situation you NAMED is something you recognise about how you work — nearer
+    a context or a role — and it should survive a new device.
+- **`situation.forgotten`**
+  - Payload: `name`
+  - Silent risk: no
+  - Scoped to one name, never a clear-all; naming nobody is a no-op.
 - **`module.enabled` / `.disabled`**
   - Payload: `module`
   - Silent risk: no
@@ -698,7 +717,19 @@ agreed to survives a copy change (law 10).
   - Payload: `name` — vault-scoped
   - Silent risk: no
 - **`person.linked`**
-  - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned`
+  - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned | promised-to`
+- **`promise.released`**
+  - Payload: `person`
+  - Silent risk: no — a person link carries no coverage, so taking one off
+    removes none; the node was your own work before and after.
+  - **The second subtraction in the vocabulary**, and ADR-0057 calls
+    `stakeholder.removed` the only one. Deliberate: that event filtering on
+    `relation: 'promised-to'` would write a false sentence into an append-only
+    log. ADR-0057's rule is that a subtraction must be SCOPED, and this is —
+    one person, one relation, named in the noun.
+  - Load-bearing rather than tidy: a promise nobody can take back is a permanent
+    claim that you owe somebody something, which is the ledger `src/requests.ts`
+    says this app exists not to keep.
   - Silent risk: no
 - **`context.created`** (emitter 2.2.0, ADR-0092)
   - Payload: `name` — vault-scoped

@@ -28,16 +28,46 @@ Epigraph: *"It holds the rest, so you can rest."*
 4. [`docs/verifications.md`](docs/verifications.md) — what has actually been
    checked and what merely looks checked. Consult before assuming a platform fact.
 
+## The credit is the owner's money (Doctrine §11b)
+A session cannot see billing, the plan, the balance, or what a turn cost, so no
+warning will ever arrive and the restraint is unconditional. **This repo is the
+expensive one** — the a11y walk, the smoke walk, `look`, `tour-shots` and the
+update walk each drive a real browser, and the full Spine is minutes of compute.
+Run the narrowest thing that answers the question (`--only=`, one grep, one
+`sed -n` range), re-render only what changed, and **say what a long run will
+cost before starting it**. *Continue* resumes the work in front of you; it is
+not authority to start a sweep of your own. Mechanical work — find-and-replace,
+classifying a list against a stated rule, running a gate and reporting its exit
+code — goes to a cheaper model in a subagent. Top tier is for judgement.
+
+## An approved plan is authority for all of it (Doctrine §11c)
+Finishing one phase of a multi-phase plan and going idle to be told to continue
+is doing a fraction of what was asked. **Report what landed and start the next
+piece in the same turn.** If you genuinely must stop, the FIRST line says so in
+those words — *stopping here, waiting on you for X* — because "I'll hold" at the
+end of a long report reads as "I am continuing", and the silence gets discovered
+by being asked what happened. It happened three times in one session, twice
+after the behaviour had been ruled out. This does not license a sweep of your
+own: §11b still binds, and the authority is the plan's remaining phases.
+
+**It is enforced by the harness now, because the paragraph did not hold.** It
+was broken a fourth time by the session that wrote it, on the sentence "I'm
+waiting on it". `.claude/hooks/stop-guard.sh` runs the hub's `stop-guard.mjs`
+as a `Stop` hook and REFUSES a turn that ends while saying something is still
+running without opening with the declaration. Wait for the thing and carry on;
+that is the way past it, and it is the one that was wanted all along.
+
 ## Rules specific to this app
 - **NOTHING PERSONAL ABOUT THE OWNER EVER LANDS IN THIS REPO — a FAIL state**
-  (his instruction, 2026-08-04). No diagnosis, health fact, or identity
-  disclosure attached to him, in any file, commit message, or PR body. The product's framing ("for neurodivergent users") and research
-  about users as a population are fine; a sentence linking HIM to any of it is
+  (the owner's instruction, 2026-08-04). No diagnosis, health fact, or identity
+  disclosure attached to the owner, in any file, commit message, or PR body. The product's framing ("for neurodivergent users") and research
+  about users as a population are fine; a sentence linking THE OWNER to any of it is
   not. A HARD gate per Doctrine §9b, twice over: the Spine checks the hub out
   and runs the canonical `privacy-check.mjs` (a pattern widened in the hub
   binds here on the next push, with no copy to drift), and
   `test/privacy.test.ts` mirrors the patterns so plain `npm test` fails
-  offline too. Design statements he makes stay recordable; who he is does not.
+  offline too. Design statements the owner makes stay recordable; who the owner
+  is does not.
 - **The ten product laws in `NOTES.md` are invariants.** Violating one is a
   defect, not a trade-off. Two carry teeth in code: *no silent nodes* (every node
   is on a surface, under a clock, on the Menu, or parented to something under a
@@ -70,12 +100,28 @@ Epigraph: *"It holds the rest, so you can rest."*
 ## Branches & releases
 `staging` and `main` only. Ignore any harness-designated `claude/*` branch
 (Doctrine §11). Every product change lands on `staging` and waits for the owner's
-on-device pass and his explicit "promote" (Doctrine §7). Docs-only changes — this
+on-device pass and an explicit "promote" (Doctrine §7). Docs-only changes — this
 file, `NOTES.md`, `ACCESSIBILITY.md`, anything in `docs/` — may skip the staging
 gate.
 
 Release taxonomy and the `version.capability.iteration` triplet are Doctrine §7.
 The service-worker cache name carries the same triplet and is bumped with it.
+
+## Two commit guards, and both refuse rather than doing the work for you
+`.branch-guard` declares them with `also=`, so they run on EVERY commit —
+promotes included, because they are about WHAT is being committed.
+
+- **`tools/hooks/tour-fresh.sh`** — the walkthrough ships photographs of this
+  app. A picture of a version that no longer exists is worse than none.
+- **`tools/hooks/a11y-fresh.sh`** — a commit that changes the rendered app while
+  `.a11y-stamp` still records the previous markup is refused. **2.23.1 passed
+  twenty-five static gates and both picture-taking walks and went RED in CI on
+  the a11y walk**, which had never been run locally because nothing asked for
+  it. `npm run a11y` writes the receipt itself, and only on a clean run, so a
+  failing walk cannot be stamped. About four minutes. (Hub LESSONS 126.)
+
+Both name the one command instead of spending minutes inside a hook, because a
+hook that silently spends four minutes is a hook somebody disables.
 
 ## Accessibility
 WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the
@@ -84,16 +130,16 @@ read it **before** writing any UI. Pressure and decay never ride on hue; the
 contrast gate is computed in CI and exits non-zero, and new foreground/background
 pairs are added to the gate in the same commit that introduces them.
 
-## Anything he pastes is a code block (Doctrine §2)
+## Anything the owner pastes is a code block (Doctrine §2)
 Handoff prompts, commands, configs, a message to send on — if the next thing
 that happens to it is *copy*, it ships as **one fenced code block**, not prose,
 not a blockquote, not styled markdown. Rendered formatting does not survive
 being copied back out, and selecting prose by hand on an iPad is a fight. The
-test is not "is it readable" but "what does he do with it next".
+test is not "is it readable" but "what happens to it next".
 
 ## No tables, anywhere (Doctrine §2)
 Markdown tables do not render on a real iPad — they arrive as pipes and dashes
-and the content is lost. **Never put one in anything he reads**: chat, commit
+and the content is lost. **Never put one in anything the owner reads**: chat, commit
 messages, PR bodies, `NOTES.md`, `CHANGELOG.md`, plan files, or anything under
 `docs/`. Headed lists or one fact per line instead. The repo was converted in
 full on 2026-07-29; do not reintroduce one.

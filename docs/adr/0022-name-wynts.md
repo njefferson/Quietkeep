@@ -65,7 +65,7 @@ because it is a grep and it is free.
   - Result: not a term of art anywhere (unlike *Detent*)
 
 **Not checked, and still owed on a real device:** the App Store search from a real
-device, and a USPTO knockout in classes 9 and 42 if he wants one. Both are blocked
+device, and a USPTO knockout in classes 9 and 42 if the owner wants one. Both are blocked
 from a session — proven, not assumed ([V-05](../verifications.md)).
 
 ## Consequences and known costs
@@ -78,7 +78,7 @@ from a session — proven, not assumed ([V-05](../verifications.md)).
   Accepted knowingly.
 - **Pronunciation is not self-evident** — *WINTS* or *WHYNTS*. A name people say
   aloud needs one answer, and a name whose pronunciation people guess at gets said
-  wrong forever. **Open for the owner** (Q-08); recorded in the README once he rules.
+  wrong forever. **Open for the owner** (Q-08); recorded in the README once ruled on.
 - **It carries no meaning on first contact.** That is the trade a coinage makes:
   ownable and clearable, but opaque until explained. For a personal free tool
   whose primary user is its author, that cost is small and the "inside knowledge"

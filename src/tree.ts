@@ -32,8 +32,56 @@ export const CONTAINER_KINDS: ReadonlySet<NodeKind> = new Set<NodeKind>([
  *  result is a separate act of thinking that this control must not fake. */
 export const CONTAINER_DEFAULT: NodeKind = 'project';
 
+/**
+ * THE CONTAINERS SOMEBODY CAN MAKE, in the order they are offered, with the
+ * words that appear on the control.
+ *
+ * Separate from `CONTAINER_DEFAULT` above, and the difference is the whole
+ * reason this list exists. That default belongs to the PROMOTION control —
+ * "this is bigger than one step" — which must not fake the act of naming a
+ * result. This list belongs where somebody is already typing a name, so
+ * choosing what kind of thing it is happens in the same breath as saying what
+ * it is called. Naming and classifying together is honest; classifying
+ * something you have not named is the thing that control refuses.
+ *
+ * `project` leads because it is the ordinary case and stays the default, so
+ * the common path costs no extra thought.
+ */
+export const CONTAINER_ORDER: ReadonlyArray<readonly [NodeKind, string]> = [
+  ['project', 'Project — work with steps'],
+  ['outcome', 'Outcome — a result to reach'],
+  ['area', 'Area — something ongoing'],
+  ['goal', 'Goal — something to move toward'],
+];
+
 export const isContainer = (n: NodeState): boolean =>
   CONTAINER_KINDS.has(n.kind as NodeKind);
+
+/**
+ * How one container reads in a picker: its title, WHAT KIND IT IS, and where it
+ * sits.
+ *
+ * ONE function, because there were two identical copies — the detail sheet's
+ * and the sort sheet's — and they said the same thing in the same words by
+ * coincidence rather than by construction. That is the shape this repo keeps
+ * paying for: one concept, two places, and only one of them gets the fix.
+ *
+ * THE KIND IS NEW, and it is new because it only just started mattering. Before
+ * 2.16.0 every option in both pickers was a `project`, so a bare list of titles
+ * was unambiguous. Now a goal, an area, an outcome and a project sit in the same
+ * list looking identical, and somebody filing forty things at once cannot see
+ * which altitude they are filing them to. Nothing about the pickers changed to
+ * cause that — the world under them did, which is the harder kind to notice.
+ */
+export function containerOptionWords(state: State, t: NodeState): string {
+  const title = t.title || '(untitled)';
+  const kind = CONTAINER_KINDS.has(t.kind as NodeKind) ? t.kind : null;
+  const p = t.parent ? state.nodes.get(t.parent) : undefined;
+  const alive = p && !p.trashed && !p.mergedInto;
+  const where = alive ? `in ${p.title || '(untitled)'}` : '';
+  const tail = [kind, where].filter(Boolean).join(', ');
+  return tail ? `${title} — ${tail}` : title;
+}
 
 const alive = (n: NodeState | undefined): n is NodeState =>
   isHeld(n);

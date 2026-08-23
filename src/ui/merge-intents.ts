@@ -134,6 +134,7 @@ export const MERGE_DISPOSITION: Record<keyof NodeState, Disposition> = {
   heat: { carry: 'no', because: 'the source\'s passage through the inbox, not a fact about the work' },
   route: { carry: 'no', because: 'writing the source\'s route onto a clarified survivor would put it back in a queue it has already left' },
   captured: { carry: 'no', because: 'a latch about how the SOURCE arrived; carrying it would put the survivor in triage' },
+  arrived: { carry: 'no', because: 'a latch about how the SOURCE reached this app, exactly like `captured` above it; the survivor was not the thing that came in from another planner' },
   sourceTags: { carry: 'no', because: 'capture-time provenance of the source' },
   resumeSpent: { carry: 'no', because: 'a fact about one sitting' },
   resumeFor: { carry: 'no', because: 'a resume card holds one thread; legalMergeTargets refuses cards as targets' },

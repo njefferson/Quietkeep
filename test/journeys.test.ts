@@ -2,7 +2,7 @@
 //
 // Every other test in this repo pins one line. That catches the defect it was
 // written for and nothing either side of it, and the defects that actually
-// reached the owner's device this week were all at JOINS: an item covered by the
+// reached a real device this week were all at JOINS: an item covered by the
 // gate but never offered by the work surface; a cure written by one file and
 // read as a demand by another; a fix applied to the triage card and not to the
 // offer card. Each component was correct. The seam was not.

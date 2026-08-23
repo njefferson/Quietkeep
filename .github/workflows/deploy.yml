@@ -1,10 +1,10 @@
 name: Deploy
 
 # staging -> staging.quietkeep.pages.dev   (the on-device pass; Doctrine §7)
-# main    -> quietkeep.pages.dev           (production, only after his "promote")
+# main    -> quietkeep.pages.dev           (production, only after a "promote")
 #
 # Cloudflare Pages serves a preview branch at <branch>.<project>.pages.dev, which
-# is what turns the §7 staging gate from a convention I observe into a URL he can
+# is what turns the §7 staging gate from an observed convention into a URL that can
 # open on the iPad.
 #
 # HONESTY NOTE (Doctrine §5), corrected 2026-08-01 (1.9.1): this used to read

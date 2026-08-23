@@ -34,12 +34,10 @@ import { chromium } from 'playwright-core';
 import { existsSync, readFileSync } from 'node:fs';
 import { serve } from './serve.mjs';
 import { CURRENT } from '../src/ui/changelog.ts';
+import { requireFreshBundle } from './bundle-fresh.mjs';
 
 const ROOT = new URL('../public', import.meta.url).pathname;
-if (!existsSync(`${ROOT}/app.js`)) {
-  console.error('public/app.js is missing — run `npm run build` first.');
-  process.exit(1);
-}
+requireFreshBundle(new URL('..', import.meta.url).pathname, 'the update walk');
 
 const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';

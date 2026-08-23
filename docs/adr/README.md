@@ -346,6 +346,10 @@ Status · Date · Decision · Why · Consequences · What would overturn it
   - Decision: A control that undoes a state does not live inside anything that state can hide — the bar carrying the only way out of "Just one thing" moves out of the offer card, which is hidden whenever nothing is asking. Rendered: mode on with nothing to offer left capture, the proof line, More, the ⓘ and the footer, and no control anywhere that turns the mode off. The defect predates ADR-0104 and its cost does not; nothing about the exit's markup changed in that release, which is why no diff and no release note could see it. The containment is asserted statically now, not stated in a comment written inside the container it forbids
   - Status: Accepted · shipped 2.14.1 · consequence of [0104](0104-the-worst-day-is-the-whole-screen.md)
 
+- **[0106](0106-no-pronoun-for-anybody.md)**
+  - Decision: The app has no pronoun for anybody — the reader is *you*, another person is their *name*, and where neither works the answer is *they*. No pronoun preference is collected for the reader and no pronoun field for recorded people. Measured before deciding: zero gendered third-person pronouns across 7,213 shipped strings in 114 files and both pages, the reader addressed in the second person throughout, and `peopleWords` taking a count rather than a person — so no code path can generate a pronoun for anybody. A setting for the reader has nothing to set; a field for third parties is a datum that is silently wrong when stale or guessed and that the app has no use for, and not collecting it is stronger than collecting it correctly. The property already held and nothing asserted it, which is this repo's most expensive recurring shape
+  - Status: Accepted · gated by `tools/voice-pronouns.mjs`, both rules watched red on a plant
+
 **This index went fifteen records stale before anyone noticed**, from 0074 to
 0088 — every record written between 5 and 11 August. Nothing gates it, and a
 missing row is invisible in exactly the way a wrong row is not: the index reads

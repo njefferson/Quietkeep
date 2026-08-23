@@ -58,8 +58,8 @@ by the lens is simply absent — like an empty group always is.
 - **The never-filter fence: nothing.** A lensed Next up or a lensed gauge is
   Q-10's refused vault with a select instead of a wall; the fence is the
   decision. If real use shows the WHOLE-life Next up is wrong for the owner, that
-  is a Next-up question to bring to him, not a lens argument.
-- **The row-filter shape, by his word** — if the select above the list proves
+  is a Next-up question to bring to the owner, not a lens argument.
+- **The row-filter shape, by the owner's word** — if the select above the list proves
   the wrong furniture (mis-taps, or the line grows tired), the surface can
   change freely; membership-by-lineage and the spoken law-1 line go wherever
   it goes.

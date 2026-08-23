@@ -122,6 +122,18 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   // to go quiet, which is the entire point of the kind.
   stamp('clock.set', quote, { clockKind: 'suspense', at: day(4), source: 'sample' });
 
+  // --- AND THE OTHER DIRECTION (2.20.0) -----------------------------------
+  //
+  // What somebody is waiting on from YOU. The set has always carried the half
+  // where Alex owes you a quote; the half where you owe Alex something could
+  // not be expressed until `promised-to` existed, so "With other people" has
+  // only ever rendered one of its two lists — one shape measured, looking like
+  // two. It is an ordinary action with a name on it, because that is exactly
+  // what a promise is here: your own work, kept by doing it.
+  const prints = node('action', 'Send Alex the framed prints');
+  due(prints, 3);
+  stamp('person.linked', prints, { node: prints, person: alex, relation: 'promised-to' });
+
   // --- upkeep, which is a rhythm and not a deadline ------------------------
   //
   // One decay primitive runs everything temporal (law 5). No streaks, and
@@ -131,6 +143,20 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   // an interval with no comfort window would be a deadline wearing a rhythm's name.
   stamp('upkeep.interval.set', filter, { intervalDays: 60, comfortWindowDays: 14 });
   stamp('done.marked', filter, { at: day(-40) });
+
+  // AND ONE THAT IS ACTUALLY READY, because a fixture that never reaches a
+  // surface is a surface nothing measures. With only the filter above — done 40
+  // days into a 60-day rhythm, comfortable by design — `#upkeep` was hidden in
+  // every walk this repo runs, so its contrast and its accessible names had
+  // never been checked in either theme. Found by `tools/surfaces.mjs`.
+  //
+  // Both are kept: the comfortable one demonstrates that a rhythm is not a
+  // deadline, and this one demonstrates what a rhythm looks like when it comes
+  // round. Past its window rather than exactly on it, so the chip carries real
+  // pressure words rather than the boundary case.
+  const sheets = node('upkeep', 'Change the bed sheets');
+  stamp('upkeep.interval.set', sheets, { intervalDays: 14, comfortWindowDays: 7 });
+  stamp('done.marked', sheets, { at: day(-25) });
 
   // --- the Menu: wanted, not owed ------------------------------------------
   //
@@ -154,6 +180,21 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
   const admin = node('area', 'Household paperwork');
   const insurance = node('action', 'Compare the two insurance renewals', { parent: admin });
   due(insurance, 5);
+  // ON A RHYTHM, so "What you're working toward" has a row that reads
+  // "comes back every 30 days" beside one that reads "no rhythm set". A sample
+  // where every row says the same thing measures one state and looks like two.
+  stamp('upkeep.interval.set', admin, { intervalDays: 30, comfortWindowDays: 7 });
+
+  // --- a goal with NOTHING under it ---------------------------------------
+  //
+  // The case that surface exists for, and the one the store could not produce
+  // until 2.16.0 made a goal creatable at all. `unfedGoals` in `review.ts` has
+  // been live code since Review was built and has never had data to run on;
+  // this is the first time either it or the horizons list is exercised on
+  // something real. Deliberately left empty and deliberately given no rhythm:
+  // an empty goal is not a defect, it is a goal somebody has not decided about
+  // yet, and the app's job is to let them see it rather than to grade it.
+  node('goal', 'A calmer house');
 
   return out;
 }

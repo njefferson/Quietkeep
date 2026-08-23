@@ -49,7 +49,7 @@
      the middle scrolls. `.frame` cannot scroll away because it is not inside the
      scroller, which — in that file's own words — "needs no support from any
      engine and cannot regress". It is the pattern every sheet in this app has
-     shipped on his device since 1.40.0, applied one level up to the page itself.
+     shipped on device since 1.40.0, applied one level up to the page itself.
      Hub LESSONS 93: an argument accepted for one surface does not travel to the
      others by itself. Somebody has to carry it. -->
 <!-- THE FRAME IS THE BANNER, and it has to be a landmark rather than a div.
@@ -259,6 +259,46 @@
     <p id="reentry-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
 
+  <!-- THE SITUATION (2.21.0, MOVED HERE 2.23.1).
+
+       Where you are and how long you have are INPUTS TO THE OFFER — `app.ts`
+       hands both to `setWhereNow`/`setHowLong` and the card below reads them —
+       and for two releases the door that sets them rendered 2129px below that
+       card on a phone (3.84 screens) and 1983px below it on an iPad, measured
+       on the sample store. It sat inside `<section id="held">`, exactly where
+       the two `<select>`s had been, so the release that moved them out of the
+       pile put their door back into it. You could be offered something you
+       cannot do where you are standing and the control to say so was four
+       screens away.
+
+       Every gate passed. Twenty-five static checks and eight browser walks and
+       not one of them asks WHERE a thing renders — see `tools/narrows-check.mjs`,
+       which is the assertion that would have caught it, and `data-narrows`
+       below, which is the declaration it reads.
+
+       IT COSTS 56px ABOVE NEXT UP AND THAT IS PAID ON PURPOSE. Measured: the
+       offer's top moved from 64px to 120px, and the door now stands 64px above
+       it at both widths. ADR-0099 bought 92px back here by moving two shut
+       doors off this screen, and its rule was about doors that OFFER NOTHING
+       while shut. This one changes what the offer says. The two lines under it
+       cost nothing while shut, because they are hidden until a situation is
+       set — which is why they moved with it and not instead of it.
+
+       `whereWords` and `howLongWords` are the only things telling a reader that
+       what they are looking at has been narrowed. Behind a sheet nobody has
+       open, a filter is invisible, and an invisible filter is an app that looks
+       broken — which is the failure `serves.ts` records and 2.18.0's empty
+       state answers. So the control goes behind a door and the CONSEQUENCE
+       stays in front of it — and now both stand with the thing they narrow.
+
+       One door and not a list of named views: entry 16 is that twenty options
+       produce zero actions, so you arrive here by answering a question rather
+       than by picking a screen's name. -->
+  <button id="situation-open" class="gauge" type="button"
+          data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
+  <p id="where-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
+  <p id="how-long-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
+
   <!-- Next up: one thing, chosen for you, with a short capped list behind it.
        Hidden when nothing is asking — an empty morning says so. -->
   <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
@@ -407,6 +447,24 @@
          approach, and clocks here are day-granular so an hour would be
          fabricated (ADR-0010). -->
     <p id="nextup-fixed" class="nextup-count" hidden></p>
+    <!-- WHAT TODAY ACTUALLY COMMITS YOU TO (2.19.1, the plan's phase 3).
+         Answers "what is on my plate, enough to decide whether to finish
+         early" — and the useful answer is usually the zero one, which is why
+         it is stated rather than left as an absence.
+
+         The count and its words are `datedTodayCount` and `datedWords`, which
+         have existed since the clock module and rendered ONLY inside it: an
+         opt-in ticking clock face, off by default, with this fact third in a
+         run-on sentence after the time and how much of the day is left.
+         Somebody asking whether they can stop should not have to turn on a
+         clock to find out, and this app is careful about clocks for a reason.
+
+         The COUNT ONLY. `remainderWords` sits beside it in that sentence and
+         stays there: "2h 30m left today" is a remainder with nothing to
+         measure against, which is precisely what ADR-0103 took off this card.
+         A count of dates you set yourself is not a remainder and not a score —
+         it is what you already decided, said back to you. -->
+    <p id="nextup-dated" class="nextup-count" hidden></p>
     <ul id="nextup-behind" class="nextup-behind"></ul>
     <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
@@ -614,7 +672,23 @@
   <section id="people" class="people" aria-labelledby="people-heading" hidden>
     <h2 id="people-heading" class="section" tabindex="-1">With other people</h2>
     <p id="people-count" class="people-count"></p>
-    <ul id="people-list" class="people-list"></ul>
+    <ul id="people-list" class="people-list" aria-labelledby="people-count"></ul>
+    <!-- THE OTHER DIRECTION (2.20.0). The same question — what is between me
+         and other people — so it belongs in the section already named for it
+         rather than in a new one: no new surface, no new plain-mode
+         declaration, and the two halves side by side where somebody asking
+         either one is already standing.
+
+         Its own count line, and each list labelled by its own, because two
+         unlabelled lists in one section are one list to a screen reader.
+
+         What it must NEVER carry is a duration. The list above says "With Sam
+         for three weeks" about what somebody owes you; the same words pointed
+         here would be a record of how long you have been failing, which is the
+         ledger `src/requests.ts` says this app exists not to keep. The
+         projection behind it has no `days` field to render. -->
+    <p id="people-promised-count" class="people-count"></p>
+    <ul id="people-promised" class="people-list" aria-labelledby="people-promised-count"></ul>
   </section>
 
   <!-- Review, as EXCEPTIONS ONLY (v1 Must). Never a list of your work — only
@@ -684,6 +758,18 @@
        is broken. -->
   <button id="roles-open" class="gauge" type="button" hidden></button>
 
+  <!-- WHAT YOU ARE WORKING TOWARD (2.18.0). Beside the roles door and hidden by
+       the same rule: a surface that greets you every morning with a list of
+       your goals is a standing report card, and ADR-0013 refuses the tree as a
+       landing view. Reachable, never a destination.
+
+       Hidden until a horizon exists rather than shown-and-empty, because a
+       chooser with nothing in it teaches you the feature is broken — the lesson
+       the roles door above already carries. The EMPTY-STATE words inside the
+       sheet are for a different case: horizons exist, and none of them has
+       anything under it yet. -->
+  <button id="horizons-open" class="gauge" type="button" hidden></button>
+
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
@@ -731,31 +817,15 @@
        unfolded into the workspace for thirty-four releases regardless. -->
   <button id="tree-open" class="gauge" type="button">How it hangs together</button>
 
-  <!-- WHERE YOU ARE (2.2.0, ADR-0092). The thing the app did not have.
-       The tree says where a thing LIVES; this says where it can be DONE, and
-       they are different questions. Set this and the offer and the list narrow
-       to what actually fits — plus everything unlabelled, which fits anywhere.
-       A FILTER, never a partition: law 1 does not bend for it. A thing not
-       shown here still has its clock, still counts in the claim above, and
-       still comes back. Anything else is an archive with a friendlier name,
-       which law 3 forbids — the same binding ADR-0054 put on the lens.
-       Hidden until at least one place has been named, because a chooser with
-       nothing in it is a control that teaches you the feature is broken. -->
-  <div id="where-row" class="lens-row" hidden>
-    <label class="detail-inline" for="where">Where you are</label>
-    <select id="where" aria-describedby="where-note"></select>
-  </div>
-  <p id="where-note" class="detail-hint" hidden></p>
-
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
        re-entry, Next up, and search are structurally unlensed. The line below
        states law 1 every time the lens is on. -->
-  <div id="lens-row" class="lens-row" hidden>
+  <div id="lens-row" class="lens-row" data-narrows="#cards" hidden>
     <label class="detail-inline" for="lens">Looking at</label>
     <select id="lens" aria-describedby="lens-note"></select>
   </div>
-  <p id="lens-note" class="detail-hint" hidden></p>
+  <p id="lens-note" class="detail-hint" data-narrows="#cards" hidden></p>
 
   <p id="empty" class="empty" hidden>
     Nothing yet. Whatever you put here comes back to you — you do not have to
@@ -1251,8 +1321,14 @@
       <button id="detail-parent-set" type="button">Put it under</button>
       <button id="detail-unparent" type="button" class="ghost">On its own</button>
     </div>
-    <div class="detail-row">
-      <button id="detail-parent-create" type="button" class="ghost" hidden></button>
+    <!-- WHAT KIND OF CONTAINER, asked in the same breath as its name (2.16.0).
+         Hidden and shown with the create button beside it, because a choice
+         about a thing nobody is making is furniture. `project` is selected, so
+         the ordinary path is unchanged and costs no extra tap. -->
+    <div class="detail-row" id="detail-parent-new" hidden>
+      <label class="detail-inline" for="detail-parent-kind">as</label>
+      <select id="detail-parent-kind"></select>
+      <button id="detail-parent-create" type="button" class="ghost"></button>
     </div>
     <div class="detail-row">
       <button id="detail-make-project" type="button" class="ghost">This is bigger than one step</button>
@@ -1272,6 +1348,31 @@
       Bigger things hold smaller ones. Nothing is filed out of reach.
     </p>
     <ul id="detail-children" class="detail-feeds"></ul>
+
+    <!-- A FIRST STEP, FROM ANYWHERE (2.23.0, the plan's phase 7). *Get oil
+         change* is not stale and it is not a bad plan — it is UNFORMED, and the
+         thing that unblocks it is naming the first physical action.
+
+         That flow has existed since 1.24.0 and had exactly one route into it:
+         `#nextup-bite-open`, on the offer card. So you could shape the ONE
+         thing the app happened to hand you, and nothing else — a thing you knew
+         was unformed had no route unless it came round. Same machinery
+         (`biteEvents`), same event, second door.
+
+         An ordinary `action` under the thing, not a new kind and not a new
+         noun: it completes, decays, renders and can be let go like anything
+         else, which is what makes this cost nothing downstream. -->
+    <p class="detail-label" id="detail-step-label">Too big to start?</p>
+    <div class="detail-row" role="group" aria-labelledby="detail-step-label">
+      <label class="visually-hidden" for="detail-step">A smaller first step</label>
+      <input id="detail-step" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="ring the garage"
+             aria-describedby="detail-step-hint">
+      <button id="detail-step-set" type="button">Put it under this</button>
+    </div>
+    <p id="detail-step-hint" class="detail-hint">
+      It becomes an ordinary thing under this one. Nothing else changes.
+    </p>
   </div>
 
   <!-- Folding a duplicate (1.7.0, ADR-0053). The batch carries what the
@@ -1374,6 +1475,11 @@
              aria-describedby="detail-person-hint">
       <select id="detail-relation" aria-label="How they are involved">
         <option value="waiting-on">they owe me this</option>
+        <!-- THE OTHER DIRECTION (2.20.0). Two rows apart from "they asked for
+             it" and genuinely a different fact: that one is where a thing came
+             from, this one is somebody now expecting it of you. Only this one
+             puts you on a standing list, and only this one can be released. -->
+        <option value="promised-to">I said I would</option>
         <option value="requested-by">they asked for it</option>
         <option value="opr">they are running it</option>
         <option value="stakeholder">they care about it</option>
@@ -1502,6 +1608,30 @@
       <button id="detail-done" type="button" aria-label="Done with this one">Done</button>
       <button id="detail-undone" type="button" class="ghost">Not done after all</button>
       <button id="detail-menu" type="button" class="ghost">Put on the Menu</button>
+      <!-- WHICH KIND OF WANT (2.23.0, the plan's phase 7, and it is what the
+           research allows and nothing more). `docs/nd-collisions.md` entry 26
+           REFUSES the packaged practice outright — no named feature, no
+           use-tracking, no "you haven't looked at your menu" prompt, no earned
+           or contingent framing, nothing algorithmic. What it permits is one
+           narrow thing, and calls it a verified defect: the category is a
+           six-value field that was dead code in the shipped app, because both
+           routes a person actually uses wrote `read` and nothing else. The
+           Menu groups by category, so a six-way grouping rendered one group,
+           always.
+
+           A TWO-TAP CHOICE at the moment the act happens — ADR-0029's shape,
+           the same one `#detail-parent-kind` uses — with `read` still the
+           default, so the common case costs nothing. Not a new surface, not a
+           rank, not a requirement. -->
+      <label class="visually-hidden" for="detail-menu-category">As what kind of thing</label>
+      <select id="detail-menu-category" hidden>
+        <option value="read">read</option>
+        <option value="try">try</option>
+        <option value="go">go</option>
+        <option value="make">make</option>
+        <option value="research">research</option>
+        <option value="save-for">save for</option>
+      </select>
       <button id="detail-promote" type="button" class="ghost">Bring back from the Menu</button>
       <button id="detail-trash" type="button" class="ghost">Let it go</button>
       <button id="detail-untrash" type="button" class="ghost">Keep it after all</button>
@@ -2000,6 +2130,17 @@
     What has changed since you last told anyone, plus what is still outstanding. You choose what goes in it.
   </p>
   <div class="about-actions">
+    <!-- READING IS NOT REPORTING (2.22.0, the plan's phase 6). Every other
+         control here HANDS THE REPORT OVER, and handing it over records
+         `status.report.exported`, which moves the mark — so the next report
+         starts from this moment. That is right for a report somebody received
+         and wrong for a glance.
+
+         Until this button, "what did I miss" could only be answered by
+         exporting, which spent the period to read it. Look twice and the second
+         look was empty, with nothing on screen explaining why. This one writes
+         NOTHING: same cut, same text, no event, no mark moved. -->
+    <button id="report-show" type="button">Show me</button>
     <button id="report-copy" type="button" aria-label="Copy it — the weekly look">Copy it</button>
     <button id="report-markdown" type="button" class="ghost">Save as Markdown</button>
     <button id="report-csv" type="button" class="ghost">Save as a spreadsheet</button>
@@ -2313,11 +2454,112 @@
        scrolling region with nothing focusable inside cannot be scrolled from a
        keyboard (WCAG 2.1.1). -->
   <div class="sheet-body" tabindex="0">
+    <h3 id="roles-load-heading" class="about-section">What each one is carrying</h3>
     <p id="roles-words" class="detail-hint"></p>
-    <ul id="roles-list" class="roles-list"></ul>
+    <ul id="roles-list" class="roles-list" aria-labelledby="roles-load-heading"></ul>
     <p id="roles-unnamed" class="detail-hint"></p>
+
+    <!-- WHERE THE ATTENTION ACTUALLY WENT (2.24.0, the plan's phase 5 item).
+         This sheet has been titled "Where the attention is" since 2.6.0 and has
+         shown a COUNT OF LIVE WORK, which answers a different question. Load is
+         what a role is carrying; attention is what it was given. A role can be
+         carrying nine things and have had none of your time, and that gap is
+         the reason somebody opens this.
+
+         Built on `do-now.timed` — time a timer actually measured — and NOT on
+         completions, which is what keeps it out of law 5's way. It deliberately
+         counts finished work too: an hour spent on something you finished is an
+         hour of your attention.
+
+         Sorted by name like the list above it, never by size. Ordering somebody's
+         own identities by how much each got is a ranking of their life.
+
+         It renders its own emptiness in words rather than hiding: on a store
+         that has never used the timer every row is zero, and a surface that goes
+         blank teaches the reader the feature is broken (`serves.ts`).
+
+         TWO HEADINGS, AND THEY COST TEN WORDS OF THE READING BUDGET ON PURPOSE.
+         `size-check.mjs` refused the release at 3498 against 3490, and the first
+         answer was to drop both and name the lists with `aria-label` — free,
+         because an attribute is not shell text. Then the sheet was RENDERED AND
+         LOOKED AT, which is what this repo learned to do: without headings the
+         screen reads "Parent — 1 thing", a paragraph, "Parent — no timed work",
+         with nothing saying those are two different readouts. It looks like a
+         contradiction. The budget exists to make this trade deliberate, not to
+         make the screen worse, so the budget moved and the reason is in
+         `size-check.mjs` beside the number. -->
+    <h3 id="roles-attention-heading" class="about-section">Where your time actually went</h3>
+    <p id="roles-attention-words" class="detail-hint"></p>
+    <ul id="roles-attention-list" class="roles-list" aria-labelledby="roles-attention-heading"></ul>
   </div>
   <button id="sheet-roles-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<dialog id="sheet-situation" aria-labelledby="sheet-situation-title" data-door="#situation-open">
+  <h2 id="sheet-situation-title" class="section">What&rsquo;s the situation?</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="situation-words" class="detail-hint">Where you are and how long you
+      have. Both narrow what the app offers you and what the list shows &mdash;
+      nothing is taken away, and everything still comes back.</p>
+
+    <!-- WHERE YOU ARE (2.2.0, ADR-0092). The tree says where a thing LIVES;
+         this says where it can be DONE, and they are different questions. A
+         FILTER, never a partition: a thing not shown still has its clock, still
+         counts in the claim, and still comes back — anything else is an archive
+         with a friendlier name, which law 3 forbids.
+         Hidden until at least one place has been named, because a chooser with
+         nothing in it teaches you the feature is broken. -->
+    <div id="where-row" class="lens-row" hidden>
+      <label class="detail-inline" for="where">Where you are</label>
+      <select id="where" aria-describedby="where-note"></select>
+    </div>
+
+    <!-- HOW LONG YOU HAVE (2.19.0). Never hidden, unlike the chooser above:
+         an unestimated thing fits every answer, so this works on the first day
+         and withholding it would withhold a control that works. -->
+    <div id="how-long-row" class="lens-row">
+      <label class="detail-inline" for="how-long">How long you have</label>
+      <select id="how-long" aria-describedby="how-long-note"></select>
+    </div>
+
+    <!-- A SITUATION YOU RECOGNISE (2.21.0). Name what you have just set and it
+         comes back in one tap — which is what makes a Tuesday standup or a free
+         weekend recurring WITHOUT the app ever mentioning it again. Saving one
+         is a shortcut, never a schedule: nothing here reminds, detects, counts
+         or notices that you have not used it.
+
+         Named by you, so it is an event rather than a device preference — see
+         `situation.saved`. Where you are is not a fact about your work; a
+         situation you recognise about how you work is nearer a context or a
+         role, and it should survive a new device. -->
+    <p class="detail-label" id="situation-save-label">Recognise this one?</p>
+    <div class="detail-row" role="group" aria-labelledby="situation-save-label">
+      <label class="visually-hidden" for="situation-name">A name for it</label>
+      <input id="situation-name" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="the Tuesday standup"
+             aria-describedby="situation-save-hint">
+      <button id="situation-save" type="button">Remember it</button>
+    </div>
+    <p id="situation-save-hint" class="detail-hint">
+      Nothing has to be named. This only saves what you have set above.
+    </p>
+    <ul id="situation-list" class="roles-list"></ul>
+  </div>
+  <button id="sheet-situation-close" type="button" class="ghost">Close</button>
+</dialog>
+
+<dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">
+  <h2 id="sheet-horizons-title" class="section">What you&rsquo;re working toward</h2>
+  <!-- `tabindex="0"` for the reason the roles body carries it: this body holds
+       no focusable thing at all — it is rows of words — and a scrolling region
+       with nothing focusable inside cannot be scrolled from a keyboard
+       (WCAG 2.1.1). -->
+  <div class="sheet-body" tabindex="0">
+    <p id="horizons-words" class="detail-hint"></p>
+    <ul id="horizons-list" class="roles-list"></ul>
+    <p id="horizons-empty" class="detail-hint" hidden></p>
+  </div>
+  <button id="sheet-horizons-close" type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
@@ -2576,7 +2818,7 @@
   <h3 class="about-section">Part of a family of free apps</h3>
   <p class="about-p">
     Quietkeep is one of Noah Jefferson&rsquo;s free apps &mdash; small tools,
-    no accounts, nothing to pay. See the rest of them, and how to reach him, at
+    no accounts, nothing to pay. See the rest of them, and how to get in touch, at
     <a href="https://noahjefferson.pages.dev">noahjefferson.pages.dev</a>.
   </p>
   <!-- The other edition (ADR-0036). Filled in by src/ui/sibling.ts, and left

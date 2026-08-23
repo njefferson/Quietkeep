@@ -35,14 +35,30 @@ import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
 import { servesWords } from '../serves.ts';
-import { roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS } from '../roles.ts';
+import {
+  roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS,
+  roleAttention, roleAttentionWords, roleAttentionRowWords,
+} from '../roles.ts';
+import {
+  horizonRows, holdsWords, rhythmWords, horizonEmptyWords,
+  HORIZON_WORDS, HORIZON_READOUT_WORDS,
+} from '../horizons.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
 import { WHERE_KEY, allContexts, contextNames, fitsHere, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
-import { waitingOnAnyone, withWhom, waitingWords, peopleWords } from '../people.ts';
+import { situationWords } from '../situations.ts';
+import { saveSituationEvents, forgetSituationEvents } from './detail-intents.ts';
+import {
+  HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
+  getHowLong, setHowLong,
+} from '../duration.ts';
+import {
+  waitingOnAnyone, withWhom, waitingWords, peopleWords,
+  promisedToAnyone, promisedWords, promisedRowWords,
+} from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
@@ -87,6 +103,9 @@ let lensRoot: string | null = null;
  *  somebody is is not a fact about their work and the log has no business
  *  keeping a history of it. */
 let whereNow: string | null = null;
+/** How long the reader says they have, in minutes, or null for no limit. A
+ *  device view preference like `whereNow` — see `HOW_LONG_KEY`. */
+let howLongNow: number | null = null;
 
 /**
  * THE WAY PAST THE STACK (2.0.8, ADR-0090) — shown when, and only when, there is
@@ -281,6 +300,29 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     }
   }
 
+  // HOW LONG HAVE YOU GOT (2.19.0). The place chooser's shape exactly, with one
+  // deliberate difference: it is never hidden. The place chooser is withheld
+  // until a place exists because it would filter by nothing; this one acts on
+  // estimates and an UNESTIMATED thing fits every answer, so it is useful from
+  // the first day and hiding it would be hiding a control that works.
+  const howLongSel = document.querySelector<HTMLSelectElement>('#how-long');
+  const howLongNote = document.querySelector<HTMLElement>('#how-long-note');
+  if (howLongSel) {
+    const keep = howLongNow === null ? '' : String(howLongNow);
+    howLongSel.replaceChildren(...[
+      Object.assign(document.createElement('option'), { value: '', textContent: 'as long as it takes' }),
+      ...HOW_LONG_CHOICES.map(m => Object.assign(document.createElement('option'), {
+        value: String(m), textContent: minutesWords(m),
+      })),
+    ]);
+    howLongSel.value = keep;
+  }
+  if (getHowLong() !== howLongNow) setHowLong(howLongNow);
+  if (howLongNote) {
+    howLongNote.hidden = howLongNow === null;
+    if (howLongNow !== null) howLongNote.textContent = howLongWords(howLongNow);
+  }
+
   const lensRootNode = lensRoot ? st.nodes.get(lensRoot) : undefined;
   const lensLive = Boolean(lensRootNode && !lensRootNode.trashed && !lensRootNode.mergedInto
     && lensRoots.some(r => r.id === lensRoot));
@@ -303,7 +345,12 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     // AND WHERE YOU ARE (2.2.0). Applied with the lens and before the cap, for
     // the same reason: a cap over an unfiltered set would lie about how many it
     // held back. Unlabelled things fit anywhere, so they always survive this.
-    const lensed = lensedOnly.filter(n => fitsHere(st, n, whereLive));
+    // AND HOW LONG YOU HAVE (2.19.0). Beside the place filter, before the cap,
+    // for the same reason. Unestimated things fit every answer, so they survive
+    // this exactly as unlabelled things survive the one above.
+    const lensed = lensedOnly
+      .filter(n => fitsHere(st, n, whereLive))
+      .filter(n => fitsWithin(n, howLongNow));
     if (lensed.length === 0) continue;
 
     const head = document.createElement('h3');
@@ -573,6 +620,20 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
           if (anyRoles === 0) closeSheet('sheet-roles');
         }
       }
+      // WHAT YOU ARE WORKING TOWARD (2.18.0), on the same pass and by the same
+      // rules as the door above it: what it OPENS and no number, hidden until a
+      // horizon exists, and closed behind anybody standing in it when the last
+      // one goes. A count here would be a score on the landing surface, and a
+      // count of somebody's goals is the worst kind.
+      {
+        const horizonsBtn = document.querySelector<HTMLButtonElement>('#horizons-open');
+        const anyHorizons = horizonRows(st).rows.length;
+        if (horizonsBtn) {
+          horizonsBtn.hidden = anyHorizons === 0;
+          horizonsBtn.textContent = 'What you\u2019re working toward';
+          if (anyHorizons === 0) closeSheet('sheet-horizons');
+        }
+      }
       const rows: HTMLElement[] = [];
       for (const g of menuGroups(st)) {
         const h = document.createElement('h3');
@@ -685,6 +746,38 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         // hiding the row.
         w.textContent = [whom ? `With ${whom}` : 'Nobody named yet', how].filter(Boolean).join(' ') + '.';
         b.append(t, w);
+        if (openDetail) b.addEventListener('click', () => openDetail(line.node));
+        li.append(b);
+        return li;
+      }));
+    }
+
+    // THE OTHER DIRECTION (2.20.0). Same section, same question, and the
+    // section shows if EITHER half has something — so a day where nobody owes
+    // you anything and you owe two people still has somewhere to say so.
+    //
+    // The row is a name and nothing else. The list above it says "for three
+    // weeks"; `PromiseLine` has no `days` field to say it with, which is how
+    // this rule is kept by the shape rather than by anybody remembering it.
+    const promised = promisedToAnyone(session.state());
+    const pCount = document.querySelector<HTMLElement>('#people-promised-count');
+    const pList = document.querySelector<HTMLElement>('#people-promised');
+    if (region && pCount && pList) {
+      region.hidden = owed.length === 0 && promised.length === 0;
+      pCount.textContent = promisedWords(promised.length);
+      pList.replaceChildren(...promised.map(line => {
+        const li = document.createElement('li');
+        li.className = 'people-item';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'people-open';
+        const t2 = document.createElement('span');
+        t2.className = 'people-title';
+        t2.textContent = line.node.title || '(untitled)';
+        const w2 = document.createElement('span');
+        w2.className = 'people-why';
+        w2.textContent = promisedRowWords(line.person);
+        b.append(t2, w2);
         if (openDetail) b.addEventListener('click', () => openDetail(line.node));
         li.append(b);
         return li;
@@ -1091,11 +1184,153 @@ export async function main(edition?: Edition): Promise<void> {
           + 'you are holding belong to no named role. That is ordinary — most things do not.';
       rest.hidden = false;
     }
+
+    // WHERE THE TIME ACTUALLY WENT (2.24.0). The other half of this sheet's own
+    // title. `roleLoads` above answers what each role is CARRYING; this answers
+    // what each was GIVEN, from `do-now.timed` and never from completions.
+    //
+    // Painted whether or not there is anything to show. A readout that hides
+    // until it has data is a readout nobody discovers, and the empty words say
+    // what would fill it — the `serves.ts` failure, answered the way 2.19.0
+    // answered the same sparsity.
+    const att = roleAttention(st, heldWork);
+    const attWords = document.querySelector<HTMLElement>('#roles-attention-words');
+    if (attWords) attWords.textContent = roleAttentionWords(att.totalSessions, att.unnamed);
+    const attList = document.querySelector<HTMLUListElement>('#roles-attention-list');
+    if (attList) {
+      attList.replaceChildren(...att.rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        name.textContent = r.role.title || '(unnamed)';
+        const given = document.createElement('span');
+        given.className = 'roles-held';
+        given.textContent = roleAttentionRowWords(r);
+        li.append(name, given);
+        return li;
+      }));
+    }
   };
   onSheetOpen('sheet-roles', paintRoles);
   wireSheetClose('sheet-roles');
   document.querySelector<HTMLButtonElement>('#roles-open')
     ?.addEventListener('click', () => { openSheet('sheet-roles'); });
+
+  // WHAT YOU ARE WORKING TOWARD (2.18.0, the plan's phase 2 step 3). Painted on
+  // open like every other sheet, because a list built once reports the store as
+  // it was when the app started.
+  //
+  // THE EMPTY ONES ARE THE POINT. Review already computes unfed goals and quiet
+  // areas and shows them capped at three, exceptions-first — the right shape for
+  // "what needs attention" and the wrong one for "what am I working toward".
+  // Somebody deciding what to put under a goal has to be able to see the goal.
+  const paintHorizons = (): void => {
+    const st = session.state();
+    const { rows, projects } = horizonRows(st);
+    const words = document.querySelector<HTMLElement>('#horizons-words');
+    if (words) words.textContent = HORIZON_READOUT_WORDS;
+    const list = document.querySelector<HTMLUListElement>('#horizons-list');
+    if (list) {
+      list.replaceChildren(...rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        // The KIND is said out loud beside the name. Without it a list of bare
+        // titles cannot be told from a list of projects, and the whole reason
+        // this surface exists is that those are different altitudes.
+        name.textContent = `${r.node.title || '(untitled)'} — ${HORIZON_WORDS[r.node.kind] ?? r.node.kind}`;
+        const held = document.createElement('span');
+        held.className = 'roles-held';
+        // WORDS, never a bare integer, and the rhythm stated even when absent.
+        // "no rhythm set" is a fact somebody can act on; a blank is a question.
+        held.textContent = `${holdsWords(r.holds)} · ${rhythmWords(r.everyDays)}`;
+        li.append(name, held);
+        return li;
+      }));
+    }
+    const empty = document.querySelector<HTMLElement>('#horizons-empty');
+    if (empty) {
+      // Shown only when the list is empty of ROWS. The door is hidden in that
+      // case, so this is reachable in one way: the last horizon went while
+      // somebody was standing here.
+      empty.textContent = horizonEmptyWords(projects);
+      empty.hidden = rows.length > 0;
+    }
+  };
+  // WHAT'S THE SITUATION (2.21.0, the plan's phase 5). The two inputs moved
+  // here out of the pile — the machinery was finished and the route was wrong:
+  // somebody answering "what is my situation" does not look inside the list of
+  // everything they are holding.
+  //
+  // The inputs themselves are painted with the shell, because they narrow the
+  // shell. What paints on OPEN is the saved list, for the reason every sheet
+  // here paints on open: a list built once reports the store as it was when the
+  // app started.
+  //
+  // No count of uses, no last-used, no ordering by how often. A situation is a
+  // shortcut somebody made for themselves, and any of those would turn it into
+  // a record of their habits — which is what law 7 keeps this app out of, and
+  // the nagging law 8 makes lapse-tolerant.
+  const paintSituations = (): void => {
+    const st = session.state();
+    const list = document.querySelector<HTMLUListElement>('#situation-list');
+    if (!list) return;
+    const names = [...st.situations.keys()].sort((a, b) => a.localeCompare(b));
+    list.replaceChildren(...names.map(nm => {
+      const saved = st.situations.get(nm)!;
+      const li = document.createElement('li');
+      li.className = 'roles-row';
+      const go = document.createElement('button');
+      go.type = 'button';
+      go.className = 'linklike';
+      go.textContent = nm;
+      go.addEventListener('click', () => {
+        // A GHOST PLACE MATCHES NOTHING. Recalling a situation whose context has
+        // been let go would empty every surface with nothing on screen saying
+        // why — the rule the shell already applies to `whereLive`. The place
+        // stands down; the time it named still applies.
+        const fresh = session.state();
+        const stillThere = saved.context && allContexts(fresh).some(c => c.id === saved.context);
+        setSituation(stillThere ? saved.context : null, saved.minutes);
+      });
+      const what = document.createElement('span');
+      what.className = 'roles-held';
+      what.textContent = situationWords(st, saved);
+      const off = document.createElement('button');
+      off.type = 'button';
+      off.className = 'ghost';
+      off.textContent = 'Forget it';
+      off.addEventListener('click', () => {
+        void session.commit(ctx => forgetSituationEvents(ctx, nm))
+          .then(() => { refreshAll(); paintSituations(); })
+          .catch(() => { /* the list simply does not change */ });
+      });
+      li.append(go, what, off);
+      return li;
+    }));
+  };
+  onSheetOpen('sheet-situation', paintSituations);
+  wireSheetClose('sheet-situation');
+  document.querySelector<HTMLButtonElement>('#situation-open')
+    ?.addEventListener('click', () => { openSheet('sheet-situation'); });
+
+  document.querySelector<HTMLButtonElement>('#situation-save')?.addEventListener('click', () => {
+    const input = document.querySelector<HTMLInputElement>('#situation-name');
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) return;
+    input.value = '';
+    void session.commit(ctx => saveSituationEvents(ctx, name, whereNow, howLongNow))
+      .then(() => paintSituations())
+      .catch(() => { /* nothing saved, and the inputs are untouched */ });
+  });
+
+  onSheetOpen('sheet-horizons', paintHorizons);
+  wireSheetClose('sheet-horizons');
+  document.querySelector<HTMLButtonElement>('#horizons-open')
+    ?.addEventListener('click', () => { openSheet('sheet-horizons'); });
 
   onSheetOpen('sheet-contents', () => paintContents());
   wireSheetClose('sheet-contents');
@@ -1424,6 +1659,16 @@ export async function main(edition?: Edition): Promise<void> {
   } catch {
     whereNow = null;
   }
+  try {
+    // Stored as a string like every other view preference. A stored value that
+    // is not one of the offered lengths is dropped rather than honoured: it
+    // would filter by a number no control can show or clear, which is a state
+    // somebody could be stuck in with nothing on screen explaining why.
+    const raw = Number(await session.store.getKv<string>(HOW_LONG_KEY));
+    howLongNow = HOW_LONG_CHOICES.includes(raw) ? raw : null;
+  } catch {
+    howLongNow = null;
+  }
 
   // THE INVENTORY'S FOLD, REMEMBERED (2.12.0, ADR-0102). Somebody who wants the
   // list open should not have to say so on every load: a preference re-asked
@@ -1446,11 +1691,32 @@ export async function main(edition?: Edition): Promise<void> {
   // this route is that it works for somebody who cannot see where they landed.
   document.querySelector<HTMLAnchorElement>('a.skip')?.addEventListener('click', () => { openHeld(); });
   setWhereNow(whereNow);
-  document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
-    whereNow = (e.target as HTMLSelectElement).value || null;
+  setHowLong(howLongNow);
+
+  /** ONE WRITER for the situation (2.21.0). Three routes set these two values —
+   *  each chooser, and recalling a saved situation — and before this each did
+   *  its own module cache, its own repaint and its own kv write. Three copies of
+   *  one act is how one of them comes to persist what it did not apply, which is
+   *  the shape `containerOptionWords` and `personName` are both the record of.
+   *
+   *  Persisted behind the repaint, the badge's rule: act now, store after. */
+  const setSituation = (place: string | null, minutes: number | null): void => {
+    whereNow = place;
+    howLongNow = minutes;
     setWhereNow(whereNow);
+    setHowLong(howLongNow);
     refreshAll();
     void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+    void session.store.setKv(HOW_LONG_KEY, howLongNow === null ? '' : String(howLongNow))
+      .catch(() => { /* view pref only */ });
+  };
+
+  document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
+    setSituation((e.target as HTMLSelectElement).value || null, howLongNow);
+  });
+  document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
+    const v = (e.target as HTMLSelectElement).value;
+    setSituation(whereNow, v ? Number(v) : null);
   });
 
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {

@@ -16,12 +16,10 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { serve } from './serve.mjs';
 import { CURRENT } from '../src/ui/changelog.ts';
+import { requireFreshBundle } from './bundle-fresh.mjs';
 
 const ROOT = new URL('../public', import.meta.url).pathname;
-if (!existsSync(`${ROOT}/app.js`)) {
-  console.error('public/app.js is missing — run `npm run build` first.');
-  process.exit(1);
-}
+requireFreshBundle(new URL('..', import.meta.url).pathname, 'the smoke walk');
 
 const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
@@ -2948,10 +2946,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   const parentOptions = await tpage.locator('#detail-parent option').allTextContents();
-  is(parentOptions.includes('the quarterly report'), true,
+  // THE KIND IS PART OF THE OPTION NOW (2.18.0). This matched the title
+  // exactly, which was unambiguous while every place in the list was a project
+  // and stopped being so the moment a goal could be one. Matched by prefix, and
+  // the kind asserted separately, so the walk fails on the right fact if either
+  // half changes.
+  const parentOption = parentOptions.find(o => o.startsWith('the quarterly report'));
+  is(Boolean(parentOption), true,
     `the container is offered as a parent (${parentOptions.join(', ')})`);
-  is(parentOptions.includes('draft the brief'), false, 'and never itself');
-  await tpage.selectOption('#detail-parent', { label: 'the quarterly report' });
+  is(/— project/.test(parentOption ?? ''), true,
+    `and the option says what KIND of place it is ("${parentOption ?? ''}")`);
+  is(parentOptions.some(o => o.startsWith('draft the brief')), false, 'and never itself');
+  await tpage.selectOption('#detail-parent', { label: parentOption });
   await tpage.click('#detail-parent-set');
   await tpage.waitForTimeout(300);
   const placeLine = await tpage.locator('#detail-place').textContent();
@@ -3050,7 +3056,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.locator('#cards .card:has-text("write the script") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
-  await tpage.selectOption('#detail-parent', { label: 'the migration' });
+  {
+    // Prefix again — the option carries its kind since 2.18.0.
+    const opts = await tpage.locator('#detail-parent option').allTextContents();
+    const label = opts.find(o => o.startsWith('the migration'));
+    is(Boolean(label), true, `"the migration" is offered as a place (${opts.join(', ')})`);
+    await tpage.selectOption('#detail-parent', { label });
+  }
   await tpage.click('#detail-parent-set');
   await tpage.waitForTimeout(300);
   await tpage.click('#detail-close');
@@ -3524,7 +3536,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // media. The button worked and the result was unusable.
   // --- The way out of the panel (found on device, twice) -------------------
   // The header was `position: sticky` inside the dialog's own scroll container.
-  // Correct, honoured by every engine in CI, and it did not hold on his iPad:
+  // Correct, honoured by every engine in CI, and it did not hold on the iPad:
   // the bar scrolled away with the content and both ways out ended up at the
   // extremes of a panel thousands of pixels tall.
   //
@@ -3660,8 +3672,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-role', 'Parent').catch(() => {});
   await tpage.locator('#detail-role-set').click().catch(() => {});
   await tpage.waitForSelector('#detail-role-list li').catch(() => {});
+  // AND A HORIZON, in the same sheet and for the same reason as the role above:
+  // `#horizons-open` is hidden until one exists, so without this the sheet
+  // behind it reports "could not open it" — which is this check working, and a
+  // surface going unmeasured either way. Made through the container picker
+  // rather than planted, so the door being reachable at all is part of what
+  // this pass proves.
+  await tpage.fill('#detail-parent-filter', 'A calmer house').catch(() => {});
+  await tpage.waitForSelector('#detail-parent-create:not([hidden])').catch(() => {});
+  await tpage.selectOption('#detail-parent-kind', 'goal').catch(() => {});
+  await tpage.locator('#detail-parent-create').click().catch(() => {});
+  await tpage.waitForTimeout(120);
   await tpage.locator('#detail-close').click().catch(() => {});
   await tpage.waitForSelector('#roles-open:not([hidden])').catch(() => {});
+  await tpage.waitForSelector('#horizons-open:not([hidden])').catch(() => {});
 
   const seeThrough = [];
   for (const [surface, bodySel, closeSel, door] of SURFACES_WITH_A_WAY_OUT) {
@@ -4663,7 +4687,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // a copy does), so the panel is already gone and waiting for its X would hang.
 
   console.log('\nThe build is on the main screen, without opening anything');
-  // a reader could not tell which build his device was running, because the version
+  // a reader could not tell which build the device was running, because the version
   // lived only inside the (i) panel's title. A screenshot of the app has to say
   // it. Read with the panel SHUT, and matched against the changelog head so the
   // two cannot drift.
@@ -5057,8 +5081,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // heat card in front is somebody else's — the first version clicked "Just sort
   // it" on whatever happened to be showing and then asserted about the item it
   // had captured, which is two different items and a check that could only fail.
+  //
+  // THE BOUND HAS TO EXCEED WHAT THIS WALK ITSELF PUT IN THE INBOX (2.15.0).
+  // It was 30, which held while only captures reached the inbox. An import now
+  // lands there too — that is the whole point of 2.15.0, and it is why the
+  // offer has something to hand over on a store that arrived from another
+  // planner — and this walk imports 60 rows a few hundred lines above. Sixty is
+  // more than thirty, so the loop ran out before reaching its own item and four
+  // assertions failed downstream of that one fact.
+  //
+  // Derived from the import above rather than another magic number, so the two
+  // cannot drift apart again: raise the import and this rises with it.
   let onMine = false;
-  for (let i = 0; i < 30 && !onMine; i++) {
+  const bound = cap_many.length + 40;
+  for (let i = 0; i < bound && !onMine; i++) {
     const card = await tpage.locator('#triage-card').textContent();
     if (/a thing to sort without heat/.test(card || '')) { onMine = true; break; }
     const skip = tpage.locator('#triage-actions .route', { hasText: 'Not this one' });
@@ -5228,8 +5264,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // repaints the action row underneath a locator click. This drains until the
   // named item is out of triage, which is the condition that actually matters,
   // and says what it was looking at if it cannot get there.
+  //
+  // BOUNDED BY WHAT THIS WALK IMPORTED, for the same reason as the loop above
+  // (2.15.0): an import now lands in the inbox, so a fixed 40 no longer clears
+  // a queue this walk filled with 60.
+  //
+  // TIMES TWO, and that is arithmetic rather than padding: this loop spends one
+  // pass setting heat on a card and a SECOND routing it, so every item in front
+  // of the named one costs two iterations. One times the import cleared the
+  // first assertion and left the second still short.
   const routeUntilOut = async (title) => {
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < cap_many.length * 2 + 40; i++) {
       if (await tpage.locator('#triage:not([hidden]) .route').count() === 0) return;
       const card = await tpage.locator('#triage-card').textContent().catch(() => '');
       const done = await tpage.evaluate(() => {
@@ -5989,7 +6034,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const mergeOptions = await tpage.locator('#detail-merge option').allTextContents();
   is(mergeOptions.some(o => /banister/.test(o)), false,
     'the filter narrowed the targets to what was typed');
-  await tpage.selectOption('#detail-merge', { label: 'polish the SAMOVAR' });
+  {
+    const opts = await tpage.locator('#detail-merge option').allTextContents();
+    const label = opts.find(o => o.startsWith('polish the SAMOVAR'));
+    is(Boolean(label), true, `"polish the SAMOVAR" is offered to fold into (${opts.join(', ')})`);
+    await tpage.selectOption('#detail-merge', { label });
+  }
   const mergeLogBefore = await sortCount();
   await tpage.click('#detail-merge-set');
   await tpage.waitForFunction(() => /Folded into/.test(
@@ -6085,7 +6135,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-merge-filter', 'SHED');
   await tpage.waitForFunction(() => [...document.querySelectorAll('#detail-merge option')]
     .some(o => /SHED/.test(o.textContent ?? '')));
-  await tpage.selectOption('#detail-merge', { label: 'rewire the SHED light' });
+  {
+    const opts = await tpage.locator('#detail-merge option').allTextContents();
+    const label = opts.find(o => o.startsWith('rewire the SHED light'));
+    is(Boolean(label), true, `"rewire the SHED light" is offered to fold into (${opts.join(', ')})`);
+    await tpage.selectOption('#detail-merge', { label });
+  }
   await tpage.click('#detail-merge-set');
   await tpage.waitForFunction(() => /Folded into/.test(
     document.querySelector('#detail-live')?.textContent ?? ''));
@@ -6243,6 +6298,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     window.__reports = [];
     navigator.clipboard.writeText = (t) => { window.__reports.push(t); return Promise.resolve(); };
   });
+  // READING IS NOT REPORTING (2.22.0). The contrast with the two exports below
+  // is the whole assertion: look twice and you see the same thing, because
+  // looking writes nothing; EXPORT twice and the second is empty, because
+  // handing it over moves the mark. Before this button, the only way to read
+  // what changed was to spend the period reading it.
+  await tpage.click('#report-show');
+  await tpage.waitForSelector('#report-preview:not([hidden])');
+  const look1 = (await tpage.locator('#report-preview').textContent()) ?? '';
+  is(/we ship on the 12th/.test(look1), true,
+    'Show me renders what changed, without handing it to anybody');
+  await tpage.click('#report-show');
+  await tpage.waitForTimeout(200);
+  const look2 = (await tpage.locator('#report-preview').textContent()) ?? '';
+  is(look2 === look1, true,
+    'AND LOOKING TWICE SHOWS THE SAME THING — reading does not spend the period');
+  is((await tpage.evaluate(() => (window.__reports ?? []).length)) === 0, true,
+    'and nothing was handed over by looking');
+
   await tpage.click('#report-copy');
   await tpage.waitForFunction(() => (window.__reports ?? []).length === 1);
   const report = await tpage.evaluate(() => window.__reports[0]);
@@ -6850,8 +6923,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const sel of ['#detail-weight-light', '#detail-weight-ordinary', '#detail-weight-heavy',
                      '#detail-weight-clear', '#detail-date-clear', '#detail-start-clear',
                      '#detail-after-clear', '#detail-menu', '#detail-promote',
-                     '#detail-unparent', '#detail-untrack', '#detail-repeat-stop',
-                     '#detail-undone', '#detail-unmerge', '#detail-arrangement-set',
+                     '#detail-unparent', '#detail-untrack',
+                     // UNDONE BEFORE STOP, and the order is load-bearing.
+                     // `stopRepeatEvents` clears the completion on purpose — a
+                     // non-recurring thing that has ever been completed is
+                     // finished for good, so stopping a repeat on something
+                     // already ticked off would silently retire it. Pressing
+                     // stop first therefore hides `#detail-undone` before this
+                     // pass can reach it.
+                     //
+                     // It did not matter until 2.17.0 because stop was
+                     // UNREACHABLE here: `#detail-promote` forces the kind to
+                     // `action` while leaving the interval set, and the old
+                     // visibility predicate keyed on `kind === 'upkeep'`. So the
+                     // node carried a cadence, `pressureOf` read it, and the one
+                     // control that could stop it was hidden. This pass reached
+                     // `#detail-undone` only because of that hole.
+                     '#detail-undone', '#detail-repeat-stop',
+                     '#detail-unmerge', '#detail-arrangement-set',
                      '#detail-arrangement-depends', '#detail-arrangement-stop']) await press(sel);
   await press('#detail-close');
 
@@ -6963,6 +7052,217 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.keyboard.press('Escape').catch(() => {});
   is(await tpage.locator('#capture').isVisible(), true,
     'and the capture line is still there afterwards — nothing was left blocking the app');
+
+  // ————— A FIRST STEP, FROM ANYWHERE (2.23.0) —————
+  //
+  // The flow has existed since 1.24.0 with ONE route into it, on the offer
+  // card. So it could only shape whatever the app happened to hand you. This
+  // proves the second door writes the same thing: an ordinary action, under the
+  // thing, from that thing's own sheet.
+  console.log('\nA first step, from anywhere');
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.fill('#capture', 'Get the oil change done');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  {
+    const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
+    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+  }
+  await tpage.evaluate(() => {
+    const f = document.querySelector('#held-fold');
+    if (f && !f.open) f.open = true;
+  });
+  await tpage.waitForTimeout(120);
+  const oil = tpage.locator('#cards .card', { hasText: 'Get the oil change done' }).first();
+  if (await oil.count()) {
+    await oil.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await tpage.fill('#detail-step', 'Ring the garage');
+    await tpage.click('#detail-step-set');
+    await tpage.waitForTimeout(250);
+    const kids = await tpage.evaluate(() =>
+      (document.querySelector('#detail-children')?.textContent ?? ''));
+    is(/Ring the garage/.test(kids), true,
+      'a first step named on the sheet lands under the thing it belongs to');
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(200);
+    is(await tpage.locator('#cards .card', { hasText: 'Get the oil change done' }).count() > 0, true,
+      'and the unformed thing is still there — shaping it did not consume it');
+  } else {
+    is(false, true, 'the unformed item never reached the held list, so nothing was measured');
+  }
+
+  // ————— THE OTHER DIRECTION, END TO END (2.20.0) —————
+  //
+  // The promise itself is unit-tested. What no unit reaches is the RELEASE
+  // through the app: its whole claim is that the undertaking comes off and the
+  // work stays, and a release that quietly took the work with it would pass
+  // every projection test in the file.
+  //
+  // Built from nothing in its own block, so a change to a sequence above cannot
+  // leave it measuring a card that is not there.
+  console.log('\nThe other direction');
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.fill('#capture', 'Return the borrowed drill');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  {
+    const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
+    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+  }
+  await tpage.evaluate(() => {
+    const f = document.querySelector('#held-fold');
+    if (f && !f.open) f.open = true;
+  });
+  await tpage.waitForTimeout(120);
+  const drill = tpage.locator('#cards .card', { hasText: 'Return the borrowed drill' }).first();
+  if (await drill.count()) {
+    await drill.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await tpage.fill('#detail-person', 'Rowan');
+    await tpage.selectOption('#detail-relation', 'promised-to');
+    await tpage.click('#detail-person-set');
+    await tpage.waitForTimeout(200);
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(200);
+
+    const promisedRows = async () => tpage.evaluate(() =>
+      [...document.querySelectorAll('#people-promised li')].map(li => li.textContent ?? '').join(' | '));
+    is(/Return the borrowed drill/.test(await promisedRows()), true,
+      'a promise reaches "With other people", on the side that is about you');
+    is(/Rowan/.test(await promisedRows()), true, 'and it says who is expecting it');
+    is(/week|day|since|ago/i.test(await promisedRows()), false,
+      'and never how long — that would be a record of not having done your own work');
+
+    // NOW TAKE IT BACK. The control lives on the row in the sheet's people list.
+    await drill.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    const off = tpage.locator('#detail-people-list button', { hasText: 'No longer promised' }).first();
+    is(await off.count() > 0, true, 'a promise can be taken back — the control is on its row');
+    await off.click();
+    await tpage.waitForTimeout(200);
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(200);
+    is(/Return the borrowed drill/.test(await promisedRows()), false,
+      'released — it is off the list');
+    is(await tpage.locator('#cards .card', { hasText: 'Return the borrowed drill' }).count() > 0, true,
+      'AND THE WORK IS STILL HERE — the release took the undertaking, not the thing');
+  } else {
+    is(false, true, 'the promised item never reached the held list, so nothing was measured');
+  }
+
+  // ————— HOW LONG YOU HAVE, END TO END (2.19.0) —————
+  //
+  // `fitsWithin` is unit-tested; this is the wiring, which no unit test reaches
+  // and no static sweep can see — the exact class of defect that took 2.15.0's
+  // Spine red. Built from nothing here rather than reusing an earlier item, so
+  // it cannot be broken by a change to a sequence somewhere above it.
+  //
+  // THREE CLAIMS: a thing longer than the time you have leaves the list; a
+  // thing you never put a time on STAYS, which is the rule that keeps the
+  // feature usable; and clearing the chooser brings the long one back, because
+  // this narrows what is shown and never what is held (law 1).
+  console.log('\nHow long you have');
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  await tpage.fill('#capture', 'A ninety minute job');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  await tpage.fill('#capture', 'A job of unknown length');
+  await tpage.press('#capture', 'Enter');
+  await tpage.waitForTimeout(150);
+  // Route both out of the inbox so they land on the held list.
+  for (let i = 0; i < 2; i += 1) {
+    const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
+    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+  }
+  await tpage.evaluate(() => {
+    const f = document.querySelector('#held-fold');
+    if (f && !f.open) f.open = true;
+  });
+  await tpage.waitForTimeout(120);
+  const longCard = tpage.locator('#cards .card', { hasText: 'A ninety minute job' }).first();
+  if (await longCard.count()) {
+    await longCard.locator('.card-open').click();
+    await tpage.waitForSelector('#detail[open]');
+    await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await tpage.fill('#detail-estimate', '90');
+    await tpage.click('#detail-estimate-set');
+    await tpage.waitForTimeout(150);
+    await tpage.click('#detail-close');
+    await tpage.waitForTimeout(150);
+    const shown = async () => tpage.evaluate(() =>
+      [...document.querySelectorAll('#cards .card')].map(c => c.textContent ?? '').join(' | '));
+    const before = await shown();
+    is(/ninety minute/.test(before) && /unknown length/.test(before), true,
+      'both are on the list with no limit set');
+
+    // THROUGH THE DOOR (2.21.0). The choosers moved out of the pile into
+    // `#sheet-situation`; the standing line stayed outside it, which is what
+    // this block goes on to rely on.
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
+    await tpage.selectOption('#how-long', '30');
+    await tpage.click('#sheet-situation-close');
+    await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
+    await tpage.waitForSelector('#how-long-note:not([hidden])');
+    const narrowed = await shown();
+    is(/ninety minute/.test(narrowed), false,
+      'a ninety-minute job is not shown when you have thirty');
+    is(/unknown length/.test(narrowed), true,
+      'and a thing you never put a time on IS — the app cannot say it does not fit');
+
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
+    await tpage.selectOption('#how-long', '');
+    await tpage.click('#sheet-situation-close');
+    await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
+    await tpage.waitForTimeout(150);
+    is(/ninety minute/.test(await shown()), true,
+      'clearing it brings the long one back — nothing was taken away, only not shown');
+
+    // ————— A SITUATION YOU NAMED (2.21.0) —————
+    //
+    // Save, recall, forget. The recall is what no unit reaches: its whole claim
+    // is that ONE tap sets BOTH inputs, and a save that quietly stored only one
+    // of them would pass every fold test written for it.
+    console.log('\nA situation you named');
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
+    await tpage.selectOption('#how-long', '30');
+    await tpage.fill('#situation-name', 'A quiet half hour');
+    await tpage.click('#situation-save');
+    await tpage.waitForSelector('#situation-list li');
+    is(await tpage.locator('#situation-list li').count() > 0, true,
+      'naming the situation you are in puts it on the list');
+
+    await tpage.selectOption('#how-long', '');
+    await tpage.waitForTimeout(150);
+    await tpage.click('#situation-list .linklike');
+    await tpage.waitForTimeout(250);
+    is(await tpage.locator('#how-long').inputValue(), '30',
+      'recalling it sets the inputs back in one tap');
+
+    await tpage.click('#situation-list .ghost');
+    await tpage.waitForTimeout(250);
+    is(await tpage.locator('#situation-list li').count(), 0,
+      'and it can be forgotten');
+    is(await tpage.locator('#how-long').inputValue(), '30',
+      'AND FORGETTING IT LEAVES THE SITUATION SET — the shortcut goes, not the answer');
+    await tpage.selectOption('#how-long', '');
+    await tpage.click('#sheet-situation-close');
+    await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
+  } else {
+    is(false, true, 'the ninety-minute job never reached the held list, so nothing was measured');
+  }
 
   await tctx.close();
 } finally {

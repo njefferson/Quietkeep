@@ -61,8 +61,15 @@ if (!existsSync(join(ROOT, 'public', 'app.js'))) {
   // when the module IS present. Otherwise this gate passes forever by testing
   // for words nothing ever emits — the shape that has produced theatre in this
   // repo three times.
+  // `maxBuffer` EXPLICITLY, because Node's default is 1MB and this bundle
+  // crossed it on 2026-08-22 at 1,043,605 characters. What that produced was
+  // not a failing gate — it was `spawnSync npx ENOBUFS` and a stack trace, a
+  // CRASH where the check should have had an answer, and a crash reads as a
+  // broken step rather than as a finding. The bundle only ever grows, so the
+  // ceiling is set far above it rather than just over it.
   const proof = execFileSync('npx', ['esbuild', 'src/ui/entry-sync.ts', '--bundle',
-    '--format=esm', '--target=es2022', '--log-level=warning'], { cwd: ROOT, encoding: 'utf8' });
+    '--format=esm', '--target=es2022', '--log-level=warning'],
+  { cwd: ROOT, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
   const absent = SYNC_MARKERS.filter(m => !proof.includes(m));
   if (absent.length) {
     fail(`these markers do not appear in the SYNC bundle either (${absent.join(', ')}), ` +

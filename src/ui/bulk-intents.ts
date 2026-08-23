@@ -35,6 +35,7 @@ import { passedHardClocks, type Passed } from '../replan.ts';
 import { replanEvents } from './replan-intents.ts';
 import { isHeld, isGone } from '../fold.ts';
 import type { DayShape } from '../time.ts';
+import { promotedKind } from '../kinds.ts';
 
 export type BulkVerb = 'put-under' | 'to-menu' | 'park' | 'let-go' | 'bring-back' | 'new-date' | 'put-down';
 
@@ -228,7 +229,9 @@ export function bulkItemEvents(
         demandClocksOf(n),
       );
     case 'bring-back':
-      return [base(ctx, 'menu.item.promoted', n.id, { toKind: 'action' })];
+      // `promotedKind`, not a hard-coded 'action': bringing forty things back
+      // off the Menu must not turn every goal among them into a task.
+      return [base(ctx, 'menu.item.promoted', n.id, { toKind: promotedKind(n.kind) })];
   }
 }
 

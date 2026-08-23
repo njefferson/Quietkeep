@@ -126,8 +126,8 @@ const stampValue = (iso: string): string =>
  *
  * Exporting them turned "show me this again tomorrow" into "this is due tomorrow",
  * with a nine o'clock alarm, once per item. a reader routed nine things to Next action
- * in one afternoon and his calendar offered him nine all-day events on a single day,
- * none of which he had ever given a date to. **A planner that misreports your
+ * in one afternoon and the calendar then offered nine all-day events on a single
+ * day, none of which had ever been given a date. **A planner that misreports your
  * obligations to a calendar you trust is worse than one with no calendar export at
  * all**: the app can be wrong on its own screen and be corrected by the next
  * glance, but it cannot follow the mistake back out of your diary.

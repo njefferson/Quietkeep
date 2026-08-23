@@ -314,7 +314,7 @@ Each exits non-zero. A gate that warns is not a gate.
 ## 6 · Release
 
 Doctrine §7. Every product change lands on `staging`, and promotion needs the owner's
-explicit "promote" on his actual device — never a session's read that it looks
+explicit "promote" after a real on-device pass — never a session's read that it looks
 ready. Docs-only changes may skip the gate.
 
 Releases are **version.capability.iteration**, one kind each, with the

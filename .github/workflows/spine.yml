@@ -71,13 +71,36 @@ jobs:
 
       # THE SECOND HALF OF THE PRIVACY RULE. privacy-check.mjs anchors
       # every pattern on the owner's NAME or role, so it cannot see a verbatim
-      # sentence of his speech — five of those were in this repo, and one more in
+      # sentence of ordinary speech — five of those were in this repo, and one more in
       # an ADR that had copied one, all of them green on every gate. This holds
       # every set-apart quotation to a declaration saying whose words it is.
       # Runs beside the privacy gate because it is the same rule.
       - name: Every set-apart quotation says whose words it is
         if: ${{ !cancelled() }}
         run: node .hub-gates/quote-check.mjs --repo .
+
+      # THE THIRD HALF, and it was enforced by nothing here until 2.18.1.
+      # privacy-check anchors on the NAME and quote-check finds the set-apart
+      # quotation; neither can see a sentence that refers to the owner with a
+      # pronoun and no name at all. A pass for those found 12 live references in
+      # this repo's own tracked files on 2026-08-22 — seven of them in NOTES.md,
+      # the file this repo's CLAUDE.md names first in "read these first".
+      #
+      # It had been run only when a session remembered to, which is the state the
+      # other two gates were in before they were wired. A rule enforced by
+      # memory is enforced on the days somebody has the memory to spare.
+      - name: No third-person reference to the owner
+        if: ${{ !cancelled() }}
+        run: node .hub-gates/third-person-check.mjs --repo .
+
+      # NO TABLES OR GRIDS, ANYWHERE THE OWNER READS (Doctrine 2). Markdown
+      # tables arrive on an iPad as pipes and dashes with the content lost, and
+      # the loss is silent — the prose around them looks fine. This repo was
+      # converted in full on 2026-07-29 and nothing has checked it since; the
+      # rule survived on the fact that nobody happened to write one.
+      - name: No grid in anything the owner reads
+        if: ${{ !cancelled() }}
+        run: node .hub-gates/docs-check.mjs .
 
       # THE HOOK THAT ENFORCES THE FRESHNESS RULE IS THE ONE THIS REPO DECLARES.
       # That rule is caught locally by the generated pre-commit hook, which
@@ -116,6 +139,19 @@ jobs:
       # one defect it exists to find.
       - name: The commit guard is the one that was declared
         run: node .hub-gates/branch-guard.mjs --repo . --artefact
+
+      # AND THE RECEIPT IN THE TREE IS FOR THIS MARKUP. `.a11y-stamp` records
+      # the UI hash the accessibility walk last passed against; the pre-commit
+      # hook refuses a UI change without a current one. This catches the commit
+      # that went round the hook — `--no-verify`, or a clone where it was never
+      # installed.
+      #
+      # BEFORE THE WALK, NOT AFTER. The walk WRITES this file, so a step placed
+      # after it compares the stamp against the tree the stamp was just made
+      # from and can only pass. Same shape as running branch-guard with
+      # `--install` in CI: the check repairs the thing it exists to find.
+      - name: The accessibility receipt is for the markup being committed
+        run: node tools/a11y-fresh.mjs
 
 
       - run: npm run typecheck
@@ -248,6 +284,14 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run vocabulary
 
+      - name: The app has no pronoun for anybody
+        if: ${{ !cancelled() }}
+        run: npm run voice:pronouns
+
+      - name: Every surface is on the accessibility walk
+        if: ${{ !cancelled() }}
+        run: npm run surfaces:check
+
       # The closed list, checked against the DOCUMENT that governs it (1.9.1).
       # `isKnownKind` has always refused an unlisted kind at runtime, and
       # nothing ever asked whether the code's list and
@@ -367,6 +411,16 @@ jobs:
       # forward, never reachable by finger, green everywhere, for 142 releases.
       - name: Every off-canvas route names a way a finger can take it
         run: npm run touch:check
+
+      # AND THE OTHER HALF OF THE SAME QUESTION: not "can this be pressed" but
+      # "is it anywhere near the thing it acts on". `#situation-open` sets where
+      # you are and how long you have — both inputs to the offer — and shipped
+      # 2129px below that offer on a phone, 3.84 screens, inside the very
+      # section it narrows. Twenty-five static gates and eight browser walks and
+      # not one asked where a thing renders.
+      - name: Every filter stands in front of what it filters
+        if: ${{ !cancelled() }}
+        run: npm run narrows:check
 
       # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
       # somebody who did not open the app, on a lock screen, possibly in front of

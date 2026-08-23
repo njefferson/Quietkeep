@@ -41,7 +41,16 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const html = readFileSync(join(root, 'public/index.html'), 'utf8');
+// A THIRD WRONG ANSWER FROM THE SAME FUNCTION, and the same shape as the two
+// confessed in `locate` below: comments were read as markup. This file is
+// mostly comments, and one of them quotes `<section id="held">` — so the
+// landmark stack pushed a section that never opened and never popped, and
+// every control after it reported region `held`. The gate then correctly
+// demanded a release note for a move that had not happened. Blanked to spaces
+// rather than deleted, so every offset stays an offset into the real file.
+// `surfaces.mjs:94` already did this; this one did not.
+const html = readFileSync(join(root, 'public/index.html'), 'utf8')
+  .replace(/<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '));
 const manifestPath = join(root, 'docs/control-surface.json');
 
 /**
@@ -52,6 +61,14 @@ const manifestPath = join(root, 'docs/control-surface.json');
  */
 const CORE = [
   'capture', 'open-about', 'nextup-done', 'nextup-skip', 'menu-open',
+  // ADDED 2.23.1, BECAUSE THIS GATE COULD NOT SEE THE BIGGEST MOVE IN TWO
+  // RELEASES. `#situation-open` sets where you are and how long you have —
+  // inputs to the offer — and shipped 2129px below that offer on a phone,
+  // inside the section it narrows. The manifest tracked five controls and this
+  // was not one of them, so all this gate reported was `#menu-open`'s ordinal
+  // drifting by one as a side effect. A compatibility surface that does not
+  // include the control whose placement was the defect is not covering it.
+  'situation-open',
 ];
 
 /**
@@ -141,6 +158,19 @@ function locate(id) {
     const forLabel = html.match(new RegExp(`<label[^>]*for="${id}"[^>]*>([^<]*)</label>`));
     label = forLabel ? forLabel[1].replace(/\s+/g, ' ').trim() : '';
   }
+  // WHAT A PERSON READS, not what the file stores. The label is lifted out of
+  // the markup, so it arrives carrying HTML entities — and this gate's whole
+  // demand is that the RELEASE NOTE name the control. Requiring a note to say
+  // "What&rsquo;s the situation?" would be requiring it to be wrong. Found when
+  // `#situation-open` joined the core set in 2.23.1 and became the first tracked
+  // label with an entity in it; every earlier one was plain ASCII by luck.
+  label = label
+    .replace(/&rsquo;/g, '\u2019').replace(/&lsquo;/g, '\u2018')
+    .replace(/&rdquo;/g, '\u201d').replace(/&ldquo;/g, '\u201c')
+    .replace(/&mdash;/g, '\u2014').replace(/&ndash;/g, '\u2013')
+    .replace(/&hellip;/g, '\u2026').replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
   return { region, ordinal, label };
 }
 

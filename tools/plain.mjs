@@ -114,6 +114,65 @@ const chromeGone = [...chrome, ...chromeKept].filter(id => !html.includes(`id="$
   'and the chrome it names is all still in the page'
   + (chromeGone.length ? ` — ${chromeGone.join(', ')}` : ''));
 
+// AND THE DIRECTION THAT WAS BROWSER-ONLY (2.23.2).
+//
+// Above, the offer CARD is checked both ways: every element declared, and every
+// declaration real. The chrome had only one of those halves — a declared region
+// must exist, but an existing region need not be declared. The other half lived
+// in the a11y walk, which drives a browser.
+//
+// `src/plain.ts` says the gate "walks the rendered header, `<main>` and the
+// footer and fails on any region in neither — so a new surface answers 'does
+// this survive the worst day' in the commit that creates it". That is true of
+// the WALK. A session that runs `npm run plain:check`, reads that sentence and
+// concludes the question is answered is wrong, and 2.23.1 is what that costs:
+// three regions moved out of `#held` (which covered them by covering it) into
+// `<main>`, every static gate green, and the walk red in CI ten minutes later.
+//
+// The regions of `<main>` are readable from the file. This is not a smaller
+// version of the walk's check — the walk sees runtime-inserted regions this
+// cannot — but it catches the case that actually happens, which is markup being
+// moved, and it catches it at the commit instead of in CI.
+// STRIP FIRST, THEN SLICE. The first `<main` in this file is inside a COMMENT,
+// 7.5KB before the real one, so slicing on the raw text found prose and the
+// region list came back empty. THIRD gate in one day with this exact defect —
+// `controls.mjs` read a commented `<section id="held">` as an open landmark,
+// and `narrows-check.mjs` had it on its first run. Blanked to spaces rather
+// than deleted so offsets stay offsets.
+const source = html.replace(/<!--[\s\S]*?-->/g, (c) => c.replace(/[^\n]/g, ' '));
+const mainStart = source.indexOf('<main');
+const mainEnd = source.indexOf('</main>', mainStart);
+const mainHtml = mainStart < 0 ? '' : source.slice(mainStart, mainEnd);
+
+/** Direct element children of <main> carrying an id — the regions of the work
+ *  surface, which is exactly what the two chrome lists account for. */
+const regions = [];
+{
+  let depth = 0;
+  for (const m of mainHtml.matchAll(/<(\/?)([a-z][a-z0-9-]*)\b([^>]*)>/g)) {
+    const [, slash, tag, attrs] = m;
+    if (tag === 'main') continue;
+    const selfClosing = /\/$/.test(attrs) || ['br', 'hr', 'img', 'input', 'meta', 'link'].includes(tag);
+    if (slash) { depth = Math.max(0, depth - 1); continue; }
+    if (depth === 0) {
+      const id = /\sid="([^"]+)"/.exec(attrs)?.[1];
+      if (id) regions.push(id);
+    }
+    if (!selfClosing) depth++;
+  }
+}
+
+(regions.length >= 8 ? ok : fail)(
+  `the work surface is there to be checked (${regions.length} regions of <main> found, expected at least 8)`);
+
+const unaccounted = regions.filter(id => !chrome.has(id) && !chromeKept.has(id));
+(unaccounted.length === 0 ? ok : fail)(
+  'every region of the work surface says whether it survives "Just one thing"'
+  + (unaccounted.length
+    ? ` — ${unaccounted.map(i => '#' + i).join(', ')} ${unaccounted.length === 1 ? 'is' : 'are'} in neither list.`
+      + ' Add each to PLAIN_CHROME_HIDDEN or PLAIN_CHROME_KEPT in src/plain.ts.'
+    : ''));
+
 const both = [...chrome].filter(id => chromeKept.has(id));
 (both.length === 0 ? ok : fail)(
   'no region is declared as both stripped and surviving'

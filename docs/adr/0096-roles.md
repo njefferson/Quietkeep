@@ -20,9 +20,9 @@ a thing that crosses areas **structurally cannot be a container** — it has to 
 a cross-cutting link, the shape `node.people` has used since 0.15.0. Q-13 said
 exactly that, named the mechanism, and then **deferred the build**:
 
-> *"Building role machinery now, before a single area or goal exists in his
-> store, repeats the eleven-empty-nouns mistake … Stage 4's evidence (does he
-> make containers at all at two-tap cost?) gates this."*
+Building role machinery before a single area or goal existed in any store would
+repeat the eleven-empty-nouns mistake, so stage 4's evidence — whether
+containers get made at all at two-tap cost — was set as the gate.
 
 **Thirteen days.** The reasoning is not stupid — the eleven-empty-nouns mistake
 is real and is recorded in this repo. But the gate it set was *a session's

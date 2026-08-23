@@ -18,7 +18,7 @@
 import type { NodeState, State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { workSurface } from './nextup.ts';
-import { waitingOnAnyone, withWhom, waitingWords } from './people.ts';
+import { waitingOnAnyone, withWhom, waitingWords, promisedToAnyone } from './people.ts';
 import { calendarDaysBetween, isValidIso, localDayKey, type DayShape } from './time.ts';
 import { boundaryOf } from './day.ts';
 
@@ -42,6 +42,13 @@ export interface TodayCard {
   /** What is with somebody else, capped. */
   withOthers: { title: string; whom: string | null; how: string | null }[];
   withOthersTotal: number;
+  /** What YOU said you would do, capped (2.20.0). No `how` field, and the
+   *  omission is the design: `withOthers` carries a duration because ageing
+   *  somebody else's debt to you is a fact about a date, and the same words
+   *  pointed this way are the ledger `src/requests.ts` refuses. `PromiseLine`
+   *  has no `days` to carry, so there is nothing here to render. */
+  promised: { title: string; whom: string | null }[];
+  promisedTotal: number;
   /** Dates coming up, capped. */
   ahead: { day: string; title: string }[];
   aheadTotal: number;
@@ -72,6 +79,11 @@ export function todayCard(state: State, nowIso: string, zone: string, aheadDays 
   const behind = up.behind;
 
   const owed = waitingOnAnyone(state, nowIso, zone);
+  // AND THE OTHER DIRECTION (2.20.0). The same projection the screen uses, for
+  // the reason stated above: a second definition of "what somebody is expecting
+  // from me" would eventually disagree with the first, and then the paper and
+  // the app would say different things while both looked authoritative.
+  const promised = promisedToAnyone(state);
   const ahead: { day: string; title: string; days: number }[] = [];
   for (const n of heldNodes(state)) {
     if (n.lastDone) continue;
@@ -100,6 +112,10 @@ export function todayCard(state: State, nowIso: string, zone: string, aheadDays 
       how: waitingWords(l.days),
     })),
     withOthersTotal: owed.length,
+    promised: promised.slice(0, WITH_OTHERS_CAP).map(l => ({
+      title: title(l.node), whom: l.person,
+    })),
+    promisedTotal: promised.length,
     ahead: ahead.slice(0, AHEAD_CAP).map(a => ({ day: a.day, title: a.title })),
     aheadTotal: ahead.length,
   };

@@ -26,6 +26,7 @@ import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { serve } from './serve.mjs';
+import { requireFreshBundle } from './bundle-fresh.mjs';
 
 /** ONE SURFACE AT A TIME (1.40.0) — see the note in tools/smoke.mjs. */
 const openSurface = async (pg, id) => {
@@ -71,10 +72,7 @@ const openSurface = async (pg, id) => {
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const AXE = join(ROOT, 'node_modules', 'axe-core', 'axe.min.js');
-if (!existsSync(join(ROOT, 'public', 'app.js'))) {
-  console.error('public/app.js is missing — run `npm run build` first.');
-  process.exit(1);
-}
+requireFreshBundle(ROOT, 'the a11y walk');
 
 const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
@@ -381,7 +379,27 @@ const REGISTRY = {
   'trash view': ['#trash-open', '#trash-total', '.trash-row'],
   // The picker's create-in-place offer, which only exists once unknown words
   // have been typed — a control someone meets mid-filing is still a control.
-  'detail sheet, creating a place': ['#detail-parent-filter', '#detail-parent-create'],
+  // The kind picker joins this in the SAME COMMIT it is built (hub LESSONS 28),
+  // which is the rule that exists because a surface added without its entry
+  // ships unmeasured and every gate stays green about it. Its label is checked
+  // too: a bare select answers to nothing.
+  'detail sheet, creating a place': [
+    '#detail-parent-filter', '#detail-parent-create',
+    '#detail-parent-kind', 'label[for="detail-parent-kind"]',
+  ],
+  // The sheet open on a CONTAINER, with a rhythm set on it (2.17.0). Its own
+  // state and not a fold of 'detail sheet', because these three controls carry
+  // DIFFERENT WORDS here — a goal is told it will come back, not that it will
+  // repeat — and words are what SC 2.5.3 and the name audits read. Measured on
+  // the variant a reader of a goal actually meets rather than on the default
+  // strings, which is the difference between auditing the markup and auditing
+  // the app. `#detail-repeat-stop` is in the list on purpose: it is revealed
+  // only once a cadence exists, and it was hidden from every container by a
+  // predicate keyed on kind — a state you could enter and not leave.
+  'detail sheet, a container with a rhythm': [
+    '#detail-repeat-label', '#detail-repeat-set', '#detail-repeat-stop',
+    '#detail-every', '#detail-slack', '#detail-repeat-hint',
+  ],
   // The situation field (1.29.0). Scoped to its own group: `.detail-label`
   // unscoped answers for every group on the sheet, so a registry entry written
   // that way measures the note's label and reports the situation's as covered.
@@ -515,7 +533,16 @@ const REGISTRY = {
   // AND the list has rows, which is exactly what 'next up' stages. A registry
   // entry matching nothing visible is the false receipt `#nextup-left` cost a
   // release for, so it goes where it is actually on screen.
+  // `#nextup-dated` (2.19.1) IS listed, and the note about `#nextup-fixed` two
+  // paragraphs up is why the two differ rather than an argument against this.
+  // That one renders only when something is fixed today, so an entry naming it
+  // would match nothing on most runs — the false receipt `#nextup-left` cost a
+  // release for. This one renders on EVERY ordinary offer, zero included, so it
+  // always has content to measure. Named rather than left to `.nextup-count`,
+  // for `#nextup-written`'s reason: "it happens to match a selector already in
+  // the list" is how a surface goes unmeasured the moment its class changes.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
+    '#nextup-dated',
     '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
     // When you cannot start (1.24.0). The heavy control is on the card whenever
     // there is a head, so it belongs in this state. THE INVITATION IS NOW ONE
@@ -556,13 +583,41 @@ const REGISTRY = {
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
   'where you are': ['#where', '#where-note', '.card-where'],
+  // HOW LONG YOU HAVE (2.19.0). Its own entry, and the note is in it: the
+  // standing line only renders while the filter is ON, so an entry naming only
+  // the chooser would report the surface measured while the one line that says
+  // what is being hidden had never been looked at.
+  'how long you have': ['#how-long', 'label[for="how-long"]', '#how-long-note'],
+  // WHAT'S THE SITUATION (2.21.0). Its own entry rather than a fold into the
+  // two above: those name the inputs, which MOVED into this sheet, and this
+  // names the sheet's own chrome and the saved list. Keyed on IDs — the rows
+  // borrow `.roles-row` and `.roles-held` from two other sheets, and a shared
+  // class is not coverage.
+  'the situation': ['#situation-open', '#sheet-situation-title', '#sheet-situation-close',
+    '#situation-words', '#situation-save-label', '#situation-name', '#situation-save',
+    '#situation-save-hint', '#situation-list .linklike', '#situation-list .roles-held'],
   // WHO IT IS FOR (2.6.0, ADR-0096). Its own driven state for the reason 'where
   // you are' has one: the door and the readout render only once a role exists,
   // so registering them on a state whose store has none would be three false
   // receipts — the failure `#nextup-left` already cost a release for.
   'where the attention is': ['#roles-open'],
+  // WHERE THE TIME ACTUALLY WENT joined this in 2.24.0, by ID. The two lists in
+  // this sheet share `.roles-name` and `.roles-held`, and the note below is the
+  // reason that is not enough: a shared class is not coverage. Without these
+  // four ids the second readout would ride on the first one's classes and be
+  // reported as measured while nothing had looked at its headings or its words.
   'roles open': ['#sheet-roles-title', '#sheet-roles-close', '#roles-words',
-    '.roles-name', '.roles-held', '#roles-unnamed'],
+    '.roles-name', '.roles-held', '#roles-unnamed',
+    '#roles-load-heading', '#roles-attention-heading', '#roles-attention-words'],
+  // WHAT YOU ARE WORKING TOWARD (2.18.0). Its own entry rather than a fold into
+  // 'roles open': the two sheets share `.roles-name` and `.roles-held`, and a
+  // shared class is not coverage — `surfaces.mjs` records the draft that counted
+  // `.section` and reported all seventeen sections measured. The ids are what
+  // pin this surface, and the two shared classes ride along so the rows are
+  // measured where they actually render.
+  'what you are working toward': ['#horizons-open'],
+  'horizons open': ['#sheet-horizons-title', '#sheet-horizons-close',
+    '#horizons-words', '#horizons-list .roles-name', '#horizons-list .roles-held'],
   // THE AMBIENT HORIZON on the focus surface (2.7.1, collisions entry 7). It
   // shares `.focus-held`'s measured pair — the class adds nothing but a second
   // element — but it gets its own registry line because it renders only when a
@@ -600,6 +655,17 @@ const REGISTRY = {
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
     '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
     '#detail-context-hint',
+    // WHICH KIND OF WANT (2.23.0). Named rather than left to a class, for
+    // `#detail-written`'s reason: "it happens to match a selector already in
+    // the list" is how a control goes unmeasured the moment its markup changes.
+    // Safe to name here because it renders on every non-trashed node's sheet,
+    // unlike `#nextup-fixed` — the false-receipt trap this file already carries
+    // a note about.
+    '#detail-menu-category',
+    // A FIRST STEP, FROM ANYWHERE (2.23.0). The offer card's own invitation is
+    // registered in its own state; this is the second door, on the sheet, and
+    // it renders on every non-trashed node so naming it is safe.
+    '#detail-step-label', '#detail-step', '#detail-step-set', '#detail-step-hint',
     '.detail-hint', '#detail-name', '#detail-date', '#detail-every', '#detail-rename',
     '#detail-date-set', '#detail-close',
     // 1.3.0's verbs: the defer date, the estimate, and the picker's filter.
@@ -736,6 +802,16 @@ const REGISTRY = {
   // `#menu-open` left in 2.0.7 for the reason `#gauge` left 'coverage open': the
   // Menu is a sheet now and its control is on the inert surface underneath.
   'menu open': ['#sheet-menu-title', '#sheet-menu-close', '.menu-cat', '.menu-item', '.menu-title'],
+  // UPKEEP, and it took a coverage gate to notice it was missing. This section
+  // has a heading and its own chips, and it had NO entry here at all — contrast
+  // and accessible names were never checked on it, in either theme, for its
+  // whole life. Nobody forgot to add it so much as nobody could: the sample's
+  // one upkeep item was done 40 days into a 60-day rhythm, so it is comfortable
+  // and the section is correctly hidden, and no fixture in any walk ever
+  // reached the state. A surface no test can arrive at is a surface no test
+  // measures. The fixture now carries a ready upkeep and this is audited last
+  // in each theme, on the sample, where nothing downstream can be perturbed.
+  'upkeep ready': ['#upkeep-heading', '.chip', '.chip-title', '.chip-why'],
   // Coming back (law 8). The reassurance is the CONTENT, so it gets full ink;
   // the counts beneath it are the lesser fact and sit in the quiet token. There
   // is nothing here keyed to how long you were away — no colour, no threshold —
@@ -763,7 +839,7 @@ const REGISTRY = {
     '.detail-inline', '#detail-close'],
   // The status report's controls, in the panel that talks about handing things
   // over. Four buttons and the line that confirms one worked.
-  'report controls': ['#report-copy', '#report-markdown', '#report-csv', '#report-print',
+  'report controls': ['#report-show', '#report-copy', '#report-markdown', '#report-csv', '#report-print',
     '.about-p', '.about-section'],
   // The person lens. How long something has been with someone is the
   // lowest-contrast text here and it is load-bearing — it is the fact you use to
@@ -771,6 +847,13 @@ const REGISTRY = {
   // no colour that means "they have had this a while", and there will not be.
   'people': ['#people-heading', '.people-count', '.people-open',
     '.people-title', '.people-why'],
+  // THE OTHER DIRECTION (2.20.0). Its own entry, keyed on IDS, because the two
+  // lists in this section share every class — and a shared class is not
+  // coverage. `tools/surfaces.mjs` records the draft that counted `.section`
+  // and reported all seventeen sections measured; this is the same mistake one
+  // scale down, and the entry above would have made it silently.
+  'people, the other direction': ['#people-promised-count',
+    '#people-promised .people-title', '#people-promised .people-why'],
   // The sheet's write side. A free-text box with a datalist and a select are the
   // two smallest targets on it.
   'detail sheet, with someone': ['#detail-person',
@@ -1039,7 +1122,7 @@ async function auditNames(page, stateName, theme) {
   // title: a card in a list and the same card in search, or two errands both
   // called "the same errand twice". The app cannot make a person's titles
   // unique, and a real store holds 1,405 actions, so a gate on this would
-  // go red on his data rather than on a defect. **A check that fails on the
+  // go red on real data rather than on a defect. **A check that fails on the
   // user's content is not measuring the app.**
   //
   // It stays visible because the app-authored collisions are real and worth
@@ -1949,6 +2032,23 @@ try {
 
     // State 3d: Work mode — Next up, then the coverage list opened.
     await page.waitForSelector('#nextup:not([hidden])');
+    // WHAT TODAY COMMITS YOU TO (2.19.1). Asserted before the audits, because a
+    // registry entry naming an element that renders empty is a false receipt —
+    // the failure `#nextup-left` cost a release for, and the note on this
+    // entry's own line is about exactly that.
+    const datedLine = await page.evaluate(() => {
+      const el = document.querySelector('#nextup-dated');
+      return el && !el.hidden ? (el.textContent ?? '').trim() : '';
+    });
+    (/\bdated today\b/.test(datedLine) ? pass : fail)(
+      `${theme}/next up: the day's own commitments are stated ("${datedLine}")`);
+    (!/left today|remaining|behind|overdue/i.test(datedLine) ? pass : fail)(
+      `${theme}/next up: and it is a count of dates, never a remainder (ADR-0103)`);
+    // SAID PLAINLY: this measures the ZERO wording, because the sample dates
+    // nothing today. The one-thing and many-things wordings — and that zero
+    // carries no digit and no congratulation — are held by test/clock.test.ts,
+    // which has covered `datedWords` since the clock module. What was missing
+    // was never the words; it was any route to them outside an opt-in clock.
     await auditContrast(page, 'next up', theme);
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
@@ -2367,6 +2467,12 @@ try {
     await page.click('#detail-context-set');
     await page.waitForSelector('#detail-context-list li');
     await page.click('#detail-close');
+    // THROUGH THE DOOR (2.21.0). Both inputs moved out of the pile and into
+    // `#sheet-situation`, so this opens it — and opening it is now part of what
+    // the walk proves, rather than the chooser being assumed to be on screen.
+    await page.waitForSelector('#situation-open:not([hidden])');
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
     await page.waitForSelector('#where-row:not([hidden])');
     await page.selectOption('#where', { label: 'At home' });
     await page.waitForSelector('#where-note:not([hidden])');
@@ -2375,6 +2481,96 @@ try {
     await auditNames(page, 'where you are', theme);
     await auditSeparationAndTargets(page, 'where you are', theme);
     await auditFocusRings(page, 'where you are', theme, ['#where']);
+
+    // HOW LONG YOU HAVE (2.19.0, the plan's phase 3). The other half of the
+    // situation, driven the same way — chosen on the work surface, with the
+    // standing line waited for rather than assumed, because that line is the
+    // only thing telling a reader that what they are looking at is narrowed.
+    await page.selectOption('#how-long', '30');
+    await page.waitForSelector('#how-long-note:not([hidden])');
+    const howLongNote = await page.locator('#how-long-note').innerText();
+    (/never put a time on/.test(howLongNote) ? pass : fail)(
+      `${theme}/how long: the line says unestimated things are still shown ("${howLongNote.slice(0, 60)}")`);
+    (/\d/.test(howLongNote) && !/hidden|left|remaining/i.test(howLongNote) ? pass : fail)(
+      `${theme}/how long: it states the scope and never a count of what is hidden`);
+    await auditContrast(page, 'how long you have', theme);
+    await auditAxe(page, 'how long you have', theme);
+    await auditNames(page, 'how long you have', theme);
+    await auditSeparationAndTargets(page, 'how long you have', theme);
+    await auditFocusRings(page, 'how long you have', theme, ['#how-long']);
+    // Back to no limit, so every state after this sees the whole list — the
+    // rule the place chooser already follows two blocks down.
+    await page.selectOption('#how-long', '');
+    await page.waitForSelector('#how-long-note', { state: 'hidden' });
+
+    // A SITUATION SOMEBODY NAMED (2.21.0). Saved through the app, recalled, and
+    // forgotten — the three acts, in the order they can fail.
+    await page.selectOption('#how-long', '15');
+    await page.waitForSelector('#how-long-note:not([hidden])');
+    await page.fill('#situation-name', 'The Tuesday standup');
+    await page.click('#situation-save');
+    await page.waitForSelector('#situation-list li');
+    const savedRow = await page.evaluate(() => {
+      const li = document.querySelector('#situation-list li');
+      return {
+        name: li?.querySelector('.linklike')?.textContent?.trim() ?? '',
+        what: li?.querySelector('.roles-held')?.textContent?.trim() ?? '',
+      };
+    });
+    (savedRow.name === 'The Tuesday standup' ? pass : fail)(
+      `${theme}/situation: a named situation is listed ("${savedRow.name}")`);
+    (/At home/.test(savedRow.what) && /15/.test(savedRow.what) ? pass : fail)(
+      `${theme}/situation: and it says what it recalls ("${savedRow.what}")`);
+    (!/used|last|times|often|ago/i.test(savedRow.what) ? pass : fail)(
+      `${theme}/situation: no record of how often it is used — a shortcut, not a habit log`);
+    await auditContrast(page, 'the situation', theme);
+    await auditAxe(page, 'the situation', theme);
+    await auditNames(page, 'the situation', theme);
+    await auditSeparationAndTargets(page, 'the situation', theme);
+    await auditFocusRings(page, 'the situation', theme, ['#situation-save']);
+
+    // RECALLED: it sets BOTH inputs, which is the whole point of naming one.
+    await page.selectOption('#how-long', '');
+    await page.selectOption('#where', '');
+    await page.waitForTimeout(200);
+    await page.click('#situation-list .linklike');
+    await page.waitForTimeout(250);
+    const recalled = await page.evaluate(() => ({
+      where: document.querySelector('#where')?.value ?? '',
+      how: document.querySelector('#how-long')?.value ?? '',
+    }));
+    (recalled.how === '15' && recalled.where !== '' ? pass : fail)(
+      `${theme}/situation: recalling it sets BOTH inputs (where="${recalled.where}", how="${recalled.how}")`);
+
+    // AND THE STANDING LINE IS OUTSIDE THE SHEET. This is what makes moving the
+    // controls safe: behind a sheet nobody has open, a filter is invisible, and
+    // an invisible filter is an app that looks broken.
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
+    const noteVisible = await page.evaluate(() => {
+      const n = document.querySelector('#how-long-note');
+      return Boolean(n && !n.hidden && (n.textContent ?? '').trim().length > 0);
+    });
+    (noteVisible ? pass : fail)(
+      `${theme}/situation: with the sheet CLOSED, the line still says the list is narrowed`);
+
+    // Forget it, and put both back so every state after this sees everything.
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
+    await page.click('#situation-list .ghost');
+    await page.waitForTimeout(250);
+    const goneCount = await page.locator('#situation-list li').count();
+    (goneCount === 0 ? pass : fail)(
+      `${theme}/situation: forgetting one takes it off the list (${goneCount} left)`);
+    await page.selectOption('#how-long', '');
+    await page.waitForSelector('#how-long-note', { state: 'hidden' });
+    // AND CLOSED BEHIND US. A modal dialog makes everything behind it inert,
+    // and an inert element is neither hidden nor disabled — so the next block's
+    // click does not fail, it TIMES OUT, which reads as a broken control rather
+    // than as a sheet left open. This file already carries that lesson about
+    // `#build-version`; leaving this one open reproduced it exactly.
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
     // WHO IT IS FOR (2.6.0, ADR-0096), driven the same way and for the same
     // reason: a role planted into the store would prove the readout renders and
     // nothing about whether one can be made. Three claims, in the order they can
@@ -2420,6 +2616,7 @@ try {
       `${theme}/roles open: the unnamed remainder is STATED — on a real store it is the biggest number`);
     (/not a target/.test(readout.words) ? pass : fail)(
       `${theme}/roles open: it says out loud that it is not a score (law 7 is what makes it legal)`);
+
     // NO BAR, NO METER, NO PROGRESS ELEMENT anywhere on this surface. A bar is a
     // machine for implying you are behind (law 5), and the check is structural
     // rather than a promise in a comment.
@@ -2430,8 +2627,101 @@ try {
     await page.click('#sheet-roles-close');
     await page.waitForSelector('#sheet-roles[open]', { state: 'detached' });
 
-    // Back to everywhere, so every state after this sees the whole list.
+    // WHAT YOU ARE WORKING TOWARD (2.18.0, the plan's phase 2 step 3).
+    //
+    // BUILT THROUGH THE APP, like the roles readout above and for the same
+    // reason: a goal planted into the store proves the list renders and nothing
+    // about whether one can be made. Four claims, in the order they can fail —
+    // the door is absent until a horizon EXISTS; the container picker makes a
+    // goal; the goal is listed with what it is carrying; and **it is still
+    // listed once that work is finished**.
+    //
+    // THAT LAST ONE IS THE ASSERTION THAT MATTERS. Everything else here would
+    // render identically if the list quietly dropped horizons with nothing under
+    // them — which is exactly what Review does, correctly, and exactly what this
+    // surface must not do. A goal whose work is done is the moment it would
+    // vanish, and it is the moment somebody most needs to see it.
+    const hDoorBefore = await page.evaluate(() =>
+      document.querySelector('#horizons-open')?.hidden ?? null);
+    (hDoorBefore === true ? pass : fail)(
+      `${theme}/horizons: the door is absent until a horizon exists (hidden=${hDoorBefore})`);
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-parent-filter', 'A calmer house');
+    await page.waitForSelector('#detail-parent-create:not([hidden])');
+    await page.selectOption('#detail-parent-kind', 'goal');
+    await page.click('#detail-parent-create');
+    await page.waitForTimeout(250);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.waitForSelector('#horizons-open:not([hidden])');
+    await auditContrast(page, 'what you are working toward', theme);
+    await auditSeparationAndTargets(page, 'what you are working toward', theme);
+    await page.click('#horizons-open');
+    await page.waitForSelector('#sheet-horizons[open]');
+    await auditContrast(page, 'horizons open', theme);
+    await auditAxe(page, 'horizons open', theme);
+    await auditNames(page, 'horizons open', theme);
+    await auditSeparationAndTargets(page, 'horizons open', theme);
+    await auditFocusRings(page, 'horizons open', theme, ['#sheet-horizons-close']);
+    const horizons = await page.evaluate(() => ({
+      rows: [...document.querySelectorAll('#horizons-list .roles-row')].map(r => ({
+        name: r.querySelector('.roles-name')?.textContent?.trim(),
+        held: r.querySelector('.roles-held')?.textContent?.trim(),
+      })),
+      words: document.querySelector('#horizons-words')?.textContent?.trim() ?? '',
+    }));
+    const goalRow = horizons.rows.find(r => /A calmer house/.test(r.name ?? ''));
+    (goalRow ? pass : fail)(
+      `${theme}/horizons open: the goal somebody just made is listed`);
+    (/ — goal/.test(goalRow?.name ?? '') ? pass : fail)(
+      `${theme}/horizons open: the row says what KIND it is — a list of bare titles is a list of projects`);
+    (/1 thing under it/.test(goalRow?.held ?? '') ? pass : fail)(
+      `${theme}/horizons open: carrying the thing it was made around ("${goalRow?.held ?? ''}")`);
+    (/no rhythm set/.test(goalRow?.held ?? '') ? pass : fail)(
+      `${theme}/horizons open: and the absence of a rhythm is STATED, not left blank`);
+    (horizons.rows.every(r => /thing|nothing/.test(r.held ?? '')) ? pass : fail)(
+      `${theme}/horizons open: every count is words, never a bare number`);
+    (/not a target/.test(horizons.words) ? pass : fail)(
+      `${theme}/horizons open: it says out loud that it is not a score (law 7 again)`);
+    await page.click('#sheet-horizons-close');
+    await page.waitForSelector('#sheet-horizons', { state: 'hidden' });
+
+    // AND NOW FINISH THE WORK UNDER IT. The goal must stay on the list holding
+    // nothing — the state Review raises as an exception and caps at three, and
+    // the state this surface exists to render as an ordinary fact.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.click('#detail-done');
+    await page.waitForTimeout(250);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.click('#horizons-open');
+    await page.waitForSelector('#sheet-horizons[open]');
+    const after = await page.evaluate(() =>
+      [...document.querySelectorAll('#horizons-list .roles-row')].map(r => ({
+        name: r.querySelector('.roles-name')?.textContent?.trim(),
+        held: r.querySelector('.roles-held')?.textContent?.trim(),
+      })));
+    const emptied = after.find(r => /A calmer house/.test(r.name ?? ''));
+    (emptied ? pass : fail)(
+      `${theme}/horizons emptied: the goal is STILL LISTED once its work is finished`);
+    (/nothing under it yet/.test(emptied?.held ?? '') ? pass : fail)(
+      `${theme}/horizons emptied: and it says so plainly ("${emptied?.held ?? ''}")`);
+    await auditContrast(page, 'horizons open', theme);
+    await auditNames(page, 'horizons open', theme);
+    await page.click('#sheet-horizons-close');
+    await page.waitForSelector('#sheet-horizons', { state: 'hidden' });
+
+    // Back to everywhere, so every state after this sees the whole list. The
+    // chooser lives in `#sheet-situation` since 2.21.0, so this opens it, sets
+    // it and closes it again rather than reaching for a control on the shell.
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
     await page.selectOption('#where', '');
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
     await page.waitForSelector('#where-note', { state: 'hidden' });
 
     // State 3e: the detail sheet — the surface that makes this a planner.
@@ -2447,6 +2737,16 @@ try {
     await auditContrast(page, 'detail sheet', theme);
     await auditAxe(page, 'detail sheet', theme);
     await auditNames(page, 'detail sheet', theme);
+    // WHICH KIND OF WANT (2.23.0). The six-value field was dead code in the
+    // shipped app: both routes a person uses wrote `read`, so the Menu's
+    // six-way grouping rendered one group on every store. Asserted rather than
+    // assumed — a picker that renders and is ignored looks identical to one
+    // that works.
+    const catOptions = await page.locator('#detail-menu-category option').count();
+    (catOptions === 6 ? pass : fail)(
+      `${theme}/detail sheet: the Menu category offers all six (${catOptions})`);
+    ((await page.locator('#detail-menu-category').inputValue()) === 'read' ? pass : fail)(
+      `${theme}/detail sheet: and defaults to read, so the common case is one tap`);
     await auditSeparationAndTargets(page, 'detail sheet', theme);
     await auditFocusRings(page, 'detail sheet', theme, ['#detail-date-set', '#detail-close', '#detail-feeds']);
     // Put the field back, so the states after this one meet an ordinary sheet
@@ -2910,6 +3210,44 @@ try {
     await auditSeparationAndTargets(page, 'people', theme);
     await auditFocusRings(page, 'people', theme, ['.people-open']);
 
+    // AND THE OTHER DIRECTION (2.20.0). Driven through the app rather than
+    // seeded: a promise planted into the store proves the list renders and
+    // nothing about whether one can be made. Built from a card of its own so a
+    // change to the sequence above cannot leave this measuring nothing.
+    //
+    // THE ASSERTION THAT MATTERS IS THE NEGATIVE ONE. Everything here would
+    // render identically if the row carried a duration, and a duration on this
+    // side is the ledger `src/requests.ts` says the app exists not to keep. It
+    // is checked in the rendered words, not only in the type.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-person', 'Rowan');
+    await page.selectOption('#detail-relation', 'promised-to');
+    await page.click('#detail-person-set');
+    await page.waitForTimeout(250);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.waitForSelector('#people-promised li');
+    const promised = await page.evaluate(() => ({
+      count: document.querySelector('#people-promised-count')?.textContent?.trim() ?? '',
+      rows: [...document.querySelectorAll('#people-promised li')].map(li => ({
+        title: li.querySelector('.people-title')?.textContent?.trim() ?? '',
+        why: li.querySelector('.people-why')?.textContent?.trim() ?? '',
+      })),
+    }));
+    (promised.rows.some(r => /Rowan/.test(r.why)) ? pass : fail)(
+      `${theme}/people other direction: what you said you would do is listed, for whom`);
+    (/said you would/.test(promised.count) ? pass : fail)(
+      `${theme}/people other direction: and the line says what it is ("${promised.count}")`);
+    const promisedWordsAll = promised.count + ' ' + promised.rows.map(r => r.why).join(' ');
+    (!/\bfor \d|week|day|month|since|ago|yesterday\b/i.test(promisedWordsAll) ? pass : fail)(
+      `${theme}/people other direction: NO duration anywhere on it ("${promisedWordsAll.slice(0, 70)}")`);
+    await auditContrast(page, 'people, the other direction', theme);
+    await auditAxe(page, 'people, the other direction', theme);
+    await auditNames(page, 'people, the other direction', theme);
+    await auditSeparationAndTargets(page, 'people, the other direction', theme);
+
     // And the sheet's write side, with a name actually attached — the state in
     // which the linked-people list renders at all.
     await page.locator('.people-open').first().click();
@@ -3124,6 +3462,31 @@ try {
     await auditSeparationAndTargets(page, 'detail sheet, creating a place', theme);
     await auditFocusRings(page, 'detail sheet, creating a place', theme, ['#detail-parent-create']);
     await page.fill('#detail-parent-filter', '');
+
+    // The sheet open on a CONTAINER, carrying a cadence (2.17.0). Driven rather
+    // than assumed: the three controls in the repeat group say something
+    // different here, and 2.16.0 shipped a picker that made goals which the
+    // very next control in this same sheet silently converted to upkeeps.
+    // Card 0 is the container made by the create-in-place step above.
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+    await page.locator('#cards .card-open').nth(0).click();
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.waitForSelector('#detail-repeat-group:not([hidden])');
+    const rWords = await page.locator('#detail-repeat-label').innerText();
+    if (!/come back/i.test(rWords)) {
+      fail(`${theme}: the sheet on a container still says "${rWords}" — the container wording went unmeasured`);
+    }
+    await page.fill('#detail-every', '90');
+    await page.fill('#detail-slack', '14');
+    await page.click('#detail-repeat-set');
+    await page.waitForSelector('#detail-repeat-stop:not([hidden])');
+    await auditContrast(page, 'detail sheet, a container with a rhythm', theme);
+    await auditAxe(page, 'detail sheet, a container with a rhythm', theme);
+    await auditNames(page, 'detail sheet, a container with a rhythm', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, a container with a rhythm', theme);
+    await auditFocusRings(page, 'detail sheet, a container with a rhythm', theme, ['#detail-repeat-stop']);
 
     // The situation field (1.29.0). Filled first, deliberately: the box is empty
     // in the ordinary case and an empty textarea has colours but no words, so a
@@ -3877,6 +4240,40 @@ try {
       `${theme}/320px @ 200%: capture is ${cap.w}x${cap.h} — still a usable target`);
     await auditAxe(page, 'page @ 320/200', theme);
 
+    // UPKEEP READY, and it is LAST on purpose.
+    //
+    // This section had no REGISTRY entry for its whole life, so its contrast and
+    // its accessible names had never been measured in either theme. Not an
+    // oversight in the list: an unreachable state. This walk builds its own
+    // store by capturing items, and never had an upkeep in it at all, so there
+    // was no moment in the run where the section was on screen to be sampled.
+    //
+    // Two things were tried before this and are worth not repeating. Seeding a
+    // ready item straight into IndexedDB does nothing — the app does not re-fold
+    // an appended event on reload. Auditing at 'with cards' timed out, because
+    // by then the walk's own earlier steps have moved the store on.
+    //
+    // So it runs at the very END of the theme, on the sample fixture, where
+    // there is nothing downstream left to perturb. The viewport is put back
+    // first: the step above leaves it at 320px under a 200% zoom, which is a
+    // deliberately hostile layout and not the one this section should be
+    // measured in.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.evaluate(() => document.querySelector('#more')?.showModal());
+    await page.waitForSelector('#more[open]');
+    await page.click('.more-go[data-go="group-actions"]');
+    await page.waitForSelector('#sheet-group-actions[open]');
+    await page.click('#sample');
+    await page.waitForTimeout(2500);
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
+    await page.waitForSelector('#upkeep:not([hidden])');
+    await auditContrast(page, 'upkeep ready', theme);
+    await auditAxe(page, 'upkeep ready', theme);
+    await auditNames(page, 'upkeep ready', theme);
+    await auditSeparationAndTargets(page, 'upkeep ready', theme);
+
     await ctx.close();
   }
 } finally {
@@ -3890,3 +4287,14 @@ if (failures.length) {
   process.exit(1);
 }
 console.log('The rendered app passes: both themes, every state, stressed viewport, rings and placeholder measured.');
+
+// AND LEAVE THE RECEIPT (2.23.2). This walk measures things no static read can
+// reach — contrast per state, focus rings, target separation, axe, the
+// 320px/200% reflow — so a commit that changes the rendered app and has not run
+// it is a commit nobody has checked. `tools/hooks/a11y-fresh.sh` refuses that
+// commit; this is what tells it the walk was run against THIS markup.
+// Only on a clean run: a receipt for a failed walk would be a lie in a file
+// nobody reads. See tools/a11y-stamp.mjs and LESSONS 126.
+const { writeStamp } = await import('./a11y-stamp.mjs');
+writeStamp();
+console.log('  receipt written to .a11y-stamp — the commit hook reads this.');

@@ -16,8 +16,10 @@ import { upkeepChips, nextUpQueue } from '../src/nextup.ts';
 import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
 import {
   endOfDayKey, setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
-  undoneEvents, untrashEvents, promoteFromMenuEvents, toMenuEvents,
+  undoneEvents, untrashEvents, promoteFromMenuEvents, promoteNodeFromMenuEvents, toMenuEvents,
 } from '../src/ui/detail-intents.ts';
+import { promotedKind } from '../src/kinds.ts';
+import { menuGroups } from '../src/menu.ts';
 import type { AppEvent } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
 
@@ -211,11 +213,206 @@ test('every edit intent leaves nothing silent (law 1, across all of them)', () =
     ['stopRepeat', () => stopRepeatEvents(ctx(), 'N')],
     ['undone', () => undoneEvents(ctx(), 'N')],
     ['toMenu', () => toMenuEvents(ctx(), 'N')],
-    ['promote', () => promoteFromMenuEvents(ctx(), 'N')],
+    ['promote', () => promoteFromMenuEvents(ctx(), 'N', 'action')],
   ];
   for (const [name, make] of build) {
     let s = captured('N');
     s = write(s, make(s));
     assert.equal(silentNodes(s).length, 0, `${name} leaves nothing silent`);
   }
+});
+
+// --- a rhythm on a container ------------------------------------------------
+//
+// The container-kind picker (2.16.0) made goals and areas creatable for the
+// first time. These assert that the rest of the sheet does not unmake them.
+
+/** A container of a given kind, made the way the picker makes one. */
+const containerOf = (id: string, kind: 'goal' | 'area' | 'project', title: string): State =>
+  write(emptyState(), [{
+    id: `k${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'node.created', node: id,
+    payload: { nodeKind: kind, title, provenance: { for: 'self' } },
+  } as AppEvent]);
+
+test('a rhythm on a goal leaves it a goal — the picker made one and Repeat unmade it', () => {
+  let s = containerOf('G', 'goal', 'Finish the novel');
+  assert.equal(s.nodes.get('G')!.kind, 'goal');
+
+  s = write(s, makeRepeatEvents(ctx(), 'G', s.nodes.get('G')!.kind, 90, 14));
+  const g = s.nodes.get('G')!;
+
+  // The defect this locks out: `node.kind.changed` from 'goal' to 'upkeep',
+  // emitted by the same control whose label read "Make it repeat". A goal was
+  // creatable for one release and destroyable by the next tap in the same sheet.
+  assert.equal(g.kind, 'goal', 'still a goal');
+  assert.equal(g.intervalDays, 90, 'and it carries the cadence');
+  assert.equal(g.comfortWindowDays, 14);
+  assert.ok(g.clocks.review, 'and a review clock, so law 1 is satisfied without a kind change');
+  assert.equal(silentNodes(s).length, 0);
+});
+
+test('every container kind survives its own rhythm, not only goal', () => {
+  for (const kind of ['goal', 'area', 'project'] as const) {
+    let s = containerOf('C', kind, 'a place work lives in');
+    s = write(s, makeRepeatEvents(ctx(), 'C', kind, 30, 7));
+    assert.equal(s.nodes.get('C')!.kind, kind, `${kind} survives`);
+  }
+});
+
+test('an ordinary item still becomes an upkeep — the fix narrowed nothing else', () => {
+  let s = captured('N', 'water the plant');
+  s = write(s, makeRepeatEvents(ctx(), 'N', s.nodes.get('N')!.kind, 7, 2));
+  assert.equal(s.nodes.get('N')!.kind, 'upkeep', 'unchanged for the case the control was built for');
+});
+
+test('stopping a goal’s rhythm leaves it a goal, not an action', () => {
+  let s = containerOf('G', 'goal', 'Finish the novel');
+  s = write(s, makeRepeatEvents(ctx(), 'G', s.nodes.get('G')!.kind, 90, 14));
+  s = write(s, stopRepeatEvents(ctx(), 'G', 'action', s.nodes.get('G')!.kind));
+
+  // Without the current kind, `stopRepeatEvents` writes `from: 'upkeep', to:
+  // 'action'` about a node that was never an upkeep — a false claim in an
+  // append-only log, and a goal silently demoted to a task.
+  const g = s.nodes.get('G')!;
+  assert.equal(g.kind, 'goal', 'still a goal');
+  assert.equal(g.intervalDays, 0, 'and the cadence is off');
+  assert.equal(pressureOf(g, AT, atMidnight(TZ)), null, 'no cadence, so no pressure');
+});
+
+test('an upkeep still returns to an action when its repeat stops', () => {
+  let s = captured('U', 'water the plant');
+  s = write(s, makeRepeatEvents(ctx(), 'U', s.nodes.get('U')!.kind, 7, 2));
+  s = write(s, stopRepeatEvents(ctx(), 'U', 'action', s.nodes.get('U')!.kind));
+  assert.equal(s.nodes.get('U')!.kind, 'action', 'unchanged for the case it was built for');
+});
+
+test('a goal’s rhythm is what brings the work under it back', () => {
+  // The claim the whole phase rests on, tested by difference rather than by
+  // reading: the same tree, offered at the same moment, with and without the
+  // rhythm. Nothing else about the action changes.
+  const build = (withRhythm: boolean): State => {
+    let s = containerOf('G', 'goal', 'Finish the novel');
+    const c = ctx();
+    s = write(s, [{
+      id: c.id(), vault: 'personal', at: AT, device: 'd0', seq: c.seq(),
+      kind: 'node.created', node: 'A',
+      payload: { nodeKind: 'action', title: 'Write the market scene', provenance: { for: 'self' } },
+    } as AppEvent, {
+      id: c.id(), vault: 'personal', at: AT, device: 'd0', seq: c.seq(),
+      kind: 'node.parented', node: 'A', payload: { parent: 'G' },
+    } as AppEvent]);
+    return withRhythm ? write(s, makeRepeatEvents(ctx(), 'G', 'goal', 90, 14)) : s;
+  };
+  const LATER = '2026-11-29T18:00:00.000Z';   // the 90 days have passed
+  const offered = (s: State): number => nextUpQueue(s, LATER, TZ).length;
+
+  assert.equal(offered(build(false)), 0, 'filed under a goal with no rhythm: silent, which is law 1 clause (d)');
+  assert.equal(offered(build(true)), 1, 'and the rhythm is what fetches it — the mountain comes down');
+});
+
+// --- coming back off the Menu ----------------------------------------------
+//
+// Promotion turns a WISH into work. Until 2.18.2 it rewrote the kind of
+// whatever it touched, because `toKind` defaulted to 'action' and both callers
+// took the default.
+
+test('a goal rested on the Menu comes back a goal', () => {
+  let s = containerOf('G', 'goal', 'A calmer house');
+  s = write(s, toMenuEvents(ctx(), 'G'));
+  assert.equal(s.nodes.get('G')!.kind, 'goal', 'the Menu itself never touched the kind');
+
+  s = write(s, promoteNodeFromMenuEvents(ctx(), s.nodes.get('G')!));
+  assert.equal(s.nodes.get('G')!.kind, 'goal', 'and neither does coming back');
+  assert.equal(s.nodes.get('G')!.onMenu, null, 'but it is off the Menu');
+});
+
+test('an upkeep comes back an upkeep, still carrying its rhythm honestly', () => {
+  // The worst of the three: it came back an `action` with intervalDays still 7,
+  // so it kept arriving on a rhythm while calling itself a task — and nothing
+  // in the app said either half of that.
+  let s = captured('U', 'water the plant');
+  s = write(s, makeRepeatEvents(ctx(), 'U', s.nodes.get('U')!.kind, 7, 2));
+  s = write(s, toMenuEvents(ctx(), 'U'));
+  s = write(s, promoteNodeFromMenuEvents(ctx(), s.nodes.get('U')!));
+  const n = s.nodes.get('U')!;
+  assert.equal(n.kind, 'upkeep', 'still an upkeep');
+  assert.equal(n.intervalDays, 7, 'and the rhythm it carries matches what it says it is');
+});
+
+test('a wish still becomes real work — the case the control was built for', () => {
+  let s = write(emptyState(), [{
+    id: `w${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'node.created', node: 'W',
+    payload: { nodeKind: 'aspiration', title: 'Learn to sail', provenance: { for: 'self' } },
+  } as AppEvent]);
+  s = write(s, toMenuEvents(ctx(), 'W'));
+  s = write(s, promoteNodeFromMenuEvents(ctx(), s.nodes.get('W')!));
+  assert.equal(s.nodes.get('W')!.kind, 'action', 'a demand-free kind genuinely does change');
+  assert.equal(silentNodes(s).length, 0, 'and the gate covered it on the way');
+});
+
+test('promotedKind changes only the demand-free kinds', () => {
+  for (const k of ['aspiration', 'pebble', 'person', 'journal', 'anchor', 'context', 'role'] as const) {
+    assert.equal(promotedKind(k), 'action', `${k} becomes work`);
+  }
+  for (const k of ['goal', 'area', 'outcome', 'project', 'upkeep', 'action', 'waiting-for'] as const) {
+    assert.equal(promotedKind(k), k, `${k} keeps what it was`);
+  }
+});
+
+// --- which kind of want (2.23.0) --------------------------------------------
+//
+// `docs/nd-collisions.md` entry 26 REFUSES the packaged reward-menu practice
+// outright and permits exactly one narrow thing: the category chosen at write
+// time instead of silently defaulting. It calls the current state a verified
+// defect — a six-value field that is dead code in the shipped app.
+
+test('the Menu category defaults to read, so the common case costs nothing', () => {
+  let s = captured('N', 'that novel everyone mentions');
+  s = write(s, toMenuEvents(ctx(), 'N'));
+  assert.equal(s.nodes.get('N')!.onMenu, 'read');
+});
+
+test('and any of the six can be chosen instead', () => {
+  for (const c of ['read', 'try', 'go', 'make', 'research', 'save-for'] as const) {
+    let s = captured('N', 'a want');
+    s = write(s, toMenuEvents(ctx(), 'N', c));
+    assert.equal(s.nodes.get('N')!.onMenu, c, `${c} lands`);
+  }
+});
+
+test('a category chosen wrongly is corrected in place, with no way out and back', () => {
+  // `menu.item.added` is last-write-wins on the `menu` stamp, so re-emitting it
+  // IS the correction. Without that the only route would be to bring the thing
+  // off the Menu and put it on again — two events to fix one word, and a state
+  // you enter and cannot leave (LESSONS 113).
+  let s = captured('N', 'that novel everyone mentions');
+  s = write(s, toMenuEvents(ctx(), 'N'));
+  const nodesBefore = s.nodes.size;
+
+  s = write(s, toMenuEvents(ctx(), 'N', 'research'));
+  assert.equal(s.nodes.get('N')!.onMenu, 'research');
+  assert.equal(s.nodes.size, nodesBefore, 'nothing was duplicated to do it');
+  assert.equal(silentNodes(s).length, 0);
+});
+
+test('the Menu groups by category, so more than one is more than one group', () => {
+  // The defect this closes, stated as the surface saw it: with every route
+  // writing `read`, a six-way grouping rendered one group on every store.
+  let s = captured('A', 'that novel');
+  s = write(s, [{
+    id: `m${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'capture.recorded', node: 'B', payload: { text: 'the pottery place', source: 'quick', sourceTags: [] },
+  } as AppEvent]);
+  s = write(s, [{
+    id: `r${seq++}`, vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'clarify.routed', node: 'B', payload: { route: 'next-action' },
+  } as AppEvent]);
+  s = write(s, toMenuEvents(ctx(), 'A', 'read'));
+  s = write(s, toMenuEvents(ctx(), 'B', 'go'));
+
+  const groups = menuGroups(s);
+  assert.equal(groups.length, 2, 'two categories, two groups');
+  assert.deepEqual(groups.map(g => g.items.length), [1, 1]);
 });

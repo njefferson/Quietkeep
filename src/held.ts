@@ -134,7 +134,7 @@ export function soonestClock(
    * says "this will come back to you", not "this is due". With cures counted, every
    * dateless thing sat in "Ready now" — a real import of 1,429 items and the heading
    * claimed 1,055 were ready today, which was arithmetically true and completely
-   * false as a statement about his day.
+   * false as a statement about anybody's day.
    *
    * `true` when the question is "does this have any clock at all", which is what
    * law 1 and the parked-until line are about.

@@ -327,7 +327,7 @@ words.
 ### B-21 · The way out of the (i) panel (0.21.1) — reported twice
 **found on device, twice.** The panel's header was `position: sticky` inside the
 dialog's own scroll container. That is correct, every engine in CI honours it,
-and it did **not** hold on his iPad: the header scrolled away with the content,
+and it did **not** hold on the iPad: the header scrolled away with the content,
 so both ways out sat at the extremes of a panel thousands of pixels long.
 
 The dependency was **removed rather than debugged**, because I cannot test the

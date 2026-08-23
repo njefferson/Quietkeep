@@ -1,10 +1,10 @@
 // Nothing personal about the owner ever lands in this repo. FAIL state.
 //
 // The rule, stated by the owner 2026-08-04: nothing personal or embarrassing
-// about him is ever recorded in the repo. That is a FAIL state.
+// about the owner is ever recorded in the repo. That is a FAIL state.
 //
-// The line that decides every case: his design statements are repo material;
-// who he is, is not. The product's framing ("a planner for neurodivergent
+// The line that decides every case: the owner's design statements are repo
+// material; who the owner is, is not. The product's framing ("a planner for neurodivergent
 // users") is public and fine; research about users as a population
 // (docs/nd-collisions.md) is fine; a sentence whose predicate is a diagnosis,
 // health fact, or identity disclosure and whose subject is the OWNER is not.
@@ -72,15 +72,15 @@ const ATTRIBUTION = [
   // numbers look like" is ordinary guidance prose and fired on the first run;
   // "the owner said: <quote>" is the thing.
   /\b(?:noah|the owner)\b\s+(?:said|says|reported|complained|wrote|told|put it|called it)\b[^\n]{0,60}["“]/i,
-  // His words, his message, his screenshot — attribution without a quote mark.
-  // The name token excludes handles and domains, which are his own product copy
+  // A named person's words, message or screenshot — attribution with no quote
+  // mark on it. The name token excludes handles and domains, which are product
   // and were caught by the first draft of this rule.
   /\b(?:noah(?![.\w])|the owner)(?:'s|\u2019s)\s+(?:words|quote|message|complaint|wording|phrasing|screenshot|exact)\b/i,
 
   // THE MIRROR IMAGE: QUOTE FIRST, ATTRIBUTION AFTER.
   // Every rule above reads left to right — role, then colon or verb, then the
   // quotation. The reverse order is the same act and went unseen for a month: a
-  // bolded sentence of his speech, closed, then the role and a date, in a repo's
+  // bolded sentence of reported speech, closed, then the role and a date, in a
   // own question log, green on this file the whole time.
   //
   // The closing quote must carry a markdown EMPHASIS close. That is what
@@ -132,9 +132,9 @@ const ATTRIBUTION = [
   // call a thing is, and stays legal.
   /\bnoah(?![.\w@-])(?:'s|\u2019s)\s+(?:ipad|iphone|device|phone|screen|browser|machine|laptop|tablet|instance|store|install)\b/i,
 ];
-const HIS_LIFE = [
-  // Anchored on him: a life noun tied to the owner by a possessive. "his
-  // prescriptions", "the owner's supervisor", "his wife". The app's own
+const OWNER_LIFE = [
+  // Anchored on the owner: a life noun tied to the owner by a possessive.
+  // A prescription, a supervisor, a spouse. The app's own
   // fixtures say "dentist" and "appointment" freely and are untouched, because
   // nothing there belongs to anybody.
   /\b(?:noah(?![.\w])|the owner|his)(?:'s|\u2019s)?\s+(?:\w+\s+){0,2}?(?:prescription|prescriptions|pharmacy|refill|refills|medication|medications|dose|dosage|inhaler|appointment|appointments|doctor|dentist|optician|optometrist|surgery|clinic|therapist|supervisor|employer|workplace|payroll|wife|husband|partner|spouse|kids|children|daughter|son|truck|car|vehicle|mortgage|landlord)\b/i,
@@ -226,7 +226,7 @@ test('FAIL STATE — no tracked file attaches a diagnosis or health fact to the 
   const hits: string[] = [];
   for (const f of tracked()) {
     const { body } = split(readFileSync(join(ROOT, f), 'utf8'));
-    for (const p of [...DISCLOSURE, ...ATTRIBUTION, ...HIS_LIFE]) {
+    for (const p of [...DISCLOSURE, ...ATTRIBUTION, ...OWNER_LIFE]) {
       const m = p.exec(body);
       // LOCATION ONLY, never the matched text — an assertion message lands in
       // a CI log, and on a public repo that log is public. Quoting the find
@@ -254,11 +254,11 @@ test('the skipped region carries no name and no date, in any file', () => {
 test('the gate BITES — each pattern catches the class it exists for', () => {
   // Made to fail once before being trusted (Doctrine §6).
   for (const v of PROBES) {
-    assert.ok([...DISCLOSURE, ...ATTRIBUTION, ...HIS_LIFE].some(p => p.test(v)), `pattern set misses a probe`);
+    assert.ok([...DISCLOSURE, ...ATTRIBUTION, ...OWNER_LIFE].some(p => p.test(v)), `pattern set misses a probe`);
   }
   // Every pattern must be exercised by at least one probe, or a pattern could
   // rot unnoticed behind the others.
-  [...DISCLOSURE, ...ATTRIBUTION, ...HIS_LIFE].forEach((pattern, i) => {
+  [...DISCLOSURE, ...ATTRIBUTION, ...OWNER_LIFE].forEach((pattern, i) => {
     assert.ok(PROBES.some(v => pattern.test(v)), `pattern ${i} has no probe`);
   });
   // And the product's own public vocabulary must NEVER trip — a gate that
@@ -277,6 +277,6 @@ test('the gate BITES — each pattern catches the class it exists for', () => {
     'the cache was diagnosed as stale, not missing',
   ];
   for (const l of legitimate) {
-    assert.ok(![...DISCLOSURE, ...ATTRIBUTION, ...HIS_LIFE].some(p => p.test(l)), `false positive on: "${l}"`);
+    assert.ok(![...DISCLOSURE, ...ATTRIBUTION, ...OWNER_LIFE].some(p => p.test(l)), `false positive on: "${l}"`);
   }
 });

@@ -29,6 +29,199 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.24.1',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**Two headings on the roles screen, so you can tell its two lists apart.** It now shows what each role is carrying and where your time went, and without headings those read as one list saying two contradictory things about the same name.',
+      '**One sentence removed that said the same thing twice.** The line under the first heading opened by repeating the heading.',
+      '**What is still true and still not fixed.** If you have never run a timer the time list reads zero for everything \u2014 it says so, and says what would fill it.',
+    ],
+  },
+  {
+    triplet: '2.24.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**\u201cWhere the attention is\u201d now shows where your time actually went.** That screen has been called that since it was built, and all it showed was how many things each of your roles is carrying \u2014 which is a different question. A role can be carrying nine things and have had none of your time, and that gap is the reason you would open it.',
+      '**It counts the work you finished too.** An hour spent on something you completed is still an hour of your attention. The list above it, of what each role is carrying, still leaves finished things out \u2014 that one is about what is still open.',
+      '**It comes from the timer, not from ticking things off.** Nothing here counts completions, so there is no way to make a number go up by finishing more.',
+      '**It says how many separate runs the time came from**, because ninety minutes in one sitting and ninety across nine are not the same thing about a day.',
+      '**In name order, never in order of size**, and with no target, no share of a whole and no bar. Ordering your own identities by how much each got is a ranking of your life.',
+      '**What is still true and still not fixed.** If you have never run a timer, every line reads zero \u2014 so it says so, and says what would fill it, rather than showing you a blank screen. And only timed work is in it, which makes it a sample of your attention rather than the whole of it. It says that too.',
+    ],
+  },
+  {
+    triplet: '2.23.2',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**\u201cJust one thing\u201d had grown a filter, and it should never have one.** Moving the situation control to the top of the screen last release accidentally left it standing in the mode built for the worst day \u2014 along with the two lines about what your list has been narrowed to. That mode exists to hand you one thing and take the choosing away; asking *where are you, how long have you got* is two more questions to answer before anything can start. All three are gone from it again.',
+      '**Nothing else about the mode changed**, and the control is exactly where it was on the ordinary screen.',
+    ],
+  },
+  {
+    triplet: '2.23.1',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**\u201cWhat\u2019s the situation?\u201d is now the first thing under the box you type in; it was down inside *What you are holding*.** So are the two lines telling you the list has been narrowed \u2014 *You are at home* and *You have 30 minutes*. They were 2129px below *Next up* on a phone, which is nearly four screenfuls of scrolling, and *Next up* is the thing they change. You could be handed something you cannot do where you are standing, with the way to say so four screens away.',
+      '**The Menu button is one place further down the tab order**, because there is one more button above it now. Nothing about it changed otherwise.',
+      '**What is still true and still not fixed.** Nothing else moved. The lens, the tree and the rest of *What you are holding* are exactly where they were.',
+    ],
+  },
+  {
+    triplet: '2.23.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**When you put something on the Menu you can say what kind of thing it is** — read, try, go, make, look into, save for. The Menu already sorted itself into those six and everything you put there was filed as *read*, so it only ever showed one heading. Now it shows what you actually have.',
+      '**One tap unless you want the choice.** It still says *read* unless you change it, so nothing takes longer than it did.',
+      '**And you can change your mind afterwards**, on the thing itself. No taking it off the Menu and putting it back.',
+      '**And you can name a first step on anything, not just whatever you were handed.** *Get the oil change done* is not a bad plan and it is not stale — it is unformed, and what unblocks it is saying *ring the garage*. That has been on the offer card for a while and had no other way in, so it only worked on the one thing the app chose to show you. Now it is on every thing\u2019s own panel.',
+      '**What is deliberately NOT here.** Nothing tracks whether you look at the Menu, nothing suggests items, nothing frames any of it as a reward you earned by doing something else. The research this came from refuses all of that by name, and the reason is that attaching strings to the one part of your list that never had any is how it stops working.',
+    ],
+  },
+  {
+    triplet: '2.22.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**You can look at what has changed without sending it to anybody.** *Show me*, beside the copy and save buttons. Until now the only way to read it was to copy it or save it — and doing that tells the app you have reported, so the next one starts from that moment. Look twice and the second look was empty, with nothing saying why.',
+      '**Looking costs you nothing.** It writes no record and moves nothing. Copy, save and print still do, because those are you handing it over, which is a different act.',
+      '**And when nothing has moved it says so, and says why.** Time passing does not write anything down — a week away with nobody touching it changes no records at all. That is an ordinary answer rather than an empty screen. What did change while you were gone is which things came round, and *Welcome back* is where that is said.',
+    ],
+  },
+  {
+    triplet: '2.21.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**One place to answer what your situation is.** *What\u2019s the situation?* holds where you are and how long you have — the two questions that change what the app should offer you. They were buried in the list of everything you are holding, which is the last place you would look when you have twenty minutes before you leave.',
+      '**And you can name a situation, so it comes back in one tap.** *The Tuesday standup* — at the office, fifteen minutes. Set it once, name it, and it is one tap after that. Nothing reminds you it exists, nothing counts how often you use it, and nothing notices when you stop.',
+      '**The line saying what is narrowed stays where you can see it.** The controls went behind a door; what they are doing did not. A filter you cannot see is an app that looks broken.',
+      '**Forgetting a situation leaves the situation set.** The shortcut goes, not the answer. Letting go of a place you named leaves the situations that mentioned it working — they simply stop mentioning it.',
+    ],
+  },
+  {
+    triplet: '2.20.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**You can say you promised something, and see everything you promised.** Pick *I said I would* when you name a person, and it appears under *With other people* — the same place that already showed what other people owe you, now showing both directions.',
+      '**It never says how long.** The things other people owe you say *for three weeks*, because that is a fact about their side. Nothing on your side does, and nothing ever will: a running tally of how long you have kept somebody waiting is the one kind of record this app is built not to keep.',
+      '**You keep a promise by doing the thing.** There is no separate step and nothing to tick twice — mark the work done and the promise goes with it.',
+      '**And you can take one back without dropping the work.** *No longer promised* takes off the undertaking and leaves the thing exactly where it was, with its date and everything else. You might still mean to do it; that is yours to decide, not the app\u2019s.',
+      '**It is on the printed card too**, beside what you are waiting on from other people.',
+    ],
+  },
+  {
+    triplet: '2.19.1',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**The work surface now says what today actually commits you to.** *Nothing is dated today* or *2 things are dated today* — the dates you set yourself, nothing inferred. It answers whether you can stop, and the answer that lets you stop is the one that used to be missing.',
+      '**It was already worked out and you could not get at it.** The app has counted this since the header clock, and only ever said it inside that clock — which is off unless you turn it on, and buries it after the time and how much of the day is left. Somebody wondering whether they can finish early should not have to switch on a clock to find out.',
+      '**Just the count, not the countdown.** How much of the day is left stays where it is. A number ticking down beside something you are avoiding makes it worse, which is why it came off this card in the first place.',
+      '**Gone when you have said enough, and gone in "Just one thing".** Settling for the day is finishing early, so the question has already been answered; and a day cut down to one thing is not a day for weighing the whole plate.',
+    ],
+  },
+  {
+    triplet: '2.19.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**You can say how long you have, and the app answers with things that fit.** Twenty minutes before you leave, five while the kettle boils. It sits beside *where you are* on the pile, and it narrows what the app offers you, not just what you can scroll.',
+      '**Anything you never put a time on still shows.** Most things never get one, and the app does not know how long they take — so it does not pretend they do not fit. The line under the chooser says exactly that, rather than leaving you to wonder why the list looks short.',
+      '**It uses your own estimate, never a correction of it.** If you said ten minutes and it took forty, it still counts as ten. What actually happened is on the thing itself for you to weigh; it is not the app\u2019s to weigh for you.',
+      '**Nothing is hidden from you, only from this view.** Everything still has its clock, still counts, and still comes back. Clear the chooser and it is all there.',
+    ],
+  },
+  {
+    triplet: '2.18.2',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**Resting something on the Menu no longer changes what it is.** Put a goal on the Menu and bring it back and you got a plain task — the goal was gone, and nothing told you. A repeating thing came back as a task too, still quietly repeating underneath. Now everything comes back as whatever it was.',
+      '**Except a wish, which is the whole point of bringing one back.** Something you put down as *maybe one day* becomes real work when you pick it up. That was the only case this was ever meant to do, and it was doing it to everything.',
+      '**This was the thing last release said was still broken.** It turned out to be worse than described — not just a leftover rhythm, but the kind itself being rewritten every time.',
+    ],
+  },
+  {
+    triplet: '2.18.1',
+    kind: 'ITERATION',
+    date: '2026-08-22',
+    notes: [
+      '**When you pick a place to put something, it now says what kind of place it is.** *A calmer house — goal*, *Re-do the hallway — project, in A calmer house*. Until you could make goals and areas, every place in that list was a project and the names alone were enough; now they are not, and filing forty things at once is exactly where guessing wrong costs the most.',
+      '**Filing many things under a goal already worked.** It was on the list to build and it turned out to be there — the picker offered it, and the filing landed. What was missing was only the words on the option.',
+    ],
+  },
+  {
+    triplet: '2.18.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**A page for what you are working toward.** Your goals, areas and outcomes, each with what it is carrying and how often it comes back. Behind a control, never the screen you land on — you go and look when you want to, and it does not greet you with a list of your ambitions every morning.',
+      '**The empty ones are on it, and that is the point.** A goal with nothing under it yet is still a goal. The app has always been able to work out which ones have nothing feeding them, but only ever mentioned it as something needing attention — which is a different thing from being able to see what you have and decide what goes under it.',
+      '**It stays there when the work is done.** Finish everything under a goal and the goal remains on the list, saying it is holding nothing. That is the moment it would have vanished, and the moment you most need to see it.',
+      '**Nothing on it is a score.** No bars, no percentages, no counts that could be read as a grade — what each one is carrying is said in words, and an empty one is not a failure. Projects are counted but not listed: a page with every project on it is the whole tree by another name.',
+    ],
+  },
+  {
+    triplet: '2.17.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-22',
+    notes: [
+      '**A goal or an area can come back on its own rhythm.** Say how often you want to look at it and it arrives when the time comes, with something from inside it — you never have to remember to go and check. Work filed under a goal with no rhythm stays quiet, which is the point: nothing nags until you have asked it to.',
+      '**Making a goal repeat used to quietly stop it being a goal.** The choice of kind arrived last release; the very next control in the same panel turned whatever you had made into a repeating chore, and the panel called it "Make it repeat" throughout. It no longer does. A goal that comes back is still a goal, and stopping it leaves it one too.',
+      '**The words changed to match.** On a goal or an area the control now says *Come back to this* rather than *Make it repeat*, because that is what it does — it brings the thing back to be looked at, not to be ticked off.',
+      '**And the way to stop was hidden.** Anything carrying a rhythm can now be told to stop carrying one. Before, that control appeared only on things the app called upkeeps, so a goal you had given a rhythm was in a state you could enter and not leave.',
+      '**Still broken, and worth knowing.** Taking something off the Menu turns it back into a plain task but leaves any rhythm it had running underneath. It will still come back on that rhythm while calling itself a task. The way to stop it is now reachable, which it was not before, but the underlying muddle is not fixed. *Fixed in 2.18.2.*',
+    ],
+  },
+  {
+    triplet: '2.16.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-21',
+    notes: [
+      '**You can make a goal, an area or an outcome — not only a project.** When you type a name for something to put a thing under, there is now a choice of what kind of thing it is. Project stays the default, so nothing you already do changes or costs an extra tap.',
+      '**Which means a task can finally say what it is working toward.** The offer card has been able to say *serves ⟨something⟩* since 2.5.0 and has never once said it, because there was nothing above a project for it to find. Now there can be.',
+      '**And a goal with nothing under it can be seen.** The app has always worked out which goals have nothing feeding them and which areas have gone quiet — it just had no goals or areas to work it out about.',
+      '**What is deliberately not here.** No button that makes an empty goal for its own sake, no screen that asks you to build a structure before you can start, and nothing that scores or counts how much has moved under anything.',
+    ],
+  },
+  {
+    triplet: '2.15.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-21',
+    notes: [
+      '**Bring your work in from another planner and the app now has something to offer you.** Before this it did not. An import of a few hundred things left *Next up* saying "nothing is asking today" — that morning, and the next one, and every one after — while the list underneath held every one of them. Everything about that was working as designed and the result was an app you could not start using.',
+      '**What was wrong.** Things you write here go into an inbox, and the offer hands them back to you one at a time until you have said what they are. Things that arrive from somewhere else never joined that inbox, so nothing ever picked them up. They were held, they were safe, they were findable by searching — and they were never once handed to you.',
+      '**Now an import arrives in the inbox, and the offer says where it came from.** One thing at a time, in the order it arrived, ranked below anything with a real date on it. The card says *this came in with your import* rather than *you put this down*, because you did not.',
+      '**Nothing invents a date.** A date that had already gone by is still dropped rather than turned into something asking today — that was right and it has not changed. A date still ahead of you is still kept, and those things are not treated as unsorted, because you already said when.',
+      '**Nothing else moved.** On a store you built here, the offer behaves exactly as it did.',
+    ],
+  },
+  {
+    triplet: '2.14.3',
+    kind: 'ITERATION',
+    date: '2026-08-21',
+    notes: [
+      '**The sample now has an upkeep that has actually come round.** It had one before, and it was deliberately not due yet — which meant the *Upkeep* strip stayed hidden, and if you loaded the sample to see what the app does, that was one thing it never showed you. There are two now: one comfortable, one ready, because the point of a rhythm is that it is not a deadline and you cannot see that from a single example.',
+      '**What this actually fixed is invisible to you and worth saying anyway.** Because nothing could reach that strip, none of the accessibility checks had ever measured it — not its contrast, not what a screen reader calls its chips, in either theme, for the whole life of the app. It passes now, and a new check refuses to let any part of the screen go unmeasured like that again.',
+      '**Nothing about the app itself changed.** The same strip, the same words, the same behaviour.',
+    ],
+  },
+  {
+    triplet: '2.14.2',
+    kind: 'ITERATION',
+    date: '2026-08-21',
+    notes: [
+      '**One line of wording in the footer.** Where it pointed you at the rest of the free apps, it referred to the person who makes them in the third person. It now just says how to get in touch. Nothing else in the app changed.',
+      '**Why a whole release for one phrase.** The rest of the work behind it was a sweep through every note, record and comment in the repository, removing references to a real person that had no business being in a public place. None of that is visible to you and none of it is a change to the app — so it does not get a release of its own. This phrase was the only part you could actually see.',
+    ],
+  },
+  {
     triplet: '2.14.1',
     kind: 'ITERATION',
     date: '2026-08-20',
