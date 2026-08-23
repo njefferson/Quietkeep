@@ -298,6 +298,7 @@
           data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
   <p id="where-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
   <p id="how-long-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
+  <p id="with-note" class="detail-hint" data-narrows="#nextup,#held" hidden></p>
 
   <!-- Next up: one thing, chosen for you, with a short capped list behind it.
        Hidden when nothing is asking — an empty morning says so. -->
@@ -2498,9 +2499,9 @@
 <dialog id="sheet-situation" aria-labelledby="sheet-situation-title" data-door="#situation-open">
   <h2 id="sheet-situation-title" class="section">What&rsquo;s the situation?</h2>
   <div class="sheet-body" tabindex="0">
-    <p id="situation-words" class="detail-hint">Where you are and how long you
-      have. Both narrow what the app offers you and what the list shows &mdash;
-      nothing is taken away, and everything still comes back.</p>
+    <p id="situation-words" class="detail-hint">Where you are, how long you have,
+      and who is with you. Each narrows what the app offers you and what the
+      list shows &mdash; nothing is taken away, and everything still comes back.</p>
 
     <!-- WHERE YOU ARE (2.2.0, ADR-0092). The tree says where a thing LIVES;
          this says where it can be DONE, and they are different questions. A
@@ -2520,6 +2521,29 @@
     <div id="how-long-row" class="lens-row">
       <label class="detail-inline" for="how-long">How long you have</label>
       <select id="how-long" aria-describedby="how-long-note"></select>
+    </div>
+
+    <!-- WHO IS HERE (2.26.0, entry 24's third axis and the best evidenced of
+         the three: a specific person in front of somebody is the most
+         distinctive focal event-based cue there is).
+
+         `fitsWith`'s shape is `fitsHere`'s exactly, including the part that
+         looks like a weakness — a thing with nobody named on it fits every
+         answer. Without that, saying who is here on a store where almost
+         nothing names a person empties the screen, and an app that goes empty
+         on the first day is the one somebody stops trusting (entry 23).
+
+         Hidden until somebody has been named, like the place chooser and for
+         the same reason. The duration chooser above is never hidden because it
+         works from the first day; this one cannot.
+
+         A FILTER OVER THE ONE OFFER, composed with the other two — never its
+         own screen. That guardrail is entry 24's own and the other two axes
+         depend on it: a set of named situational destinations is entry 16's
+         twenty options producing zero actions. -->
+    <div id="with-row" class="lens-row" hidden>
+      <label class="detail-inline" for="with-who">Who is here</label>
+      <select id="with-who" aria-describedby="with-note"></select>
     </div>
 
     <!-- A SITUATION YOU RECOGNISE (2.21.0). Name what you have just set and it

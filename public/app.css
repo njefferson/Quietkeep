@@ -2808,6 +2808,7 @@ body[data-plain="1"] #search,
 body[data-plain="1"] #situation-open,
 body[data-plain="1"] #where-note,
 body[data-plain="1"] #how-long-note,
+body[data-plain="1"] #with-note,
 body[data-plain="1"] #held
   { display: none !important; }
 /* end generated */

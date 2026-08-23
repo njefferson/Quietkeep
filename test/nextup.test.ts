@@ -560,3 +560,49 @@ test('the approach never reaches for the vocabulary this app refuses', () => {
     assert.doesNotMatch(item.approach!, new RegExp(`\\b${bad}\\b`, 'i'), `it says "${bad}"`);
   }
 });
+
+// ——— A DAY'S OWN CAPTURES COME BEFORE A FILE'S (2.26.0, entry 23) ———
+//
+// The routing proposal: extend the taskpaper precedent from clocks to ranking,
+// so an import's sheer size does not out-rank an ordinary day's captures for no
+// better reason than volume. The tier already sorts last and the queue caps at
+// five; neither touches the order INSIDE the tier, which was node id — minted
+// in arrival order, hundreds at a time by an import.
+
+test('a thing written today is offered before a file full of imported ones', () => {
+  const evs: AppEvent[] = [];
+  // An import mints its ids first, exactly as a real one does.
+  for (let i = 0; i < 12; i++) {
+    evs.push(ev('node.created', `i${i}`, { nodeKind: 'action', title: `imported ${i}`, arrived: true }));
+  }
+  evs.push(ev('capture.recorded', 'mine', { text: 'the thing I wrote this morning' }));
+  const q = nextUpQueue(fold(evs), NOW, TZ).filter(i => i.reason === 'unsorted');
+  assert.ok(q.length > 0, 'the tier is populated, or this test is about nothing');
+  assert.equal(q[0]!.node.id, 'mine',
+    'the day’s own capture leads; before this it sat behind all twelve, permanently');
+});
+
+test('among imported things, and among the day’s own, arrival order still holds', () => {
+  // The change is a single two-state tie-break, not a re-ranking. Everything
+  // else about the order is untouched, and this is the half most likely to be
+  // broken by extending it later.
+  const evs: AppEvent[] = [
+    ev('node.created', 'i1', { nodeKind: 'action', title: 'imported one', arrived: true }),
+    ev('node.created', 'i2', { nodeKind: 'action', title: 'imported two', arrived: true }),
+    ev('capture.recorded', 'm1', { text: 'mine one' }),
+    ev('capture.recorded', 'm2', { text: 'mine two' }),
+  ];
+  const ids = nextUpQueue(fold(evs), NOW, TZ).filter(i => i.reason === 'unsorted').map(i => i.node.id);
+  assert.deepEqual(ids, ['m1', 'm2', 'i1', 'i2'],
+    'own captures in arrival order, then imported ones in arrival order');
+});
+
+test('an imported thing is still offered — this demotes, it never excludes', () => {
+  // Entry 3 is the thesis and it binds here: a thing that leaves the visual
+  // field leaves existence. Sorting imported items behind is legitimate;
+  // dropping them out of the queue would be an archive with a friendlier name.
+  const evs = [ev('node.created', 'only', { nodeKind: 'action', title: 'imported and alone', arrived: true })];
+  const q = nextUpQueue(fold(evs), NOW, TZ).filter(i => i.reason === 'unsorted');
+  assert.equal(q.length, 1, 'with nothing else to sort behind, it is still offered');
+  assert.match(q[0]!.words, /came in with your import/, 'and the card says what it is');
+});

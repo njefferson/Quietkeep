@@ -98,7 +98,16 @@ const BUDGET = {
   // So the words are bought deliberately, which is the only way this number is
   // allowed to move. Nothing on the first screen changes — both headings are
   // inside a sheet behind a door that is hidden until a role exists.
-  words: 3500,
+  // 3500 -> 3506 on 2026-08-23 (2.26.0): the third filter axis. Six words —
+  // the "Who is here" label, and the sheet's opening sentence naming three
+  // things where it named two. Bought deliberately: the axis is entry 24's
+  // best-evidenced of the three, and a chooser nobody can read the purpose of
+  // is a control that does not work.
+  //
+  // Nothing on the first screen changes. Both live inside `#sheet-situation`,
+  // behind a door, and the chooser itself is hidden until somebody has been
+  // named.
+  words: 3506,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -340,7 +349,11 @@ const BUDGET = {
   // nothing on the first screen changes. The first-step flow had ONE route into
   // it for eleven months — the offer card — so it could only shape whatever the
   // app happened to hand you.
-  controls: 241,
+  // 241 -> 242 on 2026-08-23 (2.26.0): one `<select>` — who is here — inside
+  // the situation sheet, beside the two choosers already there. Hidden until a
+  // person has been named, so on a store that has named nobody the control
+  // count of every screen is unchanged.
+  controls: 242,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

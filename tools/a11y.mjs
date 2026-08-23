@@ -583,6 +583,12 @@ const REGISTRY = {
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
   'where you are': ['#where', '#where-note', '.card-where'],
+  // WHO IS HERE (2.26.0) — its own entry rather than a fold into the two
+  // above, because a shared class is not coverage and the ids are what pin a
+  // surface. `#with-row` is hidden until somebody has been named, so it is not
+  // listed: a registry entry naming a hidden thing is a false receipt, which is
+  // the finding 2.24.0 cost.
+  'who is here': ['#with-who', 'label[for="with-who"]', '#with-note'],
   // HOW LONG YOU HAVE (2.19.0). Its own entry, and the note is in it: the
   // standing line only renders while the filter is ON, so an entry naming only
   // the chooser would report the surface measured while the one line that says
@@ -3240,6 +3246,37 @@ try {
       `${theme}/people other direction: what you said you would do is listed, for whom`);
     (/said you would/.test(promised.count) ? pass : fail)(
       `${theme}/people other direction: and the line says what it is ("${promised.count}")`);
+    // WHO IS HERE (2.26.0, entry 24's third axis). Driven HERE and not in the
+    // situation block above, because that block runs before anybody has been
+    // named and `#with-row` is hidden until somebody has. A registry entry
+    // naming a hidden thing is a false receipt, which is what 2.24.0 cost.
+    //
+    // Three claims in the order they can fail: the chooser appears once a
+    // person exists; choosing somebody produces the standing line, which is the
+    // only thing telling a reader the offer has been narrowed at all; and
+    // clearing it puts everything back, so no state after this is measured
+    // through a filter it did not ask for.
+    await page.click('#situation-open');
+    await page.waitForSelector('#sheet-situation[open]');
+    await page.waitForSelector('#with-row:not([hidden])');
+    await page.selectOption('#with-who', { label: 'Rowan' });
+    await page.waitForSelector('#with-note:not([hidden])');
+    const withLine = await page.locator('#with-note').innerText();
+    (/Rowan/.test(withLine) ? pass : fail)(
+      `${theme}/who is here: the line names who ("${withLine.slice(0, 60)}")`);
+    (/nobody named on it/.test(withLine) ? pass : fail)(
+      `${theme}/who is here: and says the unattached still show — the default that stops it being a cliff`);
+    (!/hidden|\d+ others?\b/i.test(withLine) ? pass : fail)(
+      `${theme}/who is here: it states the scope and never a count of what is not shown`);
+    await auditContrast(page, 'who is here', theme);
+    await auditNames(page, 'who is here', theme);
+    await auditSeparationAndTargets(page, 'who is here', theme);
+    await auditFocusRings(page, 'who is here', theme, ['#with-who']);
+    await page.selectOption('#with-who', '');
+    await page.waitForSelector('#with-note', { state: 'hidden' });
+    await page.click('#sheet-situation-close');
+    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
+
     const promisedWordsAll = promised.count + ' ' + promised.rows.map(r => r.why).join(' ');
     (!/\bfor \d|week|day|month|since|ago|yesterday\b/i.test(promisedWordsAll) ? pass : fail)(
       `${theme}/people other direction: NO duration anywhere on it ("${promisedWordsAll.slice(0, 70)}")`);

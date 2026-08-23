@@ -50,6 +50,7 @@ const REQUIRED = {
   '#situation-open': 'the door to where you are and how long you have — both are inputs to the offer',
   '#where-note': 'the only line saying the offer and the pile have been narrowed by place',
   '#how-long-note': 'the only line saying they have been narrowed by time',
+  '#with-note': 'and by who is with you — the third axis, added 2.26.0',
   '#lens-row': 'the lens chooser — it narrows the held cards',
   '#lens-note': 'the line stating law 1 while the lens is on',
 };

@@ -59,6 +59,7 @@ import {
 import {
   waitingOnAnyone, withWhom, waitingWords, peopleWords,
   promisedToAnyone, promisedWords, promisedRowWords,
+  allPeople, withWords, WITH_KEY, getWithNow, setWithNow,
 } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
@@ -104,6 +105,7 @@ let lensRoot: string | null = null;
  *  somebody is is not a fact about their work and the log has no business
  *  keeping a history of it. */
 let whereNow: string | null = null;
+let withNow: string | null = null;
 /** How long the reader says they have, in minutes, or null for no limit. A
  *  device view preference like `whereNow` — see `HOW_LONG_KEY`. */
 let howLongNow: number | null = null;
@@ -330,6 +332,35 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       howLongNote.textContent = isLongStretch(howLongNow)
         ? longStretchWords(howLongNow, menuCount(st))
         : howLongWords(howLongNow);
+    }
+  }
+
+  // WHO IS HERE (2.26.0, entry 24's third axis). The place chooser's shape
+  // exactly — hidden until somebody has been named, because a chooser with
+  // nothing in it teaches you the feature is broken; stands down rather than
+  // filtering by a ghost if that person was trashed, because a ghost matches
+  // nothing and the surface would go empty.
+  const withSel = document.querySelector<HTMLSelectElement>('#with-who');
+  const withRow = document.querySelector<HTMLElement>('#with-row');
+  const withNote = document.querySelector<HTMLElement>('#with-note');
+  const named = allPeople(st);
+  if (withSel && withRow) {
+    withRow.hidden = named.length === 0;
+    const keep = withNow ?? '';
+    withSel.replaceChildren(...[
+      Object.assign(document.createElement('option'), { value: '', textContent: 'nobody in particular' }),
+      ...named.map(p => Object.assign(document.createElement('option'), {
+        value: p.id, textContent: p.title || '(unnamed)',
+      })),
+    ]);
+    if (keep === '' || named.some(p => p.id === keep)) withSel.value = keep;
+  }
+  const withLive = withNow && named.some(p => p.id === withNow) ? withNow : null;
+  if (getWithNow() !== withLive) setWithNow(withLive);
+  if (withNote) {
+    withNote.hidden = !withLive;
+    if (withLive) {
+      withNote.textContent = withWords(named.find(p => p.id === withLive)?.title || 'them');
     }
   }
 
@@ -1670,6 +1701,15 @@ export async function main(edition?: Edition): Promise<void> {
     whereNow = null;
   }
   try {
+    // WHO IS HERE (2.26.0). A device view preference like the two above, and
+    // more pointedly than either: a stored trail of who somebody was with, and
+    // when, is the most sensitive thing this app could accidentally keep. It is
+    // a kv value and there is no event for it.
+    withNow = (await session.store.getKv<string>(WITH_KEY)) || null;
+  } catch {
+    withNow = null;
+  }
+  try {
     // Stored as a string like every other view preference. A stored value that
     // is not one of the offered lengths is dropped rather than honoured: it
     // would filter by a number no control can show or clear, which is a state
@@ -1702,6 +1742,7 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLAnchorElement>('a.skip')?.addEventListener('click', () => { openHeld(); });
   setWhereNow(whereNow);
   setHowLong(howLongNow);
+  setWithNow(withNow);
 
   /** ONE WRITER for the situation (2.21.0). Three routes set these two values —
    *  each chooser, and recalling a saved situation — and before this each did
@@ -1710,13 +1751,23 @@ export async function main(edition?: Edition): Promise<void> {
    *  the shape `containerOptionWords` and `personName` are both the record of.
    *
    *  Persisted behind the repaint, the badge's rule: act now, store after. */
-  const setSituation = (place: string | null, minutes: number | null): void => {
+  const setSituation = (place: string | null, minutes: number | null,
+                        person: string | null = withNow): void => {
     whereNow = place;
     howLongNow = minutes;
+    // THIRD AXIS, SAME WRITER (2.26.0). It defaults to what is already set so
+    // every existing caller keeps its meaning — recalling a saved situation
+    // restores a place and a length and says nothing about who is with you,
+    // because a saved situation has no person in it. Adding one would widen
+    // `situation.saved`'s payload, which is a schema change this release does
+    // not need and is recorded in the plan instead of smuggled in here.
+    withNow = person;
     setWhereNow(whereNow);
     setHowLong(howLongNow);
+    setWithNow(withNow);
     refreshAll();
     void session.store.setKv(WHERE_KEY, whereNow ?? '').catch(() => { /* view pref only */ });
+    void session.store.setKv(WITH_KEY, withNow ?? '').catch(() => { /* view pref only */ });
     void session.store.setKv(HOW_LONG_KEY, howLongNow === null ? '' : String(howLongNow))
       .catch(() => { /* view pref only */ });
   };
@@ -1727,6 +1778,10 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLSelectElement>('#how-long')?.addEventListener('change', (e) => {
     const v = (e.target as HTMLSelectElement).value;
     setSituation(whereNow, v ? Number(v) : null);
+  });
+
+  document.querySelector<HTMLSelectElement>('#with-who')?.addEventListener('change', (e) => {
+    setSituation(whereNow, howLongNow, (e.target as HTMLSelectElement).value || null);
   });
 
   document.querySelector<HTMLSelectElement>('#lens')?.addEventListener('change', (e) => {

@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.26.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**You can say who is with you, and the app answers with what is between you and them.** It sits beside *where you are* and *how long you have*, and the three work together on the one thing you are offered \u2014 never three separate screens to choose between. Anything with nobody named on it still shows, the same way anything with no place still shows, so saying who is here can never empty the screen.',
+      '**Something you wrote this morning is no longer buried under an imported file.** Things you have not sorted yet are offered last, and inside that group they were ordered by when they arrived \u2014 so a planner you brought in put hundreds of its own items ahead of anything you wrote afterwards, permanently. Your own captures come first now. Nothing imported is excluded; it is behind, not gone.',
+      '**What is deliberately NOT here.** Nothing counts who you spend time with, nothing is stored about who you were with or when, and there is no list of people ranked by anything. Who is with you is a setting on this device and never an event.',
+      '**What is still true and still not fixed.** A saved situation remembers where you are and how long you have, but not who is with you. And a place you put on a project still does not reach the things inside it.',
+    ],
+  },
+  {
     triplet: '2.25.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

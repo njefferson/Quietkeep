@@ -673,6 +673,31 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       const h = HEAT_ORDER[a.node.heat ?? 'none'] - HEAT_ORDER[b.node.heat ?? 'none'];
       if (h !== 0) return h;
     }
+    // WITHIN `unsorted`, A DAY'S OWN CAPTURES COME BEFORE A FILE'S (2.26.0).
+    //
+    // Entry 23's routing proposal: extend the `taskpaper.ts` precedent from
+    // clocks to ranking, so an import's sheer size does not out-rank an ordinary
+    // day's captures for no better reason than volume.
+    //
+    // WHY THE EXISTING RESTRAINTS DO NOT COVER THIS, checked rather than assumed.
+    // The tier already sorts last, the queue caps at five, and the comment above
+    // says a dump cannot flood it — all true, and none of it touches the order
+    // INSIDE the tier. That order was the final tie-break below: node id. Ids
+    // are minted in arrival order, an import mints hundreds at once, and
+    // anything written afterwards therefore sorts behind every one of them. On
+    // the stress fixture that is 840 items ahead of whatever was written this
+    // morning, permanently, and the five-item cap guarantees the five are always
+    // the same five imported lines. The cap does not rescue this; it seals it.
+    //
+    // A TWO-STATE FACT, NOT A SCORE — `heat`'s shape in `ready` directly above.
+    // `arrived` is already set by the import and already read by this file's own
+    // reason words, so the card SAYS which one it is and nothing is inferred,
+    // accumulated or hidden. A thing somebody wrote down themselves is not more
+    // important than an imported one; it is simply newer, and being buried under
+    // a file's worth of someone-else's-past is the failure being fixed.
+    if (a.reason === 'unsorted' && b.reason === 'unsorted' && a.node.arrived !== b.node.arrived) {
+      return a.node.arrived ? 1 : -1;
+    }
     return a.node.id < b.node.id ? -1 : a.node.id > b.node.id ? 1 : 0;
   });
 }
