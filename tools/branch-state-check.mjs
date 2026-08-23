@@ -111,7 +111,8 @@ const rest = notes.slice(at + HEADING.length);
 const end = rest.search(/\n#{1,3} /);
 const block = end < 0 ? rest : rest.slice(0, end);
 
-/** The first bolded triplet on the bullet whose URL is exactly this one.
+/** The triplet claimed by the bullet whose URL is exactly this one, and a
+ *  refusal if it claims more than one.
  *  Start-anchored: `https://quietkeep.pages.dev` is a SUBSTRING of
  *  `https://staging.quietkeep.pages.dev`, so a loose search reads the staging
  *  bullet as the production one and the gate compares a line with itself. */
@@ -120,8 +121,14 @@ const versionOn = (url) => {
     .split('\n- ')
     .find((b) => b.startsWith(`**${url}**`));
   if (line === undefined) return { missing: true };
-  const m = /\*\*(\d+\.\d+\.\d+)\*\*/.exec(line);
-  return m ? { version: m[1] } : { unversioned: true };
+  // MATCH ALL AND REFUSE AN AMBIGUOUS BULLET, never take the first (hub
+  // LESSONS 129). `exec` here would read "up from **2.24.1** to **2.29.0**" as
+  // a claim of 2.24.1 and compare the wrong number, silently, with nothing at
+  // the call site looking conditional.
+  const all = [...line.matchAll(/\*\*(\d+\.\d+\.\d+)\*\*/g)].map((m) => m[1]);
+  if (all.length === 0) return { unversioned: true };
+  if (new Set(all).size > 1) return { ambiguous: all };
+  return { version: all[0] };
 };
 
 // --- what the branches actually carry --------------------------------------
@@ -130,11 +137,21 @@ const versionOn = (url) => {
  *  END: the Sync edition's cache is `quietkeep-sync-<triplet>`, so a prefix
  *  match returns `sync-2.29.0` and every comparison below fails obscurely. */
 const tripletIn = (sw, where) => {
-  const cache = /const CACHE = '([^']+)'/.exec(sw)?.[1];
-  const m = cache && /(\d+\.\d+\.\d+)$/.exec(cache);
+  // Comments blanked before the search — three gates in this repo learned that
+  // on one day (hub LESSONS 125), and a `const CACHE` quoted in a comment is
+  // exactly the shape that would be read as the declaration.
+  const code = sw.replace(/\/\*[\s\S]*?\*\//g, ' ').replace(/\/\/[^\n]*/g, ' ');
+  // ALL of them, and exactly one is required. Hub LESSONS 129: anchoring on the
+  // first match measures whichever declaration happens to sit highest, and a
+  // second one appearing later is the change nobody would look for here.
+  const names = [...code.matchAll(/const CACHE = '([^']+)'/g)].map((m) => m[1]);
+  if (names.length !== 1) {
+    failBlock(`expected exactly one cache declaration at ${where}, found ${names.length}`);
+    return null;
+  }
+  const m = /(\d+\.\d+\.\d+)$/.exec(names[0]);
   if (!m) {
-    failBlock(`no release triplet in the cache name at ${where}`
-      + (cache ? ` — read "${cache}"` : ''));
+    failBlock(`no release triplet in the cache name at ${where} — read "${names[0]}"`);
     return null;
   }
   return m[1];
@@ -167,6 +184,9 @@ const check = (label, url, actual) => {
     failBlock(`no ${label} bullet starting "- **${url}**" in the block`);
   } else if (got.unversioned) {
     failBlock(`the ${label} bullet names no bolded triplet`);
+  } else if (got.ambiguous) {
+    failBlock(`the ${label} bullet names more than one triplet — ${got.ambiguous.join(', ')}`
+      + '\n        Which is the claim? Say one, and put the history in prose.');
   } else if (got.version !== actual) {
     failBlock(`${label} says ${got.version}, and ${url} carries ${actual}`);
   } else {
