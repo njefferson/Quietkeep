@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.27.0 — CAPABILITY
+
+*2026-08-23*
+
+- **A place you put on a project now reaches everything inside it.** Before this, saying where something could be done meant saying it on every single item — which on a planner brought in from somewhere else is hundreds of statements, and nobody was ever going to make them. One statement on the project does it now, and it reaches down through however many levels are between.
+- **Nothing you already set has changed.** A thing keeps its own places as well as the ones it inherits, so a place put on an item is never cancelled by one further up.
+- **And a thing with no place anywhere above it still shows everywhere**, exactly as before. Saying where you are cannot empty the screen.
+- **The place field says this now**, because it used to say something that stopped being true: a thing with no place of its own goes where it lives.
+- **What is still true and still not fixed.** An item’s own panel lists only the places you set on it, not the ones it inherits — so if something surprises you by showing up, the reason is on whatever it sits inside rather than on the thing itself.
+
 ## 2.26.0 — CAPABILITY
 
 *2026-08-23*

@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.27.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-23',
+    notes: [
+      '**A place you put on a project now reaches everything inside it.** Before this, saying where something could be done meant saying it on every single item \u2014 which on a planner brought in from somewhere else is hundreds of statements, and nobody was ever going to make them. One statement on the project does it now, and it reaches down through however many levels are between.',
+      '**Nothing you already set has changed.** A thing keeps its own places as well as the ones it inherits, so a place put on an item is never cancelled by one further up.',
+      '**And a thing with no place anywhere above it still shows everywhere**, exactly as before. Saying where you are cannot empty the screen.',
+      '**The place field says this now**, because it used to say something that stopped being true: a thing with no place of its own goes where it lives.',
+      '**What is still true and still not fixed.** An item\u2019s own panel lists only the places you set on it, not the ones it inherits \u2014 so if something surprises you by showing up, the reason is on whatever it sits inside rather than on the thing itself.',
+    ],
+  },
+  {
     triplet: '2.26.0',
     kind: 'CAPABILITY',
     date: '2026-08-23',

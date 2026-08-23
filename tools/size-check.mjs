@@ -107,7 +107,13 @@ const BUDGET = {
   // Nothing on the first screen changes. Both live inside `#sheet-situation`,
   // behind a door, and the chooser itself is hidden until somebody has been
   // named.
-  words: 3506,
+  // 3506 -> 3512 on 2026-08-23 (2.27.0): six words in the detail sheet's place
+  // hint, and they are honesty rather than polish. It read "a thing with no
+  // place at all can be done anywhere", which stopped being true the moment a
+  // place on a project began reaching the work inside it. A sheet that is
+  // quietly wrong about what the app does is worse than one that says less, and
+  // the first rewrite cost fifteen words before being cut to six.
+  words: 3512,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

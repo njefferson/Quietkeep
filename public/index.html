@@ -1430,9 +1430,16 @@
       <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
     </div>
     <datalist id="detail-contexts"></datalist>
+    <!-- The last clause changed in 2.27.0 and the change is honesty, not
+         polish. It read "a thing with no place at all can be done anywhere",
+         which stopped being true the moment a place on a project began reaching
+         the work inside it: a thing with none of its own can now be reached by
+         one it inherits. Leaving the old sentence would have made the sheet
+         quietly wrong about the app's behaviour, which is worse than saying
+         less. -->
     <p id="detail-context-hint" class="detail-hint">
-      As many as fit. Nothing here is required, and a thing with no place at all
-      can be done anywhere.
+      As many as fit, and none is required. With no place of its own, a thing
+      goes where it lives &mdash; or anywhere, if that has none.
     </p>
     <ul id="detail-context-list" class="detail-feeds"></ul>
   </div>
