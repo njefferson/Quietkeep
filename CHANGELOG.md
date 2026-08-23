@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.31.2 — ITERATION
+
+*2026-08-23*
+
+- **The way into the full list looks like a control now, instead of a heading with a triangle stuck to it.** Reported from a device: the triangle stopped it reading as a heading, and the heading weight stopped it reading as something that opens, so it read as neither.
+- **It carries exactly the chrome of the controls beside it** — the same border, the same corners, the same weight as *How it hangs together* and *Back to the top*. It was set in heading weight on a surface where every control is lighter, which is what made it look like a title.
+- **And the marker is a real chevron** that turns when it opens, rather than the browser’s own ten-pixel triangle. The words never said it opened; now the shape does.
+
 ## 2.31.1 — ITERATION
 
 *2026-08-23*
