@@ -761,7 +761,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.35.0** — 2.33.2 through
+- **https://quietkeep.pages.dev** — production, **2.37.0** — 2.36.0 through
+  2.37.0 promoted at `a4ea629`. The import summary as a lead and a list of
+  facts rather than a hundred and twenty words in one block; a refused line
+  saying it had no name on it rather than only that it was refused; and the
+  chooser saying, before you pick anything, that a label can be told it is not
+  a place. Verified before the merge by the full Spine locally on the staging
+  head — 37 of 37 — plus the five hub gates, and CI green on `2613d24` and
+  `d54caab`.
+- **Earlier, and kept for the record: 2.35.0** — 2.33.2 through
   2.35.0 promoted at `235302a`, Deploy success read from the run. The picker's
   frame, a flag arriving as heat, the count of what is finished, and the
   arrival screen. **THE SPINE WAS RED FOR THREE OF THEM AND NOBODY READ IT**:
