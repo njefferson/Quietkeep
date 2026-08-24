@@ -162,6 +162,10 @@ marked done, all of it retrievable.
 always starts a fresh store and never merges. Nothing you write is ever lost to
 an update.
 
+**Anything already finished stays behind.** Work you completed in the other app
+is not brought in — that history belongs to the app it happened in, and the file
+still has it. The summary says how many before you press the button.
+
 Anything you had flagged comes in **hot** — this app has no priority and no
 ranking by importance, so what you marked is kept as interest instead. It says
 so when it does.

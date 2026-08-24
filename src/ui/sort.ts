@@ -308,8 +308,14 @@ export function mountSort(
     'put-under': { label: 'Put them under…', hint: 'file every one into a place' },
     'to-menu': { label: 'To the Menu…', hint: 'wishes, not demands — any dates come off' },
     'park': { label: 'Park until…', hint: 'held away on purpose, back on the day' },
-    'put-down': { label: 'Put them down', hint: 'they stop coming back; not done, not binned, and search still finds them' },
-    'let-go': { label: 'Let them go', hint: 'a copy is saved first; the trash can give them back' },
+    // "PUT DOWN, WHERE?" — the question the old hint did not answer (2.34.1).
+    // The phrase implies a destination and there is not one: nothing moves, it
+    // stays exactly where it is and stops asking. Beside "let them go" the two
+    // read as synonyms in plain English, so the hints have to carry the whole
+    // difference, and the first thing each must say is what HAPPENS to the
+    // thing rather than what it stops doing.
+    'put-down': { label: 'Put them down', hint: 'they stay where they are and stop asking — nothing moves, nothing is binned, and search still finds them' },
+    'let-go': { label: 'Let them go', hint: 'they go to the trash, which can give them back; a copy is saved first' },
     'bring-back': { label: 'Bring them back as real work', hint: 'each gets a clock so it returns' },
   };
   const BULK_CONFIRM = 'let go';

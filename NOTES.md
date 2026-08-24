@@ -694,8 +694,37 @@ closed question filed under this heading now, so the two cannot drift again.
   thought, reloads the whole page, and asserts it came back. It was made to fail once
   before being trusted.
 
+### Arriving with a dump is a MAIN ENTRANCE, not a migration
+
+Stated as a design fact on 2026-08-24, because everything about the import path
+had been built as though it were a one-time migration from somewhere else.
+
+**It is the ordinary way this app gets used.** Somebody focuses elsewhere for a
+stretch, comes back not knowing where they are, and arrives holding a text file.
+That is not a first-run event that happens once and is over; it is the same
+shape as re-entry (ADR-0043) with a file attached, and it will recur.
+
+What follows from it, and none of it is gated on any one person's use:
+
+- **The import summary is a first-run screen**, read at the moment somebody has
+  the least patience and the least idea what they are looking at. Every rule
+  about first-run copy applies to it.
+- **Everything the app does for re-entry belongs there too.** *Welcome back*
+  exists for the person who has been away; the importer serves the same person
+  on the same day, and the two currently know nothing about each other.
+- **Loss at the door is the expensive kind.** A label discarded on import is
+  discovered weeks later, if ever — which is exactly how tags, estimates and
+  flags each came to be dropped with a sentence nobody could act on.
+
+**Measured on a real export, 2026-08-24**, which is what turned this from an
+impression into a fact: 1,445 rows, 45 projects, 21 distinct tags applied to 93
+rows — 6.4% — of which 8 were places and 13 were people, topics, a waiting state
+and a priority. 216 rows already finished. 1,173 dates already gone by. No
+durations at all. A store that is 88% flat is not a badly-kept store; it is what
+a real one looks like, and the fixture was three-quarters filed until 2.32.0.
+
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.34.0**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.34.1**. The
   invented set was three-quarters filed where a real store is seven-eighths
   not, so every narrowing feature was judged against data that flattered it;
   it is about fifteen hundred things now, mostly unsorted. The manual gained

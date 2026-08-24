@@ -471,6 +471,25 @@ export function diagnosticReport(
   // Both numbers, because 1.15.1 made them different questions and a report
   // giving one invites the wrong conclusion about the other.
   L.push(`  Held as work (what the gauge counts): ${gauge.total}`);
+  // FINISHED THINGS ARE IN THAT NUMBER, and until 2.34.1 nothing said so. A
+  // store imported from another planner arrived with 216 already-completed rows
+  // inside a "held as work" count of 1,429 — fifteen per cent of the pile the
+  // reader believes they are carrying.
+  //
+  // NAMED RATHER THAN SUBTRACTED, and that is the whole decision. `heldGroups`
+  // is TOTAL over `heldWork` — exactly one group per node — so dropping them
+  // from that set would not correct a count, it would delete them from the
+  // list. `held.ts` already carries the record of the opposite version of that
+  // defect: items counted by the gauge and rendered nowhere.
+  //
+  // The test is `heldGroups`' own: done, and not ready again. A thing that
+  // repeats is done FOR NOW and is still work; a one-off that is finished is
+  // not, and needs no clock to say so because `pressureOf` returns null without
+  // a cadence whatever the time is.
+  const finishedDay: DayShape = { zone: r.zone, boundary: boundaryOf(state) };
+  const finished = heldWork(state).filter(
+    n => n.lastDone != null && !isReadyAgain(pressureOf(n, nowIso, finishedDay))).length;
+  L.push(`  Of those, finished and not coming back: ${finished}`);
   L.push(`  Held altogether (people, weights, entries, periods included): ${heldNodes(state).length}`);
   L.push(`  On no surface at all (must be 0): ${gauge.silent}`);
   L.push(`  Let go: ${trashedNodes(state).length}`);

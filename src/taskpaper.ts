@@ -403,6 +403,25 @@ export function taskPaperEvents(
   };
 
   for (const line of parsed) {
+    // ALREADY FINISHED SOMEWHERE ELSE, AND NOT BROUGHT IN (2.34.1).
+    //
+    // A real export carried 216 completed rows into a store of 1,429 — fifteen
+    // per cent of the pile, finished, sitting in the count of what somebody
+    // believes they are carrying. Importing them imports HISTORY, and this app
+    // is not where somebody else's history goes: the record of what happened
+    // lives in the log of the app it happened in, and that file still exists.
+    //
+    // NOT SILENT. `importSummary` counts them and `importWords` says the number
+    // BEFORE the button is pressed — which is the difference between a decision
+    // stated at the door and a loss discovered later. That is the whole
+    // complaint about how flags used to be handled, and it is not repeated here.
+    //
+    // A finished PROJECT is skipped with the rest, and its children ride the
+    // ordinary parent rule: an indented child of a skipped container falls back
+    // to the nearest container above it, exactly as it would if the line had not
+    // been in the file. Nothing dangles, because `containerAt` is only written
+    // by lines that are actually created.
+    if (line.done) continue;
     if (line.kind === 'note') {
       if (lastItemId !== null) noteBuf.push(line.title);
       continue;
@@ -684,9 +703,12 @@ export function importSummary(
     places: placeNames.size,
     placed: parsed.filter(l => l.tags.length > 0).length,
     estimates: parsed.filter(l => l.estimateMinutes !== null).length,
-    flagged: parsed.filter(l => l.flagged && l.kind !== 'project').length,
-    projects: parsed.filter(l => l.kind === 'project').length,
-    actions: parsed.filter(l => l.kind === 'action').length,
+    flagged: parsed.filter(l => l.flagged && l.kind !== 'project' && !l.done).length,
+    // WHAT ARRIVES, not what the file held (2.34.1). Finished rows are no
+    // longer brought in, so counting them here would promise a pile that never
+    // turns up — the same shape as the note count being of notes that ATTACH.
+    projects: parsed.filter(l => l.kind === 'project' && !l.done).length,
+    actions: parsed.filter(l => l.kind === 'action' && !l.done).length,
     // Notes that actually ATTACH (1.4.0), counted the way the mapper WRITES
     // them (1.17.4): consecutive TaskPaper note lines are joined into ONE
     // `node.field.set`, so this used to count LINES and claim "3 notes come
@@ -736,8 +758,17 @@ export function importWords(s: ImportSummary): string {
 
   const parts = [`Found ${bits.join(' and ')}`];
   if (s.withDates > 0) parts.push(`${s.withDates} with a date`);
-  if (s.done > 0) parts.push(`${s.done} already finished`);
   let out = `${parts.join(', ')}.`;
+  if (s.done > 0) {
+    // ITS OWN SENTENCE, because it changed meaning (2.34.1). It used to be a
+    // clause inside the count — "1385 actions, 215 already finished" — which
+    // read as "and these are coming too". They are not brought in at all now,
+    // and a number that quietly means the opposite of what it did is worse than
+    // a new sentence.
+    out += ` ${s.done === 1 ? 'One was' : `${s.done} were`} already finished and`
+      + ` ${s.done === 1 ? 'is' : 'are'} not brought in — that history stays in`
+      + ' the app it happened in, and the file still has it.';
+  }
   if (s.notes > 0) {
     // Inverted at 1.4.0: notes come across now. The 1.2.3 version of this
     // sentence stated the loss; before that, a silent zero cost a 1,445-row

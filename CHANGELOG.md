@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.34.1 — ITERATION
+
+*2026-08-24*
+
+- **Work you already finished elsewhere is no longer brought in.** A real export carried 216 completed things into a store of 1,429 — fifteen per cent of a pile you believe you are carrying. That history belongs to the app it happened in, and your file still has it. The summary says the number before you press the button.
+- **And the report now says how many finished things are in the count.** They are grouped away under *Done* and they were still counted as work you are holding, with nothing saying so.
+- **“Put them down” now says where they go: nowhere.** It reads as though it must have a destination, and it has not — things stay exactly where they are and stop asking. Beside *Let them go* the two were near-synonyms with no way to tell them apart until you had already chosen.
+
 ## 2.34.0 — CAPABILITY
 
 *2026-08-24*
