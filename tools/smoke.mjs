@@ -87,6 +87,42 @@ const ensureStanceFor = async (pg, selector) => {
 /** Into a job, for the locator-based clicks the wrapper above cannot see. */
 const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
 
+/**
+ * OPEN WHAT IT IS INSIDE, by pressing the summary a finger presses.
+ *
+ * Entering a job is not always enough to reach a control in it: the inventory
+ * arrives FOLDED (2.12.0, ADR-0102), so `#cards` sits inside a shut `<details>`
+ * and a click on a card after a reload waited thirty seconds on something that
+ * was in the right job and still not on screen.
+ *
+ * Pressing the summary is the route, not a shortcut around it — the app's own
+ * listeners run either way. Declared by the DOM rather than by a list here, so
+ * a fold added later is handled the day it is added.
+ *
+ * VERBS ONLY, never `waitForSelector`: a wait that asks whether something is
+ * HIDDEN is a legitimate question about a shut fold, and unfolding underneath
+ * it would answer a different one. The walk asserts the fold arrives shut on
+ * its own, before anything opens it, and that assertion stays untouched.
+ */
+const unfoldTo = async (pg, sel) => {
+  try {
+    await pg.evaluate((s) => {
+      const el = document.querySelector(s);
+      if (!el) return;
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (p.tagName !== 'DETAILS' || p.open) continue;
+        const sum = p.querySelector(':scope > summary');
+        // NEVER THE FOLD THE TARGET IS THE HANDLE OF. Opening it here and then
+        // letting the caller's own press land on the summary toggles it shut
+        // again — the walk's `click('#held-fold-summary')` did exactly that and
+        // waited thirty seconds for a card it had just closed the door on.
+        if (sum && (sum === el || sum.contains(el))) continue;
+        if (sum) sum.click(); else p.open = true;
+      }
+    }, sel);
+  } catch { /* the verb's own call reports the real problem */ }
+};
+
 /** Wrap a page's verbs so each one goes to the job first. */
 const routeThroughHub = (pg) => {
   const rawWait = pg.waitForSelector.bind(pg);
@@ -122,6 +158,7 @@ const routeThroughHub = (pg) => {
           catch { /* the verb's own call reports the real problem */ }
           await ensureStanceFor(pg, sel);
         }
+        await unfoldTo(pg, sel);
       }
       return raw(sel, ...rest);
     };
@@ -1896,14 +1933,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // landed perfectly — and the door has no id of its own to compare against.
     const h = document.elementFromPoint(Math.round(r.left + r.width / 2),
                                         Math.round(r.top + r.height / 2));
-    return { left: Math.round(r.left), w: Math.round(r.width), h: Math.round(r.height),
-             hit: h === b || b.contains(h) };
+    const name = h ? `${h.tagName.toLowerCase()}${h.id ? `#${h.id}` : ''}` +
+      `${typeof h.className === 'string' && h.className.trim() ? `.${h.className.trim().split(/\s+/).join('.')}` : ''}`
+      : 'nothing';
+    return { left: Math.round(r.left), top: Math.round(r.top),
+             w: Math.round(r.width), h: Math.round(r.height),
+             hit: h === b || b.contains(h), over: name };
   });
   is(jumpBox !== null, true, 'the door onto what you are holding is on the surface you land on');
   is(jumpBox && jumpBox.left >= 0, true,
     `and it is ON SCREEN, not parked off-canvas like the keyboard skip link (left=${jumpBox?.left})`);
   is(jumpBox !== null && jumpBox.hit === true, true,
-    'and a finger landing on it hits it, with nothing over the top');
+    `and a finger landing on it hits it, with nothing over the top (hit ${jumpBox?.over} at ${jumpBox?.left},${jumpBox?.top} ${jumpBox?.w}x${jumpBox?.h})`);
   // IT MOVES YOU, and takes focus with it — a scroll that leaves focus behind
   // throws the next Tab back up the page.
   // THE RUNWAY'S scrollTop, NOT `window.scrollY` (2.9.0, ADR-0100). The document
