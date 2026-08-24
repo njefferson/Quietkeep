@@ -48,9 +48,9 @@ import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
-import { WHERE_KEY, allContexts, contextNames, fitsHere, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
+import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
-import { saveSituationEvents, forgetSituationEvents } from './detail-intents.ts';
+import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
   isLongStretch, longStretchWords,
@@ -296,6 +296,22 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       })),
     ]);
     if (keep === '' || places.some(c => c.id === keep)) whereSel.value = keep;
+  }
+  // The way to say one of them is not a place (2.34.0) — see the note on the
+  // markup. Present only while one is chosen: there is nothing to say it about
+  // when the answer is "anywhere".
+  const notPlaceRow = document.querySelector<HTMLElement>('#where-notplace-row');
+  if (notPlaceRow) {
+    notPlaceRow.hidden = whereNow === null || !places.some(c => c.id === whereNow);
+    // RENDERED, NOT IN THE MARKUP. The shell's word budget counts what is in
+    // `index.html` whether it is showing or not, and this line is only ever
+    // read by somebody who has already chosen a place. Same trade the places
+    // readout makes: the heading earns its place in the shell, the sentence
+    // under it does not.
+    const notPlaceHint = document.querySelector<HTMLElement>('#where-notplace-hint');
+    if (notPlaceHint && !notPlaceRow.hidden) {
+      notPlaceHint.textContent = 'It stops being offered here, and stops hiding things that carry it.';
+    }
   }
   // If the chosen place was trashed, the filter stands down rather than
   // filtering by a ghost — the lens's rule, and the reason it matters more here
@@ -1144,7 +1160,16 @@ export async function main(edition?: Edition): Promise<void> {
   // had a chance to commit anything — a cure clock written by another mount
   // would be activity, and the greeting would report an absence of zero to
   // somebody who has been gone a fortnight.
-  try { reentry = mountReentry(session, now, refreshAll); } catch { /* a surface */ }
+  // AN IMPORT IS AN ARRIVAL (2.35.0). The importer writes this and reloads, so
+  // this read is the first thing that happens afterwards. Cleared in the same
+  // breath: a flag that survived would greet somebody with their own arrival
+  // every time they opened the app.
+  let justArrived = false;
+  try {
+    justArrived = (await session.store.getKv<string>(ARRIVAL_KEY)) === '1';
+    if (justArrived) await session.store.setKv(ARRIVAL_KEY, '');
+  } catch { /* no kv, no arrival card, and the app still starts */ }
+  try { reentry = mountReentry(session, now, refreshAll, justArrived); } catch { /* a surface */ }
 
   // ARRIVE, and take focus with you (2.0.8, ADR-0090). `#cards` carries
   // tabindex="-1" precisely so a jump can land on it — the same target the
@@ -1816,6 +1841,23 @@ export async function main(edition?: Edition): Promise<void> {
     void session.store.setKv(HOW_LONG_KEY, howLongNow === null ? '' : String(howLongNow))
       .catch(() => { /* view pref only */ });
   };
+
+  // NOT A PLACE (2.34.0). `node.released` and never `node.trashed`: putting a
+  // label down is not the same as saying it was a mistake to have, and release
+  // is the app's own reversible exit — the log reads "put down", and reclaiming
+  // it is one event the other way if it turns out to have been a place after all.
+  //
+  // The filter stands down in the same breath. `allContexts` drops a released
+  // node, so anything reached only by this one becomes unlabelled again and
+  // goes back to fitting every answer — which is the whole point: a mis-typed
+  // label was HIDING those things.
+  document.querySelector<HTMLButtonElement>('#where-notplace')?.addEventListener('click', () => {
+    const id = whereNow;
+    if (id === null) return;
+    void session.commit(ctx => releaseEvents(ctx, id))
+      .then(() => { setSituation(null, howLongNow); })
+      .catch(() => { /* the readout repaints from state either way */ });
+  });
 
   document.querySelector<HTMLSelectElement>('#where')?.addEventListener('change', (e) => {
     setSituation((e.target as HTMLSelectElement).value || null, howLongNow);

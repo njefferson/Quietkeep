@@ -112,8 +112,12 @@ test('THE ONE THAT MATTERS: the greeting cannot be made to show the pile', () =>
   assert.equal(v.waitingToTriage, 300, 'it knows the true number');
   assert.equal(v.passedDates, 40, 'and states it');
   const keys = Object.keys(v).sort();
+  // The list is EXACT on purpose, so a new field has to be added here
+  // deliberately and looked at. `arrived` and `show` joined it in 2.35.0 and
+  // both are booleans; the assertion underneath — no arrays, nothing a surface
+  // could render as a pile — is the one doing the work and is untouched.
   assert.deepEqual(keys,
-    ['absenceDays', 'amnestyAvailable', 'lapsed', 'passedDates', 'waitingToTriage'],
+    ['absenceDays', 'amnestyAvailable', 'arrived', 'lapsed', 'passedDates', 'show', 'waitingToTriage'],
     'and carries nothing a surface could render as a list');
   for (const val of Object.values(v)) {
     assert.equal(Array.isArray(val), false, 'no arrays: there is no pile to hand over');
@@ -282,4 +286,28 @@ test('the offer is recorded even when it is not taken up', () => {
   const out = offerAmnestyEvents(ctx, 'passed-dates');
   assert.equal(out.length, 1);
   assert.equal(out[0]!.kind, 'amnesty.offered');
+});
+
+test('an import is an arrival, and the greeting says so without inventing an absence', () => {
+  // Law 9 seeds a FRESH store, so the newest event after an import is the
+  // import itself and the absence is zero. The one surface built for somebody
+  // walking back in not knowing where to begin was structurally unable to
+  // appear at the one moment it was most needed.
+  const events: AppEvent[] = [];
+  for (let i = 0; i < 40; i++) events.push(...stale(`c${i}`, 0));
+  const state = fold(events);
+
+  const cold = reentryView(state, NOW, TZ);
+  assert.equal(cold.show, false, 'nothing shows on an ordinary launch');
+
+  const arrival = reentryView(state, NOW, TZ, true);
+  assert.equal(arrival.show, true);
+  assert.equal(arrival.lapsed, false, 'it is not an absence and must not claim to be');
+  assert.equal(arrival.waitingToTriage, 40, 'and it knows what came in');
+
+  // "You were away 0 days" would be false, and the greeting's own rule is that
+  // it never apologises for you or on your behalf.
+  const words = reentryWords(arrival);
+  assert.equal(/away/.test(words), false, words);
+  assert.match(words, /It is all here/);
 });

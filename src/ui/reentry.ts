@@ -14,7 +14,9 @@ import { greetEvents, offerAmnestyEvents, acceptAmnestyEvents } from './reentry-
 
 export interface ReentryUI { refresh(): void }
 
-export function mountReentry(session: Session, now: () => number, onChange: () => void): ReentryUI {
+export function mountReentry(
+  session: Session, now: () => number, onChange: () => void, justArrived = false,
+): ReentryUI {
   const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
   const region = q('#reentry');
   const words = q('#reentry-words');
@@ -29,8 +31,12 @@ export function mountReentry(session: Session, now: () => number, onChange: () =
 
   // Measured once, before this session writes anything.
   const arrivedAt = new Date(now()).toISOString();
-  const atArrival = reentryView(session.state(), arrivedAt, session.zone);
-  let dismissed = !atArrival.lapsed;
+  // `justArrived` comes from the caller, which has already read and cleared the
+  // flag the importer set. Read there rather than here because this mount is
+  // synchronous and the kv is not — and passing it in keeps the flag's whole
+  // life in one place instead of split across two modules.
+  const atArrival = reentryView(session.state(), arrivedAt, session.zone, justArrived);
+  let dismissed = !atArrival.show;
   let busy = false;
 
   const run = async (make: Parameters<Session['commit']>[0], announce: string): Promise<void> => {
@@ -53,7 +59,8 @@ export function mountReentry(session: Session, now: () => number, onChange: () =
     // The counts are read from CURRENT state, not from arrival: triaging three
     // things should make the line say so rather than keep reciting the number
     // you walked in to.
-    const nowView = reentryView(session.state(), new Date(now()).toISOString(), session.zone);
+    const nowView = reentryView(
+      session.state(), new Date(now()).toISOString(), session.zone, justArrived);
     if (waiting) {
       const w = waitingWords(nowView);
       waiting.textContent = w ?? '';

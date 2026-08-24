@@ -29,6 +29,48 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.35.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-24',
+    notes: [
+      '**Bringing a file in now lands you somewhere that says what just happened.** It used to reload into a plain work surface holding everything you had imported and no account of where any of it came from \u2014 which is the moment of not knowing where to begin.',
+      '**It is the screen that already existed for exactly this**, and it could never appear here. *Welcome back* fires on how long you have been away, and an import starts a fresh store, so the absence is zero the instant it lands. The one time it was most needed was the one time it was unable to show.',
+      '**It does not pretend you were away.** No "you were away 0 days" \u2014 it says everything is here and that nothing is filed, because filing was never asked for. It tells you how many things are waiting to be sorted, and the way into sorting them is on it.',
+      '**Shown once, on the device you imported on.** Whether you have seen your own arrival is not part of your work, so it is not written into the log and does not follow you to another device.',
+    ],
+  },
+  {
+    triplet: '2.34.1',
+    kind: 'ITERATION',
+    date: '2026-08-24',
+    notes: [
+      '**Work you already finished elsewhere is no longer brought in.** A real export carried 216 completed things into a store of 1,429 \u2014 fifteen per cent of a pile you believe you are carrying. That history belongs to the app it happened in, and your file still has it. The summary says the number before you press the button.',
+      '**And the report now says how many finished things are in the count.** They are grouped away under *Done* and they were still counted as work you are holding, with nothing saying so.',
+      '**\u201CPut them down\u201D now says where they go: nowhere.** It reads as though it must have a destination, and it has not \u2014 things stay exactly where they are and stop asking. Beside *Let them go* the two were near-synonyms with no way to tell them apart until you had already chosen.',
+    ],
+  },
+  {
+    triplet: '2.34.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-24',
+    notes: [
+      '**Anything you had flagged now comes in hot.** It used to be dropped, on the grounds that this app has no priority field \u2014 which is still true and was never the whole argument. Reading a mark you made deliberately and discarding it is not neutrality. Heat is a two-state fact you stated, it only ever breaks a tie between two things already offered, it can never add up to a score, and the card says it out loud.',
+      '**And the flag was not even being read.** A real export writes that column as 1 and 0; the app was looking for the word "true", so flagged things were neither carried nor reported as lost. Three of them, silently.',
+      '**A place can now be told it is not one.** Tags from another planner are not all places \u2014 a real export carried eight places and thirteen other things: people, topics, a waiting state, a priority. **Not a place** takes one out of the question, and is offered where you meet it: in the chooser, when it has just been suggested as somewhere you might be standing.',
+      '**Which matters more than tidiness.** Once a thing carries any place it stops turning up everywhere \u2014 so something tagged only "Health" disappears the moment you say you are at home. Five things in that export were reachable by nothing but a label that was not a place.',
+      '**Nothing is asked at the door**, and nothing asks what the label is instead. One tap, when it is in front of you, and only for the ones you actually meet.',
+    ],
+  },
+  {
+    triplet: '2.33.2',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**The file picker no longer looks like a progress bar that has stopped.** With a file chosen it was a rounded bordered box holding a button, a grey block and the filename \u2014 and the grey block, which is the browser\u2019s own thumbnail of your file, read as a half-filled track. On the screen you use to bring in a thousand things, that is the worst thing it could have looked like.',
+      '**The box was ours; the grey block is not.** The browser draws that and it cannot be styled. Removing our border leaves nothing for it to look like the end of, and the row reads as what it is: a button, then what you picked.',
+    ],
+  },
+  {
     triplet: '2.33.1',
     kind: 'ITERATION',
     date: '2026-08-23',

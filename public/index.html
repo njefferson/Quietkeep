@@ -2561,6 +2561,36 @@
       <label class="detail-inline" for="where">Where you are</label>
       <select id="where" aria-describedby="where-note"></select>
     </div>
+    <!-- SAYING ONE OF THEM IS NOT A PLACE (2.34.0 — entry 23's ask-once shape,
+         at the one moment it is obviously wrong).
+
+         An import carries every label somebody wrote, because reading their own
+         word and discarding it is a decision to lose data. But a tag in another
+         planner is not always a place: a real export carried eight places and
+         thirteen other things — people, topics, a waiting state, a priority.
+
+         AND A MIS-TYPED ONE HIDES WORK, which is why this is not tidiness. Once
+         a thing is reached by ANY place it stops being unlabelled, so `fitsHere`
+         no longer lets it through every answer: something tagged only "Health"
+         vanishes the moment you say you are at Home. Measured on that export —
+         five items reachable by nothing but a non-place label.
+
+         THE MOMENT IS THIS ONE. The label is in front of you, offered as
+         somewhere you could be standing, which is exactly when "that is not a
+         place" is obvious and costs one tap. Not at import: twenty-one
+         questions at the door is the front-loaded configuration entry 23
+         refuses by name, about words nobody has seen in context yet.
+
+         AND IT DOES NOT ASK WHAT IT IS INSTEAD. "A person, or an area?" is a
+         comparison at the worst moment (entry 16), and the app already lets a
+         person be named on an item when somebody is looking at the item.
+
+         Shown only while a place is chosen, because there is nothing to say it
+         about otherwise. -->
+    <div id="where-notplace-row" class="lens-row" hidden>
+      <button id="where-notplace" type="button" class="ghost">Not a place</button>
+      <p id="where-notplace-hint" class="detail-hint"></p>
+    </div>
 
     <!-- ASK ONCE, IN THE FLOW (2.28.0 — entry 23's routing proposal).
          Shown only when NO place has ever been named, and replaced by the

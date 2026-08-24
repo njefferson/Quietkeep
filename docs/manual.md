@@ -80,7 +80,11 @@ shows:
 
 - **Where you are.** Anything with no place turns up wherever you are, so this
   can never empty the screen. A place put on a project reaches everything
-  inside it, so one answer covers a lot.
+  inside it, so one answer covers a lot. If something in the list is not really
+  a place — a person, a topic, a label that came in from somewhere else —
+  **Not a place** takes it out of the question. That matters more than tidiness:
+  once a thing carries any place it stops turning up everywhere, so a label that
+  is not a place quietly hides whatever carries it.
 - **How long you have.** Anything you never estimated fits every answer. At the
   long end it stops narrowing and points at the Menu instead, because a free
   afternoon is rarely short of time — it is short of the thing you want to do.
@@ -157,6 +161,19 @@ marked done, all of it retrievable.
 *Your data* exports everything as one file, and imports one back. An import
 always starts a fresh store and never merges. Nothing you write is ever lost to
 an update.
+
+When the import finishes, the app comes back on **Welcome back** — the same
+screen you get after a spell away — saying everything is here, that nothing is
+filed, and how many things are waiting to be sorted. It appears once, on the
+device you imported on.
+
+**Anything already finished stays behind.** Work you completed in the other app
+is not brought in — that history belongs to the app it happened in, and the file
+still has it. The summary says how many before you press the button.
+
+Anything you had flagged comes in **hot** — this app has no priority and no
+ranking by importance, so what you marked is kept as interest instead. It says
+so when it does.
 
 Bringing work in from another planner keeps more than the words. Projects and
 what sits inside them come across, along with dates and notes — and **the tags

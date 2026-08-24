@@ -588,7 +588,11 @@ const REGISTRY = {
   // and its standing line render only once a context exists and one is chosen —
   // registering them on 'next up' put three entries in a state whose store has
   // no context at all, and the gate correctly called all three false receipts.
-  'where you are': ['#where', '#where-note', '.card-where'],
+  // `#where-notplace` and its line are only on screen while a place is chosen,
+  // which is exactly this state — the walk selects one three lines below the
+  // audit. Their own ids because a shared class is not coverage (2.34.0).
+  'where you are': ['#where', '#where-note', '.card-where',
+    '#where-notplace', '#where-notplace-hint'],
   // ASK ONCE (2.28.0). Its own state, because it is only on screen BEFORE any
   // place exists and the chooser above is only on screen after — the two are
   // never visible together, so folding them into one entry would mean one of

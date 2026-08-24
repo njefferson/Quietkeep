@@ -157,7 +157,36 @@ test('a date with a time keeps the day and drops the hour', () => {
 
 // --- what does not come across, and says so ---------------------------------
 
-test('a flag is dropped ON PURPOSE, and reported rather than swallowed', () => {
+test('a flag comes across as HEAT, and the CSV writes it as 1 rather than true', () => {
+  // Reversed in 2.34.0. Dropping it was defended as "this app has no priority
+  // field" — still true, and not the whole argument: discarding somebody's own
+  // deliberate mark is a decision to lose data, which is the same argument this
+  // importer already makes about carrying tags. Heat is a two-state fact the
+  // reader stated, it breaks a tie only inside one tier, and the card says it
+  // out loud — so the distinction survives and nothing gets ranked.
+  const { lines } = parseTaskPaper('- Thing @flagged\n');
+  assert.equal(lines[0]!.flagged, true);
+  assert.equal(lines[0]!.dropped.includes('flagged'), false, 'no longer a loss to report');
+
+  const { state } = build('- Thing @flagged\n');
+  const n = heldNodes(state).find(x => x.title === 'Thing')!;
+  assert.equal(n.heat, 'hot');
+
+  // A REAL EXPORT WRITES 1 AND 0, and the check for the string "true" matched
+  // none of it — three flagged rows were neither carried nor reported.
+  for (const [written, want] of [['1', true], ['true', true], ['YES', true], ['0', false], ['', false]] as const) {
+    const csv = `Name,Type,Flagged\nThing,Action,${written}\n`;
+    assert.equal(parseOmniFocusCsv(csv).lines[0]!.flagged, want, `Flagged=${written}`);
+  }
+});
+
+test('a container is never made hot — a project is not offered', () => {
+  const { state } = build('Move house: @flagged\n\t- Book the van\n');
+  const proj = heldNodes(state).find(n => n.title === 'Move house')!;
+  assert.notEqual(proj.heat, 'hot');
+});
+
+test('a rhythm and an unreadable estimate are dropped, and reported rather than swallowed', () => {
   // This app has no priority field: pressure comes from the decay primitive, never
   // from a star set in a better mood. Recording a flag as a fake clock would invent
   // a demand nobody made — but discarding it silently would be a different lie.
@@ -165,11 +194,11 @@ test('a flag is dropped ON PURPOSE, and reported rather than swallowed', () => {
   // THIS TEST USED TO ASSERT `['context', 'estimate', 'flagged']` and that is the
   // whole point of changing it (2.33.0). Two of those three were the person's own
   // words and are carried now; only the flag is a decision this app gets to make.
-  const { lines } = parseTaskPaper('- Thing @flagged @estimate(20m) @context(Office)\n');
-  assert.deepEqual(lines[0]!.dropped.sort(), ['flagged']);
+  const { lines } = parseTaskPaper('- Thing @repeat(weekly) @estimate(a while)\n');
+  assert.deepEqual(lines[0]!.dropped.sort(), ['estimate', 'repeat']);
   const words = importWords(importSummary(lines, []));
   assert.match(words, /will not come with them/);
-  assert.ok(words.includes('flagged'));
+  for (const t of ['repeat', 'estimate']) assert.ok(words.includes(t), t);
 });
 
 test('the tags somebody wrote come across as places, in their own words', () => {
@@ -342,9 +371,26 @@ test('a CSV project listed AFTER its children is not duplicated', () => {
   assert.equal(heldNodes(state).filter(n => n.parent === kitchens[0]!.id).length, 2);
 });
 
-test('a completed CSV row arrives finished', () => {
+test('a completed row is not brought in at all', () => {
+  // Reversed in 2.34.1. It used to arrive marked done, which imports somebody
+  // else's HISTORY: a real export carried 216 finished rows into a store of
+  // 1,429, fifteen per cent of a pile somebody believes they are carrying.
+  // The record of what happened stays in the app it happened in, and the file
+  // still has it — and the summary says the number before the button is
+  // pressed, which is the difference between a decision and a discovery.
   const { state } = build('Type,Name,Completion Date\ntask,Old thing,2026-07-01\n');
-  assert.ok(heldNodes(state).find(n => n.title === 'Old thing')?.lastDone);
+  assert.equal(heldNodes(state).some(n => n.title === 'Old thing'), false);
+});
+
+test('a finished container does not take its live children with it', () => {
+  // The children fall back to the nearest container above, exactly as they
+  // would if the line had not been in the file. Nothing dangles.
+  const { state } = build('Move house:\n\tOld phase: @done\n\t\t- Book the van\n');
+  const van = heldNodes(state).find(n => n.title === 'Book the van');
+  assert.ok(van, 'the live child still arrives');
+  assert.equal(heldNodes(state).some(n => n.title === 'Old phase'), false);
+  const move = heldNodes(state).find(n => n.title === 'Move house')!;
+  assert.equal(van!.parent, move.id, 'and lands under the container above');
 });
 
 test('the format is sniffed from the content, not the filename', () => {
@@ -361,15 +407,16 @@ test('the format is sniffed from the content, not the filename', () => {
 test('the summary counts the parse, and the words state all three outcomes', () => {
   const { lines, unreadable } = parseTaskPaper(SAMPLE);
   const s = importSummary(lines, unreadable);
+  // The counts are of what ARRIVES (2.34.1), which is why the finished one is
+  // not in `actions` — promising a pile that never turns up is the same defect
+  // as the note count that once counted lines instead of notes that attach.
   assert.equal(s.projects, 2);
-  assert.equal(s.actions, 5);
+  assert.equal(s.actions, 4);
   assert.equal(s.notes, 1);
   assert.equal(s.done, 1);
-  assert.equal(s.withDates, 4);
   const w = importWords(s);
-  assert.match(w, /2 projects and 5 actions/);
-  assert.match(w, /4 with a date/);
-  assert.match(w, /1 already finished/);
+  assert.match(w, /2 projects and 4 actions/);
+  assert.match(w, /already finished and .*not brought in/);
 });
 
 test('an empty or unreadable file says so and changes nothing', () => {

@@ -29,6 +29,7 @@ import type { AppEvent } from '../events.ts';
 import { RELEASES, CURRENT } from './changelog.ts';
 import { marked } from './marks.ts';
 import { diagnosticReport, type DeviceReading } from '../diagnostic.ts';
+import { ARRIVAL_KEY } from '../contexts.ts';
 import type { Session } from './session.ts';
 import { sampleEvents, sampleSummary, sampleWords } from '../sample.ts';
 import { bigSampleEvents, bigSampleSummary, bigSampleWords } from '../big-sample.ts';
@@ -1891,6 +1892,16 @@ export async function mountAbout(
             return made;
           });
           otherNote.textContent = `Brought in ${made.filter(e => e.kind === 'node.created').length} things. Reloading…`;
+          // SO THE RELOAD LANDS SOMEWHERE THAT SAYS WHAT JUST HAPPENED (2.35.0).
+          // Without this the app comes back as a plain work surface holding
+          // fourteen hundred things and no account of where they came from —
+          // which is the state somebody described as not knowing where to
+          // begin, on the path NOTES.md records as a main entrance.
+          //
+          // The re-entry surface is the one built for exactly this and it could
+          // never fire here: law 9 seeds a fresh store, so the absence it keys
+          // on is zero the instant an import lands.
+          try { await session.store.setKv(ARRIVAL_KEY, '1'); } catch { /* the import still stands */ }
           setTimeout(() => location.reload(), 500);
         } catch (err) {
           otherNote.textContent =
