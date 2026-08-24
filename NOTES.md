@@ -695,7 +695,7 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.33.1**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.33.2**. The
   invented set was three-quarters filed where a real store is seven-eighths
   not, so every narrowing feature was judged against data that flattered it;
   it is about fifteen hundred things now, mostly unsorted. The manual gained
@@ -715,7 +715,7 @@ closed question filed under this heading now, so the two cannot drift again.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.33.0** (2.30.2 through
+- **https://quietkeep.pages.dev** — production, **2.33.1** (2.30.2 through
   2.31.2 promoted at `cd2a5a8`, Spine, Deploy and the push check all success,
   read from the runs. Five releases, every one of them from a device report:
   the version stamp's landing, the rewritten walkthrough, install-before-ask,

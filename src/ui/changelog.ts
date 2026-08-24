@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.33.2',
+    kind: 'ITERATION',
+    date: '2026-08-23',
+    notes: [
+      '**The file picker no longer looks like a progress bar that has stopped.** With a file chosen it was a rounded bordered box holding a button, a grey block and the filename \u2014 and the grey block, which is the browser\u2019s own thumbnail of your file, read as a half-filled track. On the screen you use to bring in a thousand things, that is the worst thing it could have looked like.',
+      '**The box was ours; the grey block is not.** The browser draws that and it cannot be styled. Removing our border leaves nothing for it to look like the end of, and the row reads as what it is: a button, then what you picked.',
+    ],
+  },
+  {
     triplet: '2.33.1',
     kind: 'ITERATION',
     date: '2026-08-23',

@@ -1236,17 +1236,26 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * the platform's own picker is the part most likely to still work. It needs
  * explicit sizing, because the default control is well under the 44px floor.
  */
+/* NO FRAME AROUND IT (2.33.2), and the frame was the whole defect.
+   With a file chosen, Safari draws its own small document thumbnail between the
+   button and the filename. Inside a rounded bordered box that grey block reads
+   as a TRACK WITH A PARTIAL FILL — a progress bar that has stalled — which is
+   the worst available misreading on the surface somebody uses to bring in a
+   thousand things. Reported from a device in exactly those words.
+   The thumbnail cannot be styled: it is in the platform's shadow DOM and only
+   `::file-selector-button` is addressable. But the track is OURS. Without it
+   there is nothing for the grey block to look like the end of, and the row
+   reads as what it is: a button, then what you picked.
+   The explicit sizing stays — it exists for the 44px floor, which has nothing
+   to do with the border. */
 #import-file,
 #other-file {
   display: block;
   width: 100%;
   min-height: var(--target);
   margin: 0.25rem 0 0.5rem;
-  padding: 0.5rem;
+  padding: 0.5rem 0;
   color: var(--ink);
-  background: var(--surface);
-  border: 2px solid var(--line);
-  border-radius: var(--radius);
   font: inherit;
 }
 #import-file::file-selector-button,

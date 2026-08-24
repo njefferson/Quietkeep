@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.33.2 — ITERATION
+
+*2026-08-23*
+
+- **The file picker no longer looks like a progress bar that has stopped.** With a file chosen it was a rounded bordered box holding a button, a grey block and the filename — and the grey block, which is the browser’s own thumbnail of your file, read as a half-filled track. On the screen you use to bring in a thousand things, that is the worst thing it could have looked like.
+- **The box was ours; the grey block is not.** The browser draws that and it cannot be styled. Removing our border leaves nothing for it to look like the end of, and the row reads as what it is: a button, then what you picked.
+
 ## 2.33.1 — ITERATION
 
 *2026-08-23*
