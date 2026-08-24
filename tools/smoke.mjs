@@ -99,8 +99,48 @@ const ensureStanceFor = async (pg, selector) => {
   } catch { /* the caller's own call reports the real problem */ }
 };
 
-/** Into a job, for the locator-based clicks the wrapper above cannot see. */
-const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
+/**
+ * Into a job, for the locator-based clicks the wrapper above cannot see.
+ *
+ * AND OPEN IT. `ensureStanceFor` short-circuits when the stance is already this
+ * job — correctly, since re-entering would reset a surface mid-flow — but the
+ * inbox has been behind its own door since 1.43.0, so a walk already STANDING
+ * in triage without having OPENED it read every card and prompt as blank and
+ * spent its whole bound cycling nothing.
+ *
+ * The same `alreadyOpen` test the hub itself uses, so a job in progress is
+ * never reset by this.
+ */
+const intoJob = async (pg, id) => {
+  await ensureStanceFor(pg, `#${id}`);
+  await pg.evaluate((jid) => {
+    const sec = document.getElementById(jid);
+    if (!sec) return;
+    const opener = sec.querySelector('[data-stance-opener]');
+    if (opener && !opener.hidden && !sec.querySelector('.route')) opener.click();
+  }, id).catch(() => {});
+};
+
+/**
+ * Show the rest of a capped list, by pressing what a finger presses.
+ *
+ * The held list caps each heading and states the number held back — a real
+ * import of well over a thousand rows under one heading is the pile in a new
+ * costume, which is what the cap exists to prevent. So a walk that names a
+ * specific card cannot assume it is on screen: it may be one of the ones the
+ * cap is holding, and "show the rest" is the route to it.
+ *
+ * Bounded, and silent when there is nothing capped, so it costs a count on the
+ * ordinary path.
+ */
+const revealAll = async (pg) => {
+  for (let i = 0; i < 8; i++) {
+    const more = await pg.locator('#cards .card-more .card-open').count().catch(() => 0);
+    if (more === 0) return;
+    await pg.locator('#cards .card-more .card-open').first().click().catch(() => {});
+    await pg.waitForTimeout(140);
+  }
+};
 
 /**
  * OPEN WHAT IT IS INSIDE, by pressing the summary a finger presses.
@@ -5725,7 +5765,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // else, and the chain will still be there in an hour — and this store carries
   // several. Cycled with the app's own "Not this", which records nothing.
   await intoJob(tpage, 'held');
-  await tpage.locator('#cards .card:has-text("strip the old sealant") .card-done').click();
+  await revealAll(tpage);
+  try {
+    await tpage.locator('#cards .card:has-text("strip the old sealant") .card-done')
+      .click({ timeout: 8000 });
+  } catch (err) {
+    const titles = await tpage.locator('#cards .card-title').allTextContents().catch(() => []);
+    bad(`the card named for this step is not reachable — ${titles.length} on the list: ` +
+        JSON.stringify(titles.map((t) => t.trim().slice(0, 30)).slice(0, 14)));
+    throw err;
+  }
   await tpage.waitForTimeout(300);
   // CYCLED UNTIL THE QUEUE REPEATS, not a fixed 25 times.
   //
