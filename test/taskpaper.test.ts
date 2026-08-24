@@ -157,7 +157,36 @@ test('a date with a time keeps the day and drops the hour', () => {
 
 // --- what does not come across, and says so ---------------------------------
 
-test('a flag is dropped ON PURPOSE, and reported rather than swallowed', () => {
+test('a flag comes across as HEAT, and the CSV writes it as 1 rather than true', () => {
+  // Reversed in 2.34.0. Dropping it was defended as "this app has no priority
+  // field" — still true, and not the whole argument: discarding somebody's own
+  // deliberate mark is a decision to lose data, which is the same argument this
+  // importer already makes about carrying tags. Heat is a two-state fact the
+  // reader stated, it breaks a tie only inside one tier, and the card says it
+  // out loud — so the distinction survives and nothing gets ranked.
+  const { lines } = parseTaskPaper('- Thing @flagged\n');
+  assert.equal(lines[0]!.flagged, true);
+  assert.equal(lines[0]!.dropped.includes('flagged'), false, 'no longer a loss to report');
+
+  const { state } = build('- Thing @flagged\n');
+  const n = heldNodes(state).find(x => x.title === 'Thing')!;
+  assert.equal(n.heat, 'hot');
+
+  // A REAL EXPORT WRITES 1 AND 0, and the check for the string "true" matched
+  // none of it — three flagged rows were neither carried nor reported.
+  for (const [written, want] of [['1', true], ['true', true], ['YES', true], ['0', false], ['', false]] as const) {
+    const csv = `Name,Type,Flagged\nThing,Action,${written}\n`;
+    assert.equal(parseOmniFocusCsv(csv).lines[0]!.flagged, want, `Flagged=${written}`);
+  }
+});
+
+test('a container is never made hot — a project is not offered', () => {
+  const { state } = build('Move house: @flagged\n\t- Book the van\n');
+  const proj = heldNodes(state).find(n => n.title === 'Move house')!;
+  assert.notEqual(proj.heat, 'hot');
+});
+
+test('a rhythm and an unreadable estimate are dropped, and reported rather than swallowed', () => {
   // This app has no priority field: pressure comes from the decay primitive, never
   // from a star set in a better mood. Recording a flag as a fake clock would invent
   // a demand nobody made — but discarding it silently would be a different lie.
@@ -165,11 +194,11 @@ test('a flag is dropped ON PURPOSE, and reported rather than swallowed', () => {
   // THIS TEST USED TO ASSERT `['context', 'estimate', 'flagged']` and that is the
   // whole point of changing it (2.33.0). Two of those three were the person's own
   // words and are carried now; only the flag is a decision this app gets to make.
-  const { lines } = parseTaskPaper('- Thing @flagged @estimate(20m) @context(Office)\n');
-  assert.deepEqual(lines[0]!.dropped.sort(), ['flagged']);
+  const { lines } = parseTaskPaper('- Thing @repeat(weekly) @estimate(a while)\n');
+  assert.deepEqual(lines[0]!.dropped.sort(), ['estimate', 'repeat']);
   const words = importWords(importSummary(lines, []));
   assert.match(words, /will not come with them/);
-  assert.ok(words.includes('flagged'));
+  for (const t of ['repeat', 'estimate']) assert.ok(words.includes(t), t);
 });
 
 test('the tags somebody wrote come across as places, in their own words', () => {

@@ -26,10 +26,18 @@
 //   one of the few kinds a calendar may carry (`CALENDAR_KINDS`);
 // - `@defer(...)` / `@start(...)` becomes a **`start` clock**;
 // - `@done` / `@done(date)` becomes **`done.marked`**;
-// - `@flagged` is DROPPED, and that is a decision rather than an omission: a flag
-//   is a priority mark, and this app has no priority field on purpose — pressure
-//   comes from the decay primitive, never from a star somebody set in a better
-//   mood. Recording it as a fake clock would invent a demand nobody made.
+// - `@flagged` becomes **HEAT** (2.34.0), reversing a decision that stood from
+//   the first importer. It used to be dropped, on the reasoning that a flag is a
+//   priority mark and this app has no priority field — which is still true, and
+//   is not the whole argument. The rest of it: reading somebody's own deliberate
+//   mark and discarding it is not neutrality, it is a decision to lose data, and
+//   it is the SAME argument this file already makes about carrying tags.
+//   Heat is where it belongs and nowhere else would do. It is a two-state fact
+//   the reader stated, it breaks a tie only INSIDE one tier of the offer, it can
+//   never accumulate into a score, and the card says it out loud rather than
+//   silently reordering anything (ADR-0097). So the distinction survives the
+//   move and the refusal of ranking-on-importance is untouched.
+//   Recording it as a clock would still be inventing a demand nobody made.
 // - `@estimate`, `@context`, `@tags` other than the above are dropped for now, and
 //   the importer SAYS SO rather than quietly discarding them.
 // - **notes are carried** (1.4.0) — TaskPaper note lines attach to the item
@@ -82,6 +90,9 @@ export interface TaskLine {
   /** `@estimate(30m)` in minutes, or null. Their own word about how long
    *  something takes, which is exactly what `estimate.recorded` holds. */
   estimateMinutes: number | null;
+  /** Flagged in the other planner (2.34.0). Carried as HEAT, never as a
+   *  priority — see the header. */
+  flagged: boolean;
   /** A parent named EXPLICITLY rather than by indentation. OmniFocus CSV has a
    *  "Project" column instead of nesting, and rows can arrive before the project
    *  they belong to — so a name is resolved by lookup, and a project named by a
@@ -114,6 +125,8 @@ export interface ImportSummary {
   placed: number;
   /** Things that arrived with their own estimate of how long they take. */
   estimates: number;
+  /** Things flagged in the other planner, arriving hot (2.34.0). */
+  flagged: number;
   /** Rows whose repeat/rhythm was dropped-and-named. COUNTED (1.8.0): the bare
    *  tag list said "repeat" once for a file where sixty things repeat — the
    *  same unnumbered-loss shape as the pre-1.4.0 note bug. Rebuilding real
@@ -129,7 +142,7 @@ const TAG = /@([A-Za-z][A-Za-z0-9_-]*)(?:\(([^)]*)\))?/g;
  *  header). `repeat` is counted and reported separately, because rhythms are
  *  not carried and the number matters. Everything else a person typed is their
  *  own word for where or how work gets done, which is what a context IS. */
-const NOT_A_PLACE = new Set(['flagged', 'repeat', 'repeatrule', 'estimate', 'estimated', 'duration']);
+const NOT_A_PLACE = new Set(['repeat', 'repeatrule', 'estimate', 'estimated', 'duration']);
 
 /** Tag names that CARRY the place in their value rather than being one.
  *
@@ -226,6 +239,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
     let due: string | null = null;
     let start: string | null = null;
     let done = false;
+    let flagged = false;
     let estimateMinutes: number | null = null;
     for (const m of body.matchAll(TAG)) {
       const raw = m[1] ?? '';
@@ -238,6 +252,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
         continue;
       }
       if (name === 'done' || name === 'completed') { done = true; continue; }
+      if (name === 'flagged') { flagged = true; continue; }
       if (name === 'estimate' || name === 'estimated' || name === 'duration') {
         const mins = minutesOf(value);
         if (mins === null) dropped.push(name);
@@ -294,7 +309,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
     lines.push({
       depth,
       kind: isProject ? 'project' : isAction ? 'action' : 'note',
-      title, due, start, done, dropped, tags, estimateMinutes,
+      title, due, start, done, flagged, dropped, tags, estimateMinutes,
     });
   }
   return { lines, unreadable };
@@ -461,6 +476,11 @@ export function taskPaperEvents(
     if (line.estimateMinutes !== null) {
       stamp('estimate.recorded', id, { durationMinutes: line.estimateMinutes, basis: 'guess' });
     }
+    // A FLAG IS HEAT (2.34.0). Not a priority — see the header for why heat is
+    // the only place it could go and why that leaves the no-ranking rule alone.
+    // Never on a project: heat informs which candidate fills one slot of the
+    // offer, and a container is not offered.
+    if (line.flagged && line.kind !== 'project') stamp('heat.set', id, { heat: 'hot' });
 
     if (line.kind === 'project') {
       projectByTitle.set(line.title, id);
@@ -586,7 +606,11 @@ export function parseOmniFocusCsv(text: string): { lines: TaskLine[]; unreadable
     const start = dayOf(pick(row, at, 'Defer Date', 'Start Date', 'Defer', 'Start'));
     const completion = pick(row, at, 'Completion Date', 'Completed');
     const dropped: string[] = [];
-    if (pick(row, at, 'Flagged').toLowerCase() === 'true') dropped.push('flagged');
+    // TRUE, 1, YES — because this column is not one format (2.34.0). A real
+    // OmniFocus CSV export writes `1` and `0`, and the check for the string
+    // "true" matched none of it: three flagged rows were neither carried NOR
+    // reported as dropped, so the summary said nothing about them at all.
+    const flagged = ['true', '1', 'yes'].includes(pick(row, at, 'Flagged').toLowerCase());
     if (pick(row, at, 'Repeat') !== '') dropped.push(norm('Repeat'));
 
     // THE SAME CARRY AS THE TAG PATH (2.33.0), because the same person's same
@@ -609,7 +633,7 @@ export function parseOmniFocusCsv(text: string): { lines: TaskLine[]; unreadable
       kind: isProject ? 'project' : 'action',
       title, due, start,
       done: completion !== '' || status === 'completed' || status === 'done',
-      dropped, tags, estimateMinutes,
+      dropped, tags, estimateMinutes, flagged,
       // Only for non-projects, and only when named — a project claiming itself as
       // its own parent would be a cycle the write boundary would rightly refuse.
       ...(isProject || projectName === '' || projectName === title ? {} : { parentName: projectName }),
@@ -660,6 +684,7 @@ export function importSummary(
     places: placeNames.size,
     placed: parsed.filter(l => l.tags.length > 0).length,
     estimates: parsed.filter(l => l.estimateMinutes !== null).length,
+    flagged: parsed.filter(l => l.flagged && l.kind !== 'project').length,
     projects: parsed.filter(l => l.kind === 'project').length,
     actions: parsed.filter(l => l.kind === 'action').length,
     // Notes that actually ATTACH (1.4.0), counted the way the mapper WRITES
@@ -773,6 +798,14 @@ export function importWords(s: ImportSummary): string {
         + ' Nothing else is filed, because filing was never asked for.'
       : ' Nothing is filed, because filing was never asked for — it all arrives'
         + ' as work, in the words it was written in.';
+  }
+  if (s.flagged > 0) {
+    // NAMED AS WHAT IT BECOMES, not as what it was. "Flagged" is the other
+    // planner's word; heat is this app's, and saying "hot" is what makes the
+    // sentence checkable against the thing the reader will actually see.
+    out += ` ${s.flagged === 1 ? 'One was flagged' : `${s.flagged} were flagged`}, and`
+      + ` ${s.flagged === 1 ? 'comes' : 'come'} in hot — this app has no priority,`
+      + ' so what you marked is kept as interest rather than as a rank.';
   }
   if (s.estimates > 0) {
     out += ` ${s.estimates === 1 ? 'One says' : `${s.estimates} say`} how long`

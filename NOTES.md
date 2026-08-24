@@ -695,7 +695,7 @@ closed question filed under this heading now, so the two cannot drift again.
   before being trusted.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.33.2**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.34.0**. The
   invented set was three-quarters filed where a real store is seven-eighths
   not, so every narrowing feature was judged against data that flattered it;
   it is about fifteen hundred things now, mostly unsorted. The manual gained

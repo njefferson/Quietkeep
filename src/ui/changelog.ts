@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.34.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-24',
+    notes: [
+      '**Anything you had flagged now comes in hot.** It used to be dropped, on the grounds that this app has no priority field \u2014 which is still true and was never the whole argument. Reading a mark you made deliberately and discarding it is not neutrality. Heat is a two-state fact you stated, it only ever breaks a tie between two things already offered, it can never add up to a score, and the card says it out loud.',
+      '**And the flag was not even being read.** A real export writes that column as 1 and 0; the app was looking for the word "true", so flagged things were neither carried nor reported as lost. Three of them, silently.',
+      '**A place can now be told it is not one.** Tags from another planner are not all places \u2014 a real export carried eight places and thirteen other things: people, topics, a waiting state, a priority. **Not a place** takes one out of the question, and is offered where you meet it: in the chooser, when it has just been suggested as somewhere you might be standing.',
+      '**Which matters more than tidiness.** Once a thing carries any place it stops turning up everywhere \u2014 so something tagged only "Health" disappears the moment you say you are at home. Five things in that export were reachable by nothing but a label that was not a place.',
+      '**Nothing is asked at the door**, and nothing asks what the label is instead. One tap, when it is in front of you, and only for the ones you actually meet.',
+    ],
+  },
+  {
     triplet: '2.33.2',
     kind: 'ITERATION',
     date: '2026-08-23',
