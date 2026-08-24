@@ -5676,6 +5676,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // first assertion and left the second still short.
   const routeUntilOut = async (title) => {
     for (let i = 0; i < cap_many.length * 2 + 40; i++) {
+      // OPEN THE INBOX EACH PASS (3.0.0). The early exit below is right when
+      // triage really has run dry, and indistinguishable from it when nothing
+      // has OPENED triage — `.route` is absent either way. So this returned on
+      // its first pass having routed nothing, and the item stayed in the inbox
+      // while the two assertions after it read a sheet that does not say so.
+      await intoJob(tpage, 'triage');
       if (await tpage.locator('#triage:not([hidden]) .route').count() === 0) return;
       const card = await tpage.locator('#triage-card').textContent().catch(() => '');
       const done = await tpage.evaluate(() => {
@@ -5711,6 +5717,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       `“${title}” is out of the inbox — its sheet reads ${JSON.stringify(state)}`);
     await tpage.click('#detail-close');
     await fillSearch('');
+    // AND THE LIST HAS TO AGREE (3.0.0).
+    //
+    // `#detail-state` reports the CLOCK when one is set, so "the words 'not
+    // sorted yet' are absent from it" was true of an item that had never been
+    // routed at all — this check passed for a reason it was not making, and
+    // the failure surfaced four assertions later as a card with no Done on it.
+    // The held list groups BY ROUTE, so the group is the fact, and asking the
+    // surface is what the walk is for.
+    await intoJob(tpage, 'held');
+    await revealAll(tpage);
+    const grp = await tpage.evaluate((t) => {
+      const card = [...document.querySelectorAll('#cards .card')].find(
+        (c) => (c.querySelector('.card-title')?.textContent || '').trim() === t);
+      return card ? (card.closest('ul')?.getAttribute('aria-label') ?? null) : null;
+    }, title);
+    is(grp !== null && !/not sorted yet/i.test(grp), true,
+      `and the list agrees — “${title}” sits under ${JSON.stringify(grp)}`);
   };
   // DRAINED FIRST. Capturing into a non-empty inbox means the card in front of
   // the walk is somebody else's, and the first version of this block routed
