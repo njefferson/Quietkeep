@@ -7745,10 +7745,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
 
   await tctx.close();
+} catch (err) {
+  // A CRASH IS A FAILURE, AND IT HAS TO SAY SO IN THE SAME PLACE. A thrown
+  // timeout used to leave `failures` empty and the report below unreached, so
+  // the only record of it was a stack trace in the middle of the log.
+  failures.push(`CRASHED — ${String((err && err.message) || err).split('\n')
+    .slice(0, 3).join(' | ').slice(0, 400)}`);
 } finally {
   await browser.close();
   server.close();
 }
+
+// SAY IT WHERE IT GETS READ (3.0.0).
+//
+// The Spine keeps running past a failure on purpose, so in CI twenty-six steps
+// of green land between this walk's failures and the bottom of the log — and
+// the tail is all the API will hand back, while the raw log redirects to a host
+// that is not always reachable. So a red walk was legible only to somebody who
+// could open the run in a browser and scroll to the right step.
+//
+// Written to a file the workflow prints as its last act. Removed on a green run,
+// so a stale one cannot be read as today's.
+try {
+  if (failures.length) writeFileSync('.walk-failures', `${failures.join('\n')}\n`);
+  else if (existsSync('.walk-failures')) writeFileSync('.walk-failures', '');
+} catch { /* reporting must never change the verdict */ }
 
 console.log('');
 if (failures.length) {
