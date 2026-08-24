@@ -5835,6 +5835,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Seeing a title twice means the rotation has come all the way round, which is
   // the real end of the search and is true whatever the queue length. The count
   // is kept only as a runaway guard, never as the bound.
+  // INTO THE JOB FIRST (3.0.0). The loop reads `#nextup-title` and breaks the
+  // moment `#nextup-skip` is hidden — and from anywhere but this job it IS
+  // hidden, so it exited on its first pass having cycled nothing and both
+  // assertions under it failed against a null they never had a chance to fill.
+  await intoJob(tpage, 'nextup');
   let unblockedWhy = null;
   const seenTitles = new Set();
   for (let guard = 0; guard < 200 && unblockedWhy === null; guard++) {
@@ -5936,12 +5941,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#nextup-plain-off');
   await tpage.waitForFunction(() =>
     document.querySelector('#nextup-plain-bar')?.hidden === true);
+  await intoJob(tpage, 'nextup');
   is(await tpage.locator('#nextup-why').isHidden(), false,
     'and leaving it brings everything back in one act');
-  is(await tpage.evaluate(() => ['#held', '#triage', '#search', '#replan']
-    .map(s => document.querySelector(s))
-    .filter(Boolean).some(el => el.checkVisibility())), true,
-  'including the surface below it, which is on screen again');
+  // AND THE REST OF THE APP IS REACHABLE AGAIN (3.0.0, ADR-0108).
+  //
+  // These four were asserted as ON SCREEN, which was the whole claim while the
+  // page showed every surface at once. One job is on screen now, so measuring
+  // visibility from inside another job asks about the wrong thing and would
+  // fail against a perfectly healthy app. The property is unchanged and it is
+  // the one that matters: plain mode strips the app down, and leaving it must
+  // not leave any of it unreachable. A door is what reachable means here, and a
+  // surface with nothing in it has no door — so this still fails if leaving
+  // plain mode emptied them.
+  await ensureStanceFor(tpage, '#hub');
+  await tpage.waitForTimeout(150);
+  is(await tpage.evaluate(() => ['held', 'triage', 'search', 'replan']
+    .some((id) => !!document.querySelector(`#hub-doors .hub-go[data-stance-id="${id}"]`))), true,
+  'including the surfaces below it, which have their doors back');
 
   // --- THE MOMENT AFTER (1.35.0) --------------------------------------------
   //
