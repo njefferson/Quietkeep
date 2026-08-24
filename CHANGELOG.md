@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.37.0 — CAPABILITY
+
+*2026-08-24*
+
+- **The list of places says it is yours.** After an import the chooser can hold every label you ever wrote, and some of them are not places at all — a topic, a tool, somebody’s name. You could already tell the app so, and there was nothing on screen saying you could: the control only appears once you have picked one, so opening the list and looking at it answered nothing.
+- **A line under the chooser now says it, before you pick anything.** Pick a label and the way to say it is not a place is right there, as it always was.
+- **It tells you once.** The moment you put any label down the line stops, because you know the route. It is not a standing instruction on a screen you open every day.
+- **Still no way to rename one.** A label comes in as you wrote it and stays that way; putting it down and naming a new one is the only route today.
+
 ## 2.36.1 — ITERATION
 
 *2026-08-24*

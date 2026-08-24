@@ -2573,6 +2573,23 @@
       <label class="detail-inline" for="where">Where you are</label>
       <select id="where" aria-describedby="where-note"></select>
     </div>
+    <!-- AND THE LINE THAT SAYS THE LIST IS YOURS (2.37.0). Reported from the
+         device: an import brought in nineteen labels, the chooser was opened,
+         and the immediate question was how to edit the list. The answer already
+         existed — the button below — and was invisible, because it renders only
+         after a place has been chosen. A route nobody can see is a route nobody
+         has.
+
+         EMPTY IN THE MARKUP, rendered from JS, the same trade the not-a-place
+         line below makes: the shell's word budget counts what is in this file
+         whether it is showing or not, and this sentence is read once, by
+         somebody who has more places than they meant to have.
+
+         It turns itself off. Once any label has been put down the route is
+         known, and a standing instruction on a screen somebody opens every day
+         is the shape this product refuses everywhere else. -->
+    <p id="where-hint" class="detail-hint" hidden></p>
+
     <!-- SAYING ONE OF THEM IS NOT A PLACE (2.34.0 — entry 23's ask-once shape,
          at the one moment it is obviously wrong).
 

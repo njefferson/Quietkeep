@@ -724,7 +724,14 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.36.1**. What a
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.37.0**. Reported
+  from the device, straight after an import: the chooser held nineteen labels
+  and there was no way to tell, from looking at it, that any of them could be
+  corrected. The answer already existed — *Not a place*, since 2.34.0 — and
+  renders only after a label is picked, so the question got asked with nothing
+  on screen able to answer it. A line under the chooser says it before the
+  choice, and stops for good once any label has been put down.
+- **Superseded, and kept for the record: 2.36.1.** What a
   file will do to your work is a list of facts now rather than one block of a
   hundred and twenty words — three groups, one fact per line, each loss said
   once. The screen had never been rendered by anything, so the accessibility

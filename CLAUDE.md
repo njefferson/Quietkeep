@@ -162,8 +162,11 @@ first time it ran. (Hub LESSONS 127.)
 The steps it cannot run are PRINTED with the reason, never skipped in silence:
 the checkout actions, `npm ci`, the browser install, and the hub gates, which run
 from `../noahjefferson` here rather than from the CI-only `.hub-gates` checkout.
-**Run those separately** — `privacy-check`, `privacy-mirror-check`, `quote-check`,
-`docs-check` and `branch-guard`, each with `--repo .`.
+**Run those separately**, and note they do not all take the same argument:
+`privacy-check`, `privacy-mirror-check`, `quote-check` and `branch-guard` take
+`--repo .`; **`docs-check` takes a positional path** — `node
+../noahjefferson/docs-check.mjs .` — and dies on `--repo`, which it reads as a
+directory name.
 
 ## Accessibility
 WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the

@@ -597,6 +597,13 @@ const REGISTRY = {
   // audit. Their own ids because a shared class is not coverage (2.34.0).
   'where you are': ['#where', '#where-note', '.card-where',
     '#where-notplace', '#where-notplace-hint'],
+  // AND THE STATE BEFORE A CHOICE (2.37.0). `#where-hint` is on screen only
+  // while the chooser sits at "anywhere" and nothing has been put down yet, so
+  // it is never visible in 'where you are' above — where a place IS chosen.
+  // Its own entry for the same reason 'the first place, asked for' has one: two
+  // lines that are never on screen together cannot share a state, or one of
+  // them always matches nothing and the gate correctly calls it a false receipt.
+  'where you are, nothing chosen': ['#where', '#where-hint'],
   // ASK ONCE (2.28.0). Its own state, because it is only on screen BEFORE any
   // place exists and the chooser above is only on screen after — the two are
   // never visible together, so folding them into one entry would mean one of
@@ -2573,8 +2580,20 @@ try {
     await page.click('#situation-open');
     await page.waitForSelector('#sheet-situation[open]');
     await page.waitForSelector('#where-row:not([hidden])');
+    // BEFORE ANYTHING IS CHOSEN, which is the state somebody meets first and
+    // the only one where the line saying the labels can be corrected is up.
+    await page.waitForSelector('#where-hint:not([hidden])');
+    await auditContrast(page, 'where you are, nothing chosen', theme);
+    await auditNames(page, 'where you are, nothing chosen', theme);
+    await auditSeparationAndTargets(page, 'where you are, nothing chosen', theme);
+
     await page.selectOption('#where', { label: 'At home' });
     await page.waitForSelector('#where-note:not([hidden])');
+    // and it stands down the moment there IS something to say it about, so the
+    // reader is never shown the invitation and the button at the same time.
+    const hintGone = await page.locator('#where-hint').isVisible();
+    (hintGone ? fail : pass)(
+      `${theme}/where you are: the invitation gives way to the control it was pointing at`);
     await auditContrast(page, 'where you are', theme);
     await auditAxe(page, 'where you are', theme);
     await auditNames(page, 'where you are', theme);
