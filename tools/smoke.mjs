@@ -190,6 +190,23 @@ const unfoldTo = async (pg, sel) => {
       const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
       const el = ask(s) ?? ask(s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim());
       if (!el) return;
+      // AND OPEN THE JOB IF IT IS BEHIND ITS OWN DOOR (3.0.0).
+      //
+      // Standing in a job is not the same as having opened it. `#triage-card`
+      // is a button that EXISTS in the markup and is EMPTY until the inbox is
+      // opened — and an empty button has zero size, so Playwright waits thirty
+      // seconds for something to become visible that nothing is going to
+      // render. `ensureStanceFor` short-circuits when the stance is already
+      // this job, so it presses nothing, and the caller waits.
+      //
+      // `intoJob` was taught this earlier today. The page verbs were not, and
+      // they are what the walk mostly uses — so the same defect was still there
+      // behind a different door. Only CI ever hit it: this machine reached the
+      // call from a different stance, where entering pressed the opener on the
+      // way in.
+      const jobSec = el.closest('section[data-stance-name]');
+      const opener = jobSec && jobSec.querySelector('[data-stance-opener]');
+      if (opener && !opener.hidden && !jobSec.querySelector('.route')) opener.click();
       for (let p = el.parentElement; p; p = p.parentElement) {
         if (p.tagName !== 'DETAILS' || p.open) continue;
         const sum = p.querySelector(':scope > summary');
