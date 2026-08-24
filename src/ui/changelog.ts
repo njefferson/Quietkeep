@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.38.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-24',
+    notes: [
+      '**A whole planner brought in is no longer something you answer one card at a time.** *Sort things out* has always had a batch called **Loose things brought in from another planner**, and since an import started landing in the inbox that batch has been empty \u2014 so it never appeared, and the only way through an import was card by card. It holds your import again. Pick it, choose **All of them at once**, and *Let go* takes the whole batch; a copy is saved first and it can be undone.',
+      '**Hot or cold is not asked about things you brought in.** That question leads whenever four or more things want it, so a thousand-row import put it in front of every single card \u2014 and heat removes nothing, it only decides what gets offered first. It is a feel about a handful you just put down. You can still mark anything hot or cold from its own sheet.',
+      '**And an import is not a number saying how far behind you are.** The count in the app\u2019s chrome is about what you put down, not what you carried in from somewhere else. Everything you imported is still there and still sortable \u2014 it just does not follow you around as a headline.',
+    ],
+  },
+  {
     triplet: '2.37.0',
     kind: 'CAPABILITY',
     date: '2026-08-24',

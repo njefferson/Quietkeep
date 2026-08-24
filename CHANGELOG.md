@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.38.0 — CAPABILITY
+
+*2026-08-24*
+
+- **A whole planner brought in is no longer something you answer one card at a time.** *Sort things out* has always had a batch called **Loose things brought in from another planner**, and since an import started landing in the inbox that batch has been empty — so it never appeared, and the only way through an import was card by card. It holds your import again. Pick it, choose **All of them at once**, and *Let go* takes the whole batch; a copy is saved first and it can be undone.
+- **Hot or cold is not asked about things you brought in.** That question leads whenever four or more things want it, so a thousand-row import put it in front of every single card — and heat removes nothing, it only decides what gets offered first. It is a feel about a handful you just put down. You can still mark anything hot or cold from its own sheet.
+- **And an import is not a number saying how far behind you are.** The count in the app’s chrome is about what you put down, not what you carried in from somewhere else. Everything you imported is still there and still sortable — it just does not follow you around as a headline.
+
 ## 2.37.0 — CAPABILITY
 
 *2026-08-24*

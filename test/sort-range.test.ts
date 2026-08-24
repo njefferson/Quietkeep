@@ -5,12 +5,14 @@
 //  - HYGIENE: no person, bother, container, demand-free kind, Menu item, or
 //    finished thing can enter a sort range — an over-broad predicate offers
 //    routes the gate must then refuse, the recorded anti-pattern.
-//  - PARITY: routing an imported (never-captured) item writes the same facts
-//    the daily triage writes for a captured one — sort mode is the same
-//    conveyor, not a second dialect.
-//  - THE INBOX BOUNDARY: sort mode changes NOTHING about what daily triage
-//    counts. The gauge stays captures-only, or law 8 acquires a permanent
-//    1,222 headline by omission.
+//  - PARITY: routing an ARRIVED item writes the same facts the daily triage
+//    writes for a captured one — sort mode is the same conveyor, not a second
+//    dialect.
+//  - THE INBOX BOUNDARY: the gauge stays captures-only, or law 8 acquires a
+//    permanent 1,222 headline by omission. Since 2.15.0 an arrival latches
+//    `captured` too, so the boundary is drawn on `arrived` rather than on
+//    absence from the queue (2.38.0) — an arrival is sortable work, and it is
+//    never a headline and never swept for heat.
 //  - THE CURE: clearing the only clock (a start) through the gate re-covers
 //    the node in the same transaction.
 
@@ -19,7 +21,7 @@ import assert from 'node:assert/strict';
 import { atMidnight } from '../src/time.ts';
 
 import { fold, emptyState, type State } from '../src/fold.ts';
-import { admit, silentNodes, gateOptionsFor } from '../src/gate.ts';
+import { admit, silentNodes, gateOptionsFor, heldNodes } from '../src/gate.ts';
 import {
   sortable, looseFromImport, underContainer, parkedAndBack, matchingQuery, rangeChoices,
   datesGoneBy,
@@ -29,6 +31,7 @@ import { unclarified, needsHeat, inboxGauge } from '../src/triage.ts';
 import { demandClocksOf, routeEvents, undoRouteEvents } from '../src/ui/triage-intents.ts';
 import { setStartEvents, clearStartEvents, setDueEvents } from '../src/ui/detail-intents.ts';
 import { heldStatus } from '../src/held.ts';
+import { parseAnyExport, taskPaperEvents, type ImportContext } from '../src/taskpaper.ts';
 import type { AppEvent, ClarifyRoute } from '../src/events.ts';
 import type { StampContext } from '../src/ui/session.ts';
 
@@ -46,8 +49,25 @@ const ctx = (): StampContext => ({
 const write = (prior: State, offered: AppEvent[]): State =>
   fold(admit(offered, prior, OPTS), prior);
 
-/** An IMPORTED row: node.created, cured by the gate — never captured. */
+/** A row shaped LIKE an import — `node.created`, cured by the gate.
+ *
+ *  NOT WHAT THE IMPORTER WRITES, and the comment here used to claim it was:
+ *  "never captured", which was true when this was written and stopped being true
+ *  in 2.15.0, when an import started landing in the inbox with `arrived: true`.
+ *  Every range test below kept passing on rows the importer would never produce.
+ *  `throughTheImporter` at the foot of this file is the fixture that can fail. */
 const imported = (prior: State, id: string, title: string, parent?: string): State =>
+  write(prior, [ev('node.created', id, {
+    nodeKind: 'action', title, provenance: { for: 'self' }, arrived: true,
+    ...(parent ? { parent } : {}),
+  })]);
+
+/** A row MADE IN THIS APP — no capture, no arrival. What the clock tests below
+ *  always meant by `imported()`, back when the two were indistinguishable. They
+ *  are not: an arrival is an inbox item, so `heldStatus` says "not sorted yet"
+ *  about it whatever clock it carries, and a test about the start clock's
+ *  WORDING has to hold the inbox out of the way to say anything. */
+const built = (prior: State, id: string, title: string, parent?: string): State =>
   write(prior, [ev('node.created', id, {
     nodeKind: 'action', title, provenance: { for: 'self' }, ...(parent ? { parent } : {}),
   })]);
@@ -119,7 +139,7 @@ test('HYGIENE: a MENU range holds only live Menu items of its own category — a
   for (const c of choices) assert.ok(c.family === 'runway' || c.family === 'menu');
 });
 
-test('the loose-import range holds exactly the unfiled, unrouted, never-captured rows', () => {
+test('the loose-import range holds exactly the unfiled, unrouted ARRIVALS', () => {
   const s = menagerie();
   assert.deepEqual(looseFromImport(s).map(n => n.id).sort(), ['LOOSE1', 'LOOSE2'],
     'not the filed one, not the capture, not the menagerie');
@@ -128,7 +148,7 @@ test('the loose-import range holds exactly the unfiled, unrouted, never-captured
 test('under-a-container is transitive and survives a cycle in bad data', () => {
   let s = menagerie();
   s = write(s, [ev('node.created', 'SUB', { nodeKind: 'project', title: 'a sub-project', parent: 'PROJ' })]);
-  s = imported(s, 'DEEP', 'deep child', 'SUB');
+  s = built(s, 'DEEP', 'deep child', 'SUB');
   assert.deepEqual(underContainer(s, 'PROJ').map(n => n.id).sort(), ['DEEP', 'FILED'],
     'the grandchild is found; the sub-container itself is not offered for routing');
   // A cycle folded from a hostile shard must not hang the walk. Raw fold, not
@@ -194,25 +214,50 @@ test('undo works identically on an imported item: back to the range, not the inb
   s = write(s, undoRouteEvents(ctx(), 'IMP', 'next-action', kind));
   assert.deepEqual(looseFromImport(s).map(n => n.id), ['IMP'],
     'undo returns it to the named range it came from');
-  assert.equal(unclarified(s).length, 0,
-    'and NOT to the daily inbox — it was never captured, and undo does not forge that');
+  // AND IT IS IN THE INBOX TOO, which reverses what this asserted before
+  // 2.38.0. The old line read "NOT to the daily inbox — it was never captured",
+  // which was the world before 2.15.0 made an import land there on purpose. An
+  // arrival is inbox work now; the batch and the inbox are two routes to the
+  // same thing rather than two populations, and undo forges neither.
+  assert.deepEqual(unclarified(s).map(n => n.id), ['IMP'],
+    'undo returns it to both routes, because since 2.15.0 an arrival is inbox work');
 });
 
 // --- the inbox boundary ------------------------------------------------------
 
-test('THE BOUNDARY: imported rows never appear in daily triage, its gauge, or the heat queue', () => {
+test('THE BOUNDARY: an arrival is sortable work, but never a headline and never swept', () => {
+  // REWRITTEN IN 2.38.0, and the rewrite is the point rather than an
+  // accommodation. This used to assert that imported rows appear in no part of
+  // daily triage at all. 2.15.0 made an import latch `captured` so the offer's
+  // unsorted tier could reach it — right, and untouched here — and that quietly
+  // put a whole planner into the gauge and the heat sweep as well. The test kept
+  // passing for twenty-two days because its fixture wrote rows the importer no
+  // longer produces.
+  //
+  // The line that survives intact is the one with the law on it: the gauge
+  // counts what you put down. What changed is that "not in triage at all" is no
+  // longer the way to get there, because it costs the offer everything.
   const s = menagerie();
-  assert.deepEqual(unclarified(s).map(n => n.id), ['CAP'], 'the one capture, nothing imported');
+
+  // In the queue, because the clarify surface is where you GO to sort, and
+  // saying "inbox clear" over a thousand unsorted things would be a lie.
+  assert.deepEqual(unclarified(s).map(n => n.id).sort(), ['CAP', 'FILED', 'LOOSE1', 'LOOSE2']);
+
+  // NOT in the sweep. Heat is a feel about a handful you just put down; nobody
+  // has one about a thousand rows they have not read.
   assert.deepEqual(needsHeat(s).map(n => n.id), ['CAP']);
-  assert.equal(inboxGauge(s).unclarified, 1,
-    'the gauge counts captures only — a 1,222-row import must never become a daily headline (law 8)');
+
+  // NOT the headline — law 8, rest is legitimate. A 1,222-row import must never
+  // become a standing number saying how far behind you are.
+  assert.equal(inboxGauge(s).unclarified, 1, 'the gauge counts captures only');
+  assert.equal(inboxGauge(s).unheated, 1);
 });
 
 // --- the defer verb ----------------------------------------------------------
 
 test('the start clock: set groups it "not before", clearing it is CURED in the same transaction', () => {
   let s = emptyState();
-  s = imported(s, 'D', 'deferred thing');
+  s = built(s, 'D', 'deferred thing');
   s = write(s, setStartEvents(ctx(), 'D', '2026-08-04'));
   const n = s.nodes.get('D')!;
   assert.ok(n.clocks.start, 'the start clock landed');
@@ -235,9 +280,9 @@ for (const route of ['someday', 'reference'] as ClarifyRoute[]) {
     // replan card raises, the sheet hides temporal controls. A wish carries no
     // demands; the route clears what the node carries, visibly, in the log.
     let s = emptyState();
-    s = imported(s, 'DATED', 'a due-dated import');
+    s = built(s, 'DATED', 'a due-dated thing');
     s = write(s, setDueEvents(ctx(), 'DATED', '2026-08-09'));
-    s = imported(s, 'PARKED', 'a parked import');
+    s = built(s, 'PARKED', 'a parked thing');
     s = write(s, [ev('park.set', 'PARKED', { returnAt: '2026-08-09T12:00:00.000Z' })]);
     for (const id of ['DATED', 'PARKED'] as const) {
       const n = s.nodes.get(id)!;
@@ -254,7 +299,7 @@ for (const route of ['someday', 'reference'] as ClarifyRoute[]) {
 
 test('demandClocksOf names exactly what the node carries — never an unconditional clear', () => {
   let s = emptyState();
-  s = imported(s, 'D', 'dated');
+  s = built(s, 'D', 'dated');
   s = write(s, setStartEvents(ctx(), 'D', '2026-08-04'));
   assert.deepEqual(demandClocksOf(s.nodes.get('D')), ['start'],
     'the start it carries, not the due it does not — the log must not claim changes that did not happen');
@@ -268,7 +313,7 @@ test('a due date at the same instant as the start keeps the DEADLINE wording', (
   // louder fact is the obligation, and describing it as pure deferral is a
   // claim the data does not support (audit).
   let s = emptyState();
-  s = imported(s, 'B', 'both dates, one day');
+  s = built(s, 'B', 'both dates, one day');
   s = write(s, setStartEvents(ctx(), 'B', '2026-08-04'));
   s = write(s, setDueEvents(ctx(), 'B', '2026-08-04'));
   const words = heldStatus(s.nodes.get('B')!, NOW, TZ, atMidnight(TZ));
@@ -278,7 +323,7 @@ test('a due date at the same instant as the start keeps the DEADLINE wording', (
 
 test('a PASSED start raises no replan card and reads ready', () => {
   let s = emptyState();
-  s = imported(s, 'D', 'deferred thing');
+  s = built(s, 'D', 'deferred thing');
   s = write(s, setStartEvents(ctx(), 'D', '2026-07-25'));   // four days behind NOW
   const n = s.nodes.get('D')!;
   const words = heldStatus(n, NOW, TZ, atMidnight(TZ));
@@ -332,4 +377,77 @@ test('the dates range is offered first, and only when it holds something', () =>
   assert.equal(choices[0]?.count, 1);
   assert.equal(choices[0]?.family, 'runway',
     'runway, so every verb it offers is legal on every item in it');
+});
+
+
+// --- THE BATCH BUILT FOR AN IMPORT, DRIVEN BY THE REAL IMPORTER ---------------
+//
+// Reported from the device: a 1,171-row import, and the only way through it was
+// one card at a time. `looseFromImport` returned 0 on that store, so the batch
+// named "Loose things brought in from another planner" never appeared at all —
+// `rangeChoices` pushes it only when non-empty, so a broken predicate does not
+// show as an empty batch. The door simply is not there.
+//
+// It selected on `!n.captured`, written 2026-07-31 when `captured` meant "you
+// typed it". 2.15.0 made an import land in the inbox, setting `captured` on
+// every arriving row, and emptied the batch named for imports. Twenty-two days.
+//
+// EVERY TEST ABOVE STAYED GREEN, and the reason is the fixture rather than the
+// assertions: `imported()` writes a bare `node.created`, so its rows are not
+// `captured` and the old predicate finds them. Hub LESSONS 138 — a check whose
+// fixture cannot express its failure has not run. So this drives the REAL
+// importer, which is the only fixture here that can go red.
+
+const importCtx = (): ImportContext => {
+  let n = 0;
+  return { at: NOW, device: 'imp', vault: 'personal', zone: TZ, seq: () => n, id: () => `imp${n++}` };
+};
+
+/** A file, through the chain the app runs when somebody picks one. */
+const throughTheImporter = (text: string): State =>
+  write(emptyState(), taskPaperEvents(importCtx(), parseAnyExport(text).lines));
+
+test('the fixture is the check: a real import arrives CAPTURED, which is what broke this', () => {
+  // Asserted first and on its own, because every failure below is downstream of
+  // it and a reader needs to see the premise rather than infer it.
+  const s = throughTheImporter('- A loose action\n');
+  const n = heldNodes(s).find(x => x.title === 'A loose action');
+  assert.ok(n, 'it arrived');
+  assert.equal(n.captured, true, 'an import lands in the inbox (2.15.0)');
+  assert.equal(n.arrived, true, 'and says how it got here');
+});
+
+test('THE ONE FROM THE DEVICE: a real import lands IN the batch built for it', () => {
+  const s = throughTheImporter([
+    'Kitchen refit:',
+    '\t- Ring the plumber',
+    '- A loose action',
+    '- Another loose one',
+    '',
+  ].join('\n'));
+  assert.deepEqual(looseFromImport(s).map(n => n.title).sort(),
+    ['A loose action', 'Another loose one'],
+    'the unfiled arrivals — it returned 0 for twenty-two days');
+});
+
+test('and the batch is OFFERED, because an empty one is never shown at all', () => {
+  const s = throughTheImporter('- A loose action\n- Another loose one\n');
+  const batch = rangeChoices(() => s, () => NOW, TZ).find(c => c.key === 'loose-import');
+  assert.ok(batch, 'the batch appears in the picker');
+  assert.equal(batch.count, 2);
+  assert.equal(batch.family, 'runway', 'so it faces the runway verbs, Let go among them');
+});
+
+test('a thing you typed yourself is not in it, which is what the batch NAME promises', () => {
+  // The property the old predicate was reaching for, asserted directly rather
+  // than as a side effect of how capture happened to be flagged at the time.
+  let s = throughTheImporter('- A loose action\n');
+  s = captured(s, 'MINE', 'something I typed just now');
+  assert.deepEqual(looseFromImport(s).map(n => n.title), ['A loose action']);
+});
+
+test('and something filed under a project is not loose, whatever it arrived as', () => {
+  const s = throughTheImporter('Kitchen refit:\n\t- Ring the plumber\n');
+  assert.deepEqual(looseFromImport(s), [],
+    'it has a home already — the per-project batches reach it');
 });
