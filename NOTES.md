@@ -724,7 +724,7 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.34.1**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.35.0**. The
   invented set was three-quarters filed where a real store is seven-eighths
   not, so every narrowing feature was judged against data that flattered it;
   it is about fifteen hundred things now, mostly unsorted. The manual gained

@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.35.0 — CAPABILITY
+
+*2026-08-24*
+
+- **Bringing a file in now lands you somewhere that says what just happened.** It used to reload into a plain work surface holding everything you had imported and no account of where any of it came from — which is the moment of not knowing where to begin.
+- **It is the screen that already existed for exactly this**, and it could never appear here. *Welcome back* fires on how long you have been away, and an import starts a fresh store, so the absence is zero the instant it lands. The one time it was most needed was the one time it was unable to show.
+- **It does not pretend you were away.** No "you were away 0 days" — it says everything is here and that nothing is filed, because filing was never asked for. It tells you how many things are waiting to be sorted, and the way into sorting them is on it.
+- **Shown once, on the device you imported on.** Whether you have seen your own arrival is not part of your work, so it is not written into the log and does not follow you to another device.
+
 ## 2.34.1 — ITERATION
 
 *2026-08-24*

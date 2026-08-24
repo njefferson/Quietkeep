@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.35.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-24',
+    notes: [
+      '**Bringing a file in now lands you somewhere that says what just happened.** It used to reload into a plain work surface holding everything you had imported and no account of where any of it came from \u2014 which is the moment of not knowing where to begin.',
+      '**It is the screen that already existed for exactly this**, and it could never appear here. *Welcome back* fires on how long you have been away, and an import starts a fresh store, so the absence is zero the instant it lands. The one time it was most needed was the one time it was unable to show.',
+      '**It does not pretend you were away.** No "you were away 0 days" \u2014 it says everything is here and that nothing is filed, because filing was never asked for. It tells you how many things are waiting to be sorted, and the way into sorting them is on it.',
+      '**Shown once, on the device you imported on.** Whether you have seen your own arrival is not part of your work, so it is not written into the log and does not follow you to another device.',
+    ],
+  },
+  {
     triplet: '2.34.1',
     kind: 'ITERATION',
     date: '2026-08-24',

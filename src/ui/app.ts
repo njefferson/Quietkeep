@@ -48,7 +48,7 @@ import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
-import { WHERE_KEY, allContexts, contextNames, fitsHere, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
+import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
 import {
@@ -1160,7 +1160,16 @@ export async function main(edition?: Edition): Promise<void> {
   // had a chance to commit anything — a cure clock written by another mount
   // would be activity, and the greeting would report an absence of zero to
   // somebody who has been gone a fortnight.
-  try { reentry = mountReentry(session, now, refreshAll); } catch { /* a surface */ }
+  // AN IMPORT IS AN ARRIVAL (2.35.0). The importer writes this and reloads, so
+  // this read is the first thing that happens afterwards. Cleared in the same
+  // breath: a flag that survived would greet somebody with their own arrival
+  // every time they opened the app.
+  let justArrived = false;
+  try {
+    justArrived = (await session.store.getKv<string>(ARRIVAL_KEY)) === '1';
+    if (justArrived) await session.store.setKv(ARRIVAL_KEY, '');
+  } catch { /* no kv, no arrival card, and the app still starts */ }
+  try { reentry = mountReentry(session, now, refreshAll, justArrived); } catch { /* a surface */ }
 
   // ARRIVE, and take focus with you (2.0.8, ADR-0090). `#cards` carries
   // tabindex="-1" precisely so a jump can land on it — the same target the

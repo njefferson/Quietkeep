@@ -41,6 +41,11 @@ export interface ReentryView {
   absenceDays: number | null;
   /** Is this a re-entry at all? */
   lapsed: boolean;
+  /** Did somebody just bring a file in? Device state, passed in — see the note
+   *  on `reentryView` for why it is not, and must not be, in the log. */
+  arrived: boolean;
+  /** Should the surface appear? Either reason is enough. */
+  show: boolean;
   /** How many unrouted captures are waiting — the TRUE number, stated, while
    *  only three are ever shown. */
   waitingToTriage: number;
@@ -83,7 +88,29 @@ export function absenceDays(state: State, nowIso: string, zone: string): number 
  * caller the backlog even if a caller asked for it. Law 8 enforced by what the
  * type makes impossible, not by a promise in a comment.
  */
-export function reentryView(state: State, nowIso: string, zone: string): ReentryView {
+/**
+ * `arrived` — AN IMPORT IS AN ARRIVAL (2.35.0).
+ *
+ * This surface exists for somebody who has been away and is walking back in,
+ * and it fires on `absenceDays >= LAPSE_DAYS`. An import cannot satisfy that
+ * and never will: law 9 seeds a FRESH store, so the newest event in the log is
+ * the import itself and the absence is zero. The one moment this screen was
+ * built for is therefore the one moment it was structurally unable to appear.
+ *
+ * And that moment is not rare. NOTES.md records it as a main entrance rather
+ * than a migration: coming back after focusing elsewhere, holding a file,
+ * not knowing where to begin — which is this surface's whole subject, with a
+ * file attached.
+ *
+ * It is passed IN rather than derived, because it is not in the log and must
+ * not be. Whether this device has already shown somebody their arrival is
+ * device state, like the lens and the where-now; putting it in the log would
+ * make "I have seen this screen" a fact that syncs to another machine and
+ * silences the arrival there.
+ */
+export function reentryView(
+  state: State, nowIso: string, zone: string, arrived = false,
+): ReentryView {
   const days = absenceDays(state, nowIso, zone);
   const lapsed = days !== null && days >= LAPSE_DAYS;
 
@@ -97,9 +124,13 @@ export function reentryView(state: State, nowIso: string, zone: string): Reentry
   return {
     absenceDays: days,
     lapsed,
+    arrived,
+    show: lapsed || arrived,
     waitingToTriage: waiting,
     passedDates: passed,
-    amnestyAvailable: lapsed && passed > 0,
+    // The amnesty is about a pile of passed dates and not about how you came to
+    // be looking at one, so it follows `show` rather than `lapsed`.
+    amnestyAvailable: (lapsed || arrived) && passed > 0,
   };
 }
 
@@ -111,6 +142,17 @@ export function reentryView(state: State, nowIso: string, zone: string): Reentry
  * a fortnight" is a fact, and the difference is the whole of law 8.
  */
 export function reentryWords(v: ReentryView): string {
+  // AN ARRIVAL IS NOT AN ABSENCE, and must not borrow its sentence. "You were
+  // away 0 days" is false, and the greeting's own rule is that it does not
+  // apologise for you or on your behalf — so this says what is true of somebody
+  // who has just brought a file in, and nothing about where they have been.
+  //
+  // ABOVE THE GUARD, which is where it was not: the guard returns early on
+  // `!lapsed`, and an arrival is by definition not lapsed, so the first version
+  // of this branch could never run. Caught by its own test.
+  if (v.arrived && !v.lapsed) {
+    return 'It is all here. Nothing is filed, because filing was never asked for.';
+  }
   if (!v.lapsed || v.absenceDays === null) return '';
   const d = v.absenceDays;
   const away = d >= 28 ? `${Math.floor(d / 7)} weeks`

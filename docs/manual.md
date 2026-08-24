@@ -162,6 +162,11 @@ marked done, all of it retrievable.
 always starts a fresh store and never merges. Nothing you write is ever lost to
 an update.
 
+When the import finishes, the app comes back on **Welcome back** — the same
+screen you get after a spell away — saying everything is here, that nothing is
+filed, and how many things are waiting to be sorted. It appears once, on the
+device you imported on.
+
 **Anything already finished stays behind.** Work you completed in the other app
 is not brought in — that history belongs to the app it happened in, and the file
 still has it. The summary says how many before you press the button.

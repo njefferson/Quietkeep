@@ -164,6 +164,12 @@ function lowerFirst(s: string): string {
  *  is exactly the material it stays out of. */
 export const WHERE_KEY = 'where.now';
 
+/** Set by the importer and read once on the next boot (2.35.0). Device state,
+ *  never an event: whether THIS device has shown somebody their arrival is not
+ *  a fact about the work, and putting it in the log would silence the arrival
+ *  on every other device the store reaches. */
+export const ARRIVAL_KEY = 'arrival.pending';
+
 /** The live answer, cached at module level — the badge's and the lens root's
  *  pattern, so every render stays synchronous and a kv read never sits on the
  *  path to a paint.
