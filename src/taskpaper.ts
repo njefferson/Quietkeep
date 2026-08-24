@@ -690,9 +690,17 @@ export function importSummary(
   nowIso?: string,
   zone?: string,
 ): ImportSummary {
+  // A LOSS IS STATED ONCE. A rhythm is dropped AND counted, and it used to
+  // appear twice in the summary — as its own sentence about rebuilding upkeep,
+  // and again six lines later in the bare list of what will not come. Two
+  // registers for one fact reads as two facts. Anything with a sentence of its
+  // own is kept out of the list; anything without one — an estimate nobody can
+  // parse, a date that is not a date — belongs there, because the list is the
+  // only place it is said at all.
+  const HAS_ITS_OWN_SENTENCE = new Set(['repeat', 'repeatrule']);
   const tags = new Set<string>();
-  for (const l of parsed) for (const t of l.dropped) tags.add(t);
-  const repeats = parsed.filter(l => l.dropped.some(t => t === 'repeat' || t === 'repeatrule')).length;
+  for (const l of parsed) for (const t of l.dropped) if (!HAS_ITS_OWN_SENTENCE.has(t)) tags.add(t);
+  const repeats = parsed.filter(l => l.dropped.some(t => HAS_ITS_OWN_SENTENCE.has(t))).length;
   const gone = (d: string | null): boolean =>
     d !== null && nowIso !== undefined && zone !== undefined && isPastDay(d, nowIso, zone);
   const live = (l: TaskLine): boolean =>
@@ -750,97 +758,104 @@ export function importSummary(
  * because an importer that reports only its successes is how somebody discovers a
  * year later that half a planner never arrived.
  */
-export function importWords(s: ImportSummary): string {
+/**
+ * The summary as a LEAD and a LIST, because it is a first-run screen (2.36.0).
+ *
+ * It was one paragraph. On a real export that came to 124 words in a single
+ * block — seven distinct facts run together, read at the moment somebody has
+ * the least patience and the least idea what they are looking at, on the path
+ * NOTES.md records as a main entrance rather than a migration.
+ *
+ * AND IN THE WRONG ORDER. Losses came before arrivals: what was finished and
+ * not brought in, then notes, then expired dates, then unreadable lines, and
+ * only then the places. Somebody scanning the first line learned what they had
+ * lost before they learned what they were getting.
+ *
+ * So: the lead says what ARRIVES, and the facts go in three runs — what comes
+ * with it, what changed on the way, and what does not come at all. Each is one
+ * line somebody can stop reading after.
+ *
+ * `importWords` composes from this rather than duplicating it, so the spoken
+ * announcement and the rendered list cannot disagree about the same file.
+ */
+export function importFacts(s: ImportSummary): { lead: string; facts: string[] } {
   const bits: string[] = [];
   if (s.projects > 0) bits.push(s.projects === 1 ? '1 project' : `${s.projects} projects`);
   if (s.actions > 0) bits.push(s.actions === 1 ? '1 action' : `${s.actions} actions`);
-  if (bits.length === 0) return 'Nothing in that file could be read as work. Nothing has been changed.';
+  if (bits.length === 0) {
+    return { lead: 'Nothing in that file could be read as work. Nothing has been changed.', facts: [] };
+  }
+  // AGREEMENT, and the first version of this line did not have it: "1 action
+  // come in." One item is the smallest file somebody can bring, and it is
+  // exactly the case a first-run screen must not fumble.
+  const one = s.projects + s.actions === 1;
+  const lead = `${bits.join(' and ')} ${one ? 'comes' : 'come'} in.`;
+  const facts: string[] = [];
 
-  const parts = [`Found ${bits.join(' and ')}`];
-  if (s.withDates > 0) parts.push(`${s.withDates} with a date`);
-  let out = `${parts.join(', ')}.`;
-  if (s.done > 0) {
-    // ITS OWN SENTENCE, because it changed meaning (2.34.1). It used to be a
-    // clause inside the count — "1385 actions, 215 already finished" — which
-    // read as "and these are coming too". They are not brought in at all now,
-    // and a number that quietly means the opposite of what it did is worse than
-    // a new sentence.
-    out += ` ${s.done === 1 ? 'One was' : `${s.done} were`} already finished and`
-      + ` ${s.done === 1 ? 'is' : 'are'} not brought in — that history stays in`
-      + ' the app it happened in, and the file still has it.';
-  }
-  if (s.notes > 0) {
-    // Inverted at 1.4.0: notes come across now. The 1.2.3 version of this
-    // sentence stated the loss; before that, a silent zero cost a 1,445-row
-    // import every note it had (audit). The count is of notes that ATTACH.
-    out += ` ${s.notes === 1 ? 'One note comes' : `${s.notes} notes come`} across with ${s.notes === 1 ? 'its item' : 'their items'}, readable on each item's own sheet.`;
-  }
-  if (s.staleDates > 0) {
-    // Said in full, because it is the single most surprising thing about importing
-    // a long-running planner and somebody will otherwise think the dates were lost.
-    out += ` ${s.staleDates === 1 ? 'One date had' : `${s.staleDates} dates had`} already gone by, so ${s.staleDates === 1 ? 'it comes' : 'they come'} in without a date rather than as something asking today.`;
-  }
-  if (s.repeats > 0) {
-    // The number, not just the tag name (1.8.0): rhythms are not carried, and
-    // the honest next step — rebuilding the real ones as upkeep — needs to
-    // know whether that is three things or sixty.
-    out += ` ${s.repeats === 1 ? 'One of them repeats' : `${s.repeats} of them repeat`} on a rhythm — rhythms are not carried; rebuild the real ones as upkeep when they matter.`;
-  }
-  if (s.droppedTags.length > 0) {
-    out += ` These will not come with them: ${s.droppedTags.join(', ')}.`;
-  }
-  if (s.unreadable.length > 0) {
-    out += ` ${s.unreadable.length === 1 ? 'One line' : `${s.unreadable.length} lines`} could not be read.`;
-  }
-  // THE ARRIVAL IS A FACT, NOT A DEBT (2.25.0 — entry 23's routing proposal).
-  //
-  // Everything above this line counts what came. None of it says the thing a
-  // large import most needs said, which is that the pile is not a backlog the
-  // reader has already failed to clear. The catalogue's measured case is a
-  // 1,173-item import leaving eleven of fourteen node kinds at zero: the app
-  // arrives knowing how to filter by place, by person and by container, and
-  // none of it can do anything, because nobody has been asked for a word.
-  //
-  // MODELLED ON THE AMNESTY (ADR-0043) AND ON ITS ONE HARD CONSTRAINT: an
-  // amnesty that sounds like absolution implies there was something to forgive.
-  // So this states the fact and the reason and stops. It does not reassure, it
-  // does not say "don't worry", and it does not promise the reader will file it
-  // later — which would be the debt, restated politely.
-  //
-  // Last on purpose: after what came and what did not, because the sentence is
-  // about the whole arrival rather than about any one count in it.
-  //
-  // AND ONLY WHEN SOMETHING ARRIVED THAT FILING IS A QUESTION ABOUT. The first
-  // version appended unconditionally and an existing assertion caught it: the
-  // summary for a one-line file is held to exactly `Found 1 action.`, on the
-  // rule that it never claims more than the file held. That rule is right. One
-  // action is not a pile, nothing about it invites sorting, and a sentence
-  // explaining that it has not been sorted is clutter answering a question
-  // nobody asked. The entry's case is the pile; this is where the pile starts.
-  if (s.projects + s.actions > 1) {
-    // ARRIVAL AS A FACT, NOT A DEBT — `docs/nd-collisions.md` entry 23, whose
-    // wording this follows. What changed in 2.33.0 is that half of it had
-    // become untrue: the tags somebody wrote now come across as places, so
-    // "nothing is filed" would be a sentence about a store that IS partly
-    // filed, and by their own hand rather than by this app's guess.
-    out += s.places > 0
-      ? ` ${s.places === 1 ? 'One place comes' : `${s.places} places come`} with them,`
-        + ` in the words you wrote — ${s.placed} of these things carry at least one.`
-        + ' Nothing else is filed, because filing was never asked for.'
-      : ' Nothing is filed, because filing was never asked for — it all arrives'
-        + ' as work, in the words it was written in.';
+  // --- what comes with them -------------------------------------------------
+  if (s.places > 0) {
+    facts.push(`${s.places === 1 ? 'One place comes' : `${s.places} places come`} too, in the words`
+      + ` you wrote — ${s.placed} of these things carry at least one.`);
   }
   if (s.flagged > 0) {
-    // NAMED AS WHAT IT BECOMES, not as what it was. "Flagged" is the other
-    // planner's word; heat is this app's, and saying "hot" is what makes the
-    // sentence checkable against the thing the reader will actually see.
-    out += ` ${s.flagged === 1 ? 'One was flagged' : `${s.flagged} were flagged`}, and`
-      + ` ${s.flagged === 1 ? 'comes' : 'come'} in hot — this app has no priority,`
-      + ' so what you marked is kept as interest rather than as a rank.';
+    facts.push(`${s.flagged === 1 ? 'One was flagged and comes' : `${s.flagged} were flagged and come`}`
+      + ' in hot. This app has no priority, so what you marked is kept as interest, never as a rank.');
   }
   if (s.estimates > 0) {
-    out += ` ${s.estimates === 1 ? 'One says' : `${s.estimates} say`} how long`
-      + ` ${s.estimates === 1 ? 'it takes' : 'they take'}, and that comes too.`;
+    facts.push(`${s.estimates === 1 ? 'One says' : `${s.estimates} say`} how long`
+      + ` ${s.estimates === 1 ? 'it takes' : 'they take'}, and that comes too.`);
   }
-  return out;
+  if (s.notes > 0) {
+    facts.push(`${s.notes === 1 ? 'One note comes' : `${s.notes} notes come`} across with`
+      + ` ${s.notes === 1 ? 'its item' : 'their items'}, readable on each item's own sheet.`);
+  }
+
+  // --- what changed on the way ---------------------------------------------
+  if (s.staleDates > 0) {
+    facts.push(`${s.staleDates === 1 ? 'One date had' : `${s.staleDates} dates had`} already gone by,`
+      + ` so ${s.staleDates === 1 ? 'it comes' : 'they come'} in without a date rather than as`
+      + ' something asking today.');
+  }
+  if (s.repeats > 0) {
+    facts.push(`${s.repeats === 1 ? 'One of them repeats' : `${s.repeats} of them repeat`} on a rhythm.`
+      + ' Rhythms are not carried; rebuild the real ones as upkeep when they matter.');
+  }
+
+  // --- what does not come at all -------------------------------------------
+  if (s.done > 0) {
+    facts.push(`${s.done === 1 ? 'One was' : `${s.done} were`} already finished and`
+      + ` ${s.done === 1 ? 'is' : 'are'} not brought in. That history stays in the app it`
+      + ' happened in, and the file still has it.');
+  }
+  if (s.droppedTags.length > 0) {
+    facts.push(`These will not come with them: ${s.droppedTags.join(', ')}.`);
+  }
+  // SAY WHY, because a count is a sentence nobody can act on (2.36.1). On a real
+  // export this was "15 lines could not be read." — the single largest
+  // unexplained loss in a 1,445-row import, and no way to tell from it whether
+  // fifteen pieces of work had gone missing. They had not: every one of the
+  // fifteen was a row with an empty name column, with its neighbouring Project
+  // cell filled in, which is what made them look like titles at a glance.
+  //
+  // BOTH parsers refuse for exactly this one reason and no other — a CSV row
+  // whose name column is empty, a TaskPaper line that is nothing but tags — so
+  // naming it here is a fact about the code rather than a guess about the file.
+  // If a second reason for refusing is ever added, this sentence becomes a lie
+  // and `unreadable` has to start carrying the reason with it.
+  if (s.unreadable.length > 0) {
+    facts.push(`${s.unreadable.length === 1 ? 'One line had' : `${s.unreadable.length} lines had`}`
+      + ' no name on them — an empty name column, or nothing but labels — so there is'
+      + ' nothing on them to bring in.');
+  }
+
+  // LAST, because it is the standing fact rather than a finding about the file,
+  // and it is the one that says the pile is not a debt.
+  if (s.projects + s.actions > 1) {
+    facts.push(s.places > 0
+      ? 'Nothing else is filed, because filing was never asked for.'
+      : 'Nothing is filed, because filing was never asked for. It all arrives as work,'
+        + ' in the words it was written in.');
+  }
+  return { lead, facts };
 }
+

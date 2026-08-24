@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fold } from '../src/fold.ts';
-import { allContexts, contextsOf, fitsHere, contextNames, placesReaching } from '../src/contexts.ts';
+import { allContexts, contextsOf, fitsHere, contextNames, offerToCorrectPlaces, placesReaching, releasedContexts } from '../src/contexts.ts';
 import type { AppEvent } from '../src/events.ts';
 
 const AT = '2026-08-17T09:00:00.000Z';
@@ -178,4 +178,67 @@ test('a place trashed on an ancestor stops reaching, without a migration', () =>
   // With its only reaching place dead the thing reverts to fitting everything,
   // rather than to fitting nothing — `contextsOf`'s rule, one level up.
   assert.equal(fitsHere(gone, gone.nodes.get('task')!, 'HOME'), true);
+});
+
+
+// --- the list is yours, and the way to say so was invisible ------------------
+//
+// Reported from the device: an import brought in nineteen labels, the chooser
+// was opened, and the immediate question was how to edit the list. "Not a
+// place" already existed and renders ONLY after a place is chosen — so the
+// question was asked with nothing on screen able to answer it.
+//
+// The line that answers it has to turn itself off, or it becomes a standing
+// instruction on a screen somebody opens every day.
+
+test('THE ONE FROM THE DEVICE: with places named and none chosen, the route is offered', () => {
+  assert.equal(offerToCorrectPlaces(world(), null), true);
+});
+
+test('and not while one is chosen, because the button is already on screen saying it', () => {
+  assert.equal(offerToCorrectPlaces(world(), 'home'), false);
+});
+
+test('and not on a store with no places, where there is nothing to correct', () => {
+  assert.equal(offerToCorrectPlaces(fold([]), null), false);
+});
+
+test('and never again once any label has been put down — told once, not standing', () => {
+  const s = fold([
+    ev('context.created', 'home', { name: 'At home' }),
+    ev('context.created', 'topic', { name: 'Email' }),
+    ev('context.created', 'other', { name: 'At work' }),
+    ev('node.released', 'topic', { at: AT }),
+  ]);
+  assert.equal(releasedContexts(s).length, 1);
+  // Two places still stand, so the chooser is still worth using — and the line
+  // is gone anyway, because the route is known.
+  assert.equal(allContexts(s).length, 2);
+  assert.equal(offerToCorrectPlaces(s, null), false);
+});
+
+test('a put-down label leaves the chooser, and takes its filtering with it', () => {
+  // The consequence the button's own line promises: "it stops being offered
+  // here, and stops hiding things that carry it". The second half is the one
+  // that matters — a thing whose ONLY label was a non-place was invisible
+  // everywhere except that fictional place.
+  const before = fold([
+    ev('context.created', 'topic', { name: 'Email' }),
+    ev('context.created', 'home', { name: 'At home' }),
+    ev('node.created', 'x', { kind: 'action', title: 'Reply to the surveyor' }),
+    ev('context.attached', 'x', { node: 'x', context: 'topic' }),
+  ]);
+  assert.equal(fitsHere(before, before.nodes.get('x')!, 'home'), false,
+    'labelled with a non-place, it does not fit where you actually are');
+
+  const after = fold([
+    ev('context.created', 'topic', { name: 'Email' }),
+    ev('context.created', 'home', { name: 'At home' }),
+    ev('node.created', 'x', { kind: 'action', title: 'Reply to the surveyor' }),
+    ev('context.attached', 'x', { node: 'x', context: 'topic' }),
+    ev('node.released', 'topic', { at: AT }),
+  ]);
+  assert.deepEqual(allContexts(after).map(c => c.title), ['At home'], 'gone from the chooser');
+  assert.equal(fitsHere(after, after.nodes.get('x')!, 'home'), true,
+    'and the work it was hiding fits everywhere again');
 });

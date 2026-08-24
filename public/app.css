@@ -1965,6 +1965,20 @@ dialog, dialog * { overflow-wrap: anywhere; }
   padding: 0.02em 0.3em;
   white-space: nowrap;
 }
+/* The import's facts, one per line (2.36.0). No bullets: these are not a list
+   of things to do, they are seven statements about a file, and a disc beside
+   each one reads as a checklist somebody has to get through. No new colour
+   pair — `--ink-soft` on the sheet is what `.storage-note` above it already
+   uses and is already measured. */
+.storage-facts {
+  list-style: none;
+  margin: 0.35rem 0 0.75rem;
+  padding: 0;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+.storage-facts li { margin: 0 0 0.4rem; }
+.storage-facts li:last-child { margin-bottom: 0; }
 .tour-p { margin: 0 0 0.7rem; color: var(--ink-soft); }
 .tour-p:last-child { margin-bottom: 0; }
 .tour-nav {

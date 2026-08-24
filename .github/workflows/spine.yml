@@ -481,3 +481,40 @@ jobs:
       - name: No localStorage
         if: ${{ !cancelled() }}
         run: npm run storage:check
+
+      # AND THE ONE THAT ASKS ABOUT THE OTHERS. Every step above is a gate
+      # somebody remembered to add here. This asks the reverse: is there a gate
+      # in package.json that nobody added? A check written, wired into a script
+      # and never put in a workflow looks exactly like a check that is running,
+      # from every angle except this one. Each script is either run by a workflow
+      # or declared in `.spine-exempt` with a reason, and both directions are
+      # asserted so an exemption cannot outlive the reason for it.
+      - name: Every gate is in CI, or says why not
+        if: ${{ !cancelled() }}
+        run: npm run spine -- --parity
+
+      # THE LAST THING IN THE LOG SAYS WHETHER THE RUN PASSED.
+      #
+      # Every step above runs with `if: ${{ !cancelled() }}` so one failure does
+      # not hide the twenty checks after it — which is right, and which has a
+      # cost that went uncollected for three releases: a red job whose final
+      # screen is a wall of green. `size:check` failed on 2.34.0 and the run's
+      # tail read `clean`; it stayed red through 2.34.1 and 2.35.0, both pushed
+      # to staging and promoted to production, because deploy.yml runs on push
+      # and never consults this workflow.
+      #
+      # So the tail is made to tell the truth. This step runs ONLY on failure
+      # and is the last thing written, so scrolling to the bottom — which is
+      # what anybody does — lands on the word FAILED.
+      - name: Say so, at the bottom, where it gets read
+        if: ${{ failure() }}
+        run: |
+          echo '::error::THE SPINE FAILED. Steps after the failure still ran, so the green above proves nothing about the run.'
+          echo
+          echo '  THE SPINE FAILED.'
+          echo
+          echo '  Steps above this one keep running past a failure on purpose, so'
+          echo '  a green tail is not a green run. Open the run and read which'
+          echo "  step is marked failed — do not read the last screen of the log."
+          echo
+          exit 1

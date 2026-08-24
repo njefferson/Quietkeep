@@ -135,6 +135,39 @@ promotes included, because they are about WHAT is being committed.
 Both name the one command instead of spending minutes inside a hook, because a
 hook that silently spends four minutes is a hook somebody disables.
 
+## Run the whole Spine before you push: `npm run spine`
+It reads `.github/workflows/spine.yml` and runs every step of it, in order, on
+this machine — no second list to go stale, so a step added to CI is run by it the
+same day. **About eight minutes**, most of it the three browser walks; `--list`
+shows what it would run, `--only a11y` runs one, `--from 20` picks up after a
+failure. It keeps going past a failure, for the reason CI does, and **prints the
+verdict last** so the bottom of the output is the answer.
+
+It exists because there is no other way to know. There are around thirty gates,
+and until this a session assembled the list by hand — so what it did not think of
+did not get run, which is by definition the thing it forgot it had changed. On
+one day that cost `size:check` going red for three releases that were pushed and
+promoted anyway, and six waits in the smoke walk left asking the app for words it
+had stopped saying. Both were found afterwards, by CI. (Hub LESSONS 139.)
+
+**`npm run spine -- --parity` is the other direction**, and it is a Spine step
+itself. The run above asks whether everything CI runs passes here; parity asks
+whether CI runs everything there is. A gate written, wired into `package.json`
+and never added to the workflow **looks exactly like a gate that is running**,
+from every angle except this one. Every script is either run by a workflow or
+declared in [`.spine-exempt`](.spine-exempt) with a reason, both directions
+asserted, so an exemption cannot outlive what it exempts. It caught its own the
+first time it ran. (Hub LESSONS 127.)
+
+The steps it cannot run are PRINTED with the reason, never skipped in silence:
+the checkout actions, `npm ci`, the browser install, and the hub gates, which run
+from `../noahjefferson` here rather than from the CI-only `.hub-gates` checkout.
+**Run those separately**, and note they do not all take the same argument:
+`privacy-check`, `privacy-mirror-check`, `quote-check` and `branch-guard` take
+`--repo .`; **`docs-check` takes a positional path** — `node
+../noahjefferson/docs-check.mjs .` — and dies on `--repo`, which it reads as a
+directory name.
+
 ## Accessibility
 WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the
 append-only register and it already records the design-time colour bindings —

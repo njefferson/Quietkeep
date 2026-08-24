@@ -14,6 +14,31 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.37.0 — CAPABILITY
+
+*2026-08-24*
+
+- **The list of places says it is yours.** After an import the chooser can hold every label you ever wrote, and some of them are not places at all — a topic, a tool, somebody’s name. You could already tell the app so, and there was nothing on screen saying you could: the control only appears once you have picked one, so opening the list and looking at it answered nothing.
+- **A line under the chooser now says it, before you pick anything.** Pick a label and the way to say it is not a place is right there, as it always was.
+- **It tells you once.** The moment you put any label down the line stops, because you know the route. It is not a standing instruction on a screen you open every day.
+- **Still no way to rename one.** A label comes in as you wrote it and stays that way; putting it down and naming a new one is the only route today.
+
+## 2.36.1 — ITERATION
+
+*2026-08-24*
+
+- **A line the importer cannot use now says what was wrong with it.** It used to say only "15 lines could not be read", which on a real export was the biggest thing in the summary you could do nothing about — no way to tell whether fifteen pieces of work had just gone missing.
+- **They had not.** A line is left behind for one reason: it has no name on it — an empty name column, or nothing but labels. The summary says that now, so you can stop wondering about it.
+
+## 2.36.0 — CAPABILITY
+
+*2026-08-24*
+
+- **What a file will do to your work is now a list you can read, not a paragraph you have to get through.** Choosing an export used to answer with one block of a hundred and twenty words — what arrives, what changes on the way and what does not come at all, all run together, at the moment you have the least patience for it.
+- **It is one fact per line now, in three groups**: what comes with your work, what changed on the way in, and what stays behind. The line saying nothing is filed comes last, because it is the standing fact rather than something about your file.
+- **Each loss is stated once.** A repeating thing was reported twice — once as a rhythm to rebuild, and again six lines later in a bare list of what will not come. Two ways of saying one thing reads as two things.
+- **The screen is measured now.** Nothing had ever rendered this list, so its colours and spacing had never been checked in either theme; the accessibility walk chooses a file of its own and reads what comes back.
+
 ## 2.35.0 — CAPABILITY
 
 *2026-08-24*

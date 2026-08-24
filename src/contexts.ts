@@ -39,6 +39,35 @@ export function allContexts(state: State): NodeState[] {
     .sort((a, b) => (a.title || '').localeCompare(b.title || '') || (a.id < b.id ? -1 : 1));
 }
 
+/** The ones put down as not-places. Read only to stop telling somebody about a
+ *  route they have already taken. */
+export function releasedContexts(state: State): NodeState[] {
+  return [...state.nodes.values()]
+    .filter(n => n.kind === 'context' && n.released !== null && !n.trashed && !n.mergedInto);
+}
+
+/**
+ * Whether to say, under the chooser, that a label can be told it is not a place.
+ *
+ * THE CONTROL THAT SAYS IT IS INVISIBLE UNTIL YOU HAVE ALREADY CHOSEN ONE, which
+ * is the defect this answers: an import brought in nineteen labels, the chooser
+ * was opened, and there was nothing on screen saying any of them could be
+ * corrected. The button appears after a choice; the reason to make a choice has
+ * to come before it.
+ *
+ * It is NOT a standing line. Three conditions, and each turns it off for good
+ * reason: nothing to correct when there are no places; the button is already on
+ * screen with its own words once one is chosen; and once anybody has put a label
+ * down they know the route, so it stops. Told once, then never again — the shape
+ * `docs/nd-collisions.md` entry 23 asks for, and the opposite of a standing
+ * instruction on a screen somebody visits every day.
+ */
+export function offerToCorrectPlaces(state: State, chosen: string | null): boolean {
+  if (chosen !== null) return false;
+  if (allContexts(state).length === 0) return false;
+  return releasedContexts(state).length === 0;
+}
+
 /** The contexts attached to one thing, as live nodes.
  *
  *  Resolved through state rather than trusting the stored ids, so a context

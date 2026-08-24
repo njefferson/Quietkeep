@@ -48,7 +48,7 @@ import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
-import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
+import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
 import {
@@ -296,6 +296,17 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       })),
     ]);
     if (keep === '' || places.some(c => c.id === keep)) whereSel.value = keep;
+  }
+  // AND THE LINE THAT SAYS SO BEFORE YOU HAVE CHOSEN ANYTHING (2.37.0). The
+  // button below is the answer to "how do I edit this list" and it is not on
+  // screen until a place is picked, so the question gets asked with nothing in
+  // front of it to answer it. `offerToCorrectPlaces` turns this off for good
+  // once any label has been put down.
+  const whereHint = document.querySelector<HTMLElement>('#where-hint');
+  if (whereHint) {
+    const news = offerToCorrectPlaces(session.state(), whereNow);
+    whereHint.hidden = !news;
+    if (news) whereHint.textContent = 'Some of these may not be places. Pick one and you can say so.';
   }
   // The way to say one of them is not a place (2.34.0) — see the note on the
   // markup. Present only while one is chosen: there is nothing to say it about

@@ -4773,12 +4773,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     mimeType: 'text/plain',
     buffer: Buffer.from('Kitchen refit:\n\t- Ring the plumber @due(2026-12-05)\n\t- Measure the gap @flagged\n'),
   });
-  await tpage.waitForFunction(() => /Found/.test(
+  // THE LEAD, and only the lead, is what this region carries (2.36.0). It used
+  // to hold the whole summary as one paragraph and this waited on the word
+  // "Found", which was the old opening. Both changed under it and this walk is
+  // where that was caught — the unit tests knew the new words and had no idea
+  // the picker still said the old ones to a browser.
+  await tpage.waitForFunction(() => /comes? in\./.test(
     document.querySelector('#other-note')?.textContent ?? ''), null, { timeout: 4000 });
   const said = await tpage.locator('#other-note').textContent();
-  is(/1 project and 2 actions/.test(said || ''), true, `it says what the file held ("${said}")`);
-  is(/flagged/.test(said || ''), true, 'and names what will NOT come with it');
+  is(/1 project and 2 actions come in/.test(said || ''), true, `it says what the file held ("${said}")`);
   is(/TaskPaper/.test(said || ''), true, 'and which format it read');
+
+  // AND THE FACTS ARE BESIDE IT, as list items rather than more of that
+  // sentence. The flag is the one to assert: it used to be DROPPED and named in
+  // a list of losses, and since 2.34.0 it arrives as heat — so a walk still
+  // asserting "flagged" appears anywhere would pass on either behaviour.
+  const facts = await tpage.locator('#other-facts li').allTextContents();
+  is(facts.length > 0, true, `the facts render as their own lines (${facts.length})`);
+  is(facts.some(f => /flagged and comes in hot/.test(f)), true,
+    'and the flag arrives as heat rather than being listed as a loss');
   await tpage.click('#other-go');
   await tpage.waitForTimeout(900);
   await tpage.waitForSelector('body[data-ready=true]');
@@ -4834,7 +4847,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.setInputFiles('#other-file', {
     name: 'big.taskpaper', mimeType: 'text/plain', buffer: Buffer.from(cap_many.join('\n') + '\n'),
   });
-  await tpage.waitForFunction(() => /Found/.test(
+  await tpage.waitForFunction(() => /comes? in\./.test(
     document.querySelector('#other-note')?.textContent ?? ''), null, { timeout: 5000 });
   await tpage.click('#other-go');
   await tpage.waitForTimeout(1400);
@@ -4881,7 +4894,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     name: 'loose.taskpaper', mimeType: 'text/plain',
     buffer: Buffer.from('- Sort me one\n- Sort me two\n- Sort me three\n'),
   });
-  await tpage.waitForFunction(() => /Found/.test(
+  await tpage.waitForFunction(() => /comes? in\./.test(
     document.querySelector('#other-note')?.textContent ?? ''), null, { timeout: 5000 });
   const looseNav = tpage.waitForEvent('framenavigated');
   await tpage.click('#other-go');
@@ -5146,9 +5159,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     name: 'noted.csv', mimeType: 'text/csv',
     buffer: Buffer.from('Task ID,Type,Name,Status,Project,Notes\n1,Action,Noted thing,,,ask about the crown\n'),
   });
-  await tpage.waitForFunction(() => /Found/.test(
+  await tpage.waitForFunction(() => /comes? in\./.test(
     document.querySelector('#other-note')?.textContent ?? ''), null, { timeout: 5000 });
-  is(/One note comes across with its item/.test(await tpage.locator('#other-note').textContent() || ''), true,
+  is((await tpage.locator('#other-facts li').allTextContents())
+    .some(f => /One note comes across with its item/.test(f)), true,
     'the summary states the carry, before anything is written');
   const notedNav = tpage.waitForEvent('framenavigated');
   await tpage.click('#other-go');
@@ -5665,7 +5679,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     name: 'bulk.taskpaper', mimeType: 'text/plain',
     buffer: Buffer.from('- Bulk me one\n- Bulk me two @due(2026-12-01)\n- Bulk me three\n- Bulk me four\n- Bulk me five\n- Bulk me six\n'),
   });
-  await tpage.waitForFunction(() => /Found/.test(
+  await tpage.waitForFunction(() => /comes? in\./.test(
     document.querySelector('#other-note')?.textContent ?? ''), null, { timeout: 5000 });
   const bulkNav = tpage.waitForEvent('framenavigated');
   await tpage.click('#other-go');
@@ -6121,7 +6135,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     mimeType: 'text/plain',
     buffer: Buffer.from('Rewire the shed light:\n\t- pull the cable\nrewire the SHED light:\n\t- fit the fitting\n'),
   });
-  await tpage.waitForFunction(() => /Found/.test(
+  await tpage.waitForFunction(() => /comes? in\./.test(
     document.querySelector('#other-note')?.textContent ?? ''), null, { timeout: 4000 });
   await tpage.click('#other-go');
   await tpage.waitForTimeout(900);
