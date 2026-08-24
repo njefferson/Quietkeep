@@ -5776,8 +5776,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.locator('#cards .card:has(.card-title:text-is("strip the old sealant")) .card-done')
       .click({ timeout: 8000 });
   } catch (err) {
+    // WHAT THE CARD ACTUALLY IS. "The card is missing" and "the card is there
+    // and offers no Done" are different faults with different causes, and a
+    // list of titles cannot tell them apart.
+    const probe = await tpage.evaluate(() => {
+      const card = [...document.querySelectorAll('#cards .card')].find(
+        (c) => (c.querySelector('.card-title')?.textContent || '').trim() === 'strip the old sealant');
+      if (!card) return { found: false };
+      const r = card.getBoundingClientRect();
+      return {
+        found: true,
+        cls: card.className,
+        group: card.closest('ul')?.getAttribute('aria-label') ?? null,
+        status: (card.querySelector('.card-status')?.textContent || '').trim().slice(0, 40),
+        buttons: [...card.querySelectorAll('button')]
+          .map((b) => `${b.className}="${(b.textContent || '').trim().slice(0, 16)}"`),
+        box: `${Math.round(r.width)}x${Math.round(r.height)}`,
+      };
+    }).catch(() => null);
+    bad(`the card named for this step offers no Done — ${JSON.stringify(probe)}`);
     const titles = await tpage.locator('#cards .card-title').allTextContents().catch(() => []);
-    bad(`the card named for this step is not reachable — ${titles.length} on the list: ` +
+    bad(`and the list around it — ${titles.length} on it: ` +
         JSON.stringify(titles.map((t) => t.trim().slice(0, 30)).slice(0, 14)));
     throw err;
   }
