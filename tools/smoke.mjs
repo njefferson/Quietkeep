@@ -44,7 +44,22 @@ const ensureStanceFor = async (pg, selector) => {
   let want = null;
   try {
     want = await pg.evaluate((sel) => {
-      const el = document.querySelector(sel) ?? document.querySelector(sel.split(':')[0]);
+      // PLAYWRIGHT'S PSEUDOS ARE NOT CSS, and `querySelector` THROWS on them
+      // rather than returning null — so `?? querySelector(split)` never ran,
+      // the throw escaped to the caller's catch, and the shim declined to
+      // navigate on every `:has-text()` selector in the walk. Silently: a
+      // decline looks exactly like "no job needed". `:has()` is real CSS and
+      // stays.
+      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
+      const plain = (q) => q
+        .replace(/:has-text\([^)]*\)/g, '')
+        .replace(/:text-is\([^)]*\)/g, '')
+        .replace(/:text\([^)]*\)/g, '')
+        .replace(/:nth-match\([^)]*\)/g, '')
+        .replace(/:visible/g, '')
+        .replace(/\s*>>.*$/, '')
+        .trim();
+      const el = ask(sel) ?? ask(plain(sel)) ?? ask(plain(sel).split(':')[0]);
       if (!el) return null;
       const runway = document.querySelector('#runway');
       if (!runway || !runway.hasAttribute('data-hub')) return null;
@@ -107,7 +122,8 @@ const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
 const unfoldTo = async (pg, sel) => {
   try {
     await pg.evaluate((s) => {
-      const el = document.querySelector(s);
+      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
+      const el = ask(s) ?? ask(s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim());
       if (!el) return;
       for (let p = el.parentElement; p; p = p.parentElement) {
         if (p.tagName !== 'DETAILS' || p.open) continue;
@@ -3166,6 +3182,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // nothing, rather than by seeding a head. Bounded, and the walk FAILS if the
   // item never comes up — a check that quietly passes when it found nothing is
   // not a check.
+  // INTO THE JOB FIRST (3.0.0). The loop below breaks out the moment
+  // `#nextup-skip` reads hidden — and from anywhere but this job it IS hidden,
+  // so the loop exited on its first pass having cycled nothing and the three
+  // assertions under it failed against a null they were never given a chance
+  // to fill.
+  await intoJob(tpage, 'nextup');
   let offerApproach = null;
   for (let i = 0; i < 15 && offerApproach === null; i++) {
     const title = await tpage.locator('#nextup-title').textContent();
@@ -3630,8 +3652,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // reclaims it or the battery dies.
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
+  // THE SESSION SURVIVES; THE HUB IS WHERE YOU COME BACK TO (3.0.0, ADR-0108).
+  //
+  // Landing back inside the session would be the app deciding where you are
+  // standing after an interruption it never saw — and the interruption this
+  // block is about is the OS reclaiming the app, which may have been hours ago.
+  // The hub is the safe landing. What must survive is the SESSION, and the door
+  // is the evidence it did: a job with nothing running has no door at all.
+  //
+  // Asserted in two halves so neither is weaker than the one line it replaces.
+  // `isVisible()` on `#focus` from the hub reads false for a section that is
+  // display:none and perfectly alive — a true answer to the wrong question.
+  is(await tpage.locator('#hub-doors .hub-go[data-stance-id=\"focus\"]').count() > 0, true,
+    'and coming back, the session is still there \u2014 it survived the app going away');
+  await intoJob(tpage, 'focus');
   is(await tpage.locator('#focus').isVisible(), true,
-    'and coming back, you are still in it \u2014 the session survived the app going away');
+    'and going back in through its door, you are still in it');
 
   // Stop properly, and leave the five words. Optional throughout; this walk
   // gives them so the cue path is exercised rather than assumed.
@@ -5410,6 +5446,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   //
   // Derived from the import above rather than another magic number, so the two
   // cannot drift apart again: raise the import and this rises with it.
+  // OPEN THE INBOX FIRST (3.0.0). `#triage-card` and `#triage-prompt` read
+  // empty when nothing has opened the job, so the loop below walked its whole
+  // bound against blank text and the fixture check reported the prompt it saw
+  // as "" — which is not a heat card, and is not a defect either.
+  await intoJob(tpage, 'triage');
   let onMine = false;
   const bound = cap_many.length + 40;
   for (let i = 0; i < bound && !onMine; i++) {
