@@ -5767,7 +5767,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await intoJob(tpage, 'held');
   await revealAll(tpage);
   try {
-    await tpage.locator('#cards .card:has-text("strip the old sealant") .card-done')
+    // BY ITS TITLE, not by any text on the card. `:has-text()` matches a card
+    // that MENTIONS the words — and the card for "re-seal the frame" says
+    // “Waiting for “strip the old sealant””, which is the whole point of the
+    // step above. It sorts first, so the locator resolved to the blocked card,
+    // whose Done button correctly does not exist. A latent ambiguity that only
+    // showed once the list got long enough for both cards to be on it.
+    await tpage.locator('#cards .card:has(.card-title:text-is("strip the old sealant")) .card-done')
       .click({ timeout: 8000 });
   } catch (err) {
     const titles = await tpage.locator('#cards .card-title').allTextContents().catch(() => []);
