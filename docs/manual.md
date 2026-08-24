@@ -250,6 +250,13 @@ when there is a reason.
 
 ### The work surface
 
+- **Where do you want to be?** — the screen you land on, and the one you come
+  back up to. A list of doors, each opening a single job and saying what is
+  behind it. A door only appears when there is something behind it, so the list
+  is short on a quiet day and never asks you to remember to go and look
+  somewhere. Inside a job, that job is the whole screen: one way back, in the
+  same place every time, and a **+** for putting a thought down without leaving
+  what you are doing.
 - **Next up** — the one thing offered, with why.
 - **Sort things out** — captured things, one at a time, with eight plain choices.
 - **Needs a new plan** — a date went by. Not a failure and not a backlog.

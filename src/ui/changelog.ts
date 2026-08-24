@@ -29,6 +29,20 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.0.0',
+    kind: 'VERSION',
+    date: '2026-08-24',
+    notes: [
+      '**The app has places now.** It used to be one long page holding fifteen blocks, and you had a position in it rather than somewhere to be \u2014 scroll away and you lost your place, which on a page this long meant losing the thought too.',
+      '**You land on a list of doors.** Each one opens a single job and says what is behind it in your words: what to sort, what slipped, what you are holding. A door only appears when there is something behind it.',
+      '**Inside a job, that job is the whole screen.** Nothing else is on it. There is one way back \u2014 the same one everywhere \u2014 and a **+** for putting a thought down without leaving what you are doing.',
+      '**Nothing is hidden from you.** Coming back up shows everything waiting, everywhere, so there is never a place you have to remember to go and check. That is the difference between this and tabs, and it is why it is not tabs.',
+      '**What you are on, and what you just did, follow you.** The thing you are working on now and the way to undo the last thing stay on screen wherever you are \u2014 they are not one of the jobs.',
+      '**What\u2019s the situation? is now the seventeenth control on the page; it was the fifteenth.** The row that carries the way back and the **+** sits above it, so it moved down by two. Nothing about it changed otherwise.',
+      '**Your work is untouched.** Nothing about how anything is stored has changed, so there is nothing to import again and nothing to migrate.',
+    ],
+  },
+  {
     triplet: '2.38.0',
     kind: 'CAPABILITY',
     date: '2026-08-24',

@@ -118,6 +118,25 @@ const uiHash = () => {
  * something to offer — and a crop of an element that is not there would be a
  * blank rectangle shipped as an illustration.
  */
+/**
+ * INTO A JOB, THROUGH ITS DOOR (3.0.0, ADR-0108).
+ *
+ * These are photographs of the app, so they have to be taken from where a
+ * finger can stand. A section is on screen only while it is the stance, and a
+ * picture staged any other way would illustrate a screen nobody can reach.
+ */
+const intoJob = async (page, id) => {
+  const inOne = await page.evaluate(() =>
+    document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
+  if (inOne === id) return;
+  if (inOne !== null) await page.click('#stance-back');
+  const door = `#hub-doors .hub-go[data-stance-id="${id}"]`;
+  await page.waitForSelector(door, { timeout: 15000 });
+  await page.click(door);
+  await page.waitForSelector(`#runway[data-stance="${id}"]`, { timeout: 15000 });
+  await page.waitForTimeout(300);
+};
+
 const SHOTS = [
   {
     step: 2,
@@ -145,7 +164,9 @@ const SHOTS = [
       await seed(page);
       // The inline one-card-at-a-time pass on the main screen — which is what
       // this step describes, and not the `Sort things out` batch picker.
-      await page.evaluate(() => { document.querySelector('#triage-open')?.click(); });
+      // The hub's door IS the way in now, and entering the job opens the card —
+      // the second door inside it collapsed in 3.0.0.
+      await intoJob(page, 'triage');
       await page.waitForSelector('#triage:not([hidden])', { timeout: 15000 });
       await page.waitForTimeout(500);
       return '#triage';
@@ -160,6 +181,7 @@ const SHOTS = [
     frame: { from: '#nextup-heading', to: '#nextup-plain' },
     async reach(page) {
       await seed(page);
+      await intoJob(page, 'nextup');
       await page.waitForSelector('#nextup:not([hidden])');
       return '#nextup';
     },
@@ -169,6 +191,7 @@ const SHOTS = [
     name: 'quiet-day',
     async reach(page) {
       await seed(page);
+      await intoJob(page, 'nextup');
       await page.waitForSelector('#nextup-plain');
       await page.click('#nextup-plain');
       await page.waitForTimeout(1200);

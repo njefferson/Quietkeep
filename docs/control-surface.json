@@ -21,12 +21,12 @@
   },
   "menu-open": {
     "region": "document",
-    "ordinal": 40,
+    "ordinal": 42,
     "label": null
   },
   "situation-open": {
     "region": "document",
-    "ordinal": 15,
-    "label": "What’s the situation?"
+    "ordinal": 17,
+    "label": "What\u2019s the situation?"
   }
 }

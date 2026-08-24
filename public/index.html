@@ -177,7 +177,45 @@
      changed with it — a window scroll on a page that does not scroll is a call
      that silently does nothing. -->
 <div class="runway" id="runway">
+<!-- THE WAY BACK (3.0.0). Outside <main> so it is not a section and cannot
+     become a door; inside the runway so it scrolls with the job rather than
+     eating fixed height, which is what ADR-0101 had to stand the frame down
+     for. Hidden on the hub, because there is nowhere above it. -->
+<div id="stance-bar" class="stance-bar" hidden>
+  <button id="stance-back" type="button" class="ghost">Everywhere else</button>
+  <!-- CAPTURE FROM INSIDE THE JOB. The box lives in the frame, and the frame
+       stands down at 175% text (ADR-0101) — so inside a stance, at the size
+       where it matters most, there was no way to put a thought down without
+       leaving the job first. Leaving the job to record a thought is how the
+       thought gets lost, which is the whole thing this app is a rebuttal to.
+       NOT FLOATING. ADR-0100 measured a floating control at two screen sizes
+       across thirteen scroll positions: it overlapped ten controls and took the
+       centre of three card Done buttons. This is an ordinary button in an
+       ordinary row, beside the way out, and it cannot cover anything.
+       The glyph is decorative and the NAME is a sentence (hub LESSONS §29):
+       "+" is not a phrase anybody can say to a voice control. -->
+  <button id="stance-capture" type="button" class="stance-add"
+          title="Put something down"><span aria-hidden="true">+</span><span
+          class="visually-hidden">Put something down</span></button>
+</div>
 <main>
+
+<!-- HOME (3.0.0, ADR-0108). The surface you come up to.
+     Before this the landing view was 15 conditional sections in one scroller,
+     and reading it was reading an article: you had a position, never a place,
+     and losing the position lost the thought. Reported from the device across
+     several days — the app's own thesis failing on the thing the app made.
+     NOT A SHORTER RUNWAY. A list of doors, each opening ONE job, each saying
+     what is behind it in the reader's own words. Every row is DERIVED from the
+     live sections by `stops()`, exactly as a Contents row is, so a block added
+     to the page shows up here the day it is added and a renamed heading cannot
+     leave a stale door behind — there is no second list to go stale.
+     `data-not-a-stop` keeps it out of its own door list: a surface you come up
+     to must never offer a way to come up to it. -->
+<section id="hub" class="hub" aria-labelledby="hub-heading" data-not-a-stop>
+  <h2 id="hub-heading" class="section" tabindex="-1">Where do you want to be?</h2>
+  <ul id="hub-doors" class="hub-doors"></ul>
+</section>
 
 <!-- THE SECOND ROW OF CAPTURE, WHICH THE FRAME COULD NOT AFFORD (2.9.0, ADR-0100).
      These two were inside the form, on a second line, and measured 52px of a
@@ -228,7 +266,7 @@
        than any single worry on it. It asks WHOSE IT IS before it asks anything
        else, because asking what you will do about it first is what makes people
        invent an answer. -->
-  <section id="bother" class="bother" aria-labelledby="bother-prompt" hidden>
+  <section id="bother" data-always class="bother" aria-labelledby="bother-prompt" hidden>
     <p id="bother-count" class="bother-count"></p>
     <!-- tabindex=-1 so focus can land here after answering removes the control
          it was on (WCAG 2.4.3). -->
@@ -242,7 +280,7 @@
        BY SCHEMA — Next-up, at most three triage items, the gauge, and an amnesty
        offer. There is no shape it can take that shows the backlog, and it says
        how long you were away without apologising on your behalf. -->
-  <section id="reentry" class="reentry" aria-labelledby="reentry-heading" hidden>
+  <section id="reentry" data-always class="reentry" aria-labelledby="reentry-heading" hidden>
     <h2 id="reentry-heading" class="section" tabindex="-1">Welcome back</h2>
     <p id="reentry-words" class="reentry-words"></p>
     <p id="reentry-waiting" class="reentry-waiting" hidden></p>
@@ -302,7 +340,7 @@
 
   <!-- Next up: one thing, chosen for you, with a short capped list behind it.
        Hidden when nothing is asking — an empty morning says so. -->
-  <section id="nextup" class="nextup" aria-labelledby="nextup-heading" hidden>
+  <section id="nextup" data-stance-name="Choose what to do" class="nextup" aria-labelledby="nextup-heading" hidden>
     <h2 id="nextup-heading" class="section" tabindex="-1">Next up</h2>
     <!-- A DOOR, not a caption (2.2.0, ADR-0092). This was a <p>. Every other
          thing on this card is a real control — Done, Not this, This one is
@@ -493,7 +531,7 @@
      renaming it would touch the stylesheet, three gates and the edition build
      for no fact. It is declared in `PLAIN_CHROME_KEPT` rather than `PLAIN_KEPT`,
      which is where the gate now looks for it. -->
-  <div id="nextup-plain-bar" class="nextup-plain-bar" hidden>
+  <div id="nextup-plain-bar" class="nextup-plain-bar" data-always hidden>
     <button id="nextup-plain-off" type="button" class="ghost">Show me everything again</button>
   </div>
 
@@ -521,12 +559,12 @@
 
   <!-- Triage: the heat pass and clarify. One card at a time; hidden when the
        inbox is clear. Announced in its own live region. -->
-  <section id="triage" class="triage" aria-labelledby="triage-prompt" hidden>
+  <section id="triage" data-stance-name="Sort what you put down" class="triage" aria-labelledby="triage-prompt" hidden>
     <!-- THE DOOR, not the question (1.39.2). After you have put something down,
          this surface offers to sort rather than asking about the thing you just
          typed. Deciding while dumping stops the dumping; ten captures in a row
          used to mean ten interruptions on the one path that must stay clear. -->
-    <button id="triage-open" type="button" class="ghost" hidden>Sort what you have put down</button>
+    <button id="triage-open" type="button" class="ghost" data-stance-opener hidden>Sort what you have put down</button>
     <p id="triage-gauge" class="triage-gauge"></p>
     <!-- tabindex=-1 so focus can land here after a card is replaced: activating a
          route removes the button, and focus must not fall to <body> (WCAG 2.4.3). -->
@@ -553,13 +591,13 @@
        now" made the offer disappear, and a running timer went on to reach zero
        invisibly. The old comment claimed this was "outside the card", which was
        true and not enough. -->
-  <div id="triage-donow"></div>
+  <div id="triage-donow" data-always></div>
 
   <!-- Last-action undo for triage. OUTSIDE the triage section for the same
        reason the do-now offer is: routing your last inbox item hides that whole
        section, and the way to take the route back must not vanish with it. It
        names where the card went and returns it to the inbox in one tap. -->
-  <div id="triage-undo" class="triage-undo"></div>
+  <div id="triage-undo" class="triage-undo" data-always></div>
 
   <!-- Sort mode's door left this surface in 2.8.1 (ADR-0099). It was a 68px
        row here, 1.92 screens down on a thirteen-item store, standing between
@@ -571,7 +609,7 @@
        failures — there is no such list in this app. Each row is a live decision,
        capped at three so returning after a fortnight is not a wall, with the
        true total stated so the cap is never a lie by omission. -->
-  <section id="replan" class="replan" aria-labelledby="replan-heading" hidden>
+  <section id="replan" data-stance-name="What slipped" class="replan" aria-labelledby="replan-heading" hidden>
     <!-- tabindex=-1 so focus can land here after resolving a card removes the
          control it was on (WCAG 2.4.3). -->
     <h2 id="replan-heading" class="section" tabindex="-1">Needs a new plan</h2>
@@ -584,7 +622,7 @@
        The capture line here writes `interrupt.captured` rather than an ordinary
        capture, and the resume card is written WITH IT — you do not get to press
        a button on your way out of the room. -->
-  <section id="focus" class="focus" aria-labelledby="focus-heading" hidden>
+  <section id="focus" data-stance-name="Do one thing" class="focus" aria-labelledby="focus-heading" hidden>
     <h2 id="focus-heading" class="section" tabindex="-1">Working on</h2>
     <p id="focus-title" class="focus-title"></p>
     <p id="focus-elapsed" class="focus-elapsed"></p>
@@ -626,7 +664,7 @@
        It appears when you come out of a focus session and NOWHERE ELSE. A chip
        that can arrive at any moment is a notification wearing different clothes,
        and it would be the very interruption it exists to consolidate. -->
-  <section id="comms" class="comms" aria-labelledby="comms-heading" hidden>
+  <section id="comms" data-always class="comms" aria-labelledby="comms-heading" hidden>
     <h2 id="comms-heading" class="section" tabindex="-1">Coming up for air</h2>
     <p id="comms-words" class="comms-words"></p>
     <div class="comms-actions">
@@ -641,7 +679,7 @@
        peak-end, never a score, no duration, no streak. Carries the one
        day-end question (item 26) when a thread from EARLIER is still waiting.
        In-memory like the comms chip: it never greets a cold start. -->
-  <section id="close" class="comms" aria-labelledby="close-heading" hidden>
+  <section id="close" data-always class="comms" aria-labelledby="close-heading" hidden>
     <h2 id="close-heading" class="section" tabindex="-1">That was a session.</h2>
     <p id="close-win" class="comms-words"></p>
     <p id="close-gauge" class="comms-words"></p>
@@ -661,7 +699,7 @@
        hold is a name, a date you owe an answer, and whether it has moved. No
        health word anywhere — "at risk" and "slipping" are this app grading
        somebody else's work on evidence it does not have. -->
-  <section id="portfolio" class="portfolio" aria-labelledby="portfolio-heading" hidden>
+  <section id="portfolio" data-stance-name="What you are working toward" class="portfolio" aria-labelledby="portfolio-heading" hidden>
     <h2 id="portfolio-heading" class="section" tabindex="-1">Carrying</h2>
     <p id="portfolio-count" class="portfolio-count"></p>
     <ul id="portfolio-list" class="portfolio-list"></ul>
@@ -670,7 +708,7 @@
   <!-- The person lens (v1 Must). Not filing — "what am I waiting on Sam for" is
        a question you get asked out loud, in a corridor, with no time to look
        anything up. The same nodes, sliced the way the question arrives. -->
-  <section id="people" class="people" aria-labelledby="people-heading" hidden>
+  <section id="people" data-stance-name="People" class="people" aria-labelledby="people-heading" hidden>
     <h2 id="people-heading" class="section" tabindex="-1">With other people</h2>
     <p id="people-count" class="people-count"></p>
     <ul id="people-list" class="people-list" aria-labelledby="people-count"></ul>
@@ -695,7 +733,7 @@
   <!-- Review, as EXCEPTIONS ONLY (v1 Must). Never a list of your work — only
        what is structurally broken, and absent entirely when nothing is. An
        empty review says so by not being here, never by congratulating anyone. -->
-  <section id="review" class="review" aria-labelledby="review-heading" hidden>
+  <section id="review" data-stance-name="Is the ladder in the right place" class="review" aria-labelledby="review-heading" hidden>
     <h2 id="review-heading" class="section" tabindex="-1">Worth a look</h2>
     <p id="review-count" class="review-count"></p>
     <ul id="review-list" class="review-list"></ul>
@@ -706,7 +744,7 @@
        from each item's own sheet, capped at five; at midnight the choosing
        lapses BY PROJECTION, so no surface can ever say "chosen and not done".
        It frames the day; Next up's computed offer is unchanged below it. -->
-  <section id="composed" class="composed" aria-labelledby="composed-heading" hidden>
+  <section id="composed" data-always class="composed" aria-labelledby="composed-heading" hidden>
     <h2 id="composed-heading" class="section" tabindex="-1">Chosen for today</h2>
     <ul id="composed-list" class="composed-list"></ul>
     <p class="detail-hint">Chosen by you, by hand, from each thing&rsquo;s own
@@ -716,7 +754,7 @@
 
   <!-- Upkeep: the small repeating things that have come round. Never a failure
        to have not done one yet. -->
-  <section id="upkeep" class="upkeep" aria-labelledby="upkeep-heading" hidden>
+  <section id="upkeep" data-stance-name="Tend what recurs" class="upkeep" aria-labelledby="upkeep-heading" hidden>
     <!-- tabindex=-1 like every other section heading: it is a jump target for
          the contents sheet (2.3.0), and a jump that cannot land focus is a
          scroll, not a route. This was the ONE heading without it. -->
@@ -739,7 +777,7 @@
        The control keeps its words: a count and the sentence saying none of it
        is asking. It is no longer an expander, so it drops aria-expanded and
        aria-controls — a button that opens a dialog is not a disclosure. -->
-  <button id="menu-open" class="gauge" type="button" hidden></button>
+  <button id="menu-open" class="gauge" data-hub-part type="button" hidden></button>
 
   <!-- WHERE THE ATTENTION IS (2.6.0, ADR-0096). The answer to a question in the
        record for weeks: "when do I visit whether I'm putting enough energy into
@@ -757,7 +795,7 @@
        every morning is a standing report card. Hidden entirely until a role has
        been named, because a chooser with nothing in it teaches you the feature
        is broken. -->
-  <button id="roles-open" class="gauge" type="button" hidden></button>
+  <button id="roles-open" class="gauge" data-hub-part type="button" hidden></button>
 
   <!-- WHAT YOU ARE WORKING TOWARD (2.18.0). Beside the roles door and hidden by
        the same rule: a surface that greets you every morning with a list of
@@ -769,13 +807,13 @@
        the roles door above already carries. The EMPTY-STATE words inside the
        sheet are for a different case: horizons exist, and none of them has
        anything under it yet. -->
-  <button id="horizons-open" class="gauge" type="button" hidden></button>
+  <button id="horizons-open" class="gauge" data-hub-part type="button" hidden></button>
 
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
        that greets you. -->
-  <section id="search" class="search" aria-labelledby="search-label">
+  <section id="search" data-stance-name="Find something" class="search" aria-labelledby="search-label">
     <label id="search-label" class="visually-hidden" for="search-input">Find something you are holding</label>
     <input id="search-input" class="search-input" type="search" enterkeyhint="search"
            autocomplete="off" autocapitalize="none" spellcheck="false"
@@ -793,7 +831,7 @@
        as a heading with no region, and to the contents sheet as nothing at all.
        Wrapping it costs no layout: a <section> is a block box exactly like the
        run of children it replaces. -->
-  <section id="held" class="held" aria-labelledby="held-heading">
+  <section id="held" data-stance-name="Everything you are holding" class="held" aria-labelledby="held-heading">
   <h2 id="held-heading" class="section" tabindex="-1">What you are holding</h2>
   <!-- The gauge stood here, first inside this list, until 2.8.1 moved it to the
        top of the page (ADR-0099). A proof that nothing has gone quiet is worth
@@ -816,7 +854,7 @@
        exactly one verb — open the sheet. No drag, no reorder, no add-here.
        Its own ADR called it an inspection mode from the day it shipped, and it
        unfolded into the workspace for thirty-four releases regardless. -->
-  <button id="tree-open" class="gauge" type="button">How it hangs together</button>
+  <button id="tree-open" class="gauge" data-hub-part type="button">How it hangs together</button>
 
   <!-- The lens (1.7.0, ADR-0054 — Q-10's shape). A filter over what you are
        LOOKING at, never a partition of what is held: the gauge, replan,
@@ -883,7 +921,7 @@
        things undone. There is no tally." ADR-0060 retired "8 things are asking"
        and put the honest totals in the gauge. A folded list captioned with
        numbers would rebuild the backlog headline both of them cleared off. -->
-  <details id="held-fold" class="held-fold">
+  <details id="held-fold" class="held-fold" data-stance-part="held">
     <summary id="held-fold-summary">
       <span class="held-fold-label">Every one of them</span>
       <span id="held-fold-where" class="held-fold-where"></span>

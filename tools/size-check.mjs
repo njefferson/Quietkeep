@@ -158,7 +158,10 @@ const BUDGET = {
   // item's own panel — so a place existed only inside a control that filters BY
   // it, and there was nowhere to ask what you have. A heading is what makes the
   // block findable; the line under it is rendered, so it costs nothing here.
-  words: 3576,
+  // 3576 -> 3588 on 2026-08-24 (3.0.0). Twelve words: the hub's heading, the way
+  // back, and the (+)'s spoken name. Every door's text is DERIVED from the
+  // section it opens, so the list itself adds nothing here however long it gets.
+  words: 3588,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -428,7 +431,20 @@ const BUDGET = {
   // This is hub LESSONS 53 wearing different clothes: a push is not a release,
   // and now also A GREEN TAIL IS NOT A GREEN RUN. Read the job's conclusion,
   // never its last screen.
-  controls: 245,
+  // 245 -> 247 on 2026-08-24 (3.0.0). The way back and the **+**, in the row
+  // that rides inside every job. They are the two controls the hub model owes
+  // the reader: a screen with no way out is a trap, and capture that cannot be
+  // reached from inside a job is capture you must leave the job to use — which
+  // is how a thought gets lost, and the whole thing this app is a rebuttal to.
+  //
+  // NOTHING ELSE ROSE, and that is the number worth reading. The hub's doors are
+  // rendered from the live sections rather than written into the shell, so the
+  // landing view costs the markup nothing; and the runway's fifteen blocks are
+  // unchanged, they are simply no longer all on screen at once. What a reader
+  // MEETS went from fifteen blocks to a list of doors, which this budget counts
+  // in the markup and cannot see — the fourth time in this file's history it has
+  // read the wrong way round, and the note is the record.
+  controls: 247,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

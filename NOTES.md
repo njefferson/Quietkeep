@@ -724,7 +724,20 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.38.0**. Reported
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.0.0**. The app has
+  places. The landing view was fifteen conditional sections in one scroller and
+  reading it was reading an article — a position rather than somewhere to be, and
+  losing the position lost the thought. It is a hub of doors now, each opening one
+  job that is the whole screen, with one way back and a **+** for capture inside
+  every job. ADR-0108 has the decision and why the tabs refusal does not reach it.
+  **Six product defects were found by rendering and by the walk, not by
+  reasoning**: capture partly hidden behind a job; an empty store hiding a
+  newcomer's route to restoring from a copy; the hub painting a beat stale so a
+  captured thought had no door to sort it; Sort carrying two doors; the undo bar
+  and the do-now offer vanishing at the moment they were needed, both of which
+  outlive their job by design; and five sections left with no door at all, which
+  deleted them for everybody.
+- **Superseded, and kept for the record: 2.38.0.** Reported
   from the device: clicking Cold on every task was taking forever and nothing
   was being removed by it. Three faults, one root. `looseFromImport` selected
   on `!n.captured`, written when `captured` meant "you typed it"; 2.15.0 made an
@@ -775,7 +788,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.37.0** — 2.36.0 through
+- **https://quietkeep.pages.dev** — production, **2.38.0** — promoted at
+  `ceb990e`, Deploy success read from the run. The way through an import: the
+  batch of 1,012 with *Let go*, the heat sweep no longer asking Hot-or-cold about
+  a whole planner, and the gauge no longer carrying an import as a headline.
+- **Earlier, and kept for the record: 2.37.0** — 2.36.0 through
   2.37.0 promoted at `a4ea629`. The import summary as a lead and a list of
   facts rather than a hundred and twenty words in one block; a refused line
   saying it had no name on it rather than only that it was refused; and the
