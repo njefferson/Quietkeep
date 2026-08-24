@@ -22,6 +22,14 @@
 //   node tools/spine.mjs --list          what it would run, and what it cannot
 //   node tools/spine.mjs --from 20       from step 20 on, after a failure
 //   node tools/spine.mjs --only a11y     one step, by any part of its command
+//   node tools/spine.mjs --parity        every script is in CI, or says why not
+//
+// THE PARITY CHECK IS THE OTHER DIRECTION, and it is a different question. The
+// run above asks "does everything CI runs pass here". `--parity` asks "does CI
+// run everything there is" — a gate written, wired into package.json and never
+// added to the workflow looks exactly like a gate that is running, from every
+// angle except this one. Each script is either in a workflow or declared in
+// `.spine-exempt` with a reason; a new one fails by default. Hub LESSONS 127.
 //
 // IT KEEPS GOING PAST A FAILURE, deliberately, and for the reason the workflow
 // does: one red step must not hide the twenty after it. That has a cost — the
@@ -46,8 +54,57 @@ const arg = (name) => {
   return i >= 0 ? (process.argv[i + 1] ?? '') : null;
 };
 const LIST = process.argv.includes('--list');
+const PARITY = process.argv.includes('--parity');
 const FROM = Number(arg('from') ?? 0);
 const ONLY = arg('only');
+
+if (PARITY) {
+  const { readFileSync, readdirSync } = await import('node:fs');
+  const scripts = Object.keys(JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8')).scripts);
+  const dir = join(ROOT, '.github', 'workflows');
+  const all = readdirSync(dir).filter(f => /\.ya?ml$/.test(f))
+    .map(f => readFileSync(join(dir, f), 'utf8')).join('\n');
+
+  // The word boundary has to exclude `:` and `-`, or `npm run manual:check`
+  // counts as a run of `manual` and a generator gets credit for its own gate.
+  const inCi = (n) => new RegExp(`npm run ${n.replace(/[:]/g, '\\:')}(?![\\w:-])`).test(all);
+
+  const exemptFile = join(ROOT, '.spine-exempt');
+  const declared = new Map();
+  for (const line of readFileSync(exemptFile, 'utf8').split('\n')) {
+    const t = line.trim();
+    if (t === '' || t.startsWith('#')) continue;
+    const m = /^(\S+)\s+—\s+(.+)$/.exec(t);
+    // A malformed line is a FAILURE, not a skip. An exemption nobody can read
+    // is an exemption nobody reviewed.
+    if (!m) { console.log(`  FAIL  .spine-exempt: "${t}" is not "name — reason"`); process.exit(1); }
+    declared.set(m[1], m[2]);
+  }
+
+  console.log('\nEvery gate is in CI, or says why not\n');
+  const failures = [];
+  for (const n of scripts) {
+    if (inCi(n)) continue;
+    const why = declared.get(n);
+    if (why) console.log(`  --    ${n} — ${why}`);
+    else failures.push(n);
+  }
+  // BOTH DIRECTIONS, so a script that later joins CI cannot leave a stale
+  // exemption standing — the reason would go on reading as current.
+  for (const [n, why] of declared) {
+    if (!scripts.includes(n)) failures.push(`${n} is declared here but is not a script any more — ${why}`);
+    else if (inCi(n)) failures.push(`${n} is declared as not in CI, but a workflow runs it — ${why}`);
+  }
+  console.log('');
+  if (failures.length === 0) {
+    console.log(`Every one of the ${scripts.length} scripts is run by a workflow or declared. Nothing is quietly not running.\n`);
+    process.exit(0);
+  }
+  console.log(`${failures.length} script(s) unaccounted for:`);
+  for (const f of failures) console.log(`  ${f}`);
+  console.log('\nAdd it to a workflow, or to .spine-exempt with the reason it does not belong there.\n');
+  process.exit(1);
+}
 
 // The same PyYAML call `tools/workflows.mjs` makes, for the same reason: it is
 // on this machine and on every runner, and a node YAML parser in

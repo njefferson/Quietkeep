@@ -482,6 +482,17 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run storage:check
 
+      # AND THE ONE THAT ASKS ABOUT THE OTHERS. Every step above is a gate
+      # somebody remembered to add here. This asks the reverse: is there a gate
+      # in package.json that nobody added? A check written, wired into a script
+      # and never put in a workflow looks exactly like a check that is running,
+      # from every angle except this one. Each script is either run by a workflow
+      # or declared in `.spine-exempt` with a reason, and both directions are
+      # asserted so an exemption cannot outlive the reason for it.
+      - name: Every gate is in CI, or says why not
+        if: ${{ !cancelled() }}
+        run: npm run spine -- --parity
+
       # THE LAST THING IN THE LOG SAYS WHETHER THE RUN PASSED.
       #
       # Every step above runs with `if: ${{ !cancelled() }}` so one failure does

@@ -150,6 +150,15 @@ one day that cost `size:check` going red for three releases that were pushed and
 promoted anyway, and six waits in the smoke walk left asking the app for words it
 had stopped saying. Both were found afterwards, by CI. (Hub LESSONS 139.)
 
+**`npm run spine -- --parity` is the other direction**, and it is a Spine step
+itself. The run above asks whether everything CI runs passes here; parity asks
+whether CI runs everything there is. A gate written, wired into `package.json`
+and never added to the workflow **looks exactly like a gate that is running**,
+from every angle except this one. Every script is either run by a workflow or
+declared in [`.spine-exempt`](.spine-exempt) with a reason, both directions
+asserted, so an exemption cannot outlive what it exempts. It caught its own the
+first time it ran. (Hub LESSONS 127.)
+
 The steps it cannot run are PRINTED with the reason, never skipped in silence:
 the checkout actions, `npm ci`, the browser install, and the hub gates, which run
 from `../noahjefferson` here rather than from the CI-only `.hub-gates` checkout.
