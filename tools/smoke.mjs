@@ -92,10 +92,15 @@ const ensureStanceFor = async (pg, selector) => {
     // looking once and giving up left the caller waiting for a section only the
     // stance can show. The raw wait, or this would re-enter itself.
     if (await pg.locator(door).count() === 0) {
-      try { await rawWaitOf(pg)(door, { timeout: 2500 }); } catch { return; }
+      // GENEROUS ON PURPOSE. This is not an assertion and nothing is proven by
+      // it being short — it exists so the walk cannot hang. Giving up early
+      // makes the shim DECLINE to navigate, silently, which is the exact
+      // failure this whole shim was written to stop, and a CI runner is slower
+      // than the machine these numbers were chosen on.
+      try { await rawWaitOf(pg)(door, { timeout: 10000 }); } catch { return; }
     }
     await pg.$eval(door, (b) => b.click());
-    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 4000 });
+    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 10000 });
   } catch { /* the caller's own call reports the real problem */ }
 };
 
@@ -249,7 +254,7 @@ const routeThroughHub = (pg) => {
         // section. `waitForSelector` already retries for this race; the verbs
         // did not, and the detail sheet is where it surfaced.
         if (await pg.locator(sel).count() === 0) {
-          try { await rawWaitOf(pg)(sel, { state: 'attached', timeout: 5000 }); }
+          try { await rawWaitOf(pg)(sel, { state: 'attached', timeout: 10000 }); }
           catch { /* the verb's own call reports the real problem */ }
           await ensureStanceFor(pg, sel);
         }
@@ -3126,7 +3131,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // reports that a label was not found and nothing about what was, which
     // costs a whole run to answer.
     try {
-      await tpage.locator('#triage-actions .route', { hasText: label }).first().click({ timeout: 8000 });
+      // UNDER Playwright's own 30s default, so the diagnostic below still runs
+      // before the walk dies — but not so tight that a slow runner trips it.
+      await tpage.locator('#triage-actions .route', { hasText: label }).first().click({ timeout: 25000 });
     } catch (err) {
       const have = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
       const prompt = await tpage.locator('#triage-prompt').textContent().catch(() => null);
@@ -5797,7 +5804,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // whose Done button correctly does not exist. A latent ambiguity that only
     // showed once the list got long enough for both cards to be on it.
     await tpage.locator('#cards .card:has(.card-title:text-is("strip the old sealant")) .card-done')
-      .click({ timeout: 8000 });
+      .click({ timeout: 25000 });
   } catch (err) {
     // WHAT THE CARD ACTUALLY IS. "The card is missing" and "the card is there
     // and offers no Done" are different faults with different causes, and a
