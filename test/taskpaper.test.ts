@@ -455,6 +455,32 @@ test('the words never claim more than the file held', () => {
   assert.equal(importWords(s), '1 action comes in.');
 });
 
+test('a line that could not be read says WHY it could not, not only that it was not', () => {
+  // A real export ended with "15 lines could not be read." and that was the
+  // largest unexplained loss in a 1,445-row import — a count with no way to tell
+  // whether fifteen pieces of work had gone missing. Every one of the fifteen was
+  // a row with an empty name column and its Project cell filled in beside it,
+  // which is exactly what makes a nameless row look like a titled one.
+  //
+  // Both parsers refuse for this one reason. The sentence says so, so somebody
+  // can stop wondering.
+  const csv = 'Task ID,Type,Name,Project\n1,Action,,Some project\n2,Action,Real work,Some project\n';
+  const p = parseAnyExport(csv);
+  assert.equal(p.format, 'csv');
+  assert.equal(p.unreadable.length, 1, 'the nameless row is refused');
+  const line = importFacts(importSummary(p.lines, p.unreadable)).facts
+    .find(f => /no name on them/.test(f));
+  assert.ok(line, 'and the summary says what was wrong with it');
+  assert.match(line, /^One line had no name on them/, 'singular, for one line');
+  assert.match(line, /nothing on them to bring in/, 'and says the consequence');
+
+  // A TaskPaper line that is nothing but labels reaches the same sentence.
+  const tp = parseAnyExport('- Real work\n- @Errands @Phone\n');
+  assert.equal(tp.unreadable.length, 1);
+  assert.ok(importFacts(importSummary(tp.lines, tp.unreadable)).facts
+    .some(f => /no name on them/.test(f)));
+});
+
 test('the pile line comes last, after the findings about this file', () => {
   // It is the standing fact rather than a finding about this file, and it is the
   // one that says the arrival is not a debt — so it reads after the findings.

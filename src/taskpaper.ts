@@ -830,8 +830,22 @@ export function importFacts(s: ImportSummary): { lead: string; facts: string[] }
   if (s.droppedTags.length > 0) {
     facts.push(`These will not come with them: ${s.droppedTags.join(', ')}.`);
   }
+  // SAY WHY, because a count is a sentence nobody can act on (2.36.1). On a real
+  // export this was "15 lines could not be read." — the single largest
+  // unexplained loss in a 1,445-row import, and no way to tell from it whether
+  // fifteen pieces of work had gone missing. They had not: every one of the
+  // fifteen was a row with an empty name column, with its neighbouring Project
+  // cell filled in, which is what made them look like titles at a glance.
+  //
+  // BOTH parsers refuse for exactly this one reason and no other — a CSV row
+  // whose name column is empty, a TaskPaper line that is nothing but tags — so
+  // naming it here is a fact about the code rather than a guess about the file.
+  // If a second reason for refusing is ever added, this sentence becomes a lie
+  // and `unreadable` has to start carrying the reason with it.
   if (s.unreadable.length > 0) {
-    facts.push(`${s.unreadable.length === 1 ? 'One line' : `${s.unreadable.length} lines`} could not be read.`);
+    facts.push(`${s.unreadable.length === 1 ? 'One line had' : `${s.unreadable.length} lines had`}`
+      + ' no name on them — an empty name column, or nothing but labels — so there is'
+      + ' nothing on them to bring in.');
   }
 
   // LAST, because it is the standing fact rather than a finding about the file,

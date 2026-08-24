@@ -724,11 +724,14 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.36.0**. What a
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.36.1**. What a
   file will do to your work is a list of facts now rather than one block of a
   hundred and twenty words — three groups, one fact per line, each loss said
   once. The screen had never been rendered by anything, so the accessibility
-  walk chooses a file of its own and reads what comes back.
+  walk chooses a file of its own and reads what comes back. 2.36.1 then made
+  the last remaining unexplained loss explain itself: "15 lines could not be
+  read" is "15 lines had no name on them", which is the one reason either
+  parser ever refuses a line.
 - **Superseded, and kept for the record: 2.35.0.** The
   invented set was three-quarters filed where a real store is seven-eighths
   not, so every narrowing feature was judged against data that flattered it;

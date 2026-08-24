@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 2.36.1 — ITERATION
+
+*2026-08-24*
+
+- **A line the importer cannot use now says what was wrong with it.** It used to say only "15 lines could not be read", which on a real export was the biggest thing in the summary you could do nothing about — no way to tell whether fifteen pieces of work had just gone missing.
+- **They had not.** A line is left behind for one reason: it has no name on it — an empty name column, or nothing but labels. The summary says that now, so you can stop wondering about it.
+
 ## 2.36.0 — CAPABILITY
 
 *2026-08-24*

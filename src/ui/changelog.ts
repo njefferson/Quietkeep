@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.36.1',
+    kind: 'ITERATION',
+    date: '2026-08-24',
+    notes: [
+      '**A line the importer cannot use now says what was wrong with it.** It used to say only "15 lines could not be read", which on a real export was the biggest thing in the summary you could do nothing about \u2014 no way to tell whether fifteen pieces of work had just gone missing.',
+      '**They had not.** A line is left behind for one reason: it has no name on it \u2014 an empty name column, or nothing but labels. The summary says that now, so you can stop wondering about it.',
+    ],
+  },
+  {
     triplet: '2.36.0',
     kind: 'CAPABILITY',
     date: '2026-08-24',
