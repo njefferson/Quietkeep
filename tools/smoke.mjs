@@ -168,6 +168,46 @@ const revealAll = async (pg) => {
 };
 
 /**
+ * ARRIVE AT THE JOB PROPERLY: standing in it is not the same as opening it.
+ *
+ * `#triage-card` is a button that EXISTS in the markup and is EMPTY until the
+ * inbox is opened — and an empty button has zero size, so a wait for it to be
+ * visible waits its full thirty seconds for something nothing will render.
+ * `ensureStanceFor` short-circuits when the stance is already this job, and so
+ * presses nothing.
+ *
+ * THIS BELONGS TO WAITS AS WELL AS VERBS, and drawing that line the other way
+ * cost a CI round: pressing a job's opener is ARRIVING, which the shim already
+ * does whenever it navigates, so doing it while standing there is the same act.
+ * Opening a `<details>` is different — it REVEALS, and an assertion may
+ * legitimately be asking whether something is still folded away. That one stays
+ * verb-only.
+ *
+ * Never on a wait for `hidden` or `detached`: a wait that asks whether a thing
+ * has GONE is a fair question, and arriving underneath it answers another one.
+ */
+const openJobFor = async (pg, sel) => {
+  try {
+    await pg.evaluate((s) => {
+      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
+      const bare = s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim();
+      let el = ask(s) ?? ask(bare) ?? ask(bare.split(':')[0]);
+      // The section is derivable from the NAME when none of the job is built
+      // yet — ids run `<section>-<part>` throughout this app.
+      let sec = el && el.closest('section[data-stance-name]');
+      if (!sec) {
+        const m = /^#([A-Za-z0-9]+)-/.exec(s.trim());
+        const named = m && document.getElementById(m[1]);
+        if (named && named.matches('section[data-stance-name]')) sec = named;
+      }
+      if (!sec) return;
+      const opener = sec.querySelector('[data-stance-opener]');
+      if (opener && !opener.hidden && !sec.querySelector('.route')) opener.click();
+    }, sel);
+  } catch { /* the caller's own call reports the real problem */ }
+};
+
+/**
  * OPEN WHAT IT IS INSIDE, by pressing the summary a finger presses.
  *
  * Entering a job is not always enough to reach a control in it: the inventory
@@ -190,7 +230,6 @@ const unfoldTo = async (pg, sel) => {
       const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
       const el = ask(s) ?? ask(s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim());
       if (!el) return;
-      // AND OPEN THE JOB IF IT IS BEHIND ITS OWN DOOR (3.0.0).
       //
       // Standing in a job is not the same as having opened it. `#triage-card`
       // is a button that EXISTS in the markup and is EMPTY until the inbox is
@@ -204,9 +243,6 @@ const unfoldTo = async (pg, sel) => {
       // behind a different door. Only CI ever hit it: this machine reached the
       // call from a different stance, where entering pressed the opener on the
       // way in.
-      const jobSec = el.closest('section[data-stance-name]');
-      const opener = jobSec && jobSec.querySelector('[data-stance-opener]');
-      if (opener && !opener.hidden && !jobSec.querySelector('.route')) opener.click();
       for (let p = el.parentElement; p; p = p.parentElement) {
         if (p.tagName !== 'DETAILS' || p.open) continue;
         const sum = p.querySelector(':scope > summary');
@@ -248,6 +284,7 @@ const routeLocator = (pg, loc, sel) => new Proxy(loc, {
     if (typeof v !== 'function') return v;
     if (LOC_ACT.includes(prop)) return async (...a) => {
       await ensureStanceFor(pg, sel);
+      await openJobFor(pg, sel);
       await unfoldTo(pg, sel);
       return v.apply(target, a);
     };
@@ -263,6 +300,8 @@ const routeThroughHub = (pg) => {
   pg.waitForSelector = async (sel, ...rest) => {
     if (typeof sel !== 'string') return rawWait(sel, ...rest);
     await ensureStanceFor(pg, sel);
+    const asked = rest[0] && rest[0].state;
+    if (asked !== 'hidden' && asked !== 'detached') await openJobFor(pg, sel);
     try {
       return await rawWait(sel, ...rest);
     } catch (err) {
@@ -295,6 +334,7 @@ const routeThroughHub = (pg) => {
           catch { /* the verb's own call reports the real problem */ }
           await ensureStanceFor(pg, sel);
         }
+        await openJobFor(pg, sel);
         await unfoldTo(pg, sel);
       }
       return raw(sel, ...rest);
@@ -5481,6 +5521,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#capture', 'open me from triage');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage:not([hidden])');
+  // OPEN IT BEFORE READING IT. `textContent` is a question and questions never
+  // navigate, so this read the empty button and got "" — then the click that
+  // followed opened the inbox and filled the card with a different item, and
+  // the assertion compared one to the other. Not hidden is not open.
+  await intoJob(tpage, 'triage');
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
   await tpage.waitForSelector('#detail[open]');
