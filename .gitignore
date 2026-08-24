@@ -21,3 +21,6 @@ public/app.js.map
 
 # release-check builds both trees to compare bundles; the directory is transient.
 .release-check-build/
+
+# The headless walk writes its failures here for CI to print last.
+.walk-failures

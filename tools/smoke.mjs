@@ -60,10 +60,30 @@ const ensureStanceFor = async (pg, selector) => {
         .replace(/\s*>>.*$/, '')
         .trim();
       const el = ask(sel) ?? ask(plain(sel)) ?? ask(plain(sel).split(':')[0]);
-      if (!el) return null;
       const runway = document.querySelector('#runway');
       if (!runway || !runway.hasAttribute('data-hub')) return null;
       const here = runway.getAttribute('data-stance');
+      if (!el) {
+        // THE ELEMENT MAY NOT EXIST UNTIL AFTER WE HAVE NAVIGATED — and then
+        // waiting for it to appear before deciding where to go waits for ever.
+        //
+        // `#triage-card` is RENDERED BY opening the inbox, and opening the
+        // inbox is what entering that job DOES. So on a machine slow enough
+        // that the card has not been built yet, the shim found nothing,
+        // declined, and the caller waited thirty seconds for a card that only
+        // its own navigation could have produced. It showed only in CI, because
+        // this machine happened to have built it already every single time —
+        // twelve green runs of a walk that could not pass on a slower box.
+        //
+        // Ids run `<section>-<part>` throughout this app, so the job is
+        // derivable from the NAME even when none of it is on the page yet.
+        const m = /^#([A-Za-z0-9]+)-/.exec(sel.trim());
+        const named = m && document.getElementById(m[1]);
+        if (named && named.matches('section[data-stance-name]')) {
+          return here === m[1] ? null : m[1];
+        }
+        return null;
+      }
       const sec = el.closest('section[data-stance-name]');
       if (sec) return here === sec.id ? null : sec.id;
       // The hub's own controls mean COME UP. Its doors are hidden while you are
@@ -92,10 +112,15 @@ const ensureStanceFor = async (pg, selector) => {
     // looking once and giving up left the caller waiting for a section only the
     // stance can show. The raw wait, or this would re-enter itself.
     if (await pg.locator(door).count() === 0) {
-      try { await rawWaitOf(pg)(door, { timeout: 2500 }); } catch { return; }
+      // GENEROUS ON PURPOSE. This is not an assertion and nothing is proven by
+      // it being short — it exists so the walk cannot hang. Giving up early
+      // makes the shim DECLINE to navigate, silently, which is the exact
+      // failure this whole shim was written to stop, and a CI runner is slower
+      // than the machine these numbers were chosen on.
+      try { await rawWaitOf(pg)(door, { timeout: 10000 }); } catch { return; }
     }
     await pg.$eval(door, (b) => b.click());
-    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 4000 });
+    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 10000 });
   } catch { /* the caller's own call reports the real problem */ }
 };
 
@@ -143,6 +168,46 @@ const revealAll = async (pg) => {
 };
 
 /**
+ * ARRIVE AT THE JOB PROPERLY: standing in it is not the same as opening it.
+ *
+ * `#triage-card` is a button that EXISTS in the markup and is EMPTY until the
+ * inbox is opened — and an empty button has zero size, so a wait for it to be
+ * visible waits its full thirty seconds for something nothing will render.
+ * `ensureStanceFor` short-circuits when the stance is already this job, and so
+ * presses nothing.
+ *
+ * THIS BELONGS TO WAITS AS WELL AS VERBS, and drawing that line the other way
+ * cost a CI round: pressing a job's opener is ARRIVING, which the shim already
+ * does whenever it navigates, so doing it while standing there is the same act.
+ * Opening a `<details>` is different — it REVEALS, and an assertion may
+ * legitimately be asking whether something is still folded away. That one stays
+ * verb-only.
+ *
+ * Never on a wait for `hidden` or `detached`: a wait that asks whether a thing
+ * has GONE is a fair question, and arriving underneath it answers another one.
+ */
+const openJobFor = async (pg, sel) => {
+  try {
+    await pg.evaluate((s) => {
+      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
+      const bare = s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim();
+      let el = ask(s) ?? ask(bare) ?? ask(bare.split(':')[0]);
+      // The section is derivable from the NAME when none of the job is built
+      // yet — ids run `<section>-<part>` throughout this app.
+      let sec = el && el.closest('section[data-stance-name]');
+      if (!sec) {
+        const m = /^#([A-Za-z0-9]+)-/.exec(s.trim());
+        const named = m && document.getElementById(m[1]);
+        if (named && named.matches('section[data-stance-name]')) sec = named;
+      }
+      if (!sec) return;
+      const opener = sec.querySelector('[data-stance-opener]');
+      if (opener && !opener.hidden && !sec.querySelector('.route')) opener.click();
+    }, sel);
+  } catch { /* the caller's own call reports the real problem */ }
+};
+
+/**
  * OPEN WHAT IT IS INSIDE, by pressing the summary a finger presses.
  *
  * Entering a job is not always enough to reach a control in it: the inventory
@@ -165,6 +230,19 @@ const unfoldTo = async (pg, sel) => {
       const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
       const el = ask(s) ?? ask(s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim());
       if (!el) return;
+      //
+      // Standing in a job is not the same as having opened it. `#triage-card`
+      // is a button that EXISTS in the markup and is EMPTY until the inbox is
+      // opened — and an empty button has zero size, so Playwright waits thirty
+      // seconds for something to become visible that nothing is going to
+      // render. `ensureStanceFor` short-circuits when the stance is already
+      // this job, so it presses nothing, and the caller waits.
+      //
+      // `intoJob` was taught this earlier today. The page verbs were not, and
+      // they are what the walk mostly uses — so the same defect was still there
+      // behind a different door. Only CI ever hit it: this machine reached the
+      // call from a different stance, where entering pressed the opener on the
+      // way in.
       for (let p = el.parentElement; p; p = p.parentElement) {
         if (p.tagName !== 'DETAILS' || p.open) continue;
         const sum = p.querySelector(':scope > summary');
@@ -206,6 +284,7 @@ const routeLocator = (pg, loc, sel) => new Proxy(loc, {
     if (typeof v !== 'function') return v;
     if (LOC_ACT.includes(prop)) return async (...a) => {
       await ensureStanceFor(pg, sel);
+      await openJobFor(pg, sel);
       await unfoldTo(pg, sel);
       return v.apply(target, a);
     };
@@ -221,6 +300,8 @@ const routeThroughHub = (pg) => {
   pg.waitForSelector = async (sel, ...rest) => {
     if (typeof sel !== 'string') return rawWait(sel, ...rest);
     await ensureStanceFor(pg, sel);
+    const asked = rest[0] && rest[0].state;
+    if (asked !== 'hidden' && asked !== 'detached') await openJobFor(pg, sel);
     try {
       return await rawWait(sel, ...rest);
     } catch (err) {
@@ -249,10 +330,11 @@ const routeThroughHub = (pg) => {
         // section. `waitForSelector` already retries for this race; the verbs
         // did not, and the detail sheet is where it surfaced.
         if (await pg.locator(sel).count() === 0) {
-          try { await rawWaitOf(pg)(sel, { state: 'attached', timeout: 5000 }); }
+          try { await rawWaitOf(pg)(sel, { state: 'attached', timeout: 10000 }); }
           catch { /* the verb's own call reports the real problem */ }
           await ensureStanceFor(pg, sel);
         }
+        await openJobFor(pg, sel);
         await unfoldTo(pg, sel);
       }
       return raw(sel, ...rest);
@@ -3126,7 +3208,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // reports that a label was not found and nothing about what was, which
     // costs a whole run to answer.
     try {
-      await tpage.locator('#triage-actions .route', { hasText: label }).first().click({ timeout: 8000 });
+      // UNDER Playwright's own 30s default, so the diagnostic below still runs
+      // before the walk dies — but not so tight that a slow runner trips it.
+      await tpage.locator('#triage-actions .route', { hasText: label }).first().click({ timeout: 25000 });
     } catch (err) {
       const have = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
       const prompt = await tpage.locator('#triage-prompt').textContent().catch(() => null);
@@ -5437,6 +5521,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#capture', 'open me from triage');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage:not([hidden])');
+  // OPEN IT BEFORE READING IT. `textContent` is a question and questions never
+  // navigate, so this read the empty button and got "" — then the click that
+  // followed opened the inbox and filled the card with a different item, and
+  // the assertion compared one to the other. Not hidden is not open.
+  await intoJob(tpage, 'triage');
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
   await tpage.waitForSelector('#detail[open]');
@@ -5797,7 +5886,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // whose Done button correctly does not exist. A latent ambiguity that only
     // showed once the list got long enough for both cards to be on it.
     await tpage.locator('#cards .card:has(.card-title:text-is("strip the old sealant")) .card-done')
-      .click({ timeout: 8000 });
+      .click({ timeout: 25000 });
   } catch (err) {
     // WHAT THE CARD ACTUALLY IS. "The card is missing" and "the card is there
     // and offers no Done" are different faults with different causes, and a
@@ -7738,10 +7827,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
 
   await tctx.close();
+} catch (err) {
+  // A CRASH IS A FAILURE, AND IT HAS TO SAY SO IN THE SAME PLACE. A thrown
+  // timeout used to leave `failures` empty and the report below unreached, so
+  // the only record of it was a stack trace in the middle of the log.
+  failures.push(`CRASHED — ${String((err && err.message) || err).split('\n')
+    .slice(0, 3).join(' | ').slice(0, 400)}`);
 } finally {
   await browser.close();
   server.close();
 }
+
+// SAY IT WHERE IT GETS READ (3.0.0).
+//
+// The Spine keeps running past a failure on purpose, so in CI twenty-six steps
+// of green land between this walk's failures and the bottom of the log — and
+// the tail is all the API will hand back, while the raw log redirects to a host
+// that is not always reachable. So a red walk was legible only to somebody who
+// could open the run in a browser and scroll to the right step.
+//
+// Written to a file the workflow prints as its last act. Removed on a green run,
+// so a stale one cannot be read as today's.
+try {
+  if (failures.length) writeFileSync('.walk-failures', `${failures.join('\n')}\n`);
+  else if (existsSync('.walk-failures')) writeFileSync('.walk-failures', '');
+} catch { /* reporting must never change the verdict */ }
 
 console.log('');
 if (failures.length) {

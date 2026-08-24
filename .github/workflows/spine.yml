@@ -517,4 +517,16 @@ jobs:
           echo '  a green tail is not a green run. Open the run and read which'
           echo "  step is marked failed — do not read the last screen of the log."
           echo
+          # AND SAY WHAT THE WALK FOUND, HERE, rather than only where to look.
+          # Twenty-six steps of green land between the walk and the bottom of the
+          # log, and the tail is all an API will hand back — the raw log redirects
+          # to a host that is not always reachable. A failure legible only to
+          # somebody who can open the run in a browser is a failure that gets
+          # guessed at instead of read, which cost two runs on 3.0.0.
+          if [ -s .walk-failures ]; then
+            echo '  WHAT THE HEADLESS WALK FOUND:'
+            echo
+            sed 's/^/    /' .walk-failures
+            echo
+          fi
           exit 1

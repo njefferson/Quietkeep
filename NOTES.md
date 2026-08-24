@@ -788,10 +788,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.38.0** — promoted at
-  `ceb990e`, Deploy success read from the run. The way through an import: the
-  batch of 1,012 with *Let go*, the heat sweep no longer asking Hot-or-cold about
-  a whole planner, and the gauge no longer carrying an import as a headline.
+- **https://quietkeep.pages.dev** — production, **3.0.0** — promoted at
+  `b7bfc83`, Deploy success read from the run. The app has places: the landing
+  view is a hub of doors rather than fifteen conditional sections in one
+  scroller, going through a door shows that job and nothing else, capture is a
+  (+) reachable from everywhere, and coming back up is one control in the same
+  place from every job (ADR-0108).
+- **Superseded, and kept for the record: 2.38.0** — promoted at `ceb990e`. The
+  way through an import: the batch of 1,012 with *Let go*, the heat sweep no
+  longer asking Hot-or-cold about a whole planner, and the gauge no longer
+  carrying an import as a headline.
 - **Earlier, and kept for the record: 2.37.0** — 2.36.0 through
   2.37.0 promoted at `a4ea629`. The import summary as a lead and a list of
   facts rather than a hundred and twenty words in one block; a refused line
