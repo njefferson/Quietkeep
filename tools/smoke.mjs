@@ -123,6 +123,41 @@ const unfoldTo = async (pg, sel) => {
   } catch { /* the verb's own call reports the real problem */ }
 };
 
+/**
+ * ROUTE LOCATOR ACTIONS THROUGH THE HUB TOO.
+ *
+ * `pg.click(sel)` is wrapped below. `pg.locator(sel).first().click()` is not,
+ * and there are ninety-five of those in this walk. Each bypassed the shim
+ * completely and waited thirty seconds on a control sitting in a job the walk
+ * was not standing in — one crash per run, three minutes apart, which is a way
+ * to spend an afternoon finding out the same thing five times.
+ *
+ * By PROXY rather than by editing ninety-five call sites, and the chaining
+ * methods carry the base selector forward so `.filter().first().click()`
+ * navigates by the same rule as a bare one.
+ *
+ * ACTIONS ONLY. `count()`, `textContent()`, `isVisible()` and the rest are
+ * questions, and a question must never move the app underneath the assertion
+ * asking it — "the inventory arrives folded" is exactly such a question, and a
+ * read that navigated would answer it about somewhere else.
+ */
+const LOC_ACT = ['click', 'tap', 'fill', 'focus', 'hover', 'check', 'uncheck',
+                 'selectOption', 'press', 'dblclick', 'setInputFiles', 'clear'];
+const LOC_CHAIN = ['first', 'last', 'nth', 'filter', 'locator', 'and', 'or'];
+const routeLocator = (pg, loc, sel) => new Proxy(loc, {
+  get(target, prop, recv) {
+    const v = Reflect.get(target, prop, recv);
+    if (typeof v !== 'function') return v;
+    if (LOC_ACT.includes(prop)) return async (...a) => {
+      await ensureStanceFor(pg, sel);
+      await unfoldTo(pg, sel);
+      return v.apply(target, a);
+    };
+    if (LOC_CHAIN.includes(prop)) return (...a) => routeLocator(pg, v.apply(target, a), sel);
+    return v.bind(target);
+  },
+});
+
 /** Wrap a page's verbs so each one goes to the job first. */
 const routeThroughHub = (pg) => {
   const rawWait = pg.waitForSelector.bind(pg);
@@ -142,6 +177,10 @@ const routeThroughHub = (pg) => {
       return rawWait(sel, ...rest).catch(() => { throw err; });
     }
   };
+  const rawLocator = pg.locator.bind(pg);
+  pg.locator = (sel, ...rest) => (typeof sel === 'string'
+    ? routeLocator(pg, rawLocator(sel, ...rest), sel)
+    : rawLocator(sel, ...rest));
   for (const verb of ['click', 'tap', 'fill', 'focus', 'selectOption', 'hover', 'check', 'uncheck']) {
     const raw = pg[verb].bind(pg);
     pg[verb] = async (sel, ...rest) => {
