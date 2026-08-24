@@ -98,6 +98,27 @@ The vocabulary has been right for months and the surface has been one page.
   `sort` sheet behind Contents — the same work, reached two ways, neither of them
   the place you are.
 
+## A stance is a placed region, not a dialog
+
+**Because a single-page wide layout is a roadmap item, not a rejected idea.** One
+page is wrong for a phone held in one hand; on a PC or a full-screen tablet it is
+a legitimate target, where a wide viewport can show several stances at once and
+position on screen genuinely does read as location.
+
+So the mechanism must not foreclose it. `<dialog>` owns the viewport by
+definition and can never become one pane of a multi-pane layout, which rules it
+out despite `sheets.ts` being the obvious reuse — its full-screen shape is the
+part that does not survive.
+
+**A stance is therefore a region the layout places**, and it must never assume
+its own size. Narrow shows exactly one and the hub is a place you return to;
+wide can show the hub beside one or more stances. Same definitions, one set of
+behaviours, two arrangements — not a second implementation, and not a phone app
+with a desktop mode bolted on.
+
+The thing that would make this expensive later is building three stances as
+dialogs first. It is written down here so that does not happen.
+
 ## What does not change
 
 Every product law. The write boundary. The closed vocabulary. Capture staying
