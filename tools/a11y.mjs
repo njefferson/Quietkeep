@@ -179,6 +179,10 @@ const DATA_SHEET = [
   '#other-file',
   'label[for="other-file"]',
   '#other-note',
+  // `#other-facts li` is NOT here, and that is the rule this list runs on: a
+  // registry entry that matches nothing visible FAILS, so a selector whose
+  // elements exist only after a file is chosen belongs to that state and not to
+  // the sheet at rest. It is measured under 'another planner, file chosen'.
   '#purge-summary',
   '#purge-backup',
   '#purge-pick-clear',
@@ -945,6 +949,11 @@ const REGISTRY = {
   // above it is the sentence someone reads before replacing everything they
   // have.
   'import, file chosen': ['#import-note', '#import-union', '#import-backup', '#import-go', '#import-explainer'],
+  // The other import: somebody else's planner, described. 2.36.0 split that
+  // description into a lead and a list of facts, and the list is the part that
+  // says what will NOT come across — the finished rows, the rhythms, the labels
+  // that are not places. It is the last thing read before the button that acts.
+  'another planner, file chosen': ['#other-note', '#other-facts li', '#other-go'],
 };
 
 const srgb = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -4348,6 +4357,35 @@ try {
     await auditSeparationAndTargets(page, 'import, file chosen', theme);
     await auditFocusRings(page, 'import, file chosen', theme, ['#import-file', '#import-union', '#import-backup', '#import-go']);
     rmSync(validExport, { force: true });
+
+    // AND THE OTHER IMPORT, with a file chosen — the one that reads somebody
+    // else's planner. 2.36.0 turned its summary from a paragraph into a list of
+    // facts, and a list that only ever renders after a file is chosen is a list
+    // nothing measures unless the walk chooses one. Written outside the repo for
+    // the same reason as the fixture above.
+    //
+    // The file is built to reach every fact at once: two places, a flag, an
+    // estimate, a note, a rhythm, a finished row and a date seven years gone.
+    // A single-fact file would measure the markup and prove nothing about a
+    // real export, which is where this surface is actually read.
+    const otherExport = join(tmpdir(), 'quietkeep-a11y-other-fixture.taskpaper');
+    writeFileSync(otherExport, [
+      'Kitchen refit:',
+      '\t- Ring the plumber @due(2019-06-11) @flagged @context(Home)',
+      '\tThe stopcock is under the stairs',
+      '\t- Old thing @done',
+      '\t- Weekly check @repeat(1w)',
+      '- A loose action @context(Errands) @estimate(20m)',
+      '',
+    ].join('\n'));
+    await page.setInputFiles('#other-file', otherExport);
+    await page.waitForSelector('#other-facts:not([hidden]) li');
+    await auditContrast(page, 'another planner, file chosen', theme);
+    await auditAxe(page, 'another planner, file chosen', theme);
+    await auditNames(page, 'another planner, file chosen', theme);
+    await auditSeparationAndTargets(page, 'another planner, file chosen', theme);
+    await auditFocusRings(page, 'another planner, file chosen', theme, ['#other-file', '#other-go']);
+    rmSync(otherExport, { force: true });
 
     // State 5: B-04's hardest case — 320px at 200% text — WITH a dialog open.
     // A dialog is its own scroll container, so page-level overflow stays 0 while

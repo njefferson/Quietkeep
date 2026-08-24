@@ -37,7 +37,7 @@ import { CONFIRM_WORD, clearEvents, confirmMatches, eraseEverything, purgeCount,
 import { KEY_KV } from '../sync-keys.ts';
 import { openSheet as openSheetById, onSheetOpen, wireSheetClose, closeEverything } from './sheets.ts';
 import { badgeWords, badgeToggleLabel, isBadgeOn, setBadgeEnabled } from './badge.ts';
-import { importSummary, importWords, parseAnyExport, taskPaperEvents } from '../taskpaper.ts';
+import { importFacts, importSummary, parseAnyExport, taskPaperEvents } from '../taskpaper.ts';
 import { deliverCopy, deliverDiagnostic, deliverGeneratedSet } from './export-copy.ts';
 import { eventWords, isCure } from '../log-words.ts';
 import { localDayKey, recordDayWords, atMidnight} from '../time.ts';
@@ -1856,24 +1856,37 @@ export async function mountAbout(
   const otherNote = document.querySelector<HTMLElement>('#other-note');
   const otherActions = document.querySelector<HTMLElement>('#other-actions');
   const otherGo = document.querySelector<HTMLButtonElement>('#other-go');
-  if (otherFile && otherNote && otherActions && otherGo) {
+  const otherFacts = document.querySelector<HTMLUListElement>('#other-facts');
+  if (otherFile && otherNote && otherActions && otherGo && otherFacts) {
     let staged: ReturnType<typeof parseAnyExport> | null = null;
     otherFile.addEventListener('change', () => {
       void (async () => {
         const file = otherFile.files?.[0];
         staged = null;
         otherActions.hidden = true;
-        if (!file) { otherNote.textContent = ''; return; }
+        if (!file) { otherNote.textContent = ''; otherFacts.replaceChildren(); otherFacts.hidden = true; return; }
         try {
           const parsed = parseAnyExport(await file.text());
           const summary = importSummary(parsed.lines, parsed.unreadable, new Date().toISOString(), session.zone);
-          otherNote.textContent = `${importWords(summary)} Read as ${parsed.format === 'csv' ? 'CSV' : 'TaskPaper'}.`;
+          const { lead, facts } = importFacts(summary);
+          // THE LEAD IS WHAT ARRIVES, and the format is part of the lead because
+          // "read as CSV" is the one thing that tells somebody the file was
+          // understood at all — a fact about the reading, not about the work.
+          otherNote.textContent = `${lead} Read as ${parsed.format === 'csv' ? 'CSV' : 'TaskPaper'}.`;
+          otherFacts.replaceChildren(...facts.map(f => {
+            const li = document.createElement('li');
+            li.textContent = f;
+            return li;
+          }));
+          otherFacts.hidden = facts.length === 0;
           if (summary.projects + summary.actions > 0) {
             staged = parsed;
             otherActions.hidden = false;
           }
         } catch (err) {
           otherNote.textContent = `That file could not be read — ${(err as Error).message} Nothing has been changed.`;
+          otherFacts.replaceChildren();
+          otherFacts.hidden = true;
         }
       })();
     });

@@ -724,11 +724,18 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.35.0**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.36.0**. What a
+  file will do to your work is a list of facts now rather than one block of a
+  hundred and twenty words — three groups, one fact per line, each loss said
+  once. The screen had never been rendered by anything, so the accessibility
+  walk chooses a file of its own and reads what comes back.
+- **Superseded, and kept for the record: 2.35.0.** The
   invented set was three-quarters filed where a real store is seven-eighths
   not, so every narrowing feature was judged against data that flattered it;
   it is about fifteen hundred things now, mostly unsorted. The manual gained
-  the *Things you can do* section it never had, and the fold.
+  the *Things you can do* section it never had, and the fold. 2.35.0 itself is
+  the arrival screen — an import used to reload into a plain work surface with
+  no account of where any of it came from.
 - **Superseded, and kept for the record: 2.31.2.** The
   walkthrough was written for somebody who already knew the app: it invited the
   storage ask before saying to install, set control names in italics on the one
@@ -744,7 +751,17 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **2.33.1** (2.30.2 through
+- **https://quietkeep.pages.dev** — production, **2.35.0** — 2.33.2 through
+  2.35.0 promoted at `235302a`, Deploy success read from the run. The picker's
+  frame, a flag arriving as heat, the count of what is finished, and the
+  arrival screen. **THE SPINE WAS RED FOR THREE OF THEM AND NOBODY READ IT**:
+  `size:check` failed on 2.34.0 over one control and stayed failing through
+  2.34.1 and 2.35.0, while the log's last twenty lines were green and
+  `deploy.yml` — which runs on push and never consults the Spine — shipped all
+  three. The budget is raised deliberately in 2.36.0 with the reason written
+  where the other raises are, and the Spine now ends a failed run by saying so
+  at the bottom, where somebody actually looks.
+- **Earlier, and kept for the record: 2.33.1** (2.30.2 through
   2.31.2 promoted at `cd2a5a8`, Spine, Deploy and the push check all success,
   read from the runs. Five releases, every one of them from a device report:
   the version stamp's landing, the rewritten walkthrough, install-before-ask,

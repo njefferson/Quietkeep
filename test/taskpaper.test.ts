@@ -19,8 +19,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  depthOf, importSummary, importWords, isCalendarDay, parseAnyExport, parseCsv,
-  parseOmniFocusCsv, parseTaskPaper, taskPaperEvents, isPastDay, type ImportContext,
+  depthOf, importFacts, importSummary, isCalendarDay, parseAnyExport, parseCsv,
+  parseOmniFocusCsv, parseTaskPaper, taskPaperEvents, isPastDay,
+  type ImportContext, type ImportSummary,
 } from '../src/taskpaper.ts';
 import { admit, gateOptionsFor, heldNodes, silentNodes } from '../src/gate.ts';
 import { fold, noteOf } from '../src/fold.ts';
@@ -29,6 +30,16 @@ import { calendarCount } from '../src/ics.ts';
 import { allContexts, contextsOf, placesReaching } from '../src/contexts.ts';
 import { estimateOf } from '../src/duration.ts';
 import { replanAll } from '../src/replan.ts';
+
+// The summary as ONE string. The app never composes it: the lead goes into a
+// live region and the facts render as a navigable list beside it, because a
+// hundred and twenty words fired at a live region cannot be paused, re-read or
+// skipped. So this lives here, in the tests that want to read the whole thing
+// at once, rather than in the module as a second rendering with no caller.
+const importWords = (s: ImportSummary): string => {
+  const { lead, facts } = importFacts(s);
+  return facts.length === 0 ? lead : `${lead} ${facts.join(' ')}`;
+};
 
 const DENVER = 'America/Denver';
 const KIRITIMATI = 'Pacific/Kiritimati';
@@ -196,9 +207,16 @@ test('a rhythm and an unreadable estimate are dropped, and reported rather than 
   // words and are carried now; only the flag is a decision this app gets to make.
   const { lines } = parseTaskPaper('- Thing @repeat(weekly) @estimate(a while)\n');
   assert.deepEqual(lines[0]!.dropped.sort(), ['estimate', 'repeat']);
-  const words = importWords(importSummary(lines, []));
-  assert.match(words, /will not come with them/);
-  for (const t of ['repeat', 'estimate']) assert.ok(words.includes(t), t);
+  const { facts } = importFacts(importSummary(lines, []));
+  // Both are reported, and EACH IS REPORTED ONCE (2.36.0). The rhythm has a
+  // sentence of its own that says what to do about it; the estimate nobody can
+  // parse has nothing but the bare list, which is why the list still exists.
+  const rhythm = facts.filter(f => /repeats on a rhythm/.test(f));
+  const list = facts.filter(f => /will not come with them/.test(f));
+  assert.equal(rhythm.length, 1, 'the rhythm gets its own sentence');
+  assert.equal(list.length, 1, 'and there is one list of the rest');
+  assert.match(list[0]!, /estimate/, 'the estimate that could not be read is in it');
+  assert.ok(!/repeat/.test(list[0]!), 'and the rhythm is not said a second time');
 });
 
 test('the tags somebody wrote come across as places, in their own words', () => {
@@ -427,8 +445,23 @@ test('an empty or unreadable file says so and changes nothing', () => {
 });
 
 test('the words never claim more than the file held', () => {
+  // One line is the smallest file anybody brings, and it is the case the lead
+  // sentence first got wrong: "1 action come in." Exact, not a substring: the
+  // point is that NOTHING else is claimed of a one-line file.
   const s = importSummary(parseTaskPaper('- One thing\n').lines, []);
-  assert.match(importWords(s), /^Found 1 action\.$/);
+  const { lead, facts } = importFacts(s);
+  assert.equal(lead, '1 action comes in.');
+  assert.deepEqual(facts, []);
+  assert.equal(importWords(s), '1 action comes in.');
+});
+
+test('the pile line comes last, after the findings about this file', () => {
+  // It is the standing fact rather than a finding about this file, and it is the
+  // one that says the arrival is not a debt — so it reads after the findings.
+  const { lines, unreadable } = parseTaskPaper(SAMPLE);
+  const { facts } = importFacts(importSummary(lines, unreadable));
+  assert.match(facts[facts.length - 1]!, /filing was never asked for/);
+  assert.equal(facts.filter(f => /filing was never asked for/.test(f)).length, 1);
 });
 
 // --- dates that already went by ---------------------------------------------

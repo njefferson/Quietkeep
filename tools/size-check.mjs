@@ -408,7 +408,27 @@ const BUDGET = {
   // the situation sheet. They REPLACE the place chooser rather than joining it —
   // the two states are never on screen together — so the count on any one screen
   // rises by one, not two, and only on a store that has never named a place.
-  controls: 244,
+  // 244 -> 245 on 2026-08-24 (2.36.0, for a control added in 2.34.0): "Not a
+  // place", the ghost button beside the place chooser. A real export carried
+  // thirteen labels that were not places among eight that were, so the app has
+  // to be TOLD, once, by the only person who knows — and this is the control
+  // that lets it be told without a settings screen. It lives inside the
+  // situation sheet, so nothing on the first screen changes.
+  //
+  // THE RAISE IS LATE, AND THAT IS THE FINDING. This gate went red on 2.34.0
+  // and stayed red through 2.34.1 and 2.35.0 — three releases pushed to staging
+  // and promoted to production with a Spine step failing — because the step's
+  // one FAIL line sits four hundred lines up a log that ends with twenty green
+  // ones. Every step after it carries `if: ${!cancelled()}` on purpose, so the
+  // run does not stop at the first failure; the cost of that is a red job whose
+  // tail reads exactly like a green one. Cloudflare deploys on push and does
+  // not consult the Spine, so all three shipped, and "pushed and verified
+  // against the remote" was true every time.
+  //
+  // This is hub LESSONS 53 wearing different clothes: a push is not a release,
+  // and now also A GREEN TAIL IS NOT A GREEN RUN. Read the job's conclusion,
+  // never its last screen.
+  controls: 245,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

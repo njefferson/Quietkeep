@@ -2089,6 +2089,18 @@
   <label class="purge-label" for="other-file">Choose the file</label>
   <input id="other-file" type="file" accept=".taskpaper,.txt,.csv,text/plain,text/csv">
   <p id="other-note" class="storage-note" role="status" aria-live="polite"></p>
+  <!-- THE FACTS AS A LIST (2.36.0). The summary is a first-run screen and it was
+       one paragraph — 124 words in a single block on a real export, seven facts
+       run together at the moment somebody has the least patience.
+       OUTSIDE THE LIVE REGION on purpose, and this is a real trade rather than
+       a free one. `#other-note` above announces the LEAD — what arrives, and
+       that the file was understood — and these facts are not announced at all.
+       A polite live region cannot be paused, re-read or skipped, so pushing a
+       hundred and twenty words through it reads the file aloud at somebody who
+       asked what was in it. They are the next thing in reading order, between
+       that announcement and the button that acts on it, so anybody moving from
+       the one to the other passes through them. -->
+  <ul id="other-facts" class="storage-facts" hidden></ul>
   <div id="other-actions" class="about-actions" hidden>
     <button id="other-go" type="button">Bring it in</button>
   </div>

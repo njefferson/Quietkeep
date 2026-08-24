@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '2.36.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-24',
+    notes: [
+      '**What a file will do to your work is now a list you can read, not a paragraph you have to get through.** Choosing an export used to answer with one block of a hundred and twenty words \u2014 what arrives, what changes on the way and what does not come at all, all run together, at the moment you have the least patience for it.',
+      '**It is one fact per line now, in three groups**: what comes with your work, what changed on the way in, and what stays behind. The line saying nothing is filed comes last, because it is the standing fact rather than something about your file.',
+      '**Each loss is stated once.** A repeating thing was reported twice \u2014 once as a rhythm to rebuild, and again six lines later in a bare list of what will not come. Two ways of saying one thing reads as two things.',
+      '**The screen is measured now.** Nothing had ever rendered this list, so its colours and spacing had never been checked in either theme; the accessibility walk chooses a file of its own and reads what comes back.',
+    ],
+  },
+  {
     triplet: '2.35.0',
     kind: 'CAPABILITY',
     date: '2026-08-24',
