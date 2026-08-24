@@ -68,10 +68,29 @@ const oldestFirst = (a: NodeState, b: NodeState): number => {
  * (which does not). Provenance cannot tell these apart — the importer and the
  * sample set both write `{for:'self'}` — and must not be built on.
  */
+/**
+ * SELECTED BY HOW IT ARRIVED, not by not-being-a-capture (2.38.0).
+ *
+ * This read `!n.captured`, written 2026-07-31 when `captured` meant "you typed
+ * it", so excluding it did mean "came from somewhere else". 2.15.0 made an
+ * import land in the inbox — `arrived: true`, which latches `captured` — and
+ * that emptied the batch NAMED for imports. `rangeChoices` pushes it only when
+ * non-empty, so it stopped appearing rather than appearing empty: the door was
+ * simply gone, and nothing said so.
+ *
+ * Twenty-two days, found from the device on a 1,171-row import where the only
+ * route left was one card at a time. Hub LESSONS 104's shape — an absence
+ * identical to a presence — and the tests stayed green because their fixture
+ * wrote rows the importer would never produce (LESSONS 138).
+ *
+ * `arrived` says the thing directly. It is the latch about how the SOURCE
+ * reached this app, which is exactly the question this batch asks, rather than a
+ * property that happened to correlate with it for three weeks.
+ */
 export const looseFromImport = (state: State): NodeState[] =>
   heldNodes(state)
     .filter(sortable)
-    .filter(n => !n.captured && n.route === null && n.parent === null)
+    .filter(n => n.arrived && n.route === null && n.parent === null)
     .sort(oldestFirst);
 
 /** "Everything under [container]" — live sortable descendants, transitively.

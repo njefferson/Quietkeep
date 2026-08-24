@@ -724,7 +724,21 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **2.37.0**. Reported
+- **https://staging.quietkeep.pages.dev** — the candidate, **2.38.0**. Reported
+  from the device: clicking Cold on every task was taking forever and nothing
+  was being removed by it. Three faults, one root. `looseFromImport` selected
+  on `!n.captured`, written when `captured` meant "you typed it"; 2.15.0 made an
+  import latch it, so the batch NAMED for imports held zero and `rangeChoices`
+  never offered it — the one-tap route through an import simply was not there
+  for twenty-two days. The same latch put a whole planner into the heat sweep,
+  which leads at four items, and into the daily gauge, which law 8 says must
+  never carry an import. Now: the batch selects on `arrived`, and the sweep and
+  the gauge exclude arrivals. Measured on a 1,200-row import — gauge 1160 → 0,
+  sweep 1160 → 0, batch 0 → 1000, and the clarify queue keeps all of it.
+  **The tests stayed green because their fixture wrote rows the importer no
+  longer produces**, which is hub LESSONS 138 exactly; `imported()` now stamps
+  what the importer stamps, and a second fixture drives the real parser.
+- **Superseded, and kept for the record: 2.37.0.** Reported
   from the device, straight after an import: the chooser held nineteen labels
   and there was no way to tell, from looking at it, that any of them could be
   corrected. The answer already existed — *Not a place*, since 2.34.0 — and
