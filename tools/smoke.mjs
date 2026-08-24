@@ -60,10 +60,30 @@ const ensureStanceFor = async (pg, selector) => {
         .replace(/\s*>>.*$/, '')
         .trim();
       const el = ask(sel) ?? ask(plain(sel)) ?? ask(plain(sel).split(':')[0]);
-      if (!el) return null;
       const runway = document.querySelector('#runway');
       if (!runway || !runway.hasAttribute('data-hub')) return null;
       const here = runway.getAttribute('data-stance');
+      if (!el) {
+        // THE ELEMENT MAY NOT EXIST UNTIL AFTER WE HAVE NAVIGATED — and then
+        // waiting for it to appear before deciding where to go waits for ever.
+        //
+        // `#triage-card` is RENDERED BY opening the inbox, and opening the
+        // inbox is what entering that job DOES. So on a machine slow enough
+        // that the card has not been built yet, the shim found nothing,
+        // declined, and the caller waited thirty seconds for a card that only
+        // its own navigation could have produced. It showed only in CI, because
+        // this machine happened to have built it already every single time —
+        // twelve green runs of a walk that could not pass on a slower box.
+        //
+        // Ids run `<section>-<part>` throughout this app, so the job is
+        // derivable from the NAME even when none of it is on the page yet.
+        const m = /^#([A-Za-z0-9]+)-/.exec(sel.trim());
+        const named = m && document.getElementById(m[1]);
+        if (named && named.matches('section[data-stance-name]')) {
+          return here === m[1] ? null : m[1];
+        }
+        return null;
+      }
       const sec = el.closest('section[data-stance-name]');
       if (sec) return here === sec.id ? null : sec.id;
       // The hub's own controls mean COME UP. Its doors are hidden while you are
