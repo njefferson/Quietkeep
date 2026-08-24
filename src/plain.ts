@@ -206,6 +206,15 @@ export const PLAIN_KEPT = [
  */
 export const PLAIN_CHROME_HIDDEN = [
   // Above the offer.
+  // THE HUB (3.0.0, ADR-0108) — a list of places to go, which is the one thing
+  // this mode is a rebuttal to. Somebody who has reduced the day to one thing is
+  // not choosing where to be; being asked is the load being cut.
+  '#hub',
+  // AND THE ROW INSIDE A JOB, for the same reason. The way back and the (+) are
+  // navigation and an accessory, and the mode's own exit (`#nextup-plain-off`)
+  // is what leaves — a second and third control here is exactly the count this
+  // mode holds to ten.
+  '#stance-bar',
   '#capture-room',    // a capture accessory, and directly in the path to the offer
   '#contents-open',   // navigation. On this day you are not navigating.
   '#clock',           // a clock face, the time, and how much of today is left

@@ -25,6 +25,242 @@ const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
 
+/**
+ * GO TO THE JOB BEFORE PRESSING SOMETHING IN IT (3.0.0, ADR-0108).
+ *
+ * The landing view is the hub, and a section is on screen only while it is the
+ * stance. Rather than edit several hundred call sites, the page's own verbs
+ * navigate first — derived from the selector, so nothing here can go stale.
+ *
+ * A control in the frame, in a dialog, or on the hub resolves to no job and
+ * nothing happens. This is not the walk faking a state: it is taking the route
+ * a finger takes, which is the standard these walks are held to.
+ */
+/** The unwrapped `waitForSelector`, so the shim never re-enters itself. */
+const RAW_WAIT = new WeakMap();
+const rawWaitOf = (pg) => RAW_WAIT.get(pg) ?? pg.waitForSelector.bind(pg);
+
+const ensureStanceFor = async (pg, selector) => {
+  let want = null;
+  try {
+    want = await pg.evaluate((sel) => {
+      // PLAYWRIGHT'S PSEUDOS ARE NOT CSS, and `querySelector` THROWS on them
+      // rather than returning null — so `?? querySelector(split)` never ran,
+      // the throw escaped to the caller's catch, and the shim declined to
+      // navigate on every `:has-text()` selector in the walk. Silently: a
+      // decline looks exactly like "no job needed". `:has()` is real CSS and
+      // stays.
+      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
+      const plain = (q) => q
+        .replace(/:has-text\([^)]*\)/g, '')
+        .replace(/:text-is\([^)]*\)/g, '')
+        .replace(/:text\([^)]*\)/g, '')
+        .replace(/:nth-match\([^)]*\)/g, '')
+        .replace(/:visible/g, '')
+        .replace(/\s*>>.*$/, '')
+        .trim();
+      const el = ask(sel) ?? ask(plain(sel)) ?? ask(plain(sel).split(':')[0]);
+      if (!el) return null;
+      const runway = document.querySelector('#runway');
+      if (!runway || !runway.hasAttribute('data-hub')) return null;
+      const here = runway.getAttribute('data-stance');
+      const sec = el.closest('section[data-stance-name]');
+      if (sec) return here === sec.id ? null : sec.id;
+      // The hub's own controls mean COME UP. Its doors are hidden while you are
+      // inside a job, which is correct and which the shim has to know.
+      if (el.closest('#hub') || el.closest('[data-hub-part]')) {
+        return here === null ? null : '\u0000hub';
+      }
+      const owner = el.closest('[data-stance-part], [data-narrows]');
+      if (!owner) return null;
+      const part = owner.getAttribute('data-stance-part');
+      const wants = part ? [part] : (owner.getAttribute('data-narrows') ?? '')
+        .split(',').map((t) => t.trim().replace(/^#/, '')).filter(Boolean);
+      if (wants.length === 0) return null;
+      return wants.includes(here) ? null : wants[0];
+    }, selector);
+  } catch { return; }
+  if (!want) return;
+  try {
+    if (want === '\u0000hub') { await pg.$eval('#stance-back', (b) => b.click()); return; }
+    const inOne = await pg.evaluate(() =>
+      document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
+    if (inOne !== null) await pg.$eval('#stance-back', (b) => b.click());
+    const door = `#hub-doors .hub-go[data-stance-id="${want}"]`;
+    // WAIT BRIEFLY FOR THE DOOR. A job becomes live a beat after the write that
+    // fills it — capture something and `#nextup` is not on the hub yet — so
+    // looking once and giving up left the caller waiting for a section only the
+    // stance can show. The raw wait, or this would re-enter itself.
+    if (await pg.locator(door).count() === 0) {
+      try { await rawWaitOf(pg)(door, { timeout: 2500 }); } catch { return; }
+    }
+    await pg.$eval(door, (b) => b.click());
+    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 4000 });
+  } catch { /* the caller's own call reports the real problem */ }
+};
+
+/**
+ * Into a job, for the locator-based clicks the wrapper above cannot see.
+ *
+ * AND OPEN IT. `ensureStanceFor` short-circuits when the stance is already this
+ * job — correctly, since re-entering would reset a surface mid-flow — but the
+ * inbox has been behind its own door since 1.43.0, so a walk already STANDING
+ * in triage without having OPENED it read every card and prompt as blank and
+ * spent its whole bound cycling nothing.
+ *
+ * The same `alreadyOpen` test the hub itself uses, so a job in progress is
+ * never reset by this.
+ */
+const intoJob = async (pg, id) => {
+  await ensureStanceFor(pg, `#${id}`);
+  await pg.evaluate((jid) => {
+    const sec = document.getElementById(jid);
+    if (!sec) return;
+    const opener = sec.querySelector('[data-stance-opener]');
+    if (opener && !opener.hidden && !sec.querySelector('.route')) opener.click();
+  }, id).catch(() => {});
+};
+
+/**
+ * Show the rest of a capped list, by pressing what a finger presses.
+ *
+ * The held list caps each heading and states the number held back — a real
+ * import of well over a thousand rows under one heading is the pile in a new
+ * costume, which is what the cap exists to prevent. So a walk that names a
+ * specific card cannot assume it is on screen: it may be one of the ones the
+ * cap is holding, and "show the rest" is the route to it.
+ *
+ * Bounded, and silent when there is nothing capped, so it costs a count on the
+ * ordinary path.
+ */
+const revealAll = async (pg) => {
+  for (let i = 0; i < 8; i++) {
+    const more = await pg.locator('#cards .card-more .card-open').count().catch(() => 0);
+    if (more === 0) return;
+    await pg.locator('#cards .card-more .card-open').first().click().catch(() => {});
+    await pg.waitForTimeout(140);
+  }
+};
+
+/**
+ * OPEN WHAT IT IS INSIDE, by pressing the summary a finger presses.
+ *
+ * Entering a job is not always enough to reach a control in it: the inventory
+ * arrives FOLDED (2.12.0, ADR-0102), so `#cards` sits inside a shut `<details>`
+ * and a click on a card after a reload waited thirty seconds on something that
+ * was in the right job and still not on screen.
+ *
+ * Pressing the summary is the route, not a shortcut around it — the app's own
+ * listeners run either way. Declared by the DOM rather than by a list here, so
+ * a fold added later is handled the day it is added.
+ *
+ * VERBS ONLY, never `waitForSelector`: a wait that asks whether something is
+ * HIDDEN is a legitimate question about a shut fold, and unfolding underneath
+ * it would answer a different one. The walk asserts the fold arrives shut on
+ * its own, before anything opens it, and that assertion stays untouched.
+ */
+const unfoldTo = async (pg, sel) => {
+  try {
+    await pg.evaluate((s) => {
+      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
+      const el = ask(s) ?? ask(s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim());
+      if (!el) return;
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        if (p.tagName !== 'DETAILS' || p.open) continue;
+        const sum = p.querySelector(':scope > summary');
+        // NEVER THE FOLD THE TARGET IS THE HANDLE OF. Opening it here and then
+        // letting the caller's own press land on the summary toggles it shut
+        // again — the walk's `click('#held-fold-summary')` did exactly that and
+        // waited thirty seconds for a card it had just closed the door on.
+        if (sum && (sum === el || sum.contains(el))) continue;
+        if (sum) sum.click(); else p.open = true;
+      }
+    }, sel);
+  } catch { /* the verb's own call reports the real problem */ }
+};
+
+/**
+ * ROUTE LOCATOR ACTIONS THROUGH THE HUB TOO.
+ *
+ * `pg.click(sel)` is wrapped below. `pg.locator(sel).first().click()` is not,
+ * and there are ninety-five of those in this walk. Each bypassed the shim
+ * completely and waited thirty seconds on a control sitting in a job the walk
+ * was not standing in — one crash per run, three minutes apart, which is a way
+ * to spend an afternoon finding out the same thing five times.
+ *
+ * By PROXY rather than by editing ninety-five call sites, and the chaining
+ * methods carry the base selector forward so `.filter().first().click()`
+ * navigates by the same rule as a bare one.
+ *
+ * ACTIONS ONLY. `count()`, `textContent()`, `isVisible()` and the rest are
+ * questions, and a question must never move the app underneath the assertion
+ * asking it — "the inventory arrives folded" is exactly such a question, and a
+ * read that navigated would answer it about somewhere else.
+ */
+const LOC_ACT = ['click', 'tap', 'fill', 'focus', 'hover', 'check', 'uncheck',
+                 'selectOption', 'press', 'dblclick', 'setInputFiles', 'clear'];
+const LOC_CHAIN = ['first', 'last', 'nth', 'filter', 'locator', 'and', 'or'];
+const routeLocator = (pg, loc, sel) => new Proxy(loc, {
+  get(target, prop, recv) {
+    const v = Reflect.get(target, prop, recv);
+    if (typeof v !== 'function') return v;
+    if (LOC_ACT.includes(prop)) return async (...a) => {
+      await ensureStanceFor(pg, sel);
+      await unfoldTo(pg, sel);
+      return v.apply(target, a);
+    };
+    if (LOC_CHAIN.includes(prop)) return (...a) => routeLocator(pg, v.apply(target, a), sel);
+    return v.bind(target);
+  },
+});
+
+/** Wrap a page's verbs so each one goes to the job first. */
+const routeThroughHub = (pg) => {
+  const rawWait = pg.waitForSelector.bind(pg);
+  RAW_WAIT.set(pg, rawWait);
+  pg.waitForSelector = async (sel, ...rest) => {
+    if (typeof sel !== 'string') return rawWait(sel, ...rest);
+    await ensureStanceFor(pg, sel);
+    try {
+      return await rawWait(sel, ...rest);
+    } catch (err) {
+      // ONE RETRY, because the decision can be taken a beat too early. A capture
+      // makes a job live only once the write has folded, so a shim that looked
+      // before that saw no hub, declined, and left the caller waiting for a
+      // section that only the stance can show. Asking again after the wait has
+      // failed costs nothing on the ordinary path.
+      await ensureStanceFor(pg, sel);
+      return rawWait(sel, ...rest).catch(() => { throw err; });
+    }
+  };
+  const rawLocator = pg.locator.bind(pg);
+  pg.locator = (sel, ...rest) => (typeof sel === 'string'
+    ? routeLocator(pg, rawLocator(sel, ...rest), sel)
+    : rawLocator(sel, ...rest));
+  for (const verb of ['click', 'tap', 'fill', 'focus', 'selectOption', 'hover', 'check', 'uncheck']) {
+    const raw = pg[verb].bind(pg);
+    pg[verb] = async (sel, ...rest) => {
+      if (typeof sel === 'string') {
+        await ensureStanceFor(pg, sel);
+        // THE ELEMENT MAY NOT EXIST YET, and then no job gets decided. A card
+        // list fills a beat AFTER `body[data-ready=true]`, so a verb run
+        // straight after a reload finds nothing, concludes no navigation is
+        // needed, and then waits thirty seconds on a control inside a hidden
+        // section. `waitForSelector` already retries for this race; the verbs
+        // did not, and the detail sheet is where it surfaced.
+        if (await pg.locator(sel).count() === 0) {
+          try { await rawWaitOf(pg)(sel, { state: 'attached', timeout: 5000 }); }
+          catch { /* the verb's own call reports the real problem */ }
+          await ensureStanceFor(pg, sel);
+        }
+        await unfoldTo(pg, sel);
+      }
+      return raw(sel, ...rest);
+    };
+  }
+  return pg;
+};
+
 const failures = [];
 const ok = (m) => console.log(`  ok    ${m}`);
 const bad = (m) => { failures.push(m); console.error(`  FAIL  ${m}`); };
@@ -76,6 +312,7 @@ try {
     permissions: ['clipboard-read', 'clipboard-write'],
   });
   const page = await ctx.newPage();
+  routeThroughHub(page);
 
   const pageErrors = [];
   page.on('pageerror', (e) => pageErrors.push(String(e)));
@@ -371,7 +608,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   const writeStart = Date.now();
   await page.click('#capture-form button[type=submit]');
-  await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+  // THE BUDGET MEASURES THE APP, NOT THE WALK (3.0.0).
+  //
+  // This bracket used to close after a stance change and a fold, so it timed
+  // the walk's own navigation — and, until this release, a swallowed six-second
+  // wait for a triage control the walk was not heading to. It read 12116ms
+  // against a 1000ms bound with none of it the app. The write path is submit
+  // to the card existing, which is what the proxy bound was ever about:
+  // catching an accidental spinner or a blocking await before the device does.
+  await page.waitForSelector('.card', { state: 'attached', timeout: 6000 });
+  const writeMs = Date.now() - writeStart;
 
   // THE INVENTORY ARRIVES FOLDED (2.12.0, ADR-0102), so every assertion below
   // about `.card` needs it opened first — and this walk timed out on exactly
@@ -391,7 +637,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and states no number — ADR-0032 has no tally, and the gauge already holds the totals');
   await page.click('#held-fold-summary');
   await page.waitForSelector('.card');
-  const writeMs = Date.now() - writeStart;
   is(await page.locator('.card').count(), 1, 'one card after capture');
   is(await page.locator('.card-title').first().textContent(), 'Ring the dentist', 'card text');
   is(await page.inputValue('#capture'), '', 'input cleared after commit');
@@ -418,7 +663,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nText is text, never interpreted');
   await page.fill('#capture', '<img src=x onerror="globalThis.__pwned=1">');
   await page.click('#capture-form button[type=submit]');
-  await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
   await page.waitForFunction(() => document.querySelectorAll('.card').length === 2);
   is(await page.evaluate(() => globalThis.__pwned), undefined, 'a hostile capture is stored as text');
   is(await page.locator('.card-title').first().textContent(), '<img src=x onerror="globalThis.__pwned=1">',
@@ -475,7 +719,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and with every line it had, whitespace and blanks included');
 
   await page.click('#capture-form button[type=submit]');
-  await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
   await page.waitForFunction((n) => document.querySelectorAll('.card').length === n, beforeDump + 3);
   is(await page.locator('.card').count(), beforeDump + 3,
     'three items — the blank line is not a thing to do');
@@ -737,6 +980,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the gate's generic cure.
   const tctx = await browser.newContext({ timezoneId: 'America/Denver', locale: 'en-US', acceptDownloads: true });
   const tpage = await tctx.newPage();
+  routeThroughHub(tpage);
   // Fill-and-verify for the search box (shared shape with a11y.mjs): a plain
   // fill has been observed at more than one site to resolve without the value
   // landing when a commit-triggered refresh is in flight. A lost fill retries;
@@ -787,6 +1031,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // nothing dated, nothing parented, nothing anchored.
   const uctx = await browser.newContext({ timezoneId: 'America/Denver', locale: 'en-US' });
   const upage = await uctx.newPage();
+  routeThroughHub(upage);
   await upage.goto(url, { waitUntil: 'load' });
   await upage.waitForSelector('body[data-ready=true]');
   await upage.click('#tour-skip');
@@ -857,10 +1102,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'maybe one day', 'keep for reference', 'not a thing after all']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
-    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   }
   await tpage.waitForFunction(() => document.querySelectorAll('.card').length === 6);
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden])');
   // THE GAUGE SAYS WHAT IS TRUE OF THESE THINGS, AND NEVER HOW MANY (1.43.0).
   //
@@ -908,6 +1151,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const gaugeBeforeSkip = await tpage.locator('#triage-gauge').getAttribute('data-waiting');
+  await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions button', { hasText: 'Not this one' }).click();
   await tpage.waitForTimeout(200);
   const afterSkipCard = await tpage.locator('#triage-card').textContent();
@@ -956,15 +1200,19 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // corridor is back". The three assertions below say which of the three
   // properties failed, in four seconds, in words. A gate that fails by crashing
   // costs the next person the diagnosis it already had.
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).catch(() => {});
+  // THE DOOR IS THE HUB'S NOW (3.0.0, ADR-0108), and the property is unchanged:
+  // arriving does not put a decision in front of you. What moved is which
+  // control is the way in — `#triage-open` was the runway's, and entering the
+  // job from the hub presses it for you, so it is never the thing on screen.
+  await tpage.waitForSelector('#hub-doors .hub-go[data-stance-id="triage"]', { timeout: 4000 }).catch(() => {});
   is(await tpage.locator('#triage-actions .route').count(), 0,
     'arriving with a full inbox offers NO forced choice — sorting is a door, not a corridor');
   is(await tpage.locator('#triage-card').isVisible(), false,
     'and no card is put in front of you before you have asked for one');
-  is(await tpage.locator('#triage-open').isVisible(), true,
+  is(await tpage.locator('#hub-doors .hub-go[data-stance-id="triage"]').isVisible(), true,
     'the way in is on screen the whole time, so nothing is stranded by not being shown');
 
-  await tpage.click('#triage-open');
+  await tpage.click('#hub-doors .hub-go[data-stance-id="triage"]');
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   is(await tpage.locator('#triage-card').textContent(), beforeSkip,
     'a reload brings it back to the top — nothing about the skip was kept');
@@ -992,6 +1240,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the capture order the queue presents (oldest first).
   const routeByLabel = async (label) => {
     const before = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting') ?? 'NaN');
+    await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
     // The queue drops by one. Read from the data attribute since 1.43.0 — the
     // words no longer change as it drains, on purpose.
@@ -1097,12 +1346,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // clarify.reopened stops returning the card to the inbox.
   await tpage.fill('#capture', 'routed then reclaimed');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   // ONE item goes straight to clarify since 1.39.3 — the hot/cold sweep leads
   // only when there is a pile worth sweeping, so there is no heat step to clear
   // here any more.
   await tpage.waitForSelector('#triage-actions .route .route-hint');
+  await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route', { hasText: 'Waiting for' }).first().click();
   await tpage.waitForSelector('#triage-undo .triage-undo-btn');
   is((await tpage.locator('#triage-undo .triage-undo-where').textContent())?.includes('Waiting for'), true,
@@ -1127,6 +1376,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.evaluate(() => (document.querySelector('#triage-undo')?.textContent ?? '').length), 0,
     'and the undo bar clears itself once used');
   // Clean up so the inbox is clear for the next section: send it to Trash.
+  await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route', { hasText: 'Trash' }).first().click();
   await tpage.waitForSelector('#triage', { state: 'hidden' });
 
@@ -1204,6 +1454,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       submitVisible: visible('#capture-form button[type=submit]'),
       doneGates: gatesAbove('#nextup-done'),
       doneVisible: visible('#nextup-done'),
+      // THE DOOR ONTO THE OFFERED THING (3.0.0). From a cold open the landing
+      // view is the hub, so what has to be one tap from here is the way in.
+      doorGates: gatesAbove('#hub-doors .hub-go[data-stance-id="nextup"]'),
+      doorVisible: visible('#hub-doors .hub-go[data-stance-id="nextup"]'),
       // Nothing may be covering the capture line on arrival either — a modal
       // that greets you is a tap before the first tap.
       modalOpen: Boolean(document.querySelector('dialog[open]')),
@@ -1239,10 +1493,39 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `TWO TAPS TO CAPTURE: nothing has to be opened to reach the capture line (${reach.captureGates} gates above it)`);
   is(reach.captureVisible && reach.submitVisible, true,
     'and the line and its button are both on the surface you land on — tap the line, tap the button');
-  is(reach.doneGates, 0,
-    `ONE TAP TO ACT: nothing has to be opened to reach Done on the offered thing (${reach.doneGates} gates above it)`);
-  is(reach.doneVisible, true,
+  // ONE TAP TO ACT, MEASURED WHERE THE ACTING HAPPENS (3.0.0, ADR-0108).
+  //
+  // The landing view is a hub now, so `#nextup` is display:none until you go
+  // through its door, and the gate count above Done reads 1 from up here. That
+  // is the shape that was asked for — one job on screen instead of fifteen —
+  // and asserting the old number would be asserting the paradigm that was
+  // replaced. So the criterion splits in two, and NEITHER half is weaker than
+  // what it came from: the way in must be one tap from the surface you land on,
+  // and once you are there, acting must not require opening anything. A Done
+  // button put behind a <details>, a tab or a dialog still fails this exactly
+  // as it did before.
+  is(reach.doorGates, 0,
+    `ONE TAP TO THE OFFERED THING: its door is on the surface you land on (${reach.doorGates} gates above it)`);
+  is(reach.doorVisible, true, 'and the door is on screen, with what is behind it named on its face');
+  await intoJob(tpage, 'nextup');
+  const act = await tpage.evaluate(() => {
+    const el = document.querySelector('#nextup-done');
+    if (!el) return { gates: null, visible: false };
+    let gates = 0;
+    for (let p = el; p; p = p.parentElement) {
+      if (p.hidden) gates++;
+      if (p.tagName === 'DETAILS' && !p.open) gates++;
+      if (p.tagName === 'DIALOG' && !p.open) gates++;
+      if (p instanceof HTMLElement && getComputedStyle(p).display === 'none') gates++;
+    }
+    const r = el.getBoundingClientRect();
+    return { gates, visible: r.width > 0 && r.height > 0 };
+  });
+  is(act.gates, 0,
+    `ONE TAP TO ACT: inside the job, nothing has to be opened to reach Done (${act.gates} gates above it)`);
+  is(act.visible, true,
     'and it is on screen, so acting on what is offered is one tap and no navigation');
+  await tpage.$eval('#stance-back', (b) => b.click());
 
   console.log('\nThe way in from outside (V2 stage 6)');
   // On the reference platform `?text=` is the ONLY entrance from outside the
@@ -1354,11 +1637,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // completing it here would quietly hollow that check out into a tautology.
   await tpage.fill('#capture', 'a timed two-minute job');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   // No heat step for a single item since 1.39.3 — the sweep leads only when
   // there is a pile worth sweeping.
   await tpage.waitForSelector('#triage-actions .route .route-hint');
+  await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route', { hasText: 'Do now' }).first().click();
   await tpage.waitForSelector('.donow-done');
 
@@ -1468,10 +1751,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['second thing asking', 'third thing asking']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
-    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await tpage.waitForSelector('#triage:not([hidden]) .route');
     // One at a time, so clarify leads — no heat step to clear (1.39.3).
     await tpage.waitForSelector('#triage-actions .route .route-hint');
+    await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: 'Do now' }).first().click();
     await tpage.waitForTimeout(80);
   }
@@ -1723,8 +2006,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // actually moves the reader, and that it is absent when there is nothing in
   // the way rather than being permanent furniture.
   console.log('\nA way past the stack, reachable by finger');
+  // THE DOOR CARRIES THIS NOW (3.0.0, ADR-0108). `#to-held` was a jump for a
+  // long scrolling page and there is no longer one, so it stands down under the
+  // hub — asserting it is on screen asserts the shape that was replaced. The
+  // property it was built for is unchanged and it is the door that has to hold
+  // it now: reachable by finger, on screen, nothing over the top. Retiring the
+  // assertion along with the control would leave the property untested, which
+  // is how a route stays unreachable by finger for 142 releases (LESSONS 95).
+  // MEASURED ON THE SURFACE YOU LAND ON. The doors are hidden while you are
+  // inside a job — correctly — so taking this reading from wherever the
+  // previous block left the walk reported the door as 0x0 at 0,0 and the hit
+  // test as a miss against `html`. That is a true measurement of the wrong
+  // place: this block asks about the landing surface, so come up to it first.
+  await ensureStanceFor(tpage, '#hub');
+  await tpage.waitForTimeout(150);
   const jumpBox = await tpage.evaluate(() => {
-    const b = document.querySelector('#to-held');
+    const b = document.querySelector('#hub-doors .hub-go[data-stance-id="held"]');
     if (!b || b.hidden) return null;
     // IN VIEW BEFORE HIT-TESTING. `elementFromPoint` takes VIEWPORT coordinates,
     // so testing a control that is below the fold asks about whatever happens to
@@ -1733,15 +2030,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // question about a control you can currently see.
     b.scrollIntoView({ block: 'center' });
     const r = b.getBoundingClientRect();
-    return { left: Math.round(r.left), w: Math.round(r.width), h: Math.round(r.height),
-             hit: document.elementFromPoint(Math.round(r.left + r.width / 2),
-                                            Math.round(r.top + r.height / 2))?.id ?? null };
+    // THE HIT IS THE BUTTON OR ANYTHING INSIDE IT. The door's name and count
+    // are spans within it, so comparing ids would report a miss on a press that
+    // landed perfectly — and the door has no id of its own to compare against.
+    const h = document.elementFromPoint(Math.round(r.left + r.width / 2),
+                                        Math.round(r.top + r.height / 2));
+    const name = h ? `${h.tagName.toLowerCase()}${h.id ? `#${h.id}` : ''}` +
+      `${typeof h.className === 'string' && h.className.trim() ? `.${h.className.trim().split(/\s+/).join('.')}` : ''}`
+      : 'nothing';
+    return { left: Math.round(r.left), top: Math.round(r.top),
+             w: Math.round(r.width), h: Math.round(r.height),
+             hit: h === b || b.contains(h), over: name };
   });
-  is(jumpBox !== null, true, 'it is on the surface when there is a stack above the list');
+  is(jumpBox !== null, true, 'the door onto what you are holding is on the surface you land on');
   is(jumpBox && jumpBox.left >= 0, true,
     `and it is ON SCREEN, not parked off-canvas like the keyboard skip link (left=${jumpBox?.left})`);
-  is(jumpBox && jumpBox.hit === 'to-held', true,
-    'and a finger landing on it hits it, with nothing over the top');
+  is(jumpBox !== null && jumpBox.hit === true, true,
+    `and a finger landing on it hits it, with nothing over the top (hit ${jumpBox?.over} at ${jumpBox?.left},${jumpBox?.top} ${jumpBox?.w}x${jumpBox?.h})`);
   // IT MOVES YOU, and takes focus with it — a scroll that leaves focus behind
   // throws the next Tab back up the page.
   // THE RUNWAY'S scrollTop, NOT `window.scrollY` (2.9.0, ADR-0100). The document
@@ -1753,7 +2058,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // arriving through a layout change rather than through a conditional.
   const runwayY = () => tpage.evaluate(() => document.querySelector('#runway')?.scrollTop ?? window.scrollY);
   await tpage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
-  await tpage.click('#to-held');
+  await tpage.click('#hub-doors .hub-go[data-stance-id="held"]');
   await tpage.waitForTimeout(350);
   // `cardsTop` IS RELATIVE TO THE RUNWAY (2.9.0, ADR-0100), for the same reason
   // the runway's scrollTop replaced window.scrollY three lines up: the frame
@@ -1765,19 +2070,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const origin = runway ? runway.getBoundingClientRect().top : 0;
     return {
       focus: document.activeElement?.id ?? null,
+      // FOCUS IS IN THE JOB, not on one named element (3.0.0). Arriving lands
+      // it on the section's heading rather than the list, deliberately and for
+      // the reason `contents.ts` settled: a screen reader should say where you
+      // have arrived before it names a control. What must never happen is focus
+      // staying behind on the hub while the screen changes underneath it.
+      focusInJob: !!document.querySelector('#held')?.contains(document.activeElement),
       cardsTop: Math.round(document.querySelector('#cards').getBoundingClientRect().top - origin),
+      runwayH: runway ? Math.round(runway.getBoundingClientRect().height) : 0,
       scrolled: runway ? runway.scrollTop : window.scrollY,
     };
   });
-  is(landed.focus, 'cards', 'pressing it puts focus on the list, not just the scrollbar');
+  is(landed.focusInJob, true,
+    `pressing it takes focus into the job, not leaving it behind on the hub (focus=${landed.focus})`);
   // AND A WAY BACK (2.1.0, ADR-0091). There was none anywhere in the app, so the
   // jump was a one-way trip five screens down.
-  is(await tpage.locator('#to-top').isVisible(), true, 'and there is a way back from down here');
-  await tpage.click('#to-top');
+  // THE WAY BACK IS THE STANCE BAR NOW (3.0.0, ADR-0108), and the property is
+  // the one ADR-0091 was about: nobody is left five screens down with no way
+  // out. It is the same control in the same place from every job, rather than a
+  // jump that only appeared when the page happened to be long.
+  is(await tpage.locator('#stance-back').isVisible(), true, 'and there is a way back from down here');
+  await tpage.click('#stance-back');
   await tpage.waitForTimeout(350);
   const back = { y: await runwayY(), focus: await tpage.evaluate(() => document.activeElement?.id) };
   is(back.y === 0, true, `pressing it returns to the top (runway scrollTop ${back.y})`);
-  is(back.focus, 'capture', 'and puts focus on the capture line, which is what is up there');
+  is(back.focus, 'hub-heading', 'and puts focus on the hub, which is what you came back up to');
   // A CONTROL LOOKS LIKE A CONTROL. Five routes off this page rendered as plain
   // grey sentences; 45 of the other controls carried a border or a fill.
   const bare = await tpage.evaluate(() => {
@@ -1792,8 +2109,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     }).map(b => (b.id || b.className));
   });
   is(bare.join(', '), '', 'no control on the work surface renders as plain prose');
-  is(landed.scrolled > 0 && landed.cardsTop < 200, true,
-    `and the list is actually at the top of the screen (runway scrolled ${landed.scrolled}px, list at ${landed.cardsTop}px)`);
+  // ON SCREEN ON ARRIVAL, rather than scrolled to. Entering a job resets the
+  // runway to the top by design, so `scrolled > 0` now asserts the opposite of
+  // what the app promises: the old jump had to travel because fourteen other
+  // blocks sat above the list, and none of them do any more.
+  is(landed.cardsTop >= 0 && landed.cardsTop < landed.runwayH, true,
+    `and the list is on screen when you arrive (list at ${landed.cardsTop}px, runway ${landed.runwayH}px tall)`);
   await tpage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
 
   console.log('\nWork mode — the gauge is a claim you can open');
@@ -2126,6 +2447,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const tickTitle = await tpage.locator('#cards .card:has(.card-done) .card-title').first().textContent();
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-done').first().click();
   await tpage.waitForTimeout(180);
   const doneAfter = await tpage.evaluate(async () => {
@@ -2253,6 +2575,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const nth of [0, 1]) {
     const t = await tpage.locator('#cards .card:has(.card-done) .card-title').nth(nth).textContent();
     lapsedTitles.push(t);
+    await intoJob(tpage, 'held');
     await tpage.locator('#cards .card:has(.card-done) .card-open').nth(nth).click();
     await tpage.waitForSelector('#detail[open]');
     await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -2706,7 +3029,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'written after the backup was taken');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForTimeout(250);
   const heldAfterExtra = await tpage.locator('#cards .card').count();
   is(heldAfterExtra, heldBefore + 1, 'the store now differs from the file');
@@ -2767,6 +3089,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the same reason: a second click would close what the last step opened.
   const openInbox = async () => {
     if (await tpage.locator('#triage-actions .route').count() > 0) return;
+    // GO TO THE JOB FIRST (3.0.0, ADR-0108). `#triage-open` is display:none
+    // while another job is the stance, so an `isVisible()` test taken from
+    // wherever the previous step left the walk reported "there is no inbox"
+    // and returned quietly — and the caller then waited on a route that
+    // nothing had opened. Entering is idempotent and never resets a job that
+    // is already in progress, so this is safe to do on every call.
+    await intoJob(tpage, 'triage');
+    if (await tpage.locator('#triage-actions .route').count() > 0) return;
     if (!(await tpage.locator('#triage-open').isVisible())) return;
     await tpage.click('#triage-open');
     await tpage.waitForSelector('#triage:not([hidden]) .route');
@@ -2787,10 +3117,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     for (let i = 0; i < 12; i++) {
       const prompt = await tpage.locator('#triage-prompt').textContent();
       if (!/hot or cold/i.test(prompt || '')) break;
+      await intoJob(tpage, 'triage');
       await tpage.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
       await tpage.waitForTimeout(120);
     }
-    await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
+    await intoJob(tpage, 'triage');
+    // SAY WHAT WAS ON OFFER. A bare 30-second timeout on a filtered locator
+    // reports that a label was not found and nothing about what was, which
+    // costs a whole run to answer.
+    try {
+      await tpage.locator('#triage-actions .route', { hasText: label }).first().click({ timeout: 8000 });
+    } catch (err) {
+      const have = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
+      const prompt = await tpage.locator('#triage-prompt').textContent().catch(() => null);
+      const stance = await tpage.evaluate(() =>
+        document.querySelector('#runway')?.getAttribute('data-stance') ?? null).catch(() => null);
+      bad(`routeOne(${JSON.stringify(label)}): no such route — stance=${JSON.stringify(stance)} ` +
+          `prompt=${JSON.stringify((prompt || '').trim().slice(0, 70))} ` +
+          `offered=${JSON.stringify(have.map((t) => t.trim().slice(0, 34)))}`);
+      throw err;
+    }
     await tpage.waitForTimeout(150);
   };
   await openInbox();
@@ -2800,7 +3146,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['draft the brief', 'brief the boss']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
-    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await routeOne('Next action');
   }
   await tpage.reload({ waitUntil: 'load' });
@@ -2815,6 +3160,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const walk = new Date(Date.UTC(y, m - 1, d + 6));
     return walk.toISOString().slice(0, 10);
   });
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("brief the boss") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -2823,6 +3169,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForTimeout(200);
   await tpage.click('#detail-close');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("draft the brief") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -2875,6 +3222,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // nothing, rather than by seeding a head. Bounded, and the walk FAILS if the
   // item never comes up — a check that quietly passes when it found nothing is
   // not a check.
+  // INTO THE JOB FIRST (3.0.0). The loop below breaks out the moment
+  // `#nextup-skip` reads hidden — and from anywhere but this job it IS hidden,
+  // so the loop exited on its first pass having cycled nothing and the three
+  // assertions under it failed against a null they were never given a chance
+  // to fill.
+  await intoJob(tpage, 'nextup');
   let offerApproach = null;
   for (let i = 0; i < 15 && offerApproach === null; i++) {
     const title = await tpage.locator('#nextup-title').textContent();
@@ -2908,11 +3261,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.fill('#capture', 'the quarterly report');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Next action');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("the quarterly report") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -2952,6 +3305,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // Now fix it the way the app says to — put real work under it — and watch the
   // surface leave. An exceptions list that cannot reach zero is a nag.
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("draft the brief") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3037,15 +3391,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.fill('#capture', 'the migration');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Next action');
   await tpage.fill('#capture', 'write the script');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Next action');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("the migration") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3063,6 +3416,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForTimeout(300);
   await tpage.click('#detail-close');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("write the script") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3129,7 +3483,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'something after the report');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForTimeout(300);
   await openSurface(tpage, 'sheet-group-actions');
   const [second] = await Promise.all([
@@ -3169,7 +3522,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await tpage.fill('#capture', 'the signed form');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Waiting for');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -3220,6 +3572,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#detail-close');
   await fillSearch('');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("the signed form") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3241,10 +3594,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // two rows for ever.
   await tpage.fill('#capture', 'the numbers');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Waiting for');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("the numbers") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3271,6 +3624,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
   const owedBefore = await tpage.locator('.people-open').count();
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("the signed form") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3302,6 +3656,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'nothing is running, so the surface is not there');
 
   const focusTitle = await tpage.locator('#cards .card:has(.card-focus) .card-title').first().textContent();
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has(.card-focus) .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');
   is(await tpage.locator('#focus-title').textContent(), focusTitle,
@@ -3337,8 +3692,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // reclaims it or the battery dies.
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
+  // THE SESSION SURVIVES; THE HUB IS WHERE YOU COME BACK TO (3.0.0, ADR-0108).
+  //
+  // Landing back inside the session would be the app deciding where you are
+  // standing after an interruption it never saw — and the interruption this
+  // block is about is the OS reclaiming the app, which may have been hours ago.
+  // The hub is the safe landing. What must survive is the SESSION, and the door
+  // is the evidence it did: a job with nothing running has no door at all.
+  //
+  // Asserted in two halves so neither is weaker than the one line it replaces.
+  // `isVisible()` on `#focus` from the hub reads false for a section that is
+  // display:none and perfectly alive — a true answer to the wrong question.
+  is(await tpage.locator('#hub-doors .hub-go[data-stance-id=\"focus\"]').count() > 0, true,
+    'and coming back, the session is still there \u2014 it survived the app going away');
+  await intoJob(tpage, 'focus');
   is(await tpage.locator('#focus').isVisible(), true,
-    'and coming back, you are still in it \u2014 the session survived the app going away');
+    'and going back in through its door, you are still in it');
 
   // Stop properly, and leave the five words. Optional throughout; this walk
   // gives them so the cue path is exercised rather than assumed.
@@ -3387,6 +3756,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // Pick it back up: the card is spent and focus lands on the WORK, never on a
   // card about a focus session.
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("where you left off") .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');
   is(await tpage.locator('#focus-title').textContent(), focusTitle,
@@ -3442,6 +3812,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#comms').isVisible(), false,
     'saying yes does not itself interrupt you');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');
   is(await tpage.locator('#comms').isVisible(), false,
@@ -3486,6 +3857,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#comms').isVisible(), false, 'still nothing on arrival');
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');
   await tpage.click('#focus-stop');
@@ -3520,6 +3892,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(eventsAfter, eventsBefore, `and writes nothing at all (${eventsBefore} events, unchanged)`);
 
   // Having a look records it, and it stops being offered.
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');
   await tpage.click('#focus-stop');
@@ -3530,6 +3903,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#comms-done');
   await tpage.waitForTimeout(400);
   is(await tpage.locator('#comms').isVisible(), false, 'a look puts it away');
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');
   await tpage.click('#focus-stop');
@@ -3673,6 +4047,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => {
     for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
   });
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-open').first().click().catch(() => {});
   await tpage.waitForSelector('#detail[open]').catch(() => {});
   await tpage.evaluate(() => {
@@ -4300,7 +4675,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'a decent tripod');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeOne('Someday');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -5062,8 +5436,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // sheet opens on that very item.
   await tpage.fill('#capture', 'open me from triage');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden])');
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
@@ -5083,7 +5455,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // gate was purely in what the surface chose to show.
   await tpage.fill('#capture', 'a thing to sort without heat');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   const countHeats = () => tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -5115,6 +5486,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   //
   // Derived from the import above rather than another magic number, so the two
   // cannot drift apart again: raise the import and this rises with it.
+  // OPEN THE INBOX FIRST (3.0.0). `#triage-card` and `#triage-prompt` read
+  // empty when nothing has opened the job, so the loop below walked its whole
+  // bound against blank text and the fixture check reported the prompt it saw
+  // as "" — which is not a heat card, and is not a defect either.
+  await intoJob(tpage, 'triage');
   let onMine = false;
   const bound = cap_many.length + 40;
   for (let i = 0; i < bound && !onMine; i++) {
@@ -5128,6 +5504,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(onMine, true, 'the walk reached the item it captured before asserting about it');
   const heatPrompt = await tpage.locator('#triage-prompt').textContent();
   if (onMine && /hot or cold/i.test(heatPrompt || '')) {
+    await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: 'Just sort it' }).first().click();
     await tpage.waitForTimeout(200);
     const after = await tpage.locator('#triage-prompt').textContent();
@@ -5299,6 +5676,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // first assertion and left the second still short.
   const routeUntilOut = async (title) => {
     for (let i = 0; i < cap_many.length * 2 + 40; i++) {
+      // OPEN THE INBOX EACH PASS (3.0.0). The early exit below is right when
+      // triage really has run dry, and indistinguishable from it when nothing
+      // has OPENED triage — `.route` is absent either way. So this returned on
+      // its first pass having routed nothing, and the item stayed in the inbox
+      // while the two assertions after it read a sheet that does not say so.
+      await intoJob(tpage, 'triage');
       if (await tpage.locator('#triage:not([hidden]) .route').count() === 0) return;
       const card = await tpage.locator('#triage-card').textContent().catch(() => '');
       const done = await tpage.evaluate(() => {
@@ -5334,6 +5717,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       `“${title}” is out of the inbox — its sheet reads ${JSON.stringify(state)}`);
     await tpage.click('#detail-close');
     await fillSearch('');
+    // AND THE LIST HAS TO AGREE (3.0.0).
+    //
+    // `#detail-state` reports the CLOCK when one is set, so "the words 'not
+    // sorted yet' are absent from it" was true of an item that had never been
+    // routed at all — this check passed for a reason it was not making, and
+    // the failure surfaced four assertions later as a card with no Done on it.
+    // The held list groups BY ROUTE, so the group is the fact, and asking the
+    // surface is what the walk is for.
+    await intoJob(tpage, 'held');
+    await revealAll(tpage);
+    const grp = await tpage.evaluate((t) => {
+      const card = [...document.querySelectorAll('#cards .card')].find(
+        (c) => (c.querySelector('.card-title')?.textContent || '').trim() === t);
+      return card ? (card.closest('ul')?.getAttribute('aria-label') ?? null) : null;
+    }, title);
+    is(grp !== null && !/not sorted yet/i.test(grp), true,
+      `and the list agrees — “${title}” sits under ${JSON.stringify(grp)}`);
   };
   // DRAINED FIRST. Capturing into a non-empty inbox means the card in front of
   // the walk is somebody else's, and the first version of this block routed
@@ -5350,15 +5750,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'strip the old sealant');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeUntilOut('strip the old sealant');
   await assertRouted('strip the old sealant');
   await tpage.fill('#capture', 're-seal the frame');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeUntilOut('re-seal the frame');
   await assertRouted('re-seal the frame');
 
+  await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("re-seal the frame") .card-open').click();
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -5388,7 +5787,42 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // outranks a freshly unblocked step by design — that is a promise to somebody
   // else, and the chain will still be there in an hour — and this store carries
   // several. Cycled with the app's own "Not this", which records nothing.
-  await tpage.locator('#cards .card:has-text("strip the old sealant") .card-done').click();
+  await intoJob(tpage, 'held');
+  await revealAll(tpage);
+  try {
+    // BY ITS TITLE, not by any text on the card. `:has-text()` matches a card
+    // that MENTIONS the words — and the card for "re-seal the frame" says
+    // “Waiting for “strip the old sealant””, which is the whole point of the
+    // step above. It sorts first, so the locator resolved to the blocked card,
+    // whose Done button correctly does not exist. A latent ambiguity that only
+    // showed once the list got long enough for both cards to be on it.
+    await tpage.locator('#cards .card:has(.card-title:text-is("strip the old sealant")) .card-done')
+      .click({ timeout: 8000 });
+  } catch (err) {
+    // WHAT THE CARD ACTUALLY IS. "The card is missing" and "the card is there
+    // and offers no Done" are different faults with different causes, and a
+    // list of titles cannot tell them apart.
+    const probe = await tpage.evaluate(() => {
+      const card = [...document.querySelectorAll('#cards .card')].find(
+        (c) => (c.querySelector('.card-title')?.textContent || '').trim() === 'strip the old sealant');
+      if (!card) return { found: false };
+      const r = card.getBoundingClientRect();
+      return {
+        found: true,
+        cls: card.className,
+        group: card.closest('ul')?.getAttribute('aria-label') ?? null,
+        status: (card.querySelector('.card-status')?.textContent || '').trim().slice(0, 40),
+        buttons: [...card.querySelectorAll('button')]
+          .map((b) => `${b.className}="${(b.textContent || '').trim().slice(0, 16)}"`),
+        box: `${Math.round(r.width)}x${Math.round(r.height)}`,
+      };
+    }).catch(() => null);
+    bad(`the card named for this step offers no Done — ${JSON.stringify(probe)}`);
+    const titles = await tpage.locator('#cards .card-title').allTextContents().catch(() => []);
+    bad(`and the list around it — ${titles.length} on it: ` +
+        JSON.stringify(titles.map((t) => t.trim().slice(0, 30)).slice(0, 14)));
+    throw err;
+  }
   await tpage.waitForTimeout(300);
   // CYCLED UNTIL THE QUEUE REPEATS, not a fixed 25 times.
   //
@@ -5401,6 +5835,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Seeing a title twice means the rotation has come all the way round, which is
   // the real end of the search and is true whatever the queue length. The count
   // is kept only as a runaway guard, never as the bound.
+  // INTO THE JOB FIRST (3.0.0). The loop reads `#nextup-title` and breaks the
+  // moment `#nextup-skip` is hidden — and from anywhere but this job it IS
+  // hidden, so it exited on its first pass having cycled nothing and both
+  // assertions under it failed against a null they never had a chance to fill.
+  await intoJob(tpage, 'nextup');
   let unblockedWhy = null;
   const seenTitles = new Set();
   for (let guard = 0; guard < 200 && unblockedWhy === null; guard++) {
@@ -5502,12 +5941,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#nextup-plain-off');
   await tpage.waitForFunction(() =>
     document.querySelector('#nextup-plain-bar')?.hidden === true);
+  await intoJob(tpage, 'nextup');
   is(await tpage.locator('#nextup-why').isHidden(), false,
     'and leaving it brings everything back in one act');
-  is(await tpage.evaluate(() => ['#held', '#triage', '#search', '#replan']
-    .map(s => document.querySelector(s))
-    .filter(Boolean).some(el => el.checkVisibility())), true,
-  'including the surface below it, which is on screen again');
+  // AND THE REST OF THE APP IS REACHABLE AGAIN (3.0.0, ADR-0108).
+  //
+  // These four were asserted as ON SCREEN, which was the whole claim while the
+  // page showed every surface at once. One job is on screen now, so measuring
+  // visibility from inside another job asks about the wrong thing and would
+  // fail against a perfectly healthy app. The property is unchanged and it is
+  // the one that matters: plain mode strips the app down, and leaving it must
+  // not leave any of it unreachable. A door is what reachable means here, and a
+  // surface with nothing in it has no door — so this still fails if leaving
+  // plain mode emptied them.
+  await ensureStanceFor(tpage, '#hub');
+  await tpage.waitForTimeout(150);
+  is(await tpage.evaluate(() => ['held', 'triage', 'search', 'replan']
+    .some((id) => !!document.querySelector(`#hub-doors .hub-go[data-stance-id="${id}"]`))), true,
+  'including the surfaces below it, which have their doors back');
 
   // --- THE MOMENT AFTER (1.35.0) --------------------------------------------
   //
@@ -5592,7 +6043,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // that makes putting a thing down cheap enough to actually do.
   await tpage.fill('#capture', 'learn the tenor recorder');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await routeUntilOut('learn the tenor recorder');
   await fillSearch('tenor recorder');
   await tpage.waitForSelector('#search-results .search-open');
@@ -6030,7 +6480,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['Polish the samovar', 'polish the SAMOVAR', 'Polish the banister']) {
     await tpage.fill('#capture', t);
     await tpage.click('#capture-form button[type=submit]');
-    await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
     await tpage.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
   }
   is(await twinsCount(), twinsBefore + 2,
@@ -6247,7 +6696,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // group — NOT twice — and on the portfolio row.
   await tpage.fill('#capture', 'the fielding review');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
   await fillSearch('fielding review');
   await tpage.waitForSelector('#search-results .search-open');
@@ -6449,7 +6897,6 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // back, a door away in the ledger.
   await tpage.fill('#capture', 'Take on the newsletter for Dana');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForFunction(() => (document.querySelector('#capture')?.value ?? 'x') === '');
   await fillSearch('newsletter');
   await tpage.waitForSelector('#search-results .search-open');
@@ -6740,11 +7187,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // cannot litter.
   await tpage.fill('#capture', 'the thing in the shed');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => tpage.click('#triage-open')).catch(() => {});
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   for (let i = 0; i < 12; i++) {
     const prompt = await tpage.locator('#triage-prompt').textContent();
     if (!/hot or cold/i.test(prompt || '')) break;
+    await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
     await tpage.waitForTimeout(120);
   }
@@ -6754,9 +7201,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // a hard-coded title here was wrong about the walk rather than about the app,
   // and the check caught it by naming what the place really held.
   const filedTitle = (await tpage.locator('#triage-card').textContent()) || '';
+  await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
   await tpage.waitForSelector('#triage-place-new');
   await tpage.fill('#triage-place-new', 'The shed');
+  await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route', { hasText: 'Make it' }).first().click();
   await tpage.waitForSelector('#triage-undo .triage-undo-bar');
   const receipt0 = await tpage.locator('.triage-undo-where').first().textContent();

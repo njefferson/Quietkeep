@@ -51,6 +51,7 @@ import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../sc
 import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
+import { paintHub, leave, watchJobs, enter as enterStance } from './hub.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
   isLongStretch, longStretchWords,
@@ -190,6 +191,19 @@ function paintJump(): void {
   try {
     const jump = document.querySelector<HTMLButtonElement>('#to-held');
     if (!jump) return;
+    // THE JUMPS BELONG TO A SCROLLING PAGE, AND THERE ISN'T ONE (3.0.0,
+    // ADR-0108). "Go to what you are holding" and "Back to the top" existed to
+    // get past fifteen blocks stacked in one scroller. The hub has a door to the
+    // pile and a way back from every job, so these are the same journeys with
+    // second names — and a second control answering to one name is what the
+    // accessibility walk refuses (§4). They stand down rather than move.
+    const hub = document.querySelector<HTMLElement>('#runway')?.hasAttribute('data-hub');
+    if (hub) {
+      jump.hidden = true;
+      const t = document.querySelector<HTMLButtonElement>('#to-top');
+      if (t) t.hidden = true;
+      return;
+    }
     const inTheWay = ['#nextup', '#triage', '#replan', '#portfolio', '#people',
       '#review', '#composed', '#upkeep', '#bother', '#reentry', '#comms', '#close']
       .some(sel => {
@@ -1095,7 +1109,12 @@ export async function main(edition?: Edition): Promise<void> {
         (next ?? document.querySelector<HTMLElement>('#capture'))?.focus();
       });
   };
-  const rerender = (): void => render(session, n => detail.open(n), markDone, n => focus.start(n));
+  // STARTING A FOCUS SESSION GOES INTO THE JOB (3.0.0, ADR-0108). Pressing "Work
+  // on this" is choosing to do one thing; leaving the reader on the pile they
+  // just chose from is the old page's shape. `#focus` is not live until the
+  // session has started, which is what `pending` in hub.ts is for.
+  const rerender = (): void => render(session, n => detail.open(n), markDone,
+    (n) => { focus.start(n); enterStance('focus'); });
   // The held list AND the replan surface. `workSurface` excludes every id with a
   // live card, so these two must never be refreshed apart from one another: if
   // only one re-rendered, resolving a card would return the item to Next-up
@@ -1114,6 +1133,11 @@ export async function main(edition?: Edition): Promise<void> {
     rerenderLists(); work.refresh(); triage.relabelTimer();
     // After everything that owns a section has painted — see paintJump.
     paintJump();
+    // LAST, and it must be last (3.0.0). The hub's doors are the LIVE sections,
+    // so it reads a page every other painter has finished with. Painting it
+    // earlier would build doors to blocks that are about to be hidden, and hide
+    // the one section somebody is standing in.
+    paintHub(heldWork(session.state()).length > 0);
   };
 
   try { rerender(); } catch { /* the shell still works; cards appear on next load */ }
@@ -1862,6 +1886,19 @@ export async function main(edition?: Edition): Promise<void> {
   // node, so anything reached only by this one becomes unlabelled again and
   // goes back to fitting every answer — which is the whole point: a mis-typed
   // label was HIDING those things.
+  // THE WAY BACK AND THE WAY TO PUT SOMETHING DOWN (3.0.0, ADR-0108).
+  document.querySelector<HTMLButtonElement>('#stance-back')?.addEventListener('click', () => {
+    leave();
+  });
+  // Capture from inside a job. The box is in the frame and the frame stands
+  // down at 175% text, so this leaves the stance, puts focus in the field, and
+  // the thought is recorded where it always was — no second capture path to
+  // drift from the first.
+  document.querySelector<HTMLButtonElement>('#stance-capture')?.addEventListener('click', () => {
+    leave();
+    document.querySelector<HTMLInputElement>('#capture')?.focus();
+  });
+
   document.querySelector<HTMLButtonElement>('#where-notplace')?.addEventListener('click', () => {
     const id = whereNow;
     if (id === null) return;
@@ -1942,6 +1979,14 @@ export async function main(edition?: Edition): Promise<void> {
   // that only appeared after you did something would be missing on exactly the
   // screen you arrive at.
   paintJump();
+  // AND THE HUB, for exactly the reason written above it (3.0.0). The first
+  // paint has no change to ride on, and the hub is the screen somebody ARRIVES
+  // at — a landing view that only appeared after you did something would be
+  // missing on the one screen it exists for. Rendering it showed an empty hub
+  // and leftover runway furniture, which is what an unpainted landing view
+  // looks like.
+  paintHub(heldWork(session.state()).length > 0);
+  watchJobs();
 
   // The store is open, state is folded, and the surface reflects it. Marked on
   // the document so the headless walk waits for the app rather than for `load`,

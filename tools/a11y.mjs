@@ -29,6 +29,123 @@ import { serve } from './serve.mjs';
 import { requireFreshBundle } from './bundle-fresh.mjs';
 
 /** ONE SURFACE AT A TIME (1.40.0) — see the note in tools/smoke.mjs. */
+/**
+ * INTO A JOB, THROUGH ITS DOOR (3.0.0, ADR-0108).
+ *
+ * The landing view is the hub now, and a section is on screen only while it is
+ * the stance. A walk that revealed one any other way would be measuring a state
+ * no finger can reach, which is the defect `tools/look.mjs`'s header is about
+ * and which this file has paid for twice.
+ *
+ * Comes up first: the door only exists on the hub. Idempotent, so a caller that
+ * is already in the job it wants pays one repaint and nothing else.
+ *
+ * A stance whose door is absent is a FAILURE rather than a skip — the section
+ * has nothing in it, so the audit that follows would silently measure nothing
+ * and report green, which is the fail-open shape this repo keeps rediscovering.
+ */
+const enterStance = async (pg, id) => {
+  await pg.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  });
+  const inOne = await pg.evaluate(() =>
+    document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
+  if (inOne === id) return;
+  if (inOne !== null) await pg.click('#stance-back');
+  const door = `#hub-doors .hub-go[data-stance-id="${id}"]`;
+  if (await pg.locator(door).count() === 0) {
+    fail(`no door to "${id}" on the hub — the section is empty, so anything measured after this measures nothing`);
+    return;
+  }
+  await pg.click(door);
+  await pg.waitForSelector(`#runway[data-stance="${id}"]`);
+};
+
+/** Back to the hub. */
+const leaveStance = async (pg) => {
+  const inOne = await pg.evaluate(() =>
+    document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
+  if (inOne !== null) await pg.click('#stance-back');
+};
+
+/**
+ * Which job does this selector live in, and are we in it?
+ *
+ * Reads the DOM rather than a map: the section a control sits in is a fact about
+ * the page, and a table here would be the hand-written list of surfaces this
+ * repo has watched go stale inside a day.
+ *
+ * Silent when there is nothing to do — a selector that matches nothing, or one
+ * in the frame or a dialog, is not this function's business. It must not fail:
+ * the caller's own click is about to fail with a far better message if the
+ * element is genuinely unreachable, and a second error here would bury it.
+ */
+/** The unwrapped `waitForSelector`, so the shim never re-enters itself. */
+const RAW_WAIT = new WeakMap();
+const rawWaitOf = (pg) => RAW_WAIT.get(pg) ?? pg.waitForSelector.bind(pg);
+
+const ensureStanceFor = async (pg, selector) => {
+  let want = null;
+  try {
+    want = await pg.evaluate((sel) => {
+      // The BARE element, not the filtered one. A selector like
+      // `#triage-open:not([hidden])` matches nothing precisely BECAUSE the job
+      // has not been entered, so asking it where to go answers null and the
+      // walk deadlocks. Everything from the first `:` is a condition about
+      // state; the part before it is the thing.
+      const el = document.querySelector(sel) ?? document.querySelector(sel.split(':')[0]);
+      if (!el) return null;
+      const runway = document.querySelector('#runway');
+      if (!runway || !runway.hasAttribute('data-hub')) return null;   // no hub yet
+      const here = runway.getAttribute('data-stance');
+      const sec = el.closest('section[data-stance-name]');
+      if (sec) return here === sec.id ? null : sec.id;
+      // PAGE-LEVEL NAVIGATION LIVES ON THE HUB, so reaching it means coming UP
+      // rather than going in. The shim knew how to enter a job and not how to
+      // leave one, so a wait on `#roles-open` sat watching a control that is
+      // correctly invisible inside a job.
+      // The hub's own controls mean COME UP. Its doors are hidden while you are
+      // inside a job, which is correct and which the shim has to know.
+      if (el.closest('#hub') || el.closest('[data-hub-part]')) {
+        return here === null ? null : '\u0000hub';
+      }
+      // A JOB'S FURNITURE CAN SIT OUTSIDE ITS SECTION, and mostly already says
+      // which job it serves: `data-narrows` has named that for releases, and
+      // `data-stance-part` covers the few that narrow nothing. The same rule the
+      // app paints by — see `belongs()` in src/ui/hub.ts.
+      const owner = el.closest('[data-stance-part], [data-narrows]');
+      if (!owner) return null;
+      const part = owner.getAttribute('data-stance-part');
+      const wants = part
+        ? [part]
+        : (owner.getAttribute('data-narrows') ?? '').split(',')
+            .map((t) => t.trim().replace(/^#/, '')).filter(Boolean);
+      if (wants.length === 0) return null;
+      return wants.includes(here) ? null : wants[0];
+    }, selector);
+  } catch { return false; }
+  if (!want) return false;
+  if (want === '\u0000hub') {
+    try { await pg.$eval('#stance-back', (b) => b.click()); return true; } catch { return false; }
+  }
+  const door = `#hub-doors .hub-go[data-stance-id="${want}"]`;
+  try {
+    const inOne = await pg.evaluate(() =>
+      document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
+    if (inOne !== null) await pg.$eval('#stance-back', (b) => b.click());
+    // WAIT BRIEFLY FOR THE DOOR. A job becomes live a beat after the write that
+    // fills it, so looking once and giving up leaves the caller waiting for a
+    // section only the stance can show. The raw wait, or this re-enters itself.
+    if (await pg.locator(door).count() === 0) {
+      try { await rawWaitOf(pg)(door, { timeout: 2500 }); } catch { return false; }
+    }
+    await pg.$eval(door, (b) => b.click());
+    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 4000 });
+    return true;
+  } catch { /* the caller's click reports the real problem */ }
+  return false;
+};
+
 const openSurface = async (pg, id) => {
   // THROUGH THE REAL DOOR (1.40.0). A sheet reached with `showModal()` skips
   // `openSheet`, and `openSheet` is where each sheet's open-time repaint runs —
@@ -470,7 +587,12 @@ const REGISTRY = {
   // with a question about it. Its own driven state, because that window is the
   // only place it is on screen, and a registry entry matching nothing visible
   // is the false receipt `#nextup-left` already cost a release for.
-  'the door onto the inbox': ['#triage-open'],
+  // 'the door onto the inbox' WAS HERE and is gone (3.0.0, ADR-0108).
+  // `#triage-open` is no longer a screen anybody meets: the hub's own door is
+  // the way into sorting, and entering the job presses this on the reader's
+  // behalf. It is audited as part of 'the hub' now. Kept as the mechanism rather
+  // than deleted, because on a store with no hub it is still the only way in —
+  // but it is never a thing on screen to be measured.
   // Search results — only exist once you have typed, so a state of their own.
   // The summary is the quiet count; the "where" is the held status word, the
   // lowest-contrast text on the row and the whole point of showing it.
@@ -484,15 +606,16 @@ const REGISTRY = {
   // branch — folding it into 'route undo' would demand it be visible after an
   // ordinary route, which is the opposite of what it is.
   'filed receipt': ['.triage-undo-where', '.triage-place-when', '.triage-place-set',
-    '.triage-undo-btn',
-    // `.card-place` had never been measured anywhere — the line that says "in
-    // Errands · under Home", and from 1.27.0 also what a returned place is
-    // holding, which reuses the same class and so the same pair. It is
-    // registered HERE because this is the state that reliably has one: the
-    // filing just happened, so the item's card now says where it went. In the
-    // ordinary card state nothing is filed and the entry would correctly match
-    // nothing visible.
-    '.card-place'],
+    '.triage-undo-btn'],
+  // `.card-place` — the line that says "in Errands · under Home", and from
+  // 1.27.0 also what a returned place is holding.
+  //
+  // IT USED TO RIDE ON 'filed receipt' because the filing had just happened and
+  // the item's card would then say where it went. Under the hub (3.0.0) a state
+  // cannot span two jobs: the receipt is in Sort and the card is in the pile, so
+  // one state asking for both would always be measuring something off-screen.
+  // Its own state, in the job where the card actually is.
+  'a card that says where it went': ['.card-place'],
   // The triage surface, in both of its passes. Heat shows Hot/Cold; clarify
   // shows the six routes, each a label over a hint. Every visible pair is
   // audited — the hint is the lowest-contrast text on the surface, so it is
@@ -553,7 +676,13 @@ const REGISTRY = {
   // the list" is how a surface goes unmeasured the moment its class changes.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
     '#nextup-dated',
-    '#nextup-done', '#nextup-skip', '#gauge', '.card-done', '#tree-open', '#to-held', '#to-top',
+    '#nextup-done', '#nextup-skip', '#gauge',
+    // `.card-done`, `#tree-open`, `#to-held` and `#to-top` used to ride here.
+    // Under the hub (3.0.0) a state cannot span three places: the cards are in
+    // the pile, the tree door is page navigation that lives on the hub, and the
+    // two jumps were about a long scrolling page that no longer exists. Each is
+    // measured where it actually is.
+
     // When you cannot start (1.24.0). The heavy control is on the card whenever
     // there is a head, so it belongs in this state. THE INVITATION IS NOW ONE
     // WORD (2.10.1): the field, its placeholder, its submit and its hint left
@@ -956,6 +1085,14 @@ const REGISTRY = {
   // above it is the sentence someone reads before replacing everything they
   // have.
   'import, file chosen': ['#import-note', '#import-union', '#import-backup', '#import-go', '#import-explainer'],
+  // HOME (3.0.0, ADR-0108) — the screen every session now starts on, so it is
+  // the one state that must never ship unmeasured. The doors are the only
+  // controls; each carries a place name and, when its surface publishes one, a
+  // sentence about what is behind it.
+  'the hub': ['#hub-heading', '.hub-go', '.hub-name', '.hub-count'],
+  // And the row that is present inside every job: the way back, and the way to
+  // put a thought down without leaving the job to find the box.
+  'inside a job': ['#stance-back', '#stance-capture'],
   // The other import: somebody else's planner, described. 2.36.0 split that
   // description into a lead and a list of facts, and the list is the part that
   // says what will NOT come across — the finished rows, the rhythms, the labels
@@ -1005,7 +1142,65 @@ function sampler(entries) {
   });
 }
 
+/**
+ * The same, for an audit — which measures without pressing anything, and so
+ * would sit on the hub reporting that a job's selectors match nothing visible.
+ *
+ * The state's own registry entry names what it is about, so the first selector
+ * that resolves is the one that says which job this state lives in. Nothing to
+ * look up and nothing to keep in step.
+ */
+const ensureStanceForSelectors = async (pg, list) => {
+  if (!list) return;
+  const sels = list
+    .map((e) => (typeof e === 'string' ? e : e?.sel))
+    .filter((x) => typeof x === 'string');
+  if (sels.length === 0) return;
+
+  // ALREADY SOMEWHERE THAT HOLDS ONE OF THESE? THEN STAY.
+  //
+  // The first version looped and ensured for EVERY selector, which navigated
+  // away mid-state and undid what the state had just driven. `place picker`
+  // lists a bare `.route`, and `.route` exists in more than one section, so
+  // `querySelector` answered with whichever came first in the document — the
+  // walk left the sort surface, the picker it had just opened was gone, and the
+  // failure surfaced three steps later as an input that would not appear.
+  //
+  // A state is where its controls are. If the job on screen already holds any of
+  // them, that is the job, and nothing should move.
+  const settled = await pg.evaluate((list2) => {
+    const runway = document.querySelector('#runway');
+    if (!runway || !runway.hasAttribute('data-hub')) return true;
+    const here = runway.getAttribute('data-stance');
+    if (!here) return false;
+    // THE WHOLE JOB, not just its section — the same `belongs()` rule the app
+    // paints by. A job's furniture can sit OUTSIDE its section: `#triage-undo`
+    // is a child of <main>, so a state about the filed receipt found none of its
+    // controls "inside" `#triage`, decided it was not settled, and walked off to
+    // whichever section held the next selector. `.card-place` lives on cards, so
+    // the walk left the sort surface and the receipt it was about to measure
+    // went with it.
+    const parts = [document.getElementById(here), ...document.querySelectorAll(
+      `#runway main > [data-stance-part="${here}"], #runway main > [data-narrows*="#${here}"]`)];
+    return parts.some((el) => el && list2.some((sel) => {
+      try { return el.matches(sel) || !!el.querySelector(sel); } catch { return false; }
+    }));
+  }, sels);
+  if (settled) return;
+
+  // Otherwise the FIRST selector that names a job wins, and only that one.
+  for (const sel of sels) {
+    const moved = await ensureStanceFor(pg, sel);
+    if (moved) return;
+  }
+};
+
+/** The same, for a state's registry entry. */
+const ensureStanceForState = (pg, registryKey) =>
+  ensureStanceForSelectors(pg, REGISTRY[registryKey]);
+
 async function auditContrast(page, stateName, theme, registryKey = stateName) {
+  await ensureStanceForState(page, registryKey);
   const rows = await page.evaluate(sampler, REGISTRY[registryKey]);
   for (const r of rows) {
     const label = `${r.sel}${r.pseudo ?? ''}`;
@@ -1027,6 +1222,7 @@ async function auditContrast(page, stateName, theme, registryKey = stateName) {
 }
 
 async function auditAxe(page, stateName, theme) {
+  await ensureStanceForState(page, stateName);
   await page.addScriptTag({ path: AXE });
   const res = await page.evaluate(() =>
     axe.run(document, { resultTypes: ['violations', 'incomplete'] }));
@@ -1071,6 +1267,7 @@ async function auditAxe(page, stateName, theme) {
  * two Hide buttons are fine when their names differ.
  */
 async function auditNames(page, stateName, theme) {
+  await ensureStanceForState(page, stateName);
   const found = await page.evaluate(() => {
     const norm = (s) => (s ?? '')
       .toLowerCase()
@@ -1370,6 +1567,7 @@ async function photograph(page, stateName, theme) {
 }
 
 async function auditSeparationAndTargets(page, stateName, theme) {
+  await ensureStanceForState(page, stateName);
   await auditSeparation(page, stateName, theme);
   await auditTargets(page, stateName, theme);
   await photograph(page, stateName, theme);
@@ -1454,6 +1652,13 @@ async function auditTargets(page, stateName, theme) {
  *  passed a build with `outline:none` (audit). Real Tabbing sets the keyboard
  *  modality, so what we measure is what a keyboard user is actually shown. */
 async function auditFocusRings(page, stateName, theme, selectors) {
+  // THROUGH THE SAME GUARD AS EVERY OTHER AUDIT. This looped and ensured for
+  // each selector in turn, with no check for already being somewhere that holds
+  // them — so a list containing one control that also exists in another job
+  // navigated away mid-state and undid what the state had driven. Fixed once in
+  // `ensureStanceForState` and left broken here, which is the whole argument for
+  // one helper rather than two call sites doing the same thing by hand.
+  await ensureStanceForSelectors(page, selectors);
   const remaining = new Set(selectors);
   // Start from a clean slate, then walk forward with Tab. The budget is a
   // reachability proxy, sized to the DENSEST surface: the detail sheet's
@@ -1558,6 +1763,63 @@ try {
       bypassCSP: true,
     });
     const page = await ctx.newPage();
+
+    // GO TO THE JOB BEFORE PRESSING SOMETHING IN IT (3.0.0, ADR-0108).
+    //
+    // The landing view is the hub, and a section is on screen only while it is
+    // the stance — so roughly twenty-five states in this file drive a control
+    // that is no longer visible when they reach it. The alternative to this was
+    // twenty-five hand-placed calls, each needing its own four-minute run to
+    // verify, and a twenty-sixth state added later with nobody remembering.
+    //
+    // DERIVED FROM THE SELECTOR ITSELF, so it cannot go stale: resolve what is
+    // about to be pressed, walk up to its `section[data-stance-name]`, and enter
+    // that one if it is not already the stance. A control in the frame, in a
+    // dialog, or on the hub resolves to no section and nothing happens.
+    //
+    // This is not the walk faking a state. It is the walk taking the route a
+    // finger takes, which is the whole standard this file is held to — a walk
+    // that revealed a section any other way would be measuring a screen no
+    // person can arrive at.
+    const rawClick = page.click.bind(page);
+    page.click = async (selector, ...rest) => {
+      if (typeof selector === 'string') await ensureStanceFor(page, selector);
+      return rawClick(selector, ...rest);
+    };
+    const rawTap = page.tap.bind(page);
+    page.tap = async (selector, ...rest) => {
+      if (typeof selector === 'string') await ensureStanceFor(page, selector);
+      return rawTap(selector, ...rest);
+    };
+    // Every verb that touches a control, not only the two that press one — the
+    // first version wrapped click and tap alone and the walk fell over on
+    // `fill`, which is the same problem wearing a different name.
+    // Waiting for something inside a job implies being in that job. Without
+    // this, `waitForSelector('#triage-open:not([hidden])')` times out on a
+    // control that is present and merely off-screen — and the call site swallows
+    // the timeout, so the NEXT wait hangs with nothing saying why.
+    const rawWait = page.waitForSelector.bind(page);
+    RAW_WAIT.set(page, rawWait);
+    page.waitForSelector = async (selector, ...rest) => {
+      if (typeof selector !== 'string') return rawWait(selector, ...rest);
+      await ensureStanceFor(page, selector);
+      try {
+        return await rawWait(selector, ...rest);
+      } catch (err) {
+        // One retry: a job becomes live only once the write has folded, so the
+        // decision can be taken a beat too early. See the same note in smoke.
+        await ensureStanceFor(page, selector);
+        return rawWait(selector, ...rest).catch(() => { throw err; });
+      }
+    };
+    for (const verb of ['fill', 'focus', 'selectOption', 'hover', 'check', 'uncheck']) {
+      const raw = page[verb].bind(page);
+      page[verb] = async (selector, ...rest) => {
+        if (typeof selector === 'string') await ensureStanceFor(page, selector);
+        return raw(selector, ...rest);
+      };
+    }
+
     await page.goto(url, { waitUntil: 'load' });
     await page.waitForSelector('body[data-ready=true]');
 
@@ -1886,11 +2148,6 @@ try {
     // State 3-i: the door, measured BEFORE it is pressed — the state a person is
     // in the instant after putting something down (1.39.2).
     await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).catch(() => {});
-    await auditContrast(page, 'the door onto the inbox', theme);
-    await auditAxe(page, 'the door onto the inbox', theme);
-    await auditNames(page, 'the door onto the inbox', theme);
-    await auditSeparationAndTargets(page, 'the door onto the inbox', theme);
-    await auditFocusRings(page, 'the door onto the inbox', theme, ['#triage-open']);
 
     await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
 
@@ -1918,11 +2175,37 @@ try {
       `${theme}/inventory folded: and it names what is in there ("${folded.words.slice(0, 58)}")`);
     (!/\d/.test(folded.words) ? pass : fail)(
       `${theme}/inventory folded: and counts nothing — ADR-0032 has no tally, the gauge holds the totals`);
+
     await auditContrast(page, 'inventory folded', theme);
     await auditAxe(page, 'inventory folded', theme);
     await auditNames(page, 'inventory folded', theme);
     await auditSeparationAndTargets(page, 'inventory folded', theme);
     await auditFocusRings(page, 'inventory folded', theme, ['#held-fold-summary']);
+    // HOME (3.0.0, ADR-0108) — the screen every session starts on, audited here
+    // because the store now holds work and the hub therefore exists.
+    //
+    // ITS REGISTRY ENTRY WENT IN WITHOUT THIS AND DID NOTHING. A planted
+    // contrast failure on `.hub-count` was caught by axe and NOT by the registry
+    // pass, which is how the omission surfaced: a surface can be declared in
+    // REGISTRY and never audited, and from every angle except a plant that reads
+    // exactly like coverage. The same shape `spine --parity` exists for one
+    // level up.
+    await leaveStance(page);
+    await page.waitForSelector('#hub-doors .hub-go');
+    await auditContrast(page, 'the hub', theme);
+    await auditAxe(page, 'the hub', theme);
+    await auditNames(page, 'the hub', theme);
+    await auditSeparationAndTargets(page, 'the hub', theme);
+    await auditFocusRings(page, 'the hub', theme, ['#hub-doors .hub-go']);
+
+    // And the row that rides inside every job: the way back, and the way to put
+    // a thought down without leaving the job to find the box.
+    await enterStance(page, 'held');
+    await auditContrast(page, 'inside a job', theme);
+    await auditNames(page, 'inside a job', theme);
+    await auditSeparationAndTargets(page, 'inside a job', theme);
+    await auditFocusRings(page, 'inside a job', theme, ['#stance-back', '#stance-capture']);
+    await leaveStance(page);
 
     // Opened the way a finger opens it, not by setting the attribute — a fold
     // only script can open is not the route anybody takes.
@@ -1962,7 +2245,12 @@ try {
       await page.click('#capture-form button[type=submit]');
       await page.waitForTimeout(60);
     }
-    await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+    // ENTERING THE JOB OPENS IT (3.0.0, ADR-0108), so the old line that also
+    // clicked `#triage-open` here fired a SECOND open on a surface already
+    // opened — and `refresh('ask')` resets to the first question, so the flow
+    // three states later found a place picker that had been thrown away. The
+    // hub's door is the only open now.
+    await enterStance(page, 'triage');
     await page.waitForSelector('#triage:not([hidden]) .route');
     await auditContrast(page, 'heat pass', theme);
     await auditAxe(page, 'heat pass', theme);
@@ -2003,6 +2291,7 @@ try {
     // waited thirty seconds for a picker it had never opened. Position is not
     // identity: a control's place in a row is a layout decision and will move
     // again.
+    await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
     await page.waitForSelector('#triage-place-new');
     await auditContrast(page, 'place picker', theme);
@@ -2016,6 +2305,7 @@ try {
     // no return date — audit the bar, then Undo, which puts the card back and
     // leaves the surface as this section found it.
     await page.fill('#triage-place-new', 'A place for a11y');
+    await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Make it' }).first().click();
     await page.waitForSelector('.triage-place-when');
     await auditContrast(page, 'filed receipt', theme);
@@ -2023,9 +2313,21 @@ try {
     await auditNames(page, 'filed receipt', theme);
     await auditSeparationAndTargets(page, 'filed receipt', theme);
     await auditFocusRings(page, 'filed receipt', theme, ['.triage-place-when', '.triage-place-set']);
+
+    // AND THE CARD THAT NOW SAYS WHERE IT WENT, in the job the card lives in.
+    // Before the undo below, which takes the filing back.
+    await enterStance(page, 'held');
+    if (await page.locator('.card-place').count() > 0) {
+      await auditContrast(page, 'a card that says where it went', theme);
+      await auditNames(page, 'a card that says where it went', theme);
+    } else {
+      fail(`${theme}/a card that says where it went: nothing is filed, so the line that says where cannot be measured`);
+    }
+    await enterStance(page, 'triage');
     await page.locator('.triage-undo-btn').click();
     await page.waitForSelector('#triage-actions .route .route-hint');
 
+    await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
     await page.waitForSelector('#triage-place-new');
     await page.evaluate(() => document.querySelector('#triage-actions .route')?.click()); // Back
@@ -2039,6 +2341,7 @@ try {
       const left = await page.evaluate(() =>
         Number(document.querySelector('#triage-gauge')?.dataset.waiting ?? 0));
       if (left <= 1) break;
+      await enterStance(page, 'triage');
       await page.locator('#triage-actions .route', { hasText: 'Next action' }).first().click();
       await page.waitForTimeout(60);
     }
@@ -2095,7 +2398,7 @@ try {
     await auditAxe(page, 'next up', theme);
     await auditNames(page, 'next up', theme);
     await auditSeparationAndTargets(page, 'next up', theme);
-    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#cards .card-done', '#to-held', '#to-top', '#nextup-title']);
+    await auditFocusRings(page, 'next up', theme, ['#nextup-done', '#nextup-skip', '#gauge', '#nextup-title']);
 
     // State 3c1: SETTLED (1.35.0). Reached the way anybody reaches it — finish
     // the thing being offered — and then left the same way, so every state after
@@ -2406,7 +2709,10 @@ try {
       rows: [...document.querySelectorAll('#contents-list .contents-go')]
         .map((b) => ({ go: b.dataset.go, name: b.querySelector('.contents-name')?.textContent?.trim() })),
       live: [...document.querySelectorAll('main > section[id]')]
-        .filter((s) => !s.hidden)
+        // The hub is not a block on the page — it is the page you come up to
+        // (3.0.0), and `stops()` skips it for the same reason: a row taking you
+        // to where the list already is.
+        .filter((s) => !s.hidden && !s.hasAttribute('data-not-a-stop'))
         .map((s) => ({
           id: s.id,
           name: document.getElementById(s.getAttribute('aria-labelledby'))?.textContent?.trim() ?? '',
@@ -3156,9 +3462,11 @@ try {
       // on it. The prompt names the pass outright.
       const p = await page.locator('#triage-prompt').textContent();
       if (!/hot or cold/i.test(p || '')) break;
+      await enterStance(page, 'triage');
       await page.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
       await page.waitForTimeout(120);
     }
+    await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Someday' }).first().click();
     await page.waitForTimeout(300);
     // The Menu, open — ITS OWN SHEET since 2.0.7 (ADR-0089), so a dialog state,
@@ -3260,6 +3568,7 @@ try {
     });
     await page.reload({ waitUntil: 'load' });
     await page.waitForSelector('body[data-ready=true]');
+    await enterStance(page, 'held');
     await page.locator('#cards .card-focus').first().click();
     await page.waitForSelector('#focus:not([hidden])');
     await page.click('#focus-stop');
@@ -3316,9 +3625,11 @@ try {
       // on it. The prompt names the pass outright.
       const p = await page.locator('#triage-prompt').textContent();
       if (!/hot or cold/i.test(p || '')) break;
+      await enterStance(page, 'triage');
       await page.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
       await page.waitForTimeout(120);
     }
+    await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Waiting for' }).first().click();
     await page.waitForTimeout(300);
     await page.waitForSelector('#people:not([hidden])');
@@ -3416,6 +3727,7 @@ try {
     // State 3f2: focus. Reached the way a person reaches it — the control on the
     // row — and audited in all three of its states, including the sheet where
     // the optional five words are asked for.
+    await enterStance(page, 'held');
     await page.locator('#cards .card-focus').first().click();
     await page.waitForSelector('#focus:not([hidden])');
     await auditContrast(page, 'focus', theme);
@@ -3456,6 +3768,7 @@ try {
       for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
     });
     await page.waitForSelector('#focus[hidden]').catch(() => {});
+    await enterStance(page, 'held');
     await page.locator('#cards .card-open').first().click();
     await page.waitForSelector('#detail[open]');
     const todayKey = await page.evaluate(() => {
@@ -3467,6 +3780,7 @@ try {
     await page.click('#detail-date-set');
     await page.waitForTimeout(200);
     await page.click('#detail-close');
+    await enterStance(page, 'held');
     await page.locator('#cards .card-focus').first().click();
     await page.waitForSelector('#focus:not([hidden])');
     await page.waitForSelector('#focus-fixed:not([hidden])', { timeout: 5000 }).catch(() => {});
@@ -3560,6 +3874,7 @@ try {
       await page.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();       // Hot — advances to clarify
       await page.waitForTimeout(120);
     }
+    await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Next action' }).first().click();
     await page.waitForTimeout(250);
 
@@ -3583,6 +3898,7 @@ try {
     // The SECOND card. The first is the container just made, and a container's
     // own picker excludes itself — so reusing it audited an empty picker and
     // reported the state as unauditable, which is the guard below working.
+    await enterStance(page, 'held');
     await page.locator('#cards .card-open').nth(1).click();
     await page.waitForSelector('#detail[open]');
     await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3619,6 +3935,7 @@ try {
     // Card 0 is the container made by the create-in-place step above.
     await page.click('#detail-close');
     await page.waitForSelector('#detail', { state: 'hidden' });
+    await enterStance(page, 'held');
     await page.locator('#cards .card-open').nth(0).click();
     await page.waitForSelector('#detail[open]');
     await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -3696,6 +4013,7 @@ try {
     const cards = await page.locator('#cards .card-open').count();
     let anchored = false;
     for (let i = 0; i < Math.min(cards, 8) && !anchored; i++) {
+      await enterStance(page, 'held');
       await page.locator('#cards .card-open').nth(i).click();
       await page.waitForSelector('#detail[open]');
       await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
@@ -4036,6 +4354,7 @@ try {
     // What a meeting needs (1.9.0, ADR-0057). The walk already made a
     // container above; give it somebody who cares and one decision, and
     // audit both groups in the state a person meets them in.
+    await enterStance(page, 'held');
     await page.locator('#cards .card-open').first().click();
     await page.waitForSelector('#detail[open]');
     await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });

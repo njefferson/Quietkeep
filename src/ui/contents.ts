@@ -36,6 +36,7 @@
  */
 
 import { closeSheet, openSheet } from './sheets.ts';
+import { enter as enterStance } from './hub.ts';
 
 /** A surface reached from here and from nowhere else.
  *
@@ -89,6 +90,9 @@ export function stops(doc: Document = document): Stop[] {
   const out: Stop[] = [TOP];
   for (const el of Array.from(doc.querySelectorAll<HTMLElement>('main > section[id]'))) {
     if (el.hidden) continue;
+    // The hub is not a block on the page, it is the page you come up to
+    // (3.0.0). Listing it would offer a route to where the list already is.
+    if (el.getAttribute('data-not-a-stop') !== null) continue;
     const labelledBy = el.getAttribute('aria-labelledby');
     if (!labelledBy) continue;
     const label = doc.getElementById(labelledBy);
@@ -150,6 +154,11 @@ export function goTo(stop: Stop, doc: Document = document): void {
     if (runway) runway.scrollTop = 0;
     else doc.defaultView?.scrollTo({ top: 0, behavior: 'auto' });
   } else {
+    // INTO THE JOB (3.0.0, ADR-0108). A block is on screen only while it is the
+    // stance, so scrolling to one that is not would move nothing and land focus
+    // on an invisible heading — a row that goes nowhere, which is the one thing
+    // this sheet has always refused to offer. Entering is what a row means now.
+    enterStance(stop.id, doc);
     doc.getElementById(stop.id)?.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
   // Focus after the scroll, and `preventScroll` with it: the browser's own
