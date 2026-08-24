@@ -1918,6 +1918,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // it now: reachable by finger, on screen, nothing over the top. Retiring the
   // assertion along with the control would leave the property untested, which
   // is how a route stays unreachable by finger for 142 releases (LESSONS 95).
+  // MEASURED ON THE SURFACE YOU LAND ON. The doors are hidden while you are
+  // inside a job — correctly — so taking this reading from wherever the
+  // previous block left the walk reported the door as 0x0 at 0,0 and the hit
+  // test as a miss against `html`. That is a true measurement of the wrong
+  // place: this block asks about the landing surface, so come up to it first.
+  await ensureStanceFor(tpage, '#hub');
+  await tpage.waitForTimeout(150);
   const jumpBox = await tpage.evaluate(() => {
     const b = document.querySelector('#hub-doors .hub-go[data-stance-id="held"]');
     if (!b || b.hidden) return null;
@@ -2987,6 +2994,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the same reason: a second click would close what the last step opened.
   const openInbox = async () => {
     if (await tpage.locator('#triage-actions .route').count() > 0) return;
+    // GO TO THE JOB FIRST (3.0.0, ADR-0108). `#triage-open` is display:none
+    // while another job is the stance, so an `isVisible()` test taken from
+    // wherever the previous step left the walk reported "there is no inbox"
+    // and returned quietly — and the caller then waited on a route that
+    // nothing had opened. Entering is idempotent and never resets a job that
+    // is already in progress, so this is safe to do on every call.
+    await intoJob(tpage, 'triage');
+    if (await tpage.locator('#triage-actions .route').count() > 0) return;
     if (!(await tpage.locator('#triage-open').isVisible())) return;
     await tpage.click('#triage-open');
     await tpage.waitForSelector('#triage:not([hidden]) .route');
@@ -3012,7 +3027,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       await tpage.waitForTimeout(120);
     }
     await intoJob(tpage, 'triage');
-    await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
+    // SAY WHAT WAS ON OFFER. A bare 30-second timeout on a filtered locator
+    // reports that a label was not found and nothing about what was, which
+    // costs a whole run to answer.
+    try {
+      await tpage.locator('#triage-actions .route', { hasText: label }).first().click({ timeout: 8000 });
+    } catch (err) {
+      const have = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
+      const prompt = await tpage.locator('#triage-prompt').textContent().catch(() => null);
+      const stance = await tpage.evaluate(() =>
+        document.querySelector('#runway')?.getAttribute('data-stance') ?? null).catch(() => null);
+      bad(`routeOne(${JSON.stringify(label)}): no such route — stance=${JSON.stringify(stance)} ` +
+          `prompt=${JSON.stringify((prompt || '').trim().slice(0, 70))} ` +
+          `offered=${JSON.stringify(have.map((t) => t.trim().slice(0, 34)))}`);
+      throw err;
+    }
     await tpage.waitForTimeout(150);
   };
   await openInbox();
