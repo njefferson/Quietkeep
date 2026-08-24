@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.0.1',
+    kind: 'ITERATION',
+    date: '2026-08-24',
+    notes: [
+      '**The app behaves exactly as it did in 3.0.0.** Nothing on screen has moved and nothing you do has changed. This release is about the checks that guard it, and it is here because a file the app ships was edited \u2014 which means the version has to move, whether or not you would ever notice.',
+      '**What changed underneath:** the app and its automated checks used to work out separately how you reach a control \u2014 which screen owns it, whether that screen has to be opened first. Two answers to one question drift apart, and this one did, repeatedly. There is one answer now, and both read it.',
+      '**What is still not right:** the checks still wait fixed intervals in about forty places rather than waiting for the thing they need. That is why one of them passed and then failed on identical code, and it is not fixed yet.',
+    ],
+  },
+  {
     triplet: '3.0.0',
     kind: 'VERSION',
     date: '2026-08-24',

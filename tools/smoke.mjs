@@ -17,6 +17,7 @@ import { join } from 'node:path';
 import { serve } from './serve.mjs';
 import { CURRENT } from '../src/ui/changelog.ts';
 import { requireFreshBundle } from './bundle-fresh.mjs';
+import * as esbuild from 'esbuild';
 
 const ROOT = new URL('../public', import.meta.url).pathname;
 requireFreshBundle(new URL('..', import.meta.url).pathname, 'the smoke walk');
@@ -28,135 +29,88 @@ if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
 /**
  * GO TO THE JOB BEFORE PRESSING SOMETHING IN IT (3.0.0, ADR-0108).
  *
- * The landing view is the hub, and a section is on screen only while it is the
- * stance. Rather than edit several hundred call sites, the page's own verbs
- * navigate first — derived from the selector, so nothing here can go stale.
+ * The landing view is the hub and a section is on screen only while it is the
+ * stance, so every verb has to arrive before it can act.
  *
- * A control in the frame, in a dialog, or on the hub resolves to no job and
- * nothing happens. This is not the walk faking a state: it is taking the route
- * a finger takes, which is the standard these walks are held to.
+ * HOW to arrive is NOT decided here. It is `src/reach.ts`, which the app itself
+ * imports — one rule, read by both. This file used to work it out again from
+ * outside, and that second model cost fourteen rounds in an afternoon: which
+ * section owns an element, whether a job is behind its own opener, whether a
+ * fold sits above it. Every disagreement was silent, because a walk that
+ * declines to navigate looks exactly like one with nothing to do.
+ *
+ * WHEN to arrive stays here, and that is the honest split: a walk retries and
+ * waits, an app does not.
+ *
+ * The module is bundled and injected rather than reached through a hook on the
+ * app, so nothing test-only ships. It re-injects itself after a reload, because
+ * a fresh document has no memory of it.
  */
+const REACH_SRC = (await esbuild.build({
+  entryPoints: [new URL('../src/reach.ts', import.meta.url).pathname],
+  bundle: true, format: 'iife', globalName: '__reach', write: false,
+  target: 'es2022', logLevel: 'silent',
+  // ESBUILD'S IIFE DECLARES `var __reach`, AND PLAYWRIGHT WRAPS AN INIT SCRIPT
+  // IN A FUNCTION — so the `var` is function-scoped and never reaches the page.
+  // It defined nothing, every call returned null, and the walk stopped
+  // navigating while looking exactly like a walk with nothing to navigate.
+  // Found by probing the live page for `typeof __reach` rather than by reading
+  // one more timeout, which is the only reason it took minutes instead of runs.
+  footer: { js: ';globalThis.__reach = __reach;' },
+})).outputFiles[0].text;
+
+/**
+ * INJECTED BY THE BROWSER, NOT EVALUATED BY THE PAGE.
+ *
+ * This app ships `script-src 'self'` with no `unsafe-eval`, so the first
+ * version of this — `eval(src)` inside the page — was blocked outright. It
+ * failed the way everything here fails: SILENTLY. `__reach` was never defined,
+ * every call was caught and returned null, and the walk simply stopped
+ * navigating while looking exactly like a walk that had nothing to navigate.
+ *
+ * `addInitScript` runs ahead of the page's own scripts and is not governed by
+ * the page's CSP, and it re-runs on every navigation, so a reload cannot leave
+ * the walk without it.
+ */
+const inPage = (pg, fnName, sel) => pg.evaluate(([name, s]) =>
+  globalThis.__reach ? globalThis.__reach[name](s) : null,
+[fnName, sel]).catch(() => null);
+
+
 /** The unwrapped `waitForSelector`, so the shim never re-enters itself. */
 const RAW_WAIT = new WeakMap();
 const rawWaitOf = (pg) => RAW_WAIT.get(pg) ?? pg.waitForSelector.bind(pg);
 
+/**
+ * Arrive, and wait for a door that is not on the hub yet.
+ *
+ * A JOB BECOMES LIVE A BEAT AFTER THE WRITE THAT FILLS IT — capture something
+ * and `#nextup` is not on the hub yet. `reach` says so rather than declining,
+ * which is the whole point: a decline is indistinguishable from "nothing
+ * needed", and that indistinguishability was the bug every time.
+ *
+ * GENEROUS ON PURPOSE. Nothing is proven by this being short; it exists so the
+ * walk cannot hang, and a hosted runner is slower than the machine these
+ * numbers get chosen on.
+ */
 const ensureStanceFor = async (pg, selector) => {
-  let want = null;
-  try {
-    want = await pg.evaluate((sel) => {
-      // PLAYWRIGHT'S PSEUDOS ARE NOT CSS, and `querySelector` THROWS on them
-      // rather than returning null — so `?? querySelector(split)` never ran,
-      // the throw escaped to the caller's catch, and the shim declined to
-      // navigate on every `:has-text()` selector in the walk. Silently: a
-      // decline looks exactly like "no job needed". `:has()` is real CSS and
-      // stays.
-      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
-      const plain = (q) => q
-        .replace(/:has-text\([^)]*\)/g, '')
-        .replace(/:text-is\([^)]*\)/g, '')
-        .replace(/:text\([^)]*\)/g, '')
-        .replace(/:nth-match\([^)]*\)/g, '')
-        .replace(/:visible/g, '')
-        .replace(/\s*>>.*$/, '')
-        .trim();
-      const el = ask(sel) ?? ask(plain(sel)) ?? ask(plain(sel).split(':')[0]);
-      const runway = document.querySelector('#runway');
-      if (!runway || !runway.hasAttribute('data-hub')) return null;
-      const here = runway.getAttribute('data-stance');
-      if (!el) {
-        // THE ELEMENT MAY NOT EXIST UNTIL AFTER WE HAVE NAVIGATED — and then
-        // waiting for it to appear before deciding where to go waits for ever.
-        //
-        // `#triage-card` is RENDERED BY opening the inbox, and opening the
-        // inbox is what entering that job DOES. So on a machine slow enough
-        // that the card has not been built yet, the shim found nothing,
-        // declined, and the caller waited thirty seconds for a card that only
-        // its own navigation could have produced. It showed only in CI, because
-        // this machine happened to have built it already every single time —
-        // twelve green runs of a walk that could not pass on a slower box.
-        //
-        // Ids run `<section>-<part>` throughout this app, so the job is
-        // derivable from the NAME even when none of it is on the page yet.
-        const m = /^#([A-Za-z0-9]+)-/.exec(sel.trim());
-        const named = m && document.getElementById(m[1]);
-        if (named && named.matches('section[data-stance-name]')) {
-          return here === m[1] ? null : m[1];
-        }
-        return null;
-      }
-      const sec = el.closest('section[data-stance-name]');
-      if (sec) return here === sec.id ? null : sec.id;
-      // The hub's own controls mean COME UP. Its doors are hidden while you are
-      // inside a job, which is correct and which the shim has to know.
-      if (el.closest('#hub') || el.closest('[data-hub-part]')) {
-        return here === null ? null : '\u0000hub';
-      }
-      const owner = el.closest('[data-stance-part], [data-narrows]');
-      if (!owner) return null;
-      const part = owner.getAttribute('data-stance-part');
-      const wants = part ? [part] : (owner.getAttribute('data-narrows') ?? '')
-        .split(',').map((t) => t.trim().replace(/^#/, '')).filter(Boolean);
-      if (wants.length === 0) return null;
-      return wants.includes(here) ? null : wants[0];
-    }, selector);
-  } catch { return; }
-  if (!want) return;
-  try {
-    if (want === '\u0000hub') { await pg.$eval('#stance-back', (b) => b.click()); return; }
-    const inOne = await pg.evaluate(() =>
-      document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
-    if (inOne !== null) await pg.$eval('#stance-back', (b) => b.click());
-    const door = `#hub-doors .hub-go[data-stance-id="${want}"]`;
-    // WAIT BRIEFLY FOR THE DOOR. A job becomes live a beat after the write that
-    // fills it — capture something and `#nextup` is not on the hub yet — so
-    // looking once and giving up left the caller waiting for a section only the
-    // stance can show. The raw wait, or this would re-enter itself.
-    if (await pg.locator(door).count() === 0) {
-      // GENEROUS ON PURPOSE. This is not an assertion and nothing is proven by
-      // it being short — it exists so the walk cannot hang. Giving up early
-      // makes the shim DECLINE to navigate, silently, which is the exact
-      // failure this whole shim was written to stop, and a CI runner is slower
-      // than the machine these numbers were chosen on.
-      try { await rawWaitOf(pg)(door, { timeout: 10000 }); } catch { return; }
-    }
-    await pg.$eval(door, (b) => b.click());
-    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 10000 });
-  } catch { /* the caller's own call reports the real problem */ }
+  const first = await inPage(pg, 'reach', selector);
+  if (!first || first.at !== 'waiting') return;
+  try { await rawWaitOf(pg)(first.door, { timeout: 10000 }); } catch { return; }
+  await inPage(pg, 'reach', selector);
 };
 
-/**
- * Into a job, for the locator-based clicks the wrapper above cannot see.
- *
- * AND OPEN IT. `ensureStanceFor` short-circuits when the stance is already this
- * job — correctly, since re-entering would reset a surface mid-flow — but the
- * inbox has been behind its own door since 1.43.0, so a walk already STANDING
- * in triage without having OPENED it read every card and prompt as blank and
- * spent its whole bound cycling nothing.
- *
- * The same `alreadyOpen` test the hub itself uses, so a job in progress is
- * never reset by this.
- */
-const intoJob = async (pg, id) => {
-  await ensureStanceFor(pg, `#${id}`);
-  await pg.evaluate((jid) => {
-    const sec = document.getElementById(jid);
-    if (!sec) return;
-    const opener = sec.querySelector('[data-stance-opener]');
-    if (opener && !opener.hidden && !sec.querySelector('.route')) opener.click();
-  }, id).catch(() => {});
-};
+/** Into a job by name, for the locator clicks the wrapper cannot see. */
+const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
 
 /**
  * Show the rest of a capped list, by pressing what a finger presses.
  *
- * The held list caps each heading and states the number held back — a real
- * import of well over a thousand rows under one heading is the pile in a new
- * costume, which is what the cap exists to prevent. So a walk that names a
- * specific card cannot assume it is on screen: it may be one of the ones the
- * cap is holding, and "show the rest" is the route to it.
- *
- * Bounded, and silent when there is nothing capped, so it costs a count on the
- * ordinary path.
+ * THE WALK'S OWN, not the app's: the held list caps each heading and states the
+ * number held back, because a real import of well over a thousand rows under
+ * one heading is the pile in a new costume. A walk that names a specific card
+ * cannot assume it is on screen, and "show the rest" is the route to it. That
+ * is a fact about how this walk searches, not about how a person arrives.
  */
 const revealAll = async (pg) => {
   for (let i = 0; i < 8; i++) {
@@ -168,107 +122,27 @@ const revealAll = async (pg) => {
 };
 
 /**
- * ARRIVE AT THE JOB PROPERLY: standing in it is not the same as opening it.
+ * OPEN THE FOLDS ABOVE IT — VERBS ONLY, and that line cost a round to draw.
  *
- * `#triage-card` is a button that EXISTS in the markup and is EMPTY until the
- * inbox is opened — and an empty button has zero size, so a wait for it to be
- * visible waits its full thirty seconds for something nothing will render.
- * `ensureStanceFor` short-circuits when the stance is already this job, and so
- * presses nothing.
- *
- * THIS BELONGS TO WAITS AS WELL AS VERBS, and drawing that line the other way
- * cost a CI round: pressing a job's opener is ARRIVING, which the shim already
- * does whenever it navigates, so doing it while standing there is the same act.
- * Opening a `<details>` is different — it REVEALS, and an assertion may
- * legitimately be asking whether something is still folded away. That one stays
- * verb-only.
- *
- * Never on a wait for `hidden` or `detached`: a wait that asks whether a thing
- * has GONE is a fair question, and arriving underneath it answers another one.
+ * Arriving at a job is something the app does on every navigation, so doing it
+ * under a wait is the same act the wait was going to see anyway. Revealing is
+ * different: `<details>` hides content deliberately, and "the inventory arrives
+ * folded" is an assertion somebody wrote about exactly that.
  */
-const openJobFor = async (pg, sel) => {
-  try {
-    await pg.evaluate((s) => {
-      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
-      const bare = s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim();
-      let el = ask(s) ?? ask(bare) ?? ask(bare.split(':')[0]);
-      // The section is derivable from the NAME when none of the job is built
-      // yet — ids run `<section>-<part>` throughout this app.
-      let sec = el && el.closest('section[data-stance-name]');
-      if (!sec) {
-        const m = /^#([A-Za-z0-9]+)-/.exec(s.trim());
-        const named = m && document.getElementById(m[1]);
-        if (named && named.matches('section[data-stance-name]')) sec = named;
-      }
-      if (!sec) return;
-      const opener = sec.querySelector('[data-stance-opener]');
-      if (opener && !opener.hidden && !sec.querySelector('.route')) opener.click();
-    }, sel);
-  } catch { /* the caller's own call reports the real problem */ }
-};
+const unfoldTo = async (pg, sel) => { await inPage(pg, 'unfold', sel); };
 
-/**
- * OPEN WHAT IT IS INSIDE, by pressing the summary a finger presses.
- *
- * Entering a job is not always enough to reach a control in it: the inventory
- * arrives FOLDED (2.12.0, ADR-0102), so `#cards` sits inside a shut `<details>`
- * and a click on a card after a reload waited thirty seconds on something that
- * was in the right job and still not on screen.
- *
- * Pressing the summary is the route, not a shortcut around it — the app's own
- * listeners run either way. Declared by the DOM rather than by a list here, so
- * a fold added later is handled the day it is added.
- *
- * VERBS ONLY, never `waitForSelector`: a wait that asks whether something is
- * HIDDEN is a legitimate question about a shut fold, and unfolding underneath
- * it would answer a different one. The walk asserts the fold arrives shut on
- * its own, before anything opens it, and that assertion stays untouched.
- */
-const unfoldTo = async (pg, sel) => {
-  try {
-    await pg.evaluate((s) => {
-      const ask = (q) => { try { return document.querySelector(q); } catch { return null; } };
-      const el = ask(s) ?? ask(s.replace(/:has-text\([^)]*\)|:text-is\([^)]*\)|:text\([^)]*\)|:visible/g, '').trim());
-      if (!el) return;
-      //
-      // Standing in a job is not the same as having opened it. `#triage-card`
-      // is a button that EXISTS in the markup and is EMPTY until the inbox is
-      // opened — and an empty button has zero size, so Playwright waits thirty
-      // seconds for something to become visible that nothing is going to
-      // render. `ensureStanceFor` short-circuits when the stance is already
-      // this job, so it presses nothing, and the caller waits.
-      //
-      // `intoJob` was taught this earlier today. The page verbs were not, and
-      // they are what the walk mostly uses — so the same defect was still there
-      // behind a different door. Only CI ever hit it: this machine reached the
-      // call from a different stance, where entering pressed the opener on the
-      // way in.
-      for (let p = el.parentElement; p; p = p.parentElement) {
-        if (p.tagName !== 'DETAILS' || p.open) continue;
-        const sum = p.querySelector(':scope > summary');
-        // NEVER THE FOLD THE TARGET IS THE HANDLE OF. Opening it here and then
-        // letting the caller's own press land on the summary toggles it shut
-        // again — the walk's `click('#held-fold-summary')` did exactly that and
-        // waited thirty seconds for a card it had just closed the door on.
-        if (sum && (sum === el || sum.contains(el))) continue;
-        if (sum) sum.click(); else p.open = true;
-      }
-    }, sel);
-  } catch { /* the verb's own call reports the real problem */ }
-};
 
 /**
  * ROUTE LOCATOR ACTIONS THROUGH THE HUB TOO.
  *
  * `pg.click(sel)` is wrapped below. `pg.locator(sel).first().click()` is not,
- * and there are ninety-five of those in this walk. Each bypassed the shim
+ * and there are ninety-five of those in this walk. Each bypassed the routing
  * completely and waited thirty seconds on a control sitting in a job the walk
- * was not standing in — one crash per run, three minutes apart, which is a way
- * to spend an afternoon finding out the same thing five times.
+ * was not standing in.
  *
  * By PROXY rather than by editing ninety-five call sites, and the chaining
  * methods carry the base selector forward so `.filter().first().click()`
- * navigates by the same rule as a bare one.
+ * navigates by the same rule a bare one does.
  *
  * ACTIONS ONLY. `count()`, `textContent()`, `isVisible()` and the rest are
  * questions, and a question must never move the app underneath the assertion
@@ -284,7 +158,6 @@ const routeLocator = (pg, loc, sel) => new Proxy(loc, {
     if (typeof v !== 'function') return v;
     if (LOC_ACT.includes(prop)) return async (...a) => {
       await ensureStanceFor(pg, sel);
-      await openJobFor(pg, sel);
       await unfoldTo(pg, sel);
       return v.apply(target, a);
     };
@@ -294,14 +167,17 @@ const routeLocator = (pg, loc, sel) => new Proxy(loc, {
 });
 
 /** Wrap a page's verbs so each one goes to the job first. */
-const routeThroughHub = (pg) => {
+const routeThroughHub = async (pg) => {
+  await pg.addInitScript({ content: REACH_SRC });
   const rawWait = pg.waitForSelector.bind(pg);
   RAW_WAIT.set(pg, rawWait);
   pg.waitForSelector = async (sel, ...rest) => {
     if (typeof sel !== 'string') return rawWait(sel, ...rest);
-    await ensureStanceFor(pg, sel);
+    // NEVER ARRIVE UNDER A WAIT THAT ASKS WHETHER SOMETHING HAS GONE. Waiting
+    // for `hidden` or `detached` is a fair question, and arriving — which
+    // enters the job and presses its opener — answers a different one.
     const asked = rest[0] && rest[0].state;
-    if (asked !== 'hidden' && asked !== 'detached') await openJobFor(pg, sel);
+    if (asked !== 'hidden' && asked !== 'detached') await ensureStanceFor(pg, sel);
     try {
       return await rawWait(sel, ...rest);
     } catch (err) {
@@ -310,7 +186,7 @@ const routeThroughHub = (pg) => {
       // before that saw no hub, declined, and left the caller waiting for a
       // section that only the stance can show. Asking again after the wait has
       // failed costs nothing on the ordinary path.
-      await ensureStanceFor(pg, sel);
+      if (asked !== 'hidden' && asked !== 'detached') await ensureStanceFor(pg, sel);
       return rawWait(sel, ...rest).catch(() => { throw err; });
     }
   };
@@ -334,7 +210,6 @@ const routeThroughHub = (pg) => {
           catch { /* the verb's own call reports the real problem */ }
           await ensureStanceFor(pg, sel);
         }
-        await openJobFor(pg, sel);
         await unfoldTo(pg, sel);
       }
       return raw(sel, ...rest);
@@ -394,7 +269,13 @@ try {
     permissions: ['clipboard-read', 'clipboard-write'],
   });
   const page = await ctx.newPage();
-  routeThroughHub(page);
+  page.setDefaultTimeout(12000);
+  // FAIL FAST (3.0.1). Playwright's default is thirty seconds and this walk has
+  // a dozen places that can hit one, so a FAILING run spent minutes doing
+  // nothing while a passing run never waits at all — nothing healthy here takes
+  // twelve seconds. Cuts a red run to a third of its length and leaves a green
+  // one untouched. Explicit timeouts still win where one is stated.
+  await routeThroughHub(page);
 
   const pageErrors = [];
   page.on('pageerror', (e) => pageErrors.push(String(e)));
@@ -1062,7 +943,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the gate's generic cure.
   const tctx = await browser.newContext({ timezoneId: 'America/Denver', locale: 'en-US', acceptDownloads: true });
   const tpage = await tctx.newPage();
-  routeThroughHub(tpage);
+  tpage.setDefaultTimeout(12000);
+  // FAIL FAST (3.0.1). Playwright's default is thirty seconds and this walk has
+  // a dozen places that can hit one, so a FAILING run spent minutes doing
+  // nothing while a passing run never waits at all — nothing healthy here takes
+  // twelve seconds. Cuts a red run to a third of its length and leaves a green
+  // one untouched. Explicit timeouts still win where one is stated.
+  await routeThroughHub(tpage);
   // Fill-and-verify for the search box (shared shape with a11y.mjs): a plain
   // fill has been observed at more than one site to resolve without the value
   // landing when a commit-triggered refresh is in flight. A lost fill retries;
@@ -1113,7 +1000,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // nothing dated, nothing parented, nothing anchored.
   const uctx = await browser.newContext({ timezoneId: 'America/Denver', locale: 'en-US' });
   const upage = await uctx.newPage();
-  routeThroughHub(upage);
+  upage.setDefaultTimeout(12000);
+  // FAIL FAST (3.0.1). Playwright's default is thirty seconds and this walk has
+  // a dozen places that can hit one, so a FAILING run spent minutes doing
+  // nothing while a passing run never waits at all — nothing healthy here takes
+  // twelve seconds. Cuts a red run to a third of its length and leaves a green
+  // one untouched. Explicit timeouts still win where one is stated.
+  await routeThroughHub(upage);
   await upage.goto(url, { waitUntil: 'load' });
   await upage.waitForSelector('body[data-ready=true]');
   await upage.click('#tour-skip');
@@ -4299,6 +4192,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // genuinely different case, so it is the only one walked separately.
   const phone = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const ppage = await phone.newPage();
+  ppage.setDefaultTimeout(12000);
+  // FAIL FAST (3.0.1). Playwright's default is thirty seconds and this walk has
+  // a dozen places that can hit one, so a FAILING run spent minutes doing
+  // nothing while a passing run never waits at all — nothing healthy here takes
+  // twelve seconds. Cuts a red run to a third of its length and leaves a green
+  // one untouched. Explicit timeouts still win where one is stated.
   await ppage.goto(url, { waitUntil: 'load' });
   await ppage.waitForSelector('body[data-ready=true]');
   await ppage.click('#tour-skip').catch(() => {});
@@ -4993,6 +4892,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nTwo devices — carrying your work from one to the other');
   const otherCtx = await browser.newContext({ timezoneId: 'America/Denver', locale: 'en-US', acceptDownloads: true });
   const other = await otherCtx.newPage();
+  other.setDefaultTimeout(12000);
+  // FAIL FAST (3.0.1). Playwright's default is thirty seconds and this walk has
+  // a dozen places that can hit one, so a FAILING run spent minutes doing
+  // nothing while a passing run never waits at all — nothing healthy here takes
+  // twelve seconds. Cuts a red run to a third of its length and leaves a green
+  // one untouched. Explicit timeouts still win where one is stated.
   await other.goto(url, { waitUntil: 'load' });
   await other.waitForSelector('body[data-ready=true]');
   await other.click('#tour-skip');                   // dismiss the first-run walkthrough
@@ -5526,6 +5431,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // followed opened the inbox and filled the card with a different item, and
   // the assertion compared one to the other. Not hidden is not open.
   await intoJob(tpage, 'triage');
+  // WAIT FOR THE CARD TO HAVE WORDS ON IT (3.0.1).
+  //
+  // Arriving presses the opener; FILLING the card is a render that follows. So
+  // reading a beat too early returned "" — and the click after it opened
+  // whatever item was really there, leaving the assertion holding one item
+  // against another. Identical code passed standalone and failed inside the
+  // Spine minutes later, which is worse than a failure: a gate that goes red at
+  // random teaches everybody to re-run rather than to look.
+  //
+  // A CONDITION, not a sleep. There are forty-odd fixed `waitForTimeout` calls
+  // left in this walk and every one of them is this defect waiting for a slower
+  // machine.
+  await tpage.waitForFunction(() =>
+    (document.querySelector('#triage-card')?.textContent ?? '').trim().length > 0,
+  null, { timeout: 10000 }).catch(() => {});
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
   await tpage.waitForSelector('#detail[open]');

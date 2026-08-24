@@ -10,6 +10,7 @@
 // route to nowhere.
 
 import { stanceNow } from '../stance.ts';
+import { jobsOf } from '../reach.ts';
 
 /**
  * A STANCE IS DECLARED, on the section, with the name of the PLACE.
@@ -96,14 +97,13 @@ export function paintHub(hasWork: boolean, doc: Document = document): void {
   // which surface an element belongs to, so the situation controls and the lens
   // row need nothing new. `data-stance-part` covers the few that narrow nothing
   // and simply belong — a job's own undo bar, its do-now slot, the held fold.
-  const belongs = (el: HTMLElement, stance: string): boolean => {
-    if (el.id === stance) return true;
-    if (el.getAttribute('data-stance-part') === stance) return true;
-    const narrows = el.getAttribute('data-narrows');
-    return narrows !== null && narrows.split(',').map(t => t.trim()).includes(`#${stance}`);
-  };
+  // ONE ANSWER TO "WHAT BELONGS TO THIS JOB", shared with `src/reach.ts`
+  // (3.0.0). This rule used to be written here and again in the browser walks,
+  // and the two disagreed fourteen times in one afternoon — every disagreement
+  // silent, because a walk that declines to navigate looks exactly like a walk
+  // that had no need to. The rule now has one home and both callers read it.
   for (const el of Array.from(doc.querySelectorAll<HTMLElement>('#runway main > *'))) {
-    el.classList.toggle('stance-on', now !== null && belongs(el, now));
+    el.classList.toggle('stance-on', now !== null && jobsOf(el).includes(now));
   }
   // THE HUB ONLY EXISTS ONCE THERE IS WORK TO CHOOSE BETWEEN.
   //

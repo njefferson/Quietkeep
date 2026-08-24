@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.0.1 — ITERATION
+
+*2026-08-24*
+
+- **The app behaves exactly as it did in 3.0.0.** Nothing on screen has moved and nothing you do has changed. This release is about the checks that guard it, and it is here because a file the app ships was edited — which means the version has to move, whether or not you would ever notice.
+- **What changed underneath:** the app and its automated checks used to work out separately how you reach a control — which screen owns it, whether that screen has to be opened first. Two answers to one question drift apart, and this one did, repeatedly. There is one answer now, and both read it.
+- **What is still not right:** the checks still wait fixed intervals in about forty places rather than waiting for the thing they need. That is why one of them passed and then failed on identical code, and it is not fixed yet.
+
 ## 3.0.0 — VERSION
 
 *2026-08-24*
