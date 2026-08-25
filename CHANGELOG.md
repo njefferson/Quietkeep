@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.3.0 — CAPABILITY
+
+*2026-08-25*
+
+- **A real fault, and you would have seen it:** if your device is set to dark and you chose *light* in the app, the app went light and every dropdown, date box and text area stayed dark — white on grey, a hole in the page, on exactly the setting that control exists to provide. Fixed. They follow your choice now, not the device.
+- **Colour checking got about a hundred times cheaper, and stricter.** The automated check used to render the whole app in every colour set and measure roughly 830 pairs each time — four minutes of browser per set. It now measures the app ONCE to learn which colour pairs it actually puts on screen, and checks each colour set against that by arithmetic. It turns out the whole app is thirteen distinct pairs.
+- **So more colour sets can be added without slowing anything down.** A new one is a list of seven colours; it is checked in about a millisecond and it either clears the contrast floors or it does not ship. That is the same standard as before, arrived at without rendering anything.
+- **And it found something invisible.** Thirteen controls in this app — every dropdown, the date picker, the text areas — are painted by your browser rather than by the app, so no colour set can change them. That was true before and nothing could see it, because they were being measured like any other colour and passing. They are written down now, each with a reason, and the check refuses any new one that turns up undeclared.
+- **What is still not right:** this makes checking a colour set cheap; it does not make the app check itself in places the automated walk never visits. A screen the walk does not reach has its colours unchecked, exactly as before.
+
 ## 3.2.0 — CAPABILITY
 
 *2026-08-25*

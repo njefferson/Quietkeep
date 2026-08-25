@@ -75,6 +75,24 @@ export function applyTheme(v: Theme, doc: Document = document): void {
   if (v === 'device') delete root.dataset.theme;
   else root.dataset.theme = v;
 
+  // AND `color-scheme`, WHICH IS WHAT THE BROWSER'S OWN CONTROLS FOLLOW (3.3.0).
+  //
+  // The stylesheet says `color-scheme: light dark`, so a `<select>`, an `<input>`
+  // and a `<textarea>` are painted by the browser according to the DEVICE, not
+  // according to this choice. Choosing light on a device set to dark therefore
+  // turned the app cream and left every form control white-on-grey — a hole in
+  // the page, on exactly the setting this control exists to provide.
+  //
+  // Measured, on a dark device with light chosen: `--bg` became `#F4F1E9` and the
+  // select still rendered `rgb(255,255,255)` on `rgb(107,107,107)`.
+  //
+  // The old contrast gate could not have found it. It measures each theme under a
+  // device set to match, so the one case that matters here — a choice DISAGREEING
+  // with the device — is the one case it never renders. It surfaced instead as
+  // four selectors rendering colours no role owns, while extracting the colour
+  // inventory (ADR-0110).
+  root.style.colorScheme = v === 'device' ? '' : v;
+
   const metas = Array.from(doc.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]'));
   for (const m of metas) {
     const forDark = (m.getAttribute('media') ?? '').includes('dark');

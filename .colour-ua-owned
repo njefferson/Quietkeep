@@ -1,0 +1,32 @@
+# COLOURS THE BROWSER OWNS, NOT THE PALETTE.
+#
+# The colour inventory (ADR-0110) maps every rendered colour to one of the app's
+# seven roles, so any palette can be checked by arithmetic. A form control the
+# app never colours is painted by the USER AGENT from `color-scheme`, so no role
+# produces it and no palette can change it.
+#
+# That is not automatically wrong — a native control that follows the platform is
+# often the right answer, and since 3.3.0 it follows the READER'S choice rather
+# than the device's. But it must be a decision somebody made, not a gap, because
+# a control the palette cannot reach will look like the platform in every palette
+# and like the product in none.
+#
+# Held in BOTH directions: an undeclared UA colour fails the extraction, and a
+# declaration whose selector no longer renders one fails it too — so an exemption
+# cannot outlive the thing it exempts.
+#
+#   <selector> | <why>
+#
+#journal-text | a <textarea>: the app styles its box and its size, never its ink and paper, so the UA paints those from color-scheme
+#slot-day | a <select>: the UA paints its own control colours, and its popup list is not stylable at all on iOS
+#day-boundary | a <select>: same, and the day boundary is set from a fixed list of hours
+#timer-length | a <select>: same, and it is the timer's own length in minutes
+#detail-situation | a <textarea>: the app styles its box and its size, never its ink and paper
+#detail-parent-kind | a <select>: what kind of place this is, chosen from a fixed list
+#detail-after | a <select>: what this waits for, chosen from what already exists
+#detail-merge | a <select>: which thing to fold this into
+#ui-scale | a <select>: the app's own text size, chosen from a fixed list
+#capacity-level | a <select>: how much you have in you, chosen from a fixed list
+#pebble-weight | a <select>: how heavy this one is, chosen from a fixed list
+#detail-menu-category | a <select>: which kind of wish this is
+#replan-new-date | an <input type=date>: the UA owns the whole picker, calendar included

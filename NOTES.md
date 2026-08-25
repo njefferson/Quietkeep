@@ -724,7 +724,47 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.2.0**. The wide
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.3.0**. Colour is
+  checked by arithmetic now, and a palette costs nothing to add. ADR-0110.
+  **The measurement that started it.** The a11y walk made **1,660 contrast
+  assertions** in its last run — for TWO palettes, about 830 each, roughly four
+  minutes of browser each. A sixth palette would have been twenty-four minutes of
+  re-measuring the same thing. It does not have to be: contrast is a property of a
+  PAIR, and a palette swap changes token VALUES — never which token a selector
+  resolves to, nor the size and weight that decide whether it needs 4.5:1 or 3:1.
+  **Structure once, values per palette.** `npm run colour:inventory` walks every
+  state under a SENTINEL palette — each of the seven roles painted a unique probe
+  value, so every computed colour maps to exactly one role BY CONSTRUCTION rather
+  than by luck — and writes `docs/colour-inventory.json`. `npm run palette:check`
+  reads it and does the arithmetic, no browser.
+  **624 rows reduce to THIRTEEN distinct pairs.** A palette is thirteen
+  computations. Both current palettes clear every one; the tightest is `warm` on
+  `bg` at 6.38:1 in light and `ink-soft` on `surface` at 7.93:1 in dark.
+  **It found a shipped bug.** `applyTheme` set `data-theme` and never
+  `color-scheme`, so choosing *light* on a device set to dark turned the app cream
+  and left every dropdown, date box and textarea white-on-grey. Measured through
+  the reader's own route: `--bg` became `#F4F1E9` while the select still rendered
+  `rgb(255,255,255)` on `rgb(107,107,107)`. **The old gate could not have found
+  it** — it renders each theme under a device set to match, so a choice
+  DISAGREEING with the device is the one case it never renders.
+  **And thirteen controls the palette cannot reach**, every `<select>`,
+  `<textarea>` and `<input type=date>` in the app, painted by the user agent.
+  True before and invisible, because they were measured like any other colour and
+  passed. Declared in `.colour-ua-owned` with a reason each, held BOTH ways.
+  **Planted, both halves.** A palette with grey ink was caught on all thirteen
+  pairs with the states each shows on; a palette missing three roles was refused
+  before any arithmetic. The extraction's own detector caught its first installer
+  too — the sentinel lost to `:root:not([data-theme="light"])` on specificity and
+  reported all 5,267 real colours as unowned.
+  **Freshness:** the inventory carries the same UI hash `.a11y-stamp` uses and
+  `palette:check` refuses to answer if it does not match the tree — a gate
+  checking palettes against a structure the app no longer has is worse than none,
+  because it reports green. `colour:inventory` is `.spine-exempt`: it writes a
+  tracked file, and CI regenerating what a gate checks repairs the drift instead
+  of reporting it.
+  **Still not right:** this removes repetition, not the need to walk the app. A
+  state the walk never visits has its colours unchecked, exactly as before.
+- **Superseded, and kept for the record: 3.2.0.** The wide
   arrangement: above 900px the job view shows the hub BESIDE the job.
   **Not a new decision.** ADR-0108 specified this second arrangement and built
   for it — that is why stances are `main > section[data-stance-name]` toggled by

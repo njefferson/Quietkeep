@@ -1,0 +1,31 @@
+{
+  "note": "Every palette this app can wear, described in ROLES. `npm run palette:check` holds each one against docs/colour-inventory.json — the pairs the UI actually renders — by arithmetic, with no browser. Adding a palette is adding an entry here and a block in public/app.css; it needs no accessibility run, because the structure it is checked against does not change when the colours do. See ADR-0110.",
+  "palettes": {
+    "light": {
+      "name": "Light",
+      "scheme": "light",
+      "roles": {
+        "bg": "#F4F1E9",
+        "surface": "#FFFFFF",
+        "ink": "#1B2333",
+        "ink-soft": "#4C5670",
+        "line": "#8E8A7F",
+        "accent": "#33425F",
+        "warm": "#7A4E00"
+      }
+    },
+    "dark": {
+      "name": "Dark",
+      "scheme": "dark",
+      "roles": {
+        "bg": "#141A26",
+        "surface": "#1E2637",
+        "ink": "#F2F0EA",
+        "ink-soft": "#B3BCCE",
+        "line": "#6A7896",
+        "accent": "#AFC0DC",
+        "warm": "#F5C978"
+      }
+    }
+  }
+}
