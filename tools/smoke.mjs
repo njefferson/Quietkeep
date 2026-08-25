@@ -7208,12 +7208,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#capture', 'the thing in the shed');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage:not([hidden]) .route');
-  for (let i = 0; i < 12; i++) {
-    const prompt = await tpage.locator('#triage-prompt').textContent();
-    if (!/hot or cold/i.test(prompt || '')) break;
+  // TAP PAST THE HEAT PASS UNTIL THE ROUTE IT NEEDS IS ACTUALLY THERE (3.0.1).
+  //
+  // The bound was 12 and the heat queue is as long as the inbox — this walk
+  // imports sixty rows a few thousand lines above. So on a machine where the
+  // sweep leads, the loop ran out while still in the heat pass, and the clarify
+  // route clicked on the next line did not exist. Green here, red in CI, twice.
+  //
+  // Bounded by the queue rather than by a number somebody guessed, and it stops
+  // on the CONDITION it actually needs rather than on a prompt that describes it.
+  const wanted = () => tpage.locator('#triage-actions .route', { hasText: 'Put it somewhere' });
+  for (let i = 0; i < cap_many.length * 2 + 60; i++) {
     await intoJob(tpage, 'triage');
-    await tpage.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
+    if (await wanted().count() > 0) break;
+    const hot = tpage.locator('#triage-actions .route', { hasText: 'Hot' });
+    if (await hot.count() === 0) break;
+    await hot.first().click();
     await tpage.waitForTimeout(120);
+  }
+  if (await wanted().count() === 0) {
+    const offered = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
+    bad(`never reached the clarify pass — offered ${JSON.stringify(offered.map((t) => t.trim().slice(0, 24)))}`);
   }
   // WHICHEVER CARD THE SURFACE IS ACTUALLY SHOWING. The heat taps above advance
   // through the heat queue, so the clarify card that lands is the head of the
