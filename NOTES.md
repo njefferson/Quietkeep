@@ -379,6 +379,49 @@ What follows from the correction, and it changes the ordering of everything:
 
 ---
 
+## Known and not yet fixed
+
+Defects that have been SEEN and MEASURED, and deliberately left for a later
+release. Not questions — nothing here is waiting on a decision, and nothing here
+is a thing a session may quietly drop.
+
+**This section exists because there was nowhere else for one to live.** A defect
+noticed mid-release was recorded in that release's *what is still not right*,
+which is the right place for it and rotates out of view the moment the next
+release is cut. *Open questions* is for owner input and `tools/questions.mjs`
+refuses anything that is not a question. So a known defect that was not being
+fixed today had exactly two homes, one temporary and one wrong.
+
+**It is not gated, and that is worth knowing.** Every ungated list in this repo
+has eventually rotted — an entry fixed and never struck out reads as an
+outstanding defect forever, which is the same false receipt the Status lines and
+the both-directions checks were added to stop. If this grows past a couple of
+entries it should get the same treatment: an assertion that each one still
+reproduces.
+
+- **The focus ring on the capture box is clipped, on every side, by 5px.**
+  Reported from a device, 2026-08-25; the left edge is where it shows, because
+  that is where the box runs closest to the frame's own edge.
+  **Measured.** `#capture` carries `outline: 3px solid` at `outline-offset: 2px`,
+  so the ring's outer edge wants to sit 5px outside the element — at x=11 with
+  the element at x=16. It is not the viewport that cuts it: the clipper is
+  `header.frame`, whose `overflow-y: auto` (ADR-0100, so the frame scrolls inside
+  itself rather than pushing the runway off screen) makes `overflow-x` compute to
+  `auto` as well. **A box that only meant to scroll vertically clips
+  horizontally too, and an outline is painted OUTSIDE the element it belongs
+  to.** Identical at 390px and 900px, so it is every width rather than a narrow
+  screen artefact.
+  **Why it matters beyond looking wrong.** A focus indicator is WCAG 2.4.11 and
+  2.4.13; a ring missing one of its four sides is a weaker indicator than the one
+  the a11y walk measured and passed, and the walk passed it because it reads
+  computed style — `outline-width` is 3px whether or not the pixels survive to
+  the screen. **The gate cannot see this class of defect at all**, which is the
+  more useful half of the finding.
+  **Not fixed today, on the owner's instruction.** The obvious remedies each cost
+  something that wants weighing rather than guessing: `overflow-x: clip` with
+  `overflow-clip-margin` on the frame, dropping the offset so the ring sits
+  inside, or insetting the frame's content. None is obviously right.
+
 ## Open questions
 
 Owner input needed. Recorded rather than guessed. **Nothing below has been
