@@ -724,7 +724,7 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.0.0**. The app has
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.0.1**. The app has
   places. The landing view was fifteen conditional sections in one scroller and
   reading it was reading an article — a position rather than somewhere to be, and
   losing the position lost the thought. It is a hub of doors now, each opening one
