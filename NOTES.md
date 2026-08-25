@@ -759,6 +759,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   **`palettes.css` is precached.** A separate stylesheet is a separate thing for
   the service worker to hold, and an offline-first app that cached its rules and
   not its colours would come back with none.
+  **CI found the consolidation's last consumer.** `brand.mjs` parsed the seven
+  roles out of `public/app.css` and went red with twenty "token not found" —
+  skipping the build and BOTH walks behind it. A THIRD place was reading the
+  values; finding it is what one source is FOR. It reads `docs/palettes.json`
+  now and covers all ten palettes rather than two. Its hand-written pair list
+  stays on purpose: `line` is a border, a graphical object at 3:1, and the
+  inventory reads `color` and `background` only — so that list carries the one
+  floor arithmetic cannot see, and the division of labour is in ADR-0110. All ten
+  clear it, tightest 4.58:1.
+  **And it went red because a hand-picked subset of gates was run instead of the
+  Spine** — the exact thing `npm run spine` exists to prevent. Brand assets was
+  not on the list because there was no reason to think colour tokens moving would
+  touch it, which is precisely why it needed running.
+  **Verified green on `35937cb`** — full Spine and Deploy, that exact SHA, and
+  all 39 Spine steps green locally before the push.
 - **Superseded, and kept for the record: 3.3.0.** Colour is
   checked by arithmetic now, and a palette costs nothing to add. ADR-0110.
   **The measurement that started it.** The a11y walk made **1,660 contrast
