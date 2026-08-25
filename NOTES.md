@@ -724,7 +724,22 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.2**. The row cost
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.3**. Two of the
+  three unmeasured surfaces now have a door the walk can drive, so the way-out
+  check measures **20 on screen** rather than 18.
+  `#focus-sheet` declares `data-door="#cards .card-focus | #focus-stop"` — the
+  route a reader takes. `#tour` needed one more idea: its replay control lives
+  INSIDE a sheet, so `data-door-via="sheet-group-actions"` names the room and
+  `data-door="#tour-replay"` names the control. A second attribute rather than a
+  first tap in the chain, because More is opened programmatically in this walk on
+  purpose — `click('#open-more')` was observed resolving without the dialog
+  opening, and a door that flakes reads as a surface that is broken.
+  **`#replan-sheet` stays structural, and this is the reason rather than an
+  omission.** Its door needs an item whose date has passed. Manufacturing that
+  inside the way-out block couples it to the shared inbox the blocks above it
+  consume — which is exactly the coupling that cost four CI rounds on
+  `clarifyCard` in 3.1.0. It is printed by name in the check's own output.
+- **Superseded, and kept for the record: 3.1.2.** The row cost
   a row, and it did not have to.
   3.1.1 pinned the way back inside a job by making `#stance-bar` the frame's own
   last ROW, which was right and cost sixty pixels of fixed height — so the frame

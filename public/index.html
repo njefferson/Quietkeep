@@ -1125,7 +1125,8 @@
      it is empty and irrelevant; it is built only at the moment of printing. -->
 <div id="print-area" class="print-area" aria-hidden="true"></div>
 
-<dialog id="focus-sheet" aria-labelledby="focus-sheet-title">
+<dialog id="focus-sheet" aria-labelledby="focus-sheet-title"
+        data-door="#cards .card-focus | #focus-stop">
   <h2 id="focus-sheet-title" class="detail-title">Stopping for now</h2>
   <!-- THE SCROLL CONTAINER (3.1.0) — see the note on `#sort`. -->
   <div class="sheet-body">
@@ -1807,7 +1808,8 @@
 <!-- The walkthrough (src/ui/tour.ts). A calm, skippable, replayable first-run
      guide — the family's first tutorial, built to the house "calm skippable
      first-run" brief. Steps are filled in by the module; this is the shell. -->
-<dialog id="tour" aria-labelledby="tour-heading">
+<dialog id="tour" aria-labelledby="tour-heading"
+        data-door-via="sheet-group-actions" data-door="#tour-replay">
   <div class="tour-card">
     <p class="tour-progress" id="tour-progress" role="status" aria-live="polite"></p>
     <h2 class="tour-heading" id="tour-heading" tabindex="-1"></h2>

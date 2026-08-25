@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.1.3 — ITERATION
+
+*2026-08-25*
+
+- **Nothing on screen changes and nothing you do is different.** This release is about the checks that guard the app, and it is here because a shipped file was edited — which means the version has to move whether or not you would ever notice.
+- **Three screens were being checked the cheap way.** The last release said so: the walkthrough, the stopping-for-now note and the replan card have the right shape, but the automated check had no way to actually open them, so it could not look at them on a real screen the way it looks at the other eighteen. Two of them can be opened now — twenty screens are measured rather than eighteen.
+- **What is still not right:** the replan card is the one left. Opening it needs something in your list whose date has already passed, and manufacturing that inside the check would tangle it with the part of the check that is hardest to keep steady. It is still named in the output rather than quietly left out, which is the whole point.
+
 ## 3.1.2 — ITERATION
 
 *2026-08-25*
