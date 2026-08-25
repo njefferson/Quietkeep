@@ -21,6 +21,7 @@
 //   npm run a11y        (exits non-zero on any failure)
 
 import { chromium } from 'playwright-core';
+import * as esbuild from 'esbuild';
 import { existsSync, writeFileSync, rmSync, readFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -84,66 +85,44 @@ const leaveStance = async (pg) => {
 const RAW_WAIT = new WeakMap();
 const rawWaitOf = (pg) => RAW_WAIT.get(pg) ?? pg.waitForSelector.bind(pg);
 
+/**
+ * ARRIVE — and HOW to arrive is not decided here (3.0.0, ADR-0108).
+ *
+ * It is `src/reach.ts`, which the app itself imports. This file used to carry
+ * its own copy of the rule and the copy had already drifted: no handling for
+ * Playwright's non-CSS pseudos, no way to name a job whose markup is not built
+ * yet, and — the one that cost a CI round in the smoke walk — no press of a
+ * job's own opener, so a job could be stood in without ever being opened.
+ *
+ * A divergent second gate is not a smaller gate, it is a different one.
+ *
+ * TRUE means the selector NAMED a job, which is what the caller's loop wants to
+ * know: stop looking, this one answered. That includes "already there", and the
+ * old copy returned FALSE for it — so the loop walked on to the next selector
+ * and navigated away from the very state it had just driven.
+ */
+const REACH_SRC = (await esbuild.build({
+  entryPoints: [new URL('../src/reach.ts', import.meta.url).pathname],
+  bundle: true, format: 'iife', globalName: '__reach', write: false,
+  target: 'es2022', logLevel: 'silent',
+  // esbuild's IIFE declares `var __reach`, and Playwright wraps an init script
+  // in a function, so without this the `var` never reaches the page.
+  footer: { js: ';globalThis.__reach = __reach;' },
+})).outputFiles[0].text;
+
 const ensureStanceFor = async (pg, selector) => {
-  let want = null;
-  try {
-    want = await pg.evaluate((sel) => {
-      // The BARE element, not the filtered one. A selector like
-      // `#triage-open:not([hidden])` matches nothing precisely BECAUSE the job
-      // has not been entered, so asking it where to go answers null and the
-      // walk deadlocks. Everything from the first `:` is a condition about
-      // state; the part before it is the thing.
-      const el = document.querySelector(sel) ?? document.querySelector(sel.split(':')[0]);
-      if (!el) return null;
-      const runway = document.querySelector('#runway');
-      if (!runway || !runway.hasAttribute('data-hub')) return null;   // no hub yet
-      const here = runway.getAttribute('data-stance');
-      const sec = el.closest('section[data-stance-name]');
-      if (sec) return here === sec.id ? null : sec.id;
-      // PAGE-LEVEL NAVIGATION LIVES ON THE HUB, so reaching it means coming UP
-      // rather than going in. The shim knew how to enter a job and not how to
-      // leave one, so a wait on `#roles-open` sat watching a control that is
-      // correctly invisible inside a job.
-      // The hub's own controls mean COME UP. Its doors are hidden while you are
-      // inside a job, which is correct and which the shim has to know.
-      if (el.closest('#hub') || el.closest('[data-hub-part]')) {
-        return here === null ? null : '\u0000hub';
-      }
-      // A JOB'S FURNITURE CAN SIT OUTSIDE ITS SECTION, and mostly already says
-      // which job it serves: `data-narrows` has named that for releases, and
-      // `data-stance-part` covers the few that narrow nothing. The same rule the
-      // app paints by — see `belongs()` in src/ui/hub.ts.
-      const owner = el.closest('[data-stance-part], [data-narrows]');
-      if (!owner) return null;
-      const part = owner.getAttribute('data-stance-part');
-      const wants = part
-        ? [part]
-        : (owner.getAttribute('data-narrows') ?? '').split(',')
-            .map((t) => t.trim().replace(/^#/, '')).filter(Boolean);
-      if (wants.length === 0) return null;
-      return wants.includes(here) ? null : wants[0];
-    }, selector);
-  } catch { return false; }
-  if (!want) return false;
-  if (want === '\u0000hub') {
-    try { await pg.$eval('#stance-back', (b) => b.click()); return true; } catch { return false; }
+  const first = await pg.evaluate((sel) =>
+    globalThis.__reach ? globalThis.__reach.reach(sel) : null, selector).catch(() => null);
+  if (!first) return false;
+  if (first.at === 'waiting') {
+    // A job becomes live a beat after the write that fills it. Generous on
+    // purpose: nothing is proven by this being short, and giving up early makes
+    // the walk decline silently, which is indistinguishable from having no need.
+    try { await rawWaitOf(pg)(first.door, { timeout: 10000 }); } catch { return false; }
+    await pg.evaluate((sel) =>
+      globalThis.__reach ? globalThis.__reach.reach(sel) : null, selector).catch(() => null);
   }
-  const door = `#hub-doors .hub-go[data-stance-id="${want}"]`;
-  try {
-    const inOne = await pg.evaluate(() =>
-      document.querySelector('#runway')?.getAttribute('data-stance') ?? null);
-    if (inOne !== null) await pg.$eval('#stance-back', (b) => b.click());
-    // WAIT BRIEFLY FOR THE DOOR. A job becomes live a beat after the write that
-    // fills it, so looking once and giving up leaves the caller waiting for a
-    // section only the stance can show. The raw wait, or this re-enters itself.
-    if (await pg.locator(door).count() === 0) {
-      try { await rawWaitOf(pg)(door, { timeout: 2500 }); } catch { return false; }
-    }
-    await pg.$eval(door, (b) => b.click());
-    await pg.waitForSelector(`#runway[data-stance="${want}"]`, { timeout: 4000 });
-    return true;
-  } catch { /* the caller's click reports the real problem */ }
-  return false;
+  return first.at !== 'nowhere';
 };
 
 const openSurface = async (pg, id) => {
@@ -1763,6 +1742,13 @@ try {
       bypassCSP: true,
     });
     const page = await ctx.newPage();
+  page.setDefaultTimeout(12000);
+  // FAIL FAST (3.0.1). Playwright's default is thirty seconds and this walk has
+  // a dozen places that can hit one, so a FAILING run spent minutes doing
+  // nothing while a passing run never waits at all — nothing healthy here takes
+  // twelve seconds. Cuts a red run to a third of its length and leaves a green
+  // one untouched. Explicit timeouts still win where one is stated.
+    await page.addInitScript({ content: REACH_SRC });
 
     // GO TO THE JOB BEFORE PRESSING SOMETHING IN IT (3.0.0, ADR-0108).
     //
