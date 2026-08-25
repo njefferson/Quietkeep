@@ -154,6 +154,131 @@ const ensureStanceFor = async (pg, selector) => {
 const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
 
 /**
+ * PUT THE WALK IN FRONT OF A CLARIFY CARD, and say what it found if it cannot.
+ *
+ * Four blocks in this file have failed in CI on the same assumption — that the
+ * inbox will be holding something sortable when they arrive — and each was fixed
+ * where it broke. That is LESSONS 140's shape exactly, so this is the paragraph
+ * before the fifth fix rather than the fifth fix.
+ *
+ * WHAT IS TRUE OF ALL OF THEM: every block that wants to sort assumes a clarify
+ * card is showing. It holds on a developer machine and intermittently does not
+ * in CI, because the walk imports sixty rows early and every block between then
+ * and here consumes them at a rate that differs with machine speed. The store
+ * diagnostic has proved the capture always lands — `capture.recorded`, every
+ * time — so the item exists and the inbox intermittently does not offer it.
+ *
+ * NOT IN `src/reach.ts`. That module answers *where a control is* and is
+ * imported by the app. This answers *what the store is holding*, which is the
+ * walk's business and no part of the app's.
+ *
+ * AND IT REPORTS RATHER THAN TIMING OUT. Two CI rounds were spent on this
+ * failing with `routes: 0, prompt: ""`, which says the surface is empty and
+ * nothing about WHY — and "why" here is almost always something a previous
+ * block left set: a time window that excludes long items, a situation, a lens
+ * over the cards. Those are readable, so the report reads them. A failure only
+ * its author can guess at is a failure that gets re-run instead of read.
+ */
+/*
+ * `past` — WHETHER THE HEAT PASS IS IN THE WAY OR IS THE POINT.
+ *
+ * Not every block that needs something sortable needs a CLARIFY card; some need
+ * a card, full stop, and one immediately after needs to arrive ON the heat
+ * question because skipping it without recording a heat is the thing it checks.
+ * The first version tapped past the heat pass unconditionally and broke that
+ * block from four hundred lines away — a helper that fixes four sites by
+ * changing the state a fifth depends on has moved the defect rather than
+ * removed it. Caught locally before it was pushed, which is the only reason it
+ * is a paragraph and not a fourth CI round.
+ */
+const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past = true } = {}) => {
+  const read = async () => pg.evaluate(() => ({
+    stance: document.body?.dataset.stance ?? null,
+    prompt: (document.querySelector('#triage-prompt')?.textContent ?? '').trim(),
+    card: (document.querySelector('#triage-card')?.textContent ?? '').trim(),
+    routes: document.querySelectorAll('#triage-actions .route').length,
+    // What a previous block may have left standing, in the app's own words.
+    window: document.querySelector('#situation-minutes')?.value
+      || document.querySelector('#minutes')?.value || null,
+    situation: (document.querySelector('#situation-words')?.textContent ?? '').trim() || null,
+    lens: document.querySelector('#lens')?.value || null,
+    lensShown: document.querySelector('#lens-row')?.hidden === false,
+  })).catch(() => ({}));
+
+  const put = async (n) => {
+    await pg.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    }).catch(() => {});
+    await pg.fill('#capture', `${capture}${n > 1 ? ` ${n}` : ''}`).catch(() => {});
+    await pg.click('#capture-form button[type=submit]').catch(() => {});
+    await settled(pg, 200);
+  };
+
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    // PUT THE THING DOWN FIRST, EVERY TIME, when the caller named one.
+    //
+    // The first version captured only when the inbox turned out to be empty,
+    // which reads as an optimisation and is a change of contract: a caller that
+    // names a capture is saying THIS ITEM MUST EXIST, and blocks four hundred
+    // lines downstream go looking for it. Skipping the capture on a busy inbox
+    // left the walk crashing in a search for an item nothing had written.
+    if (capture) await put(attempt);
+    await pg.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    }).catch(() => {});
+    await intoJob(pg, 'triage');
+
+    // PRESS THE OPENER UNTIL THE INBOX IS OPEN. A write folds into the store a
+    // beat after it is made, so the inbox can be live and EMPTY at the moment of
+    // the press, and a press against an empty inbox opens nothing. `reach`
+    // presses once, and once is a claim about timing.
+    for (let i = 0; i < 20; i += 1) {
+      if (await pg.locator('#triage-actions .route').count() > 0) break;
+      await pg.evaluate(() => {
+        const b = document.querySelector('#triage [data-stance-opener]');
+        if (b && !b.hidden) b.click();
+      }).catch(() => {});
+      await settled(pg, 200);
+    }
+
+    // TAP PAST THE HEAT PASS WHILE THE PROMPT SAYS SO, never past it. The bound
+    // is the import size rather than a guessed number, and the exit condition is
+    // the PROMPT leaving the heat pass — which is the original condition. It was
+    // once replaced with "stop when the wanted route appears", and that route
+    // never appears DURING the heat pass, so it tapped Hot up to 180 times,
+    // processed the whole pile and emptied the inbox. `offered []` was that.
+    if (past) {
+      for (let i = 0; i < 200; i += 1) {
+        const now = await read();
+        if (!/hot or cold/i.test(now.prompt)) break;
+        if (!now.routes) break;
+        await pg.locator('#triage-actions .route').first().click().catch(() => {});
+        await settled(pg, 90);
+      }
+    }
+
+    const now = await read();
+    // With `past`, the pass has to have ENDED. Without it, any card with words
+    // on it is what was asked for — and the words matter, because a card that
+    // is present and blank is the render arriving a beat after the open, which
+    // is its own long-running defect in this file.
+    if (now.routes > 0 && (past ? !/hot or cold/i.test(now.prompt) : now.card.length > 0)) {
+      return { ok: true, ...now };
+    }
+
+    // NOTHING TO SORT. Put another thing down and go round; three attempts, and
+    // an inbox that will not hold anything after three is a real finding.
+    if (!capture || attempt === 3) {
+      return {
+        ok: false, ...now,
+        why: `wanted ${want} after ${attempt} attempt(s)`,
+      };
+    }
+  }
+  return { ok: false, why: 'unreachable' };
+};
+
+/**
  * Show the rest of a capped list, by pressing what a finger presses.
  *
  * THE WALK'S OWN, not the app's: the held list caps each heading and states the
@@ -5580,71 +5705,28 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // And the daily triage card is a door now too: capture, tap the card, the
   // sheet opens on that very item.
-  // ESTABLISH THE PRECONDITION, DO NOT ASSUME IT (3.0.3).
+  // ESTABLISH THE PRECONDITION, DO NOT ASSUME IT (3.0.3, rebuilt 3.1.0).
   //
   // This block needs one thing: SOMETHING SORTABLE IN THE INBOX. It captured an
   // item and assumed that produced it, and mostly it does — which is worse than
   // never, because it passed here and on staging and then failed on a
-  // BYTE-IDENTICAL tree on main twenty minutes later. Same code, same input,
-  // different answer. A gate that fails at random teaches everybody to re-run
-  // rather than to look, so re-running until it is green is the one response
-  // that must not be the answer.
+  // BYTE-IDENTICAL tree on main twenty minutes later.
   //
-  // The store diagnostic below proved the capture always lands —
-  // `capture.recorded` every time — so the item exists and the inbox
-  // intermittently does not offer it. Rather than keep guessing at why, this
-  // asks for the state it needs and keeps asking, bounded, with each attempt
-  // putting another thing down. If the inbox will not hold anything after
-  // three, that is a real finding and the diagnostic reports it.
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    await tpage.evaluate(() => {
-      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
-    }).catch(() => {});
-    await tpage.fill('#capture', `open me from triage${attempt > 1 ? ` ${attempt}` : ''}`);
-    await tpage.click('#capture-form button[type=submit]');
-    await tpage.waitForSelector('#triage:not([hidden])').catch(() => {});
-    await intoJob(tpage, 'triage');
-    const ready = await tpage.waitForFunction(() =>
-      !!document.querySelector('#triage-actions .route')
-      || (document.querySelector('#triage-card')?.textContent ?? '').trim().length > 0,
-    null, { timeout: 8000 }).then(() => true).catch(() => false);
-    if (ready) break;
-  }
-  await tpage.waitForSelector('#triage:not([hidden])', { timeout: 12000 }).catch(() => {});
-  await intoJob(tpage, 'triage');
-  // PRESS THE OPENER UNTIL THE INBOX IS ACTUALLY OPEN (3.0.1).
-  //
-  // CI reported the state in its own words and it was unambiguous: stance
-  // "triage", the section not hidden, the opener present AND visible, and
-  // routes 0 with an empty prompt. So arriving concluded nothing needed
-  // pressing — `reach` presses once, and once is a claim about timing.
-  //
-  // A write folds into the store a beat after it is made, so the inbox can be
-  // live and EMPTY at the moment of the press, and a press against an empty
-  // inbox opens nothing. Asking again costs a count on the ordinary path and is
-  // the difference between "I pressed it" and "it is open".
-  for (let i = 0; i < 20; i++) {
-    if (await tpage.locator('#triage-actions .route').count() > 0) break;
-    await tpage.evaluate(() => {
-      const b = document.querySelector('#triage [data-stance-opener]');
-      if (b && !b.hidden) b.click();
-    }).catch(() => {});
-    await settled(tpage, 200);
-  }
-  // AND SAY WHERE IT WENT IF IT NEVER ARRIVES (3.0.1).
-  //
-  // AFTER the opener loop, not before it — routes exist only once the inbox is
-  // open, so asking first waits for something nothing has caused yet. That is
-  // the same "not open" mistake this file has now made four times, and I made
-  // it again one line further up while fixing it.
-  //
-  // "The inbox is empty" and "the capture never landed" are different faults,
-  // and the surface cannot tell them apart. This asks the STORE.
-  const inboxHasIt = await tpage.waitForFunction(() =>
-    !!document.querySelector('#triage-actions .route')
-    || (document.querySelector('#triage-card')?.textContent ?? '').trim().length > 0,
-  null, { timeout: 12000 }).then(() => true).catch(() => false);
-  if (!inboxHasIt) {
+  // The retry-and-recapture written here was the third fix of that shape at the
+  // third site, and it went red again in CI with `routes: 0, prompt: ""` — a
+  // report that says the surface is empty and nothing about why. So the loop is
+  // `clarifyCard` now, at module scope, shared, and it NAMES what it found: the
+  // stance, the prompt, and the filters a previous block may have left standing.
+  // See the note on the helper for what is true of all four sites.
+  // `past: false` — this block needs A CARD WITH WORDS ON IT, not specifically a
+  // clarify card, and the block after it needs the heat question still standing.
+  const sortable = await clarifyCard(tpage, {
+    want: 'a card to tap open', capture: 'open me from triage', past: false,
+  });
+  if (!sortable.ok) {
+    // AND WHERE THE ITEM WENT, from the store rather than the surface. "The
+    // inbox is empty" and "the capture never landed" are different faults and
+    // the surface cannot tell them apart.
     const where = await tpage.evaluate(async () => {
       const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
       const rows = await new Promise((res) => {
@@ -5654,7 +5736,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       const mine = rows.filter((e) => JSON.stringify(e.payload ?? {}).includes('open me from triage'));
       return { events: mine.map((e) => e.kind).slice(0, 6), total: rows.length };
     }).catch(() => null);
-    bad(`the capture is in the store but never reached the inbox — ${JSON.stringify(where)}`);
+    bad(`the capture is in the store but never reached the inbox — surface ${JSON.stringify(sortable)}, store ${JSON.stringify(where)}`);
   }
   // WAIT FOR THE CARD TO HAVE WORDS ON IT (3.0.1).
   //
@@ -7438,27 +7520,28 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#capture', 'the thing in the shed');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage:not([hidden]) .route');
-  // TAP PAST THE HEAT PASS UNTIL THE ROUTE IT NEEDS IS ACTUALLY THERE (3.0.1).
+  // TAP PAST THE HEAT PASS, AND STOP WHEN THE PASS ENDS (3.0.1, corrected 3.1.0).
   //
   // The bound was 12 and the heat queue is as long as the inbox — this walk
-  // imports sixty rows a few thousand lines above. So on a machine where the
-  // sweep leads, the loop ran out while still in the heat pass, and the clarify
-  // route clicked on the next line did not exist. Green here, red in CI, twice.
+  // imports sixty rows a few thousand lines above — so on a machine where the
+  // sweep leads, the loop ran out while still in the heat pass and the clarify
+  // route clicked on the next line did not exist.
   //
-  // Bounded by the queue rather than by a number somebody guessed, and it stops
-  // on the CONDITION it actually needs rather than on a prompt that describes it.
+  // The bound needed raising. THE EXIT CONDITION DID NOT, and it was replaced
+  // anyway: with "stop when the route this block wants appears". That route
+  // never appears DURING the heat pass, so the loop tapped Hot to its new
+  // ceiling, processed the whole pile and emptied the inbox — `offered []`
+  // was that, precisely, and it is a correct fix to the bound wearing an
+  // incorrect fix to the condition.
+  //
+  // `clarifyCard` restores the original condition — the PROMPT leaving the heat
+  // pass — with the bound it always needed, and it is the same loop the other
+  // three sites now use.
+  const toClarify = await clarifyCard(tpage, { want: 'the clarify pass' });
   const wanted = () => tpage.locator('#triage-actions .route', { hasText: 'Put it somewhere' });
-  for (let i = 0; i < cap_many.length * 2 + 60; i++) {
-    await intoJob(tpage, 'triage');
-    if (await wanted().count() > 0) break;
-    const hot = tpage.locator('#triage-actions .route', { hasText: 'Hot' });
-    if (await hot.count() === 0) break;
-    await hot.first().click();
-    await settled(tpage, 120);
-  }
-  if (await wanted().count() === 0) {
+  if (!toClarify.ok || await wanted().count() === 0) {
     const offered = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
-    bad(`never reached the clarify pass — offered ${JSON.stringify(offered.map((t) => t.trim().slice(0, 24)))}`);
+    bad(`never reached the clarify pass — ${JSON.stringify(toClarify)}, offered ${JSON.stringify(offered.map((t) => t.trim().slice(0, 24)))}`);
   }
   // WHICHEVER CARD THE SURFACE IS ACTUALLY SHOWING. The heat taps above advance
   // through the heat queue, so the clarify card that lands is the head of the
