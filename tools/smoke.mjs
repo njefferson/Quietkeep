@@ -193,7 +193,11 @@ const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
  */
 const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past = true } = {}) => {
   const read = async () => pg.evaluate(() => ({
-    stance: document.body?.dataset.stance ?? null,
+    // WHERE THE APP THINKS IT IS. Not `body.dataset.stance` — that is not a
+    // thing this app publishes, and the first version of this report printed
+    // `stance: null` on every run, which reads as "nowhere" and means "asked
+    // the wrong object". The hub marks the live section with `stance-on`.
+    stance: document.querySelector('#runway main > .stance-on')?.id ?? null,
     prompt: (document.querySelector('#triage-prompt')?.textContent ?? '').trim(),
     card: (document.querySelector('#triage-card')?.textContent ?? '').trim(),
     routes: document.querySelectorAll('#triage-actions .route').length,
@@ -252,7 +256,18 @@ const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past =
         const now = await read();
         if (!/hot or cold/i.test(now.prompt)) break;
         if (!now.routes) break;
-        await pg.locator('#triage-actions .route').first().click().catch(() => {});
+        // HOT, NOT WHICHEVER ROUTE IS FIRST. The heat pass offers two answers
+        // and they are not interchangeable: Hot passes the item through to the
+        // clarify queue, Cold files it elsewhere. Tapping `.first()` answered
+        // Cold for a share of the pile, so a different item led the clarify
+        // pass and the route the caller wanted was not among the eight offered.
+        // CI said exactly that — `ok: true, prompt: "Clarify:", card: "badge
+        // probe"` — which is the report doing its job: the helper had got where
+        // it was asked to go, and had changed what it found on the way.
+        const hot = pg.locator('#triage-actions .route', { hasText: 'Hot' });
+        const tap = (await hot.count()) ? hot.first()
+          : pg.locator('#triage-actions .route').first();
+        await tap.click().catch(() => {});
         await settled(pg, 90);
       }
     }
