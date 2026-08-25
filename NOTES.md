@@ -739,6 +739,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   inside the way-out block couples it to the shared inbox the blocks above it
   consume — which is exactly the coupling that cost four CI rounds on
   `clarifyCard` in 3.1.0. It is printed by name in the check's own output.
+  **Verified green on `581727e`** — full Spine and Deploy, that exact SHA. 3.1.2
+  before it was green on `d93ec34`, all forty-nine steps.
 - **Superseded, and kept for the record: 3.1.2.** The row cost
   a row, and it did not have to.
   3.1.1 pinned the way back inside a job by making `#stance-bar` the frame's own
