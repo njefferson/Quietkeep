@@ -192,6 +192,27 @@ const intoJob = async (pg, id) => { await ensureStanceFor(pg, `#${id}`); };
  * is a paragraph and not a fourth CI round.
  */
 const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past = true } = {}) => {
+  // READ A SURFACE THAT HAS FINISHED, NEVER ONE MID-FLIGHT.
+  //
+  // THIRD ROUND ON THIS HELPER, so this is the paragraph rather than the third
+  // fix. What is true of the last two: both acted on the triage surface and then
+  // read it straight away. Tapping a route is a write AND a re-render, and
+  // `settled` answers for the write only — `data-settled` is about the commit
+  // queue and says nothing about paint. So the read landed in the gap and saw
+  // `prompt: "", routes: 0`, which is indistinguishable from an empty inbox and
+  // was reported as one: `ok: false, wanted the clarify pass after 1 attempt(s)`
+  // on a store that had just been given something to sort.
+  //
+  // Bounded and caught: if the surface never becomes readable, the read below
+  // reports what it found and the caller fails with it. Waiting is not the
+  // assertion.
+  const stable = async () => {
+    await pg.waitForFunction(() => {
+      const p = (document.querySelector('#triage-prompt')?.textContent ?? '').trim();
+      return p.length > 0 || document.querySelectorAll('#triage-actions .route').length > 0;
+    }, null, { timeout: 3000 }).catch(() => {});
+  };
+
   const read = async () => pg.evaluate(() => ({
     // WHERE THE APP THINKS IT IS. Not `body.dataset.stance` — that is not a
     // thing this app publishes, and the first version of this report printed
@@ -253,6 +274,7 @@ const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past =
     // processed the whole pile and emptied the inbox. `offered []` was that.
     if (past) {
       for (let i = 0; i < 200; i += 1) {
+        await stable();
         const now = await read();
         if (!/hot or cold/i.test(now.prompt)) break;
         if (!now.routes) break;
@@ -272,6 +294,7 @@ const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past =
       }
     }
 
+    await stable();
     const now = await read();
     // With `past`, the pass has to have ENDED. Without it, any card with words
     // on it is what was asked for — and the words matter, because a card that
