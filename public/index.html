@@ -98,6 +98,41 @@
        NOT called "Menu": on this app the Menu is a place things live (law 1
        clause c), and a second meaning for that word in the chrome would be the
        app disagreeing with itself about its own vocabulary. -->
+  <!-- THE WAY BACK (3.0.0), IN THE TOP ROW SINCE 3.1.2. Outside <main> so it is
+       not a section and cannot become a door.
+       IT RODE INSIDE THE RUNWAY UNTIL 3.1.1, which meant it scrolled away: at an
+       ordinary scroll it sat 36px above the top of the screen and at the end of
+       the runway 97px, reported from a device as the app looking broken. 3.1.1
+       pinned it by making it the frame's own last ROW, and that was right and it
+       cost a row: inside a job the frame stood down one text step earlier than
+       before — 150% rather than 200% at 1000x750, 125% rather than 150% at
+       390x844, measured both ways.
+       A ROW WAS NEVER NEEDED. `.bar` is already `flex-wrap: wrap`, so putting
+       the two controls in it costs NO new line at tablet width and wraps only
+       where the bar already wraps. Pinned, and the fold threshold back where it
+       was. It stays a wrapper rather than two loose children because `hub.ts`
+       toggles one element and `body[data-plain="1"]` strips one selector — and
+       because `display: contents` on a toggled box loses to `[hidden]` in the UA
+       sheet, which is the specificity trap `#about[open]` already paid for.
+       ORDER: the way back reads before the destinations it is an alternative to,
+       so it sits after the ⓘ and before More and Contents. -->
+<div id="stance-bar" class="stance-bar" hidden>
+  <button id="stance-back" type="button" class="ghost">Everywhere else</button>
+  <!-- CAPTURE FROM INSIDE THE JOB. The box lives in the frame, and the frame
+       stands down at 175% text (ADR-0101) — so inside a stance, at the size
+       where it matters most, there was no way to put a thought down without
+       leaving the job first. Leaving the job to record a thought is how the
+       thought gets lost, which is the whole thing this app is a rebuttal to.
+       NOT FLOATING. ADR-0100 measured a floating control at two screen sizes
+       across thirteen scroll positions: it overlapped ten controls and took the
+       centre of three card Done buttons. This is an ordinary button in an
+       ordinary row, beside the way out, and it cannot cover anything.
+       The glyph is decorative and the NAME is a sentence (hub LESSONS §29):
+       "+" is not a phrase anybody can say to a voice control. -->
+  <button id="stance-capture" type="button" class="stance-add"
+          title="Put something down"><span aria-hidden="true">+</span><span
+          class="visually-hidden">Put something down</span></button>
+</div>
   <button id="open-more" type="button" class="ghost">More</button>
   <!-- WHAT IS ON THIS PAGE (2.3.0, ADR-0093), where the app's navigation
        already lives. `More` is the six destinations that are not this page;
@@ -168,43 +203,6 @@
     <button id="update-dismiss" type="button" class="ghost">Not now</button>
   </div>
 </section>
-<!-- THE WAY BACK (3.0.0), IN THE FRAME SINCE 3.1.1. Outside <main> so it is not
-     a section and cannot become a door.
-     IT USED TO RIDE INSIDE THE RUNWAY, and the note here said why: so it scrolls
-     with the job rather than eating fixed height, which is what ADR-0101 had to
-     stand the frame down for. That reasoning is about the FRAME's budget and it
-     traded away the thing the row is for. Measured at 1000x750 with ONE card in
-     the job: at 260px of scroll the way out sits at -36px and at the end of the
-     runway at -97px. Off the top, under the frame, gone. Reported from a device
-     as the app looking broken — controls appearing and disappearing in the gap
-     under fixed chrome read as chrome coming apart, which is exactly what they
-     were doing.
-     It is the same defect this release fixed on six dialogs, on the screen where
-     it matters most, and the fix is the same one: the thing you leave by is not
-     inside the box that moves. NOT `position: sticky` — that is ruled out on the
-     reference device, where it was found scrolling away twice (see `.about-bar`).
-     WHAT IT COSTS, and it is real: inside a job the frame is one row taller, so
-     it stands down at a slightly smaller text size than before. That is ADR-0101
-     working rather than a regression — and because this row is INSIDE `.frame`,
-     `watchFrameFit` measures it without being told. On the hub it is `hidden` and
-     the frame is exactly what it was. -->
-<div id="stance-bar" class="stance-bar" hidden>
-  <button id="stance-back" type="button" class="ghost">Everywhere else</button>
-  <!-- CAPTURE FROM INSIDE THE JOB. The box lives in the frame, and the frame
-       stands down at 175% text (ADR-0101) — so inside a stance, at the size
-       where it matters most, there was no way to put a thought down without
-       leaving the job first. Leaving the job to record a thought is how the
-       thought gets lost, which is the whole thing this app is a rebuttal to.
-       NOT FLOATING. ADR-0100 measured a floating control at two screen sizes
-       across thirteen scroll positions: it overlapped ten controls and took the
-       centre of three card Done buttons. This is an ordinary button in an
-       ordinary row, beside the way out, and it cannot cover anything.
-       The glyph is decorative and the NAME is a sentence (hub LESSONS §29):
-       "+" is not a phrase anybody can say to a voice control. -->
-  <button id="stance-capture" type="button" class="stance-add"
-          title="Put something down"><span aria-hidden="true">+</span><span
-          class="visually-hidden">Put something down</span></button>
-</div>
 </header>
 
 <!-- THE ONLY THING THAT SCROLLS. `<main>` and the footer ride inside it; the

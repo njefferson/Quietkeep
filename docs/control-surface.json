@@ -1,7 +1,7 @@
 {
   "capture": {
     "region": "document",
-    "ordinal": 4,
+    "ordinal": 6,
     "label": "What do you want to put down?"
   },
   "open-about": {
@@ -27,6 +27,6 @@
   "situation-open": {
     "region": "document",
     "ordinal": 17,
-    "label": "What\u2019s the situation?"
+    "label": "What’s the situation?"
   }
 }

@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.1.2',
+    kind: 'ITERATION',
+    date: '2026-08-25',
+    notes: [
+      '**On a tablet, the bar at the top no longer folds away sooner than it used to.** Keeping the way back on screen inside a job cost it a whole row last release, and a taller bar folds into ordinary page content at a smaller text size. *Everywhere else* and the **+** now sit in the top row beside *More* and *Contents*, which was already a row that wraps \u2014 so on a tablet they cost six pixels instead of sixty, and the size at which the bar folds is back where it was before.',
+      '**And the way back is still pinned.** That was the point of last release and it has not been given back: at 100% and at 150% on a tablet it stays on screen however far you scroll a job. Measured at four sizes across all three versions rather than reasoned about.',
+      '**What is still not right, on a phone:** at 125% text and above the bar still folds, and once it folds the way back scrolls with everything else. It is not this change that put it there \u2014 at that size the bar was already within seven pixels of folding before any of this, so it was going to fold on any addition at all. On a narrow screen the top row wraps, and a wrapped row costs the same as the row it replaced.',
+      '**The box you type into is now the sixth control in the reading order; it was the fourth.** *What do you want to put down?* has not moved on the screen \u2014 *Everywhere else* and the **+** have, from under the box to the row above it, and that is what changed its number. If you reach for it by feel it is exactly where it was.',
+      '**Nothing else moved.** Same controls, same names, same order relative to each other.',
+      '**And a note about the checks, because this release found a real fault with them:** moving those two controls made the top row run past the right edge of a 320-pixel screen at 200% text, in both light and dark. The accessibility check caught it before it left the machine \u2014 but it had no way to write down what it found, so reading its answer meant running the whole four-minute check a second time. It leaves a note now, the way the other browser check already did.',
+    ],
+  },
+  {
     triplet: '3.1.1',
     kind: 'ITERATION',
     date: '2026-08-25',

@@ -4837,6 +4837,23 @@ try {
 }
 
 console.log('');
+// AND SAY WHAT IT FOUND WHERE SOMETHING CAN READ IT (3.1.2).
+//
+// The smoke walk has written `.walk-failures` since 3.0.1 and the Spine's own
+// error step prints it, so a red run says what was wrong at the bottom of the
+// log. This walk did not, and its failures sit thousands of lines up — so a red
+// run here was legible only to somebody who could scroll the whole thing, which
+// on an API that hands back a tail means not legible at all.
+//
+// Paid for immediately: two real failures in this release (the top bar running
+// 103px past the right edge at 320px/200%, in both themes) cost a second full
+// four-minute walk purely to read them back.
+//
+// EMPTIED ON A CLEAN RUN, never left stale — a receipt for a failure that has
+// been fixed is worse than none, which is the argument `.a11y-stamp` above
+// already makes about the other direction.
+if (failures.length) writeFileSync('.a11y-failures', `${failures.join('\n')}\n`);
+else if (existsSync('.a11y-failures')) writeFileSync('.a11y-failures', '');
 if (failures.length) {
   console.error(`${failures.length} check(s) failed.`);
   process.exit(1);

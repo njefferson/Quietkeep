@@ -24,3 +24,4 @@ public/app.js.map
 
 # The headless walk writes its failures here for CI to print last.
 .walk-failures
+.a11y-failures

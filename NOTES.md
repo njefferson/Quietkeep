@@ -724,9 +724,35 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **Staging and production are level at 3.1.1, and nothing is waiting on you.**
-  Promoted 2026-08-25 at `0f70d96`; the block below is what was staged and is now
-  what is live.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.2**. The row cost
+  a row, and it did not have to.
+  3.1.1 pinned the way back inside a job by making `#stance-bar` the frame's own
+  last ROW, which was right and cost sixty pixels of fixed height — so the frame
+  stood down one text step earlier than before. `.bar` was already
+  `flex-wrap: wrap`, so the two controls moved into it instead, after the ⓘ and
+  before *More*. **Measured at four sizes across all three versions**, not
+  reasoned about:
+  1000x750 at 100% — frame 209px before 3.1.1, 270px in 3.1.1, **215px now**, and
+  the way back pinned at every scroll position rather than leaving at `-97`.
+  1000x750 at 150% — the frame stood down in 3.1.1 and **does not now**, at 318px
+  against 309px before any of this.
+  390x844 at 125% — **still stands down**, and this is the part that is not
+  recovered: a narrow bar wraps, so the group costs a line either way. The
+  headroom there was seven pixels before 3.1.1 (415px against a 422px threshold),
+  so that size was going to fold on any addition at all.
+  **A real fault, caught by the a11y walk before it left the machine:** a nested
+  flex row inside `.bar` is one flex item and does not shrink below its content
+  width without `min-width: 0`, so the pair ran **103px past the right edge** at
+  320px/200% in BOTH themes — sideways scroll, which is the one thing the shell
+  asserts never happens.
+  **And the walk could not write down what it found.** The smoke walk has left
+  `.walk-failures` since 3.0.1 and the Spine prints it; this one did not, so
+  reading two failures cost a second four-minute run. It leaves `.a11y-failures`
+  now, the Spine's error step prints it beside the other, and the mechanism was
+  PLANTED — the wrap fix was removed, the walk went red, and the receipt carried
+  both lines verbatim before it was put back.
+- **Superseded, and kept for the record: 3.1.1.** Promoted 2026-08-25 at
+  `0f70d96`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.1.1**. The way
   back out of a job was in the box that scrolls.
   `#stance-bar` — *Everywhere else* and the **+** — sat inside `#runway` and the

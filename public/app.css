@@ -3111,13 +3111,28 @@ body[data-plain="1"] #held
    surface is the pair `.storage-note` and the fold already use. */
 .hub-count { display: block; margin-top: 0.15rem; color: var(--ink-soft); font-size: 0.9375rem; }
 
-/* The frame's last row since 3.1.1 — see the note in the markup. The bottom
-   margin is gone with the move: the frame's own border and margin are what
-   separate it from the runway now, and keeping both put a visible gap between
-   the way out and the rule under it. */
-.stance-bar { display: flex; gap: 0.5rem; align-items: center; margin: 0.5rem 0 0.35rem; }
+/* A group inside the top bar since 3.1.2 — see the note in the markup. No
+   margin: `.bar` spaces its own children, and the two controls travel together
+   when the bar wraps rather than splitting across lines. */
+/* IT HAS TO WRAP AND IT HAS TO SHRINK. A nested flex row inside `.bar` is one
+   flex item, and a flex item does not shrink below its content width without
+   `min-width: 0` — so at 320px/200% the pair ran 103px past the right edge in
+   BOTH themes and the page scrolled sideways, which is the one thing the shell
+   asserts it never does. Caught by the a11y walk before it left this machine.
+   `.bar` wrapping does not help here: the group is what has to break. */
+.stance-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 0;
+}
+.stance-bar > button { max-width: 100%; }
 .stance-add {
-  margin-left: auto;
+  /* `margin-left: auto` is GONE with the move to the bar (3.1.2). It was what
+     pushed the + to the far end of a full-width row; inside a two-item group it
+     would instead push the + away from the way out it belongs beside, and the
+     bar already does the spacing. */
   min-width: var(--target);
   min-height: var(--target);
   font-size: 1.25rem;
