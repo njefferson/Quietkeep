@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.0.2 — ITERATION
+
+*2026-08-25*
+
+- **Nothing on screen changes.** The app does exactly what it did. What is new is that it now says, to itself, when it has finished writing something down — and nothing about that is shown to you.
+- **Why it matters anyway:** the automated checks that guard this app used to wait a guessed number of milliseconds after every action, because the app never said when it was done. There were 143 of those guesses. Several were right on one machine and wrong on a slower one, which is how a check comes to pass in one place and fail in another without anything actually being broken.
+- **134 of them now ask instead of guessing.** The remaining ten are waiting for real time to pass — a timer running out — and no amount of quiet makes a clock go faster.
+- **What is still not right:** the app tells this to a machine and not to you. If a write were ever slow enough to notice, there is nothing on screen that would say so. Whether there should be is a question about the product, and it is not answered here.
+
 ## 3.0.1 — ITERATION
 
 *2026-08-24*
