@@ -755,6 +755,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   was trusted: true at 1000px, false at 768px.
   Contrast is not re-measured wide, and `size-check` gets no wide budget. Both
   are decisions with reasons written at the code rather than omissions.
+  **Verified green on `7f65d49`** — full Spine and Deploy, that exact SHA.
 - **Superseded, and kept for the record: 3.1.3.** Two of the
   three unmeasured surfaces now have a door the walk can drive, so the way-out
   check measures **20 on screen** rather than 18.
