@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.1.1',
+    kind: 'ITERATION',
+    date: '2026-08-25',
+    notes: [
+      '**Inside a job, the way back no longer scrolls away.** *Everywhere else* and the **+** sat in the scrolling part of the screen, so once you had scrolled a card they went off the top \u2014 and scrolling back up made them appear from under the fixed bar, which read as the app coming apart. Reported from a device. Measured on a tablet with ONE card in the job: at a normal scroll the way out was 36 pixels above the top of the screen, and at the end of the list it was 97. They stay put now.',
+      '**It is the same fix as the last release, on the screen that matters most.** 3.1.0 moved the way out of six panels outside the part that scrolls. This one had it too, and it was the main screen.',
+      '**What it costs, and you should judge this on the device:** the bar at the top is now one row taller while you are inside a job, so it folds away into ordinary page content at a smaller text size than before \u2014 150% rather than 200% on a tablet, 125% rather than 150% on a phone. Nothing is lost when it folds: the page simply scrolls as a whole, which is how it worked before the bar existed. On the front screen nothing changed at all, because the row is not there.',
+      '**What is still not right:** once the bar has folded away, at those larger text sizes, the way back scrolls with everything else again. That is the folding working as intended rather than a new fault, and it is measured either way \u2014 but it means the fix above only holds while the bar is up. If the text size you use puts you past that point, say so, and the way back moves in beside *More* and *Contents* instead, which costs no height at all.',
+    ],
+  },
+  {
     triplet: '3.1.0',
     kind: 'CAPABILITY',
     date: '2026-08-25',

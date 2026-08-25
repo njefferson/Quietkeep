@@ -168,19 +168,26 @@
     <button id="update-dismiss" type="button" class="ghost">Not now</button>
   </div>
 </section>
-</header>
-
-<!-- THE ONLY THING THAT SCROLLS. `<main>` and the footer ride inside it; the
-     frame above does not. Everything a jump or a contents row scrolls to is in
-     here, so `scrollIntoView` finds this box as its nearest scrollable ancestor
-     and needs no help. The two callers that scrolled the WINDOW to the top were
-     changed with it — a window scroll on a page that does not scroll is a call
-     that silently does nothing. -->
-<div class="runway" id="runway">
-<!-- THE WAY BACK (3.0.0). Outside <main> so it is not a section and cannot
-     become a door; inside the runway so it scrolls with the job rather than
-     eating fixed height, which is what ADR-0101 had to stand the frame down
-     for. Hidden on the hub, because there is nowhere above it. -->
+<!-- THE WAY BACK (3.0.0), IN THE FRAME SINCE 3.1.1. Outside <main> so it is not
+     a section and cannot become a door.
+     IT USED TO RIDE INSIDE THE RUNWAY, and the note here said why: so it scrolls
+     with the job rather than eating fixed height, which is what ADR-0101 had to
+     stand the frame down for. That reasoning is about the FRAME's budget and it
+     traded away the thing the row is for. Measured at 1000x750 with ONE card in
+     the job: at 260px of scroll the way out sits at -36px and at the end of the
+     runway at -97px. Off the top, under the frame, gone. Reported from a device
+     as the app looking broken — controls appearing and disappearing in the gap
+     under fixed chrome read as chrome coming apart, which is exactly what they
+     were doing.
+     It is the same defect this release fixed on six dialogs, on the screen where
+     it matters most, and the fix is the same one: the thing you leave by is not
+     inside the box that moves. NOT `position: sticky` — that is ruled out on the
+     reference device, where it was found scrolling away twice (see `.about-bar`).
+     WHAT IT COSTS, and it is real: inside a job the frame is one row taller, so
+     it stands down at a slightly smaller text size than before. That is ADR-0101
+     working rather than a regression — and because this row is INSIDE `.frame`,
+     `watchFrameFit` measures it without being told. On the hub it is `hidden` and
+     the frame is exactly what it was. -->
 <div id="stance-bar" class="stance-bar" hidden>
   <button id="stance-back" type="button" class="ghost">Everywhere else</button>
   <!-- CAPTURE FROM INSIDE THE JOB. The box lives in the frame, and the frame
@@ -198,6 +205,15 @@
           title="Put something down"><span aria-hidden="true">+</span><span
           class="visually-hidden">Put something down</span></button>
 </div>
+</header>
+
+<!-- THE ONLY THING THAT SCROLLS. `<main>` and the footer ride inside it; the
+     frame above does not. Everything a jump or a contents row scrolls to is in
+     here, so `scrollIntoView` finds this box as its nearest scrollable ancestor
+     and needs no help. The two callers that scrolled the WINDOW to the top were
+     changed with it — a window scroll on a page that does not scroll is a call
+     that silently does nothing. -->
+<div class="runway" id="runway">
 <main>
 
 <!-- HOME (3.0.0, ADR-0108). The surface you come up to.

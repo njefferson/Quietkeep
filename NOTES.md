@@ -724,7 +724,35 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.0**. Three
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.1**. The way
+  back out of a job was in the box that scrolls.
+  `#stance-bar` — *Everywhere else* and the **+** — sat inside `#runway` and the
+  markup said why: *"inside the runway so it scrolls with the job rather than
+  eating fixed height, which is what ADR-0101 had to stand the frame down for."*
+  That reasoning is about the frame's budget and it traded away the thing the row
+  is for. Measured at 1000x750 with ONE card in the job: the way out at `-36`
+  after an ordinary scroll and `-97` at the end of the runway. Reported from a
+  device as the app looking broken, which is what controls sliding under fixed
+  chrome and back out again look like.
+  **It is 3.1.0's own subject on the main screen.** The fix is the same shape:
+  the thing you leave by is not inside the box that moves. `#stance-bar` is the
+  last row of `.frame` now. NOT `position: sticky` — ruled out on the reference
+  device, where it was found scrolling away twice (see the note at `.about-bar`).
+  Inside `.frame` rather than a new fixed sibling so `watchFrameFit` counts it
+  without being told; a sibling would have left ADR-0101 measuring a frame
+  smaller than the fixed region actually is.
+  **Measured before and after, at three sizes.** Frame up, 1000x750: was 224 at
+  the top and `-97` at the end, is 214 at both. Frame stood down, 320x568 at 200%
+  and 390x844 at 175%: unchanged within 17px, because in that mode there is no
+  fixed chrome at all and the document scrolls — ADR-0101 working, not a
+  regression, and it was measured rather than assumed.
+  **What it costs:** inside a job the frame is one row taller, so it stands down
+  one text step earlier — 150% rather than 200% at 1000x750, 125% rather than
+  150% at 390x844. On the hub the row is `hidden` and nothing moved. If that step
+  matters on the device, the alternative is the way back joining the top row
+  beside *More* and *Contents*, which costs no height on a wide screen and wraps
+  on a narrow one.
+- **Superseded, and kept for the record: 3.1.0.** Three
   reported defects and one long-missing choice.
   **The way out of a long screen.** `#sort` is an eighty-three-line dialog whose
   Close was the last thing in a box that scrolled as a whole, so leaving a batch
