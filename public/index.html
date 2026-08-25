@@ -983,6 +983,15 @@
         data-contents-door
         data-door="#contents-open | #contents-doors .contents-go[data-open='sort']">
   <h2 id="sort-title" class="detail-title">Sort things out</h2>
+  <!-- THE SCROLL CONTAINER (3.1.0). The way out used to be the last thing in a
+       box that scrolled as a whole, so leaving meant scrolling past everything
+       you had opened this to get through — reported from a device, and the same
+       defect the ⓘ was found to have twice and every sheet once. The dialog is
+       a flex column now: this is the only thing that moves, and the title above
+       it and the Close below it cannot scroll away because they are not inside
+       it. The children are NOT re-indented — the diff for that on a surface
+       this size buries the one line that changed behaviour. -->
+  <div class="sheet-body">
   <div id="sort-picker">
     <p class="detail-hint">Pick a batch. One card at a time, oldest first
       &mdash; leave whenever you like, nothing minds.</p>
@@ -1057,9 +1066,11 @@
       </div>
     </div>
   </div>
+  </div><!-- /.sheet-body -->
+
   <p id="sort-live" role="status" aria-live="polite" class="visually-hidden"></p>
   <div class="detail-actions">
-    <button id="sort-close" type="button" class="ghost">Close</button>
+    <button id="sort-close" data-way-out type="button" class="ghost">Close</button>
   </div>
 </dialog>
 
@@ -1070,6 +1081,8 @@
      than deciding, and filing is what produces the bucket law 3 forbids. -->
 <dialog id="replan-sheet" aria-labelledby="replan-sheet-title">
   <h2 id="replan-sheet-title" class="detail-title"></h2>
+  <!-- THE SCROLL CONTAINER (3.1.0) — see the note on `#sort`. -->
+  <div class="sheet-body">
   <p id="replan-sheet-when" class="replan-when"></p>
   <p id="replan-sheet-context" class="replan-context" hidden></p>
   <!-- Its own line. Writing a failure over the "that date was five days ago"
@@ -1078,9 +1091,10 @@
   <p id="replan-sheet-ask" class="detail-label">What should happen to it now?</p>
   <div id="replan-options" class="replan-options" role="group"
        aria-labelledby="replan-sheet-ask"></div>
+  </div><!-- /.sheet-body -->
   <p id="replan-sheet-live" role="status" aria-live="polite" class="visually-hidden"></p>
   <div class="about-actions">
-    <button id="replan-close" type="button" class="ghost">Close</button>
+    <button id="replan-close" data-way-out type="button" class="ghost">Close</button>
   </div>
 </dialog>
 
@@ -1099,6 +1113,8 @@
 
 <dialog id="focus-sheet" aria-labelledby="focus-sheet-title">
   <h2 id="focus-sheet-title" class="detail-title">Stopping for now</h2>
+  <!-- THE SCROLL CONTAINER (3.1.0) — see the note on `#sort`. -->
+  <div class="sheet-body">
   <p class="detail-hint">Your way back is already saved. This is only if you want to leave yourself a note.</p>
   <div class="detail-group">
     <label class="detail-label" for="focus-cue">I was about to&hellip;</label>
@@ -1107,14 +1123,24 @@
            aria-describedby="focus-cue-hint">
     <p id="focus-cue-hint" class="detail-hint">Leave it empty if you would rather. Nothing asks again.</p>
   </div>
+  </div><!-- /.sheet-body -->
   <div class="detail-row">
     <button id="focus-sheet-stop" type="button">Stop</button>
-    <button id="focus-sheet-cancel" type="button" class="ghost">Keep going</button>
+    <button id="focus-sheet-cancel" data-way-out type="button" class="ghost">Keep going</button>
   </div>
 </dialog>
 
-<dialog id="detail" aria-labelledby="detail-title">
+<dialog id="detail" aria-labelledby="detail-title" data-door="#cards .card-open">
   <h2 id="detail-title" class="detail-title"></h2>
+  <!-- THE SCROLL CONTAINER (3.1.0). The way out used to be the last thing in a
+       box that scrolled as a whole, so leaving meant scrolling past everything
+       you had opened this to get through — reported from a device, and the same
+       defect the ⓘ was found to have twice and every sheet once. The dialog is
+       a flex column now: this is the only thing that moves, and the title above
+       it and the Close below it cannot scroll away because they are not inside
+       it. The children are NOT re-indented — the diff for that on a surface
+       this size buries the one line that changed behaviour. -->
+  <div class="sheet-body">
   <p id="detail-state" class="detail-state"></p>
 
   <div class="detail-group">
@@ -1695,9 +1721,11 @@
     </p>
   </div>
 
+  </div><!-- /.sheet-body -->
+
   <p id="detail-live" role="status" aria-live="polite" class="visually-hidden"></p>
   <div class="about-actions">
-    <button id="detail-close" type="button" class="ghost">Close</button>
+    <button id="detail-close" data-way-out type="button" class="ghost">Close</button>
   </div>
 </dialog>
 
@@ -1769,9 +1797,9 @@
   <div class="tour-card">
     <p class="tour-progress" id="tour-progress" role="status" aria-live="polite"></p>
     <h2 class="tour-heading" id="tour-heading" tabindex="-1"></h2>
-    <div id="tour-body"></div>
+    <div id="tour-body" class="sheet-body"></div>
     <div class="tour-nav">
-      <button id="tour-skip" type="button" class="ghost">Skip</button>
+      <button id="tour-skip" data-way-out type="button" class="ghost">Skip</button>
       <span class="tour-dots" id="tour-dots" aria-hidden="true"></span>
       <button id="tour-back" type="button" class="ghost" hidden>Back</button>
       <button id="tour-next" type="button">Next</button>
@@ -1790,6 +1818,8 @@
      destinations, not a second More. -->
 <dialog id="more" aria-labelledby="more-title">
   <h2 id="more-title" class="section">More</h2>
+  <!-- THE SCROLL CONTAINER (3.1.0) — see the note on `#sort`. -->
+  <div class="sheet-body">
   <div class="more-list">
     <button type="button" class="more-go" data-go="group-actions">Things you can do</button>
     <button type="button" class="more-go" data-go="group-extras">Settings</button>
@@ -1798,7 +1828,8 @@
     <button type="button" class="more-go" data-go="group-why">How it works</button>
     <button type="button" class="more-go" data-go="group-about">About Quietkeep</button>
   </div>
-  <button id="more-close" type="button" class="ghost">Close</button>
+  </div><!-- /.sheet-body -->
+  <button id="more-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-group-why" aria-labelledby="sheet-group-why-title">
@@ -1885,7 +1916,7 @@
   </p>
 
   </div>
-  <button id="sheet-group-why-close" type="button" class="ghost">Close</button>
+  <button id="sheet-group-why-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-group-help" aria-labelledby="sheet-group-help-title">
@@ -1943,7 +1974,7 @@
     </details>
 
     </div>
-  <button id="sheet-group-help-close" type="button" class="ghost">Close</button>
+  <button id="sheet-group-help-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-group-data" aria-labelledby="sheet-group-data-title">
@@ -2027,6 +2058,26 @@
   </div>
   <div id="log-view" hidden>
     <p id="log-total" class="storage-note"></p>
+    <!-- HOW YOU READ IT IS YOURS (3.1.0). It rendered fifty at a time, oldest
+         first within a day, with no way to say otherwise — so on a store whose
+         events are mostly one day old, the thing that had just happened was at
+         the bottom of the day and every visit began by pressing Show more.
+         Reported as unusable, which it was. Both choices are remembered on this
+         device: coming back to the same reading is the point of choosing. -->
+    <div class="detail-row log-controls">
+      <label class="detail-inline" for="log-order">Read</label>
+      <select id="log-order">
+        <option value="newest">newest first</option>
+        <option value="oldest">oldest first</option>
+      </select>
+      <label class="detail-inline" for="log-page">Show</label>
+      <select id="log-page">
+        <option value="50">50 at a time</option>
+        <option value="250">250 at a time</option>
+        <option value="1000">1,000 at a time</option>
+        <option value="all">everything</option>
+      </select>
+    </div>
     <ol id="log-days" class="log-days"></ol>
     <div class="about-actions">
       <button id="log-more" type="button" class="ghost" hidden></button>
@@ -2171,7 +2222,7 @@
   <p id="purge-note" class="storage-note" role="status" aria-live="polite"></p>
 
 </div>
-  <button id="sheet-group-data-close" type="button" class="ghost">Close</button>
+  <button id="sheet-group-data-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- THINGS YOU CAN DO (1.40.0). The verbs, in one place, separate from the
@@ -2297,7 +2348,7 @@
   <p id="big-sample-note" class="storage-note" role="status" aria-live="polite"></p>
 
   </div>
-  <button id="sheet-group-actions-close" type="button" class="ghost">Close</button>
+  <button id="sheet-group-actions-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 <dialog id="sheet-group-extras" aria-labelledby="sheet-group-extras-title">
   <h2 id="sheet-group-extras-title" class="section">Settings</h2>
@@ -2409,6 +2460,31 @@
   </div>
   <p id="ui-scale-note" class="storage-note" role="status" aria-live="polite"></p>
 
+  <!-- WHICH THEME THIS APP USES (3.1.0).
+       Both themes have shipped since the beginning and are measured in both by
+       the accessibility walk. What never existed was a way to CHOOSE: the
+       device decided and the app had no opinion, which is fine until the device
+       switches at sunset and this is what you are reading at sunset.
+       THREE ANSWERS, NOT A TOGGLE. A toggle has two positions and the honest
+       set is three — light, dark, and follow the thing you already told your
+       device. Shipping two would remove the behaviour every reader has today.
+       A DEVICE PREFERENCE, not an event, exactly like the text size above. -->
+  <h3 class="about-section">Light or dark</h3>
+  <p class="about-p">
+    Only this app, and only on this device. Nothing you have written down
+    changes, and your device's own setting is left alone.
+  </p>
+  <div class="about-actions">
+    <label class="detail-inline" for="ui-theme">This app looks</label>
+    <select id="ui-theme">
+      <option value="device">whatever your device is set to</option>
+      <option value="light">light</option>
+      <option value="dark">dark</option>
+    </select>
+    <button id="ui-theme-set" type="button" class="ghost">Set how it looks</button>
+  </div>
+  <p id="ui-theme-note" class="storage-note" role="status" aria-live="polite"></p>
+
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">
     How long the <em class="ui-name">Do now</em> timer runs. Set it here, calmly, rather than in the moment you are trying to start.
@@ -2464,7 +2540,7 @@
 
 
     </div>
-  <button id="sheet-group-extras-close" type="button" class="ghost">Close</button>
+  <button id="sheet-group-extras-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- `data-door` ON EACH SHEET OPENED FROM THE WORKSPACE (2.0.7). The walks need
@@ -2502,7 +2578,7 @@
     <p id="coverage-count" class="coverage-count"></p>
     <ul id="coverage" class="coverage"></ul>
   </div>
-  <button id="sheet-coverage-close" type="button" class="ghost">Close</button>
+  <button id="sheet-coverage-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- The Menu, as its own place (2.0.7, ADR-0089). Law 6 says it is demand-free
@@ -2590,7 +2666,7 @@
     <p id="roles-attention-words" class="detail-hint"></p>
     <ul id="roles-attention-list" class="roles-list" aria-labelledby="roles-attention-heading"></ul>
   </div>
-  <button id="sheet-roles-close" type="button" class="ghost">Close</button>
+  <button id="sheet-roles-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-situation" aria-labelledby="sheet-situation-title" data-door="#situation-open">
@@ -2747,7 +2823,7 @@
     </p>
     <ul id="situation-list" class="roles-list"></ul>
   </div>
-  <button id="sheet-situation-close" type="button" class="ghost">Close</button>
+  <button id="sheet-situation-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">
@@ -2761,7 +2837,7 @@
     <ul id="horizons-list" class="roles-list"></ul>
     <p id="horizons-empty" class="detail-hint" hidden></p>
   </div>
-  <button id="sheet-horizons-close" type="button" class="ghost">Close</button>
+  <button id="sheet-horizons-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-contents" aria-labelledby="sheet-contents-title" data-door="#contents-open">
@@ -2776,7 +2852,7 @@
     <h3 id="contents-stops-title" class="contents-group">On this page</h3>
     <ul id="contents-list" class="contents-list" aria-labelledby="contents-stops-title"></ul>
   </div>
-  <button id="sheet-contents-close" type="button" class="ghost">Close</button>
+  <button id="sheet-contents-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- Naming a worry (v1.5). NOT a task, and deliberately not the same box:
@@ -2807,7 +2883,7 @@
       </p>
     </form>
   </div>
-  <button id="sheet-bother-entry-close" type="button" class="ghost">Close</button>
+  <button id="sheet-bother-entry-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- Load, not work (1.15.0, ADR-0065). Deliberately NOT the same box as a
@@ -2878,7 +2954,7 @@
 
     <ul id="pebble-list" class="trash-list"></ul>
   </div>
-  <button id="sheet-load-entry-close" type="button" class="ghost">Close</button>
+  <button id="sheet-load-entry-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-menu" aria-labelledby="sheet-menu-title" data-door="#menu-open">
@@ -2889,7 +2965,7 @@
   <div class="sheet-body" tabindex="0">
     <section id="menu" class="menu" aria-labelledby="sheet-menu-title"></section>
   </div>
-  <button id="sheet-menu-close" type="button" class="ghost">Close</button>
+  <button id="sheet-menu-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- The alignment tree, as its own place (2.0.5, ADR-0088). ADR-0013 called it
@@ -2905,7 +2981,7 @@
   <div class="sheet-body" tabindex="0">
     <ul id="tree" class="tree"></ul>
   </div>
-  <button id="sheet-tree-close" type="button" class="ghost">Close</button>
+  <button id="sheet-tree-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="about" aria-labelledby="about-title">
@@ -2920,7 +2996,7 @@
          "Close" is §4's other rule broken: "activate Close" with two answers is
          a coin toss for anyone driving by voice. The names differ; the job does
          not. (The × is decorative — see the note on #open-about.) -->
-    <button id="about-dismiss" type="button" class="about-x"
+    <button id="about-dismiss" data-way-out type="button" class="about-x"
             aria-label="Close this panel">&times;</button>
   </div>
 
@@ -3050,7 +3126,7 @@
   </div>
 
   <div class="about-actions">
-    <button id="about-close" type="button" class="ghost">Close</button>
+    <button id="about-close" data-way-out type="button" class="ghost">Close</button>
   </div>
 </dialog>
 

@@ -4031,20 +4031,55 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // has never heard of (hub LESSONS §22 and §28). Asking the document which
   // dialogs have a scrolling body and a way out means a new surface is covered
   // on the day it exists rather than on the day somebody remembers this check.
+  // AND THE FILTER WAS THE HOLE (3.1.0).
+  //
+  // "Derived from the markup" was true and was not enough. What it derived was
+  // *dialogs that have a scrolling body*, so a dialog that never got the chrome
+  // was not a failure here — it was not a row here. `#detail` is 587 lines of
+  // markup and `#sort` is 83, the two longest surfaces in the app, and neither
+  // was ever measured by this check, which reported "every scrolling surface"
+  // and meant "every surface already fixed". An absence that looks exactly like
+  // a presence (hub LESSONS §104), inside the check written to stop this defect.
+  //
+  // Reported from a device on `#sort`: leaving meant scrolling the whole batch
+  // you had opened sorting to get through.
+  //
+  // So the qualification is now EVERY dialog, and the two halves are asserted
+  // apart: it declares a way out, and its body is what scrolls. A new dialog is
+  // covered on the day it exists and is red until it has both.
+  //
+  // `data-way-out` RATHER THAN THE `-close` ID CONVENTION. The convention was
+  // the second hole: `#tour` leaves by *Skip* and `#focus-sheet` by *Keep
+  // going*, so neither has ever matched `[id$="-close"]` and neither had ever
+  // been measured, while a check named for every surface passed. A way out is
+  // now a thing the markup says it is.
   const SURFACES_WITH_A_WAY_OUT = await tpage.evaluate(() =>
     [...document.querySelectorAll('dialog')]
       .map(d => {
         const body = d.querySelector('.sheet-body, .about-body');
-        const close = d.querySelector('[id$="-close"]');
+        const outs = [...d.querySelectorAll('[data-way-out]')];
         // THE WAY IN COMES FROM THE SURFACE TOO (2.0.7). `data-door` is on the
         // sheets opened from the workspace; the rest are reached through More.
-        return body && close
-          ? [d.id, `#${d.id} .sheet-body, #${d.id} .about-body`, `#${close.id}`, d.dataset.door ?? null]
-          : null;
-      })
-      .filter(Boolean));
-  is(SURFACES_WITH_A_WAY_OUT.length >= 7, true,
-    `every scrolling surface with a way out is discovered, not listed (${SURFACES_WITH_A_WAY_OUT.length} found)`);
+        return [d.id, body ? `#${d.id} .sheet-body, #${d.id} .about-body` : null,
+                outs.map(o => o.id), d.dataset.door ?? null];
+      }));
+  is(SURFACES_WITH_A_WAY_OUT.length >= 20, true,
+    `every dialog is discovered, not listed (${SURFACES_WITH_A_WAY_OUT.length} found)`);
+  is(SURFACES_WITH_A_WAY_OUT.filter(([, , outs]) => !outs.length).map(([id]) => id).join(', '), '',
+    'and every one of them declares its way out');
+  is(SURFACES_WITH_A_WAY_OUT.filter(([, body]) => !body).map(([id]) => id).join(', '), '',
+    'and scrolls its BODY rather than itself, so the way out cannot scroll away');
+  // THE INVARIANT ITSELF, stated once and checked without opening anything: a
+  // way out INSIDE the box that scrolls is the whole defect, in one sentence.
+  // It costs nothing, needs no app state, and so it covers every dialog rather
+  // than the ones the walk happens to know a route to.
+  is(await tpage.evaluate(() => [...document.querySelectorAll('dialog')]
+    .filter((d) => {
+      const body = d.querySelector('.sheet-body, .about-body');
+      return body && [...d.querySelectorAll('[data-way-out]')].some(o => body.contains(o));
+    })
+    .map(d => d.id).join(', ')), '',
+    'and no way out is inside the box that scrolls');
   // NOT EVERY SURFACE IS REACHED THROUGH `More`. `openSurface` routes anything
   // that is not the ⓘ through More's destination list, and the two sheets that
   // arrived with ADR-0088 are opened from the WORKSPACE — the gauge opens the
@@ -4099,8 +4134,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#roles-open:not([hidden])').catch(() => {});
   await tpage.waitForSelector('#horizons-open:not([hidden])').catch(() => {});
 
+  // WHAT CAN BE MEASURED IS WHAT THE WALK CAN REACH, and the rest is NAMED.
+  //
+  // The structural assertions above cover all of them because they need no app
+  // state. The rectangle read below needs the dialog actually open, and three
+  // surfaces are reached through states this block does not stand up — the
+  // walkthrough replay, a passed date, stopping for the day. Silently dropping
+  // them would be the same shape as the filter this release just removed, so
+  // the set is derived from the markup's own doors and the remainder is
+  // PRINTED. Anything with a way in is measured, `#detail` included since it
+  // gained one here.
+  const moreGo = await tpage.evaluate(() =>
+    [...document.querySelectorAll('.more-go[data-go]')].map(b => b.dataset.go));
+  const reachable = ([id, body, outs, door]) =>
+    Boolean(body) && outs.length
+    && (Boolean(door) || id === 'about' || id === 'more'
+        || moreGo.includes(id.replace(/^sheet-/, '')));
+  const MEASURED = SURFACES_WITH_A_WAY_OUT.filter(reachable);
+  const structuralOnly = SURFACES_WITH_A_WAY_OUT.filter(d => !reachable(d)).map(([id]) => id);
+  console.log(`    way out — ${MEASURED.length} measured on screen`
+    + (structuralOnly.length
+      ? `; ${structuralOnly.join(', ')} checked structurally only (no door the walk can drive)`
+      : ''));
+
   const seeThrough = [];
-  for (const [surface, bodySel, closeSel, door] of SURFACES_WITH_A_WAY_OUT) {
+  for (const [surface, bodySel, waysOut, door] of MEASURED) {
     if (door) {
       await tpage.evaluate(() => {
         for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
@@ -4115,8 +4173,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       // `#contents-open .contents-go` is one valid selector matching nothing,
       // which would fail as "could not open it" and send somebody looking at
       // the sheet rather than at this line.
+      // `.first()`, because a door can be a SHAPE rather than one element —
+      // `#cards .card-open` is every card on the page. Without it Playwright
+      // refuses a multi-match click, the `.catch` swallows it, and the surface
+      // reports "the walk could not open it" — which points at the door rather
+      // than at the strictness. A reader facing twenty of the same door
+      // presses one.
       for (const step of doorSteps(door)) {
-        await tpage.locator(step).click().catch(() => {});
+        await tpage.locator(step).first().click().catch(() => {});
         await settled(tpage, 60);
       }
     } else {
@@ -4129,27 +4193,46 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       seeThrough.push(`${surface} — the walk could not open it, so nothing was measured`);
       continue;
     }
-    const m = await tpage.evaluate(([b, c]) => {
+    // EVERY WAY OUT, not the first one found. The ⓘ has two — the × in the bar
+    // above the scroller and Close below it — and the old single-element read
+    // took whichever came first in the document. A rule written as "the scroller
+    // must not reach past the TOP of the way out" is also the wrong question for
+    // the one that sits ABOVE it: what is actually being asserted is that the
+    // way out is not inside the box that moves, in either direction.
+    const found = await tpage.evaluate(([b, ids]) => {
       const body = document.querySelector(b);
-      const btn = document.querySelector(c);
-      if (!body || !btn) return { missing: true };
+      if (!body) return [{ note: 'no scrolling body found' }];
       body.scrollTop = body.scrollHeight;
       const br = body.getBoundingClientRect();
-      const cr = btn.getBoundingClientRect();
-      const bg = getComputedStyle(btn).backgroundColor;
-      return {
-        // How far the scroller's painted box reaches past the top of the way out.
-        overlap: Math.round(Math.max(0, br.bottom - cr.top)),
-        // rgba(…, 0) is the transparent the ghost style sets.
-        transparent: /,\s*0\s*\)$/.test(bg) || bg === 'transparent',
-      };
-    }, [bodySel, closeSel]);
-    if (m.missing) { seeThrough.push(`${surface} — no body or no way out found`); continue; }
-    if (m.overlap > 0) seeThrough.push(`${surface} — the scroller reaches ${m.overlap}px into the way out`);
-    if (m.transparent) seeThrough.push(`${surface} — the way out is transparent`);
+      return ids.map((id) => {
+        const btn = document.getElementById(id);
+        if (!btn) return { id, note: 'declared a way out and is not in the document' };
+        const cr = btn.getBoundingClientRect();
+        const bg = getComputedStyle(btn).backgroundColor;
+        return {
+          id,
+          // Clear of the scroller means entirely above its top or entirely
+          // below its bottom. 1px of slack for subpixel layout.
+          overlap: Math.round(Math.max(0,
+            Math.min(br.bottom, cr.bottom) - Math.max(br.top, cr.top))),
+          // AND IT IS ACTUALLY ON SCREEN once everything has been scrolled —
+          // the property all of this exists to protect, asserted directly
+          // rather than inferred from where the boxes are.
+          offscreen: cr.bottom > window.innerHeight + 1 || cr.top < -1,
+          // rgba(…, 0) is the transparent the ghost style sets.
+          transparent: /,\s*0\s*\)$/.test(bg) || bg === 'transparent',
+        };
+      });
+    }, [bodySel, waysOut]);
+    for (const m of found) {
+      if (m.note) { seeThrough.push(`${surface}${m.id ? ` (#${m.id})` : ''} — ${m.note}`); continue; }
+      if (m.overlap > 0) seeThrough.push(`${surface} — the scroller overlaps #${m.id} by ${m.overlap}px`);
+      if (m.offscreen) seeThrough.push(`${surface} — #${m.id} is off screen once the body is scrolled`);
+      if (m.transparent) seeThrough.push(`${surface} — #${m.id} is transparent`);
+    }
   }
   is(seeThrough.join(' | '), '',
-    `no surface can show its own text through the way out (${SURFACES_WITH_A_WAY_OUT.length} checked)`);
+    `no surface can show its own text through the way out (${MEASURED.length} measured)`);
   await tpage.keyboard.press('Escape').catch(() => {});
 
   // --- THE WALKTHROUGH NAMES ITS CONTROLS AS CONTROLS -----------------------
@@ -4268,10 +4351,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // already learned — a named list cannot fail on a screen it has never heard
   // of, and this list had gone stale once already. Each sheet states its own
   // way in with `data-door`; the rest are reached through More.
+  // `[data-way-out]` RATHER THAN `[id$="-close"]` (3.1.0), for the reason the
+  // see-through check above now records: a convention is a filter wearing a
+  // costume, and the two screens leaving by *Skip* and *Keep going* had never
+  // matched this one.
   const SHEETS_AND_DOORS = await ppage.evaluate(() =>
     [...document.querySelectorAll('dialog')]
-      .filter(d => d.querySelector('.sheet-body') && d.querySelector('[id$="-close"]'))
-      .map(d => [d.id, d.dataset.door ?? null]));
+      .filter(d => d.querySelector('.sheet-body') && d.querySelector('[data-way-out]'))
+      .map(d => [d.id, d.dataset.door ?? null,
+                 d.querySelector('[data-way-out]').id,
+                 // Reachable from HERE, on this store: a door, or a row in More.
+                 // Without this the loop fell through to a `.more-go` that does
+                 // not exist for a surface More has never listed, and spent its
+                 // twelve seconds before taking the walk down with it.
+                 d.id === 'more' || Boolean(d.dataset.door)
+                   || Boolean(document.querySelector(`.more-go[data-go="${d.id.replace(/^sheet-/, '')}"]`))]));
   is(SHEETS_AND_DOORS.length >= 8, true,
     `every sheet with a scrolling body is discovered (${SHEETS_AND_DOORS.length} found)`);
   // NO SILENT SKIP. This page is a fresh store, and `#menu-open` is hidden
@@ -4280,7 +4374,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // half does, and a surface it could not reach is NAMED rather than quietly
   // dropped, because "7 checked" reads as "all of them" either way.
   const notOpened = [];
-  for (const [id, door] of SHEETS_AND_DOORS) {
+  for (const [id, door, wayOut, hasRoute] of SHEETS_AND_DOORS) {
     await ppage.evaluate(() => {
       for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
     });
@@ -4288,13 +4382,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // holds whether or not this store can open the surface. It is also the half
     // that catches the real regression — a Close that slipped inside the
     // scroller sits on screen anyway on a short body and reports green.
-    const shape = await ppage.evaluate((want) => {
+    const shape = await ppage.evaluate(([want, out]) => {
+      const d = document.getElementById(want);
       const body = document.querySelector(`#${want} .sheet-body`);
-      const x = document.querySelector(`#${want}-close`);
-      return { outsideScroller: !!body && !!x && !body.contains(x) && x.parentElement?.id === want };
-    }, id);
+      const x = document.getElementById(out);
+      // NOT INSIDE THE SCROLLER is the whole invariant. This also demanded the
+      // way out be a DIRECT child of the dialog, which was true of every sheet
+      // and is an accident of how sheets are built rather than the property:
+      // `#sort` and the replan card keep theirs in an actions row, one level
+      // down and outside the body, which is pinned by the same `flex: none`
+      // and cannot scroll away for the same reason.
+      return { outsideScroller: !!body && !!x && d.contains(x) && !body.contains(x) };
+    }, [id, wayOut]);
     is(shape.outsideScroller, true,
-      `${id}: its Close is outside the scrolling body, so it cannot scroll away when the body grows`);
+      `${id}: #${wayOut} is outside the scrolling body, so it cannot scroll away when the body grows`);
+    if (!hasRoute) {
+      notOpened.push(`${id} (no door, and More has never listed it)`);
+      continue;
+    }
 
     // A CHAIN IS CHECKED STEP BY STEP (2.8.1, ADR-0099). Each tap has to be on
     // screen when its turn comes — asking about the whole chain at once would
@@ -4302,8 +4407,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     let blocked = null;
     if (door) {
       for (const step of doorSteps(door)) {
-        if (!(await ppage.locator(step).isVisible())) { blocked = step; break; }
-        await ppage.click(step);
+        const tap = ppage.locator(step).first();
+        if (!(await tap.isVisible())) { blocked = step; break; }
+        await tap.click();
         await settled(ppage, 60);
       }
     }
@@ -4313,13 +4419,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     }
     if (!door) {
       await ppage.evaluate(() => document.querySelector('#more')?.showModal());
-      await ppage.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
+      // More IS the destination list, so there is no row inside it to press.
+      if (id !== 'more') await ppage.click(`.more-go[data-go="${id.replace(/^sheet-/, '')}"]`);
     }
     await ppage.waitForSelector(`#${id}[open]`);
-    const out = await ppage.evaluate((want) => {
+    const out = await ppage.evaluate(([want, id2]) => {
       const body = document.querySelector(`#${want} .sheet-body`);
       body.scrollTop = 999999;
-      const x = document.querySelector(`#${want}-close`);
+      const x = document.getElementById(id2);
       const r = x.getBoundingClientRect();
       const hit = document.elementFromPoint(
         Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2));
@@ -4332,10 +4439,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
         // green. What actually makes the way out permanent is that it is a
         // child of the dialog and outside `.sheet-body`; that is true at any
         // content length, which is the point.
-        outsideScroller: !body.contains(x) && x.parentElement?.id === want };
-    }, id);
-    is(out.onScreen && out.hit === `${id}-close`, true,
-      `${id}: scrolled to the bottom, its Close is still on screen and unobstructed`);
+        outsideScroller: !body.contains(x) };
+    }, [id, wayOut]);
+    is(out.onScreen && out.hit === wayOut, true,
+      `${id}: scrolled to the bottom, #${wayOut} is still on screen and unobstructed`);
   }
   // SAID OUT LOUD (hub LESSONS: no silent caps). A surface this pass could not
   // reach is reported by name, so the count above is never read as coverage it

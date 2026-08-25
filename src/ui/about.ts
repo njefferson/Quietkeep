@@ -16,6 +16,7 @@ import { requestPersistence, ulid } from '../ids.ts';
 import { toCalendar, calendarCount } from '../ics.ts';
 import { exportFilename, inspectExport, importSeedingFresh, foldInShard, toJsonl } from '../portability.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, scaleNote, normaliseScale } from '../scale.ts';
+import { THEME_KEY, applyTheme, getTheme, setTheme, normaliseTheme, themeNote } from '../theme.ts';
 import { statusReport, renderReport, reportedBefore, periodWords, type ReportFormat } from '../delta.ts';
 import { commsNode } from '../comms.ts';
 import { printText } from './print.ts';
@@ -1135,27 +1136,67 @@ export async function mountAbout(
   //
   // Read-only, behind its control, BUILT ON REVEAL — the coverage list's
   // lesson: hidden DOM is still built DOM, and this list is the whole log.
-  // One `store.all()` per open (the same cost the purge count pays), rendered
-  // 50 lines at a time with the true total stated; the log is a RECORD, so
-  // counts are legal here (law 5 governs scores about work, not receipts).
-  // Days come newest first; within a day events read in the order they
-  // happened, so a cure sits under its cause.
+  // One `store.all()` per open (the same cost the purge count pays), with the
+  // true total stated; the log is a RECORD, so counts are legal here (law 5
+  // governs scores about work, not receipts).
+  //
+  // HOW IT IS READ IS A CHOICE NOW (3.1.0). It had exactly one reading — days
+  // newest first, chronological within a day, fifty at a time — and no way to
+  // say otherwise. On a store whose events are mostly one day old that reading
+  // IS oldest-first, because there is one day and its events run forward, so
+  // the thing that had just happened sat at the bottom of the page and every
+  // visit started by pressing Show more. Reported as unusable, which it was.
+  //
+  // Newest first is the default because the reason to open a record is almost
+  // always "what just happened". Oldest first is still here and still reads a
+  // cure under its cause; newest first puts the cure above it, which is the
+  // same adjacency the other way up.
+  //
+  // The choices are kv, never events — how somebody reads their record is not
+  // a fact about their work, the rule `SCALE_KEY` and the theme already follow.
+  // Read once when the record opens, which is already an async block, so
+  // nothing new has to be cached at boot.
   const logOpen = document.querySelector<HTMLButtonElement>('#log-open');
   const logView = document.querySelector<HTMLElement>('#log-view');
   const logDays = document.querySelector<HTMLElement>('#log-days');
   const logTotal = document.querySelector<HTMLElement>('#log-total');
   const logMore = document.querySelector<HTMLButtonElement>('#log-more');
-  if (logOpen && logView && logDays && logTotal && logMore) {
-    const PAGE = 50;
-    /** Newest-day-first, within-day chronological — the render order. */
+  const logOrder = document.querySelector<HTMLSelectElement>('#log-order');
+  const logPage = document.querySelector<HTMLSelectElement>('#log-page');
+  if (logOpen && logView && logDays && logTotal && logMore && logOrder && logPage) {
+    const ORDER_KEY = 'ui.log-order';
+    const PAGE_KEY = 'ui.log-page';
+    /** Whatever the store held when the record was opened, in log order. */
+    let all: AppEvent[] = [];
+    /** The render order — see `arrange`. */
     let ordered: AppEvent[] = [];
     let shown = 0;
     let lastDayEl: { day: string; list: HTMLElement } | null = null;
 
+    /** `all` is ascending, so day insertion order is oldest→newest. */
+    const arrange = (): AppEvent[] => {
+      const byDay = new Map<string, AppEvent[]>();
+      for (const e of all) {
+        const day = localDayKey(e.at, atMidnight(session.zone));
+        const bucket = byDay.get(day);
+        if (bucket) bucket.push(e); else byDay.set(day, [e]);
+      }
+      const days = [...byDay.values()];
+      // BOTH AXES TURN TOGETHER. Reversing the days alone is what produced the
+      // reading being fixed here: newest day at the top, and the newest event
+      // in it at the bottom.
+      return logOrder.value === 'oldest'
+        ? days.flat()
+        : days.reverse().map(d => [...d].reverse()).flat();
+    };
+
+    const pageSize = (): number =>
+      (logPage.value === 'all' ? Number.MAX_SAFE_INTEGER : Number(logPage.value) || 50);
+
     const renderMore = (): void => {
       const st = session.state();
       const titleOf = (id: string): string | null => st.nodes.get(id)?.title || null;
-      const page = ordered.slice(shown, shown + PAGE);
+      const page = ordered.slice(shown, shown + pageSize());
       for (const e of page) {
         const day = localDayKey(e.at, atMidnight(session.zone));
         if (!lastDayEl || lastDayEl.day !== day) {
@@ -1185,9 +1226,35 @@ export async function mountAbout(
       const left = ordered.length - shown;
       logMore.hidden = left <= 0;
       if (left > 0) {
-        logMore.textContent = `Show 50 more — ${shown} of ${ordered.length} shown`;
+        // The button says the NEXT step's size, not a number baked into the
+        // sentence — it read "Show 50 more" whatever was actually about to be
+        // shown, which is a label describing a version of itself.
+        const next = Math.min(left, pageSize());
+        logMore.textContent =
+          `Show ${next.toLocaleString()} more — ${shown.toLocaleString()} of ${ordered.length.toLocaleString()} shown`;
       }
     };
+
+    const paint = (): void => {
+      ordered = arrange();
+      shown = 0;
+      lastDayEl = null;
+      logDays.replaceChildren();
+      logTotal.textContent = ordered.length === 1
+        ? 'One event — everything above is worked out from it.'
+        : `${ordered.length.toLocaleString()} events — everything above is worked out from these.`;
+      renderMore();
+    };
+
+    for (const [control, key] of [[logOrder, ORDER_KEY], [logPage, PAGE_KEY]] as const) {
+      control.addEventListener('change', () => {
+        // Re-read from what was already loaded, not from the store: this is the
+        // same record, read a different way, and going back for it would make
+        // "the record now" mean two different moments inside one open.
+        paint();
+        void session.store.setKv(key, control.value).catch(() => { /* the reading still stands */ });
+      });
+    }
 
     logOpen.addEventListener('click', () => {
       const opening = logView.hidden;
@@ -1199,24 +1266,24 @@ export async function mountAbout(
       logOpen.textContent = opening ? 'Close the record' : 'Read the record';
       if (!opening) return;
       void (async () => {
+        // A REMEMBERED READING IS THE POINT OF CHOOSING ONE. Applied before the
+        // first paint, so opening the record never shows the default first and
+        // the choice a moment later.
+        const [savedOrder, savedPage] = await Promise.all([
+          session.store.getKv<string>(ORDER_KEY).catch(() => undefined),
+          session.store.getKv<string>(PAGE_KEY).catch(() => undefined),
+        ]);
+        // `option[value=…]` rather than `sel.options`, which this lib target
+        // does not make iterable, and rather than trusting the stored string:
+        // a value that is no longer offered has to fall back to the default.
+        const has = (sel: HTMLSelectElement, v: unknown): v is string =>
+          typeof v === 'string'
+          && Array.from(sel.querySelectorAll<HTMLOptionElement>('option')).some(o => o.value === v);
+        if (has(logOrder, savedOrder)) logOrder.value = savedOrder;
+        if (has(logPage, savedPage)) logPage.value = savedPage;
         // Fresh on every open, so the record read is the record now.
-        const all = await session.store.all();
-        const byDay = new Map<string, AppEvent[]>();
-        for (const e of all) {
-          const day = localDayKey(e.at, atMidnight(session.zone));
-          const bucket = byDay.get(day);
-          if (bucket) bucket.push(e); else byDay.set(day, [e]);
-        }
-        // `all` is ascending, so insertion order of days is oldest→newest;
-        // reverse the DAYS and keep each day's own order.
-        ordered = [...byDay.values()].reverse().flat();
-        shown = 0;
-        lastDayEl = null;
-        logDays.replaceChildren();
-        logTotal.textContent = ordered.length === 1
-          ? 'One event — everything above is worked out from it.'
-          : `${ordered.length} events — everything above is worked out from these.`;
-        renderMore();
+        all = await session.store.all();
+        paint();
       })();
     });
     logMore.addEventListener('click', renderMore);
@@ -1537,6 +1604,32 @@ export async function mountAbout(
       applyScale(chosen);
       scaleNoteEl.textContent = scaleNote(chosen);
       void session.store.setKv(SCALE_KEY, chosen)
+        .catch(() => { /* a view preference: it applies now either way */ });
+    });
+  }
+
+  // WHICH THEME (3.1.0). The same shape as the text size directly above, and
+  // for the same reasons: previewed on change so the reader sees it while
+  // choosing rather than having to commit to find out, persisted only on the
+  // press, and a device preference rather than an event — which theme somebody
+  // wants is not a fact about their work.
+  const themeSel = document.querySelector<HTMLSelectElement>('#ui-theme');
+  const themeSet = document.querySelector<HTMLButtonElement>('#ui-theme-set');
+  const themeNoteEl = document.querySelector<HTMLElement>('#ui-theme-note');
+  if (themeSel && themeSet && themeNoteEl) {
+    themeSel.value = getTheme();
+    themeNoteEl.textContent = themeNote(getTheme());
+    themeSel.addEventListener('change', () => {
+      // Preview only — nothing is stored until Set is pressed, so changing your
+      // mind and closing the panel leaves nothing behind.
+      applyTheme(normaliseTheme(themeSel.value));
+    });
+    themeSet.addEventListener('click', () => {
+      const chosen = normaliseTheme(themeSel.value);
+      setTheme(chosen);
+      applyTheme(chosen);
+      themeNoteEl.textContent = themeNote(chosen);
+      void session.store.setKv(THEME_KEY, chosen)
         .catch(() => { /* a view preference: it applies now either way */ });
     });
   }

@@ -724,7 +724,48 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.0.1**. The app has
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.0**. Three
+  reported defects and one long-missing choice.
+  **The way out of a long screen.** `#sort` is an eighty-three-line dialog whose
+  Close was the last thing in a box that scrolled as a whole, so leaving a batch
+  meant travelling past all of it. `#about` had the identical defect twice on a
+  device and every sheet once, and the fix — a flex column whose body is the only
+  thing that moves — had never travelled to any dialog that was neither. Six
+  surfaces carried it untouched, `#detail` among them at 587 lines of markup, the
+  longest in the app. **The check written to prevent exactly this could not see
+  any of them**: it discovered its subjects by looking for `.sheet-body`, which
+  IS the fix, so a surface that had never been fixed was not a failing row, it
+  was not a row. Hub LESSONS 141. It now qualifies on every dialog, a way out is
+  declared with `data-way-out` rather than inferred from an id ending in
+  `-close` — two screens leave by *Skip* and by *Keep going* and had never been
+  measured at all — and the invariant is asserted without opening anything, so a
+  new dialog is red on the day it exists.
+  **The record.** *Read the record* rendered fifty at a time, chronological
+  within a day, with no control for either. On a store whose events are mostly
+  one day old that reading is oldest-first, so the thing that had just happened
+  sat at the bottom and every visit began by pressing *Show more*. Newest first
+  is the default now, oldest first is still offered, the page is 50 / 250 / 1,000
+  / everything, and both choices are remembered in kv on this device.
+  **Sync.** Pairing, erasing, pairing again and syncing left the exchange
+  refusing most of what arrived and halting halfway. Overlapping chunks offered
+  the same event twice in one delivery; the store correctly refused the repeat
+  and the batch counted it as a failure. Deduped within the batch as well as
+  against the store, in `sync.ts` and `portability.ts`, with two tests.
+  **Light or dark.** Both themes have shipped since the beginning and are
+  measured in both by the a11y walk; there was never a way to choose. Three
+  answers, device being one and still the default, in kv and never an event.
+  **Found on the way and fixed:** the opaque-way-out rule was widened to `>
+  button` and painted `--surface` under the primary buttons sharing those rows —
+  1.13:1 in light and 1.15:1 in dark, caught by the contrast gate before it left
+  the machine. And `size-check` measured the rotating patch notes against the
+  ⓘ's per-surface ceiling as well as giving them their own, so 1,744px of
+  standing prose plus the 1,400px the notes are allowed exceeded the 3,000px the
+  ⓘ is allowed — a release spending its full notes allowance failed by
+  construction, and the only edit that brought it down was deleting patch notes.
+  **Not measured on screen:** the walkthrough, the replan card and the
+  stopping-for-now note have the right shape but no door the walk can drive, so
+  they are checked structurally and NAMED in the check's own output.
+- **Superseded, and kept for the record: 3.0.1.** The app has
   places. The landing view was fifteen conditional sections in one scroller and
   reading it was reading an article — a position rather than somewhere to be, and
   losing the position lost the thought. It is a hub of doors now, each opening one

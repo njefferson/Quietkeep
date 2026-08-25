@@ -359,7 +359,17 @@ export async function takeInEvents(
   // (`gate.ts`, `cureFor`), so the coarser key would treat a capture's clock as
   // already held and drop it.
   const held = new Set(mine.map(e => e.id));
-  const fresh = incoming.filter(e => !held.has(e.id));
+  // AND NOT TWICE WITHIN ONE OFFERING (3.1.1). The check above asks whether the
+  // STORE already holds it. It cannot answer whether this same array carries it
+  // twice, and a sync payload is the concatenation of overlapping mailbox
+  // chunks, so it routinely does. A file taken in twice was the case this was
+  // written for; a file that contains the same event twice is the other one.
+  const seenHere = new Set<string>();
+  const fresh = incoming.filter((e) => {
+    if (held.has(e.id) || seenHere.has(e.id)) return false;
+    seenHere.add(e.id);
+    return true;
+  });
   const fromDevices = [...new Set(fresh.map(e => e.device))].sort();
 
   if (fresh.length > 0) {

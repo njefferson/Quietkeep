@@ -14,6 +14,19 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.1.0 — CAPABILITY
+
+*2026-08-25*
+
+- **Leaving “Sort things out” no longer means scrolling the whole batch.** Close was the last thing in a list that could run to hundreds, so getting out meant travelling past all of it. The title now stays at the top and the way out at the bottom; only the middle moves.
+- **And the same on five more screens** — the item panel, *More*, the replan card, the stopping-for-now note and the walkthrough. Every screen now keeps its way out under your thumb, and a new one cannot ship without.
+- **The record reads newest first, and you say how much.** It showed fifty at a time, oldest first, with no way to ask for anything else — so the thing that had just happened sat at the bottom and every visit began by pressing *Show more*. Choose 50, 250, 1,000 or everything; both choices are remembered on this device.
+- **Oldest first is still there**, in the same menu. Reading forwards is how a correction lands under the thing it corrected.
+- **Sync no longer stops partway when you re-pair a device.** Pairing, erasing, pairing again and syncing left the exchange refusing most of what arrived and halting halfway — the two devices ended up part-synced, with a message saying it had stopped. Nothing was ever lost; the store refused the repeats rather than writing them. Fixed: the same thing arriving several times in one delivery is now recognised as one thing.
+- **You can choose light or dark.** It is in the (i) panel, under *Light or dark*, next to the text size. Changing the dropdown previews it and nothing is remembered until you press the button. Only this app, only on this device — your phone’s own setting is left alone.
+- **Three answers, not a switch.** Light, dark, or whatever your device is set to. The last one is how it has always behaved and it stays the default, so if you liked it following your device at sunset, do nothing.
+- **What is still not right:** three screens — the walkthrough, the replan card and the stopping-for-now note — have the right shape but are not yet measured on a real screen, because the automated walk has no way to open them. It names them rather than leaving them out quietly.
+
 ## 3.0.2 — ITERATION
 
 *2026-08-25*
