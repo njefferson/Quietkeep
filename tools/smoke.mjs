@@ -4230,7 +4230,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
         // THE WAY IN COMES FROM THE SURFACE TOO (2.0.7). `data-door` is on the
         // sheets opened from the workspace; the rest are reached through More.
         return [d.id, body ? `#${d.id} .sheet-body, #${d.id} .about-body` : null,
-                outs.map(o => o.id), d.dataset.door ?? null];
+                outs.map(o => o.id), d.dataset.door ?? null, d.dataset.doorVia ?? null];
       }));
   is(SURFACES_WITH_A_WAY_OUT.length >= 20, true,
     `every dialog is discovered, not listed (${SURFACES_WITH_A_WAY_OUT.length} found)`);
@@ -4327,11 +4327,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       : ''));
 
   const seeThrough = [];
-  for (const [surface, bodySel, waysOut, door] of MEASURED) {
+  for (const [surface, bodySel, waysOut, door, via] of MEASURED) {
     if (door) {
       await tpage.evaluate(() => {
         for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
       });
+      // AND A DOOR CAN BE INSIDE A ROOM (3.1.2). The walkthrough is replayed
+      // from a control that lives in a sheet, so its way in is two things: open
+      // that sheet, then press the control. `data-door-via` names the sheet and
+      // the surface still declares its own route — a second attribute rather
+      // than a first tap in the chain, because More is opened programmatically
+      // here on purpose: `click('#open-more')` was observed resolving without
+      // the dialog opening, and a door that flakes reads as a surface that is
+      // broken.
+      if (via) await openSurface(tpage, via).catch(() => {});
       // A DOOR MAY TAKE MORE THAN ONE TAP (2.8.1, ADR-0099), and the surface
       // still declares its own way in. Three entries came off the runway and
       // are reached through Contents, so their `data-door` names both taps,

@@ -29,6 +29,66 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.4.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-25',
+    notes: [
+      '**Five sets of colours to choose from, not two.** *Quietkeep* (the one you have), *Instrument*, *Paper*, *Mono* and *Soft*. Each comes in light and dark, and light-or-dark stays a separate choice \u2014 so it is two decisions, not ten: which colours, and how bright.',
+      '**They are named, never a row of coloured squares.** A swatch on its own asks you to tell colours apart to use the control, which is the one thing this app will not do. The name says which it is and the note under it says what it is for.',
+      '**Every one clears the same contrast floors as the original.** Not a promise \u2014 all ten are checked against the thirteen colour pairs this app actually puts on screen, and the check takes a quarter of a second. That is what last release was for.',
+      '**Where they come from:** four of them were worked out for this family of apps by a design council and verified independently, and were sitting in the shared notes unused. *Instrument* is the one that council recommended; *Soft* is the lowest glare; *Mono* has no hue at all.',
+      '**One place decides the colours now.** They used to be written in four places in the stylesheet; five sets would have made that twenty blocks that must never disagree. There is one file, and the stylesheet is generated from it.',
+      '**What is still not right:** if you pick something other than the one you start with, you will see a moment of the original when the app first opens, before it can read your choice back. It will be in the right brightness \u2014 light or dark is answered before anything is drawn \u2014 so what you see is a hue settling, not day turning into night. It cannot be fixed without storing the choice somewhere this app deliberately does not store things.',
+    ],
+  },
+  {
+    triplet: '3.3.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-25',
+    notes: [
+      '**A real fault, and you would have seen it:** if your device is set to dark and you chose *light* in the app, the app went light and every dropdown, date box and text area stayed dark \u2014 white on grey, a hole in the page, on exactly the setting that control exists to provide. Fixed. They follow your choice now, not the device.',
+      '**Colour checking got about a hundred times cheaper, and stricter.** The automated check used to render the whole app in every colour set and measure roughly 830 pairs each time \u2014 four minutes of browser per set. It now measures the app ONCE to learn which colour pairs it actually puts on screen, and checks each colour set against that by arithmetic. It turns out the whole app is thirteen distinct pairs.',
+      '**So more colour sets can be added without slowing anything down.** A new one is a list of seven colours; it is checked in about a millisecond and it either clears the contrast floors or it does not ship. That is the same standard as before, arrived at without rendering anything.',
+      '**And it found something invisible.** Thirteen controls in this app \u2014 every dropdown, the date picker, the text areas \u2014 are painted by your browser rather than by the app, so no colour set can change them. That was true before and nothing could see it, because they were being measured like any other colour and passing. They are written down now, each with a reason, and the check refuses any new one that turns up undeclared.',
+      '**What is still not right:** this makes checking a colour set cheap; it does not make the app check itself in places the automated walk never visits. A screen the walk does not reach has its colours unchecked, exactly as before.',
+    ],
+  },
+  {
+    triplet: '3.2.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-25',
+    notes: [
+      '**On a wide screen you can see where you are AND what you are doing, at the same time.** Go into a job on a tablet in landscape and the list of places stays on the left while the job fills the rest. Below about 900 pixels nothing changes at all \u2014 one job on screen, and the list is somewhere you come back to.',
+      '**It uses the room that was there.** The page has been capped at the same width since the shell was built, so from 768 pixels upward every screen showed the same phone-shaped column: 132 pixels of nothing each side on a tablet in landscape, 272 at desktop width. The number 900 is measured rather than chosen \u2014 the list of places asks for 276 pixels, the job needs at least 560, and with the spacing that is 896.',
+      '**Nothing about the job itself changed.** Same screens, same controls, same order, same words. What changed is where the two boxes sit. *Everywhere else* is still there too \u2014 the list being visible does not mean the way back should vanish, and a control that moves because the screen got bigger is a control you have to find again.',
+      '**One job beside the list, not several.** Two panes is the idea proved and measured; more than one job at once is a later question and is written down as one rather than left looking forgotten.',
+      '**What is still not right:** the automated accessibility check measures one screen size and now a wide one, but the wide pass covers the arrangement \u2014 whether anything runs past the edge, whether two controls touch, what the checker makes of it \u2014 rather than re-measuring every screen at that width. Colours are not re-checked there on purpose, because the arrangement moves boxes and does not change what is in them.',
+    ],
+  },
+  {
+    triplet: '3.1.3',
+    kind: 'ITERATION',
+    date: '2026-08-25',
+    notes: [
+      '**Nothing on screen changes and nothing you do is different.** This release is about the checks that guard the app, and it is here because a shipped file was edited \u2014 which means the version has to move whether or not you would ever notice.',
+      '**Three screens were being checked the cheap way.** The last release said so: the walkthrough, the stopping-for-now note and the replan card have the right shape, but the automated check had no way to actually open them, so it could not look at them on a real screen the way it looks at the other eighteen. Two of them can be opened now \u2014 twenty screens are measured rather than eighteen.',
+      '**What is still not right:** the replan card is the one left. Opening it needs something in your list whose date has already passed, and manufacturing that inside the check would tangle it with the part of the check that is hardest to keep steady. It is still named in the output rather than quietly left out, which is the whole point.',
+    ],
+  },
+  {
+    triplet: '3.1.2',
+    kind: 'ITERATION',
+    date: '2026-08-25',
+    notes: [
+      '**On a tablet, the bar at the top no longer folds away sooner than it used to.** Keeping the way back on screen inside a job cost it a whole row last release, and a taller bar folds into ordinary page content at a smaller text size. *Everywhere else* and the **+** now sit in the top row beside *More* and *Contents*, which was already a row that wraps \u2014 so on a tablet they cost six pixels instead of sixty, and the size at which the bar folds is back where it was before.',
+      '**And the way back is still pinned.** That was the point of last release and it has not been given back: at 100% and at 150% on a tablet it stays on screen however far you scroll a job. Measured at four sizes across all three versions rather than reasoned about.',
+      '**What is still not right, on a phone:** at 125% text and above the bar still folds, and once it folds the way back scrolls with everything else. It is not this change that put it there \u2014 at that size the bar was already within seven pixels of folding before any of this, so it was going to fold on any addition at all. On a narrow screen the top row wraps, and a wrapped row costs the same as the row it replaced.',
+      '**The box you type into is now the sixth control in the reading order; it was the fourth.** *What do you want to put down?* has not moved on the screen \u2014 *Everywhere else* and the **+** have, from under the box to the row above it, and that is what changed its number. If you reach for it by feel it is exactly where it was.',
+      '**Nothing else moved.** Same controls, same names, same order relative to each other.',
+      '**And a note about the checks, because this release found a real fault with them:** moving those two controls made the top row run past the right edge of a 320-pixel screen at 200% text, in both light and dark. The accessibility check caught it before it left the machine \u2014 but it had no way to write down what it found, so reading its answer meant running the whole four-minute check a second time. It leaves a note now, the way the other browser check already did.',
+    ],
+  },
+  {
     triplet: '3.1.1',
     kind: 'ITERATION',
     date: '2026-08-25',

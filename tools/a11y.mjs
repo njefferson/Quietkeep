@@ -174,6 +174,79 @@ const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
 
+/* --- THE COLOUR INVENTORY (3.3.0, ADR-0110) ---------------------------------
+ *
+ * WHY THIS EXISTS. This walk made 1,660 contrast assertions in its last run, for
+ * TWO palettes — about 830 each, four minutes of browser each. A third palette
+ * costs another four, a sixth costs twenty-four, and every one of those runs
+ * re-measures the same thing: which pairs the UI produces.
+ *
+ * It does not have to. Contrast is a property of a PAIR, and swapping a palette
+ * changes token VALUES — never which token a selector resolves to, nor the size
+ * and weight it renders at. So the browser is needed for the structural half
+ * only, and that half is the same for every palette.
+ *
+ * `--inventory` runs this walk under a SENTINEL PALETTE: each colour role is
+ * painted a unique probe value, so every computed colour maps to exactly one
+ * role BY CONSTRUCTION rather than by luck. What comes out is (state, selector,
+ * fg role, bg role, size, weight) — the structure — which `palette-gate.mjs`
+ * then reads and checks by arithmetic, for any number of palettes, in
+ * milliseconds and with no browser at all.
+ *
+ * AND IT FINDS SOMETHING NOTHING ELSE COULD. A colour hard-coded in the
+ * stylesheet is contrast-checked like any other today, so it passes — and then
+ * survives every palette swap unchanged and looks wrong in all but one. Under
+ * the sentinel palette it is a colour that is not a sentinel, which is a hard
+ * failure here. Measured before this was built: the rendered app had none.
+ *
+ * IT IS THE SAME WALK. Not a second driver and not a second list of states — the
+ * registry, the state driving and the sampler are the ones that were already
+ * here, because a copy of any of the three is the defect this repo has paid for
+ * more than once. */
+const INVENTORY_MODE = process.argv.includes('--inventory');
+/** The seven colour roles, and a probe value each that nothing would hard-code. */
+/* Multi-line, ending `\n];`, because that is the shape `surfaces.mjs` reads an
+ * uppercase const array in — its lazy `[\s\S]*?\n\];` ran past a one-line
+ * version and swallowed the comments after it, then reported two of their
+ * fragments as selectors naming elements that are not in the markup. The gate
+ * was right; the formatting was not. */
+const ROLES = [
+  'bg', 'surface', 'ink', 'ink-soft', 'line', 'accent', 'warm',
+];
+const SENTINEL = new Map(ROLES.map((r, i) => [`${11 + i * 17},${29 + i * 3},${(i + 1) * 31}`, r]));
+/* `!important`, and it is the right tool exactly once. The dark palette is set
+ * under `:root:not([data-theme="light"])`, which outranks a plain `:root` — so
+ * the first version of this probe was quietly overridden and sampled the REAL
+ * colours, then reported all 5,267 of them as colours no role owned. The
+ * detection was working; it had caught its own installer. A probe is not product
+ * CSS and has no cascade to be polite to. */
+const sentinelCss = ROLES.map((r, i) =>
+  `--${r}: rgb(${11 + i * 17}, ${29 + i * 3}, ${(i + 1) * 31}) !important;`).join(' ');
+/** Selectors whose colours the USER AGENT paints — declared, with a reason. */
+const UA_OWNED = new Map(
+  (existsSync('.colour-ua-owned') ? readFileSync('.colour-ua-owned', 'utf8') : '')
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l && l.includes('|') && !l.startsWith('# '))
+    .map((l) => {
+      const i = l.indexOf('|');
+      return [l.slice(0, i).trim(), l.slice(i + 1).trim()];
+    }),
+);
+/** Which of them actually turned up, so a stale declaration cannot survive. */
+const uaSeen = new Set();
+/** Every selector found rendering a colour no role owns, deduplicated. */
+const unowned = new Map();
+/** Rows collected while the walk drives. Written once, at the end. */
+const inventory = [];
+/* BOTH THEMES ARE STILL WALKED, and the rows are deduped across them.
+ * Under a sentinel palette the two themes render the same roles, so one pass
+ * would almost certainly do — but "almost certainly" is an assumption about
+ * every rule in a 3,000-line stylesheet, and the extraction runs once per
+ * release rather than once per palette, so it is not the cost worth shaving.
+ * Walking both and deduping needs no such assumption. */
+const recorded = new Set();
+
 const failures = [];
 
 /**
@@ -228,8 +301,17 @@ async function auditCardContainment(page, state, theme) {
   if (bad.length > 0) fail(`${label} — ${bad.slice(0, 2).join('; ')}`);
   else pass(`${label}: yes`);
 }
-const fail = (m) => { failures.push(m); console.error(`  FAIL  ${m}`); };
-const pass = (m) => console.log(`  ok    ${m}`);
+/* In `--inventory` the sentinel palette makes every ordinary assertion
+ * meaningless — the colours are probes, not the product's. So this run reports
+ * nothing but what the extraction itself finds, and `inventoryFail` is the one
+ * thing that can still make it exit non-zero. An extraction that quietly printed
+ * 1,660 failures would train everybody to ignore its output. */
+const fail = (m) => {
+  if (INVENTORY_MODE) return;
+  failures.push(m); console.error(`  FAIL  ${m}`);
+};
+const pass = (m) => { if (!INVENTORY_MODE) console.log(`  ok    ${m}`); };
+const inventoryFail = (m) => { failures.push(m); console.error(`  FAIL  ${m}`); };
 
 // Entries: 'sel' or {sel, pseudo}. Every VISIBLE match is audited; the worst
 // ratio is what gets judged. A selector matching nothing visible FAILS.
@@ -1178,9 +1260,77 @@ const ensureStanceForSelectors = async (pg, list) => {
 const ensureStanceForState = (pg, registryKey) =>
   ensureStanceForSelectors(pg, REGISTRY[registryKey]);
 
+/**
+ * Turn one state's samples into role pairs.
+ *
+ * THE FLOOR IS RECORDED, NOT RE-DERIVED. Whether a pair needs 4.5:1 or 3:1 is
+ * decided by rendered size and weight, and those are palette-independent — so
+ * working it out once here is 830 computations instead of 830 per palette, and
+ * it is the same answer every time.
+ *
+ * THE WORST SAMPLE IS THE ONE KEPT, matching what the assertion below does: a
+ * selector can match many nodes at different sizes, and the pair that binds is
+ * the one with the least headroom. Which sample that is depends on the palette,
+ * so what is kept is every DISTINCT (fg, bg, floor) the selector produces —
+ * arithmetic later picks the worst for each palette rather than this guessing on
+ * its behalf.
+ */
+function record(stateName, rows) {
+  for (const r of rows) {
+    if (r.missing) {
+      inventoryFail(`${stateName}: registry entry "${r.sel}${r.pseudo ?? ''}" matches nothing visible`);
+      continue;
+    }
+    const seen = new Set();
+    for (const smp of r.samples) {
+      const key = (c) => (c ? c.join(',') : null);
+      const fgRole = SENTINEL.get(key(smp.fg));
+      const bgRole = SENTINEL.get(key(smp.bg));
+      // A COLOUR THE TOKENS DO NOT OWN. It renders, it is opaque, and no role
+      // produced it — so no palette can change it, and it would look wrong in
+      // every palette but the one it was picked for. Invisible to the old gate,
+      // which measured it like any other colour and passed it.
+      if (!fgRole || !bgRole) {
+        const why = UA_OWNED.get(r.sel);
+        if (why) {
+          // DECLARED, so it is recorded rather than refused — the arithmetic gate
+          // is told this pair exists and that no palette reaches it, which is a
+          // different and more useful thing than not being told at all.
+          uaSeen.add(r.sel);
+          const line = `${stateName}|${r.sel}|ua`;
+          if (!recorded.has(line)) {
+            recorded.add(line);
+            inventory.push({ state: stateName, sel: r.sel, uaOwned: true, why });
+          }
+          continue;
+        }
+        if (!unowned.has(r.sel)) {
+          unowned.set(r.sel, `${stateName}: fg ${key(smp.fg)}, bg ${key(smp.bg)}`);
+          inventoryFail(
+            `"${r.sel}${r.pseudo ?? ''}" renders a colour no role owns `
+            + `(${stateName}: fg ${key(smp.fg)}, bg ${key(smp.bg)}). `
+            + 'Give it a role, or declare it in .colour-ua-owned with a reason.');
+        }
+        continue;
+      }
+      const large = smp.size >= 24 || (smp.size >= 18.66 && smp.weight >= 600);
+      const floor = large ? 3 : 4.5;
+      const line = `${stateName}|${r.sel}${r.pseudo ?? ''}|${fgRole}|${bgRole}|${floor}`;
+      if (seen.has(line) || recorded.has(line)) continue;
+      seen.add(line); recorded.add(line);
+      inventory.push({ state: stateName, sel: `${r.sel}${r.pseudo ?? ''}`, fg: fgRole, bg: bgRole, floor });
+    }
+  }
+}
+
 async function auditContrast(page, stateName, theme, registryKey = stateName) {
   await ensureStanceForState(page, registryKey);
   const rows = await page.evaluate(sampler, REGISTRY[registryKey]);
+  // THE CHOKE POINT, which is why the inventory is collected here and not in a
+  // driver of its own: every state in this walk reaches its registry through
+  // this one call, so recording here reaches all of them and can never fall
+  // behind the list.
+  if (INVENTORY_MODE) { record(stateName, rows); return; }
   for (const r of rows) {
     const label = `${r.sel}${r.pseudo ?? ''}`;
     if (r.missing) { fail(`${theme}/${stateName}: registry entry "${label}" matches nothing visible — the gate no longer sees it`); continue; }
@@ -1749,6 +1899,21 @@ try {
   // twelve seconds. Cuts a red run to a third of its length and leaves a green
   // one untouched. Explicit timeouts still win where one is stated.
     await page.addInitScript({ content: REACH_SRC });
+    // THE SENTINEL PALETTE, if this is an extraction. An init script rather than
+    // a one-off, because the walk reloads and navigates and a palette that came
+    // off half way through would produce an inventory that looked complete.
+    // A style ELEMENT on :root rather than inline properties: the dark blocks set
+    // the same tokens under `[data-theme]`, and an author rule of equal
+    // specificity later in the cascade beats them without needing `!important`
+    // anywhere near the product's own stylesheet.
+    if (INVENTORY_MODE) {
+      await page.addInitScript({ content:
+        `document.addEventListener('DOMContentLoaded', () => {
+           const el = document.createElement('style');
+           el.textContent = ':root, :root[data-theme="dark"], :root[data-theme="light"] { ${sentinelCss} }';
+           document.head.append(el);
+         }, { once: true });` });
+    }
 
     // GO TO THE JOB BEFORE PRESSING SOMETHING IN IT (3.0.0, ADR-0108).
     //
@@ -4829,6 +4994,59 @@ try {
     await auditNames(page, 'upkeep ready', theme);
     await auditSeparationAndTargets(page, 'upkeep ready', theme);
 
+    // --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) ------------------------------
+    //
+    // This whole walk measures ONE viewport, 390x844, plus a 320px/200% stress
+    // step. So a second arrangement is unmeasured by construction — contrast,
+    // targets, overlap, reflow, none of it — and hub LESSONS 28 is exactly that:
+    // a new surface joins the gate in the SAME COMMIT or it ships unchecked.
+    //
+    // WHAT THIS COVERS AND WHAT IT DOES NOT, said out loud rather than implied.
+    // The wide arrangement changes WHERE the boxes are, not what is in them: the
+    // same `.stance-on` set, the same tokens, the same elements. So the contrast
+    // registry measured above at 390 still answers for the pairs, and this pass
+    // measures the things that only a second arrangement can break — whether the
+    // hub is really beside the job, whether anything runs past the edge, whether
+    // two controls now touch, and what axe makes of the result.
+    //
+    // AND THE ARRANGEMENT IS ASSERTED, not assumed. A wide pass that ran against
+    // a page still showing one pane would report green about a layout that was
+    // not there — an absence identical to a presence (hub LESSONS 104).
+    for (const [w, h, zoom, what] of [[1000, 750, 1, 'wide'], [900, 700, 2, 'wide at 200%']]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.evaluate((px) => {
+        document.documentElement.style.fontSize = px ? `${px}px` : '';
+      }, zoom === 1 ? 0 : 16 * zoom);
+      await enterStance(page, 'nextup');
+      await page.waitForTimeout(400);
+      const arrangement = await page.evaluate(() => {
+        const hub = document.querySelector('#hub');
+        const r = hub?.getBoundingClientRect();
+        const stance = document.querySelector('#runway')?.getAttribute('data-stance');
+        const job = document.querySelector('main > .stance-on');
+        const jr = job?.getBoundingClientRect();
+        return {
+          stance,
+          hubOn: hub?.checkVisibility() === true,
+          // BESIDE, not merely both present: two panes stacked is the narrow
+          // arrangement with the hiding rule removed, which is a different and
+          // worse thing than what this is for.
+          beside: !!(r && jr && r.width > 0 && jr.left >= r.right - 1),
+          overflow: Math.max(0, Math.ceil(document.documentElement.scrollWidth - window.innerWidth)),
+        };
+      });
+      (arrangement.stance === 'nextup' ? pass : fail)(
+        `${theme}/${what}: the walk is standing in a job (stance ${arrangement.stance})`);
+      (arrangement.hubOn && arrangement.beside ? pass : fail)(
+        `${theme}/${what}: the hub is on screen BESIDE the job, not stacked above it`);
+      (arrangement.overflow <= 1 ? pass : fail)(
+        `${theme}/${what}: page horizontal overflow ${arrangement.overflow}px (must be ≤1)`);
+      await auditSeparationAndTargets(page, what, theme);
+      await auditAxe(page, what, theme);
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    await page.setViewportSize({ width: 390, height: 844 });
+
     await ctx.close();
   }
 } finally {
@@ -4837,6 +5055,90 @@ try {
 }
 
 console.log('');
+// --- THE EXTRACTION'S OWN ENDING (3.3.0) -------------------------------------
+//
+// An extraction is not a gate run and must never be mistaken for one: it walks
+// under probe colours, so it proves nothing about the product's own. It writes
+// the inventory and stops — NO `.a11y-stamp`, which is the receipt saying this
+// markup was measured, and would be a lie written by a run that measured
+// sentinels.
+if (INVENTORY_MODE) {
+  // BOTH DIRECTIONS. A declaration whose selector has since been given a role —
+  // or removed — is an exemption outliving the thing it exempts, which is how a
+  // list like this rots into a licence.
+  for (const [sel, why] of UA_OWNED) {
+    if (!uaSeen.has(sel)) {
+      inventoryFail(
+        `.colour-ua-owned declares "${sel}" (${why}) and nothing rendered a `
+        + 'colour the roles do not own for it. Give the declaration up.');
+    }
+  }
+  if (unowned.size) {
+    // ALL OF THEM, AT THE BOTTOM, READY TO PASTE. An extraction is eight minutes
+    // of browser; one that names one problem per run turns a list of eight into
+    // eight runs. This was learned the expensive way twice in one evening —
+    // the first two runs of this tool were read through a ten-line tail, so the
+    // list looked like four both times and was not.
+    console.error(`\n  ${unowned.size} selector(s) render a colour no role owns:\n`);
+    for (const [sel, where] of [...unowned].sort()) console.error(`    ${sel}  —  ${where}`);
+    console.error('\n  Give each one a role, or declare it in .colour-ua-owned:\n');
+    for (const [sel] of [...unowned].sort()) console.error(`${sel} | WHY`);
+    console.error('');
+  }
+  if (failures.length) {
+    console.error(`\n${failures.length} problem(s) found while extracting. The inventory was NOT written.`);
+    console.error('A colour no role owns cannot be checked by arithmetic, so an');
+    console.error('inventory with one missing is worse than none.\n');
+    process.exit(1);
+  }
+  // Sorted, so the file is a reviewable artefact rather than a diff that churns
+  // on walk order. A new pair appearing in the UI should read as one added line.
+  inventory.sort((a, b) => (a.state + a.sel + a.fg + a.bg).localeCompare(b.state + b.sel + b.fg + b.bg));
+  // The UA-owned rows carry no roles by definition, so they must not contribute
+  // an empty one to this list — which the first version printed as a trailing
+  // comma and would have handed to the arithmetic gate as a role to resolve.
+  const roles = [...new Set(inventory.filter((r) => !r.uaOwned).flatMap((r) => [r.fg, r.bg]))].sort();
+  // STAMPED WITH THE SAME UI HASH THE ACCESSIBILITY RECEIPT USES.
+  //
+  // The arithmetic gate checks palettes against THIS structure. If the UI moves
+  // and nobody re-extracts, that gate goes on passing palettes against a shape
+  // the app no longer has — which is worse than no gate, because it reports
+  // green. `palette-gate.mjs` refuses a stale inventory for the same reason
+  // `a11y-fresh` refuses a stale receipt.
+  const { uiHash } = await import('./a11y-stamp.mjs');
+  writeFileSync('docs/colour-inventory.json', `${JSON.stringify({
+    note: 'Generated by `npm run a11y -- --inventory`. Structure only: which role '
+      + 'pairs the UI renders and what floor each needs. Palette-independent by '
+      + 'construction — see ADR-0110. Do not hand-edit.',
+    ui: uiHash(),
+    states: [...new Set(inventory.map((r) => r.state))].length,
+    pairs: inventory.length,
+    roles,
+    inventory,
+  }, null, 2)}\n`);
+  console.log(`  ${inventory.length} role pairs across ${[...new Set(inventory.map((r) => r.state))].length} states`);
+  console.log(`  roles in use: ${roles.join(', ')}`);
+  console.log('  written to docs/colour-inventory.json');
+  console.log('\nEvery colour the app renders came from a role. Arithmetic can take it from here.');
+  process.exit(0);
+}
+// AND SAY WHAT IT FOUND WHERE SOMETHING CAN READ IT (3.1.2).
+//
+// The smoke walk has written `.walk-failures` since 3.0.1 and the Spine's own
+// error step prints it, so a red run says what was wrong at the bottom of the
+// log. This walk did not, and its failures sit thousands of lines up — so a red
+// run here was legible only to somebody who could scroll the whole thing, which
+// on an API that hands back a tail means not legible at all.
+//
+// Paid for immediately: two real failures in this release (the top bar running
+// 103px past the right edge at 320px/200%, in both themes) cost a second full
+// four-minute walk purely to read them back.
+//
+// EMPTIED ON A CLEAN RUN, never left stale — a receipt for a failure that has
+// been fixed is worse than none, which is the argument `.a11y-stamp` above
+// already makes about the other direction.
+if (failures.length) writeFileSync('.a11y-failures', `${failures.join('\n')}\n`);
+else if (existsSync('.a11y-failures')) writeFileSync('.a11y-failures', '');
 if (failures.length) {
   console.error(`${failures.length} check(s) failed.`);
   process.exit(1);

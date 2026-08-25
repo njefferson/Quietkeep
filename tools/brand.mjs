@@ -276,35 +276,39 @@ const UI_PAIRS = [
   ['line', 'surface', 3], ['line', 'bg', 3],
 ];
 
-function themeTokens(css, theme) {
-  // :root holds light; the dark block overrides it. Later wins, which is what
-  // the cascade does too.
-  const blocks = [...css.matchAll(/:root\s*\{([^}]*)\}/g)].map(m => m[1]);
-  const darkBlock = /@media\s*\(prefers-color-scheme:\s*dark\)\s*\{\s*:root\s*\{([^}]*)\}/.exec(css);
-  const out = {};
-  const take = (text) => {
-    for (const [, k, v] of text.matchAll(/--([\w-]+)\s*:\s*(#[0-9a-fA-F]{6})/g)) out[k] = v;
-  };
-  take(blocks[0] ?? '');
-  if (theme === 'dark' && darkBlock) take(darkBlock[1]);
-  return out;
-}
-
 function checkAppColours() {
   console.log('\nApp colours (B-11)');
-  const cssPath = join(ROOT, 'public', 'app.css');
-  if (!existsSync(cssPath)) { fail('public/app.css is missing'); return; }
-  const css = readFileSync(cssPath, 'utf8');
+  // FROM THE SOURCE, NOT FROM THE STYLESHEET (3.4.0, ADR-0110).
+  //
+  // This parsed `:root` out of public/app.css, which stopped declaring the seven
+  // colour roles when they were consolidated into docs/palettes.json — and this
+  // check went red with twenty "token not found", which is the consolidation
+  // finding its last consumer. A THIRD place was reading the values; the whole
+  // point of one source is that everything reads it.
+  //
+  // AND IT NOW COVERS EVERY FAMILY, not just the default. The pairs below are a
+  // hand-written list, which would normally be the defect this repo keeps
+  // paying for — except that `line` is a BORDER, a graphical object under WCAG
+  // 1.4.11, and the colour inventory reads `color` and `background` only. So
+  // this list carries the one thing arithmetic-over-the-inventory cannot see,
+  // and that division of labour is written down in ADR-0110 rather than left to
+  // be rediscovered.
+  const src = join(ROOT, 'docs', 'palettes.json');
+  if (!existsSync(src)) { fail('docs/palettes.json is missing'); return; }
+  const set = JSON.parse(readFileSync(src, 'utf8'));
 
-  for (const theme of ['light', 'dark']) {
-    const t = themeTokens(css, theme);
+  for (const [key, family] of Object.entries(set.families ?? {})) {
+  for (const mode of ['light', 'dark']) {
+    const theme = `${key}/${mode}`;
+    const t = family[mode] ?? {};
     for (const [fg, bg, min] of UI_PAIRS) {
-      if (!t[fg] || !t[bg]) { fail(`${theme}: token --${fg} or --${bg} not found in app.css`); continue; }
+      if (!t[fg] || !t[bg]) { fail(`${theme}: no value for ${fg} or ${bg} in docs/palettes.json`); continue; }
       const r = ratio(t[fg], t[bg]);
       (r >= min ? pass : fail)(
-        `${theme.padEnd(5)} ${`${fg}/${bg}`.padEnd(18)} ${r.toFixed(2)}:1 (needs ${min}:1)`,
+        `${theme.padEnd(16)} ${`${fg}/${bg}`.padEnd(18)} ${r.toFixed(2)}:1 (needs ${min}:1)`,
       );
     }
+  }
   }
 }
 

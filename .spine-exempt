@@ -14,6 +14,8 @@
 
 branch:state — deliberately NOT a Spine step. On a runner at a promote, origin/main is already the merge being pushed, so it is red by construction. It runs as a commit guard via .branch-guard instead.
 gates:audit — plants a defect per gate and restores; minutes long and it MUTATES the tree. Run by hand when adopting or changing a gate, never on a push.
+palettes — generates public/palettes.css from docs/palettes.json; palettes:check is the gate, and CI must never regenerate what a gate checks.
+colour:inventory — extracts the colour inventory under a sentinel palette and WRITES docs/colour-inventory.json, a tracked file. CI must never run it: regenerating the artefact a gate checks is how the drift the gate exists to find gets repaired instead of reported, which is the argument branch-guard already makes about --install. `palette:check` is the gate, and it refuses a stale inventory.
 prepare — an npm lifecycle hook that installs the commit guard into .git/hooks. Nothing for CI to assert: actions/checkout leaves .git/hooks empty by definition, which is why the workflow runs branch-guard with --artefact instead.
 
 # Generators. The `:check` beside each one is the gate, and IT is in CI; running

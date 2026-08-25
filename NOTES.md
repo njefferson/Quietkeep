@@ -379,6 +379,49 @@ What follows from the correction, and it changes the ordering of everything:
 
 ---
 
+## Known and not yet fixed
+
+Defects that have been SEEN and MEASURED, and deliberately left for a later
+release. Not questions — nothing here is waiting on a decision, and nothing here
+is a thing a session may quietly drop.
+
+**This section exists because there was nowhere else for one to live.** A defect
+noticed mid-release was recorded in that release's *what is still not right*,
+which is the right place for it and rotates out of view the moment the next
+release is cut. *Open questions* is for owner input and `tools/questions.mjs`
+refuses anything that is not a question. So a known defect that was not being
+fixed today had exactly two homes, one temporary and one wrong.
+
+**It is not gated, and that is worth knowing.** Every ungated list in this repo
+has eventually rotted — an entry fixed and never struck out reads as an
+outstanding defect forever, which is the same false receipt the Status lines and
+the both-directions checks were added to stop. If this grows past a couple of
+entries it should get the same treatment: an assertion that each one still
+reproduces.
+
+- **The focus ring on the capture box is clipped, on every side, by 5px.**
+  Reported from a device, 2026-08-25; the left edge is where it shows, because
+  that is where the box runs closest to the frame's own edge.
+  **Measured.** `#capture` carries `outline: 3px solid` at `outline-offset: 2px`,
+  so the ring's outer edge wants to sit 5px outside the element — at x=11 with
+  the element at x=16. It is not the viewport that cuts it: the clipper is
+  `header.frame`, whose `overflow-y: auto` (ADR-0100, so the frame scrolls inside
+  itself rather than pushing the runway off screen) makes `overflow-x` compute to
+  `auto` as well. **A box that only meant to scroll vertically clips
+  horizontally too, and an outline is painted OUTSIDE the element it belongs
+  to.** Identical at 390px and 900px, so it is every width rather than a narrow
+  screen artefact.
+  **Why it matters beyond looking wrong.** A focus indicator is WCAG 2.4.11 and
+  2.4.13; a ring missing one of its four sides is a weaker indicator than the one
+  the a11y walk measured and passed, and the walk passed it because it reads
+  computed style — `outline-width` is 3px whether or not the pixels survive to
+  the screen. **The gate cannot see this class of defect at all**, which is the
+  more useful half of the finding.
+  **Not fixed today, on the owner's instruction.** The obvious remedies each cost
+  something that wants weighing rather than guessing: `overflow-x: clip` with
+  `overflow-clip-margin` on the frame, dropping the offset so the ring sits
+  inside, or insetting the frame's content. None is obviously right.
+
 ## Open questions
 
 Owner input needed. Recorded rather than guessed. **Nothing below has been
@@ -724,6 +767,181 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.0**. Five palette
+  families, both modes each, and the picker to choose one. ADR-0110.
+  **The payoff, measured:** all ten palettes clear all thirteen pairs in **0.25
+  seconds**. Under the old arrangement that would have been about forty minutes
+  of browser. It is the whole argument for 3.3.0, demonstrated rather than
+  claimed.
+  **Where they come from.** Four were derived by the hub's 2026-07-30 palette
+  council — four independent proposals, adversarial verification, three judging
+  lenses — and have been sitting in `noahjefferson/palettes/families.json`
+  unused. They are stated in the hub's role vocabulary (`page`, `surfaces[]`,
+  `rail`, `text[]`, `accents`), so they are mapped onto Quietkeep's seven, with
+  `rail` composited to a flat hex. **`warm` is the one Quietkeep has and the hub
+  families do not**, so it is derived per family by searching a warm hue for the
+  lightness that clears 4.5:1 against both `bg` and `surface` — and then held to
+  the same gate as everything else, which is the whole of the criteria.
+  **Consolidated FIRST, because PALETTES.md §6 says to and says why:** "if a
+  palette is currently declared in N places, adding F families makes it N x F x 2
+  blocks that must never drift". This file held four such places. `docs/
+  palettes.json` is now the one source and `tools/palettes.mjs` generates
+  `public/palettes.css`; `palettes:check` fails on drift and is what CI runs.
+  **Palette and mode stay independent axes** — `data-palette` beside
+  `data-theme`, two decisions rather than ten.
+  **Named, never a swatch.** A coloured square alone asks the reader to tell
+  colours apart in order to work a colour control, which Doctrine §4 forbids.
+  **The flash is real and cannot be fixed here.** PALETTES.md assumes an inline
+  one-liner reads the palette before first paint. This app cannot: `localStorage`
+  is banned outright, kv is IndexedDB and async, and the CSP forbids inline
+  script. So a reader on a non-default family sees one beat of the default — in
+  the RIGHT MODE, since `prefers-color-scheme` is answerable before paint, so
+  what settles is hue rather than day into night. Recorded rather than papered
+  over, and it is a cross-app assumption that did not survive contact with this
+  app's own rules.
+  **`palettes.css` is precached.** A separate stylesheet is a separate thing for
+  the service worker to hold, and an offline-first app that cached its rules and
+  not its colours would come back with none.
+  **CI found the consolidation's last consumer.** `brand.mjs` parsed the seven
+  roles out of `public/app.css` and went red with twenty "token not found" —
+  skipping the build and BOTH walks behind it. A THIRD place was reading the
+  values; finding it is what one source is FOR. It reads `docs/palettes.json`
+  now and covers all ten palettes rather than two. Its hand-written pair list
+  stays on purpose: `line` is a border, a graphical object at 3:1, and the
+  inventory reads `color` and `background` only — so that list carries the one
+  floor arithmetic cannot see, and the division of labour is in ADR-0110. All ten
+  clear it, tightest 4.58:1.
+  **And it went red because a hand-picked subset of gates was run instead of the
+  Spine** — the exact thing `npm run spine` exists to prevent. Brand assets was
+  not on the list because there was no reason to think colour tokens moving would
+  touch it, which is precisely why it needed running.
+  **Verified green on `35937cb`** — full Spine and Deploy, that exact SHA, and
+  all 39 Spine steps green locally before the push.
+- **Superseded, and kept for the record: 3.3.0.** Colour is
+  checked by arithmetic now, and a palette costs nothing to add. ADR-0110.
+  **The measurement that started it.** The a11y walk made **1,660 contrast
+  assertions** in its last run — for TWO palettes, about 830 each, roughly four
+  minutes of browser each. A sixth palette would have been twenty-four minutes of
+  re-measuring the same thing. It does not have to be: contrast is a property of a
+  PAIR, and a palette swap changes token VALUES — never which token a selector
+  resolves to, nor the size and weight that decide whether it needs 4.5:1 or 3:1.
+  **Structure once, values per palette.** `npm run colour:inventory` walks every
+  state under a SENTINEL palette — each of the seven roles painted a unique probe
+  value, so every computed colour maps to exactly one role BY CONSTRUCTION rather
+  than by luck — and writes `docs/colour-inventory.json`. `npm run palette:check`
+  reads it and does the arithmetic, no browser.
+  **624 rows reduce to THIRTEEN distinct pairs.** A palette is thirteen
+  computations. Both current palettes clear every one; the tightest is `warm` on
+  `bg` at 6.38:1 in light and `ink-soft` on `surface` at 7.93:1 in dark.
+  **It found a shipped bug.** `applyTheme` set `data-theme` and never
+  `color-scheme`, so choosing *light* on a device set to dark turned the app cream
+  and left every dropdown, date box and textarea white-on-grey. Measured through
+  the reader's own route: `--bg` became `#F4F1E9` while the select still rendered
+  `rgb(255,255,255)` on `rgb(107,107,107)`. **The old gate could not have found
+  it** — it renders each theme under a device set to match, so a choice
+  DISAGREEING with the device is the one case it never renders.
+  **And thirteen controls the palette cannot reach**, every `<select>`,
+  `<textarea>` and `<input type=date>` in the app, painted by the user agent.
+  True before and invisible, because they were measured like any other colour and
+  passed. Declared in `.colour-ua-owned` with a reason each, held BOTH ways.
+  **Planted, both halves.** A palette with grey ink was caught on all thirteen
+  pairs with the states each shows on; a palette missing three roles was refused
+  before any arithmetic. The extraction's own detector caught its first installer
+  too — the sentinel lost to `:root:not([data-theme="light"])` on specificity and
+  reported all 5,267 real colours as unowned.
+  **Freshness:** the inventory carries the same UI hash `.a11y-stamp` uses and
+  `palette:check` refuses to answer if it does not match the tree — a gate
+  checking palettes against a structure the app no longer has is worse than none,
+  because it reports green. `colour:inventory` is `.spine-exempt`: it writes a
+  tracked file, and CI regenerating what a gate checks repairs the drift instead
+  of reporting it.
+  **Still not right:** this removes repetition, not the need to walk the app. A
+  state the walk never visits has its colours unchecked, exactly as before.
+  **And the picker is still the old one.** This release makes a palette free to
+  VERIFY; it does not yet make one selectable. The control offers device / light
+  / dark, not a list read from `docs/palettes.json`. `data-theme` becoming
+  `data-palette`, a stylesheet block per palette and a picker that lists whatever
+  the file holds is the next slice, and it is cheap now precisely because the
+  verification stopped being the expensive part.
+  **Verified green on `045ee6c`** — full Spine and Deploy, that exact SHA.
+- **Superseded, and kept for the record: 3.2.0.** The wide
+  arrangement: above 900px the job view shows the hub BESIDE the job.
+  **Not a new decision.** ADR-0108 specified this second arrangement and built
+  for it — that is why stances are `main > section[data-stance-name]` toggled by
+  a class rather than dialogs, and that record says in as many words that
+  building them as dialogs first is what would make this expensive. It did not
+  happen, so **nothing in `src/` changed for this**. `paintHub` resolves the same
+  one stance and sets the same `.stance-on`; the layout places it. ADR-0109.
+  **900 is measured.** `body` caps at 46rem, so every viewport from 768px up
+  rendered identically — 132px of nothing each side on a tablet in landscape,
+  272px at 1280. The hub asks for 276px at its natural width; 280 + 24 between +
+  a 560 floor for the job + 16 padding each side is 896.
+  **A pinned sidebar, not a grid, and a picture is what settled it.** The first
+  version made `<main>` a two-column grid. Grid ROWS couple the columns, so row
+  one was as tall as the hub and the job column opened with about 230px of
+  nothing — visible at a glance in a render, invisible in every number. `<main>`
+  keeps its ordinary block flow at every width now, so a job's internal layout is
+  identical narrow and wide, and the hub is pinned out of that flow.
+  **PX in the media query, never rem** — inside a query `rem` resolves against
+  the initial root size, not the zoomed one, and this file has paid for that once
+  at `.about-bar`.
+  **The walks measured one viewport, so the arrangement would have shipped
+  unchecked** (hub LESSONS 28). `tools/a11y.mjs` gains a wide pass in both
+  themes, at 1000x750 and at 900px under 200% text: overlap, targets, axe,
+  horizontal overflow, and the arrangement ITSELF — that the hub is genuinely
+  beside the job rather than stacked above it, because a wide pass run against a
+  page still showing one pane would report green about a layout that is not there
+  (LESSONS 104). The `beside` predicate was checked against both widths before it
+  was trusted: true at 1000px, false at 768px.
+  Contrast is not re-measured wide, and `size-check` gets no wide budget. Both
+  are decisions with reasons written at the code rather than omissions.
+  **Verified green on `7f65d49`** — full Spine and Deploy, that exact SHA.
+- **Superseded, and kept for the record: 3.1.3.** Two of the
+  three unmeasured surfaces now have a door the walk can drive, so the way-out
+  check measures **20 on screen** rather than 18.
+  `#focus-sheet` declares `data-door="#cards .card-focus | #focus-stop"` — the
+  route a reader takes. `#tour` needed one more idea: its replay control lives
+  INSIDE a sheet, so `data-door-via="sheet-group-actions"` names the room and
+  `data-door="#tour-replay"` names the control. A second attribute rather than a
+  first tap in the chain, because More is opened programmatically in this walk on
+  purpose — `click('#open-more')` was observed resolving without the dialog
+  opening, and a door that flakes reads as a surface that is broken.
+  **`#replan-sheet` stays structural, and this is the reason rather than an
+  omission.** Its door needs an item whose date has passed. Manufacturing that
+  inside the way-out block couples it to the shared inbox the blocks above it
+  consume — which is exactly the coupling that cost four CI rounds on
+  `clarifyCard` in 3.1.0. It is printed by name in the check's own output.
+  **Verified green on `581727e`** — full Spine and Deploy, that exact SHA. 3.1.2
+  before it was green on `d93ec34`, all forty-nine steps.
+- **Superseded, and kept for the record: 3.1.2.** The row cost
+  a row, and it did not have to.
+  3.1.1 pinned the way back inside a job by making `#stance-bar` the frame's own
+  last ROW, which was right and cost sixty pixels of fixed height — so the frame
+  stood down one text step earlier than before. `.bar` was already
+  `flex-wrap: wrap`, so the two controls moved into it instead, after the ⓘ and
+  before *More*. **Measured at four sizes across all three versions**, not
+  reasoned about:
+  1000x750 at 100% — frame 209px before 3.1.1, 270px in 3.1.1, **215px now**, and
+  the way back pinned at every scroll position rather than leaving at `-97`.
+  1000x750 at 150% — the frame stood down in 3.1.1 and **does not now**, at 318px
+  against 309px before any of this.
+  390x844 at 125% — **still stands down**, and this is the part that is not
+  recovered: a narrow bar wraps, so the group costs a line either way. The
+  headroom there was seven pixels before 3.1.1 (415px against a 422px threshold),
+  so that size was going to fold on any addition at all.
+  **A real fault, caught by the a11y walk before it left the machine:** a nested
+  flex row inside `.bar` is one flex item and does not shrink below its content
+  width without `min-width: 0`, so the pair ran **103px past the right edge** at
+  320px/200% in BOTH themes — sideways scroll, which is the one thing the shell
+  asserts never happens.
+  **And the walk could not write down what it found.** The smoke walk has left
+  `.walk-failures` since 3.0.1 and the Spine prints it; this one did not, so
+  reading two failures cost a second four-minute run. It leaves `.a11y-failures`
+  now, the Spine's error step prints it beside the other, and the mechanism was
+  PLANTED — the wrap fix was removed, the walk went red, and the receipt carried
+  both lines verbatim before it was put back.
+- **Superseded, and kept for the record: 3.1.1.** Promoted 2026-08-25 at
+  `0f70d96`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.1.1**. The way
   back out of a job was in the box that scrolls.
   `#stance-bar` — *Everywhere else* and the **+** — sat inside `#runway` and the
@@ -879,12 +1097,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.0.1** — promoted at
-  `ff7ea5c`, Deploy success AND Spine success read from the runs. Nothing on
-  screen changed: an ITERATION, cut because a shipped file was edited. One
-  answer to "how do you reach this control" now lives in `src/reach.ts` and is
-  read by the app and both browser walks instead of three copies that drifted;
-  the accessibility receipt guards the promote rather than every checkpoint.
+- **https://quietkeep.pages.dev** — production, **3.1.1** — promoted at
+  `0f70d96`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `4236c88`, the staging head
+  that was walked, and the merge asserted to descend from `1d2109a` before it was
+  pushed — both checked rather than inferred from a clean merge, because a merge
+  that did not descend from the real production has been produced here once.
+  **The Spine on `main` is green for the first time in three promotes.** The two
+  before it went red on the browser walks and shipped anyway, correctly — the app
+  was sound and the harness was not. What was wrong: a walk that slept a guessed
+  200ms between a write and the read depending on it, and a shared triage
+  precondition that could report an empty surface without reporting why.
+  What this carries: the way out of every dialog moved outside the box that
+  scrolls, including the two longest surfaces in the app and, in 3.1.1, the way
+  back out of a job on the main screen; the record's two readings; sync no longer
+  halting when a device is re-paired; and a light-or-dark chooser.
+  **Still not right, and named rather than closed:** inside a job the frame folds
+  one text step earlier than before, and once folded the way back scrolls again;
+  and three surfaces are checked structurally because the walk has no door it can
+  drive to them.
+- **Superseded, and kept for the record: 3.0.2** — promoted at `1d2109a`.
+  Nothing on screen changed. `src/ui/session.ts` publishes `data-settled` from
+  the commit queue, so the walks can ask whether a write has landed instead of
+  sleeping a guessed interval; 134 of 144 waits were converted, and the ten left
+  are waiting on real time.
+  **This line was missing until 2026-08-25.** The production line above it read
+  3.0.1 for a full release, through a promote that did not update it — the same
+  stale-record defect this block exists to prevent, in the block itself.
+- **Superseded, and kept for the record: 3.0.1** — promoted at
+  `ff7ea5c`. Nothing on screen changed: an ITERATION, cut because a shipped file
+  was edited. One answer to "how do you reach this control" now lives in
+  `src/reach.ts` and is read by the app and both browser walks instead of three
+  copies that drifted; the accessibility receipt guards the promote rather than
+  every checkpoint.
 - **Superseded, and kept for the record: 3.0.0** — promoted at `b7bfc83`. The app has places: the landing
   view is a hub of doors rather than fifteen conditional sections in one
   scroller, going through a door shows that job and nothing else, capture is a

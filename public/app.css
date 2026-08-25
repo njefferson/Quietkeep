@@ -19,13 +19,16 @@
 :root {
   color-scheme: light dark;
 
-  --bg: #F4F1E9;
-  --surface: #FFFFFF;
-  --ink: #1B2333;
-  --ink-soft: #4C5670;
-  --line: #8E8A7F;   /* 3.45:1 on surface, 3.05:1 on bg — a control boundary is a graphical object (WCAG 1.4.11) */
-  --accent: #33425F;
-  --warm: #7A4E00;
+  /* THE SEVEN COLOUR ROLES ARE NOT DECLARED HERE ANY MORE (3.4.0).
+   *
+   * They live in `public/palettes.css`, generated from `docs/palettes.json` by
+   * `npm run palettes`. PALETTES.md §6: "if a palette is currently declared in
+   * N places, adding F families makes it N x F x 2 blocks that must never
+   * drift". This file held four of those places. Five families would have been
+   * twenty blocks and one source of truth nobody could point at.
+   *
+   * Nothing else changes: every rule below still reads `var(--ink)` and the
+   * rest, because a reskin is a value swap and never a rename. */
 
   --gap: 1rem;
   --radius: 0.75rem;
@@ -74,13 +77,6 @@
  * they are the ones that must have a single home. The two rules below map them;
  * neither restates them. */
 :root {
-  --dark-bg: #141A26;
-  --dark-surface: #1E2637;
-  --dark-ink: #F2F0EA;
-  --dark-ink-soft: #B3BCCE;
-  --dark-line: #6A7896;   /* 3.42:1 on surface, 3.93:1 on bg */
-  --dark-accent: #AFC0DC;
-  --dark-warm: #F5C978;
 }
 
 /* THE DEVICE ANSWERS UNLESS THE READER HAS (3.1.0).
@@ -89,28 +85,9 @@
  * ships `script-src 'self'` with no inline script, so nothing of ours runs
  * before the first paint. Deciding the theme entirely in JS would give a reader
  * who chose light on a dark device a dark flash on every single open. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: var(--dark-bg);
-    --surface: var(--dark-surface);
-    --ink: var(--dark-ink);
-    --ink-soft: var(--dark-ink-soft);
-    --line: var(--dark-line);
-    --accent: var(--dark-accent);
-    --warm: var(--dark-warm);
-  }
-}
-
-/* And chosen dark wins on a light device, which is the other half of a choice. */
-:root[data-theme="dark"] {
-  --bg: var(--dark-bg);
-  --surface: var(--dark-surface);
-  --ink: var(--dark-ink);
-  --ink-soft: var(--dark-ink-soft);
-  --line: var(--dark-line);
-  --accent: var(--dark-accent);
-  --warm: var(--dark-warm);
-}
+/* The mode mapping moved to `public/palettes.css` too, per family, generated.
+   It was two hand-written blocks here; it is ten generated ones there, and the
+   difference between those two numbers is exactly why it is generated. */
 
 * { box-sizing: border-box; }
 
@@ -3085,8 +3062,85 @@ body[data-plain="1"] #held
    possible state to debug. Excluding `.stance-on` from the hiding rule instead
    means the active job keeps whatever display it always had, and a `hidden`
    element stays hidden with no special case. */
-#runway[data-hub][data-stance] main > *:not(.stance-on):not(.capture-extras):not([data-always]) { display: none; }
+/* THE HUB IS EXCLUDED HERE AND HIDDEN SEPARATELY (3.2.0), rather than hidden
+   here and un-hidden above the breakpoint. `display: revert` would discard the
+   element's OWN rule and fall back to the UA default — which is the mistake the
+   paragraph above records paying for, one element along. Excluding it means it
+   keeps whatever display it always had, in both arrangements.
+   Everything else this rule hides stays hidden at every width, so a wide screen
+   is not the fifteen-section runway coming back under another name. */
+#runway[data-hub][data-stance] main > *:not(#hub):not(.stance-on):not(.capture-extras):not([data-always]) { display: none; }
+/* Below the breakpoint there is only room for the job, so the hub goes. `.98`
+   because a viewport can be fractional and a gap between the two queries is a
+   width at which neither applies. */
+@media (max-width: 899.98px) {
+  #runway[data-hub][data-stance] main > #hub { display: none; }
+}
 #runway:not([data-hub]) #hub { display: none; }
+
+/* --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) -------------------------------
+ *
+ * ADR-0108 built the stance model for this and said so: "a stance is therefore a
+ * region the layout places, and it must never assume its own size. Narrow shows
+ * exactly one and the hub is a place you return to; wide can show the hub beside
+ * one or more stances. Same definitions, one set of behaviours, two
+ * arrangements." That is why stances are sections with a class rather than
+ * dialogs — a `<dialog>` owns the viewport and can never be one pane.
+ *
+ * So there is no second layout here and no second implementation. `paintHub`
+ * resolves the same one stance and sets the same `.stance-on`; what changes is
+ * where the boxes are put.
+ *
+ * WHAT WAS MEASURED. The body caps at 46rem, so from 768px upward every viewport
+ * rendered identically — 132px of nothing each side on a tablet in landscape,
+ * 272px at 1280. The hub asks for 276px at its natural width. 280 for the hub,
+ * 24 between, and a floor of 560 for the job is 864, plus the page's own 16 each
+ * side: 896. Hence 900.
+ *
+ * PX, NOT REM, IN THE QUERY. Inside a media query `rem` resolves against the
+ * INITIAL root font size and never the zoomed one, so a rem threshold silently
+ * fails at exactly the text size it was written for — this file has already paid
+ * for that once, at `.about-bar`. The app's own text-size control makes it live.
+ */
+@media (min-width: 900px) {
+  /* Room for two columns. 280 + 24 + 736 — the job keeps the comfortable
+     measure it has today rather than being squeezed to make room. */
+  body { max-width: 65rem; }
+
+  /* THE HUB VIEW IS UNCHANGED, deliberately. With nothing chosen there is only
+     one thing on the page, and a list of doors stretched across 1,040px is a
+     worse list. It keeps the measure it had and sits where it sat. */
+  #runway[data-hub]:not([data-stance]) main > #hub {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+
+  /* THE JOB VIEW IS THE TWO-PANE ONE, AND `<main>` KEEPS ITS OWN FLOW.
+   *
+   * The first version made `main` a two-column grid and placed every non-hub
+   * child in column 2. It worked and it looked wrong, which a picture showed in
+   * one glance: grid ROWS couple the columns, so row one was as tall as the hub
+   * (277px) and the first thing in the job column sat at the top of it with
+   * about 230px of nothing underneath. The hub is one tall box beside a flow of
+   * many; that is not a grid of rows.
+   *
+   * A pinned sidebar instead. `main` is a normal block flow — exactly the flow
+   * the job has today, so nothing about a job's internal layout changes with the
+   * width — and the hub is taken out of it and placed at the left, with the flow
+   * inset to clear it. No wrapper, no markup move, and no second layout for the
+   * job to be laid out by. */
+  #runway[data-hub][data-stance] main {
+    position: relative;
+    padding-inline-start: calc(17.5rem + 1.5rem);
+  }
+  #runway[data-hub][data-stance] main > #hub {
+    position: absolute;
+    inset-inline-start: 0;
+    top: 0;
+    width: 17.5rem;
+    margin: 0;
+  }
+}
 
 .hub { margin: 0 0 1rem; }
 .hub-doors { list-style: none; margin: 0.5rem 0 0; padding: 0; }
@@ -3111,13 +3165,28 @@ body[data-plain="1"] #held
    surface is the pair `.storage-note` and the fold already use. */
 .hub-count { display: block; margin-top: 0.15rem; color: var(--ink-soft); font-size: 0.9375rem; }
 
-/* The frame's last row since 3.1.1 — see the note in the markup. The bottom
-   margin is gone with the move: the frame's own border and margin are what
-   separate it from the runway now, and keeping both put a visible gap between
-   the way out and the rule under it. */
-.stance-bar { display: flex; gap: 0.5rem; align-items: center; margin: 0.5rem 0 0.35rem; }
+/* A group inside the top bar since 3.1.2 — see the note in the markup. No
+   margin: `.bar` spaces its own children, and the two controls travel together
+   when the bar wraps rather than splitting across lines. */
+/* IT HAS TO WRAP AND IT HAS TO SHRINK. A nested flex row inside `.bar` is one
+   flex item, and a flex item does not shrink below its content width without
+   `min-width: 0` — so at 320px/200% the pair ran 103px past the right edge in
+   BOTH themes and the page scrolled sideways, which is the one thing the shell
+   asserts it never does. Caught by the a11y walk before it left this machine.
+   `.bar` wrapping does not help here: the group is what has to break. */
+.stance-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 0;
+}
+.stance-bar > button { max-width: 100%; }
 .stance-add {
-  margin-left: auto;
+  /* `margin-left: auto` is GONE with the move to the bar (3.1.2). It was what
+     pushed the + to the far end of a full-width row; inside a two-item group it
+     would instead push the + away from the way out it belongs beside, and the
+     bar already does the spacing. */
   min-width: var(--target);
   min-height: var(--target);
   font-size: 1.25rem;
