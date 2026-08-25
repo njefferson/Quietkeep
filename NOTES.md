@@ -724,6 +724,9 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **Staging and production are level at 3.1.1, and nothing is waiting on you.**
+  Promoted 2026-08-25 at `0f70d96`; the block below is what was staged and is now
+  what is live.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.1.1**. The way
   back out of a job was in the box that scrolls.
   `#stance-bar` — *Everywhere else* and the **+** — sat inside `#runway` and the
@@ -879,12 +882,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.0.1** — promoted at
-  `ff7ea5c`, Deploy success AND Spine success read from the runs. Nothing on
-  screen changed: an ITERATION, cut because a shipped file was edited. One
-  answer to "how do you reach this control" now lives in `src/reach.ts` and is
-  read by the app and both browser walks instead of three copies that drifted;
-  the accessibility receipt guards the promote rather than every checkpoint.
+- **https://quietkeep.pages.dev** — production, **3.1.1** — promoted at
+  `0f70d96`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `4236c88`, the staging head
+  that was walked, and the merge asserted to descend from `1d2109a` before it was
+  pushed — both checked rather than inferred from a clean merge, because a merge
+  that did not descend from the real production has been produced here once.
+  **The Spine on `main` is green for the first time in three promotes.** The two
+  before it went red on the browser walks and shipped anyway, correctly — the app
+  was sound and the harness was not. What was wrong: a walk that slept a guessed
+  200ms between a write and the read depending on it, and a shared triage
+  precondition that could report an empty surface without reporting why.
+  What this carries: the way out of every dialog moved outside the box that
+  scrolls, including the two longest surfaces in the app and, in 3.1.1, the way
+  back out of a job on the main screen; the record's two readings; sync no longer
+  halting when a device is re-paired; and a light-or-dark chooser.
+  **Still not right, and named rather than closed:** inside a job the frame folds
+  one text step earlier than before, and once folded the way back scrolls again;
+  and three surfaces are checked structurally because the walk has no door it can
+  drive to them.
+- **Superseded, and kept for the record: 3.0.2** — promoted at `1d2109a`.
+  Nothing on screen changed. `src/ui/session.ts` publishes `data-settled` from
+  the commit queue, so the walks can ask whether a write has landed instead of
+  sleeping a guessed interval; 134 of 144 waits were converted, and the ten left
+  are waiting on real time.
+  **This line was missing until 2026-08-25.** The production line above it read
+  3.0.1 for a full release, through a promote that did not update it — the same
+  stale-record defect this block exists to prevent, in the block itself.
+- **Superseded, and kept for the record: 3.0.1** — promoted at
+  `ff7ea5c`. Nothing on screen changed: an ITERATION, cut because a shipped file
+  was edited. One answer to "how do you reach this control" now lives in
+  `src/reach.ts` and is read by the app and both browser walks instead of three
+  copies that drifted; the accessibility receipt guards the promote rather than
+  every checkpoint.
 - **Superseded, and kept for the record: 3.0.0** — promoted at `b7bfc83`. The app has places: the landing
   view is a hub of doors rather than fifteen conditional sections in one
   scroller, going through a door shows that job and nothing else, capture is a
