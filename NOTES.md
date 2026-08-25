@@ -788,8 +788,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.0.0** — promoted at
-  `b7bfc83`, Deploy success read from the run. The app has places: the landing
+- **https://quietkeep.pages.dev** — production, **3.0.1** — promoted at
+  `ff7ea5c`, Deploy success AND Spine success read from the runs. Nothing on
+  screen changed: an ITERATION, cut because a shipped file was edited. One
+  answer to "how do you reach this control" now lives in `src/reach.ts` and is
+  read by the app and both browser walks instead of three copies that drifted;
+  the accessibility receipt guards the promote rather than every checkpoint.
+- **Superseded, and kept for the record: 3.0.0** — promoted at `b7bfc83`. The app has places: the landing
   view is a hub of doors rather than fifteen conditional sections in one
   scroller, going through a door shows that job and nothing else, capture is a
   (+) reachable from everywhere, and coming back up is one control in the same
