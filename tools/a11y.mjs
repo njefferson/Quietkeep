@@ -3764,12 +3764,28 @@ try {
     });
     await page.fill('#detail-date', todayKey);
     await page.click('#detail-date-set');
-    await page.waitForTimeout(200);
+    // THE APP SAYS WHEN THE WRITE HAS LANDED (3.0.2) — ask it rather than
+    // guessing 200ms. The guess was right on this machine, in both themes, and
+    // wrong on a CI runner in the SECOND one: light passed and dark reported
+    // the horizon absent on a byte-identical tree, which is a write that had
+    // not finished rather than a line that does not render. The branch below
+    // refuses to call that "correctly absent", so it said so — and what it was
+    // actually measuring was how busy the runner was.
+    //
+    // `.catch` and then carry on: if the signal never arrives, the assertion
+    // below is what reports it, and swallowing the wait here does not swallow
+    // the finding.
+    await page.waitForSelector('body[data-settled="true"]', { timeout: 5000 }).catch(() => {});
     await page.click('#detail-close');
     await enterStance(page, 'held');
     await page.locator('#cards .card-focus').first().click();
     await page.waitForSelector('#focus:not([hidden])');
     await page.waitForSelector('#focus-fixed:not([hidden])', { timeout: 5000 }).catch(() => {});
+    // AND THE ONE THE BRANCH BELOW ACTUALLY TURNS ON. `#focus-fixed` was waited
+    // for and `#nextup-fixed` was sampled, so a horizon that had landed a beat
+    // later read as one that never came — the two lines are painted from the
+    // same fold and there was no reason to wait for one and not the other.
+    await page.waitForSelector('#nextup-fixed:not([hidden])', { timeout: 5000 }).catch(() => {});
 
     const horizon = await page.evaluate(() => ({
       onFocus: document.querySelector('#focus-fixed')?.hidden === false

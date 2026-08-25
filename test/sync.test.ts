@@ -469,3 +469,46 @@ test('a cure still arrives when the device already holds its cause', async () =>
   assert.ok(!landed.includes(cause.id), 'and the cause was not taken in twice');
   assert.equal(r.received, 1);
 });
+
+// --- overlapping chunks, which is what a re-pair leaves behind ---------------
+
+test('THE ONE FROM A DEVICE: overlapping chunks never offer the same event twice', async () => {
+  // Pair, erase, pair again, sync. The mailbox still holds every chunk from
+  // before the erase, and chunks OVERLAP by design — each carries what the
+  // sender held at the time, so consecutive ones share most of their contents.
+  // The store is empty, so "do I already hold this" answers no to all of them.
+  //
+  // Reported from a device: 8,124 events offered, 2,799 of them distinct, and
+  // the write refused the other 5,325 with a ConstraintError partway through.
+  // Nothing was lost — the store's own key is what refused them — but the
+  // exchange STOPPED and the two devices were left half-synced.
+  const { wire, box } = fakeWire();
+  await drop(box, { kind: 'events', events: [ev('a', 1), ev('a', 2), ev('a', 3)] }, '001-aaaaaaaaaaaaaaaa');
+  await drop(box, { kind: 'events', events: [ev('a', 2), ev('a', 3), ev('a', 4)] }, '002-aaaaaaaaaaaaaaaa');
+  await drop(box, { kind: 'events', events: [ev('a', 3), ev('a', 4), ev('a', 5)] }, '003-aaaaaaaaaaaaaaaa');
+
+  const b = device('b');
+  const r = await exchangeOnce(b.deps(wire));
+
+  const offered = b.persisted.flat();
+  const ids = offered.map((e) => e.id);
+  assert.deepEqual([...new Set(ids)].sort(), ids.slice().sort(),
+    'the same id must never be handed to the store twice in one batch — bulkAdd is append-only and refuses it');
+  assert.deepEqual(ids.sort(), ['a-1', 'a-2', 'a-3', 'a-4', 'a-5'],
+    'and every distinct event still arrives; deduping must not drop one');
+  assert.equal(r.received, 5, 'the count reported is the count written');
+});
+
+test('and a batch already half-held is deduped against the store as well as itself', async () => {
+  const { wire, box } = fakeWire();
+  await drop(box, { kind: 'events', events: [ev('a', 1), ev('a', 2)] }, '001-aaaaaaaaaaaaaaaa');
+  await drop(box, { kind: 'events', events: [ev('a', 2), ev('a', 3)] }, '002-aaaaaaaaaaaaaaaa');
+
+  // This device already holds a-1, which is the ordinary case for a second sync.
+  const b = device('b', [ev('a', 1)]);
+  await exchangeOnce(b.deps(wire));
+
+  const ids = b.persisted.flat().map((e) => e.id).sort();
+  assert.deepEqual(ids, ['a-2', 'a-3'],
+    'held ones are skipped, repeats within the batch are skipped, the rest land once');
+});

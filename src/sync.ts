@@ -243,7 +243,25 @@ export async function exchangeOnce(deps: ExchangeDeps): Promise<ExchangeResult> 
   // device, permanently, with nothing reporting a fault. The store's own primary
   // key is the id, so this matches what "already held" actually means.
   const have = new Set(deps.localEvents.map(e => e.id));
-  const fresh = arrived.filter(e => !have.has(e.id));
+  // AND NOT TWICE WITHIN ONE BATCH (3.1.1).
+  //
+  // `arrived` is the concatenation of EVERY unopened chunk in the mailbox, and
+  // chunks overlap by design — each carries what the sender held at the time, so
+  // consecutive ones share most of their contents. Asking only "do I already
+  // hold this" lets the same id through once per chunk that carried it.
+  //
+  // Reported from a device: pair, erase, pair again, sync — which leaves a
+  // mailbox full of overlapping chunks and nothing in the store to filter them
+  // against. 8,124 events were offered, 2,799 were distinct, and the write
+  // failed on the other 5,325 with a ConstraintError partway through. Nothing
+  // was lost, because the store's own key refused them; but the exchange stopped
+  // and the two devices were left half-synced.
+  const seen = new Set<string>();
+  const fresh = arrived.filter((e) => {
+    if (have.has(e.id) || seen.has(e.id)) return false;
+    seen.add(e.id);
+    return true;
+  });
 
   let received = 0;
   if (fresh.length > 0) {

@@ -48,6 +48,7 @@ import { reviewExceptions, reviewWords } from '../review.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
+import { THEME_KEY, applyTheme, getTheme, setTheme } from '../theme.ts';
 import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
@@ -1795,6 +1796,12 @@ export async function main(edition?: Edition): Promise<void> {
     try {
       const stored = await session.store.getKv<number>(SCALE_KEY);
       if (stored != null) { setScale(normaliseScale(stored)); applyScale(getScale()); }
+      // AND WHICH THEME (3.1.0). Beside the size and for the same reason: a
+      // device preference, read once at boot. Absent means follow the device,
+      // which is what the stylesheet already does on its own — so a store that
+      // cannot be read costs nothing here.
+      const storedTheme = await session.store.getKv<string>(THEME_KEY);
+      if (storedTheme != null) { setTheme(storedTheme); applyTheme(getTheme()); }
     } catch { /* the usual size, and the app still starts */ }
     lensRoot = (await session.store.getKv<string>(LENS_KEY)) || null;
   } catch {

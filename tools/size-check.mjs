@@ -161,7 +161,13 @@ const BUDGET = {
   // 3576 -> 3588 on 2026-08-24 (3.0.0). Twelve words: the hub's heading, the way
   // back, and the (+)'s spoken name. Every door's text is DERIVED from the
   // section it opens, so the list itself adds nothing here however long it gets.
-  words: 3588,
+  // 3588 -> 3650 on 2026-08-25 (3.1.0). Fifty-nine words, and all of them are
+  // the names of choices: *whatever your device is set to*, *light*, *dark*, and
+  // the record's *newest first* / *oldest first* with the four sizes it can
+  // arrive in. The words ARE the control — an option named in a sentence is the
+  // difference between choosing and guessing, and the alternative to every one
+  // of them was the app deciding silently, which is how both were reported.
+  words: 3650,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -181,7 +187,17 @@ const BUDGET = {
   // Set just above today's measurement, as a ratchet. It is not a target that
   // has been met — the honest thing is to say here that it is too high rather
   // than to launder it as an achievement.
-  allSurfacesPx: 11000,
+  // 11000 -> 11300 on 2026-08-25 (3.1.0). Two controls a reader asked for, each
+  // with one line saying what it does: light-or-dark in Settings, and the
+  // record's two readings under Your data. About 250px between them, and the
+  // per-destination numbers barely moved — Settings 2,650 and Your data 2,486,
+  // both well inside 3,000.
+  //
+  // This measures SCROLL, so a control counts as prose here; the note at
+  // `controls` records the same confusion from the other end. The ratchet is
+  // still a ratchet and this is still too high, which the line below has always
+  // said and this raise does not change.
+  allSurfacesPx: 11300,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.
@@ -223,7 +239,18 @@ const BUDGET = {
   // So: seven bullets measure 1330. 1400 is that with one line spare, and ten
   // bullets are still near 3,000 and still fail, which is what this number is
   // actually for.
-  notesPx: 1400,
+  // 1400 -> 1650 on 2026-08-25 (3.1.0). Eight bullets, for a release that fixed
+  // three separately reported defects and added a chooser. They were 2,234px
+  // when first written and are 1,599 now: two were cut for being about the
+  // building rather than about the change, and five were tightened word by word
+  // with nothing dropped. What is left is the ⓘ's own rule — six pixels is never
+  // a reason to cut a sentence, and 199 is one sentence.
+  //
+  // The budget was fitted to SEVEN bullets at 1,330. This is eight, and the
+  // ceiling now says so out loud rather than being cleared by an edit that makes
+  // the product say less. Ten bullets are still near 3,000 and still fail, which
+  // is what this number is actually for.
+  notesPx: 1650,
   // 205 -> 210 on 2026-08-09, ONE COMMIT after this gate was written, because it
   // caught its own author: adding navigation ("More", five destinations and a
   // close) took the count from 199 to 207.
@@ -444,7 +471,19 @@ const BUDGET = {
   // MEETS went from fifteen blocks to a list of doors, which this budget counts
   // in the markup and cannot see — the fourth time in this file's history it has
   // read the wrong way round, and the note is the record.
-  controls: 247,
+  // 247 -> 251 on 2026-08-25 (3.1.0). Four, and every one of them is a choice a
+  // reader asked for rather than a control the app needed: light-or-dark and its
+  // Set, and the record's two readings — how it is ordered and how much arrives
+  // at once. The alternative to each was the app deciding on the reader's behalf
+  // and offering no way to say otherwise, which is what both were reported as.
+  //
+  // A CHOICE IS NOT SPRAWL, and this budget cannot tell the difference — it
+  // counts controls in the markup, and four selects that replace four decisions
+  // taken for somebody look identical to four things added for their own sake.
+  // That is the fifth time this file's note has had to say which way round a
+  // rise reads. Nothing else moved: no destination gained a row and no surface
+  // gained a step.
+  controls: 251,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM
@@ -540,9 +579,28 @@ try {
       (notesPx <= BUDGET.notesPx ? ok : fail)(
         `this release's notes are ${notesPx}px of that (budget ${BUDGET.notesPx}) — they rotate, so they are not in the total`);
     }
-    total += px - notesPx;
-    (px <= BUDGET.surfacePx ? ok : fail)(
-      `${name} is ${px}px of scroll at 390px wide (budget ${BUDGET.surfacePx})`);
+    // THE SAME EXCLUSION, IN BOTH PLACES (3.1.0). The notes were taken out of
+    // the ratchet and left inside the per-surface number, and the note above
+    // says why that was not noticed: the ⓘ measured 2,671 against 3,000, so it
+    // had headroom and the question never came up.
+    //
+    // It cannot be right either way round. The ⓘ carries 1,744px of standing
+    // prose and the notes are allowed 1,400 of their own, which is 3,144 — so a
+    // release that spends its full notes allowance fails the ⓘ by construction,
+    // and the only edit that brings it down is deleting patch notes. That is
+    // §62 exactly, and escaping it is what `notesPx` was created for. Measuring
+    // the same block against two ceilings, one of them set without the other in
+    // view, is one budget doing the other's job badly.
+    //
+    // So the per-surface number is standing prose too, and `notesPx` is the
+    // whole of what bounds the notes. Nothing is unmeasured: the ⓘ's permanent
+    // content is held to 3,000 like every other destination, and an essay in a
+    // release still fails on its own line.
+    const standing = px - notesPx;
+    total += standing;
+    (standing <= BUDGET.surfacePx ? ok : fail)(
+      `${name} is ${standing}px of scroll at 390px wide (budget ${BUDGET.surfacePx})`
+      + (notesPx ? `, not counting ${notesPx}px of notes that rotate out` : ''));
   }
   (total <= BUDGET.allSurfacesPx ? ok : fail)(
     `${total}px of standing prose across all ${SURFACES.length} destinations (budget ${BUDGET.allSurfacesPx})`);
