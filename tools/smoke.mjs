@@ -228,6 +228,12 @@ const clarifyCard = async (pg, { want = 'a clarify card', capture = null, past =
     situation: (document.querySelector('#situation-words')?.textContent ?? '').trim() || null,
     lens: document.querySelector('#lens')?.value || null,
     lensShown: document.querySelector('#lens-row')?.hidden === false,
+    // WHAT THE APP SAYS IT IS HOLDING, in its own words. "The inbox is empty"
+    // and "the surface is not showing what the inbox holds" are different
+    // faults and the prompt alone cannot tell them apart — three CI rounds were
+    // spent on a report that could say `routes: 0` and nothing more.
+    gauge: (document.querySelector('#gauge')?.textContent ?? '').trim().slice(0, 90) || null,
+    triage: (document.querySelector('#triage')?.textContent ?? '').replace(/\s+/g, ' ').trim().slice(0, 140) || null,
   })).catch(() => ({}));
 
   const put = async (n) => {
@@ -7575,7 +7581,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // `clarifyCard` restores the original condition — the PROMPT leaving the heat
   // pass — with the bound it always needed, and it is the same loop the other
   // three sites now use.
-  const toClarify = await clarifyCard(tpage, { want: 'the clarify pass' });
+  // ITS OWN ITEM, AND THE HELPER ALLOWED TO PUT IT DOWN AGAIN. This block
+  // captured 'the thing in the shed' and then called the helper without naming
+  // it, so a single empty inbox was fatal where three attempts would not be —
+  // and the inbox here is shared with every block above, which consume it at a
+  // rate that differs with machine speed. That is the whole reason `capture`
+  // exists; this was the one site not using it.
+  const toClarify = await clarifyCard(tpage, {
+    want: 'the clarify pass', capture: 'the thing in the shed',
+  });
   const wanted = () => tpage.locator('#triage-actions .route', { hasText: 'Put it somewhere' });
   if (!toClarify.ok || await wanted().count() === 0) {
     const offered = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
