@@ -765,6 +765,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   **Not measured on screen:** the walkthrough, the replan card and the
   stopping-for-now note have the right shape but no door the walk can drive, so
   they are checked structurally and NAMED in the check's own output.
+  **Verified green on `ead9518`** — the full Spine on the runner, Deploy
+  succeeded for that same SHA. Two red rounds came first and neither was the
+  app: the a11y walk slept a guessed 200ms between setting a date and reading
+  whether the horizon line rendered, which was right here in both themes and
+  wrong on a runner in the second one; and the smoke walk's inbox precondition
+  failed with `routes: 0, prompt: ""`, a report that says the surface is empty
+  and nothing about why. Both are fixed at the assumption rather than at the
+  site — the a11y walk asks `data-settled`, and four blocks now share
+  `clarifyCard`, which names the stance, the prompt and the filters an earlier
+  block may have left standing.
 - **Superseded, and kept for the record: 3.0.1.** The app has
   places. The landing view was fifteen conditional sections in one scroller and
   reading it was reading an article — a position rather than somewhere to be, and
