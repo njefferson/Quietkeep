@@ -724,7 +724,38 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.1.3**. Two of the
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.2.0**. The wide
+  arrangement: above 900px the job view shows the hub BESIDE the job.
+  **Not a new decision.** ADR-0108 specified this second arrangement and built
+  for it — that is why stances are `main > section[data-stance-name]` toggled by
+  a class rather than dialogs, and that record says in as many words that
+  building them as dialogs first is what would make this expensive. It did not
+  happen, so **nothing in `src/` changed for this**. `paintHub` resolves the same
+  one stance and sets the same `.stance-on`; the layout places it. ADR-0109.
+  **900 is measured.** `body` caps at 46rem, so every viewport from 768px up
+  rendered identically — 132px of nothing each side on a tablet in landscape,
+  272px at 1280. The hub asks for 276px at its natural width; 280 + 24 between +
+  a 560 floor for the job + 16 padding each side is 896.
+  **A pinned sidebar, not a grid, and a picture is what settled it.** The first
+  version made `<main>` a two-column grid. Grid ROWS couple the columns, so row
+  one was as tall as the hub and the job column opened with about 230px of
+  nothing — visible at a glance in a render, invisible in every number. `<main>`
+  keeps its ordinary block flow at every width now, so a job's internal layout is
+  identical narrow and wide, and the hub is pinned out of that flow.
+  **PX in the media query, never rem** — inside a query `rem` resolves against
+  the initial root size, not the zoomed one, and this file has paid for that once
+  at `.about-bar`.
+  **The walks measured one viewport, so the arrangement would have shipped
+  unchecked** (hub LESSONS 28). `tools/a11y.mjs` gains a wide pass in both
+  themes, at 1000x750 and at 900px under 200% text: overlap, targets, axe,
+  horizontal overflow, and the arrangement ITSELF — that the hub is genuinely
+  beside the job rather than stacked above it, because a wide pass run against a
+  page still showing one pane would report green about a layout that is not there
+  (LESSONS 104). The `beside` predicate was checked against both widths before it
+  was trusted: true at 1000px, false at 768px.
+  Contrast is not re-measured wide, and `size-check` gets no wide budget. Both
+  are decisions with reasons written at the code rather than omissions.
+- **Superseded, and kept for the record: 3.1.3.** Two of the
   three unmeasured surfaces now have a door the walk can drive, so the way-out
   check measures **20 on screen** rather than 18.
   `#focus-sheet` declares `data-door="#cards .card-focus | #focus-stop"` — the

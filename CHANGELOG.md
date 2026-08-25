@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.2.0 — CAPABILITY
+
+*2026-08-25*
+
+- **On a wide screen you can see where you are AND what you are doing, at the same time.** Go into a job on a tablet in landscape and the list of places stays on the left while the job fills the rest. Below about 900 pixels nothing changes at all — one job on screen, and the list is somewhere you come back to.
+- **It uses the room that was there.** The page has been capped at the same width since the shell was built, so from 768 pixels upward every screen showed the same phone-shaped column: 132 pixels of nothing each side on a tablet in landscape, 272 at desktop width. The number 900 is measured rather than chosen — the list of places asks for 276 pixels, the job needs at least 560, and with the spacing that is 896.
+- **Nothing about the job itself changed.** Same screens, same controls, same order, same words. What changed is where the two boxes sit. *Everywhere else* is still there too — the list being visible does not mean the way back should vanish, and a control that moves because the screen got bigger is a control you have to find again.
+- **One job beside the list, not several.** Two panes is the idea proved and measured; more than one job at once is a later question and is written down as one rather than left looking forgotten.
+- **What is still not right:** the automated accessibility check measures one screen size and now a wide one, but the wide pass covers the arrangement — whether anything runs past the edge, whether two controls touch, what the checker makes of it — rather than re-measuring every screen at that width. Colours are not re-checked there on purpose, because the arrangement moves boxes and does not change what is in them.
+
 ## 3.1.3 — ITERATION
 
 *2026-08-25*

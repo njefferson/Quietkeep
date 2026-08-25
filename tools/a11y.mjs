@@ -4829,6 +4829,59 @@ try {
     await auditNames(page, 'upkeep ready', theme);
     await auditSeparationAndTargets(page, 'upkeep ready', theme);
 
+    // --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) ------------------------------
+    //
+    // This whole walk measures ONE viewport, 390x844, plus a 320px/200% stress
+    // step. So a second arrangement is unmeasured by construction — contrast,
+    // targets, overlap, reflow, none of it — and hub LESSONS 28 is exactly that:
+    // a new surface joins the gate in the SAME COMMIT or it ships unchecked.
+    //
+    // WHAT THIS COVERS AND WHAT IT DOES NOT, said out loud rather than implied.
+    // The wide arrangement changes WHERE the boxes are, not what is in them: the
+    // same `.stance-on` set, the same tokens, the same elements. So the contrast
+    // registry measured above at 390 still answers for the pairs, and this pass
+    // measures the things that only a second arrangement can break — whether the
+    // hub is really beside the job, whether anything runs past the edge, whether
+    // two controls now touch, and what axe makes of the result.
+    //
+    // AND THE ARRANGEMENT IS ASSERTED, not assumed. A wide pass that ran against
+    // a page still showing one pane would report green about a layout that was
+    // not there — an absence identical to a presence (hub LESSONS 104).
+    for (const [w, h, zoom, what] of [[1000, 750, 1, 'wide'], [900, 700, 2, 'wide at 200%']]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.evaluate((px) => {
+        document.documentElement.style.fontSize = px ? `${px}px` : '';
+      }, zoom === 1 ? 0 : 16 * zoom);
+      await enterStance(page, 'nextup');
+      await page.waitForTimeout(400);
+      const arrangement = await page.evaluate(() => {
+        const hub = document.querySelector('#hub');
+        const r = hub?.getBoundingClientRect();
+        const stance = document.querySelector('#runway')?.getAttribute('data-stance');
+        const job = document.querySelector('main > .stance-on');
+        const jr = job?.getBoundingClientRect();
+        return {
+          stance,
+          hubOn: hub?.checkVisibility() === true,
+          // BESIDE, not merely both present: two panes stacked is the narrow
+          // arrangement with the hiding rule removed, which is a different and
+          // worse thing than what this is for.
+          beside: !!(r && jr && r.width > 0 && jr.left >= r.right - 1),
+          overflow: Math.max(0, Math.ceil(document.documentElement.scrollWidth - window.innerWidth)),
+        };
+      });
+      (arrangement.stance === 'nextup' ? pass : fail)(
+        `${theme}/${what}: the walk is standing in a job (stance ${arrangement.stance})`);
+      (arrangement.hubOn && arrangement.beside ? pass : fail)(
+        `${theme}/${what}: the hub is on screen BESIDE the job, not stacked above it`);
+      (arrangement.overflow <= 1 ? pass : fail)(
+        `${theme}/${what}: page horizontal overflow ${arrangement.overflow}px (must be ≤1)`);
+      await auditSeparationAndTargets(page, what, theme);
+      await auditAxe(page, what, theme);
+    }
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    await page.setViewportSize({ width: 390, height: 844 });
+
     await ctx.close();
   }
 } finally {

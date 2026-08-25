@@ -176,6 +176,12 @@ const BUDGET = {
   // tallest and has the most headroom to lose). It replaces `panelPx: 9000`,
   // which was set against a thirteen-screen panel and was never a limit anybody
   // could hit — a budget nothing can exceed is a comment.
+  // NO WIDE BUDGET, AND THAT IS A DECISION (3.2.0, ADR-0109). The wide
+  // arrangement puts the hub beside the job; it adds no content. These budgets
+  // are measured at 390px, where prose reflows TALLEST, and a wider viewport can
+  // only make the same words shorter. 390 stays the binding case, so a second
+  // measurement here would be a number that can never be the one that fails —
+  // which this file already calls a comment rather than a budget.
   surfacePx: 3000,
   // The sum, so that "make it six screens instead of one" cannot pass by
   // dividing. What a person has to get through does not shrink because it was
