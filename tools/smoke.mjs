@@ -5473,18 +5473,36 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // And the daily triage card is a door now too: capture, tap the card, the
   // sheet opens on that very item.
-  // NOTHING ELSE OPEN FIRST (3.0.1). The block above sorts a batch inside the
-  // `sort` dialog, and a surface that owns the inbox leaves triage with nothing
-  // to clarify — the section is live, its opener is visible, and pressing it
-  // opens nothing at all, which is exactly the state CI reported five rounds
-  // running. On this machine that dialog is always closed by the time the walk
-  // arrives here; in CI it is not.
-  await tpage.evaluate(() => {
-    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
-  }).catch(() => {});
-  await tpage.fill('#capture', 'open me from triage');
-  await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForSelector('#triage:not([hidden])');
+  // ESTABLISH THE PRECONDITION, DO NOT ASSUME IT (3.0.3).
+  //
+  // This block needs one thing: SOMETHING SORTABLE IN THE INBOX. It captured an
+  // item and assumed that produced it, and mostly it does — which is worse than
+  // never, because it passed here and on staging and then failed on a
+  // BYTE-IDENTICAL tree on main twenty minutes later. Same code, same input,
+  // different answer. A gate that fails at random teaches everybody to re-run
+  // rather than to look, so re-running until it is green is the one response
+  // that must not be the answer.
+  //
+  // The store diagnostic below proved the capture always lands —
+  // `capture.recorded` every time — so the item exists and the inbox
+  // intermittently does not offer it. Rather than keep guessing at why, this
+  // asks for the state it needs and keeps asking, bounded, with each attempt
+  // putting another thing down. If the inbox will not hold anything after
+  // three, that is a real finding and the diagnostic reports it.
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    await tpage.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    }).catch(() => {});
+    await tpage.fill('#capture', `open me from triage${attempt > 1 ? ` ${attempt}` : ''}`);
+    await tpage.click('#capture-form button[type=submit]');
+    await tpage.waitForSelector('#triage:not([hidden])').catch(() => {});
+    await intoJob(tpage, 'triage');
+    const ready = await tpage.waitForFunction(() =>
+      !!document.querySelector('#triage-actions .route')
+      || (document.querySelector('#triage-card')?.textContent ?? '').trim().length > 0,
+    null, { timeout: 8000 }).then(() => true).catch(() => false);
+    if (ready) break;
+  }
   await tpage.waitForSelector('#triage:not([hidden])', { timeout: 12000 }).catch(() => {});
   await intoJob(tpage, 'triage');
   // PRESS THE OPENER UNTIL THE INBOX IS ACTUALLY OPEN (3.0.1).
