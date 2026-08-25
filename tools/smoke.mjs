@@ -99,6 +99,26 @@ const inPage = (pg, fnName, sel) => pg.evaluate(([name, s]) =>
  * of quiet from the store makes a clock advance. Those stay exactly as they are.
  */
 const settled = async (pg, ms) => {
+  // IS THIS SLEEP EVEN ABOUT A WRITE? Ask FIRST, and let the answer choose.
+  //
+  // THIRD ATTEMPT AT THESE SLEEPS AND THE SECOND FAILURE, both the same shape:
+  // green here, red on a slower machine. What is true of all of them — which is
+  // the question LESSONS 140 says to ask before the next fix rather than after —
+  // is that these 143 waits cover at least FOUR different things. A write
+  // landing. A render finishing. A dialog transition. A clock advancing. There
+  // is now a signal for exactly one of those, and converting all of them onto it
+  // is the same error as converting them all to animation frames was.
+  //
+  // So: if the store is ALREADY quiet when we arrive, this sleep was never
+  // waiting on a write, and shortening it is a guess about something the app has
+  // told us nothing about. Honour it in full. If a write IS in flight, wait for
+  // it to land and for one paint, which is both faster and actually correct.
+  //
+  // Self-selecting, so no call site needs judging one at a time — and the
+  // failure mode is the OLD behaviour rather than a shorter one.
+  const busy = await pg.evaluate(() =>
+    document.body?.dataset.settled === 'false').catch(() => false);
+  if (!busy) { await pg.waitForTimeout(ms); return; }
   const quiet = await pg.waitForSelector('body[data-settled="true"]', { timeout: 3000 })
     .then(() => true).catch(() => false);
   if (!quiet) { await pg.waitForTimeout(ms); return; }
