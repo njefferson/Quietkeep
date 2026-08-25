@@ -764,6 +764,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   of reporting it.
   **Still not right:** this removes repetition, not the need to walk the app. A
   state the walk never visits has its colours unchecked, exactly as before.
+  **And the picker is still the old one.** This release makes a palette free to
+  VERIFY; it does not yet make one selectable. The control offers device / light
+  / dark, not a list read from `docs/palettes.json`. `data-theme` becoming
+  `data-palette`, a stylesheet block per palette and a picker that lists whatever
+  the file holds is the next slice, and it is cheap now precisely because the
+  verification stopped being the expensive part.
+  **Verified green on `045ee6c`** — full Spine and Deploy, that exact SHA.
 - **Superseded, and kept for the record: 3.2.0.** The wide
   arrangement: above 900px the job view shows the hub BESIDE the job.
   **Not a new decision.** ADR-0108 specified this second arrangement and built
