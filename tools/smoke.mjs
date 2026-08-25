@@ -5430,6 +5430,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // navigate, so this read the empty button and got "" — then the click that
   // followed opened the inbox and filled the card with a different item, and
   // the assertion compared one to the other. Not hidden is not open.
+  // WAIT FOR THE JOB TO EXIST BEFORE ASKING TO BE TAKEN TO IT (3.0.1).
+  //
+  // A section becomes live a beat AFTER the write that fills it, and a job that
+  // is still `hidden` has no door on the hub — correctly, since a door onto
+  // nothing is a route to nowhere. So arriving found nothing to press, gave up,
+  // and the card was never rendered. Locally the write had always landed by the
+  // time the walk asked; in CI it had not, three runs in a row.
+  //
+  // THE CONDITION, not a sleep. This is the shape every one of the 143 fixed
+  // waits in this walk should eventually take.
+  await tpage.waitForSelector('#triage:not([hidden])', { timeout: 12000 }).catch(() => {});
   await intoJob(tpage, 'triage');
   // WAIT FOR THE CARD TO HAVE WORDS ON IT (3.0.1).
   //
