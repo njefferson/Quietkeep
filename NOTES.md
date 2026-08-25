@@ -755,8 +755,10 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**. The focus
-  ring reaches the screen now, and the gate can see whether it does.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**, verified at
+  `beedbdb`: Deploy success AND Spine success read from the runs for that exact
+  SHA. The focus ring reaches the screen now, and the gate can see whether it
+  does.
   **Reported from a device as the outline being cut off on the left of the box
   you type in.** It was cut on all four sides, by 5px, and it was not that box:
   `#capture` carries `outline: 3px solid` at `outline-offset: 2px`, so the ring
