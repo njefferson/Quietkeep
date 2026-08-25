@@ -752,6 +752,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   matters on the device, the alternative is the way back joining the top row
   beside *More* and *Contents*, which costs no height on a wide screen and wraps
   on a narrow one.
+  **Verified green on `8bd368c`** — the full Spine on the runner, Deploy
+  succeeded for that SHA. Four red rounds came first and none was the app; all
+  four were `clarifyCard`, the shared triage precondition added a release
+  earlier. In order: it tapped `.first()` through the heat pass rather than Hot,
+  so a share of the pile was answered Cold and a different item led the clarify
+  queue; it read the surface immediately after acting on it, and a surface
+  mid-render is indistinguishable from an empty one; and the filing block passed
+  no `capture`, so the helper had nothing to put down again and one empty inbox
+  was fatal where three attempts were not. The report is what made each of them
+  readable rather than guessed — it carries the stance, the prompt, the card, the
+  gauge line and the triage section's own text now, because `routes: 0` alone
+  cannot tell an empty inbox from a surface not showing what the inbox holds.
 - **Superseded, and kept for the record: 3.1.0.** Three
   reported defects and one long-missing choice.
   **The way out of a long screen.** `#sort` is an eighty-three-line dialog whose
