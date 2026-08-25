@@ -5454,9 +5454,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // A CONDITION, not a sleep. There are forty-odd fixed `waitForTimeout` calls
   // left in this walk and every one of them is this defect waiting for a slower
   // machine.
-  await tpage.waitForFunction(() =>
+  //
+  // AND FAIL LOUDLY IF THE WORDS NEVER COME. Swallowing this wait left the read
+  // returning "" and the assertion comparing an empty string against whatever
+  // the sheet went on to show — which reads like a defect in the app and is a
+  // defect in the walk. Three CI rounds were spent on that disguise.
+  const gotWords = await tpage.waitForFunction(() =>
     (document.querySelector('#triage-card')?.textContent ?? '').trim().length > 0,
-  null, { timeout: 10000 }).catch(() => {});
+  null, { timeout: 12000 }).then(() => true).catch(() => false);
+  if (!gotWords) {
+    const st = await tpage.evaluate(() => ({
+      stance: document.querySelector('#runway')?.getAttribute('data-stance') ?? null,
+      triageHidden: document.querySelector('#triage')?.hidden ?? null,
+      openerThere: !!document.querySelector('#triage [data-stance-opener]'),
+      openerHidden: document.querySelector('#triage [data-stance-opener]')?.hidden ?? null,
+      routes: document.querySelectorAll('#triage-actions .route').length,
+      prompt: (document.querySelector('#triage-prompt')?.textContent ?? '').trim().slice(0, 44),
+    })).catch(() => null);
+    bad(`the triage card never showed any words — ${JSON.stringify(st)}`);
+  }
   const triageShows = await tpage.locator('#triage-card').textContent();
   await tpage.click('#triage-card');
   await tpage.waitForSelector('#detail[open]');
