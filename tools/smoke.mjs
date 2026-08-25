@@ -5423,23 +5423,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // And the daily triage card is a door now too: capture, tap the card, the
   // sheet opens on that very item.
+  // NOTHING ELSE OPEN FIRST (3.0.1). The block above sorts a batch inside the
+  // `sort` dialog, and a surface that owns the inbox leaves triage with nothing
+  // to clarify — the section is live, its opener is visible, and pressing it
+  // opens nothing at all, which is exactly the state CI reported five rounds
+  // running. On this machine that dialog is always closed by the time the walk
+  // arrives here; in CI it is not.
+  await tpage.evaluate(() => {
+    for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+  }).catch(() => {});
   await tpage.fill('#capture', 'open me from triage');
   await tpage.click('#capture-form button[type=submit]');
   await tpage.waitForSelector('#triage:not([hidden])');
-  // OPEN IT BEFORE READING IT. `textContent` is a question and questions never
-  // navigate, so this read the empty button and got "" — then the click that
-  // followed opened the inbox and filled the card with a different item, and
-  // the assertion compared one to the other. Not hidden is not open.
-  // WAIT FOR THE JOB TO EXIST BEFORE ASKING TO BE TAKEN TO IT (3.0.1).
-  //
-  // A section becomes live a beat AFTER the write that fills it, and a job that
-  // is still `hidden` has no door on the hub — correctly, since a door onto
-  // nothing is a route to nowhere. So arriving found nothing to press, gave up,
-  // and the card was never rendered. Locally the write had always landed by the
-  // time the walk asked; in CI it had not, three runs in a row.
-  //
-  // THE CONDITION, not a sleep. This is the shape every one of the 143 fixed
-  // waits in this walk should eventually take.
   await tpage.waitForSelector('#triage:not([hidden])', { timeout: 12000 }).catch(() => {});
   await intoJob(tpage, 'triage');
   // PRESS THE OPENER UNTIL THE INBOX IS ACTUALLY OPEN (3.0.1).
@@ -5460,6 +5455,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       if (b && !b.hidden) b.click();
     }).catch(() => {});
     await tpage.waitForTimeout(200);
+  }
+  // AND SAY WHERE IT WENT IF IT NEVER ARRIVES (3.0.1).
+  //
+  // AFTER the opener loop, not before it — routes exist only once the inbox is
+  // open, so asking first waits for something nothing has caused yet. That is
+  // the same "not open" mistake this file has now made four times, and I made
+  // it again one line further up while fixing it.
+  //
+  // "The inbox is empty" and "the capture never landed" are different faults,
+  // and the surface cannot tell them apart. This asks the STORE.
+  const inboxHasIt = await tpage.waitForFunction(() =>
+    !!document.querySelector('#triage-actions .route')
+    || (document.querySelector('#triage-card')?.textContent ?? '').trim().length > 0,
+  null, { timeout: 12000 }).then(() => true).catch(() => false);
+  if (!inboxHasIt) {
+    const where = await tpage.evaluate(async () => {
+      const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+      const rows = await new Promise((res) => {
+        const tx = db.transaction('events', 'readonly').objectStore('events').getAll();
+        tx.onsuccess = () => res(tx.result);
+      });
+      const mine = rows.filter((e) => JSON.stringify(e.payload ?? {}).includes('open me from triage'));
+      return { events: mine.map((e) => e.kind).slice(0, 6), total: rows.length };
+    }).catch(() => null);
+    bad(`the capture is in the store but never reached the inbox — ${JSON.stringify(where)}`);
   }
   // WAIT FOR THE CARD TO HAVE WORDS ON IT (3.0.1).
   //
