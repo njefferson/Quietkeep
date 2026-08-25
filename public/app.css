@@ -218,6 +218,27 @@ body {
   flex: 0 0 auto;
   max-height: 50dvh;
   overflow-y: auto;
+  /* ROOM FOR A FOCUS RING TO BE PAINTED IN.
+   *
+   * `overflow-y: auto` forces the used value of `overflow-x` from `visible` to
+   * `auto` — the two axes cannot disagree about whether there is a clip box —
+   * so this element clips HORIZONTALLY as well, which is not what the cap above
+   * was written to do. The capture box is full-width inside it, so its focus
+   * ring was cut off flush on the left and right: 5px of a 3px outline at 2px
+   * offset, on every side, on the first control in the app.
+   *
+   * `overflow-x: clip` with an `overflow-clip-margin` is the rule that reads
+   * like the fix and is not: beside `overflow-y: auto` it computes to `hidden`,
+   * and `overflow-clip-margin` applies only to `clip`. Measured, not assumed.
+   *
+   * So the clip box is made 6px wider at each end and the padding puts the
+   * content back where it was. Nothing moves; the ring has somewhere to land.
+   * The bottom rule below is painted rather than bordered for the same reason. */
+  padding-inline: 6px;
+  margin-inline: -6px;
+  /* Same at the top and bottom edges: the frame scrolls at 200% text, and a
+     control it scrolls to lands flush against the cap. */
+  scroll-padding-block: 0.5rem;
 }
 
 .runway {
@@ -235,10 +256,26 @@ body {
      whole frame depends on being false. Found by asking, not by looking. */
   position: relative;
   overflow-y: auto;
+  /* ROOM FOR A FOCUS RING, the same 6px pair as `.frame` and for a wider reason.
+     This is the scroller nearly every control in the app lives in, and it is
+     full width, so every ring on a control touching the column's edge was cut
+     flush at 5px on BOTH sides — measured at seven tab stops on the landing
+     view alone. `overflow-x` is still the clip it was; the box it clips to is
+     6px further out, and the padding puts the content back. */
   overflow-x: hidden;
+  padding-inline: 6px;
+  margin-inline: -6px;
   /* The scroll container is what a jump lands in, so the clearance a focused
-     thing needs from the top belongs here, not on the document. */
+     thing needs belongs here, not on the document — and it is needed at BOTH
+     ends: focusing by Tab aligns the element flush with the scroller's edge,
+     which puts its ring outside the clip box just as surely as the sides did. */
   scroll-padding-top: 0.5rem;
+  scroll-padding-bottom: 0.5rem;
+  /* And the same 6px at the TOP OF THE CONTENT, which scroll-padding cannot
+     give: the first control in the runway sits at scroll position zero, where
+     there is nothing above it to inset into. The frame's margin below gives up
+     exactly this much, so the gap between them is unchanged. */
+  padding-block-start: 6px;
   padding-bottom: calc(var(--gap) * 2);
   /* Room past the last card for the safe area on a device with a home bar. */
   padding-bottom: max(calc(var(--gap) * 2), env(safe-area-inset-bottom));
@@ -246,10 +283,25 @@ body {
 
 /* The frame's own bottom edge, so the runway visibly begins somewhere. Not a
    drop shadow: content sliding under a shadow reads as content being cut off,
-   and this app already refuses to imply that anything is being lost. */
+   and this app already refuses to imply that anything is being lost.
+
+   PAINTED AS A BACKGROUND RATHER THAN A BORDER, and that is the ring padding's
+   doing. The frame's border box is 12px wider than the content column now, so a
+   `border-bottom` — which follows the border box — overhung the column by 6px at
+   each end. A background can be inset back to the column; a border cannot.
+   `background-attachment` is left at `scroll`, which for a scroll container means
+   the background is fixed to the element and does NOT travel with the contents,
+   so the rule stays on the frame's bottom edge exactly as the border did. */
 .frame {
-  border-bottom: 1px solid var(--rule, var(--line));
-  margin-bottom: 0.6rem;
+  background-image: linear-gradient(var(--rule, var(--line)), var(--rule, var(--line)));
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: calc(100% - 12px) 1px;
+  /* The 1px the border used to occupy, so nothing below moves. */
+  padding-bottom: 1px;
+  /* 6px of this is now the runway's top padding — see `.runway`. The gap the
+     reader sees is the same 0.6rem it always was. */
+  margin-bottom: calc(0.6rem - 6px);
 }
 
 /* Off-screen until focused, but it carries its full target size the whole time.
@@ -267,7 +319,10 @@ body {
   border: 2px solid var(--accent);
   border-radius: var(--radius);
 }
-.skip:focus { position: static; }
+/* Back into flow when focused — and 6px down, because the body's own clip box
+   starts at the top of the viewport and this is the first thing in it. Flush
+   against that edge, the ring's top simply has nowhere to be painted. */
+.skip:focus { position: static; margin-block-start: 6px; }
 
 .visually-hidden {
   position: absolute;
@@ -1789,6 +1844,22 @@ dialog[id^="sheet-"][open] {
    * and the shading span the full width, and neither was implicated. */
   margin: 0 -1.25rem 0;
   padding: 0 1.25rem 1.25rem;
+  /* ROOM FOR A FOCUS RING AT THE SCROLL EDGE. The horizontal margin above
+     already gives 20px of it sideways, which is why the sides were never the
+     problem here — but Tabbing to a control below the fold aligns it FLUSH with
+     the bottom of the scrollport, and the ring is painted outside the element.
+     Ten controls across ten sheet states, each losing the same 5px, in both
+     themes. The bottom padding cannot help: it is at the end of the CONTENT,
+     and this happens at every scroll position. */
+  scroll-padding-block: 0.5rem;
+  /* And 6px at the TOP OF THE CONTENT, which scroll-padding cannot give: the
+     first field in a sheet sits at scroll position zero, where there is nothing
+     above it to inset into — measured on the bother sheet, whose text box is
+     the first thing in the body and lost the top of its ring. The negative
+     margin keeps the content exactly where it was and spends the 6px out of the
+     heading's margin above, which is empty. */
+  padding-block-start: 6px;
+  margin-block-start: -6px;
 
   /* IT HAS TO LOOK SCROLLABLE (1.24.1). Reported from a phone: nothing in the
    * panel showed that it moves. iOS hides overlay scrollbars until a finger is

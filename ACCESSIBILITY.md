@@ -1344,3 +1344,59 @@ fix, and on three planted variants.
 **New pairs measured in the same commit:** `#to-held` at 6.48:1 (light) and
 9.13:1 (dark) against the surface, focus ring 8.92:1 and 9.45:1, both above the
 4.5:1 and 3:1 floors.
+
+## 3.4.1 — a focus ring that was set, measured, and not on the screen
+
+**SC 2.4.7 Focus Visible; SC 2.4.11 Focus Not Obscured (Minimum); SC 2.4.13
+Focus Appearance.** Reported from a device as the outline being cut off on the
+left of the box you type in. It was cut on all four sides, by 5px, and it was
+not that box.
+
+**What was measured.** `#capture` carries `outline: 3px solid` at
+`outline-offset: 2px`, so the ring's outer edge wants to sit 5px outside the
+element. Three containers in this app scroll, and each cut whatever reached its
+edge:
+
+- `header.frame` clips sideways as a SIDE EFFECT. `overflow-y: auto` — ADR-0100,
+  so the frame scrolls inside itself rather than pushing the runway off screen —
+  forces the used value of `overflow-x` from `visible` to `auto`, because the two
+  axes cannot disagree about whether there is a clip box. Four controls, at 390px
+  and at 900px identically.
+- `.runway` clips sideways on purpose and is full width, so seven of the landing
+  view's controls lost their ring at BOTH ends.
+- Every sheet's `.sheet-body` took the bottom off ten more: Tabbing to a control
+  below the fold aligns it flush with the scrollport, and the ring is outside it.
+  The bother sheet's text box lost the TOP instead, being the first thing in the
+  body at scroll position zero.
+
+**What was tried and rejected, measured rather than assumed.** `overflow-x: clip`
+with an `overflow-clip-margin` is the rule that reads like the fix: beside
+`overflow-y: auto` it computes to `hidden`, and `overflow-clip-margin` applies
+only to `clip`, so it never takes effect.
+
+**What changed.** `padding-inline: 6px` with `margin-inline: -6px` on the frame
+and the runway: the clip box moves out, the content stays exactly where it was.
+`scroll-padding` on all three for the scrolled positions. A little content
+padding at the top of the runway and of `.sheet-body`, for scroll position zero,
+where there is nothing above to inset into and `scroll-padding` has nothing to
+do. The frame's bottom rule is painted as a background rather than a border,
+because a border follows the border box and would have overhung the content
+column by that 6px at each end. Nothing on screen moved.
+
+**Every accessibility gate here was green throughout, and this one could not
+have been otherwise.** `auditFocusRings` read `outline-style`, `outline-width`
+and the ring's contrast — all three correct, in both themes, in every colour
+set, on every release. Computed style is what the cascade RESOLVED, not what the
+compositor PAINTED, and `outline-width` is 3px whether or not one of those pixels
+arrives. **142 releases.**
+
+**Held by a gate, not by this note.** `auditFocusRings` now builds the ring's own
+rect from the border box plus offset plus width and checks it against every
+clipping ancestor, on every control it already tests, at no extra browser cost.
+Three outcomes per axis are told apart, because a control BIGGER than its
+scroller has part of itself outside by arithmetic and that is not a ring cut; and
+the walk stops at an open `<dialog>`, which renders in the TOP LAYER where
+nothing outside it clips it however the DOM nests. Watched red on 26 real
+findings, then 8, then 2, going green as each fix landed — and the horizontal
+branch planted separately by removing the runway's room and watching it name the
+control and the container.
