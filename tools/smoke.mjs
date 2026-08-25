@@ -77,6 +77,56 @@ const inPage = (pg, fnName, sel) => pg.evaluate(([name, s]) =>
 [fnName, sel]).catch(() => null);
 
 
+/**
+ * WAIT FOR THE APP TO SAY IT HAS FINISHED, not for a number (3.1.0).
+ *
+ * A fixed sleep is an unasserted precondition with a timer attached. The timer
+ * was never the problem — the SILENCE was: this app published one fact about
+ * itself, `data-ready` at boot, and nothing about whether a write was still in
+ * flight, so anything needing to know guessed. There were 143 guesses in this
+ * file, forty seconds of them, and several were wrong on a slower machine.
+ *
+ * `session.ts` now says so from the commit queue, which is the one place every
+ * write passes through. This waits for that, then for one paint, because a
+ * committed write and a rendered screen are different facts.
+ *
+ * FALLS BACK TO THE SLEEP IT REPLACED. If the signal never comes — an older
+ * bundle, a page mid-navigation — the original interval still elapses, so this
+ * is never weaker than what it replaces. It is usually far shorter.
+ *
+ * NOT FOR LONG WAITS. A sleep of half a second or more in this walk is waiting
+ * for REAL TIME — a timer to elapse, a comfort window to pass — and no amount
+ * of quiet from the store makes a clock advance. Those stay exactly as they are.
+ */
+const settled = async (pg, ms) => {
+  // IS THIS SLEEP EVEN ABOUT A WRITE? Ask FIRST, and let the answer choose.
+  //
+  // THIRD ATTEMPT AT THESE SLEEPS AND THE SECOND FAILURE, both the same shape:
+  // green here, red on a slower machine. What is true of all of them — which is
+  // the question LESSONS 140 says to ask before the next fix rather than after —
+  // is that these 143 waits cover at least FOUR different things. A write
+  // landing. A render finishing. A dialog transition. A clock advancing. There
+  // is now a signal for exactly one of those, and converting all of them onto it
+  // is the same error as converting them all to animation frames was.
+  //
+  // So: if the store is ALREADY quiet when we arrive, this sleep was never
+  // waiting on a write, and shortening it is a guess about something the app has
+  // told us nothing about. Honour it in full. If a write IS in flight, wait for
+  // it to land and for one paint, which is both faster and actually correct.
+  //
+  // Self-selecting, so no call site needs judging one at a time — and the
+  // failure mode is the OLD behaviour rather than a shorter one.
+  const busy = await pg.evaluate(() =>
+    document.body?.dataset.settled === 'false').catch(() => false);
+  if (!busy) { await pg.waitForTimeout(ms); return; }
+  const quiet = await pg.waitForSelector('body[data-settled="true"]', { timeout: 3000 })
+    .then(() => true).catch(() => false);
+  if (!quiet) { await pg.waitForTimeout(ms); return; }
+  await pg.evaluate(() => new Promise((r) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => r(undefined)));
+  })).catch(async () => { await pg.waitForTimeout(ms); });
+};
+
 /** The unwrapped `waitForSelector`, so the shim never re-enters itself. */
 const RAW_WAIT = new WeakMap();
 const rawWaitOf = (pg) => RAW_WAIT.get(pg) ?? pg.waitForSelector.bind(pg);
@@ -117,7 +167,7 @@ const revealAll = async (pg) => {
     const more = await pg.locator('#cards .card-more .card-open').count().catch(() => 0);
     if (more === 0) return;
     await pg.locator('#cards .card-more .card-open').first().click().catch(() => {});
-    await pg.waitForTimeout(140);
+    await settled(pg, 140);
   }
 };
 
@@ -399,7 +449,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // set above and the paint below must AGREE, or the control appears and then
   // vanishes under somebody who has just arrived — which is the flicker the
   // block's own fix existed to remove, reintroduced by its control.
-  await page.waitForTimeout(250);
+  await settled(page, 250);
   is(await page.locator('#intro-ask').isVisible(), true,
     'and it is still there after the store answers — it does not appear and then vanish');
   is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras']
@@ -564,7 +614,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nCapture');
   await page.fill('#capture', 'Ring the dentist');
   // The draft is persisted per keystroke; a reload mid-capture must not lose it.
-  await page.waitForTimeout(50);
+  await settled(page, 50);
   await page.reload({ waitUntil: 'load' });
   await ready();
   is(await page.inputValue('#capture'), 'Ring the dentist', 'draft survived a reload mid-capture');
@@ -1101,7 +1151,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Six taps of Hot; the pass is done when the prompt turns to Clarify.
   for (let i = 0; i < 6; i++) {
     await tpage.click('#triage-actions .route');     // "Hot" is the first button
-    await tpage.waitForTimeout(20);
+    await settled(tpage, 20);
   }
   await tpage.waitForFunction(() =>
     document.querySelector('#triage-prompt')?.textContent?.startsWith('Clarify'));
@@ -1128,7 +1178,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const gaugeBeforeSkip = await tpage.locator('#triage-gauge').getAttribute('data-waiting');
   await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions button', { hasText: 'Not this one' }).click();
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   const afterSkipCard = await tpage.locator('#triage-card').textContent();
   const logAfterSkip = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -1639,7 +1689,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // shipped behaviour is always the choice.
   await tpage.evaluate(() => { document.querySelector('#triage-donow').dataset.seconds = '2'; });
   await tpage.locator('.donow button', { hasText: 'Start five minutes' }).click();
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
 
   // PRESENCE, NOT PROGRESS. It says it is running and says what you chose, and
   // renders no amount of any kind — no countdown, and no shape that could be
@@ -1706,7 +1756,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-done');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   await tpage.click('#detail-close');
   await fillSearch('');
   is(await tpage.locator('.donow').count(), 0, 'and no offer is left hanging about');
@@ -1731,7 +1781,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.waitForSelector('#triage-actions .route .route-hint');
     await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: 'Do now' }).first().click();
-    await tpage.waitForTimeout(80);
+    await settled(tpage, 80);
   }
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -1782,7 +1832,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   await tpage.click('#nextup-skip');
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
   const afterSkip = await tpage.locator('#nextup-title').textContent();
   const logLenAfter = await tpage.evaluate(async () => {
     const db = await new Promise((res) => {
@@ -1885,7 +1935,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // a person reads — so a wrong entry is a false sentence about their week.
   await tpage.fill('#pebble-text', 'something else entirely');
   await tpage.click('#pebble-form button[type=submit]');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   const secondRow = await tpage.evaluate(() =>
     [...document.querySelectorAll('#pebble-list li')]
       .map(li => li.textContent).find(t => (t || '').includes('something else entirely')) || '');
@@ -1905,7 +1955,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // on would silently change what every later section is offered.
   for (const t of ['the whole history of it', 'something else entirely']) {
     await tpage.locator('#pebble-list li', { hasText: t }).locator('button').click();
-    await tpage.waitForTimeout(120);
+    await settled(tpage, 120);
   }
   // AND THE DOOR GOES QUIET AGAIN, which is the other half of the same rule: a
   // standing "0 things on you" is a reminder that you have not filled something
@@ -1915,7 +1965,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and says nothing at all once the weight is off');
   await tpage.click('#sheet-load-entry-close');
   await tpage.waitForSelector('#sheet-load-entry', { state: 'hidden' });
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
 
   console.log('\nWork mode — Done records, and the item stops being offered');
   // RELATIVE to what is already there. An absolute 1 was measuring how many
@@ -1936,7 +1986,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the gate re-clocks it), so "held" is exactly the number that must not move.
   const gaugeHeldBefore = Number((await tpage.locator('#gauge').textContent() || '').match(/(\d+) ready now/)?.[1] ?? '0');
   await tpage.click('#nextup-done');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   // THE SURFACE SETTLES NOW (1.35.0), so the walk asks for the next thing the
   // way a person does. Every block after this one meets the ordinary offer —
   // without this, one Done early in the walk left the surface settled for the
@@ -1994,7 +2044,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // test as a miss against `html`. That is a true measurement of the wrong
   // place: this block asks about the landing surface, so come up to it first.
   await ensureStanceFor(tpage, '#hub');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   const jumpBox = await tpage.evaluate(() => {
     const b = document.querySelector('#hub-doors .hub-go[data-stance-id="held"]');
     if (!b || b.hidden) return null;
@@ -2034,7 +2084,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const runwayY = () => tpage.evaluate(() => document.querySelector('#runway')?.scrollTop ?? window.scrollY);
   await tpage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
   await tpage.click('#hub-doors .hub-go[data-stance-id="held"]');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   // `cardsTop` IS RELATIVE TO THE RUNWAY (2.9.0, ADR-0100), for the same reason
   // the runway's scrollTop replaced window.scrollY three lines up: the frame
   // above never moves, so a viewport-relative reading counts the frame's whole
@@ -2066,7 +2116,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // jump that only appeared when the page happened to be long.
   is(await tpage.locator('#stance-back').isVisible(), true, 'and there is a way back from down here');
   await tpage.click('#stance-back');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   const back = { y: await runwayY(), focus: await tpage.evaluate(() => document.activeElement?.id) };
   is(back.y === 0, true, `pressing it returns to the top (runway scrollTop ${back.y})`);
   is(back.focus, 'hub-heading', 'and puts focus on the hub, which is what you came back up to');
@@ -2176,7 +2226,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/accessible name|app\.ts|SC 2\.5\.3|pre-paint/i.test(footText), false,
     `the footer says nothing about how it was built ("${footText.replace(/\s+/g, ' ').slice(0, 70)}")`);
   await tpage.click('#about-close');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
 
   // --- Load, not work (1.15.0, ADR-0065) ------------------------------------
   // ADR-0014 said in the design phase that unresolved weight "may depress
@@ -2329,7 +2379,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and names the control that finishes it');
 
   await tpage.click('#detail-date-set');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   is(await tpage.locator('#detail-date-unsaved').isVisible(), false,
     'and the line goes as soon as the two agree — it can never nag about a date that IS set');
   const afterDate = await tpage.evaluate(async () => {
@@ -2349,7 +2399,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-every', '10');
   await tpage.fill('#detail-slack', '3');
   await tpage.click('#detail-repeat-set');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   const afterRepeat = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -2367,7 +2417,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // A bad number must not reach the log as NaN.
   await tpage.fill('#detail-every', '0');
   await tpage.click('#detail-repeat-set');
-  await tpage.waitForTimeout(100);
+  await settled(tpage, 100);
   const intervalsAfterBad = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -2424,7 +2474,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const tickTitle = await tpage.locator('#cards .card:has(.card-done) .card-title').first().textContent();
   await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-done').first().click();
-  await tpage.waitForTimeout(180);
+  await settled(tpage, 180);
   const doneAfter = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -2473,7 +2523,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const b = document.querySelector('#cards .card-done');
     b?.click(); b?.click();
   });
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const afterDouble = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -2501,7 +2551,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-name', 'renamed by the smoke walk');
   await tpage.click('#detail-rename');
-  await tpage.waitForTimeout(180);
+  await settled(tpage, 180);
   const renames = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -2558,9 +2608,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       new Date(Date.now() - d * 86400000).toISOString().slice(0, 10), 5 + nth * 4);
     await tpage.fill('#detail-date', key);
     await tpage.click('#detail-date-set');
-    await tpage.waitForTimeout(180);
+    await settled(tpage, 180);
     await tpage.click('#detail-close');
-    await tpage.waitForTimeout(80);
+    await settled(tpage, 80);
   }
   const lapsedTitle = lapsedTitles[0];
   await tpage.reload({ waitUntil: 'load' });
@@ -2584,7 +2634,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const firstBefore = await tpage.locator('.replan-card-title').first().textContent();
   is(await tpage.locator('.replan-skip').count() > 0, true, 'there is a way past a card');
   await tpage.locator('.replan-skip').first().click();
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   const firstAfter = await tpage.locator('.replan-card-title').first().textContent();
   is(firstAfter !== firstBefore, true,
     `passing over brings a different card forward ("${firstBefore}" -> "${firstAfter}")`);
@@ -2707,7 +2757,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await countReplanEvents(), 0, 'no decision has been recorded yet');
   const whenLine = await tpage.locator('#replan-sheet-when').textContent();
   await tpage.click('.replan-set');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   is(await countReplanEvents(), 0, 'a new date with no date is refused, not invented');
   is(await tpage.locator('#replan-sheet').isVisible(), true, 'and the sheet stays open to say so');
   is(await tpage.locator('#replan-sheet-error').isVisible(), true,
@@ -2734,7 +2784,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Resolve the FIRST of two. "Not now" is legitimate and unremarkable
   // (ADR-0012), and it must take the passed date with it.
   await tpage.locator('.replan-choice', { hasText: 'Not now' }).first().click();
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const resolution = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
     return await new Promise((res) => {
@@ -2779,7 +2829,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.locator('.replan-open').first().click();
   await tpage.waitForSelector('#replan-sheet[open]');
   await tpage.locator('.replan-choice', { hasText: 'Less of it' }).first().click();
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   is(await tpage.locator('#replan').isVisible(), false,
     'with the last one decided, the surface goes away entirely');
   const replanFocus = await tpage.evaluate(() => ({
@@ -2862,8 +2912,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // own (to prove a passed date still reaches the calendar), so an absolute `1`
   // would be measuring how many times the walk happens to press the button
   // rather than whether one press records one hand-off.
-  for (let i = 0; i < 40 && (await countCalExports()) <= calExportsBefore; i++) await tpage.waitForTimeout(50);
-  await tpage.waitForTimeout(200);           // and give a duplicate time to appear
+  for (let i = 0; i < 40 && (await countCalExports()) <= calExportsBefore; i++) await settled(tpage, 50);
+  await settled(tpage, 200);           // and give a duplicate time to appear
   is(await countCalExports(), calExportsBefore + 1,
     `one press, one hand-off recorded (${calExportsBefore} before)`);
   // ORDERING, which the count alone can never see: the file must exist BEFORE the
@@ -2926,7 +2976,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const junk = join(tmpdir(), 'quietkeep-not-an-export.json');
   writeFileSync(junk, JSON.stringify({ hello: 'world' }));
   await tpage.setInputFiles('#import-file', junk);
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const junkNote = await tpage.locator('#import-note').textContent();
   is(/not a Quietkeep export/i.test(junkNote || ''), true,
     `a file that is not an export says so ("${junkNote}")`);
@@ -2956,7 +3006,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   await tpage.setInputFiles('#import-file', dupFile);
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   const dupNote = await tpage.locator('#import-note').textContent();
   is(/damaged/i.test(dupNote || ''), true, `a file that would fail on write is refused on read ("${dupNote}")`);
   is(await tpage.locator('#import-actions').isVisible(), false,
@@ -2978,7 +3028,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     snapshot: null,
   }));
   await tpage.setInputFiles('#import-file', badPayload);
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   const badNote = await tpage.locator('#import-note').textContent();
   is(/damaged/i.test(badNote || ''), true,
     `an unreadable record is an answer, not a stuck "Reading it…" ("${badNote}")`);
@@ -2986,7 +3036,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // A file the app WROTE must be described, with the numbers stated.
   await tpage.setInputFiles('#import-file', backupPath);
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const goodNote = await tpage.locator('#import-note').textContent();
   is(new RegExp(`holds ${heldBefore} thing`).test(goodNote || ''), true,
     `it says what is in the file, in things (${heldBefore}) not just records ("${goodNote}")`);
@@ -3004,14 +3054,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'written after the backup was taken');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const heldAfterExtra = await tpage.locator('#cards .card').count();
   is(heldAfterExtra, heldBefore + 1, 'the store now differs from the file');
 
   await openSurface(tpage, 'sheet-group-data');
   await tpage.waitForSelector('#import-file');
   await tpage.setInputFiles('#import-file', backupPath);
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   // A REGRESSION GUARD, and it earned its place immediately. `<input type=file>`
   // fires a bubbling `cancel` when its chooser is dismissed, so an Esc handler
   // on the dialog closed the whole panel the moment a file was chosen.
@@ -3094,7 +3144,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       if (!/hot or cold/i.test(prompt || '')) break;
       await intoJob(tpage, 'triage');
       await tpage.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
-      await tpage.waitForTimeout(120);
+      await settled(tpage, 120);
     }
     await intoJob(tpage, 'triage');
     // SAY WHAT WAS ON OFFER. A bare 30-second timeout on a filtered locator
@@ -3114,7 +3164,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
           `offered=${JSON.stringify(have.map((t) => t.trim().slice(0, 34)))}`);
       throw err;
     }
-    await tpage.waitForTimeout(150);
+    await settled(tpage, 150);
   };
   await openInbox();
   while (await tpage.locator('#triage:not([hidden]) .route').count() > 0) {
@@ -3143,7 +3193,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-date', sixDays);
   await tpage.click('#detail-date-set');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   await tpage.click('#detail-close');
 
   await intoJob(tpage, 'held');
@@ -3158,7 +3208,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.selectOption('#detail-feeds', { label: 'brief the boss' });
   await tpage.fill('#detail-lead', '2');
   await tpage.click('#detail-feeds-set');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
 
   const depLog = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -3186,7 +3236,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     new Date().toLocaleDateString('en-CA', { timeZone: 'America/Denver' }));
   await tpage.fill('#detail-date', localToday);
   await tpage.click('#detail-date-set');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   await tpage.click('#detail-close');
 
   // AND THE SAME SENTENCE ON THE OFFER (1.23.0), which is the surface where the
@@ -3217,7 +3267,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     }
     if (await tpage.locator('#nextup-skip').isHidden()) break;
     await tpage.click('#nextup-skip');
-    await tpage.waitForTimeout(120);
+    await settled(tpage, 120);
   }
   is(offerApproach !== null, true, 'the offer can be cycled to the item that feeds something');
   is(/start it within 4 days/.test(offerApproach || ''), true,
@@ -3255,7 +3305,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#detail-parent').isDisabled(), true,
     'and it is disabled rather than offering an empty choice');
   await tpage.click('#detail-make-project');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   is(await tpage.locator('#detail-make-project').isHidden(), true,
     'and once it is one, the control that makes it one is gone');
   const kidsNote = await tpage.locator('#detail-children').textContent();
@@ -3300,7 +3350,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(parentOptions.some(o => o.startsWith('draft the brief')), false, 'and never itself');
   await tpage.selectOption('#detail-parent', { label: parentOption });
   await tpage.click('#detail-parent-set');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   const placeLine = await tpage.locator('#detail-place').textContent();
   is(placeLine, 'Part of the quarterly report.',
     `the sheet says where it now sits ("${placeLine}")`);
@@ -3382,15 +3432,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#detail-track-row').isVisible(), false,
     'a plain action has no role to set — a role with nothing under it is a label');
   await tpage.click('#detail-make-project');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   is(await tpage.locator('#detail-track-row').isVisible(), true,
     'and a container does');
   await tpage.click('#detail-track');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   const owedBy = await tpage.evaluate(() => new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10));
   await tpage.fill('#detail-suspense', owedBy);
   await tpage.click('#detail-suspense-set');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   await tpage.click('#detail-close');
 
   await intoJob(tpage, 'held');
@@ -3405,7 +3455,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.selectOption('#detail-parent', { label });
   }
   await tpage.click('#detail-parent-set');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   await tpage.click('#detail-close');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -3449,7 +3499,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // to fix on the export path.
   for (let i = 0; i < 40; i++) {
     if ((await tpage.locator('#report-note').textContent() || '').startsWith('Handed over')) break;
-    await tpage.waitForTimeout(50);
+    await settled(tpage, 50);
   }
   is((await tpage.locator('#report-note').textContent() || '').startsWith('Handed over'), true,
     'and the surface confirms only after the file was handed over');
@@ -3460,7 +3510,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#about-close');
   await tpage.fill('#capture', 'something after the report');
   await tpage.click('#capture-form button[type=submit]');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   await openSurface(tpage, 'sheet-group-actions');
   const [second] = await Promise.all([
     tpage.waitForEvent('download'),
@@ -3556,7 +3606,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-person', 'Sam');
   await tpage.selectOption('#detail-relation', 'waiting-on');
   await tpage.click('#detail-person-set');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   const linked = await tpage.locator('#detail-people-list').textContent();
   is(/Sam/.test(linked || ''), true, `the sheet says who it is with ("${linked}")`);
   is(await tpage.locator('#detail-waiting-close').count(), 1,
@@ -3580,7 +3630,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-person', 'sam');            // lower case, same human
   await tpage.click('#detail-person-set');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   await tpage.click('#detail-close');
   const personCount = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -3606,7 +3656,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-waiting-close');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   await tpage.click('#detail-close');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -3649,7 +3699,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // other check here and fail this one.
   await tpage.fill('#focus-interrupt', 'the phone rang');
   await tpage.click('#focus-interrupt-form button[type=submit]');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   is(await tpage.locator('#focus').isVisible(), true,
     'an interruption does not stop you \u2014 it is held and you carry on');
   const heldNote = await tpage.locator('#focus-held').textContent();
@@ -3692,7 +3742,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#focus-sheet[open]');
   await tpage.fill('#focus-cue', 'the paragraph about ferries');
   await tpage.click('#focus-sheet-stop');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   is(await tpage.locator('#focus').isVisible(), false, 'stopping puts the surface away');
 
   // The session close (1.6.0, item 40): the second rider on the exit ramp — a
@@ -3749,7 +3799,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // Finishing leaves NO way back, because there is no thread.
   await tpage.click('#focus-done');
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#focus').isVisible(), false, 'done closes the session');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -3777,7 +3827,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#comms-stop').isHidden(), true,
     'and nothing to stop, because nothing is running');
   await tpage.click('#comms-start');
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#comms-start').isHidden(), true, 'on');
   await openSurface(tpage, 'about');
   await tpage.click('#about-close');
@@ -3797,7 +3847,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#focus-stop');
   await tpage.waitForSelector('#focus-sheet[open]');
   await tpage.click('#focus-sheet-stop');
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   // Not due yet (turning it on counts as a pass), so coming out offers nothing.
   is(await tpage.locator('#comms').isVisible(), false,
     'coming out does not conjure a sweep that is not due \u2014 both conditions, not either');
@@ -3857,7 +3907,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   await tpage.click('#comms-later');
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#comms').isVisible(), false, 'saying not now puts it away');
   const eventsAfter = await tpage.evaluate(async () => {
     const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
@@ -3878,7 +3928,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#comms:not([hidden])');
   is(true, true, 'declining did not retire it — it is offered again, as if never asked');
   await tpage.click('#comms-done');
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#comms').isVisible(), false, 'a look puts it away');
   await intoJob(tpage, 'held');
   await tpage.locator('#cards .card-focus').first().click();
@@ -3886,7 +3936,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#focus-stop');
   await tpage.waitForSelector('#focus-sheet[open]');
   await tpage.click('#focus-sheet-stop');
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#comms').isVisible(), false,
     'and it does not come straight back \u2014 it comes round on its own');
 
@@ -4044,7 +4094,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail-parent-create:not([hidden])').catch(() => {});
   await tpage.selectOption('#detail-parent-kind', 'goal').catch(() => {});
   await tpage.locator('#detail-parent-create').click().catch(() => {});
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
   await tpage.locator('#detail-close').click().catch(() => {});
   await tpage.waitForSelector('#roles-open:not([hidden])').catch(() => {});
   await tpage.waitForSelector('#horizons-open:not([hidden])').catch(() => {});
@@ -4067,12 +4117,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       // the sheet rather than at this line.
       for (const step of doorSteps(door)) {
         await tpage.locator(step).click().catch(() => {});
-        await tpage.waitForTimeout(60);
+        await settled(tpage, 60);
       }
     } else {
       await openSurface(tpage, surface).catch(() => {});
     }
-    await tpage.waitForTimeout(90);
+    await settled(tpage, 90);
     // A CLOSED DIALOG HAS NO COMPUTED STYLE WORTH READING. Say so as its own
     // failure rather than letting it masquerade as a finding about colour.
     if (!(await tpage.locator(`#${surface}[open]`).count())) {
@@ -4125,12 +4175,12 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // notes already hit once, printing its own markers on screen.
     is(s.text.includes('*'), false, `walkthrough step ${tourStep + 1} shows no raw marker to the reader`);
     await tpage.locator('#tour-next').click().catch(() => {});
-    await tpage.waitForTimeout(60);
+    await settled(tpage, 60);
   }
   is(emphasised.length >= 4, true,
     `the walkthrough sets its control names apart from the prose (${emphasised.join(', ')})`);
   await tpage.keyboard.press('Escape').catch(() => {});
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
 
   // PUT BACK THE STATE THE NEXT SECTION EXPECTS. These two blocks borrow the
   // panel, walk through five sheets and replay the walkthrough, and the check
@@ -4148,7 +4198,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // screen — a worse version of the bug being fixed, caught only by asking the
   // browser whether it was still visible.
   await tpage.click('#about-dismiss');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   const shut = await tpage.evaluate(() => {
     const d = document.querySelector('#about');
     return { open: d.open, visible: d.checkVisibility() };
@@ -4162,7 +4212,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about-body');
   await tpage.click('#about-close');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   is(await tpage.evaluate(() => document.querySelector('#about').checkVisibility()), false,
     'and so does the one at the bottom');
 
@@ -4203,7 +4253,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await ppage.click('#tour-skip').catch(() => {});
   await ppage.evaluate(() => document.querySelector('#open-about')?.click());
   await ppage.waitForSelector('#about-body');
-  await ppage.waitForTimeout(250);
+  await settled(ppage, 250);
   is(await ppage.evaluate(() => document.querySelector('#about-close')?.checkVisibility() === true), true,
     'on a 390px phone the panel’s way out is on screen without expanding anything');
   // And every destination's, at the bottom of its own scroll — the way out is a
@@ -4254,7 +4304,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       for (const step of doorSteps(door)) {
         if (!(await ppage.locator(step).isVisible())) { blocked = step; break; }
         await ppage.click(step);
-        await ppage.waitForTimeout(60);
+        await settled(ppage, 60);
       }
     }
     if (blocked) {
@@ -4413,7 +4463,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openSurface(tpage, 'sheet-group-actions');
   await tpage.waitForSelector('#today-print');
   await tpage.click('#today-print');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   const card = await tpage.evaluate(() => window.__printed[0] ?? '');
   is(card.includes('Quietkeep'), true, 'the card is headed');
   is(/snapshot/i.test(card), true, 'it says it is a snapshot');
@@ -4430,7 +4480,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // The status report's print path goes through the same area.
   await tpage.click('#report-print');
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   const printedReport = await tpage.evaluate(() => window.__printed[1] ?? '');
   is(/Quietkeep — status/.test(printedReport), true, 'the report prints as the report');
   is(/Export a copy|Bringing a copy back/.test(printedReport), false,
@@ -4475,7 +4525,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   await tpage.locator('.bother-choice', { hasText: 'Not mine to carry' }).first().click();
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#bother').isVisible(), false, 'it is done with, in one tap');
 
   const gone = await tpage.evaluate(async (id) => {
@@ -4621,7 +4671,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#bother-form button[type=submit]');
   await tpage.waitForSelector('#bother:not([hidden])');
   await tpage.locator('.bother-choice', { hasText: 'Mine to do something about' }).first().click();
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   is(await tpage.locator('#bother').isVisible(), false, 'the flow ends');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -4729,7 +4779,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.fill('#detail-save-target', '300');
   await tpage.fill('#detail-save-saved', '120');
   await tpage.click('#detail-save-set');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   await tpage.click('#detail-close');
   await openMenu();
   const money = await tpage.locator('#menu .menu-item', { hasText: 'a decent tripod' })
@@ -4750,7 +4800,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-save-target', '');
   await tpage.click('#detail-save-set');
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   await tpage.click('#detail-close');
   await openMenu();
   const money2 = await tpage.locator('#menu .menu-item', { hasText: 'a decent tripod' })
@@ -4868,7 +4918,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // It is dismissible, and dismissing it does not strand focus on <body>.
   if (await tpage.locator('#reentry').isVisible()) {
     await tpage.locator('#reentry-dismiss, #reentry-dismiss-plain').first().click();
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     is(await tpage.locator('#reentry').isVisible(), false, 'and it can be put away');
     const f = await tpage.evaluate(() => document.activeElement?.id || document.activeElement?.tagName);
     is(f !== 'BODY' && f !== undefined, true, `focus lands somewhere real (on ${f})`);
@@ -4904,7 +4954,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const t of ['written on the other device', 'and this one too']) {
     await other.fill('#capture', t);
     await other.click('#capture-form button[type=submit]');
-    await other.waitForTimeout(150);
+    await settled(other, 150);
   }
   await openSurface(other, 'sheet-group-data');
   const [otherExport] = await Promise.all([
@@ -4921,7 +4971,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const mineBefore = await tpage.locator('#cards .card-title').allTextContents();
   await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#import-file', otherFile);
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   is(await tpage.locator('#import-union').isVisible(), true,
     'the additive option is offered, and it is the one focus lands on');
   is(await tpage.evaluate(() => document.activeElement?.id), 'import-union',
@@ -4943,7 +4993,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // did. It must cost nothing and must not throw on the unique-id index.
   await openSurface(tpage, 'sheet-group-data');
   await tpage.setInputFiles('#import-file', otherFile);
-  await tpage.waitForTimeout(350);
+  await settled(tpage, 350);
   await tpage.click('#import-union');
   await tpage.waitForTimeout(700);
   const againNote = await tpage.locator('#import-note').textContent();
@@ -5094,7 +5144,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/stays plain/.test(await tpage.locator('#badge-note').textContent() || ''), true,
     'and it says the icon stays plain and nothing is lost');
   await tpage.click('#badge-toggle');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   is(await tpage.locator('#badge-toggle').getAttribute('aria-pressed'), 'true', 'and back on again');
   await openSurface(tpage, 'about');
   await tpage.click('#about-close');
@@ -5237,7 +5287,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const cap_rowsBefore = await tpage.locator('#cards li.card:not(.card-more)').count();
   const cap_promised = Number((cap_withMore?.more || '').match(/^(\d+)/)?.[1] ?? '0');
   await tpage.locator('.card-more .card-open').first().click();
-  await tpage.waitForTimeout(400);
+  await settled(tpage, 400);
   const cap_rowsAfter = await tpage.locator('#cards li.card:not(.card-more)').count();
   is(cap_rowsAfter - cap_rowsBefore, cap_promised,
     `showing them produced exactly the number it promised (${cap_rowsBefore} -> ${cap_rowsAfter}, promised ${cap_promised})`);
@@ -5321,7 +5371,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-start', '2026-12-01');
   await tpage.click('#detail-start-set');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   await tpage.fill('#detail-parent-filter', 'Sorted pile');
   await tpage.waitForSelector('#detail-parent-create:not([hidden])');
   is(/New project named/.test(await tpage.locator('#detail-parent-create').textContent() || ''), true,
@@ -5331,7 +5381,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     document.querySelector('#detail-place')?.textContent ?? ''));
   await tpage.fill('#detail-estimate', '55');
   await tpage.click('#detail-estimate-set');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   await tpage.click('#detail-close');
 
   // After the sheet closes the conveyor stands on the remaining card. Leaving
@@ -5356,7 +5406,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-trash');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   await tpage.click('#detail-close');
   await tpage.waitForFunction(() =>
     document.querySelector('#sort-card')?.textContent === 'Sort me three');
@@ -5454,7 +5504,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       const b = document.querySelector('#triage [data-stance-opener]');
       if (b && !b.hidden) b.click();
     }).catch(() => {});
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
   }
   // AND SAY WHERE IT WENT IF IT NEVER ARRIVES (3.0.1).
   //
@@ -5574,14 +5624,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const skip = tpage.locator('#triage-actions .route', { hasText: 'Not this one' });
     if (await skip.count() === 0) break;
     await skip.first().click();
-    await tpage.waitForTimeout(90);
+    await settled(tpage, 90);
   }
   is(onMine, true, 'the walk reached the item it captured before asserting about it');
   const heatPrompt = await tpage.locator('#triage-prompt').textContent();
   if (onMine && /hot or cold/i.test(heatPrompt || '')) {
     await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: 'Just sort it' }).first().click();
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     const after = await tpage.locator('#triage-prompt').textContent();
     is(/hot or cold/i.test(after || ''), false,
       `"Just sort it" leaves the heat pass and offers the routes ("${after}")`);
@@ -5635,7 +5685,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Edit it, reload the whole app, and it is still there (fold + snapshot).
   await tpage.fill('#detail-note', 'ask about the crown\nand the bill');
   await tpage.click('#detail-note-set');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
 
   // THE SITUATION (1.29.0) — the implementation-intention "if".
   //
@@ -5653,7 +5703,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const situation = 'after I put the kettle on';
   await tpage.fill('#detail-situation', situation);
   await tpage.click('#detail-situation-set');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
 
   // Per-node history: the record of this one thing, cure indented under cause.
   await tpage.click('#detail-history summary');
@@ -5710,7 +5760,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.fill('#detail-situation', situation);
   await tpage.click('#detail-situation-set');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   await tpage.click('#detail-close');
   await fillSearch('');
   await tpage.waitForFunction(
@@ -5767,7 +5817,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
         byText('Hot')?.click();
         return false;
       });
-      await tpage.waitForTimeout(140);
+      await settled(tpage, 140);
       if (done && (card || '').includes(title)) return;
     }
     const prompt = await tpage.locator('#triage-prompt').textContent().catch(() => '');
@@ -5821,7 +5871,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
         .find(b => (b.textContent || '').includes(t));
       (byText('Next action') ?? byText('Hot'))?.click();
     });
-    await tpage.waitForTimeout(120);
+    await settled(tpage, 120);
   }
   await tpage.fill('#capture', 'strip the old sealant');
   await tpage.click('#capture-form button[type=submit]');
@@ -5898,7 +5948,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
         JSON.stringify(titles.map((t) => t.trim().slice(0, 30)).slice(0, 14)));
     throw err;
   }
-  await tpage.waitForTimeout(300);
+  await settled(tpage, 300);
   // CYCLED UNTIL THE QUEUE REPEATS, not a fixed 25 times.
   //
   // This assertion FLAKED — it failed once and passed on an identical re-run, on
@@ -6030,7 +6080,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // surface with nothing in it has no door — so this still fails if leaving
   // plain mode emptied them.
   await ensureStanceFor(tpage, '#hub');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   is(await tpage.evaluate(() => ['held', 'triage', 'search', 'replan']
     .some((id) => !!document.querySelector(`#hub-doors .hub-go[data-stance-id="${id}"]`))), true,
   'including the surfaces below it, which have their doors back');
@@ -6125,13 +6175,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-release');
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   await tpage.click('#detail-close');
 
   // GONE FROM WHAT YOU ARE HOLDING — asked of the ordinary search, which reads
   // `heldNodes`, the one chokepoint every surface and range goes through.
   await fillSearch('tenor recorder');
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const heldSummary = await tpage.locator('#search-summary').textContent();
   is(/Nothing you are holding matches/.test(heldSummary || ''), true,
     `it is no longer among what you are holding ("${heldSummary}")`);
@@ -6149,10 +6199,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await tpage.click('#detail-reclaim');
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   await tpage.click('#detail-close');
   await fillSearch('tenor recorder');
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   const backSummary = await tpage.locator('#search-summary').textContent();
   is(/Nothing you are holding matches/.test(backSummary || ''), false,
     `picking it back up puts it among what you are holding again ("${backSummary}")`);
@@ -6183,7 +6233,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const promised = (await tpage.locator('#log-more').textContent() || '').match(/(\d+) of (\d+)/);
     is(Number(promised?.[2]), logTotalN, 'the reveal button and the total agree');
     await tpage.click('#log-more');
-    await tpage.waitForTimeout(150);
+    await settled(tpage, 150);
     const afterLines = await tpage.locator('#log-days .log-line').count();
     is(afterLines - beforeLines, Math.min(50, logTotalN - beforeLines),
       `the reveal produced exactly what it promised (${beforeLines} -> ${afterLines})`);
@@ -6378,7 +6428,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     document.querySelector('#sort-bulk-preview')?.textContent ?? ''));
   is(await tpage.locator('#sort-bulk-go').isEnabled(), false, 'the destructive verb waits for its word');
   await tpage.fill('#sort-bulk-word', 'let it go');
-  await tpage.waitForTimeout(100);
+  await settled(tpage, 100);
   is(await tpage.locator('#sort-bulk-go').isEnabled(), false, 'a near-miss does not unlock it');
   await tpage.fill('#sort-bulk-word', 'Let Go ');
   await tpage.waitForFunction(() =>
@@ -6779,7 +6829,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   await fillSearch('');
   await tpage.click('#detail-make-project');
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   await tpage.fill('#detail-person', 'Priya');
   await tpage.selectOption('#detail-relation', 'stakeholder');
   await tpage.click('#detail-person-set');
@@ -6856,7 +6906,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/we ship on the 12th/.test(look1), true,
     'Show me renders what changed, without handing it to anybody');
   await tpage.click('#report-show');
-  await tpage.waitForTimeout(200);
+  await settled(tpage, 200);
   const look2 = (await tpage.locator('#report-preview').textContent()) ?? '';
   is(look2 === look1, true,
     'AND LOOKING TWICE SHOWS THE SAME THING — reading does not spend the period');
@@ -7279,7 +7329,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const hot = tpage.locator('#triage-actions .route', { hasText: 'Hot' });
     if (await hot.count() === 0) break;
     await hot.first().click();
-    await tpage.waitForTimeout(120);
+    await settled(tpage, 120);
   }
   if (await wanted().count() === 0) {
     const offered = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
@@ -7330,7 +7380,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
         .find(b => (b.textContent || '').includes(t));
       (byText('Next action') ?? byText('Hot'))?.click();
     });
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     is(await tpage.locator('#triage-place-when').count(), 1,
       'the place question survived the next triage action — it is about the place, not the route');
   } else {
@@ -7381,7 +7431,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // litter. (An earlier draft waited for the inbox to empty here, which is only
   // true near the START of the walk; by this point other items are still in it.)
   await tpage.locator('.triage-undo-btn').click();
-  await tpage.waitForTimeout(250);
+  await settled(tpage, 250);
   await tpage.waitForSelector('#triage:not([hidden]) .route');
 
 
@@ -7456,7 +7506,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const clicked = await el.click({ timeout: 2500 }).then(() => true).catch(e => String(e).slice(0, 90));
     if (clicked !== true) { unreachable.push(id); why[id] = `click refused: ${clicked}`; return; }
     pressed.push(id);
-    await tpage.waitForTimeout(40);
+    await settled(tpage, 40);
   };
 
   // BUILD THE STATE FIRST, then press the verb that undoes it.
@@ -7522,14 +7572,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // "not visible" and "not there" were the only two answers the helper gave;
   // the timeout only became legible once the helper started reporting WHY.
   await press('#build-version');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   await openSurface(tpage, 'about');
   // THE DIAGNOSTIC LIVES ON THE PANEL ITSELF, not in a sheet — pressed here,
   // while nothing is covering it. Pressing it inside the sheet loop is what put
   // it in the unreachable list twice: a sheet was on top of the thing I was
   // reaching for, and "not visible" is indistinguishable from "not there".
   await press('#diagnostic-show');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   await press('#diagnostic-copy');
   await press('#diagnostic-save');
 
@@ -7554,7 +7604,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   for (const [go, controls] of Object.entries(SHEET_CONTROLS)) {
     await openSurface(tpage, `sheet-${go}`).catch(() => {});
     await tpage.waitForSelector(`#sheet-${go}[open]`, { timeout: 2500 }).catch(() => {});
-    await tpage.waitForTimeout(120);
+    await settled(tpage, 120);
     for (const sel of controls) await press(sel);
 
     // THE WALKTHROUGH REALLY REOPENS — asserted, because the record said it
@@ -7582,7 +7632,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       await openSurface(tpage, `sheet-${go}`).catch(() => {});
     }
     await press(`#sheet-${go}-close`);
-    await tpage.waitForTimeout(60);
+    await settled(tpage, 60);
   }
   await openSurface(tpage, 'more').catch(() => {});
   await press('#more-close');
@@ -7628,16 +7678,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   await tpage.fill('#capture', 'Get the oil change done');
   await tpage.press('#capture', 'Enter');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   {
     const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
-    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+    if (await route.count()) { await route.click(); await settled(tpage, 150); }
   }
   await tpage.evaluate(() => {
     const f = document.querySelector('#held-fold');
     if (f && !f.open) f.open = true;
   });
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
   const oil = tpage.locator('#cards .card', { hasText: 'Get the oil change done' }).first();
   if (await oil.count()) {
     await oil.locator('.card-open').click();
@@ -7645,13 +7695,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await tpage.fill('#detail-step', 'Ring the garage');
     await tpage.click('#detail-step-set');
-    await tpage.waitForTimeout(250);
+    await settled(tpage, 250);
     const kids = await tpage.evaluate(() =>
       (document.querySelector('#detail-children')?.textContent ?? ''));
     is(/Ring the garage/.test(kids), true,
       'a first step named on the sheet lands under the thing it belongs to');
     await tpage.click('#detail-close');
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     is(await tpage.locator('#cards .card', { hasText: 'Get the oil change done' }).count() > 0, true,
       'and the unformed thing is still there — shaping it did not consume it');
   } else {
@@ -7673,16 +7723,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   await tpage.fill('#capture', 'Return the borrowed drill');
   await tpage.press('#capture', 'Enter');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   {
     const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
-    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+    if (await route.count()) { await route.click(); await settled(tpage, 150); }
   }
   await tpage.evaluate(() => {
     const f = document.querySelector('#held-fold');
     if (f && !f.open) f.open = true;
   });
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
   const drill = tpage.locator('#cards .card', { hasText: 'Return the borrowed drill' }).first();
   if (await drill.count()) {
     await drill.locator('.card-open').click();
@@ -7691,9 +7741,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.fill('#detail-person', 'Rowan');
     await tpage.selectOption('#detail-relation', 'promised-to');
     await tpage.click('#detail-person-set');
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     await tpage.click('#detail-close');
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
 
     const promisedRows = async () => tpage.evaluate(() =>
       [...document.querySelectorAll('#people-promised li')].map(li => li.textContent ?? '').join(' | '));
@@ -7710,9 +7760,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const off = tpage.locator('#detail-people-list button', { hasText: 'No longer promised' }).first();
     is(await off.count() > 0, true, 'a promise can be taken back — the control is on its row');
     await off.click();
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     await tpage.click('#detail-close');
-    await tpage.waitForTimeout(200);
+    await settled(tpage, 200);
     is(/Return the borrowed drill/.test(await promisedRows()), false,
       'released — it is off the list');
     is(await tpage.locator('#cards .card', { hasText: 'Return the borrowed drill' }).count() > 0, true,
@@ -7738,20 +7788,20 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   });
   await tpage.fill('#capture', 'A ninety minute job');
   await tpage.press('#capture', 'Enter');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   await tpage.fill('#capture', 'A job of unknown length');
   await tpage.press('#capture', 'Enter');
-  await tpage.waitForTimeout(150);
+  await settled(tpage, 150);
   // Route both out of the inbox so they land on the held list.
   for (let i = 0; i < 2; i += 1) {
     const route = tpage.locator('#sort-actions .route', { hasText: 'Do next' }).first();
-    if (await route.count()) { await route.click(); await tpage.waitForTimeout(150); }
+    if (await route.count()) { await route.click(); await settled(tpage, 150); }
   }
   await tpage.evaluate(() => {
     const f = document.querySelector('#held-fold');
     if (f && !f.open) f.open = true;
   });
-  await tpage.waitForTimeout(120);
+  await settled(tpage, 120);
   const longCard = tpage.locator('#cards .card', { hasText: 'A ninety minute job' }).first();
   if (await longCard.count()) {
     await longCard.locator('.card-open').click();
@@ -7759,9 +7809,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await tpage.fill('#detail-estimate', '90');
     await tpage.click('#detail-estimate-set');
-    await tpage.waitForTimeout(150);
+    await settled(tpage, 150);
     await tpage.click('#detail-close');
-    await tpage.waitForTimeout(150);
+    await settled(tpage, 150);
     const shown = async () => tpage.evaluate(() =>
       [...document.querySelectorAll('#cards .card')].map(c => c.textContent ?? '').join(' | '));
     const before = await shown();
@@ -7788,7 +7838,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.selectOption('#how-long', '');
     await tpage.click('#sheet-situation-close');
     await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });
-    await tpage.waitForTimeout(150);
+    await settled(tpage, 150);
     is(/ninety minute/.test(await shown()), true,
       'clearing it brings the long one back — nothing was taken away, only not shown');
 
@@ -7808,14 +7858,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       'naming the situation you are in puts it on the list');
 
     await tpage.selectOption('#how-long', '');
-    await tpage.waitForTimeout(150);
+    await settled(tpage, 150);
     await tpage.click('#situation-list .linklike');
-    await tpage.waitForTimeout(250);
+    await settled(tpage, 250);
     is(await tpage.locator('#how-long').inputValue(), '30',
       'recalling it sets the inputs back in one tap');
 
     await tpage.click('#situation-list .ghost');
-    await tpage.waitForTimeout(250);
+    await settled(tpage, 250);
     is(await tpage.locator('#situation-list li').count(), 0,
       'and it can be forgotten');
     is(await tpage.locator('#how-long').inputValue(), '30',

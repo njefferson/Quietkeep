@@ -111,6 +111,43 @@ export async function openSession(
   // AFTER the previous one has landed. Failures do not wedge the queue.
   let queue: Promise<unknown> = Promise.resolve();
 
+  /**
+   * SAY WHEN THE WRITING HAS STOPPED (3.1.0).
+   *
+   * The app publishes exactly one fact about its own state — `data-ready` at
+   * boot — and nothing at all about whether a write is still in flight. So
+   * anything that needs to know waits a guessed interval instead: there are 143
+   * fixed sleeps in the smoke walk, forty seconds of them, and each is an
+   * assumption that the store will have settled by some number somebody chose.
+   * Several were wrong on a slower machine, which is how a check comes to pass
+   * here and fail in CI on identical code.
+   *
+   * A fixed sleep is an unasserted precondition with a timer attached. The
+   * timer is not the problem — the silence is. Those 143 sleeps are a map of
+   * where this app does not say what it is doing.
+   *
+   * PUBLISHED FROM THE QUEUE, which is the one place every write passes
+   * through. Not sprinkled at call sites: a signal that has to be remembered is
+   * a signal that goes stale the first time somebody adds a path.
+   *
+   * `false` while anything is in flight, `true` when the log is quiet. It is an
+   * attribute rather than a spinner on purpose — nothing about it is shown to
+   * a reader, and whether it SHOULD be is a product question this does not
+   * answer.
+   */
+  let inFlight = 0;
+  const sayQuiet = (): void => {
+    // The unit tests run this module with no DOM at all, and a store that
+    // refuses to work without a document would be a worse thing than a sleep.
+    if (typeof document === 'undefined' || !document.body) return;
+    document.body.dataset.settled = inFlight === 0 ? 'true' : 'false';
+  };
+  const whileWriting = <T>(run: Promise<T>): Promise<T> => {
+    inFlight += 1;
+    sayQuiet();
+    return run.finally(() => { inFlight -= 1; sayQuiet(); });
+  };
+
   const commitOne = async (make: (ctx: StampContext) => AppEvent[]): Promise<State> => {
     const at = new Date(now()).toISOString();
     let seq = await store.nextSeq(device!);
@@ -154,16 +191,16 @@ export async function openSession(
   };
 
   const commit: Session['commit'] = (make) => {
-    const run = queue.then(() => commitOne(make));
+    const run = whileWriting(queue.then(() => commitOne(make)));
     queue = run.catch(() => { /* the next commit must not inherit this failure */ });
     return run;
   };
 
   const refresh: Session['refresh'] = () => {
-    const run = queue.then(async () => {
+    const run = whileWriting(queue.then(async () => {
       state = fold(await store.all());
       return state;
-    });
+    }));
     queue = run.catch(() => { /* as with commit, a failure does not wedge the queue */ });
     return run;
   };

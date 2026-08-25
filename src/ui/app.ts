@@ -1992,6 +1992,12 @@ export async function main(edition?: Edition): Promise<void> {
   // the document so the headless walk waits for the app rather than for `load`,
   // which fires while this function is still awaiting IndexedDB.
   document.body.dataset.ready = 'true';
+  // AND QUIET UNTIL SOMETHING WRITES (3.1.0). `session.ts` flips this to
+  // 'false' the moment a commit is in flight and back when the log goes quiet.
+  // Stated at boot rather than left absent, because an absent attribute and a
+  // false one read the same to anybody waiting on it — which is the exact
+  // confusion the signal exists to end.
+  if (!document.body.dataset.settled) document.body.dataset.settled = 'true';
 
   // Cut a snapshot if the next cold start would otherwise replay too much
   // (1.14.1, ADR-0063). AFTER `ready`, deliberately: this is housekeeping for
