@@ -478,6 +478,10 @@ jobs:
       # only invariant in CLAUDE.md with no gate behind it — unlike connect-src
       # and the vocabulary, both of which fail the build. A rule enforced by
       # remembering is a rule that lapses on a busy afternoon.
+      - name: The palette stylesheet is what the palette file says
+        run: npm run palettes:check
+        if: ${{ !cancelled() }}
+
       - name: Every palette clears the pairs the app renders
         run: npm run palette:check
         if: ${{ !cancelled() }}

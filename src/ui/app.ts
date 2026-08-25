@@ -49,6 +49,7 @@ import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
 import { THEME_KEY, applyTheme, getTheme, setTheme } from '../theme.ts';
+import { PALETTE_KEY, applyPalette, getPalette, setPalette } from '../palette.ts';
 import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
@@ -1802,6 +1803,15 @@ export async function main(edition?: Edition): Promise<void> {
       // cannot be read costs nothing here.
       const storedTheme = await session.store.getKv<string>(THEME_KEY);
       if (storedTheme != null) { setTheme(storedTheme); applyTheme(getTheme()); }
+      // AND WHICH PALETTE (3.4.0). The last of three read here, and the one that
+      // cannot be answered any earlier: `localStorage` is banned outright, this
+      // store is IndexedDB and therefore async, and the CSP forbids the inline
+      // one-liner PALETTES.md assumes — so a reader who chose a non-default
+      // family sees one beat of the default before this line runs. In the RIGHT
+      // MODE, because `prefers-color-scheme` is answerable before paint even
+      // when the palette is not, so what changes is hue rather than day to night.
+      const storedPalette = await session.store.getKv<string>(PALETTE_KEY);
+      if (storedPalette != null) { setPalette(storedPalette); applyPalette(getPalette()); }
     } catch { /* the usual size, and the app still starts */ }
     lensRoot = (await session.store.getKv<string>(LENS_KEY)) || null;
   } catch {

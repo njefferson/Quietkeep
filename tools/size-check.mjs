@@ -167,7 +167,12 @@ const BUDGET = {
   // arrive in. The words ARE the control — an option named in a sentence is the
   // difference between choosing and guessing, and the alternative to every one
   // of them was the app deciding silently, which is how both were reported.
-  words: 3650,
+  // 3650 -> 3700 on 2026-08-25 (3.4.0). Thirty-three words: five palette names,
+  // the label, the button and one sentence saying they are all held to the same
+  // floors. The names ARE the control — PALETTES.md and Doctrine §4 both refuse a
+  // row of swatches, because a coloured square alone asks the reader to tell
+  // colours apart in order to work a colour control.
+  words: 3700,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -203,7 +208,11 @@ const BUDGET = {
   // `controls` records the same confusion from the other end. The ratchet is
   // still a ratchet and this is still too high, which the line below has always
   // said and this raise does not change.
-  allSurfacesPx: 11300,
+  // 11300 -> 11650 on 2026-08-25 (3.4.0). The palette picker and its one
+  // sentence, in Settings, which is 2,650px of a 3,000px budget and unmoved by
+  // this. Same note as the raise below it: this measures SCROLL, so a control
+  // counts as prose, and the ratchet is still too high.
+  allSurfacesPx: 11650,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.
@@ -489,7 +498,10 @@ const BUDGET = {
   // That is the fifth time this file's note has had to say which way round a
   // rise reads. Nothing else moved: no destination gained a row and no surface
   // gained a step.
-  controls: 251,
+  // 251 -> 253 on 2026-08-25 (3.4.0). Two: the palette list and its Set. The
+  // second axis of a choice PALETTES.md §6 rules should ship as options rather
+  // than be decided for everybody — five families that all pass, offered.
+  controls: 253,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

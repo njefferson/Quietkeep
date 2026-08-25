@@ -34,6 +34,8 @@
     "narrows:check": "node tools/narrows-check.mjs",
     "notify:check": "node tools/notify-voice.mjs",
     "palette:check": "node tools/palette-gate.mjs",
+    "palettes": "node tools/palettes.mjs",
+    "palettes:check": "node tools/palettes.mjs --check",
     "plain:check": "node tools/plain.mjs",
     "plain:surface": "node tools/plain-surface.mjs",
     "prepare": "node ../noahjefferson/branch-guard.mjs --repo . --install >/dev/null 2>&1 || true",

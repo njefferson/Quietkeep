@@ -724,7 +724,42 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.3.0**. Colour is
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.0**. Five palette
+  families, both modes each, and the picker to choose one. ADR-0110.
+  **The payoff, measured:** all ten palettes clear all thirteen pairs in **0.25
+  seconds**. Under the old arrangement that would have been about forty minutes
+  of browser. It is the whole argument for 3.3.0, demonstrated rather than
+  claimed.
+  **Where they come from.** Four were derived by the hub's 2026-07-30 palette
+  council — four independent proposals, adversarial verification, three judging
+  lenses — and have been sitting in `noahjefferson/palettes/families.json`
+  unused. They are stated in the hub's role vocabulary (`page`, `surfaces[]`,
+  `rail`, `text[]`, `accents`), so they are mapped onto Quietkeep's seven, with
+  `rail` composited to a flat hex. **`warm` is the one Quietkeep has and the hub
+  families do not**, so it is derived per family by searching a warm hue for the
+  lightness that clears 4.5:1 against both `bg` and `surface` — and then held to
+  the same gate as everything else, which is the whole of the criteria.
+  **Consolidated FIRST, because PALETTES.md §6 says to and says why:** "if a
+  palette is currently declared in N places, adding F families makes it N x F x 2
+  blocks that must never drift". This file held four such places. `docs/
+  palettes.json` is now the one source and `tools/palettes.mjs` generates
+  `public/palettes.css`; `palettes:check` fails on drift and is what CI runs.
+  **Palette and mode stay independent axes** — `data-palette` beside
+  `data-theme`, two decisions rather than ten.
+  **Named, never a swatch.** A coloured square alone asks the reader to tell
+  colours apart in order to work a colour control, which Doctrine §4 forbids.
+  **The flash is real and cannot be fixed here.** PALETTES.md assumes an inline
+  one-liner reads the palette before first paint. This app cannot: `localStorage`
+  is banned outright, kv is IndexedDB and async, and the CSP forbids inline
+  script. So a reader on a non-default family sees one beat of the default — in
+  the RIGHT MODE, since `prefers-color-scheme` is answerable before paint, so
+  what settles is hue rather than day into night. Recorded rather than papered
+  over, and it is a cross-app assumption that did not survive contact with this
+  app's own rules.
+  **`palettes.css` is precached.** A separate stylesheet is a separate thing for
+  the service worker to hold, and an offline-first app that cached its rules and
+  not its colours would come back with none.
+- **Superseded, and kept for the record: 3.3.0.** Colour is
   checked by arithmetic now, and a palette costs nothing to add. ADR-0110.
   **The measurement that started it.** The a11y walk made **1,660 contrast
   assertions** in its last run — for TWO palettes, about 830 each, roughly four

@@ -3,13 +3,18 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-3.3.0';
+const CACHE = 'quietkeep-3.4.0';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
 const SHELL = [
   './',
   './index.html',
+  // The palette values, generated from docs/palettes.json (3.4.0). It is a
+  // SEPARATE stylesheet and therefore a separate thing to precache: an
+  // offline-first app that caches its rules and not its colours would come back
+  // with no colours at all, which is a worse failure than not coming back.
+  './palettes.css',
   './app.css',
   './app.js',
   './manifest.webmanifest',

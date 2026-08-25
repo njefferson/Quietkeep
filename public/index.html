@@ -10,6 +10,10 @@
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./brand/favicon-32.png" sizes="32x32">
 <link rel="apple-touch-icon" href="./brand/apple-touch-icon.png">
+<!-- THE PALETTE VALUES FIRST, then the rules that read them. Generated from
+     docs/palettes.json by `npm run palettes` — one source, because PALETTES.md
+     warns that N declarations times F families is a drift factory (ADR-0110). -->
+<link rel="stylesheet" href="./palettes.css">
 <link rel="stylesheet" href="./app.css">
 <meta name="theme-color" content="#F4F1E9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#141A26" media="(prefers-color-scheme: dark)">
@@ -2500,6 +2504,31 @@
     <button id="ui-theme-set" type="button" class="ghost">Set how it looks</button>
   </div>
   <p id="ui-theme-note" class="storage-note" role="status" aria-live="polite"></p>
+
+  <!-- THE SECOND AXIS (3.4.0, ADR-0110). Mode says how bright; a palette says
+       which colours, and the two are independent — hub PALETTES.md §6.
+       NAMED, NOT A ROW OF SWATCHES. A coloured square alone is colour as the
+       sole carrier of meaning, which Doctrine §4 forbids outright; the name is
+       the control and the colour is what it does.
+       ALL FIVE PASS THE SAME FLOORS. That is not a claim in this comment — it is
+       `npm run palette:check`, which holds every family in both modes against
+       the thirteen pairs this UI actually renders, in a quarter of a second. -->
+  <p class="about-p">
+    Five sets of colours, all held to the same contrast floors. Changing this
+    changes nothing about what is written down, and only on this device.
+  </p>
+  <div class="about-actions">
+    <label class="detail-inline" for="ui-palette">Its colours are</label>
+    <select id="ui-palette">
+      <option value="quietkeep">Quietkeep</option>
+      <option value="instrument">Instrument</option>
+      <option value="paper">Paper</option>
+      <option value="mono">Mono</option>
+      <option value="soft">Soft</option>
+    </select>
+    <button id="ui-palette-set" type="button" class="ghost">Set its colours</button>
+  </div>
+  <p id="ui-palette-note" class="storage-note" role="status" aria-live="polite"></p>
 
   <h3 class="about-section">How long a timer runs</h3>
   <p class="about-p">

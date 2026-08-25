@@ -17,6 +17,7 @@ import { toCalendar, calendarCount } from '../ics.ts';
 import { exportFilename, inspectExport, importSeedingFresh, foldInShard, toJsonl } from '../portability.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, scaleNote, normaliseScale } from '../scale.ts';
 import { THEME_KEY, applyTheme, getTheme, setTheme, normaliseTheme, themeNote } from '../theme.ts';
+import { PALETTE_KEY, applyPalette, getPalette, setPalette, normalisePalette, paletteNote } from '../palette.ts';
 import { statusReport, renderReport, reportedBefore, periodWords, type ReportFormat } from '../delta.ts';
 import { commsNode } from '../comms.ts';
 import { printText } from './print.ts';
@@ -1630,6 +1631,31 @@ export async function mountAbout(
       applyTheme(chosen);
       themeNoteEl.textContent = themeNote(chosen);
       void session.store.setKv(THEME_KEY, chosen)
+        .catch(() => { /* a view preference: it applies now either way */ });
+    });
+  }
+
+  // WHICH PALETTE (3.4.0). The same shape again — preview on change, persist on
+  // the press, kv and never an event. The third control in this panel built to
+  // this pattern, which is the point: a reader who has met one has met them all.
+  const palSel = document.querySelector<HTMLSelectElement>('#ui-palette');
+  const palSet = document.querySelector<HTMLButtonElement>('#ui-palette-set');
+  const palNote = document.querySelector<HTMLElement>('#ui-palette-note');
+  if (palSel && palSet && palNote) {
+    palSel.value = getPalette();
+    palNote.textContent = paletteNote(getPalette());
+    palSel.addEventListener('change', () => {
+      applyPalette(normalisePalette(palSel.value));
+      // The note previews too: the name is what carries the meaning, so it has
+      // to keep up with the colours rather than lag a press behind them.
+      palNote.textContent = paletteNote(normalisePalette(palSel.value));
+    });
+    palSet.addEventListener('click', () => {
+      const chosen = normalisePalette(palSel.value);
+      setPalette(chosen);
+      applyPalette(chosen);
+      palNote.textContent = paletteNote(chosen);
+      void session.store.setKv(PALETTE_KEY, chosen)
         .catch(() => { /* a view preference: it applies now either way */ });
     });
   }

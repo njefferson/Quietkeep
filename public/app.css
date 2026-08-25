@@ -19,13 +19,16 @@
 :root {
   color-scheme: light dark;
 
-  --bg: #F4F1E9;
-  --surface: #FFFFFF;
-  --ink: #1B2333;
-  --ink-soft: #4C5670;
-  --line: #8E8A7F;   /* 3.45:1 on surface, 3.05:1 on bg — a control boundary is a graphical object (WCAG 1.4.11) */
-  --accent: #33425F;
-  --warm: #7A4E00;
+  /* THE SEVEN COLOUR ROLES ARE NOT DECLARED HERE ANY MORE (3.4.0).
+   *
+   * They live in `public/palettes.css`, generated from `docs/palettes.json` by
+   * `npm run palettes`. PALETTES.md §6: "if a palette is currently declared in
+   * N places, adding F families makes it N x F x 2 blocks that must never
+   * drift". This file held four of those places. Five families would have been
+   * twenty blocks and one source of truth nobody could point at.
+   *
+   * Nothing else changes: every rule below still reads `var(--ink)` and the
+   * rest, because a reskin is a value swap and never a rename. */
 
   --gap: 1rem;
   --radius: 0.75rem;
@@ -74,13 +77,6 @@
  * they are the ones that must have a single home. The two rules below map them;
  * neither restates them. */
 :root {
-  --dark-bg: #141A26;
-  --dark-surface: #1E2637;
-  --dark-ink: #F2F0EA;
-  --dark-ink-soft: #B3BCCE;
-  --dark-line: #6A7896;   /* 3.42:1 on surface, 3.93:1 on bg */
-  --dark-accent: #AFC0DC;
-  --dark-warm: #F5C978;
 }
 
 /* THE DEVICE ANSWERS UNLESS THE READER HAS (3.1.0).
@@ -89,28 +85,9 @@
  * ships `script-src 'self'` with no inline script, so nothing of ours runs
  * before the first paint. Deciding the theme entirely in JS would give a reader
  * who chose light on a dark device a dark flash on every single open. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: var(--dark-bg);
-    --surface: var(--dark-surface);
-    --ink: var(--dark-ink);
-    --ink-soft: var(--dark-ink-soft);
-    --line: var(--dark-line);
-    --accent: var(--dark-accent);
-    --warm: var(--dark-warm);
-  }
-}
-
-/* And chosen dark wins on a light device, which is the other half of a choice. */
-:root[data-theme="dark"] {
-  --bg: var(--dark-bg);
-  --surface: var(--dark-surface);
-  --ink: var(--dark-ink);
-  --ink-soft: var(--dark-ink-soft);
-  --line: var(--dark-line);
-  --accent: var(--dark-accent);
-  --warm: var(--dark-warm);
-}
+/* The mode mapping moved to `public/palettes.css` too, per family, generated.
+   It was two hand-written blocks here; it is ten generated ones there, and the
+   difference between those two numbers is exactly why it is generated. */
 
 * { box-sizing: border-box; }
 

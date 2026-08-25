@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.4.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-25',
+    notes: [
+      '**Five sets of colours to choose from, not two.** *Quietkeep* (the one you have), *Instrument*, *Paper*, *Mono* and *Soft*. Each comes in light and dark, and light-or-dark stays a separate choice \u2014 so it is two decisions, not ten: which colours, and how bright.',
+      '**They are named, never a row of coloured squares.** A swatch on its own asks you to tell colours apart to use the control, which is the one thing this app will not do. The name says which it is and the note under it says what it is for.',
+      '**Every one clears the same contrast floors as the original.** Not a promise \u2014 all ten are checked against the thirteen colour pairs this app actually puts on screen, and the check takes a quarter of a second. That is what last release was for.',
+      '**Where they come from:** four of them were worked out for this family of apps by a design council and verified independently, and were sitting in the shared notes unused. *Instrument* is the one that council recommended; *Soft* is the lowest glare; *Mono* has no hue at all.',
+      '**One place decides the colours now.** They used to be written in four places in the stylesheet; five sets would have made that twenty blocks that must never disagree. There is one file, and the stylesheet is generated from it.',
+      '**What is still not right:** if you pick something other than the one you start with, you will see a moment of the original when the app first opens, before it can read your choice back. It will be in the right brightness \u2014 light or dark is answered before anything is drawn \u2014 so what you see is a hue settling, not day turning into night. It cannot be fixed without storing the choice somewhere this app deliberately does not store things.',
+    ],
+  },
+  {
     triplet: '3.3.0',
     kind: 'CAPABILITY',
     date: '2026-08-25',

@@ -100,12 +100,24 @@ if (ua.length) {
 }
 console.log('');
 
-const names = Object.keys(set.palettes);
-if (names.length === 0) fail('docs/palettes.json defines no palettes');
+// PALETTE AND MODE ARE INDEPENDENT AXES (hub PALETTES.md §6), so a family is two
+// palettes and both are checked. Flattened here rather than in the file, because
+// the file is what a person edits and `instrument` reading as one thing they
+// chose is the point of the axes being independent.
+const entries = [];
+for (const [key, f] of Object.entries(set.families ?? {})) {
+  for (const mode of ['light', 'dark']) {
+    if (!f[mode]) { fail(`${key}: no ${mode} mode — a family is both, or it is not a family`); continue; }
+    entries.push([`${f.name ?? key} · ${mode}`, f[mode]]);
+  }
+}
+if (entries.length === 0) fail('docs/palettes.json defines no families');
+if (set.default && !set.families?.[set.default]) {
+  fail(`the default palette "${set.default}" is not one of the families`);
+}
 
-for (const id of names) {
-  const p = set.palettes[id];
-  const roles = p.roles ?? {};
+for (const [id, roleMap] of entries) {
+  const roles = roleMap;
   // A PALETTE MISSING A ROLE IS A HOLE, not a smaller palette. Refused before
   // any arithmetic, because `undefined` would otherwise fail as a bad colour and
   // read as a contrast problem.
@@ -131,7 +143,7 @@ for (const id of names) {
     }
   }
   if (broke === 0) {
-    ok(`${p.name ?? id}: all ${pairs.size} pairs clear their floor `
+    ok(`${id}: all ${pairs.size} pairs clear their floor `
       + `(tightest ${worst.fg} on ${worst.bg} at ${worst.got.toFixed(2)}:1 against ${worst.floor}:1)`);
   }
 }
@@ -142,5 +154,5 @@ if (failures.length) {
   console.log('nothing had to be rendered to find out.\n');
   process.exit(1);
 }
-console.log(`${names.length} palette(s) checked against ${pairs.size} pairs, no browser involved.`);
+console.log(`${entries.length} palette(s) checked against ${pairs.size} pairs, no browser involved.`);
 console.log('Adding another is an entry in docs/palettes.json and a block in the stylesheet.\n');
