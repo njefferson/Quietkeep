@@ -5442,6 +5442,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // waits in this walk should eventually take.
   await tpage.waitForSelector('#triage:not([hidden])', { timeout: 12000 }).catch(() => {});
   await intoJob(tpage, 'triage');
+  // PRESS THE OPENER UNTIL THE INBOX IS ACTUALLY OPEN (3.0.1).
+  //
+  // CI reported the state in its own words and it was unambiguous: stance
+  // "triage", the section not hidden, the opener present AND visible, and
+  // routes 0 with an empty prompt. So arriving concluded nothing needed
+  // pressing — `reach` presses once, and once is a claim about timing.
+  //
+  // A write folds into the store a beat after it is made, so the inbox can be
+  // live and EMPTY at the moment of the press, and a press against an empty
+  // inbox opens nothing. Asking again costs a count on the ordinary path and is
+  // the difference between "I pressed it" and "it is open".
+  for (let i = 0; i < 20; i++) {
+    if (await tpage.locator('#triage-actions .route').count() > 0) break;
+    await tpage.evaluate(() => {
+      const b = document.querySelector('#triage [data-stance-opener]');
+      if (b && !b.hidden) b.click();
+    }).catch(() => {});
+    await tpage.waitForTimeout(200);
+  }
   // WAIT FOR THE CARD TO HAVE WORDS ON IT (3.0.1).
   //
   // Arriving presses the opener; FILLING the card is a render that follows. So
