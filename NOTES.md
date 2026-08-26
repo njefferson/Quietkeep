@@ -755,6 +755,8 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **Superseded, and kept for the record: 3.4.1.** Promoted 2026-08-26 at
+  `355e4c1`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**, verified at
   `beedbdb`: Deploy success AND Spine success read from the runs for that exact
   SHA. The focus ring reaches the screen now, and the gate can see whether it
@@ -1126,7 +1128,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.4.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.4.1** — promoted at
+  `355e4c1`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `a8cdf54`, the staging head
+  that was walked; the merge asserted to descend from `e16b2e8`, the real
+  production; and asserted to carry `beedbdb`, the SHA whose own Deploy and Spine
+  were read green before the promote.
+  **The clone this was promoted from was 146 commits STALE, and the local
+  remote-tracking refs were stale with it** — the container had been recycled and
+  both repos re-cloned at pinned older revisions. `git log origin/main` answered
+  about a different day; `git ls-remote`, which reads the remote rather than the
+  local ref, is what caught it. A promote from that tree would have pushed months
+  of undoing onto production and every gate would have passed, because the tree
+  was internally consistent. Both clones were reset and the commit hook
+  reinstalled before anything else happened (hub LESSONS 135).
+  **What this carries.** The focus ring reaches the screen. It was cut on all
+  four sides by 5px, on nearly every control in the app, and it was not the one
+  control it was reported on: three containers scroll here and each cut whatever
+  reached its edge. The gate that passed it for 142 releases now measures whether
+  the pixels arrive rather than whether the property is set.
+  **Still not right, and named rather than closed:** inside a job the frame folds
+  one text step earlier than before 3.1.1 on a phone at 125%; the replan card is
+  checked structurally rather than measured on screen, as are three surfaces the
+  walk has no door to; and a reader on a non-default palette sees one beat of the
+  default on a cold start, in the right mode.
+  **And one correction to what that last item has been saying.** Both 3.4.0's
+  notes and this block have called the cold-start beat unfixable "without storing
+  the choice somewhere this app deliberately does not store things". That is true
+  of `localStorage` and false in general: **a service worker can read
+  IndexedDB**, so the worker that already serves the cached shell can hand back
+  HTML with `data-palette` already on it, and the palette would be right on the
+  first painted pixel. Nothing new stored, nothing delayed. Not built; recorded
+  so the limitation stops being repeated as though it were settled.
+- **Superseded, and kept for the record: 3.4.0** — promoted at
   `e16b2e8`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `60523f3`, the staging head
   that was walked, and the merge asserted to descend from `0f70d96` before it was
