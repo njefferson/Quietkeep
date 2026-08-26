@@ -1830,6 +1830,8 @@ async function auditFocusRings(page, stateName, theme, selectors) {
       const match = sels.find((s) => el.matches(s));
       if (!match) return null;
       const cs = getComputedStyle(el);
+      const w = parseFloat(cs.outlineWidth) || 0;
+      const off = parseFloat(cs.outlineOffset) || 0;
       const parseC = (str) => {
         const m = str.match(/rgba?\(([^)]+)\)/);
         if (!m) return null;
@@ -1843,6 +1845,68 @@ async function auditFocusRings(page, stateName, theme, selectors) {
         }
         return null;
       };
+      // DO THE RING'S PIXELS REACH THE SCREEN? Everything above this reads
+      // COMPUTED STYLE, where `outline-width` is 3px whether or not a single
+      // one of those pixels is painted — which is exactly how the app shipped
+      // 142 releases with the capture box's ring cut flush on all four sides.
+      //
+      // A scroll container clips. `overflow-y: auto` forces the used value of
+      // `overflow-x` to `auto` as well, so the frame clipped horizontally as a
+      // side effect of a vertical cap, and the runway clipped horizontally on
+      // purpose — between them that is nearly every control in the app, each
+      // losing 5px of a 3px outline at 2px offset wherever it touched the
+      // column's edge. Green on every contrast, target and axe check throughout.
+      //
+      // So: build the ring's own rect and ask every clipping ancestor whether
+      // it contains it. Reported per axis because the two fail for different
+      // reasons — sideways is always a clip box drawn too tight, and downward
+      // is usually a scroller that has aligned the element flush with its edge
+      // and wants `scroll-padding`.
+      const box = el.getBoundingClientRect();
+      const ring = { l: box.left - off - w, t: box.top - off - w,
+                     r: box.right + off + w, b: box.bottom + off + w };
+      const clip = [];
+      for (let n = el.parentElement; n; n = n.parentElement) {
+        const c = getComputedStyle(n);
+        // STOP AT AN OPEN DIALOG. It renders in the TOP LAYER, so nothing
+        // outside it clips it however the DOM is nested — and every dialog in
+        // this app sits inside the runway, whose box is smaller and elsewhere.
+        // Walking past it reported three controls as 57px, 88px and 179px
+        // outside a scroller that was not clipping them at all. Test the dialog
+        // itself, which does clip its own contents, then stop.
+        const top = n.tagName === 'DIALOG' && n.hasAttribute('open');
+        if (c.overflowX === 'visible' && c.overflowY === 'visible') { if (top) break; continue; }
+        const q = n.getBoundingClientRect();
+        const name = n.tagName.toLowerCase() + (n.id ? '#' + n.id : '')
+          + (n.classList[0] ? '.' + n.classList[0] : '');
+        // Half a pixel of slack throughout: sub-pixel layout, not a clipped ring.
+        //
+        // THREE OUTCOMES PER AXIS, and telling them apart is the whole
+        // difference between a gate and a noise generator. The first run of
+        // this check reported 62px, 93px and 184px alongside the real 5px
+        // findings, in the same words — and a control that does not FIT in its
+        // scroller has part of itself off screen by arithmetic, which is not a
+        // defect and is certainly not a clipped ring.
+        //
+        //   the control is bigger than the box     — nothing to report
+        //   the control fits but is not in view    — a different defect, said
+        //                                            in different words
+        //   the control is in view, its ring is not — the one this is for
+        for (const ax of ['x', 'y']) {
+          const [lo, hi] = ax === 'x' ? ['left', 'right'] : ['top', 'bottom'];
+          const [rlo, rhi] = ax === 'x' ? ['l', 'r'] : ['t', 'b'];
+          if (box[hi] - box[lo] > q[hi] - q[lo] + 0.5) continue;
+          const word = ax === 'x' ? 'horizontally' : 'vertically';
+          const self = Math.max(q[lo] - box[lo], box[hi] - q[hi]);
+          if (self > 0.5) {
+            clip.push(`the control ITSELF is ${Math.round(self)}px outside ${name} ${word} — not a ring cut`);
+            continue;
+          }
+          const out = Math.max(q[lo] - ring[rlo], ring[rhi] - q[hi]);
+          if (out > 0.5) clip.push(`${Math.round(out)}px ${word} by ${name}`);
+        }
+        if (top) break;
+      }
       return {
         match,
         visible: cs.outlineStyle,
@@ -1850,6 +1914,7 @@ async function auditFocusRings(page, stateName, theme, selectors) {
         colour: parseC(cs.outlineColor),
         bg: bgOf(el.parentElement ?? el),
         focusVisible: el.matches(':focus-visible'),
+        clip,
       };
     }, [...remaining]);
     if (!hit) continue;
@@ -1861,6 +1926,10 @@ async function auditFocusRings(page, stateName, theme, selectors) {
     const ok = hit.visible !== 'none' && hit.width >= 2 && contrast >= 3;
     (ok ? pass : fail)(
       `${theme.padEnd(5)} ${stateName.padEnd(22)} focus ring ${hit.match.padEnd(20)} ${hit.visible} ${hit.width}px @ ${contrast.toFixed(2)}:1 (needs solid ≥2px ≥3:1)`,
+    );
+    ((hit.clip ?? []).length === 0 ? pass : fail)(
+      `${theme.padEnd(5)} ${stateName.padEnd(22)} ring reaches the screen ${hit.match.padEnd(20)}`
+      + ((hit.clip ?? []).length ? ` — CLIPPED ${hit.clip.join(', ')}` : ''),
     );
   }
   for (const sel of remaining) {

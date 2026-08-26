@@ -399,28 +399,16 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-- **The focus ring on the capture box is clipped, on every side, by 5px.**
-  Reported from a device, 2026-08-25; the left edge is where it shows, because
-  that is where the box runs closest to the frame's own edge.
-  **Measured.** `#capture` carries `outline: 3px solid` at `outline-offset: 2px`,
-  so the ring's outer edge wants to sit 5px outside the element — at x=11 with
-  the element at x=16. It is not the viewport that cuts it: the clipper is
-  `header.frame`, whose `overflow-y: auto` (ADR-0100, so the frame scrolls inside
-  itself rather than pushing the runway off screen) makes `overflow-x` compute to
-  `auto` as well. **A box that only meant to scroll vertically clips
-  horizontally too, and an outline is painted OUTSIDE the element it belongs
-  to.** Identical at 390px and 900px, so it is every width rather than a narrow
-  screen artefact.
-  **Why it matters beyond looking wrong.** A focus indicator is WCAG 2.4.11 and
-  2.4.13; a ring missing one of its four sides is a weaker indicator than the one
-  the a11y walk measured and passed, and the walk passed it because it reads
-  computed style — `outline-width` is 3px whether or not the pixels survive to
-  the screen. **The gate cannot see this class of defect at all**, which is the
-  more useful half of the finding.
-  **Not fixed today, on the owner's instruction.** The obvious remedies each cost
-  something that wants weighing rather than guessing: `overflow-x: clip` with
-  `overflow-clip-margin` on the frame, dropping the offset so the ring sits
-  inside, or insetting the frame's content. None is obviously right.
+**Nothing outstanding right now** — and the line is here rather than an empty
+gap, because a section that has been emptied and a section nobody has written in
+look identical.
+
+Struck 2026-08-25, in 3.4.1: *the focus ring on the capture box is clipped, on
+every side, by 5px*. It was not only that box. Three scrolling containers cut
+every ring that reached their edge — the frame, the runway and every sheet's
+body — and the fix is the same 6px in each. The gate that could not see it can
+now: `auditFocusRings` builds the ring's own rect and checks it against every
+clipping ancestor, and it found ten more the report never mentioned.
 
 ## Open questions
 
@@ -767,6 +755,47 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**, verified at
+  `beedbdb`: Deploy success AND Spine success read from the runs for that exact
+  SHA. The focus ring reaches the screen now, and the gate can see whether it
+  does.
+  **Reported from a device as the outline being cut off on the left of the box
+  you type in.** It was cut on all four sides, by 5px, and it was not that box:
+  `#capture` carries `outline: 3px solid` at `outline-offset: 2px`, so the ring
+  wants to sit 5px outside the element, and every scrolling container in this app
+  cut whatever reached its edge. Three of them. `header.frame` clips sideways as
+  a SIDE EFFECT — `overflow-y: auto` forces the used value of `overflow-x` from
+  `visible` to `auto`, because the two axes cannot disagree about whether there
+  is a clip box. `.runway` clips sideways on purpose, and it is full width, so
+  seven of the landing view's controls lost their ring at both ends. Every
+  sheet's `.sheet-body` cut the BOTTOM off ten more, because Tabbing to a control
+  below the fold aligns it flush with the scrollport and the ring is outside it.
+  **`overflow-x: clip` with an `overflow-clip-margin` is the rule that reads like
+  the fix and is not** — measured, not assumed: beside `overflow-y: auto` it
+  computes to `hidden`, and `overflow-clip-margin` applies only to `clip`. What
+  works is 6px of padding with 6px of negative margin: the clip box moves out,
+  the content stays exactly where it was. The frame's bottom rule became a
+  background rather than a border in the same change, because a border follows
+  the border box and would have overhung the column by that 6px at each end.
+  `scroll-padding` covers the scrolled positions and a little content padding
+  covers scroll position zero, where there is nothing above to inset into.
+  **The gate could not see this class of defect at all**, which is the more
+  useful half. `auditFocusRings` read computed style, where `outline-width` is
+  3px whether or not one of those pixels is painted — so it passed this on every
+  control, in both themes, for 142 releases. It builds the ring's rect now and
+  checks it against every clipping ancestor, at no extra browser cost, and its
+  first run found ten sheet controls nobody had reported.
+  **Two things it got wrong before it was right, both worth keeping.** It
+  reported 62px, 88px and 179px alongside the real 5px findings, in the same
+  words: a control that does not FIT in its scroller has part of itself outside
+  by arithmetic, which is not a ring cut — so the three outcomes per axis are
+  told apart now and only one of them fails. And it walked past an OPEN DIALOG,
+  which renders in the top layer where nothing outside it clips it however the
+  DOM is nested; every dialog here sits inside the runway, whose box is smaller
+  and elsewhere. Three controls were being measured against a box that was not
+  cutting them.
+- **Superseded, and kept for the record: 3.4.0.** Promoted 2026-08-25 at
+  `e16b2e8`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.4.0**. Five palette
   families, both modes each, and the picker to choose one. ADR-0110.
   **The payoff, measured:** all ten palettes clear all thirteen pairs in **0.25
@@ -1097,7 +1126,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.1.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.4.0** — promoted at
+  `e16b2e8`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `60523f3`, the staging head
+  that was walked, and the merge asserted to descend from `0f70d96` before it was
+  pushed. Three releases in one promote, and the last two are one idea.
+  **What this carries.** Above 900px the job view shows the hub BESIDE the job
+  instead of stacked above it, which is ADR-0108's second arrangement finally
+  built and needed nothing in `src/` to change. Colour is checked by ARITHMETIC
+  rather than by rendering: structure measured once under a sentinel palette,
+  values computed per palette, 624 rows reduced to thirteen distinct pairs — and
+  it found a shipped fault on the way, `applyTheme` setting `data-theme` and
+  never `color-scheme`, so a light choice on a dark device left every dropdown
+  and date box white-on-grey. Then five palette families with a picker, all ten
+  clearing all thirteen pairs in a quarter of a second.
+  **Still not right, and named rather than closed:** inside a job the frame folds
+  one text step earlier than before 3.1.1 on a phone at 125%; the replan card is
+  checked structurally rather than measured on screen; and a reader on a
+  non-default palette sees one beat of the default on a cold start, in the right
+  mode, because this app cannot read the choice before paint.
+- **Superseded, and kept for the record: 3.1.1** — promoted at
   `0f70d96`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `4236c88`, the staging head
   that was walked, and the merge asserted to descend from `1d2109a` before it was

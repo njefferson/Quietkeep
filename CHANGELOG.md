@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.4.1 — ITERATION
+
+*2026-08-25*
+
+- **The ring that shows where you are was being cut off.** Tap into the box you type in and a ring is drawn round it, so you can see that is where your typing will go. Five pixels of that ring were missing on every side — clearest on the left, where the box runs closest to the edge. It was happening to nearly every control in the app, not only that one, and it had been since the beginning.
+- **Why, in one sentence:** a box that scrolls has to cut off whatever falls outside it, and the ring is drawn just *outside* the control it belongs to. The three boxes that scroll now leave it six pixels to be drawn in. Nothing on screen has moved.
+- **And the same thing at the bottom of the panels.** Ten controls across the settings, the item detail, the record and the rest lost the bottom of their ring when you moved down to them with a keyboard, because the panel scrolled them exactly flush with its own edge. They stop a little short of it now.
+- **The automated check could not see this at all, which is the more useful half.** It asked whether a ring was *set*, and one was — three pixels wide, in every colour set, on every screen it visits. Whether those pixels reached the screen was a question nothing was asking. It now builds the ring’s own outline and checks it against every box that could cut it, on every control it already tests, at no extra cost.
+- **What is still not right:** this checks the screens the automated walk visits. A screen it cannot reach has its rings unchecked, exactly as before.
+
 ## 3.4.0 — CAPABILITY
 
 *2026-08-25*
