@@ -9,8 +9,30 @@ Help, Settings, Your data and How it works stop being folding groups inside the
 own header. The ⓘ keeps only what the app IS: the intro, what changed, the
 diagnostic, the way to the calendar, the licence.
 
-- **More** lists six destinations and nothing else. It is a list of places, so
-  it is short enough to read in one look and never scrolls.
+- **More** lists the destinations and nothing else. It is a list of places, so
+  it is short enough to read in one look.
+
+  **SEVEN since 3.5.1**, when colour left Settings and became its own door. The
+  count in this line has now been four, six and seven; what is load-bearing is
+  the sentence above it, not the number.
+
+  **"AND NEVER SCROLLS" USED TO BE HERE AND IT WAS NOT TRUE.** Measured on the
+  release that added the seventh, and measured again with the seventh removed so
+  the blame lands where it belongs:
+
+  - 390x844 at 100% — six doors: 406px in a 406px box. Seven: 466 in 466.
+    Neither scrolls, and both fit exactly, because the dialog sizes to its
+    content until it cannot.
+  - 390x844 at 200% — six doors ALREADY scrolled: 1,070px of list in a 381px
+    box. Seven makes it 1,186. At 320px and 200% it is 1,358 against 1,522.
+
+  So the claim had been false at the text sizes the people this app is for are
+  most likely to use, for as long as there have been six, and nothing had looked.
+  It is not a defect in the list: a list of places is a reasonable thing to
+  scroll, the way out sits outside the scrolling body (§4), and every door clears
+  its target size. It was a defect in this record, which stated an absolute
+  nobody had measured. The honest version is: it does not scroll at 100%, and it
+  does at 200%.
 - **One surface at a time.** Opening a destination closes whatever was open.
   Two open dialogs overlap and the top one eats the other's taps, and "somewhere
   to go" means arriving at *one* place.

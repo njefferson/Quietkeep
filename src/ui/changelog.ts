@@ -29,6 +29,56 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.5.1',
+    kind: 'ITERATION',
+    date: '2026-08-26',
+    notes: [
+      '**Colours has its own place now.** It was a block near the bottom of *Settings*; it is its own door behind *Everything else*, next to *Settings* rather than inside it. Nothing about it changed except where it lives and how big it is.',
+      '**Which is what makes the pictures worth having.** Two to a row inside Settings, each half of each picture came out about 75 pixels wide on a phone \u2014 you could see that one side was light and the other dark, and not much else. One to a row here, and a half is about 155. The whole argument for a picture is that you can see it.',
+      '**Settings got shorter by about a fifth**, which is the other half of the same move. It had been the longest thing behind that button.',
+      '**Light or dark stayed in Settings**, on purpose. How bright the app is and which set of colours it uses are two separate choices, and putting them both here would have made this door mean "anything to do with how it looks", which is what Settings already means.',
+      '**What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours whichever set you pick. That is decided when you save the app to your home screen and nothing the app does afterwards can change it.',
+    ],
+  },
+  {
+    triplet: '3.5.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-26',
+    notes: [
+      '**You can see the colour sets now, instead of reading their names.** Five pictures, side by side, one per set \u2014 the same little sample of the app painted in each. Pick by looking.',
+      '**Each picture is the same view twice: day on the left, night on the right.** Every set comes in light and dark, and ten pictures would be a wall \u2014 so one picture carries both, and every part of it appears on both sides. The button is in both, the card is in both, so you are comparing like with like rather than looking at two different things.',
+      '**The pictures are made from the same file the app gets its colours from**, so a set cannot look like one thing in the chooser and paint another once you pick it. They are only redrawn when the colours actually change.',
+      '**Which one is chosen is still shown by a button, not by a coloured outline.** The whole point of this screen is colour, so colour is the one thing that must not also be carrying "this is the one you have".',
+      '**Four of the five have been redrawn, because they were the same set four times.** Building the pictures showed it at once: in dark, four of them were within a few points of each other and two were identical to the eye, while their descriptions claimed real differences \u2014 *exact-neutral*, *cool*, *lowest glare* \u2014 that you could not see. They had each been checked for being readable and never checked against each other for being different.',
+      '**So they are now genuinely different things.** *Instrument* is cool and crisp. *Paper* is a warm kraft page with white cards and a deep teal for anything you can press. *Mono* has no hue at all. *Soft* is dimmed, with a night that is grey rather than black. *Quietkeep* is untouched. All five still clear the same contrast floors \u2014 that was checked after every change, and it takes a quarter of a second.',
+      '**What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours, whichever set you pick. That is decided when you save the app to your home screen and nothing it does afterwards can change it.',
+    ],
+  },
+  {
+    triplet: '3.4.3',
+    kind: 'ITERATION',
+    date: '2026-08-26',
+    notes: [
+      '**The button that said *More* now says *Everything else*.** More of what? The only way to find out was to press it. What is behind it has not changed \u2014 settings, your data, help, how it works, what this app is, and the things you can do like printing today or sending to your calendar. Now the button says so.',
+      '**And *Contents* now says *On this page*.** Those two sit next to each other and are exactly complementary: one is what is here, the other is what is not. They now sound like the pair they are.',
+      '**Inside a job, the way out now says *Choose where to be*.** It said *Everywhere else*, which was fine on its own and impossible next to *Everything else* \u2014 a letter apart to the ear, and one means your other work while the other means the app itself. It takes you to *Where do you want to be?*, so now it says that.',
+      '**The colours section has a heading, and says what it actually means.** It had no heading at all, and told you the five sets were *held to the same contrast floors*, which is a phrase for whoever built it. What it means is: every one is checked to the same standard for being readable, so which you pick is a matter of taste and not of one being easier to read.',
+      '**Nothing moved and nothing was added.** Same buttons, same places, same order, same things behind them. Only the words.',
+    ],
+  },
+  {
+    triplet: '3.4.2',
+    kind: 'ITERATION',
+    date: '2026-08-26',
+    notes: [
+      '**The app arrives already wearing the colours you chose.** If you had picked something other than the original, opening the app showed you a moment of the original first, then settled. It does not any more \u2014 the colours are right on the very first thing drawn.',
+      '**And the same for light or dark, which was the bigger one.** If your device is set to dark and you asked for light, you were getting a beat of night before the day you asked for. That is gone too. It was the same cause and the same one-line answer.',
+      '**Why it took until now, honestly:** the answer written down last release was that this could not be fixed without keeping your choice somewhere this app refuses to keep things. That was wrong \u2014 true of one place, not of all of them. The part of the app that lets it work offline can read your settings, and it is what hands the page over, so it now hands over a page that already knows. Nothing new is stored anywhere.',
+      '**Considered and not done:** covering the screen for a moment while it looks your choice up. That swaps a colour settling for a blank screen \u2014 worse on a light device, not better \u2014 makes everyone wait on a cold start, and adds a way for the app to sit blank if anything goes wrong reading. The way it works now is earlier than any of that could be.',
+      '**What is still not right:** the little splash the phone or tablet shows in the half-second before an installed app opens still uses the original colours. That one is decided when you save the app to your home screen, and nothing the app does afterwards can change it. It is a separate piece of work and it has not been done.',
+    ],
+  },
+  {
     triplet: '3.4.1',
     kind: 'ITERATION',
     date: '2026-08-25',

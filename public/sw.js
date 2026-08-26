@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-3.4.1';
+const CACHE = 'quietkeep-3.5.1';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -40,6 +40,132 @@ const SHELL = [
   './tour/step-6-light.png',
   './tour/step-6-dark.png',
 ];
+
+// WHAT THE READER CHOSE, READ BEFORE THE PAGE EXISTS (ADR-0111).
+//
+// A palette is stored in IndexedDB, which is asynchronous, so the app could not
+// know which colours to wear until after it had already painted — one beat of
+// the default on every cold start, in the right mode, so a hue settling rather
+// than day turning into night. That was recorded as unfixable "without storing
+// the choice somewhere this app deliberately does not store things", which is
+// true of `localStorage` (banned outright, ADR-0002) and false in general.
+//
+// A SERVICE WORKER CAN READ INDEXEDDB, and this one already serves the shell on
+// every launch. So it reads the choice and hands back HTML that already carries
+// it, and the palette is right on the FIRST PAINTED PIXEL. Nothing new is
+// stored, nothing is delayed, and the store stays the single source of truth —
+// a hint in the URL or the manifest would go stale the moment somebody changed
+// their mind after installing.
+//
+// Rejected: painting a cover over the app until the read lands. It would trade
+// a hue settle for a blank screen — worse in light mode, where the veil is the
+// bigger visual event — delay first paint for everybody on a cold start, and
+// add a failure mode where a store that throws leaves the app blank until a
+// timeout rescues it. This route is earlier than any veil can be: the attribute
+// is in the markup before the parser reaches `<head>`.
+//
+// THE STORE IS READ, NEVER CREATED. `indexedDB.open` on a name that does not
+// exist CREATES it — an empty v1 with no object stores — and Dexie opening
+// afterwards at v2 would run only the v2 upgrade, so `events` and `snapshots`
+// would never exist and a first-ever visitor would have a broken app. Hence the
+// `databases()` guard, and the abort in `onupgradeneeded` behind it in case the
+// two race. Every failure path here resolves to null, which serves the shell
+// exactly as it was served before this existed.
+// These three are DEFINED IN src/ AND COPIED HERE, because a service worker
+// cannot import the app's modules. `npm run palettes:check` holds all three to
+// their sources — the name is `quietkeep` and not `planner`, which is
+// `DexieLogStore`'s own default and what this said first: every failure path
+// below resolves to null, so a wrong name here is not a crash, it is the whole
+// feature quietly doing nothing on every launch.
+const DB_NAME = 'quietkeep';          // src/ui/session.ts, startSession's dbName
+const KV_STORE = 'kv';                // src/dexie-store.ts, version(2)
+const PALETTE_KEY = 'ui.palette';     // src/palette.ts, PALETTE_KEY
+const THEME_KEY = 'ui.theme';         // src/theme.ts, THEME_KEY
+
+// The non-default families, generated from docs/palettes.json — `npm run
+// palettes:check` fails on drift. The DEFAULT is deliberately absent: the
+// generated stylesheet declares it unattributed, so "no attribute" is what the
+// default looks like, and an unknown value falls back to exactly that. This
+// list is also what makes the injection safe — a value that is not one of these
+// never reaches the markup.
+const PALETTE_VALUES = ['instrument', 'paper', 'mono', 'soft'];
+
+// AND THE MODE, WHICH FLASHES HARDER THAN THE HUE. Measured: on a device set to
+// dark with `light` chosen, `data-theme` was absent when `<html>` was parsed and
+// arrived afterwards — a beat of night before the day it was asked for, which is
+// a bigger event than cream settling to paper. Same store, same read, same
+// injection. `device` is absent rather than named, exactly as `applyTheme`
+// leaves it, so the media query answers on its own.
+
+const THEME_VALUES = ['light', 'dark'];
+
+const NOTHING = { palette: null, theme: null };
+
+const chosenLook = async () => {
+  try {
+    if (!indexedDB.databases) return NOTHING;
+    const dbs = await indexedDB.databases();
+    if (!dbs.some((d) => d.name === DB_NAME)) return NOTHING;
+  } catch { return NOTHING; }
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (v) => { if (done) return; done = true; resolve(v); };
+    // A navigation may never wait on a store. A quarter of a second is far past
+    // a healthy read of two keys and far short of anything a reader would feel.
+    const timer = setTimeout(() => finish(NOTHING), 250);
+    const settle = (v) => { clearTimeout(timer); finish(v); };
+    let open;
+    try { open = indexedDB.open(DB_NAME); } catch { return settle(NOTHING); }
+    open.onerror = () => settle(NOTHING);
+    open.onblocked = () => settle(NOTHING);
+    open.onupgradeneeded = (e) => {
+      // The guard above should mean this never fires. If it does, the database
+      // did not exist and this open is creating it — abort, so it does not.
+      try { e.target.transaction.abort(); } catch { /* nothing to undo */ }
+      settle(NOTHING);
+    };
+    open.onsuccess = () => {
+      const db = open.result;
+      try {
+        if (!db.objectStoreNames.contains(KV_STORE)) { db.close(); return settle(NOTHING); }
+        // ONE transaction for both keys: two opens would double the only cost
+        // this feature has.
+        const store = db.transaction(KV_STORE, 'readonly').objectStore(KV_STORE);
+        const out = { palette: null, theme: null };
+        let left = 2;
+        const arrived = () => { if (--left === 0) { db.close(); settle(out); } };
+        const read = (key, allowed, field) => {
+          const get = store.get(key);
+          get.onerror = arrived;
+          get.onsuccess = () => {
+            const v = get.result && get.result.value;
+            if (allowed.includes(v)) out[field] = v;
+            arrived();
+          };
+        };
+        read(PALETTE_KEY, PALETTE_VALUES, 'palette');
+        read(THEME_KEY, THEME_VALUES, 'theme');
+      } catch { try { db.close(); } catch { /* already closed */ } settle(NOTHING); }
+    };
+  });
+};
+
+/** Put the choice on `<html>` in the bytes, before anything parses them. */
+const dressShell = async (res, look) => {
+  const attrs = [
+    look.palette ? ` data-palette="${look.palette}"` : '',
+    look.theme ? ` data-theme="${look.theme}"` : '',
+  ].join('');
+  if (!attrs || !res || !res.ok) return res;
+  if (!(res.headers.get('content-type') || '').includes('text/html')) return res;
+  let html;
+  try { html = await res.clone().text(); } catch { return res; }
+  const out = html.replace(/<html(?=[\s>])/i, `<html${attrs}`);
+  if (out === html) return res;   // markup changed shape — serve it untouched
+  return new Response(out, {
+    status: res.status, statusText: res.statusText, headers: res.headers,
+  });
+};
 
 // THE NEW WORKER WAITS. It does not take over on its own (Doctrine §7h.1).
 //
@@ -195,8 +321,24 @@ self.addEventListener('fetch', (event) => {
       : res;
 
     event.respondWith((async () => {
+      // STARTED HERE, BESIDE THE FETCH, so the read costs no wall clock — it
+      // resolves long before the network does and well inside the cache path.
+      // Only the app shell: `why.html` and `manual.html` link their own
+      // stylesheets and never the palette's, so there is nothing to dress.
+      // BOTH SPELLINGS OF THE SHELL. `pageKey` comes from the pathname, so the
+      // root is './' and only a direct hit on /index.html is './index.html' —
+      // testing for the second alone would have skipped the ordinary launch,
+      // which is every launch.
+      const isShell = pageKey === './' || pageKey === './index.html';
+      const wearing = isShell ? chosenLook() : Promise.resolve(NOTHING);
+
       const freshen = fetch(netReq).then(async (raw) => {
         const fresh = unredirect(raw);
+        // CACHED UNDRESSED, ON PURPOSE. The attribute is put on at SERVE time,
+        // so the cached shell stays neutral and a reader who changes their mind
+        // is not served last week's choice out of a cache nobody thought to
+        // invalidate. Dressing before the put is the version of this that looks
+        // identical and is wrong.
         if (fresh.ok) (await caches.open(CACHE)).put(pageKey, fresh.clone());
         return fresh;
       });
@@ -209,12 +351,15 @@ self.addEventListener('fetch', (event) => {
       // `.ok` matters: a reachable origin serving a 503 is a LOSS, not a win —
       // the audit showed an installed app rendering the deploy's error page
       // while a complete cached shell sat unused.
-      if (winner && winner.ok) return winner;
+      // BOTH BRANCHES ARE DRESSED. Fixing only the cached one would leave the
+      // flash in place for every online cold start, which is most of them.
+      if (winner && winner.ok) return dressShell(winner, await wearing);
       const cached = await (await caches.open(CACHE)).match(pageKey)
         ?? await (await caches.open(CACHE)).match('./index.html');
-      if (cached) return cached;
+      if (cached) return dressShell(cached, await wearing);
       // No cache to fall back on (first visit): the network is all there is,
       // however long it takes. If it errored above, hand that answer over.
+      // Undressed deliberately — a first-ever visit has no choice to honour.
       return winner ?? freshen.catch(() => Response.error());
     })());
     return;

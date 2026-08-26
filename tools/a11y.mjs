@@ -386,6 +386,23 @@ const EXTRAS_SHEET = [
   '#timer-length-set',
 ];
 
+// COLOUR IS ITS OWN SURFACE FROM 3.5.1, so it is its own entry here — in the
+// same commit that created it, because a surface the walk does not know about
+// ships unmeasured and looks exactly like one that passed (hub LESSONS 28).
+//
+// The picture is `alt=""` and carries no text, so what is measured is the name
+// beside it and the mark before that: the ring the tile's own `::before` draws,
+// which is what says "this is the one you have" without saying it in hue.
+const COLOUR_SHEET = [
+  ...SHEET_CHROME('sheet-group-colour'),
+  // No `.about-section` — this sheet has no section headings, because its title
+  // IS the one it would carry. A selector that matches nothing is an assertion
+  // that cannot fail.
+  '.palette-pick legend',
+  '.palette-name',
+  '#ui-palette-set',
+];
+
 const ACTIONS_SHEET = [
   ...SHEET_CHROME('sheet-group-actions'),
   '.about-section',
@@ -489,6 +506,7 @@ const REGISTRY = {
   // rather than an entry in the first, where it would match nothing visible.
   'your data, return visit': [...DATA_SHEET, '#copy-note'],
   'settings': EXTRAS_SHEET,
+  'colours': COLOUR_SHEET,
   'things you can do': ACTIONS_SHEET,
   // Clearing out is inside Settings and only exists once a mode is chosen, so it
   // is driven rather than assumed — it is the one surface standing between a
@@ -2150,6 +2168,7 @@ try {
     await auditFocusRings(page, 'settings', theme,
       ['#badge-toggle', '#day-boundary-set', '#sheet-group-extras-close']);
 
+
     // HOW BIG THIS APP IS (2.8.0, ADR-0098), driven end to end rather than
     // asserted as markup: choosing a size must CHANGE the document, pressing Set
     // must keep it, and the note must state the scope — this app, this device —
@@ -2216,6 +2235,29 @@ try {
     //
     // Not a weakened check: if the intro genuinely never shows, the wait times
     // out and the three registry entries fail exactly as they did here.
+    // COLOURS (3.5.1), AND IT SITS HERE RATHER THAN BESIDE SETTINGS FOR A
+    // REASON THAT COST A RUN. Everything between the settings audit above and
+    // this point drives controls INSIDE the settings sheet — the text size is
+    // chosen, set, and put back — and none of it reopens that sheet, because it
+    // is a continuation. `openSurface` closes every open dialog first (ADR-0083:
+    // one surface at a time), so a colours audit placed next to its sibling in
+    // the panel shut Settings under the states that were still using it, and
+    // three registry entries reported "matches nothing visible" about controls
+    // that were simply on a screen no longer open.
+    //
+    // Five pictures, five radios stretched over them, and a
+    // name apiece. The targets are the reason this surface needs driving rather
+    // than trusting: the radios were 13x13 natives when they first shipped —
+    // under the floor in every state that showed them — and the fix was to make
+    // the INPUT the size of the tile, which only a measurement can confirm.
+    await openSurface(page, 'sheet-group-colour');
+    await auditContrast(page, 'colours', theme);
+    await auditAxe(page, 'colours', theme);
+    await auditNames(page, 'colours', theme);
+    await auditSeparationAndTargets(page, 'colours', theme);
+    await auditFocusRings(page, 'colours', theme,
+      ['#ui-palette-set', '#sheet-group-colour-close']);
+
     await openSurface(page, 'about');
     await page.waitForFunction(
       () => document.querySelector('#about-intro')?.checkVisibility() === true,

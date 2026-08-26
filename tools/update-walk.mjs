@@ -288,6 +288,96 @@ try {
   redirects.delete('/capture');
   redirects.delete('/index.html');
   overrides.delete('/shell-probe.html');
+
+  // --- 8 · THE CHOSEN LOOK IS IN THE MARKUP, NOT APPLIED AFTERWARDS ---------
+  //
+  // ADR-0111. A palette and a mode live in IndexedDB, which is asynchronous, so
+  // the app painted its defaults and corrected them a beat later — one beat of
+  // the wrong hue, and on a device whose mode disagrees with the choice, one
+  // beat of night before the day that was asked for. The worker reads the store
+  // and writes both onto `<html>` before anything parses it.
+  //
+  // MEASURED AT PARSE TIME, WHICH TAKES SOME CARE. An init script runs BEFORE
+  // the document exists, so `document.documentElement` is null there and reading
+  // it gets you nothing — the first version of this recorded an exception and
+  // would have called a working fix broken. A MutationObserver on `document`
+  // fires the moment `<html>` is appended, which is the moment the parser has
+  // read its attributes and is the earliest observable point there is.
+  //
+  // Reading the attribute AFTER the app has booted proves nothing at all: the
+  // app sets both itself, so that assertion passes whether or not the worker
+  // exists. The whole question is WHEN.
+  {
+    const look = await browser.newContext({ colorScheme: 'dark' });
+    await look.addInitScript(() => {
+      globalThis.__atParse = { pending: true };
+      try {
+        new MutationObserver((_, obs) => {
+          const el = document.documentElement;
+          if (!el) return;
+          globalThis.__atParse = {
+            palette: el.getAttribute('data-palette'),
+            theme: el.getAttribute('data-theme'),
+          };
+          obs.disconnect();
+        }).observe(document, { childList: true });
+      } catch (e) { globalThis.__atParse = { error: String(e) }; }
+    });
+    const lp = await look.newPage();
+    lp.setDefaultTimeout(15000);
+    await lp.goto(url, { waitUntil: 'load' });
+    await lp.waitForSelector('body[data-ready=true]');
+
+    // A FIRST-EVER VISIT CARRIES NOTHING, and that is the half a check like this
+    // forgets. If the worker dressed the shell for somebody with no choice
+    // stored, it would be inventing one.
+    const virgin = await lp.evaluate(() => globalThis.__atParse);
+    is(virgin.palette ?? null, null, '8. a first visit is served the shell undressed');
+    is(virgin.theme ?? null, null, '   with no mode asserted either');
+
+    await lp.waitForFunction(() => navigator.serviceWorker.controller != null,
+      null, { timeout: 20000 });
+
+    // The reader chooses Paper, and light on a device set to dark — the pair
+    // that makes the mode flash visible at all.
+    await lp.evaluate(async () => {
+      const db = await new Promise((res, rej) => {
+        const r = indexedDB.open('quietkeep');
+        r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+      });
+      await new Promise((res, rej) => {
+        const tx = db.transaction('kv', 'readwrite');
+        tx.objectStore('kv').put({ key: 'ui.palette', value: 'paper' });
+        tx.objectStore('kv').put({ key: 'ui.theme', value: 'light' });
+        tx.oncomplete = res; tx.onerror = () => rej(tx.error);
+      });
+      db.close();
+    });
+
+    await lp.reload({ waitUntil: 'load' });
+    const at = await lp.evaluate(() => globalThis.__atParse);
+    is(at.palette ?? null, 'paper',
+      '   and after a choice, the palette is on <html> when the parser opens it');
+    is(at.theme ?? null, 'light',
+      '   as is the mode, on a device set to the other one');
+
+    // AND THE CACHE STAYS NEUTRAL. Dressing before the put would serve last
+    // week's choice out of a cache nobody thought to invalidate — the version of
+    // this that looks identical from the outside and is wrong.
+    await lp.waitForSelector('body[data-ready=true]');
+    const stored = await lp.evaluate(async () => {
+      for (const name of await caches.keys()) {
+        if (!name.startsWith('quietkeep')) continue;
+        const hit = await (await caches.open(name)).match('./index.html')
+          ?? await (await caches.open(name)).match('./');
+        if (hit) return await hit.text();
+      }
+      return null;
+    });
+    is(typeof stored === 'string' && !/<html[^>]*data-palette/i.test(stored), true,
+      '   while the CACHED shell stays undressed, so a change of mind is not stale');
+    await look.close();
+  }
 } finally {
   await browser.close();
   server.close();
@@ -298,4 +388,4 @@ if (failures.length) {
   console.error(`${failures.length} failure(s). Doctrine §7h: the reader decides when the app changes.`);
   process.exit(1);
 }
-console.log('A real second worker waits, says so, and lands only when the reader says.');
+console.log('A real second worker waits, says so, lands only when the reader says —\nand serves the shell already wearing what the reader chose.');

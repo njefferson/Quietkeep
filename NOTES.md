@@ -755,6 +755,176 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.1**. Colour is
+  its own door rather than a block inside Settings, and the pictures are full
+  width because of it.
+  **The move is what buys the pictures their size.** Two-up inside Settings, each
+  HALF of each tile rendered about 75px on a phone — you could see that one side
+  was light and the other dark and not much else, which is a picture failing at
+  the one thing a picture is for. One column here: a half is 155px. Settings fell
+  from 3,299px to 2,656, about a fifth, having been the longest thing behind that
+  button.
+  **The per-surface budget went BACK DOWN, 3,400 to 3,000**, which is the half of
+  a ratchet that never happens on its own. That raise was bought by the tiles
+  crowding Settings; the tiles left, so the headroom goes with them. The TOTAL
+  went up, 12,050 to 12,600, because splitting a destination adds a title and a
+  way out even as it shortens every surface — the two numbers price different
+  things and they moved in opposite directions, which is the trade being made
+  honestly rather than hidden in one figure. Controls +2, which is what a door
+  costs: the button that opens it and the way back out.
+  **Light or dark stayed in Settings.** Mode and palette are independent axes
+  (PALETTES.md §6); moving both would have made this door mean "anything to do
+  with how it looks", which is what Settings already means.
+  **Two things were caught by something refusing to run, and both are worth
+  keeping.** The `data-door` was copied from a sheet that is NOT in More — the
+  two-tap form with a `|` — and `openSurface` hands the door straight to
+  `querySelector`, where that is not a valid selector. None of the six siblings
+  has a door attribute at all; they are reached by the `more-go` fallback.
+  And the colours audit was placed beside its sibling in the panel, which shut
+  Settings under the states still driving it: `openSurface` closes every dialog
+  first (ADR-0083, one surface at a time), and everything between the settings
+  audit and the ⓘ is a CONTINUATION that never reopens the sheet. Three registry
+  entries reported "matches nothing visible" about controls that were simply on a
+  screen no longer open. The audit sits after that run now, with the dependency
+  written down where the next person will hit it.
+  **ADR-0083 said More "lists six destinations and never scrolls", and the second
+  half was not true.** Measured on this release and measured AGAIN with the
+  seventh door removed, so the blame lands where it belongs: at 390x844 and 200%
+  text, SIX doors already scrolled — 1,070px of list in a 381px box. Seven makes
+  it 1,186. At 100% neither scrolls. So the claim had been false at the text
+  sizes the people this app is for are most likely to use, for as long as there
+  have been six, and nothing had looked. Not a defect in the list — a list of
+  places is a reasonable thing to scroll, the way out is outside the scrolling
+  body, every door clears its target — a defect in the RECORD, which stated an
+  absolute nobody had measured. The ADR carries both numbers now.
+  **Still not right:** the splash an installed app shows before it opens still
+  uses the original colours whichever set is chosen. It comes from the manifest
+  captured when the shortcut is saved and nothing the app does later can change
+  it.
+- **Superseded, and kept for the record: 3.5.0.** You can see
+  the colour sets instead of reading their names, and four of the five have been
+  redrawn because they were the same set four times. ADR-0111 for the mechanism.
+  **The preview is a picture, not live CSS**, and that is what makes it cheap. A
+  tile painted with real custom properties renders a FOREIGN palette inside the
+  current one, which breaks the assumption the colour gate rests on — exactly one
+  palette active, every computed colour mapping to one role — and creates a
+  boundary pair per pairing of families per mode, fifty of them, none of which the
+  thirteen-pair inventory knows about. A PNG has none of that. It is opaque.
+  **Each tile is the same view twice, day left and night right.** A diagonal cut
+  over ONE copy was tried first and it compares nothing: the heading landed in
+  day, the button in night, and no element ever appeared in both. Split down the
+  middle with a full copy each side, the button is in both and the card is in
+  both, which is the difference between a comparison and a swatch.
+  **AND THE PREVIEW'S FIRST JOB WAS TO SHOW THAT FOUR FAMILIES WERE ONE.** In
+  dark, four of the five sat within twelve RGB points of each other and *paper*
+  and *soft* differed by TWO and ONE — `#141519` against `#15161a` — while their
+  descriptions claimed *exact-neutral*, *cool night, warm paper day* and *lowest
+  glare*. They came from the hub council verified as LEGIBLE and nothing had ever
+  checked them against each other for being DISTINCT. Rewritten along axes that
+  do not overlap: cool and crisp, warm kraft with a deep teal, no hue at all, and
+  dimmed with a night that is grey rather than black. Quietkeep untouched. Three
+  border ratios failed the first attempt and were fixed before anything else.
+  **The sample was thin too, and that was a separate defect.** A heading, one card
+  and one button used four of seven roles and was mostly page background. It is
+  now two cards, a filled button and a ghost one, a warm note and quiet second
+  lines — every role with enough area to read. Rendering the ORIGINAL palettes
+  with the RICHER sample was the honest test of whether the redraw was warranted:
+  instrument and soft were still the same palette in it. A better picture cannot
+  reveal a difference of one RGB point.
+  **The words lived in two files and only one moved.** `docs/palettes.json` and
+  `src/palette.ts` each carry a name and a sentence per family, so three families
+  spent an hour describing colours that no longer existed. `palettes:check` holds
+  them together in both directions now, planted with that exact drift. A family
+  that paints one thing and describes another is worse than one with no
+  description, because the words are what §4 leans on when it refuses colour as
+  the sole carrier of meaning.
+  **The tile is the control, and the target gate is why.** Five native radios are
+  13x13 and the gate measures the INPUT's box — correctly, because that is what a
+  finger lands on; wrapping a 13px control in a big label only changes what a
+  mouse forgives. Scaling the native radio to 44px was tried and looked it: five
+  thumbnail-sized circles in the browser's own accent, shouting over the pictures
+  they were labelling. The input covers the tile instead, and the mark is drawn —
+  an empty ring that fills, with the name going bold beside it, so nothing says
+  "this is the one you have" in hue alone on the one screen that is entirely hue.
+  **Three budgets moved and each raise says what bought it:** +4 controls (the
+  same decision wearing a different control), Settings 3,000 to 3,400, and the
+  standing-prose total 11,660 to 12,050. Smaller tiles were tried first and 80px
+  wide shows a light half and a dark half and nothing else.
+  **Still not right:** the tiles are two-up, so each half renders about 75px on a
+  phone, which is small for differences this fine. Colour is going to its own
+  door rather than growing Settings again — that is the next piece of work, and
+  it is the answer this file predicted when the budget was raised.
+- **Superseded, and kept for the record: 3.4.3.** The buttons
+  say what is behind them, and the colour picker has a heading.
+  **`More` named a quantity where it needed to name a destination.** More of
+  what? The only way to find out was to press it. All six things behind it are
+  the APP rather than your work, so it is `Everything else` — not this page, and
+  all of it. `Contents` is `On this page`: those two are exactly complementary
+  and should sound like the pair they are. That forced the third, because the way
+  out of a job said `Everywhere else`, which is one letter from `Everything else`
+  to the ear while meaning your other work rather than the app. It is
+  `Choose where to be`, which takes the verb-first shape of the doors it lands
+  among and names its destination.
+  **The colour picker had no heading at all**, in a panel where every other block
+  has one, and told the reader its five sets were "held to the same contrast
+  floors" — a phrase for whoever built it. The control said *Its colours are*,
+  with no antecedent for *its*.
+  **The size gate caught the replacement copy being longer than what it
+  replaced**, over three budgets at once, including a repetition of *only this
+  app, and only on this device* introduced two lines under the block that already
+  says it. Cut back past the original rather than accommodated: Settings ended at
+  2,995 of 3,000, having been 3,091. The four pixels that remained are the
+  heading, and that raise is recorded beside the number.
+- **Superseded, and kept for the record: 3.4.2**, verified at
+  `4279fcb`: Deploy success AND Spine success read from the runs for that exact
+  SHA. The shell arrives wearing the reader's choice, and the branch-state gate
+  fetches the ref it reads. ADR-0111.
+  **The cold-start flash is gone, and it was two flashes rather than one.** A
+  palette lives in IndexedDB, which is asynchronous, so the app painted its
+  default and corrected itself a beat later. Measuring it found the MODE doing
+  the same: on a device set to dark with `light` chosen, `data-theme` was absent
+  when `<html>` was parsed — day-to-night, which is the larger event of the two.
+  Both come from one read and both are fixed by it.
+  **The claim that this was unfixable was the actual defect.** It was written in
+  a shipped release note and here: not fixable "without storing the choice
+  somewhere this app deliberately does not store things". True of `localStorage`
+  (banned outright, ADR-0002) and false in general. **A service worker can read
+  IndexedDB**, and this app already had one serving the shell on every launch,
+  so it hands back HTML that already carries the choice. The reasoning had
+  stopped at the first candidate and the conclusion was recorded as settled.
+  **What the mechanism refuses to do.** It never CREATES the store — opening a
+  database that does not exist makes an empty one, and Dexie opening afterwards
+  at v2 would run only the v2 upgrade, leaving a first-ever visitor without
+  `events` or `snapshots`. Every failure path resolves to "no choice", which is
+  what a first visit legitimately is. The cached shell stays undressed, so a
+  change of mind is not served out of a cache nobody invalidated.
+  **The database was named `planner` in the first version, and the app calls it
+  `quietkeep`** — `DexieLogStore`'s own default, copied without checking. Nothing
+  throws when that is wrong: every path resolves to "no choice" and the feature
+  does nothing at all on every launch while looking perfectly healthy. Caught by
+  reading `src/ui/session.ts`, and now held by a check over all four constants
+  the worker copies out of `src/`, planted with that exact mistake.
+  **The gate's timing is the whole gate.** Reading the attribute after boot
+  proves nothing — the app sets it itself, so that assertion passes whether or
+  not the worker exists. An init script runs BEFORE the document, so
+  `document.documentElement` is null there; the first version of this recorded
+  an exception and would have called a working fix broken. A `MutationObserver`
+  on `document` fires as `<html>` is appended, which is the earliest observable
+  point there is.
+  **And the branch-state gate fetches now.** It read `origin/main` from the local
+  ref, printed "as last fetched", and on failure advised the reader to fetch
+  first because a stale ref compares against yesterday — naming the hazard in its
+  own error text and leaving the remedy to whoever was reading. It fetches the
+  one ref before reading it, and when the network is not there it SAYS the answer
+  is from the last fetch rather than printing it as current. Both branches
+  planted. Hub LESSONS 143.
+  **Still not right, and named rather than closed:** the splash an installed app
+  shows before it opens still uses the original colours. That is decided from the
+  manifest captured when the shortcut is saved, and nothing the app does later
+  can change it — it needs a per-palette manifest chosen before installing, and
+  rests on iOS behaviour that must be measured on a device rather than assumed.
+- **Superseded, and kept for the record: 3.4.1.** Promoted 2026-08-26 at
+  `355e4c1`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**, verified at
   `beedbdb`: Deploy success AND Spine success read from the runs for that exact
   SHA. The focus ring reaches the screen now, and the gate can see whether it
@@ -1126,7 +1296,38 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.4.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.4.1** — promoted at
+  `355e4c1`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `a8cdf54`, the staging head
+  that was walked; the merge asserted to descend from `e16b2e8`, the real
+  production; and asserted to carry `beedbdb`, the SHA whose own Deploy and Spine
+  were read green before the promote.
+  **The clone this was promoted from was 146 commits STALE, and the local
+  remote-tracking refs were stale with it** — the container had been recycled and
+  both repos re-cloned at pinned older revisions. `git log origin/main` answered
+  about a different day; `git ls-remote`, which reads the remote rather than the
+  local ref, is what caught it. A promote from that tree would have pushed months
+  of undoing onto production and every gate would have passed, because the tree
+  was internally consistent. Both clones were reset and the commit hook
+  reinstalled before anything else happened (hub LESSONS 135).
+  **What this carries.** The focus ring reaches the screen. It was cut on all
+  four sides by 5px, on nearly every control in the app, and it was not the one
+  control it was reported on: three containers scroll here and each cut whatever
+  reached its edge. The gate that passed it for 142 releases now measures whether
+  the pixels arrive rather than whether the property is set.
+  **Still not right, and named rather than closed:** inside a job the frame folds
+  one text step earlier than before 3.1.1 on a phone at 125%; the replan card is
+  checked structurally rather than measured on screen, as are three surfaces the
+  walk has no door to; and a reader on a non-default palette sees one beat of the
+  default on a cold start, in the right mode.
+  **And one correction to what that last item has been saying — now BUILT, in
+  3.4.2 on staging.** Both 3.4.0's notes and this block called the cold-start
+  beat unfixable "without storing the choice somewhere this app deliberately does
+  not store things". True of `localStorage` and false in general: a service
+  worker can read IndexedDB, so the worker already serving the cached shell hands
+  back HTML with the choice on it. Measuring it found the MODE flashing the same
+  way, which nothing had recorded. ADR-0111.
+- **Superseded, and kept for the record: 3.4.0** — promoted at
   `e16b2e8`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `60523f3`, the staging head
   that was walked, and the merge asserted to descend from `0f70d96` before it was

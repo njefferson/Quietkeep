@@ -621,7 +621,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await settled(page, 250);
   is(await page.locator('#intro-ask').isVisible(), true,
     'and it is still there after the store answers — it does not appear and then vanish');
-  is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras']
+  is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras','sheet-group-colour']
     .every(id => !document.querySelector('#' + id)?.open)), true,
     'and no other surface opened itself — you arrive at one place (1.40.0)');
   await openSurface(page, 'about');
@@ -677,7 +677,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // meaningless now — a stale assertion that would have passed by accident.
   is(await page.evaluate(() => {
     const shut = ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
-      'sheet-group-actions', 'sheet-group-extras', 'more']
+      'sheet-group-actions', 'sheet-group-extras', 'sheet-group-colour', 'more']
       .every(id => !document.querySelector('#' + id)?.open);
     return shut && document.querySelector('#intro-ask')?.checkVisibility() === true;
   }), true, 'and it is reachable with no other surface open at all');

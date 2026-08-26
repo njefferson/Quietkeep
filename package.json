@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Quietkeep \u2014 a free, local-first, event-sourced planner. Static PWA, no accounts, no server.",
+  "description": "Quietkeep — a free, local-first, event-sourced planner. Static PWA, no accounts, no server.",
   "license": "SEE LICENSE IN LICENSE.md",
   "engines": {
     "node": ">=22"
@@ -48,7 +48,7 @@
     "size:check": "node tools/size-check.mjs",
     "smoke": "node --experimental-strip-types tools/smoke.mjs",
     "spine": "node tools/spine.mjs",
-    "storage:check": "if grep -rnE '\\b(localStorage|sessionStorage)\\b' src/ public/sw.js public/index.html | grep -viE 'banned|never|no localStorage|not localStorage'; then echo 'localStorage/sessionStorage found \u2014 storage is IndexedDB via Dexie, and the ban is outright' >&2; exit 1; fi; echo clean",
+    "storage:check": "if grep -rnE '\\b(localStorage|sessionStorage)\\b' src/ public/sw.js public/index.html | grep -viE 'banned|never|no localStorage|not localStorage'; then echo 'localStorage/sessionStorage found — storage is IndexedDB via Dexie, and the ban is outright' >&2; exit 1; fi; echo clean",
     "surfaces:check": "node tools/surfaces.mjs",
     "test": "npm run typecheck && npm run test:only",
     "test:only": "node --test --experimental-strip-types 'test/**/*.test.ts'",
@@ -59,13 +59,15 @@
     "tour:shots": "node tools/tour-shots.mjs",
     "typecheck": "tsc --noEmit",
     "update:walk": "node --experimental-strip-types tools/update-walk.mjs",
-    "vocabulary": "if grep -rniE '\\b(overdue|streak)\\b' src/ | grep -viE 'no |never|banned|forbid|law 5'; then echo 'banned vocabulary found in src/ \u2014 see ADR-0010' >&2; exit 1; fi; if git ls-files | xargs grep -niE 'getting things done|\\bGTD\\b' 2>/dev/null | grep -viE 'never|banned|forbid|marks|copyrighted|ciphertext|base64|produced'; then echo 'the GTD marks are banned outright (CLAUDE.md) \u2014 name the practice, not the mark' >&2; exit 1; fi; echo clean",
+    "vocabulary": "if grep -rniE '\\b(overdue|streak)\\b' src/ | grep -viE 'no |never|banned|forbid|law 5'; then echo 'banned vocabulary found in src/ — see ADR-0010' >&2; exit 1; fi; if git ls-files | xargs grep -niE 'getting things done|\\bGTD\\b' 2>/dev/null | grep -viE 'never|banned|forbid|marks|copyrighted|ciphertext|base64|produced'; then echo 'the GTD marks are banned outright (CLAUDE.md) — name the practice, not the mark' >&2; exit 1; fi; echo clean",
     "voice:pronouns": "node tools/voice-pronouns.mjs",
     "workflows:check": "node tools/workflows.mjs",
-    "writegate:check": "node tools/write-gate.mjs"
+    "writegate:check": "node tools/write-gate.mjs",
+    "palette:shots": "node tools/palette-shots.mjs",
+    "palette:shots:check": "node tools/palette-shots.mjs --check"
   },
-  "//build": "esbuild strips types and bundles src/ui into one ES module. It is the ONLY build step and it does no transpiling down \u2014 target es2022 is what the reference platform already runs. See ADR-0026 for why a build exists at all in a family that avoids them.",
-  "//playwright": "1.56.0 ships chromium revision 1194, which is what /opt/pw-browsers/chromium-1194 is. These are a MATCHED PAIR \u2014 see the hub's LESSONS.md section 8. Bumping one without the other silently breaks every render with no useful error.",
+  "//build": "esbuild strips types and bundles src/ui into one ES module. It is the ONLY build step and it does no transpiling down — target es2022 is what the reference platform already runs. See ADR-0026 for why a build exists at all in a family that avoids them.",
+  "//playwright": "1.56.0 ships chromium revision 1194, which is what /opt/pw-browsers/chromium-1194 is. These are a MATCHED PAIR — see the hub's LESSONS.md section 8. Bumping one without the other silently breaks every render with no useful error.",
   "dependencies": {
     "dexie": "4.0.11"
   },
@@ -76,5 +78,5 @@
     "playwright-core": "1.56.0",
     "typescript": "5.7.3"
   },
-  "//hooks": "`prepare` runs on every `npm ci` \u2014 the one command every session and every CI job already runs \u2014 and installs the branch guard the hub generates from .branch-guard. It writes into .git/hooks, which no branch owns: the first attempt pointed core.hooksPath at the tracked directory and failed OPEN, because checking out an older branch deletes the hook with it, and the branch most needing protection is the one most likely to be older."
+  "//hooks": "`prepare` runs on every `npm ci` — the one command every session and every CI job already runs — and installs the branch guard the hub generates from .branch-guard. It writes into .git/hooks, which no branch owns: the first attempt pointed core.hooksPath at the tracked directory and failed OPEN, because checking out an older branch deletes the hook with it, and the branch most needing protection is the one most likely to be older."
 }
