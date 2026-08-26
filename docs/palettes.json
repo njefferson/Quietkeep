@@ -1,10 +1,10 @@
 {
-  "note": "Every palette this app can wear, described in ROLES. Palette and mode are independent axes (hub PALETTES.md \u00a76): a family carries a light and a dark, and the reader chooses each separately. `npm run palette:check` holds every family in both modes against docs/colour-inventory.json \u2014 the pairs the UI actually renders \u2014 by arithmetic, with no browser. `npm run palettes` generates public/palettes.css from this file, which is the ONE source for the values: PALETTES.md warns that N declarations times F families is a drift factory, and says to consolidate before adding families. See ADR-0110.",
+  "note": "Every palette this app can wear, described in ROLES. Palette and mode are independent axes (hub PALETTES.md §6): a family carries a light and a dark, and the reader chooses each separately. `npm run palette:check` holds every family in both modes against docs/colour-inventory.json — the pairs the UI actually renders — by arithmetic, with no browser. `npm run palettes` generates public/palettes.css from this file, which is the ONE source for the values: PALETTES.md warns that N declarations times F families is a drift factory, and says to consolidate before adding families. See ADR-0110.",
   "default": "quietkeep",
   "families": {
     "quietkeep": {
       "name": "Quietkeep",
-      "why": "the original \u2014 warm paper by day, deep blue-grey by night",
+      "why": "the original — warm paper by day, deep blue-grey by night",
       "light": {
         "bg": "#F4F1E9",
         "surface": "#FFFFFF",
@@ -26,90 +26,90 @@
     },
     "instrument": {
       "name": "Instrument",
-      "why": "exact-neutral night, warm day; the hub council\u2019s recommended default",
+      "why": "cool and crisp — a steel-blue day, a near-black night",
       "light": {
-        "bg": "#c4bcab",
-        "surface": "#eee6d6",
-        "ink": "#272119",
-        "ink-soft": "#363026",
-        "line": "#676055",
-        "accent": "#17458f",
-        "warm": "#662B00"
+        "bg": "#C9DAE6",
+        "surface": "#F2F8FC",
+        "ink": "#0F1D26",
+        "ink-soft": "#2F4A59",
+        "line": "#5C7787",
+        "accent": "#0E4A72",
+        "warm": "#7A4300"
       },
       "dark": {
-        "bg": "#1a1a1a",
-        "surface": "#3a3a3a",
-        "ink": "#eaeaea",
-        "ink-soft": "#d2d2d2",
-        "line": "#B4B4B4",
-        "accent": "#9fc2f5",
-        "warm": "#DDB188"
+        "bg": "#0B1319",
+        "surface": "#18262E",
+        "ink": "#E6F1F7",
+        "ink-soft": "#A6C1CE",
+        "line": "#5A7B8B",
+        "accent": "#8AC4E2",
+        "warm": "#EFB259"
       }
     },
     "paper": {
       "name": "Paper",
-      "why": "cool night, warm paper day",
+      "why": "a warm kraft page with white cards, and a deep teal for anything you can press",
       "light": {
-        "bg": "#c8c1b0",
-        "surface": "#f2eee3",
-        "ink": "#322e25",
-        "ink-soft": "#433d30",
-        "line": "#6F695D",
-        "accent": "#164493",
-        "warm": "#613400"
+        "bg": "#DFCCA6",
+        "surface": "#FFFDF6",
+        "ink": "#2C2216",
+        "ink-soft": "#544430",
+        "line": "#786845",
+        "accent": "#0F4F4B",
+        "warm": "#7A4700"
       },
       "dark": {
-        "bg": "#141519",
-        "surface": "#35373c",
-        "ink": "#e6e8ec",
-        "ink-soft": "#c9ccd2",
-        "line": "#B6B7B9",
-        "accent": "#a3c4ff",
-        "warm": "#E8A95E"
+        "bg": "#211A12",
+        "surface": "#362B1E",
+        "ink": "#F7EFE1",
+        "ink-soft": "#D0BB9C",
+        "line": "#8C7654",
+        "accent": "#7FCCC4",
+        "warm": "#F3C079"
       }
     },
     "mono": {
       "name": "Mono",
-      "why": "neutral in both modes, no hue at all",
+      "why": "no hue at all — neutral grey by day, neutral charcoal by night",
       "light": {
-        "bg": "#c5c5c5",
-        "surface": "#efefef",
-        "ink": "#252525",
-        "ink-soft": "#353535",
-        "line": "#6C6C6C",
-        "accent": "#274b86",
-        "warm": "#702F00"
+        "bg": "#D2D2D2",
+        "surface": "#F7F7F7",
+        "ink": "#1D1D1D",
+        "ink-soft": "#414141",
+        "line": "#727272",
+        "accent": "#2B2B2B",
+        "warm": "#6E3200"
       },
       "dark": {
-        "bg": "#131313",
-        "surface": "#363636",
-        "ink": "#e6e6e6",
-        "ink-soft": "#cfcfcf",
-        "line": "#B3B3B3",
-        "accent": "#93b9ea",
-        "warm": "#E6A84C"
+        "bg": "#161616",
+        "surface": "#2E2E2E",
+        "ink": "#EDEDED",
+        "ink-soft": "#C3C3C3",
+        "line": "#8E8E8E",
+        "accent": "#D4D4D4",
+        "warm": "#E8A84C"
       }
     },
     "soft": {
       "name": "Soft",
-      "why": "lowest glare, contrast deliberately capped",
+      "why": "the lowest glare — a dimmed page and a night that is grey rather than black",
       "light": {
-        "bg": "#bfbab0",
-        "surface": "#e8e4da",
-        "ink": "#2e2921",
-        "ink-soft": "#3e392f",
-        "line": "#5F594C",
-        "accent": "#204478",
-        "warm": "#612C05"
+        "bg": "#BFBCB2",
+        "surface": "#D9D6CC",
+        "ink": "#22201A",
+        "ink-soft": "#403C34",
+        "line": "#66625A",
+        "accent": "#26394A",
+        "warm": "#583600"
       },
       "dark": {
-        "bg": "#15161a",
-        "surface": "#36373c",
-        "ink": "#e0e2e7",
-        "ink-soft": "#c9cbd1",
-        "line": "#9DA1A9",
-        "accent": "#97b8ec",
-        "warm": "#E8A95E"
+        "bg": "#302F2C",
+        "surface": "#41403C",
+        "ink": "#E7E4DD",
+        "ink-soft": "#C3BFB6",
+        "line": "#9C978E",
+        "accent": "#AEC2D1",
+        "warm": "#E9BC7E"
       }
     }
   }

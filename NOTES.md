@@ -755,7 +755,60 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.3**. The buttons
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.0**. You can see
+  the colour sets instead of reading their names, and four of the five have been
+  redrawn because they were the same set four times. ADR-0111 for the mechanism.
+  **The preview is a picture, not live CSS**, and that is what makes it cheap. A
+  tile painted with real custom properties renders a FOREIGN palette inside the
+  current one, which breaks the assumption the colour gate rests on — exactly one
+  palette active, every computed colour mapping to one role — and creates a
+  boundary pair per pairing of families per mode, fifty of them, none of which the
+  thirteen-pair inventory knows about. A PNG has none of that. It is opaque.
+  **Each tile is the same view twice, day left and night right.** A diagonal cut
+  over ONE copy was tried first and it compares nothing: the heading landed in
+  day, the button in night, and no element ever appeared in both. Split down the
+  middle with a full copy each side, the button is in both and the card is in
+  both, which is the difference between a comparison and a swatch.
+  **AND THE PREVIEW'S FIRST JOB WAS TO SHOW THAT FOUR FAMILIES WERE ONE.** In
+  dark, four of the five sat within twelve RGB points of each other and *paper*
+  and *soft* differed by TWO and ONE — `#141519` against `#15161a` — while their
+  descriptions claimed *exact-neutral*, *cool night, warm paper day* and *lowest
+  glare*. They came from the hub council verified as LEGIBLE and nothing had ever
+  checked them against each other for being DISTINCT. Rewritten along axes that
+  do not overlap: cool and crisp, warm kraft with a deep teal, no hue at all, and
+  dimmed with a night that is grey rather than black. Quietkeep untouched. Three
+  border ratios failed the first attempt and were fixed before anything else.
+  **The sample was thin too, and that was a separate defect.** A heading, one card
+  and one button used four of seven roles and was mostly page background. It is
+  now two cards, a filled button and a ghost one, a warm note and quiet second
+  lines — every role with enough area to read. Rendering the ORIGINAL palettes
+  with the RICHER sample was the honest test of whether the redraw was warranted:
+  instrument and soft were still the same palette in it. A better picture cannot
+  reveal a difference of one RGB point.
+  **The words lived in two files and only one moved.** `docs/palettes.json` and
+  `src/palette.ts` each carry a name and a sentence per family, so three families
+  spent an hour describing colours that no longer existed. `palettes:check` holds
+  them together in both directions now, planted with that exact drift. A family
+  that paints one thing and describes another is worse than one with no
+  description, because the words are what §4 leans on when it refuses colour as
+  the sole carrier of meaning.
+  **The tile is the control, and the target gate is why.** Five native radios are
+  13x13 and the gate measures the INPUT's box — correctly, because that is what a
+  finger lands on; wrapping a 13px control in a big label only changes what a
+  mouse forgives. Scaling the native radio to 44px was tried and looked it: five
+  thumbnail-sized circles in the browser's own accent, shouting over the pictures
+  they were labelling. The input covers the tile instead, and the mark is drawn —
+  an empty ring that fills, with the name going bold beside it, so nothing says
+  "this is the one you have" in hue alone on the one screen that is entirely hue.
+  **Three budgets moved and each raise says what bought it:** +4 controls (the
+  same decision wearing a different control), Settings 3,000 to 3,400, and the
+  standing-prose total 11,660 to 12,050. Smaller tiles were tried first and 80px
+  wide shows a light half and a dark half and nothing else.
+  **Still not right:** the tiles are two-up, so each half renders about 75px on a
+  phone, which is small for differences this fine. Colour is going to its own
+  door rather than growing Settings again — that is the next piece of work, and
+  it is the answer this file predicted when the budget was raised.
+- **Superseded, and kept for the record: 3.4.3.** The buttons
   say what is behind them, and the colour picker has a heading.
   **`More` named a quantity where it needed to name a destination.** More of
   what? The only way to find out was to press it. All six things behind it are

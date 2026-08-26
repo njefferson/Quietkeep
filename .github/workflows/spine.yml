@@ -480,6 +480,12 @@ jobs:
       # remembering is a rule that lapses on a busy afternoon.
       - name: The palette stylesheet is what the palette file says
         run: npm run palettes:check
+
+      # The picker shows a picture of each family, generated from the same file
+      # the stylesheet comes from. A family cannot look like one thing in the
+      # chooser and paint another once chosen.
+      - name: The palette pictures are of the colours that ship
+        run: npm run palette:shots:check
         if: ${{ !cancelled() }}
 
       - name: Every palette clears the pairs the app renders

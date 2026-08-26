@@ -164,6 +164,35 @@ if (CHECK) {
     }
   }
 
+  // AND THE WORDS, which are the half a reader actually meets. `src/palette.ts`
+  // carries a name and a sentence per family and `docs/palettes.json` carries
+  // the same two, and they went out of step the first time the colours moved:
+  // three families were redrawn and their descriptions still claimed the old
+  // ones — *exact-neutral night*, *cool night, warm paper day* — about colours
+  // that no longer existed. A palette that paints one thing and describes
+  // another is worse than one with no description, because the words are what
+  // Doctrine §4 leans on when it refuses colour as the sole carrier of meaning.
+  const words = [];
+  {
+    const src = readFileSync('src/palette.ts', 'utf8');
+    for (const [key, f] of families) {
+      const m = src.match(new RegExp(`\\{ value: '${key}', words: '((?:[^'\\\\]|\\\\.)*)', why: '((?:[^'\\\\]|\\\\.)*)' \\}`));
+      if (!m) { words.push(`src/palette.ts has no entry for "${key}"`); continue; }
+      const unesc = (t) => t.replace(/\\'/g, "'");
+      if (unesc(m[1]) !== f.name) words.push(`${key}: named "${unesc(m[1])}" in src/palette.ts and "${f.name}" in ${SRC}`);
+      if (unesc(m[2]) !== f.why) words.push(`${key}: described differently in src/palette.ts and ${SRC}`);
+    }
+  }
+  if (words.length) {
+    console.error('  FAIL  the words and the colours disagree:');
+    for (const w of words) console.error(`        ${w}`);
+    console.error('        A family that paints one thing and describes another is worse');
+    console.error('        than one with no description at all.');
+    failed++;
+  } else {
+    console.log(`  ok    every family's name and description match ${SRC}`);
+  }
+
   const drift = constantDrift();
   if (drift.length) {
     console.error(`  FAIL  ${SW} copies constants out of src/ and they no longer match:`);

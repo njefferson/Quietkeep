@@ -187,7 +187,13 @@ const BUDGET = {
   // only make the same words shorter. 390 stays the binding case, so a second
   // measurement here would be a number that can never be the one that fails —
   // which this file already calls a comment rather than a budget.
-  surfacePx: 3000,
+  // 3000 -> 3400 on 2026-08-26 (3.5.0), and ONLY Settings needs it — every other
+  // destination is between 518 and 2,492, so this is one surface's raise wearing
+  // a shared number. That is the flaw in having one ceiling for six rooms, and it
+  // is recorded rather than fixed here: fixing it means a per-surface budget, and
+  // a budget nobody has measured against is worse than a shared one everybody has.
+  // What bought it: the colour picker became five pictures (see `allSurfacesPx`).
+  surfacePx: 3400,
   // The sum, so that "make it six screens instead of one" cannot pass by
   // dividing. What a person has to get through does not shrink because it was
   // filed, and this number is here to say so out loud: splitting Settings into
@@ -212,6 +218,22 @@ const BUDGET = {
   // sentence, in Settings, which is 2,650px of a 3,000px budget and unmoved by
   // this. Same note as the raise below it: this measures SCROLL, so a control
   // counts as prose, and the ratchet is still too high.
+  // 11660 -> 12050 on 2026-08-26 (3.5.0). THE COLOUR PICKER BECAME PICTURES.
+  // Five tiles, one per family, each cut on a diagonal so day and night are one
+  // image. That is 371px of SCROLL and close to none of what this budget is
+  // actually protecting against, which is reading burden: five pictures are
+  // less work to compare than five names with a sentence each, and the sentence
+  // each is what was there before. This file already says the quiet part at the
+  // `controls` note — it measures scroll, so a control counts as prose — and a
+  // picture is the case where that overstates the cost most.
+  // WHAT WAS TRIED FIRST. Smaller tiles: 6.5rem to 5rem saves 174px and makes
+  // them 80px wide, at which you can see a light half and a dark half and not
+  // much else. A preview too small to judge is not a preview, so the pixels
+  // were paid rather than the feature hollowed out.
+  // AND THE THING TO WATCH. Settings is now the largest destination by a
+  // distance. If it needs another raise, the answer is probably not a bigger
+  // number: colour has a heading, five pictures and its own explanation, and
+  // that is a door rather than a block in somebody else's panel.
   // 11650 -> 11660 on 2026-08-26 (3.4.3). FOUR PIXELS, and the smallest raise
   // this file has ever taken, so it is worth saying exactly what bought them:
   // the colour picker had NO HEADING. Every other block in Settings has one, and
@@ -223,7 +245,7 @@ const BUDGET = {
   // the drift this file exists to refuse, so it was cut back past the original
   // rather than accommodated. Settings ended at 2,995 of 3,000, having been over.
   // The ratchet is still a ratchet and this is still too high.
-  allSurfacesPx: 11660,
+  allSurfacesPx: 12050,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.
@@ -512,7 +534,16 @@ const BUDGET = {
   // 251 -> 253 on 2026-08-25 (3.4.0). Two: the palette list and its Set. The
   // second axis of a choice PALETTES.md §6 rules should ship as options rather
   // than be decided for everybody — five families that all pass, offered.
-  controls: 253,
+  // 253 -> 257 on 2026-08-26 (3.5.0). FOUR, and they are the same choice as
+  // above wearing a different control: one `<select>` of five names became five
+  // radios with a picture each. The number of decisions a reader can take did
+  // not move — it is still "which of five" — and the note directly above says
+  // this budget cannot tell that difference, which is the sixth time.
+  // The radio is VISIBLE and real, deliberately: selection had to be carried by
+  // the control's own state and not by a coloured ring round the chosen tile,
+  // which would be colour as the sole carrier (Doctrine §4) and would put a
+  // fourteenth pair on screen that the inventory knows nothing about.
+  controls: 257,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

@@ -1638,20 +1638,29 @@ export async function mountAbout(
   // WHICH PALETTE (3.4.0). The same shape again — preview on change, persist on
   // the press, kv and never an event. The third control in this panel built to
   // this pattern, which is the point: a reader who has met one has met them all.
-  const palSel = document.querySelector<HTMLSelectElement>('#ui-palette');
+  // A RADIO GROUP RATHER THAN A SELECT SINCE 3.5.0, because each option now
+  // carries a picture of itself. The BEHAVIOUR is deliberately the same as the
+  // two controls above it — preview on change, persist on the press — so the
+  // shape a reader learned once still holds; only the control changed.
+  const palGroup = document.querySelector<HTMLFieldSetElement>('#ui-palette');
   const palSet = document.querySelector<HTMLButtonElement>('#ui-palette-set');
   const palNote = document.querySelector<HTMLElement>('#ui-palette-note');
-  if (palSel && palSet && palNote) {
-    palSel.value = getPalette();
+  if (palGroup && palSet && palNote) {
+    const palRadios = Array.from(palGroup.querySelectorAll<HTMLInputElement>('input[name="ui-palette"]'));
+    // Whatever is stored, not whatever is first in the markup. An unrecognised
+    // value normalises to the default, and the default is a real option here.
+    const chosenNow = (): string =>
+      normalisePalette(palRadios.find((r) => r.checked)?.value);
+    for (const r of palRadios) r.checked = r.value === getPalette();
     palNote.textContent = paletteNote(getPalette());
-    palSel.addEventListener('change', () => {
-      applyPalette(normalisePalette(palSel.value));
+    palGroup.addEventListener('change', () => {
+      applyPalette(chosenNow());
       // The note previews too: the name is what carries the meaning, so it has
       // to keep up with the colours rather than lag a press behind them.
-      palNote.textContent = paletteNote(normalisePalette(palSel.value));
+      palNote.textContent = paletteNote(chosenNow());
     });
     palSet.addEventListener('click', () => {
-      const chosen = normalisePalette(palSel.value);
+      const chosen = chosenNow();
       setPalette(chosen);
       applyPalette(chosen);
       palNote.textContent = paletteNote(chosen);

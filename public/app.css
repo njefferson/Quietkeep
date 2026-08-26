@@ -320,6 +320,96 @@ body {
   margin-bottom: calc(0.6rem - 6px);
 }
 
+/* THE COLOUR PICKER'S PICTURES (3.5.0).
+ *
+ * A grid rather than a row: five tiles across a phone would be 70px each, which
+ * is too small to judge a palette by, and a horizontal scroller inside a sheet
+ * is a swipe competing with the sheet's own. `auto-fill` gives three across a
+ * phone and five on a tablet without a breakpoint.
+ *
+ * The IMAGE is never the control's state. Its border is the app's own `--line`,
+ * a pair already in the thirteen, and it does not change when the tile is
+ * chosen — the radio beside the name says that, in a shape rather than a hue.
+ * A coloured ring round the chosen tile would be colour as the sole carrier
+ * (Doctrine §4) AND would put a fourteenth pair on screen that nothing measures. */
+.palette-pick {
+  border: 0; margin: 0 0 0.6rem; padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: 0.5rem;
+}
+.palette-pick legend { padding: 0; margin-bottom: 0.35rem; }
+/* The whole tile is the target, picture included — 44px is cleared several
+   times over by the image alone, so the name never has to be the hit area. */
+.palette-opt {
+  position: relative;
+  display: flex; flex-direction: column; gap: 0.25rem;
+  cursor: pointer;
+  min-height: var(--target);
+}
+.palette-opt img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+/* THE WHOLE TILE IS THE CONTROL, AND THAT IS WHY THE INPUT COVERS IT.
+ *
+ * A native radio is 13x13 and the target gate measures the INPUT's own box —
+ * correctly, because that is what a finger has to land on. Five of them failed
+ * at 13x13 in every state that shows this sheet.
+ *
+ * SCALING THE NATIVE ONE TO 44px WAS TRIED AND LOOKED IT: five circles the size
+ * of a thumbnail, painted in the browser's own accent rather than the app's,
+ * shouting over the pictures they were meant to be labelling.
+ *
+ * So the input is stretched over the tile instead. It is the honest shape of the
+ * thing — you press the picture, not a dot beside it — and the box the gate
+ * measures is the box a finger aims at. The mark below is what the reader sees,
+ * and it is a SHAPE before it is a colour: an empty ring becomes a filled one,
+ * and the name goes bold with it, so nothing here says "this is the one you
+ * have" in hue alone (Doctrine §4) on the one screen that is entirely about hue. */
+.palette-opt input[type="radio"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  appearance: none;
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.palette-opt input[type="radio"]:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.palette-name { display: flex; align-items: center; gap: 0.4rem; }
+.palette-name::before {
+  content: "";
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  box-sizing: border-box;
+  border: 2px solid var(--ink-soft);
+  border-radius: 50%;
+}
+.palette-opt input[type="radio"]:checked ~ .palette-name { font-weight: 700; }
+.palette-opt input[type="radio"]:checked ~ .palette-name::before {
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: inset 0 0 0 3px var(--surface);
+}
+/* `appearance: none` takes the native rendering with it, so the mark has to be
+   drawn again in the colours the OS is forcing rather than the app's. */
+@media (forced-colors: active) {
+  .palette-name::before { border-color: CanvasText; }
+  .palette-opt input[type="radio"]:checked ~ .palette-name::before {
+    background: Highlight;
+    border-color: Highlight;
+  }
+}
+
 /* Off-screen until focused, but it carries its full target size the whole time.
  * A skip link that only becomes 44px at the moment it is focused is a target
  * that was too small right up until it mattered. */

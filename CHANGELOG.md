@@ -14,6 +14,18 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.5.0 — CAPABILITY
+
+*2026-08-26*
+
+- **You can see the colour sets now, instead of reading their names.** Five pictures, side by side, one per set — the same little sample of the app painted in each. Pick by looking.
+- **Each picture is the same view twice: day on the left, night on the right.** Every set comes in light and dark, and ten pictures would be a wall — so one picture carries both, and every part of it appears on both sides. The button is in both, the card is in both, so you are comparing like with like rather than looking at two different things.
+- **The pictures are made from the same file the app gets its colours from**, so a set cannot look like one thing in the chooser and paint another once you pick it. They are only redrawn when the colours actually change.
+- **Which one is chosen is still shown by a button, not by a coloured outline.** The whole point of this screen is colour, so colour is the one thing that must not also be carrying "this is the one you have".
+- **Four of the five have been redrawn, because they were the same set four times.** Building the pictures showed it at once: in dark, four of them were within a few points of each other and two were identical to the eye, while their descriptions claimed real differences — *exact-neutral*, *cool*, *lowest glare* — that you could not see. They had each been checked for being readable and never checked against each other for being different.
+- **So they are now genuinely different things.** *Instrument* is cool and crisp. *Paper* is a warm kraft page with white cards and a deep teal for anything you can press. *Mono* has no hue at all. *Soft* is dimmed, with a night that is grey rather than black. *Quietkeep* is untouched. All five still clear the same contrast floors — that was checked after every change, and it takes a quarter of a second.
+- **What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours, whichever set you pick. That is decided when you save the app to your home screen and nothing it does afterwards can change it.
+
 ## 3.4.3 — ITERATION
 
 *2026-08-26*

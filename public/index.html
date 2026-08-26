@@ -2533,15 +2533,49 @@
     Five sets, all checked to the same standard for being readable. Which you
     pick is taste.
   </p>
+  <!-- PICTURES, BECAUSE NAMING A THING AND SHOWING IT ARE NOT ALTERNATIVES.
+       This was a `<select>` of five names, which satisfies Doctrine §4 — the
+       name is the control, colour is never the sole carrier — and still asks
+       you to choose a look you cannot see.
+       THE RADIO IS REAL AND VISIBLE. Selection rides on the control's own
+       checked state, not on a coloured outline round the chosen tile, so what
+       says "this is the one" is never colour. The picture is `alt=""`: it
+       carries no information the name does not, and describing a palette in
+       words is what the name and the note already do.
+       THE PICTURES ARE GENERATED, `npm run palette:shots`, from the same
+       `docs/palettes.json` the stylesheet comes from — so a family cannot look
+       like one thing and paint another. Each is one family, cut on a shallow
+       diagonal: day above the line, night below it, because a family is two
+       palettes and ten tiles is a wall. -->
+  <fieldset id="ui-palette" class="palette-pick">
+    <legend class="detail-inline">This app uses</legend>
+    <label class="palette-opt">
+      <input type="radio" name="ui-palette" value="quietkeep">
+      <img src="./palette-shots/quietkeep.png" alt="" width="420" height="200" decoding="async">
+      <span class="palette-name">Quietkeep</span>
+    </label>
+    <label class="palette-opt">
+      <input type="radio" name="ui-palette" value="instrument">
+      <img src="./palette-shots/instrument.png" alt="" width="420" height="200" decoding="async">
+      <span class="palette-name">Instrument</span>
+    </label>
+    <label class="palette-opt">
+      <input type="radio" name="ui-palette" value="paper">
+      <img src="./palette-shots/paper.png" alt="" width="420" height="200" decoding="async">
+      <span class="palette-name">Paper</span>
+    </label>
+    <label class="palette-opt">
+      <input type="radio" name="ui-palette" value="mono">
+      <img src="./palette-shots/mono.png" alt="" width="420" height="200" decoding="async">
+      <span class="palette-name">Mono</span>
+    </label>
+    <label class="palette-opt">
+      <input type="radio" name="ui-palette" value="soft">
+      <img src="./palette-shots/soft.png" alt="" width="420" height="200" decoding="async">
+      <span class="palette-name">Soft</span>
+    </label>
+  </fieldset>
   <div class="about-actions">
-    <label class="detail-inline" for="ui-palette">This app uses</label>
-    <select id="ui-palette">
-      <option value="quietkeep">Quietkeep</option>
-      <option value="instrument">Instrument</option>
-      <option value="paper">Paper</option>
-      <option value="mono">Mono</option>
-      <option value="soft">Soft</option>
-    </select>
     <button id="ui-palette-set" type="button" class="ghost">Set the colours</button>
   </div>
   <p id="ui-palette-note" class="storage-note" role="status" aria-live="polite"></p>

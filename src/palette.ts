@@ -23,10 +23,10 @@ export const DEFAULT_PALETTE = 'quietkeep';
 
 export const PALETTES: readonly { value: string; words: string; why: string }[] = [
   { value: 'quietkeep', words: 'Quietkeep', why: 'the original — warm paper by day, deep blue-grey by night' },
-  { value: 'instrument', words: 'Instrument', why: 'exact-neutral night, warm day; the hub council’s recommended default' },
-  { value: 'paper', words: 'Paper', why: 'cool night, warm paper day' },
-  { value: 'mono', words: 'Mono', why: 'neutral in both modes, no hue at all' },
-  { value: 'soft', words: 'Soft', why: 'lowest glare, contrast deliberately capped' },
+  { value: 'instrument', words: 'Instrument', why: 'cool and crisp — a steel-blue day, a near-black night' },
+  { value: 'paper', words: 'Paper', why: 'a warm kraft page with white cards, and a deep teal for anything you can press' },
+  { value: 'mono', words: 'Mono', why: 'no hue at all — neutral grey by day, neutral charcoal by night' },
+  { value: 'soft', words: 'Soft', why: 'the lowest glare — a dimmed page and a night that is grey rather than black' },
 ];
 
 export function normalisePalette(v: unknown): string {
