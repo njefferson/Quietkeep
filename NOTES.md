@@ -755,6 +755,10 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **Superseded, and kept for the record: 3.5.1.** Promoted 2026-08-26 at
+  `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
+  after a fresh dispatch, because the push-triggered run failed at startup and
+  re-running it reproduced that.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.5.1**. Colour is
   its own door rather than a block inside Settings, and the pictures are full
   width because of it.
@@ -1296,7 +1300,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.4.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.5.1** — promoted at
+  `ac0d40e`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `63731c2`, the staging head
+  that was walked; asserted to descend from `355e4c1`, the real production; and
+  asserted to carry `63731c2` itself. Four releases in one promote.
+  **THE PUSH LANDED AND THE DEPLOY DID NOT, WHICH IS THE FAILURE THIS BLOCK
+  EXISTS TO CATCH.** The push-triggered Deploy sat queued sixteen minutes, never
+  got a runner — zero billable time, zero jobs — and ended `startup_failure`.
+  Reported as pushed-and-verified it would have read as shipped while production
+  served 3.4.1 (LESSONS 53). Two workflows, Spine and Push-on-main, were never
+  CREATED for the SHA at all.
+  **The first diagnosis was wrong and is worth keeping.** It looked like an
+  Actions backlog: three workflows failing at once, nothing running in the whole
+  account. Then a `workflow_dispatch` of the Spine on the same SHA ran a full
+  green job, which killed that theory — Actions was fine.
+  **RE-RUNNING A `startup_failure` RUN REPRODUCES IT.** `rerun_workflow_run`
+  re-uses the same run object and its broken config snapshot, so it failed again
+  the same way. A FRESH `workflow_dispatch` on the identical ref succeeded in
+  forty seconds. `deploy.yml` was diffed between `main` and `staging` first and
+  is byte-identical, so the file was never the cause.
+  **And the green was checked for being a real deploy**, not the guard's skip
+  branch: the Cloudflare Pages step ran for seven seconds, and the Sync edition
+  deployed after it.
+  **What this carries.** The shell arrives wearing the reader's palette and mode
+  on the first painted pixel; the chrome names destinations instead of
+  quantities; the colour sets are pictures, with four of five redrawn because
+  they were the same set four times; and colour has its own door, which is what
+  buys the pictures a size you can read.
+  **Still not right, and named rather than closed:** the splash an installed app
+  shows before it opens still uses the original colours whichever set is chosen —
+  it comes from the manifest captured when the shortcut is saved, and nothing the
+  app does later can change it.
+- **Superseded, and kept for the record: 3.4.1** — promoted at
   `355e4c1`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `a8cdf54`, the staging head
   that was walked; the merge asserted to descend from `e16b2e8`, the real
