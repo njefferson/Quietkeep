@@ -16,6 +16,22 @@
  * display rule can reintroduce it. */
 [hidden] { display: none !important; }
 
+/* `color-scheme` FOLLOWS THE ATTRIBUTE, DECLARATIVELY (3.4.2, ADR-0111).
+ *
+ * `applyTheme` sets both — `data-theme` and an inline `color-scheme` — and that
+ * is still what runs when somebody changes the setting. But the service worker
+ * now writes `data-theme` into the shell's bytes so the mode is right on the
+ * first painted pixel, and it cannot write an inline style without risking a
+ * second `style` attribute on a tag that may grow one. So the pairing lives
+ * here, where the attribute alone is enough.
+ *
+ * Without this, an injected `data-theme` would fix the page and leave every
+ * `<select>`, date box and `<textarea>` painted for the DEVICE's mode until the
+ * app's own script caught up — which is 3.3.0's defect back again for one beat,
+ * on the setting that exists to prevent it. */
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
 :root {
   color-scheme: light dark;
 

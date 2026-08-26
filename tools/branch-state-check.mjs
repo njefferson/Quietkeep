@@ -160,6 +160,37 @@ const tripletIn = (sw, where) => {
 const treeTriplet = tripletIn(
   readFileSync(join(ROOT, 'public', 'sw.js'), 'utf8'), 'public/sw.js');
 
+// FETCH THE REF ITSELF, RATHER THAN ADVISING THE READER TO (hub LESSONS 143).
+//
+// This gate used to read `origin/main` straight from the local ref, print
+// "as last fetched", and — only on failure — advise `git fetch origin main`
+// first, because a stale remote-tracking ref compares against yesterday. It
+// named the hazard in its own error text and left the remedy to whoever was
+// reading, which is the fail-open shape this repo keeps finding: it relies on
+// the reader being alert at the exact moment the hazard fires.
+//
+// It fires. A container was recycled mid-session and both clones came back at
+// pinned older revisions, 146 commits behind, with the remote-tracking refs
+// stale alongside them — so `git log origin/main` answered confidently about a
+// different day and nothing looked wrong, because a stale tree is internally
+// coherent. That was immediately before a promote.
+//
+// SHORT TIMEOUT, AND OFFLINE IS SAID OUT LOUD. A commit guard may not hang on
+// a network, so the fetch gets five seconds. When it does not land, the answer
+// below is still given — it is usually right — but labelled as coming from the
+// last fetch rather than printed as current. The one thing this may never do is
+// what it did before: present a possibly-stale reading in the words of a fresh
+// one.
+let fetched = false;
+let fetchWhy = '';
+try {
+  execFileSync('git', ['fetch', '--quiet', 'origin', 'main'],
+    { cwd: ROOT, encoding: 'utf8', timeout: 5000, stdio: ['ignore', 'ignore', 'pipe'] });
+  fetched = true;
+} catch (e) {
+  fetchWhy = e?.killed ? 'timed out after 5s' : 'failed';
+}
+
 let mainTriplet = null;
 let mainSha = null;
 try {
@@ -198,7 +229,10 @@ check('staging', 'https://staging.quietkeep.pages.dev', treeTriplet);
 check('production', 'https://quietkeep.pages.dev', mainTriplet);
 
 if (mainSha) {
-  console.log(`\n  production read at origin/main ${mainSha}, as last fetched.`);
+  console.log(fetched
+    ? `\n  production read at origin/main ${mainSha}, fetched just now.`
+    : `\n  production read at origin/main ${mainSha} — THE FETCH ${fetchWhy.toUpperCase()},`
+      + '\n  so this is the last fetch, not the remote. If you are online, run it again.');
 }
 
 // --- and nowhere else may say it -------------------------------------------
@@ -241,9 +275,9 @@ if (copies.length) {
 
 if (staleBlock) {
   console.log('');
-  console.log('  Fix the block in NOTES.md, not this gate. If the production line');
-  console.log('  looks right to you, `git fetch origin main` first — a stale');
-  console.log('  remote-tracking ref makes this compare against yesterday.');
+  console.log('  Fix the block in NOTES.md, not this gate. The ref was fetched');
+  console.log('  before it was read, so this is the remote and not yesterday —');
+  console.log('  unless the line above says the fetch did not land.');
   console.log('');
   console.log('  This block has been wrong three times, through eighteen releases');
   console.log('  and five promotes, and nothing ever found it. That is what this is.');

@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.4.2',
+    kind: 'ITERATION',
+    date: '2026-08-26',
+    notes: [
+      '**The app arrives already wearing the colours you chose.** If you had picked something other than the original, opening the app showed you a moment of the original first, then settled. It does not any more \u2014 the colours are right on the very first thing drawn.',
+      '**And the same for light or dark, which was the bigger one.** If your device is set to dark and you asked for light, you were getting a beat of night before the day you asked for. That is gone too. It was the same cause and the same one-line answer.',
+      '**Why it took until now, honestly:** the answer written down last release was that this could not be fixed without keeping your choice somewhere this app refuses to keep things. That was wrong \u2014 true of one place, not of all of them. The part of the app that lets it work offline can read your settings, and it is what hands the page over, so it now hands over a page that already knows. Nothing new is stored anywhere.',
+      '**Considered and not done:** covering the screen for a moment while it looks your choice up. That swaps a colour settling for a blank screen \u2014 worse on a light device, not better \u2014 makes everyone wait on a cold start, and adds a way for the app to sit blank if anything goes wrong reading. The way it works now is earlier than any of that could be.',
+      '**What is still not right:** the little splash the phone or tablet shows in the half-second before an installed app opens still uses the original colours. That one is decided when you save the app to your home screen, and nothing the app does afterwards can change it. It is a separate piece of work and it has not been done.',
+    ],
+  },
+  {
     triplet: '3.4.1',
     kind: 'ITERATION',
     date: '2026-08-25',

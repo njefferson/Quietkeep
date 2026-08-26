@@ -755,6 +755,53 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.2**. The shell
+  arrives wearing the reader's choice, and the branch-state gate fetches the ref
+  it reads. ADR-0111.
+  **The cold-start flash is gone, and it was two flashes rather than one.** A
+  palette lives in IndexedDB, which is asynchronous, so the app painted its
+  default and corrected itself a beat later. Measuring it found the MODE doing
+  the same: on a device set to dark with `light` chosen, `data-theme` was absent
+  when `<html>` was parsed — day-to-night, which is the larger event of the two.
+  Both come from one read and both are fixed by it.
+  **The claim that this was unfixable was the actual defect.** It was written in
+  a shipped release note and here: not fixable "without storing the choice
+  somewhere this app deliberately does not store things". True of `localStorage`
+  (banned outright, ADR-0002) and false in general. **A service worker can read
+  IndexedDB**, and this app already had one serving the shell on every launch,
+  so it hands back HTML that already carries the choice. The reasoning had
+  stopped at the first candidate and the conclusion was recorded as settled.
+  **What the mechanism refuses to do.** It never CREATES the store — opening a
+  database that does not exist makes an empty one, and Dexie opening afterwards
+  at v2 would run only the v2 upgrade, leaving a first-ever visitor without
+  `events` or `snapshots`. Every failure path resolves to "no choice", which is
+  what a first visit legitimately is. The cached shell stays undressed, so a
+  change of mind is not served out of a cache nobody invalidated.
+  **The database was named `planner` in the first version, and the app calls it
+  `quietkeep`** — `DexieLogStore`'s own default, copied without checking. Nothing
+  throws when that is wrong: every path resolves to "no choice" and the feature
+  does nothing at all on every launch while looking perfectly healthy. Caught by
+  reading `src/ui/session.ts`, and now held by a check over all four constants
+  the worker copies out of `src/`, planted with that exact mistake.
+  **The gate's timing is the whole gate.** Reading the attribute after boot
+  proves nothing — the app sets it itself, so that assertion passes whether or
+  not the worker exists. An init script runs BEFORE the document, so
+  `document.documentElement` is null there; the first version of this recorded
+  an exception and would have called a working fix broken. A `MutationObserver`
+  on `document` fires as `<html>` is appended, which is the earliest observable
+  point there is.
+  **And the branch-state gate fetches now.** It read `origin/main` from the local
+  ref, printed "as last fetched", and on failure advised the reader to fetch
+  first because a stale ref compares against yesterday — naming the hazard in its
+  own error text and leaving the remedy to whoever was reading. It fetches the
+  one ref before reading it, and when the network is not there it SAYS the answer
+  is from the last fetch rather than printing it as current. Both branches
+  planted. Hub LESSONS 143.
+  **Still not right, and named rather than closed:** the splash an installed app
+  shows before it opens still uses the original colours. That is decided from the
+  manifest captured when the shortcut is saved, and nothing the app does later
+  can change it — it needs a per-palette manifest chosen before installing, and
+  rests on iOS behaviour that must be measured on a device rather than assumed.
 - **Superseded, and kept for the record: 3.4.1.** Promoted 2026-08-26 at
   `355e4c1`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**, verified at
@@ -1152,14 +1199,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   checked structurally rather than measured on screen, as are three surfaces the
   walk has no door to; and a reader on a non-default palette sees one beat of the
   default on a cold start, in the right mode.
-  **And one correction to what that last item has been saying.** Both 3.4.0's
-  notes and this block have called the cold-start beat unfixable "without storing
-  the choice somewhere this app deliberately does not store things". That is true
-  of `localStorage` and false in general: **a service worker can read
-  IndexedDB**, so the worker that already serves the cached shell can hand back
-  HTML with `data-palette` already on it, and the palette would be right on the
-  first painted pixel. Nothing new stored, nothing delayed. Not built; recorded
-  so the limitation stops being repeated as though it were settled.
+  **And one correction to what that last item has been saying — now BUILT, in
+  3.4.2 on staging.** Both 3.4.0's notes and this block called the cold-start
+  beat unfixable "without storing the choice somewhere this app deliberately does
+  not store things". True of `localStorage` and false in general: a service
+  worker can read IndexedDB, so the worker already serving the cached shell hands
+  back HTML with the choice on it. Measuring it found the MODE flashing the same
+  way, which nothing had recorded. ADR-0111.
 - **Superseded, and kept for the record: 3.4.0** — promoted at
   `e16b2e8`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `60523f3`, the staging head

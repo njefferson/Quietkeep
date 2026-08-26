@@ -69,17 +69,118 @@ for (const [key, f] of families) {
   css += block(`:root[data-palette="${key}"][data-theme="light"]`, f.light);
 }
 
+// THE SECOND GENERATED SITE, AND IT IS NOT A STYLESHEET (3.4.2, ADR-0111).
+//
+// The service worker reads the reader's palette out of IndexedDB and writes it
+// onto `<html>` before the page is parsed, so the colours are right on the first
+// painted pixel. To do that safely it holds its own list of the families —
+// a value not on that list never reaches the markup — and a hand-kept copy of
+// something this file generates is exactly the drift PALETTES.md §6 warns about,
+// one level up from the four stylesheet blocks that prompted this generator.
+//
+// So it is checked in both directions: a family added here and not there would
+// be silently unreachable for anyone who chose it, and a name there that this
+// file does not know would be an injection site with no source.
+//
+// The DEFAULT is absent from that list on purpose — the stylesheet declares it
+// unattributed, so "no attribute" IS the default, and an unrecognised value
+// falls back to precisely that.
+const SW = 'public/sw.js';
+const swExpected = families.map(([k]) => k).filter((k) => k !== def);
+const swSrc = () => readFileSync(SW, 'utf8');
+const swDeclared = () => {
+  const m = swSrc().match(/const PALETTE_VALUES = \[([^\]]*)\]/);
+  if (!m) return null;
+  return [...m[1].matchAll(/'([^']+)'/g)].map((x) => x[1]);
+};
+
+// AND THE THREE CONSTANTS IT COPIES OUT OF src/, because a worker cannot import
+// the app's modules and a copied constant is a copied constant.
+//
+// The database name was written as `planner` first — `DexieLogStore`'s own
+// default — while the app passes `quietkeep`. Nothing would have thrown: the
+// worker's every failure path resolves to "no choice stored" and serves the
+// shell exactly as before, so the feature would have done nothing at all on
+// every launch and looked completely healthy doing it. Caught by reading
+// `src/ui/session.ts`, which is not a thing anybody should have to remember.
+const CONSTANTS = [
+  { what: 'DB_NAME', from: 'src/ui/session.ts', re: /\bdbName = '([^']+)'/ },
+  { what: 'KV_STORE', from: 'src/dexie-store.ts', re: /version\(2\)\.stores\(\{ (\w+):/ },
+  { what: 'PALETTE_KEY', from: 'src/palette.ts', re: /PALETTE_KEY = '([^']+)'/ },
+  { what: 'THEME_KEY', from: 'src/theme.ts', re: /THEME_KEY = '([^']+)'/ },
+];
+const constantDrift = () => {
+  const sw = swSrc();
+  const out = [];
+  for (const c of CONSTANTS) {
+    const mine = sw.match(new RegExp(`const ${c.what} = '([^']+)'`));
+    let theirs = null;
+    try { theirs = readFileSync(c.from, 'utf8').match(c.re); } catch { /* reported below */ }
+    if (!mine) { out.push(`${SW} declares no ${c.what}`); continue; }
+    if (!theirs) { out.push(`cannot find ${c.what}'s source in ${c.from} — the shape it is read with has changed`); continue; }
+    if (mine[1] !== theirs[1]) {
+      out.push(`${c.what} is '${mine[1]}' in the worker and '${theirs[1]}' in ${c.from}`);
+    }
+  }
+  return out;
+};
+
 if (CHECK) {
+  let failed = 0;
   let have = '';
   try { have = readFileSync(OUT, 'utf8'); } catch { /* missing is drift */ }
   if (have === css) {
     console.log(`\n  ok    ${OUT} is what ${SRC} says it should be`);
-    console.log(`        ${families.length} families, ${families.length * 2} palettes\n`);
-    process.exit(0);
+    console.log(`        ${families.length} families, ${families.length * 2} palettes`);
+  } else {
+    console.error(`\n  FAIL  ${OUT} has drifted from ${SRC}.`);
+    console.error('        The JSON is the source. Run:  npm run palettes');
+    failed++;
   }
-  console.error(`\n  FAIL  ${OUT} has drifted from ${SRC}.`);
-  console.error('        The JSON is the source. Run:  npm run palettes\n');
-  process.exit(1);
+
+  const declared = swDeclared();
+  if (declared === null) {
+    console.error(`  FAIL  ${SW} declares no PALETTE_VALUES list.`);
+    console.error('        The worker needs it to know which choices are real. Never a skip:');
+    console.error('        a missing list is the one state where this would agree with anything.');
+    failed++;
+  } else {
+    const missing = swExpected.filter((k) => !declared.includes(k));
+    const extra = declared.filter((k) => !swExpected.includes(k));
+    if (missing.length || extra.length) {
+      console.error(`  FAIL  ${SW}'s PALETTE_VALUES has drifted from ${SRC}.`);
+      if (missing.length) {
+        console.error(`        not in the worker: ${missing.join(', ')}`);
+        console.error('        — anyone choosing one of those keeps the flash this was written to remove.');
+      }
+      if (extra.length) {
+        console.error(`        not a family: ${extra.join(', ')}`);
+        console.error('        — a name the worker will write into markup with nothing behind it.');
+      }
+      console.error(`        The JSON is the source. Fix the list in ${SW}.`);
+      failed++;
+    } else {
+      console.log(`  ok    ${SW} knows the same ${declared.length} choosable families`);
+    }
+  }
+
+  const drift = constantDrift();
+  if (drift.length) {
+    console.error(`  FAIL  ${SW} copies constants out of src/ and they no longer match:`);
+    for (const d of drift) console.error(`        ${d}`);
+    console.error('        Nothing throws when these are wrong — the worker just serves the');
+    console.error('        shell undressed on every launch and looks perfectly healthy.');
+    failed++;
+  } else {
+    console.log(`  ok    ${SW}'s ${CONSTANTS.length} copied constants match their sources in src/`);
+  }
+  console.log('');
+  process.exit(failed === 0 ? 0 : 1);
 }
 writeFileSync(OUT, css);
 console.log(`wrote ${OUT} — ${families.length} families, ${families.length * 2} palettes`);
+const declared = swDeclared();
+console.log(declared && declared.length === swExpected.length
+  && swExpected.every((k) => declared.includes(k))
+  ? `${SW} already knows the same ${declared.length} choosable families`
+  : `NOTE: ${SW}'s PALETTE_VALUES does not match — expected [${swExpected.join(', ')}]`);
