@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.5.1 — ITERATION
+
+*2026-08-26*
+
+- **Colours has its own place now.** It was a block near the bottom of *Settings*; it is its own door behind *Everything else*, next to *Settings* rather than inside it. Nothing about it changed except where it lives and how big it is.
+- **Which is what makes the pictures worth having.** Two to a row inside Settings, each half of each picture came out about 75 pixels wide on a phone — you could see that one side was light and the other dark, and not much else. One to a row here, and a half is about 155. The whole argument for a picture is that you can see it.
+- **Settings got shorter by about a fifth**, which is the other half of the same move. It had been the longest thing behind that button.
+- **Light or dark stayed in Settings**, on purpose. How bright the app is and which set of colours it uses are two separate choices, and putting them both here would have made this door mean "anything to do with how it looks", which is what Settings already means.
+- **What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours whichever set you pick. That is decided when you save the app to your home screen and nothing the app does afterwards can change it.
+
 ## 3.5.0 — CAPABILITY
 
 *2026-08-26*

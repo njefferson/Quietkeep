@@ -332,11 +332,23 @@ body {
  * chosen — the radio beside the name says that, in a shape rather than a hue.
  * A coloured ring round the chosen tile would be colour as the sole carrier
  * (Doctrine §4) AND would put a fourteenth pair on screen that nothing measures. */
+/* ONE COLUMN, WHICH IS THE WHOLE REASON COLOUR HAS ITS OWN DOOR (3.5.1).
+ *
+ * This was `repeat(auto-fill, minmax(6.5rem, 1fr))` — two tiles per row inside
+ * Settings, where they had to be small enough not to take the sheet over its
+ * budget a third time. Each tile is a family shown twice, day beside night, so
+ * two-up on a phone rendered each HALF at about 75px: you could see that one
+ * side was light and the other dark, and nothing else. A picture you cannot
+ * read is a worse control than the list of names it replaced.
+ *
+ * `auto-fit` with a wide floor rather than a flat `1fr`, so the wide
+ * arrangement (ADR-0109) can still put two across when there is genuinely room
+ * for two at full size, instead of one tile stranded in a 65rem column. */
 .palette-pick {
   border: 0; margin: 0 0 0.6rem; padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 0.75rem;
 }
 .palette-pick legend { padding: 0; margin-bottom: 0.35rem; }
 /* The whole tile is the target, picture included — 44px is cleared several

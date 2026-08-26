@@ -755,7 +755,53 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.0**. You can see
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.1**. Colour is
+  its own door rather than a block inside Settings, and the pictures are full
+  width because of it.
+  **The move is what buys the pictures their size.** Two-up inside Settings, each
+  HALF of each tile rendered about 75px on a phone — you could see that one side
+  was light and the other dark and not much else, which is a picture failing at
+  the one thing a picture is for. One column here: a half is 155px. Settings fell
+  from 3,299px to 2,656, about a fifth, having been the longest thing behind that
+  button.
+  **The per-surface budget went BACK DOWN, 3,400 to 3,000**, which is the half of
+  a ratchet that never happens on its own. That raise was bought by the tiles
+  crowding Settings; the tiles left, so the headroom goes with them. The TOTAL
+  went up, 12,050 to 12,600, because splitting a destination adds a title and a
+  way out even as it shortens every surface — the two numbers price different
+  things and they moved in opposite directions, which is the trade being made
+  honestly rather than hidden in one figure. Controls +2, which is what a door
+  costs: the button that opens it and the way back out.
+  **Light or dark stayed in Settings.** Mode and palette are independent axes
+  (PALETTES.md §6); moving both would have made this door mean "anything to do
+  with how it looks", which is what Settings already means.
+  **Two things were caught by something refusing to run, and both are worth
+  keeping.** The `data-door` was copied from a sheet that is NOT in More — the
+  two-tap form with a `|` — and `openSurface` hands the door straight to
+  `querySelector`, where that is not a valid selector. None of the six siblings
+  has a door attribute at all; they are reached by the `more-go` fallback.
+  And the colours audit was placed beside its sibling in the panel, which shut
+  Settings under the states still driving it: `openSurface` closes every dialog
+  first (ADR-0083, one surface at a time), and everything between the settings
+  audit and the ⓘ is a CONTINUATION that never reopens the sheet. Three registry
+  entries reported "matches nothing visible" about controls that were simply on a
+  screen no longer open. The audit sits after that run now, with the dependency
+  written down where the next person will hit it.
+  **ADR-0083 said More "lists six destinations and never scrolls", and the second
+  half was not true.** Measured on this release and measured AGAIN with the
+  seventh door removed, so the blame lands where it belongs: at 390x844 and 200%
+  text, SIX doors already scrolled — 1,070px of list in a 381px box. Seven makes
+  it 1,186. At 100% neither scrolls. So the claim had been false at the text
+  sizes the people this app is for are most likely to use, for as long as there
+  have been six, and nothing had looked. Not a defect in the list — a list of
+  places is a reasonable thing to scroll, the way out is outside the scrolling
+  body, every door clears its target — a defect in the RECORD, which stated an
+  absolute nobody had measured. The ADR carries both numbers now.
+  **Still not right:** the splash an installed app shows before it opens still
+  uses the original colours whichever set is chosen. It comes from the manifest
+  captured when the shortcut is saved and nothing the app does later can change
+  it.
+- **Superseded, and kept for the record: 3.5.0.** You can see
   the colour sets instead of reading their names, and four of the five have been
   redrawn because they were the same set four times. ADR-0111 for the mechanism.
   **The preview is a picture, not live CSS**, and that is what makes it cheap. A

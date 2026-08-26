@@ -193,7 +193,13 @@ const BUDGET = {
   // is recorded rather than fixed here: fixing it means a per-surface budget, and
   // a budget nobody has measured against is worse than a shared one everybody has.
   // What bought it: the colour picker became five pictures (see `allSurfacesPx`).
-  surfacePx: 3400,
+  // 3400 -> 3000 on 2026-08-26 (3.5.1), BACK DOWN, which is the half of a
+  // ratchet that never happens on its own. That raise was bought by the colour
+  // tiles crowding Settings; colour is its own door now, Settings measures 2,656
+  // and the tiles measure 1,226, and neither is near 3,000. Leaving the number
+  // at 3,400 would have banked 744px of headroom nothing paid for — a budget
+  // that keeps the space a move just freed has stopped being a budget.
+  surfacePx: 3000,
   // The sum, so that "make it six screens instead of one" cannot pass by
   // dividing. What a person has to get through does not shrink because it was
   // filed, and this number is here to say so out loud: splitting Settings into
@@ -245,7 +251,16 @@ const BUDGET = {
   // the drift this file exists to refuse, so it was cut back past the original
   // rather than accommodated. Settings ended at 2,995 of 3,000, having been over.
   // The ratchet is still a ratchet and this is still too high.
-  allSurfacesPx: 12050,
+  // 12050 -> 12600 on 2026-08-26 (3.5.1), and this one goes UP for a reason the
+  // per-surface number cannot see. Splitting a destination in two ADDS to the
+  // total even as it lowers every surface in it: the new sheet carries its own
+  // title and its own way out, and the tiles it was built for are now full width
+  // rather than two-up, which is the entire point of moving them. Settings fell
+  // 3,299 -> 2,656 and Colours arrived at 1,226, so the total moved +583.
+  // This is the trade the two numbers exist to price separately. Travel is what
+  // the per-surface budget protects and it improved; sprawl is what this one
+  // refuses and it got worse, deliberately, by one door.
+  allSurfacesPx: 12600,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.
@@ -543,7 +558,10 @@ const BUDGET = {
   // the control's own state and not by a coloured ring round the chosen tile,
   // which would be colour as the sole carrier (Doctrine §4) and would put a
   // fourteenth pair on screen that the inventory knows nothing about.
-  controls: 257,
+  // 257 -> 259 on 2026-08-26 (3.5.1). A door costs exactly two: the button that
+  // opens it and the way back out. Nothing else was added — the five tiles and
+  // their control moved, they did not multiply.
+  controls: 259,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM
@@ -591,6 +609,10 @@ try {
     ['Your data', 'sheet-group-data', '#sheet-group-data .sheet-body'],
     ['Things you can do', 'sheet-group-actions', '#sheet-group-actions .sheet-body'],
     ['Settings', 'sheet-group-extras', '#sheet-group-extras .sheet-body'],
+    // The seventh, 3.5.1. A destination that is not in this list is not measured
+    // and its prose does not count toward the total — so the move that took the
+    // colour picker out of Settings would have looked like 700px of saving.
+    ['Colours', 'sheet-group-colour', '#sheet-group-colour .sheet-body'],
   ];
   let total = 0;
   for (const [name, id, scroller] of SURFACES) {

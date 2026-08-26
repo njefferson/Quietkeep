@@ -300,7 +300,7 @@ The named ones:
   of *What you are holding*.
 - **Everything else** — the way to everything below.
 - **How it works** · **Help** · **Your data** · **Things you can do** ·
-  **Settings** — the five destinations behind *Everything else*.
+  **Settings** · **Colours** — the six destinations behind *Everything else*.
 - **Quietkeep** — the ⓘ: what this is, what it is not, how to install it, what
   changed, and the licence.
 - **If something is wrong** — inside the ⓘ: the report the app writes about
