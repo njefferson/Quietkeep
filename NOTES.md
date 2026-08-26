@@ -755,9 +755,10 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.2**. The shell
-  arrives wearing the reader's choice, and the branch-state gate fetches the ref
-  it reads. ADR-0111.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.2**, verified at
+  `4279fcb`: Deploy success AND Spine success read from the runs for that exact
+  SHA. The shell arrives wearing the reader's choice, and the branch-state gate
+  fetches the ref it reads. ADR-0111.
   **The cold-start flash is gone, and it was two flashes rather than one.** A
   palette lives in IndexedDB, which is asynchronous, so the app painted its
   default and corrected itself a beat later. Measuring it found the MODE doing
