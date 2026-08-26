@@ -561,7 +561,11 @@ const BUDGET = {
   // 257 -> 259 on 2026-08-26 (3.5.1). A door costs exactly two: the button that
   // opens it and the way back out. Nothing else was added — the five tiles and
   // their control moved, they did not multiply.
-  controls: 259,
+  // 259 -> 258 on 2026-08-26 (3.5.2), DOWN, because *Set the colours* was
+  // removed: tapping a tile already repainted the app, so the confirm changed
+  // nothing visible and read as a control that did not work. A ceiling left
+  // above what the app actually has is a ceiling that stops counting.
+  controls: 258,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

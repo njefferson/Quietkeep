@@ -233,8 +233,34 @@ export async function mountAbout(
   // Every id came across unchanged and every handler in this file binds
   // globally by id, so nothing else had to learn where its element moved to.
   {
-    const SHEETS = ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
-      'sheet-group-actions', 'sheet-group-extras'];
+    // DERIVED FROM THE DOORS, NEVER HAND-LISTED (3.5.2).
+    //
+    // This was five ids typed out. A sixth destination — Colours — was added in
+    // 3.5.1 and was not typed in, so `wireSheetClose` never ran for it and its
+    // Close button did nothing at all. Reported from a device as the window not
+    // closing, which is exactly what it was.
+    //
+    // Every gate stayed green through it. The way-out gate asserts each dialog
+    // DECLARES a way out and that the way out sits outside the box that
+    // scrolls — both true here — and never that pressing it closes anything.
+    // The a11y walk measured the button's contrast, its target size and its
+    // focus ring. A button can be perfectly formed, perfectly placed, perfectly
+    // legible and wired to nothing.
+    //
+    // The doors are the right source because they are the thing that must stay
+    // in step: a destination reachable from More whose sheet is not wired is
+    // precisely the defect. `data-go` names it, so a new door brings its own
+    // wiring and cannot arrive without it. Hub LESSONS 141 is the same shape —
+    // a hand-written list of six that went stale within the hour.
+    //
+    // Filtered to doors that resolve to a real `<dialog>`, because one of them
+    // deliberately does not: About Quietkeep opens the ⓘ, which is not a group
+    // sheet and has its own wiring. That is a door landing somewhere else on
+    // purpose, not a missing sheet — and the difference is asserted by the walk
+    // rather than assumed here, which is the only honest place for it.
+    const SHEETS = Array.from(document.querySelectorAll<HTMLButtonElement>('.more-go'))
+      .map((b) => `sheet-${b.dataset.go ?? ''}`)
+      .filter((id) => document.querySelector(`dialog#${id}`) !== null);
     for (const id of SHEETS) wireSheetClose(id);
     // The repaint each of these owes on open, registered rather than called by
     // whoever happens to open it (2.0.5). More is no longer the only door: the
@@ -1635,6 +1661,29 @@ export async function mountAbout(
     });
   }
 
+  // AND LEAVING SETTINGS WITHOUT SETTING PUTS THEM BACK TOO (3.5.2).
+  //
+  // All three view preferences share one shape — preview on change, persist on
+  // the press — so all three could strand a preview the store never heard
+  // about. Only the colour one was reported, because only the colour one is
+  // impossible to miss: the whole app changes hue. The mode and the text size
+  // do exactly the same thing and are quieter about it, which makes them worse
+  // rather than better.
+  //
+  // Registered on the sheet rather than on each control, and on the native
+  // `close` event, so Escape and the backdrop revert identically to the button.
+  {
+    const extras = document.querySelector<HTMLDialogElement>('#sheet-group-extras');
+    extras?.addEventListener('close', () => {
+      applyTheme(getTheme());
+      applyScale(getScale());
+      const t = document.querySelector<HTMLSelectElement>('#ui-theme');
+      const sc = document.querySelector<HTMLSelectElement>('#ui-scale');
+      if (t) t.value = getTheme();
+      if (sc) sc.value = String(getScale());
+    });
+  }
+
   // WHICH PALETTE (3.4.0). The same shape again — preview on change, persist on
   // the press, kv and never an event. The third control in this panel built to
   // this pattern, which is the point: a reader who has met one has met them all.
@@ -1643,9 +1692,8 @@ export async function mountAbout(
   // two controls above it — preview on change, persist on the press — so the
   // shape a reader learned once still holds; only the control changed.
   const palGroup = document.querySelector<HTMLFieldSetElement>('#ui-palette');
-  const palSet = document.querySelector<HTMLButtonElement>('#ui-palette-set');
   const palNote = document.querySelector<HTMLElement>('#ui-palette-note');
-  if (palGroup && palSet && palNote) {
+  if (palGroup && palNote) {
     const palRadios = Array.from(palGroup.querySelectorAll<HTMLInputElement>('input[name="ui-palette"]'));
     // Whatever is stored, not whatever is first in the markup. An unrecognised
     // value normalises to the default, and the default is a real option here.
@@ -1653,16 +1701,25 @@ export async function mountAbout(
       normalisePalette(palRadios.find((r) => r.checked)?.value);
     for (const r of palRadios) r.checked = r.value === getPalette();
     palNote.textContent = paletteNote(getPalette());
+    // TAPPING IS THE DECISION (3.5.2). There is no confirm button any more.
+    //
+    // It had one, and the button was indefensible the moment the pictures
+    // arrived: tapping a tile already repainted the whole app, so pressing
+    // *Set the colours* afterwards changed nothing you could see. A confirm
+    // with no visible effect reads as a control that does not work, and it was
+    // reported as exactly that. The alternative — stop previewing until the
+    // press — would have thrown away the reason the tiles exist, which is
+    // seeing the app in that family rather than a thumbnail of it.
+    //
+    // So the tap applies AND persists, and Close only closes. Nothing is held
+    // unsaved, which also removes the state where the screen showed one palette
+    // and the store remembered another.
     palGroup.addEventListener('change', () => {
-      applyPalette(chosenNow());
-      // The note previews too: the name is what carries the meaning, so it has
-      // to keep up with the colours rather than lag a press behind them.
-      palNote.textContent = paletteNote(chosenNow());
-    });
-    palSet.addEventListener('click', () => {
       const chosen = chosenNow();
-      setPalette(chosen);
       applyPalette(chosen);
+      setPalette(chosen);
+      // The name carries the meaning (Doctrine §4), so it keeps up with the
+      // colours rather than lagging behind them.
       palNote.textContent = paletteNote(chosen);
       void session.store.setKv(PALETTE_KEY, chosen)
         .catch(() => { /* a view preference: it applies now either way */ });
