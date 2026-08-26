@@ -212,7 +212,18 @@ const BUDGET = {
   // sentence, in Settings, which is 2,650px of a 3,000px budget and unmoved by
   // this. Same note as the raise below it: this measures SCROLL, so a control
   // counts as prose, and the ratchet is still too high.
-  allSurfacesPx: 11650,
+  // 11650 -> 11660 on 2026-08-26 (3.4.3). FOUR PIXELS, and the smallest raise
+  // this file has ever taken, so it is worth saying exactly what bought them:
+  // the colour picker had NO HEADING. Every other block in Settings has one, and
+  // the section a reader lands on for "which colours" opened straight into a
+  // sentence. That is a heading's worth of pixels for a real defect.
+  // The PROSE around it went DOWN, not up, and deliberately: this raise paid for
+  // the heading alone. The replacement copy was longer than what it replaced and
+  // pushed three budgets at once — words, Settings and this — which is exactly
+  // the drift this file exists to refuse, so it was cut back past the original
+  // rather than accommodated. Settings ended at 2,995 of 3,000, having been over.
+  // The ratchet is still a ratchet and this is still too high.
+  allSurfacesPx: 11660,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.

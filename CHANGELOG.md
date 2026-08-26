@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.4.3 — ITERATION
+
+*2026-08-26*
+
+- **The button that said *More* now says *Everything else*.** More of what? The only way to find out was to press it. What is behind it has not changed — settings, your data, help, how it works, what this app is, and the things you can do like printing today or sending to your calendar. Now the button says so.
+- **And *Contents* now says *On this page*.** Those two sit next to each other and are exactly complementary: one is what is here, the other is what is not. They now sound like the pair they are.
+- **Inside a job, the way out now says *Choose where to be*.** It said *Everywhere else*, which was fine on its own and impossible next to *Everything else* — a letter apart to the ear, and one means your other work while the other means the app itself. It takes you to *Where do you want to be?*, so now it says that.
+- **The colours section has a heading, and says what it actually means.** It had no heading at all, and told you the five sets were *held to the same contrast floors*, which is a phrase for whoever built it. What it means is: every one is checked to the same standard for being readable, so which you pick is a matter of taste and not of one being easier to read.
+- **Nothing moved and nothing was added.** Same buttons, same places, same order, same things behind them. Only the words.
+
 ## 3.4.2 — ITERATION
 
 *2026-08-26*

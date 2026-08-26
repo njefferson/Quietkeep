@@ -101,7 +101,14 @@
        nowhere else for anything to go.
        NOT called "Menu": on this app the Menu is a place things live (law 1
        clause c), and a second meaning for that word in the chrome would be the
-       app disagreeing with itself about its own vocabulary. -->
+       app disagreeing with itself about its own vocabulary.
+       AND NOT "More" EITHER, WHICH IS WHAT IT SAID FOR SIX RELEASES. "More"
+       names a quantity rather than a destination — more of what? — so the only
+       way to learn what was behind it was to press it. All six ARE the app
+       rather than your work (settings, your data, help, how it works, about,
+       and the app-level actions like printing and the calendar), and the
+       complement of "On this page" beside it. "Everything else" says both:
+       not this page, and all of it. -->
   <!-- THE WAY BACK (3.0.0), IN THE TOP ROW SINCE 3.1.2. Outside <main> so it is
        not a section and cannot become a door.
        IT RODE INSIDE THE RUNWAY UNTIL 3.1.1, which meant it scrolled away: at an
@@ -119,9 +126,16 @@
        because `display: contents` on a toggled box loses to `[hidden]` in the UA
        sheet, which is the specificity trap `#about[open]` already paid for.
        ORDER: the way back reads before the destinations it is an alternative to,
-       so it sits after the ⓘ and before More and Contents. -->
+       so it sits after the ⓘ and before the other two.
+       ITS NAME MOVED WITH THEIRS. It said "Everywhere else", which was fine
+       alone and unusable once the button two along said "Everything else" —
+       one letter apart in sound, and one means your other work while the other
+       means the app itself. "Choose where to be" takes the verb-first shape of
+       the doors it lands among ("Choose what to do", "Sort what you put down")
+       and names its destination, which is the heading "Where do you want to
+       be?". -->
 <div id="stance-bar" class="stance-bar" hidden>
-  <button id="stance-back" type="button" class="ghost">Everywhere else</button>
+  <button id="stance-back" type="button" class="ghost">Choose where to be</button>
   <!-- CAPTURE FROM INSIDE THE JOB. The box lives in the frame, and the frame
        stands down at 175% text (ADR-0101) — so inside a stance, at the size
        where it matters most, there was no way to put a thought down without
@@ -137,14 +151,15 @@
           title="Put something down"><span aria-hidden="true">+</span><span
           class="visually-hidden">Put something down</span></button>
 </div>
-  <button id="open-more" type="button" class="ghost">More</button>
+  <button id="open-more" type="button" class="ghost">Everything else</button>
   <!-- WHAT IS ON THIS PAGE (2.3.0, ADR-0093), where the app's navigation
-       already lives. `More` is the six destinations that are not this page;
-       this is the parts of the page itself, which the app had no way of
-       reaching at all. Together they are the whole answer to "where do I go" —
+       already lives. `Everything else` is the six destinations that are not this
+       page; this is the parts of the page itself, which the app had no way of
+       reaching at all. THE TWO ARE A PAIR AND NOW SOUND LIKE ONE: what is here,
+       and what is not here. Together they are the whole answer to "where do I go" —
        and putting them in one place is why neither had to become a floating
        control over the reader's own work. -->
-  <button id="contents-open" type="button" class="ghost">Contents</button>
+  <button id="contents-open" type="button" class="ghost">On this page</button>
 </div>
 
 <!-- Capture first, and it is the thing that has focus on arrival. The gap
@@ -1837,7 +1852,7 @@
      More that scrolls is the panel again, and the answer to that is fewer
      destinations, not a second More. -->
 <dialog id="more" aria-labelledby="more-title">
-  <h2 id="more-title" class="section">More</h2>
+  <h2 id="more-title" class="section">Everything else</h2>
   <!-- THE SCROLL CONTAINER (3.1.0) — see the note on `#sort`. -->
   <div class="sheet-body">
   <div class="more-list">
@@ -2513,12 +2528,13 @@
        ALL FIVE PASS THE SAME FLOORS. That is not a claim in this comment — it is
        `npm run palette:check`, which holds every family in both modes against
        the thirteen pairs this UI actually renders, in a quarter of a second. -->
+  <h3 class="about-section">Which colours</h3>
   <p class="about-p">
-    Five sets of colours, all held to the same contrast floors. Changing this
-    changes nothing about what is written down, and only on this device.
+    Five sets, all checked to the same standard for being readable. Which you
+    pick is taste.
   </p>
   <div class="about-actions">
-    <label class="detail-inline" for="ui-palette">Its colours are</label>
+    <label class="detail-inline" for="ui-palette">This app uses</label>
     <select id="ui-palette">
       <option value="quietkeep">Quietkeep</option>
       <option value="instrument">Instrument</option>
@@ -2526,7 +2542,7 @@
       <option value="mono">Mono</option>
       <option value="soft">Soft</option>
     </select>
-    <button id="ui-palette-set" type="button" class="ghost">Set its colours</button>
+    <button id="ui-palette-set" type="button" class="ghost">Set the colours</button>
   </div>
   <p id="ui-palette-note" class="storage-note" role="status" aria-live="polite"></p>
 

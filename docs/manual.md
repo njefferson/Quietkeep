@@ -184,7 +184,7 @@ the summary says so rather than dropping it quietly.
 
 ### Everything else the app can do
 
-**Things you can do**, behind *More*, holds the things that do not belong on any
+**Things you can do**, behind *Everything else*, holds the things that do not belong on any
 screen you use daily:
 
 - **Send to my calendar** puts one item in your own calendar as an event. The
@@ -298,9 +298,9 @@ why it is not in the list below.
 The named ones:
 - **Every one of them** — the fold that opens the complete list, at the bottom
   of *What you are holding*.
-- **More** — the way to everything below.
+- **Everything else** — the way to everything below.
 - **How it works** · **Help** · **Your data** · **Things you can do** ·
-  **Settings** — the five destinations behind *More*.
+  **Settings** — the five destinations behind *Everything else*.
 - **Quietkeep** — the ⓘ: what this is, what it is not, how to install it, what
   changed, and the licence.
 - **If something is wrong** — inside the ⓘ: the report the app writes about

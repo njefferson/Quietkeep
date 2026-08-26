@@ -755,7 +755,28 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.2**, verified at
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.4.3**. The buttons
+  say what is behind them, and the colour picker has a heading.
+  **`More` named a quantity where it needed to name a destination.** More of
+  what? The only way to find out was to press it. All six things behind it are
+  the APP rather than your work, so it is `Everything else` — not this page, and
+  all of it. `Contents` is `On this page`: those two are exactly complementary
+  and should sound like the pair they are. That forced the third, because the way
+  out of a job said `Everywhere else`, which is one letter from `Everything else`
+  to the ear while meaning your other work rather than the app. It is
+  `Choose where to be`, which takes the verb-first shape of the doors it lands
+  among and names its destination.
+  **The colour picker had no heading at all**, in a panel where every other block
+  has one, and told the reader its five sets were "held to the same contrast
+  floors" — a phrase for whoever built it. The control said *Its colours are*,
+  with no antecedent for *its*.
+  **The size gate caught the replacement copy being longer than what it
+  replaced**, over three budgets at once, including a repetition of *only this
+  app, and only on this device* introduced two lines under the block that already
+  says it. Cut back past the original rather than accommodated: Settings ended at
+  2,995 of 3,000, having been 3,091. The four pixels that remained are the
+  heading, and that raise is recorded beside the number.
+- **Superseded, and kept for the record: 3.4.2**, verified at
   `4279fcb`: Deploy success AND Spine success read from the runs for that exact
   SHA. The shell arrives wearing the reader's choice, and the branch-state gate
   fetches the ref it reads. ADR-0111.
