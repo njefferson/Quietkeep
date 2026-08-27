@@ -221,6 +221,32 @@ cached body via `SHELL`, so a page left out does not merely miss offline, it
 falls back to the app shell and lands the reader somewhere else (the 1.7.2
 defect). `plan.html` passes by being `noindex` and linked from nowhere.
 
+## Read the deployed host — you probably can
+[`tools/deployed-check.mjs`](tools/deployed-check.mjs) (`npm run deployed:check`,
+`-- --prod` for production and the sync edition) reads what the host actually
+serves and compares it to this tree. NOTES carried "a session cannot read
+production" as a standing fact with a *do not re-test* attached; that was true of
+one container and is not true when the session has `*.pages.dev`. **Try it.**
+
+**Reachability is session configuration, not a property of this tree**, so an
+unreachable host is a SKIP with the reason printed, never a failure — which is
+also why it is not a Spine gate (`.spine-exempt` says so).
+
+Two traps it exists to have already fallen into:
+
+- **Node's `fetch` does not read `HTTPS_PROXY`** unless `NODE_USE_ENV_PROXY=1`,
+  read at STARTUP — in-process is too late. Without it every request returns 403
+  with the proxy's allowlist message in the body, which reads exactly like the
+  host being blocked while `curl` answers 200 for the same URL. The tool re-execs
+  itself rather than depend on how it was invoked.
+- **A 200 proves nothing.** Cloudflare serves the root document for any unknown
+  path, so production answers 200 for `/paths`, which it does not have, with
+  189KB of the app inside. It compares against the host's OWN root document —
+  the first version used a typed `<title>`, which is the default edition's and
+  not the sync edition's, and reported a page that was not there.
+
+(Hub LESSONS 173.)
+
 ## Run the whole Spine before you push: `npm run spine`
 It reads `.github/workflows/spine.yml` and runs every step of it, in order, on
 this machine — no second list to go stale, so a step added to CI is run by it the

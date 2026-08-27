@@ -34,6 +34,7 @@
     "paths": "node tools/paths.mjs",
     "paths:check": "node tools/paths.mjs --check",
     "paths:a11y": "node tools/paths-a11y.mjs",
+    "deployed:check": "node tools/deployed-check.mjs",
     "manual:coverage": "node tools/manual-coverage.mjs",
     "narrows:check": "node tools/narrows-check.mjs",
     "notify:check": "node tools/notify-voice.mjs",

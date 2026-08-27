@@ -681,14 +681,39 @@ closed question filed under this heading now, so the two cannot drift again.
   production carries the released triplet. **The caveat attached to all six
   promotes in this repo is retired**, and every promote after this is confirmed
   by one paste rather than by a green deploy step.
-- **A session still cannot read production, and that is a different fact.** Every
-  `pages.dev` host is refused 403 at CONNECT — re-tested 2026-08-03 in a fresh
-  container after the owner's `*.pages.dev` grant, including `noahjefferson.pages.dev`,
-  while GitHub and the package registries answer normally. The grant is not
-  reaching sessions at all; the "policy binds at container start" theory was
-  falsified by a container thirty-nine seconds old. **Do not spend another session
-  re-testing this.** It no longer blocks anything: the app carries the instrument
-  now, and Doctrine §7f is the route — put the check where the device runs it.
+- **SUPERSEDED 2026-08-27: a session CAN read the deployed hosts, when the
+  session has been given `*.pages.dev`.** The entry below was accurate for the
+  container it was written in and is not a standing fact. With the host on the
+  session's egress allowlist, all three answer 200 and were read directly:
+  staging 3.7.0, production 3.6.1, the sync edition 3.6.1. **Try it — it costs
+  one request.** The old "do not re-test" instruction is withdrawn; it outlived
+  the condition it described, which is the failure mode this file exists to catch.
+  **REACHABILITY IS SESSION CONFIGURATION, NOT A PROPERTY OF THIS TREE**, so
+  `tools/deployed-check.mjs` treats an unreachable host as a SKIP with the reason
+  printed. A gate that goes red because of how a container was configured teaches
+  people to ignore red.
+  **TWO TRAPS, both of which bit before the tool worked.** Node's built-in
+  `fetch` does not read `HTTPS_PROXY` unless `NODE_USE_ENV_PROXY=1` is set
+  BEFORE startup — setting it in-process is too late — and without it every
+  request returns 403 with an allowlist message in the body, which reads exactly
+  like the host being blocked rather than the client not asking properly. `curl`
+  was answering 200 for the same URL at the same moment. The tool re-execs itself
+  rather than depend on how it was invoked.
+  **AND A 200 PROVES NOTHING.** Cloudflare Pages serves the root document for any
+  unknown path, so a page that does not exist answers 200 with the whole app
+  inside it — production returns 200 for `/paths`, which it does not have. Every
+  assertion reads CONTENT. The first version identified the shell by a typed
+  `<title>Quietkeep</title>`, which is the default edition's title and not the
+  sync edition's, and so reported a 185KB page the sync host does not have. It
+  asks the host for its own root document now and compares against that.
+- **The 2026-08-03 finding, kept because it was true then:** every `pages.dev`
+  host was refused 403 at CONNECT in a fresh container after an earlier grant,
+  including `noahjefferson.pages.dev`, while GitHub and the package registries
+  answered normally. The grant was not reaching sessions; the "policy binds at
+  container start" theory was falsified by a container thirty-nine seconds old.
+  It stopped blocking anything because the app carries the instrument (§7f) — and
+  the route it recommended, putting the check where the device runs it, is still
+  the one that works with no session configuration at all.
 - **`main` was promoted to troubleshoot, and it worked** (promoted on the owner's word). Nothing would load on the iPad at the time, so the §7 pass could
   not happen first. The promote gave the Pages project its **first production deployment**,
   the apex URL came up, and the pass then happened on the real device — captured,
