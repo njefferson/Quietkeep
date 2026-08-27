@@ -1510,7 +1510,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.6.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.7.0** — promoted at
+  `c275280` on 2026-08-27, carrying 3.7.0 and three gates that did not exist that
+  morning. Deploy success on that exact SHA, and the merged tree asserted
+  byte-identical to `07b54ea`, the staging head that was walked.
+  **THE FIRST PROMOTE IN THIS REPO VERIFIED BY READING THE HOST.** Every earlier
+  one rested on a green deploy step plus a paste from the device.
+  `tools/deployed-check.mjs` read both editions directly: production serves
+  3.7.0, the sync edition serves 3.7.0, and both serve the new flowcharts page as
+  itself at 33KB rather than the root document. That last clause is the one that
+  matters — before the promote the same check correctly reported the page absent
+  on both, while the host answered 200 for it.
+- **Superseded, and kept for the record: 3.6.1** — promoted at
   `0d5dd21` on 2026-08-27, carrying 3.6.0, the commit-guard change and 3.6.1.
   Deploy success on that exact SHA, read at the STEP level: *Deploy to Cloudflare
   Pages* 8s and *Deploy Quietkeep Sync* 6s, both real work rather than the
