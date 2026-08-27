@@ -199,21 +199,35 @@ from **Help**, not the footer: three links in that footer line wrapped at phone
 width into two 44px boxes stacked with no gap, which the a11y walk refused as a
 mis-tap. That line's own comment already recorded it sitting one over its ceiling.
 
-**[`tools/paths-a11y.mjs`](tools/paths-a11y.mjs) measures it when it changes, and
-not otherwise.** A static document shares no code with the app and cannot regress
-from an app change, so re-walking it every run would buy nothing. It is stamped
-on its own content in `.paths-a11y-stamp`: unchanged, it exits in a third of a
-second and says so; changed, it walks both themes at 390px and at 320px/200%.
-It serves the page under the REAL headers and injects axe as a same-origin file,
-because `script-src 'self'` refuses both forms of inline injection — and a walk
-run under a relaxed CSP is not a walk of the page that ships.
+**[`tools/pages-a11y.mjs`](tools/pages-a11y.mjs) (`npm run pages:a11y`) measures
+EVERY hosted page, and only when one changes.** A static document shares no code
+with the app and cannot regress from an app change, so re-walking them every run
+would buy nothing. Each is stamped in `.pages-a11y-stamp` on its own content —
+the page plus the stylesheets it links, parsed from the page — so changing one
+walks one and the rest print as unchanged. It serves them under the REAL headers
+and injects axe as a same-origin file, because `script-src 'self'` refuses both
+forms of inline injection, and a walk under a relaxed CSP is not a walk of the
+page that ships.
 
-Its first run found the page's own links at 16–21px against the 24px floor.
+**The population is what the app LINKS to**, derived from `index.html`, not
+listed. `plan.html` is `noindex` and linked from nowhere, and its own header says
+it is "a working page for one reader, not a surface … if it ever gains a route
+from the app it becomes a surface and joins that list in the same commit".
+Deriving from the links honours that automatically; a hand-written exception
+would have to be remembered.
 
-**The three older hosted pages have never been measured at all.**
-`manual.html`, `why.html` and `plan.html` have shipped since 2.29.0 with no
-accessibility check of any kind — the app walk has never looked at them and
-nothing else does. This closes one quarter of that hole and names the rest.
+**`manual.html` and `why.html` had shipped since 2.29.0 unmeasured** — the app
+walk never looked at them and nothing else did. Both pass.
+
+**Two things its own first runs found, and the second matters more.** On the
+flowcharts, links at 16–21px against the 24px floor — a real defect, fixed. On
+the two older pages, four links flagged that were **citations inside sentences**
+("…rather than by a sweep (ADR-0011)."). WCAG 2.5.8 states an *Inline* exception
+for exactly that, and padding a word mid-paragraph to satisfy a rule that does
+not apply would have damaged the prose to please a gate. The check honours the
+exception structurally now: `display: inline` plus a parent holding text that is
+not the link. **A gate that fires on honest writing is worse than a miss** — it
+trains somebody to change good pages.
 
 **And every page the app LINKS to must be precached**, asserted by `help-check`
 from the links rather than from a list: the worker maps a navigation to its own

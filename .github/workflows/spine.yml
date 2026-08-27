@@ -263,13 +263,19 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run paths:check
 
-      # AND IT IS MEASURED WHEN IT CHANGES, not on every run. A static document
-      # shares no code with the app and cannot regress from an app change, so
-      # re-walking it every time would buy nothing. Stamped on its own content:
-      # unchanged, it exits in a third of a second and says so.
-      - name: The flowcharts page is measured, when it changes
+      # AND EVERY HOSTED PAGE IS MEASURED WHEN IT CHANGES, not on every run. A
+      # static document shares no code with the app and cannot regress from an
+      # app change, so re-walking them every time would buy nothing. Each is
+      # stamped on its own content — the page plus the stylesheets it links —
+      # so changing one walks one.
+      #
+      # `manual.html` and `why.html` had shipped since 2.29.0 with no
+      # accessibility check of any kind. The population is what the app LINKS
+      # to, derived from index.html: `plan.html` is noindex and linked from
+      # nowhere, and its own header says it joins the moment it gains a route.
+      - name: Every hosted page is measured, when it changes
         if: ${{ !cancelled() }}
-        run: npm run paths:a11y
+        run: npm run pages:a11y
 
       # The unit tests prove the spine folds. They cannot prove the bundle
       # loads, that Dexie opens in a browser, or that a captured thought comes

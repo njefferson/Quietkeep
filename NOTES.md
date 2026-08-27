@@ -813,9 +813,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   reference page is not chrome. The Help copy then blew two size budgets and was
   cut rather than accommodated, landing at **3699 words against a 3700 budget** —
   one word of headroom, which is worth knowing before adding a sentence anywhere.
-  **THE THREE OLDER HOSTED PAGES HAVE NEVER BEEN MEASURED.** `manual.html`,
-  `why.html` and `plan.html` have shipped since 2.29.0 with no accessibility
-  check of any kind. This is one quarter of that hole closed and the rest named.
+  **AND THEN THE OLDER PAGES WERE MEASURED TOO**, the same day. The
+  walk generalised from one page to every hosted page the app LINKS to, derived
+  from `index.html` rather than listed, each stamped on its own content so
+  changing one walks one. `manual.html` and `why.html` had shipped since 2.29.0
+  unmeasured; both pass. `plan.html` is excluded BY THE RULE rather than by an
+  exception — it is `noindex`, linked from nowhere, and its own header says it
+  joins the moment it gains a route from the app.
+  **ITS FIRST RUN OVER THE OLD PAGES FLAGGED FOUR LINKS, AND THE CHECK WAS
+  WRONG.** All four were citations inside sentences — *"…rather than by a sweep
+  (ADR-0011)."* — and WCAG 2.5.8 states an *Inline* exception for exactly that.
+  Padding a word mid-paragraph to satisfy a rule that does not apply would have
+  damaged two pages to please a gate. The exception is honoured structurally now:
+  `display: inline` plus a parent holding text that is not the link. **A gate
+  that fires on honest writing is worse than a miss**, because it also trains
+  somebody to change good pages — and the same run proved it is not vacuous: a
+  planted 14px standalone link was caught, while the other two pages correctly
+  printed as unchanged and were not walked at all.
   **AND NOTHING ASSERTED THE WORKER CACHES THEM.** `help-check` now derives the
   list from the app's own links: a linked page missing from `SHELL` does not just
   miss offline, it falls back to the app shell and lands the reader elsewhere
