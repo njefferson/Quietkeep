@@ -119,12 +119,27 @@ gate.
 Release taxonomy and the `version.capability.iteration` triplet are Doctrine §7.
 The service-worker cache name carries the same triplet and is bumped with it.
 
-## Two commit guards, and both refuse rather than doing the work for you
+## The commit guards, and what each one is allowed to demand
 `.branch-guard` declares them with `also=`, so they run on EVERY commit —
 promotes included, because they are about WHAT is being committed.
 
-- **`tools/hooks/tour-fresh.sh`** — the walkthrough ships photographs of this
-  app. A picture of a version that no longer exists is worse than none.
+**`tour-fresh` was one of these and is not any more (2026-08-27).** It hashed five
+WHOLE FILES — `public/index.html`, `public/app.css`, `src/ui/work.ts`,
+`src/ui/clarify.ts`, `src/ui/about.ts` — for ten photographs of six surfaces.
+Measured: a **comment-only** change to `public/app.css`, staged, refused the
+commit and demanded a minute of browser, for an edit that cannot alter a single
+pixel of any picture. `npm run tour:check` is a Spine step (`spine.yml:318`) and
+the Spine runs before a push, so nothing reaches production stale that was not
+already going to. **A guard whose trigger is wider than its output spends
+somebody's time to protect nothing, and it is the guard people learn to route
+around** — which is what makes it worse than no guard.
+
+**`escape-also=QUIETKEEP_DEFER` is the named way past what remains.** Not
+because the checks are optional, but because without a named door the door is
+`--no-verify`, and that switches off the BRANCH rule too. It prints what it
+deferred, and both remaining checks are also CI steps, so it moves WHEN the work
+happens and never WHETHER.
+
 - **`tools/hooks/a11y-fresh.sh`** — a commit that changes the rendered app while
   `.a11y-stamp` still records the previous markup is refused. **2.23.1 passed
   twenty-five static gates and both picture-taking walks and went RED in CI on
@@ -132,7 +147,11 @@ promotes included, because they are about WHAT is being committed.
   it. `npm run a11y` writes the receipt itself, and only on a clean run, so a
   failing walk cannot be stamped. About four minutes. (Hub LESSONS 126.)
 
-Both name the one command instead of spending minutes inside a hook, because a
+Note it is **lenient on `staging` and refuses only on `main`** — a note there,
+a refusal at the promote. That is worth knowing before diagnosing which guard is
+costing you something: on work commits it has never been the one.
+
+They name the one command instead of spending minutes inside a hook, because a
 hook that silently spends four minutes is a hook somebody disables.
 
 ## Run the whole Spine before you push: `npm run spine`
