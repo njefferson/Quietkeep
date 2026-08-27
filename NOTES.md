@@ -759,9 +759,47 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.2**. The way out
-  of the Colours sheet was wired to nothing, and tapping a colour is now the
-  whole decision.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.0**. The line
+  that says where a thing sits is a door now, and the tree says what each row is.
+  **THERE WAS NO ROUTE UPWARD AT ALL.** Reported from a device: something was
+  made into a container by filing a task under it, and then there was no way to
+  see the container. Accurate as stated. The sheet lists what is UNDER a node and
+  every one of those rows has been a door since 1.6.0; the line naming the parent
+  was `textContent` on a `<p>`. So the app named a place and offered no way to
+  reach it — 3.5.2's Close defect one degree further along, where the control was
+  not merely wired to nothing but was never a control.
+  **LAW 4 IS THE OBJECTION AND IT DOES NOT HOLD.** "The user never climbs" is
+  about ALTITUDE — nobody walks a hierarchy to plan a day, and the runway is
+  still the only workspace. The law's own amendment in this file records it being
+  misread as a rule about navigation and then cited to refuse a route on a page
+  measured at three screens. `serves.ts` is the case that genuinely is
+  descriptive; a parent one hop up is not that. ADR-0112.
+  **AND THE APP TAUGHT THAT WORD.** `CONTAINER_ORDER` says *Project — work with
+  steps* when somebody makes one, and `containerOptionWords` says *project* again
+  when they file something under one. Then the tree — the one surface whose whole
+  job is listing containers — drew every row as a bare indented title. So the
+  vocabulary a reader asks in is the vocabulary the app issued and then dropped. Three of
+  the four container-listing surfaces already used `KIND_WORDS`; the fourth now
+  does. No new surface: `horizons.ts` refuses project rows on reasoning that
+  holds, and a page listing 43 of them is the tree by another name.
+  **THE PLANT.** The place line was reverted to prose, rebuilt, and the smoke
+  walk run: three assertions red, and the walk continued past them. The first
+  form of the gate did NOT continue — the unguarded click timed out and took
+  every later section down with it, reporting one failure where there were three.
+  A gate that hides the other gates when it fires is LESSONS 139 with the sign
+  flipped, so the press is guarded.
+  **AND THE COLOUR THE GATE MEASURED WAS NOT THE COLOUR ON SCREEN.** The
+  paragraph carries `--ink-soft`; the button inside it carries `--accent`. The
+  a11y registry named only `#detail-place`, so it would have measured a token no
+  longer rendered there and reported green — hub LESSONS 142's shape. Registered
+  separately, measured at 10.07:1 light and 8.21:1 dark, with the ring pass added
+  to a state that had contrast, axe, names and targets and no rings.
+- **Superseded, and kept for the record: 3.5.2.** Promoted 2026-08-27 at
+  `04562b5`, Deploy success on that exact SHA with both editions published — the
+  Cloudflare step ran 5s and the Sync step 6s, read from the job's steps rather
+  than from the run's conclusion, because a guard's skip branch also concludes
+  success. The way out of the Colours sheet was wired to nothing, and tapping a
+  colour is now the whole decision.
   **THE CLOSE BUTTON DID NOTHING AT ALL.** Reported from a device as the window
   not closing, and that is exactly what it was: `about.ts` drove `wireSheetClose`
   from a HAND-TYPED LIST OF FIVE SHEET IDS, and 3.5.1 added a sixth destination
@@ -1335,7 +1373,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.5.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.5.2** — promoted at
+  `04562b5` on 2026-08-27, Deploy success on that exact SHA, read at the STEP
+  level: *Deploy to Cloudflare Pages* 5s and *Deploy Quietkeep Sync* 6s, both
+  real work rather than the guard's skip branch, which also concludes success.
+  The staging head it carries, `a98de4c`, had Deploy green and Spine green — the
+  Spine only on attempt 2, attempt 1 having timed out waiting for `.card`, a
+  flake in a section untouched by that release and passing locally on the same
+  tree.
+- **Superseded, and kept for the record: 3.5.1** — promoted at
   `ac0d40e`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `63731c2`, the staging head
   that was walked; asserted to descend from `355e4c1`, the real production; and

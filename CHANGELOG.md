@@ -14,6 +14,18 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.6.0 — CAPABILITY
+
+*2026-08-27*
+
+- **You can get to the thing something is filed under.** A screen has always said *Part of ⟨name⟩* at the top, and that was a sentence — it told you the name and gave you no way to go there. It is a button now. Tapping it opens that thing’s own screen.
+- **Reported from a device in those words:** something was made into a place by filing a task under it, and then there was no way to see the place. That was accurate. Every list on that screen travelled downward — the things underneath were already doors — and nothing at all travelled up.
+- **So the chain walks both ways now**, one step at a time, in whichever direction you are asking. Going up is not something you have to do to plan a day, and nothing asks you to.
+- **“How it hangs together” says what each row is.** Every line in it was a bare title with an indent — a project, an area and a task all drew identically. A project now says project, an area says area. Plain tasks stay unmarked, which is how they read everywhere else.
+- **That word was already yours.** The app says *Project* when you make one and again when you file something under one, and then the one screen whose whole job is listing them never said it again.
+- **What is still not right:** there is no screen called *Projects*. *How it hangs together*, behind *What you are holding*, is where they all are, and it is named after the shape rather than the thing. Whether that name changes is a decision, not an oversight.
+- **Also still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours whichever set you pick. That is decided when you save the app to your home screen.
+
 ## 3.5.2 — ITERATION
 
 *2026-08-26*

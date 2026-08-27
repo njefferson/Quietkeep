@@ -13,7 +13,7 @@
 // because acting removes the control that was acted on.
 
 import type { Session } from './session.ts';
-import type { AppEvent } from '../events.ts';
+import type { AppEvent, NodeKind } from '../events.ts';
 import type { NodeState } from '../fold.ts';
 import { coverageProof, heldWork } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
@@ -31,6 +31,7 @@ import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
+import { kindWords } from '../kind-words.ts';
 import { nextFixedToday, nextFixedWords, datedTodayCount, datedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
 import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
@@ -1127,6 +1128,21 @@ export function mountWork(
       const b = el('button', 'tree-open-row');
       b.type = 'button';
       b.append(el('span', 'tree-title', entry.node.title || '(untitled)'));
+      // WHAT KIND OF THING EACH ROW IS (3.6.0). Three of the four surfaces that
+      // list containers already say this — the held card via `held.ts`'s
+      // `placeWords`, the sheet via `detail.ts`, and both pickers via
+      // `containerOptionWords` — and the tree, the one surface whose whole job
+      // is showing containers, drew every row as a bare indented title. So the
+      // app teaches somebody the word `project` at the moment they make one and
+      // at the moment they file something under one, and then the surface that
+      // lists them never says it again.
+      //
+      // `kindWords` returns null for `action`, so the unmarked case stays
+      // unmarked and only the rows a reader cannot otherwise tell from an
+      // action get named. Same function as the other three, so the four cannot
+      // drift into four vocabularies.
+      const what = kindWords(entry.node.kind as NodeKind);
+      if (what) b.append(el('span', 'tree-kind', what));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(entry.node.id);
         if (!fresh) return;

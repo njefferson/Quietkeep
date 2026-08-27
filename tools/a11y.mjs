@@ -880,7 +880,15 @@ const REGISTRY = {
   // The tree, open (1.6.0, ADR-0013/item 39): rows are doors, depth is
   // indentation, and the branch remainder is a real button. Its own sheet since
   // 2.0.5, so `#tree-open` left for the same reason `#gauge` did.
-  'tree open': ['#sheet-tree-title', '#sheet-tree-close', '.tree-open-row', '.tree-title'],
+  // `.tree-kind` IS REGISTERED SO THE GATE CAN SEE ITS BLOCK LANDED (3.6.0).
+  // The word is `--ink-soft` inside a row whose own colour is `--ink`; if the
+  // stylesheet block had never applied — a `replace()` that matched no anchor,
+  // hub LESSONS 158 — the span would inherit `--ink` and every check in this
+  // suite would still pass, because unstyled markup is exactly what contrast,
+  // targets, landmarks and axe are all satisfied by. Naming it here is what
+  // makes the difference between applied and not applied measurable at all.
+  'tree open': ['#sheet-tree-title', '#sheet-tree-close', '.tree-open-row', '.tree-title',
+    '.tree-kind'],
   // Composed Today's strip (1.6.0, ADR-0051): quiet doors above Next up.
   'composed strip': ['#composed-heading', '.composed-open', '#composed .detail-hint'],
   // The session close (1.6.0, ADR-0052): the words are the whole surface.
@@ -1005,8 +1013,14 @@ const REGISTRY = {
   // sheet — where it matched nothing and the gate said so, which is the check
   // working. It is stated as ordinary `--ink`, not a quieter token: a structural
   // fact is not an aside.
-  'detail sheet, inside something': ['#detail-place', '#detail-title', '.detail-label',
-    '#detail-parent', '#detail-parent-set', '#detail-close'],
+  // `.detail-place-open` IS LISTED SEPARATELY from `#detail-place` (3.6.0) and
+  // the separation is the whole point. The line became a button, and the button
+  // carries `--accent` while the paragraph around it carries `--ink-soft`. A
+  // registry naming only the paragraph measures a colour that is no longer on
+  // screen and reports it green — the same shape as the visual gate that read a
+  // computed style off the wrong element (hub LESSONS 142).
+  'detail sheet, inside something': ['#detail-place', '.detail-place-open', '#detail-title',
+    '.detail-label', '#detail-parent', '#detail-parent-set', '#detail-close'],
   // Dates that have gone by. This surface must read as calm, so its contrast is
   // carried entirely by the ordinary text tokens — there is no alert colour to
   // check, and that absence is the point (law 3, ADR-0034).
@@ -4190,6 +4204,14 @@ try {
       await auditAxe(page, 'detail sheet, inside something', theme);
       await auditNames(page, 'detail sheet, inside something', theme);
       await auditSeparationAndTargets(page, 'detail sheet, inside something', theme);
+      // The place line is a control now (3.6.0), so it owes a ring like every
+      // other control. Asserted here rather than assumed from `.linklike`'s
+      // declaration: this one sits inside a `<p>` with its own margins, and a
+      // ring is clipped by whatever is around it, never by what it is called.
+      const placeDoors = await page.locator('.detail-place-open').count();
+      (placeDoors === 1 ? pass : fail)(
+        `${theme}/detail sheet, inside something: the place line is a control (${placeDoors})`);
+      await auditFocusRings(page, 'detail sheet, inside something', theme, ['.detail-place-open']);
     } else {
       fail(`${theme}: nothing could be put under anything — the containment state went unaudited`);
     }

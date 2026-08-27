@@ -3523,6 +3523,35 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const placeLine = await tpage.locator('#detail-place').textContent();
   is(placeLine, 'Part of the quarterly report.',
     `the sheet says where it now sits ("${placeLine}")`);
+
+  // AND THAT LINE IS A DOOR (3.6.0). Every list on this sheet travels DOWN — a
+  // child row opens the child's sheet — and the line naming the parent was
+  // prose. So somebody who had just made a container by filing something under
+  // it was told the container's name and handed no route to it, and reported
+  // exactly that on device: the thing was made, and there was no way to see it.
+  //
+  // TWO ASSERTIONS, because one of them is the one that was missing. That the
+  // control EXISTS is cheap and is not the fact in question; that pressing it
+  // ARRIVES somewhere is the fact, and it is the same shape as the way-out gate
+  // added in 3.5.2 after a Close that pressed nothing shipped past a check
+  // asserting only that the Close was there.
+  //
+  // THE PRESS IS GUARDED so a missing door fails these three and does not abort
+  // the walk. Planted, the unguarded form timed out on the click and took every
+  // later section down with it — one FAIL where there were three to report, and
+  // the rest of the walk never ran. A gate that hides the other gates when it
+  // fires is the green-tail problem (hub LESSONS 139) with the sign flipped.
+  const placeDoor = tpage.locator('#detail-place .detail-place-open');
+  const doorCount = await placeDoor.count();
+  is(doorCount, 1, 'and the line naming the place is a control rather than prose');
+  if (doorCount === 1) { await placeDoor.click(); await settled(tpage, 300); }
+  const arrived = await tpage.locator('#detail-title').textContent();
+  is(arrived, 'the quarterly report',
+    `and pressing it arrives at the place itself ("${arrived}")`);
+  // The chain is walkable in both directions: the parent's own sheet lists the
+  // child as a door, which is the hop that already existed.
+  is(await tpage.locator('#detail-children .detail-child-open', { hasText: 'draft the brief' }).count(), 1,
+    'and from there the child is a door back down');
   await tpage.click('#detail-close');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
