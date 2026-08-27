@@ -755,7 +755,46 @@ durations at all. A store that is 88% flat is not a badly-kept store; it is what
 a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 ### Staged and waiting on the owner
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.1**. Colour is
+- **Superseded, and kept for the record: 3.5.1.** Promoted 2026-08-26 at
+  `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
+  after a fresh dispatch, because the push-triggered run failed at startup and
+  re-running it reproduced that.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.5.2**. The way out
+  of the Colours sheet was wired to nothing, and tapping a colour is now the
+  whole decision.
+  **THE CLOSE BUTTON DID NOTHING AT ALL.** Reported from a device as the window
+  not closing, and that is exactly what it was: `about.ts` drove `wireSheetClose`
+  from a HAND-TYPED LIST OF FIVE SHEET IDS, and 3.5.1 added a sixth destination
+  without typing it in. Present, correctly sized, correctly placed, connected to
+  nothing. Derived from the doors now — `.more-go[data-go]` — so a destination
+  cannot arrive without its way out. Hub LESSONS 141 is the same shape, and it
+  was written in this repo before this happened.
+  **EVERY GATE STAYED GREEN THROUGH IT**, which is the more useful half. The
+  way-out gate asserts each dialog DECLARES a way out and that the way out sits
+  outside the box that scrolls — both true here. The a11y walk measured that
+  button's contrast, its target size and its focus ring. Nothing anywhere pressed
+  it. The smoke walk presses every way out now and asserts the surface actually
+  leaves; planted by restoring the hand-typed list, and it named the exact
+  surface and the exact button.
+  **Tapping a set of colours is the whole decision now.** The *Set the colours*
+  button is gone. It was indefensible once the pictures arrived: tapping already
+  repainted the app, so the confirm changed nothing visible, and a confirm with
+  no visible effect reads as a control that does not work. The alternative —
+  stop previewing until the press — would have thrown away the reason the tiles
+  exist. Controls budget went DOWN, 259 to 258.
+  **And leaving a mode or text size without pressing Set puts them back.** All
+  three view preferences shared one shape: preview on change, persist on the
+  press, so leaving without confirming kept the preview on screen while the store
+  remembered something else. Only the colour one was reported because only the
+  colour one is impossible to miss. Registered on the native `close` event, so
+  Escape and the backdrop revert the same as the button.
+  **Still not right, and it is the guards rather than the app:** `tour-fresh`
+  hashes five whole files, so a change to a sheet no photograph shows demanded a
+  re-render of all ten pictures. More to the point, the `also=` checks have NO
+  escape — `.branch-guard`'s `escape=` covers the branch rule only — so there is
+  no way to say "I know, proceed" even when certain. A guard with no override is
+  a wall, and walls get disabled wholesale.
+- **Superseded, and kept for the record: 3.5.1.** Colour is
   its own door rather than a block inside Settings, and the pictures are full
   width because of it.
   **The move is what buys the pictures their size.** Two-up inside Settings, each
@@ -1296,7 +1335,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.4.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.5.1** — promoted at
+  `ac0d40e`, Deploy success AND Spine success read from the runs for that exact
+  SHA. The merged tree was asserted byte-identical to `63731c2`, the staging head
+  that was walked; asserted to descend from `355e4c1`, the real production; and
+  asserted to carry `63731c2` itself. Four releases in one promote.
+  **THE PUSH LANDED AND THE DEPLOY DID NOT, WHICH IS THE FAILURE THIS BLOCK
+  EXISTS TO CATCH.** The push-triggered Deploy sat queued sixteen minutes, never
+  got a runner — zero billable time, zero jobs — and ended `startup_failure`.
+  Reported as pushed-and-verified it would have read as shipped while production
+  served 3.4.1 (LESSONS 53). Two workflows, Spine and Push-on-main, were never
+  CREATED for the SHA at all.
+  **The first diagnosis was wrong and is worth keeping.** It looked like an
+  Actions backlog: three workflows failing at once, nothing running in the whole
+  account. Then a `workflow_dispatch` of the Spine on the same SHA ran a full
+  green job, which killed that theory — Actions was fine.
+  **RE-RUNNING A `startup_failure` RUN REPRODUCES IT.** `rerun_workflow_run`
+  re-uses the same run object and its broken config snapshot, so it failed again
+  the same way. A FRESH `workflow_dispatch` on the identical ref succeeded in
+  forty seconds. `deploy.yml` was diffed between `main` and `staging` first and
+  is byte-identical, so the file was never the cause.
+  **And the green was checked for being a real deploy**, not the guard's skip
+  branch: the Cloudflare Pages step ran for seven seconds, and the Sync edition
+  deployed after it.
+  **What this carries.** The shell arrives wearing the reader's palette and mode
+  on the first painted pixel; the chrome names destinations instead of
+  quantities; the colour sets are pictures, with four of five redrawn because
+  they were the same set four times; and colour has its own door, which is what
+  buys the pictures a size you can read.
+  **Still not right, and named rather than closed:** the splash an installed app
+  shows before it opens still uses the original colours whichever set is chosen —
+  it comes from the manifest captured when the shortcut is saved, and nothing the
+  app does later can change it.
+- **Superseded, and kept for the record: 3.4.1** — promoted at
   `355e4c1`, Deploy success AND Spine success read from the runs for that exact
   SHA. The merged tree was asserted byte-identical to `a8cdf54`, the staging head
   that was walked; the merge asserted to descend from `e16b2e8`, the real

@@ -400,7 +400,6 @@ const COLOUR_SHEET = [
   // that cannot fail.
   '.palette-pick legend',
   '.palette-name',
-  '#ui-palette-set',
 ];
 
 const ACTIONS_SHEET = [
@@ -2256,7 +2255,8 @@ try {
     await auditNames(page, 'colours', theme);
     await auditSeparationAndTargets(page, 'colours', theme);
     await auditFocusRings(page, 'colours', theme,
-      ['#ui-palette-set', '#sheet-group-colour-close']);
+      // The tiles ARE the control now — there is no confirm button to focus.
+      ['#sheet-group-colour-close']);
 
     await openSurface(page, 'about');
     await page.waitForFunction(

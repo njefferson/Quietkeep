@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.5.2',
+    kind: 'ITERATION',
+    date: '2026-08-26',
+    notes: [
+      '**Close works on the Colours screen.** It did nothing at all. The button was there, the right size, in the right place, and connected to nothing \u2014 so the only way out was the back gesture. Reported from a device, and it was exactly as described.',
+      '**Why it happened, since it is the kind of thing that repeats:** the list of screens that get a working Close was typed by hand. Colours was the sixth and the list had five. It is worked out from the screens themselves now, so a new one cannot arrive without its way out.',
+      '**Tapping a set of colours is now the whole decision.** There was a *Set the colours* button under the pictures and it has gone. Tapping already repainted the app, so pressing it afterwards changed nothing you could see \u2014 a confirm button with no visible effect, which reads as a control that does not work. Tap the one you want; it is kept. Close just closes.',
+      '**And leaving a mode or a text size without pressing Set now puts it back.** Those two still have a Set button, because they sit among the other settings where one is expected. Changing them used to preview immediately and save nothing until you confirmed, so leaving without confirming kept the preview on screen while the app remembered something else. Whichever way you leave, what you see is what is saved.',
+    ],
+  },
+  {
     triplet: '3.5.1',
     kind: 'ITERATION',
     date: '2026-08-26',

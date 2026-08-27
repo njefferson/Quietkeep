@@ -4320,6 +4320,8 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     && (Boolean(door) || id === 'about' || id === 'more'
         || moreGo.includes(id.replace(/^sheet-/, '')));
   const MEASURED = SURFACES_WITH_A_WAY_OUT.filter(reachable);
+  /** Ways out that are present, placed correctly, and connected to nothing. */
+  const inert = [];
   const structuralOnly = SURFACES_WITH_A_WAY_OUT.filter(d => !reachable(d)).map(([id]) => id);
   console.log(`    way out — ${MEASURED.length} measured on screen`
     + (structuralOnly.length
@@ -4408,9 +4410,32 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       if (m.offscreen) seeThrough.push(`${surface} — #${m.id} is off screen once the body is scrolled`);
       if (m.transparent) seeThrough.push(`${surface} — #${m.id} is transparent`);
     }
+
+    // AND PRESSING IT ACTUALLY LEAVES (3.5.2).
+    //
+    // Everything above measures where the way out IS — clear of the scroller,
+    // on screen once everything is scrolled, not transparent. None of it asks
+    // whether it DOES anything. `sheet-group-colour` shipped with a Close wired
+    // to nothing: the wiring came from a hand-typed list of five sheet ids and
+    // there were six sheets by then. Perfectly formed, perfectly placed,
+    // perfectly legible, inert — and reported from a device as the window not
+    // closing, which is precisely what it was.
+    //
+    // The first way out, not all of them: the ⓘ has two and pressing the second
+    // after the first has already left would measure a closed dialog. If the
+    // press does nothing the dialog is closed here anyway, so one inert way out
+    // cannot cascade into every surface after it reporting the same thing.
+    await tpage.locator(`#${waysOut[0]}`).click().catch(() => {});
+    await tpage.waitForTimeout(150);
+    if (await tpage.locator(`#${surface}[open]`).count()) {
+      inert.push(`${surface} — pressing #${waysOut[0]} did not close it`);
+      await tpage.evaluate((id) => document.getElementById(id)?.close(), surface);
+    }
   }
   is(seeThrough.join(' | '), '',
     `no surface can show its own text through the way out (${MEASURED.length} measured)`);
+  is(inert.join(' | '), '',
+    'and pressing the way out actually leaves the surface');
   await tpage.keyboard.press('Escape').catch(() => {});
 
   // --- THE WALKTHROUGH NAMES ITS CONTROLS AS CONTROLS -----------------------
