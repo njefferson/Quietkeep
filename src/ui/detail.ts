@@ -746,9 +746,41 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       paintParents(n);
       paintAfter(n);
 
+      // WHERE IT SITS, AND A WAY TO GET THERE (3.6.0). Every list on this sheet
+      // travels DOWN — a child row opens the child's sheet — and nothing
+      // travelled up. The place line named the parent in prose, so somebody who
+      // had just made a container by filing something under it was told the
+      // container's name and handed no route to it. Reported on device in those
+      // terms: the thing was made, and there was no way to see it.
+      //
+      // ONE HOP, on the same mechanism the child rows already use, so the chain
+      // is walkable a step at a time in both directions. This is NOT the climb
+      // law 4 forbids. That law's subject is ALTITUDE — never having to walk a
+      // hierarchy to plan a day — and NOTES records it being misread as a rule
+      // about navigation and then cited to close a routing defect. Nothing here
+      // asks anybody to climb anything in order to do their work; the runway is
+      // still the only workspace and this sheet is still reached from it.
+      //
+      // A DOOR ONLY WHERE THERE IS SOMEWHERE TO GO. `placeWords` has three
+      // other readings — loose, parent not here, parent let go — and each stays
+      // prose, because a control that opens nothing is this same defect wearing
+      // the other face.
       const place = placeWords(st, n);
-      PLACE.textContent = place ?? '';
       PLACE.hidden = !place;
+      const up = n.parent ? st.nodes.get(n.parent) : undefined;
+      if (place && up && !up.trashed && !up.mergedInto) {
+        const door = document.createElement('button');
+        door.type = 'button';
+        door.className = 'linklike detail-place-open';
+        door.textContent = place;
+        door.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(up.id);
+          if (fresh) { render(fresh); LIVE.textContent = ''; }
+        });
+        PLACE.replaceChildren(door);
+      } else {
+        PLACE.textContent = place ?? '';
+      }
 
       // What it holds, shown on the sheet of the thing that holds it — because
       // "is anything actually under this" is the question Review answers from

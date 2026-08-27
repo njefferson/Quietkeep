@@ -29,6 +29,31 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.6.1',
+    kind: 'ITERATION',
+    date: '2026-08-27',
+    notes: [
+      '**\u201cHow it hangs together\u201d is called \u201cYour projects, areas and goals\u201d now.** Same screen, same contents, same place \u2014 behind *What you are holding*. Only the words on the button changed.',
+      '**Because the old name never said the thing it holds.** The app calls something a *project* when you make one, and again when you file something under one, and then the one screen that lists them all was named after its shape instead. If you went looking for your projects, nothing you could see said that is where they are.',
+      '**Last release fixed the inside of it, and that was only half.** The rows say *Project*, *Area* and *Goal* now, which is worth having \u2014 but you have to already be in there to read them. The name on the button is what decides whether you open it.',
+      '**It is not called \u201cProjects\u201d, deliberately.** Your goals and areas are in there too, and calling it Projects would be untrue about two of the three. It is also not somewhere to work: it is a way of seeing what you have, and the app never needs you to go there to plan a day.',
+    ],
+  },
+  {
+    triplet: '3.6.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-27',
+    notes: [
+      '**You can get to the thing something is filed under.** A screen has always said *Part of \u27e8name\u27e9* at the top, and that was a sentence \u2014 it told you the name and gave you no way to go there. It is a button now. Tapping it opens that thing\u2019s own screen.',
+      '**Reported from a device in those words:** something was made into a place by filing a task under it, and then there was no way to see the place. That was accurate. Every list on that screen travelled downward \u2014 the things underneath were already doors \u2014 and nothing at all travelled up.',
+      '**So the chain walks both ways now**, one step at a time, in whichever direction you are asking. Going up is not something you have to do to plan a day, and nothing asks you to.',
+      '**\u201cHow it hangs together\u201d says what each row is.** Every line in it was a bare title with an indent \u2014 a project, an area and a task all drew identically. A project now says project, an area says area. Plain tasks stay unmarked, which is how they read everywhere else.',
+      '**That word was already yours.** The app says *Project* when you make one and again when you file something under one, and then the one screen whose whole job is listing them never said it again.',
+      '**What is still not right:** there is no screen called *Projects*. *How it hangs together*, behind *What you are holding*, is where they all are, and it is named after the shape rather than the thing. Whether that name changes is a decision, not an oversight.',
+      '**Also still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours whichever set you pick. That is decided when you save the app to your home screen.',
+    ],
+  },
+  {
     triplet: '3.5.2',
     kind: 'ITERATION',
     date: '2026-08-26',
