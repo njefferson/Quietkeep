@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-3.6.1';
+const CACHE = 'quietkeep-3.7.0';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -22,6 +22,12 @@ const SHELL = [
   './why.css',
   './manual.html',
   './manual.css',
+  // The flowcharts (3.7.0). Precached for the same reason as the two above, and
+  // the navigation branch below maps a page to its OWN cached body via SHELL —
+  // so a page left out of this list does not merely miss offline, it falls back
+  // to the app shell and silently lands the reader somewhere else (1.7.2).
+  './paths.html',
+  './paths.css',
   './brand/icon-192.png',
   './brand/icon-512.png',
   './brand/apple-touch-icon.png',

@@ -29,6 +29,28 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.7.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-27',
+    notes: [
+      '**Every path through Quietkeep \u2014 a new page, linked at the bottom of the screen beside *How it works*.** Every way in, every way through and every way out, drawn as the steps you take rather than as the app is built underneath. Thirty-four of them, and the shape of each drawing tells you how much there is to it: some are one move.',
+      '**It is not a tutorial you have to finish.** It is a reference to dip into when you want to know how something works, or what a screen will do before you press it. Each path also says what it will never do, which is usually the useful half.',
+      '**Nothing on it was written twice.** The sorting choices, what each kind of thing is called, the name of every screen \u2014 all read straight out of the app. If a button is renamed and this page still says the old word, that now fails before it can ship.',
+      '**It carries no webfont and makes no network request.** The whole page is words and boxes on the colours you already chose, so it works offline like the rest of the app and costs nothing to open.',
+      '**What is still not right:** the three older pages behind the same kind of link \u2014 *How it works*, *Planning for Humans* and the plan \u2014 have never had an accessibility check of any kind. This new one does. The others are a real gap and they are named as one rather than quietly left.',
+    ],
+  },
+  {
+    triplet: '3.6.2',
+    kind: 'ITERATION',
+    date: '2026-08-27',
+    notes: [
+      '**The manual called one of the sorting choices by the wrong name.** It listed *do it now*; the button says **Do now**. Small, and the kind of thing that makes you doubt the rest of a page \u2014 if the manual names a button you cannot find, the honest conclusion is that the manual is old.',
+      '**Found by a new check rather than by reading.** Every set of words the app puts on screen \u2014 the sorting choices, what each kind of thing is called, the name of each screen \u2014 is now read straight out of the app and held against the manual, the walkthrough and the new flowcharts. If a button is renamed and the help still says the old word, that now fails before it can ship.',
+      '**It was written because of what happened last release.** Renaming one control left the flowcharts saying the old name, on a page that had been rebuilt and republished the same day. Everything about it looked current. Nothing was checking the words themselves.',
+    ],
+  },
+  {
     triplet: '3.6.1',
     kind: 'ITERATION',
     date: '2026-08-27',

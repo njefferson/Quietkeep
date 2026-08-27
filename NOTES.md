@@ -681,14 +681,39 @@ closed question filed under this heading now, so the two cannot drift again.
   production carries the released triplet. **The caveat attached to all six
   promotes in this repo is retired**, and every promote after this is confirmed
   by one paste rather than by a green deploy step.
-- **A session still cannot read production, and that is a different fact.** Every
-  `pages.dev` host is refused 403 at CONNECT — re-tested 2026-08-03 in a fresh
-  container after the owner's `*.pages.dev` grant, including `noahjefferson.pages.dev`,
-  while GitHub and the package registries answer normally. The grant is not
-  reaching sessions at all; the "policy binds at container start" theory was
-  falsified by a container thirty-nine seconds old. **Do not spend another session
-  re-testing this.** It no longer blocks anything: the app carries the instrument
-  now, and Doctrine §7f is the route — put the check where the device runs it.
+- **SUPERSEDED 2026-08-27: a session CAN read the deployed hosts, when the
+  session has been given `*.pages.dev`.** The entry below was accurate for the
+  container it was written in and is not a standing fact. With the host on the
+  session's egress allowlist, all three answer 200 and were read directly:
+  staging 3.7.0, production 3.6.1, the sync edition 3.6.1. **Try it — it costs
+  one request.** The old "do not re-test" instruction is withdrawn; it outlived
+  the condition it described, which is the failure mode this file exists to catch.
+  **REACHABILITY IS SESSION CONFIGURATION, NOT A PROPERTY OF THIS TREE**, so
+  `tools/deployed-check.mjs` treats an unreachable host as a SKIP with the reason
+  printed. A gate that goes red because of how a container was configured teaches
+  people to ignore red.
+  **TWO TRAPS, both of which bit before the tool worked.** Node's built-in
+  `fetch` does not read `HTTPS_PROXY` unless `NODE_USE_ENV_PROXY=1` is set
+  BEFORE startup — setting it in-process is too late — and without it every
+  request returns 403 with an allowlist message in the body, which reads exactly
+  like the host being blocked rather than the client not asking properly. `curl`
+  was answering 200 for the same URL at the same moment. The tool re-execs itself
+  rather than depend on how it was invoked.
+  **AND A 200 PROVES NOTHING.** Cloudflare Pages serves the root document for any
+  unknown path, so a page that does not exist answers 200 with the whole app
+  inside it — production returns 200 for `/paths`, which it does not have. Every
+  assertion reads CONTENT. The first version identified the shell by a typed
+  `<title>Quietkeep</title>`, which is the default edition's title and not the
+  sync edition's, and so reported a 185KB page the sync host does not have. It
+  asks the host for its own root document now and compares against that.
+- **The 2026-08-03 finding, kept because it was true then:** every `pages.dev`
+  host was refused 403 at CONNECT in a fresh container after an earlier grant,
+  including `noahjefferson.pages.dev`, while GitHub and the package registries
+  answered normally. The grant was not reaching sessions; the "policy binds at
+  container start" theory was falsified by a container thirty-nine seconds old.
+  It stopped blocking anything because the app carries the instrument (§7f) — and
+  the route it recommended, putting the check where the device runs it, is still
+  the one that works with no session configuration at all.
 - **`main` was promoted to troubleshoot, and it worked** (promoted on the owner's word). Nothing would load on the iPad at the time, so the §7 pass could
   not happen first. The promote gave the Pages project its **first production deployment**,
   the apex URL came up, and the pass then happened on the real device — captured,
@@ -759,8 +784,89 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.1**. The tree
-  is called *Your projects, areas and goals*.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.7.0**. The
+  flowcharts ship as a page, linked from Help, and are measured when they change.
+  **SHIPPING IT WAS NOT A FILE COPY.** The site's CSP is `style-src 'self';
+  font-src 'self'`, so the self-contained source — inline `<style>`, two Google
+  faces — would have rendered as unstyled markup in whatever font the browser
+  chose. `thesis.mjs` records that exact failure from 1.7.2. So `tools/paths.mjs`
+  splits the source into `public/paths.html` + `public/paths.css`, gated by
+  `paths:check`, and the source dropped its webfonts entirely rather than run two
+  typographic realities. The page now makes no network request at all.
+  **MEASURED WHEN IT CHANGES, NOT ON EVERY RUN**, which is the shape asked for. A
+  static document shares no code with the app and cannot regress from an app
+  change. `tools/paths-a11y.mjs` stamps on its own content: unchanged it exits in
+  0.3s and says so; changed it walks both themes at 390px and 320px/200%. Proven
+  both ways before landing.
+  **IT SERVES THE PAGE UNDER THE REAL HEADERS**, which took two attempts: both
+  forms of Playwright's script injection are inline and `script-src 'self'`
+  refuses them, `path` included. Axe is served as a same-origin file instead. The
+  alternative — relaxing the CSP for the walk — measures a page that does not
+  ship.
+  **ITS FIRST RUN FOUND THE PAGE'S OWN LINKS AT 16–21px** against the 24px floor
+  (WCAG 2.5.8). Fixed with `inline-flex` and a min-height, not block padding, so
+  they still wrap as a list of words.
+  **AND THE APP'S OWN WALK REFUSED THE FIRST PLACEMENT.** Linked from the footer,
+  three links in that line wrapped at phone width into two 44px boxes stacked
+  with zero gap — a mis-tap. The footer's own comment already recorded it sitting
+  one over its ceiling. Moved to Help, where somebody looks for this anyway; a
+  reference page is not chrome. The Help copy then blew two size budgets and was
+  cut rather than accommodated, landing at **3699 words against a 3700 budget** —
+  one word of headroom, which is worth knowing before adding a sentence anywhere.
+  **AND THEN THE OLDER PAGES WERE MEASURED TOO**, the same day. The
+  walk generalised from one page to every hosted page the app LINKS to, derived
+  from `index.html` rather than listed, each stamped on its own content so
+  changing one walks one. `manual.html` and `why.html` had shipped since 2.29.0
+  unmeasured; both pass. `plan.html` is excluded BY THE RULE rather than by an
+  exception — it is `noindex`, linked from nowhere, and its own header says it
+  joins the moment it gains a route from the app.
+  **ITS FIRST RUN OVER THE OLD PAGES FLAGGED FOUR LINKS, AND THE CHECK WAS
+  WRONG.** All four were citations inside sentences — *"…rather than by a sweep
+  (ADR-0011)."* — and WCAG 2.5.8 states an *Inline* exception for exactly that.
+  Padding a word mid-paragraph to satisfy a rule that does not apply would have
+  damaged two pages to please a gate. The exception is honoured structurally now:
+  `display: inline` plus a parent holding text that is not the link. **A gate
+  that fires on honest writing is worse than a miss**, because it also trains
+  somebody to change good pages — and the same run proved it is not vacuous: a
+  planted 14px standalone link was caught, while the other two pages correctly
+  printed as unchanged and were not walked at all.
+  **AND NOTHING ASSERTED THE WORKER CACHES THEM.** `help-check` now derives the
+  list from the app's own links: a linked page missing from `SHELL` does not just
+  miss offline, it falls back to the app shell and lands the reader elsewhere
+  (the 1.7.2 defect). `plan.html` passes by being `noindex` and linked nowhere.
+- **Superseded, and kept for the record: 3.6.2.** The words the help quotes are
+  held to the words the app says.
+  **THREE HELP SURFACES NAMED A BUTTON THAT DID NOT EXIST, AND EVERY GATE WAS
+  GREEN.** 3.6.1 renamed one control. `manual.mjs --check` proved the manual page
+  matched its source; `manual-coverage.mjs` proved every surface was named. Both
+  passed, because neither reads the words ON a control, and neither has ever
+  looked at the walkthrough or the flowcharts at all. The flowcharts page had
+  been rebuilt and republished the same day and still said the old name.
+  **`tools/help-check.mjs` reads each set from the source that DEFINES it** —
+  routes from `clarify.ts`, container words from `tree.ts`, kind words from
+  `kind-words.ts`, destinations and the tree label from `index.html` — and never
+  restates one, because a list typed into a checker is the second copy the
+  checker exists to prevent.
+  **ITS FIRST RUN FOUND FOUR THINGS AND TWO OF THEM WERE THE GATE'S OWN
+  DECLARATIONS.** Real: the flowcharts named three of the four container kinds
+  (no *Outcome*), and the manual listed a sorting choice as *do it now* for a
+  button marked **Do now**. Not real: a coverage row claiming the flowcharts
+  enumerate all seven destinations, which they do not and never claimed to. A row
+  in that table is an assertion about a file, not a wish for one.
+  **PLANTED THREE WAYS**: a route renamed in the app (caught in all three help
+  surfaces by name), the tree label renamed (caught in two), and a retired name
+  crept back into help unmarked (caught in both directions at once).
+  **A HELP PAGE MAY STILL SAY WHAT A THING USED TO BE CALLED**, inside
+  `<span data-was>`. Per-mention and visible in the markup — a whole-file
+  exemption is where the privacy gate's material collected, and green there meant
+  *not looked at*.
+  **`docs/paths.html` IS IN THE REPO NOW.** The flowcharts were living in a
+  scratchpad that was cleared three times in one session; in the repo they are
+  version controlled and gateable. Deliberately NOT in `public/`: shipping it
+  would make it a surface owing the a11y walk, and that is a product decision
+  nobody has made.
+- **Superseded, and kept for the record: 3.6.1.** The tree is called
+  *Your projects, areas and goals*.
   **THE LABEL WAS THE HALF 3.6.0 DID NOT FIX, AND IT IS THE HALF THAT DECIDES.**
   3.6.0 made every row in the tree say its kind and left the button reading *How
   it hangs together*, on the reasoning that the surface now answered the question
@@ -1404,7 +1510,20 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.5.2** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.6.1** — promoted at
+  `0d5dd21` on 2026-08-27, carrying 3.6.0, the commit-guard change and 3.6.1.
+  Deploy success on that exact SHA, read at the STEP level: *Deploy to Cloudflare
+  Pages* 8s and *Deploy Quietkeep Sync* 6s, both real work rather than the
+  guard's skip branch, which also concludes success. The merged tree was asserted
+  byte-identical to `52fdf53`, the staging head that was walked.
+  **THE MERGE LANDED ON THE WRONG BRANCH LABEL FIRST.** `git checkout main`
+  aborted on a dirty working tree and the reset and merge that followed both ran
+  on `staging`, producing a correct promote commit — right parents, right tree —
+  sitting on the wrong branch. Nothing was pushed. Recovered by moving `main` to
+  it and restoring `staging` to `origin/staging`. **A compound `checkout && …`
+  that assumes the checkout succeeded is the same defect as LESSONS 170 with a
+  different verb: the second command runs wherever the first one left you.**
+- **Superseded, and kept for the record: 3.5.2** — promoted at
   `04562b5` on 2026-08-27, Deploy success on that exact SHA, read at the STEP
   level: *Deploy to Cloudflare Pages* 5s and *Deploy Quietkeep Sync* 6s, both
   real work rather than the guard's skip branch, which also concludes success.
