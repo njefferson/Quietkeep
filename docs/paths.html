@@ -1,0 +1,1036 @@
+<!-- EVERY PATH THROUGH QUIETKEEP — the flowcharts, as a person walks them.
+     Published as an Artifact; this file is the source, so it is version
+     controlled and `npm run help:check` can hold its vocabulary to the app's.
+     Regenerate nothing by hand that the app already decides: the sort routes,
+     the reason ladder, the container kinds and the destination labels are the
+     app's own strings and the gate fails when they drift apart. -->
+<title>Every Path Through Quietkeep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap">
+
+<style>
+/* ── Quietkeep's own roles. Light is the base; the two dark blocks only
+      redefine tokens, so nothing is defined solely behind a media query. ── */
+:root {
+  --bg:       #F4F1E9;
+  --surface:  #FFFFFF;
+  --ink:      #1B2333;
+  --ink-soft: #4C5670;
+  --line:     #8E8A7F;
+  --accent:   #33425F;
+  --warm:     #7A4E00;
+  --sunk:     #EDE9DE;
+  --edge:     #DAD5C9;
+  --rule:     #C7C2B5;
+  --act-bg:   #FBF4E6;
+  --act-edge: #C79A4D;
+  --end-edge: #93A0BA;
+  --wash:     #EDEFF4;
+  --wash-edge:#C5CBD8;
+  --chip:     #E6E9F0;
+  --shadow:   0 1px 2px rgba(27, 35, 51, .06), 0 8px 24px -16px rgba(27, 35, 51, .28);
+
+  --display: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --body:    "Literata", Georgia, "Times New Roman", serif;
+  --mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --col: 40rem;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:       #141A26;
+    --surface:  #1E2637;
+    --ink:      #F2F0EA;
+    --ink-soft: #B3BCCE;
+    --line:     #6A7896;
+    --accent:   #AFC0DC;
+    --warm:     #F5C978;
+    --sunk:     #19212F;
+    --edge:     #3A465C;
+    --rule:     #4A5875;
+    --act-bg:   #262A2E;
+    --act-edge: #8A6E38;
+    --end-edge: #6E7E9C;
+    --wash:     #242E40;
+    --wash-edge:#3D4B66;
+    --chip:     #2A3448;
+    --shadow:   0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:       #141A26;
+  --surface:  #1E2637;
+  --ink:      #F2F0EA;
+  --ink-soft: #B3BCCE;
+  --line:     #6A7896;
+  --accent:   #AFC0DC;
+  --warm:     #F5C978;
+  --sunk:     #19212F;
+  --edge:     #3A465C;
+  --rule:     #4A5875;
+  --act-bg:   #262A2E;
+  --act-edge: #8A6E38;
+  --end-edge: #6E7E9C;
+  --wash:     #242E40;
+  --wash-edge:#3D4B66;
+  --chip:     #2A3448;
+  --shadow:   0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.wrap {
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 7vw, 5rem) clamp(1.1rem, 4vw, 2rem) 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 7vw, 4.5rem);
+}
+
+/* ── masthead ─────────────────────────────────────────────────────────── */
+.mast { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.eyebrow {
+  font: 600 .6875rem/1 var(--display);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+/* the lit opening, at label size */
+.eyebrow::before {
+  content: "";
+  width: .5rem; height: .8rem;
+  border-radius: 2px 2px 0 0;
+  background: var(--warm);
+  flex: none;
+}
+
+h1 {
+  margin: 0;
+  font: 700 clamp(2rem, 7vw, 2.9rem)/1.08 var(--display);
+  letter-spacing: -.024em;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--ink-soft);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.mast-note {
+  margin: .4rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: .9375rem;
+  color: var(--ink-soft);
+}
+
+/* ── group headings ───────────────────────────────────────────────────── */
+.group { display: flex; flex-direction: column; gap: 1.6rem; }
+
+.group > h2 {
+  margin: 0;
+  font: 600 .75rem/1 var(--display);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: .8rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ── one process ──────────────────────────────────────────────────────── */
+.proc {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: clamp(1.2rem, 4vw, 1.9rem);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.proc > h3 {
+  margin: 0;
+  font: 600 1.375rem/1.2 var(--display);
+  letter-spacing: -.012em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  line-height: 1.55;
+}
+.when {
+  margin: -.55rem 0 0;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  font-style: italic;
+}
+
+/* ── the flow ─────────────────────────────────────────────────────────── */
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flow li {
+  position: relative;
+  background: var(--sunk);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: .7rem .9rem;
+  font-size: .9688rem;
+  line-height: 1.45;
+}
+/* the connector: a straight rule, never a curl */
+.flow li + li { margin-top: 1.5rem; }
+.flow li + li::before {
+  content: "";
+  position: absolute;
+  left: 1.4rem;
+  top: -1.5rem;
+  width: 2px;
+  height: 1.5rem;
+  background: var(--rule);
+}
+.flow li + li::after {
+  content: "";
+  position: absolute;
+  left: calc(1.4rem - 3px);
+  top: -.42rem;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--line);
+}
+
+/* the moment the person acts — the app's amber, spent only here */
+.flow li.act {
+  background: var(--act-bg);
+  border-color: var(--act-edge);
+  box-shadow: inset 3px 0 0 var(--warm);
+  padding-left: 1.1rem;
+}
+/* where the path ends */
+.flow li.end {
+  background: var(--surface);
+  border-color: var(--end-edge);
+  border-radius: 999px;
+  padding-inline: 1.2rem;
+  font-weight: 500;
+}
+.flow li b { font-weight: 600; font-family: var(--display); }
+
+.flow li .aside {
+  display: block;
+  margin-top: .2rem;
+  color: var(--ink-soft);
+  font-size: .875rem;
+  line-height: 1.4;
+}
+
+/* ── a fork: one question, several ways out ───────────────────────────── */
+.fork {
+  border: 1px dashed var(--rule);
+  border-radius: 8px;
+  padding: .85rem .9rem 1rem;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.fork > p {
+  margin: 0;
+  font: 600 .9375rem/1.3 var(--display);
+}
+.outs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.outs li {
+  flex: 1 1 11rem;
+  background: var(--sunk);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: .55rem .7rem;
+  font: 600 .9063rem/1.3 var(--display);
+}
+.outs li span {
+  display: block;
+  margin-top: .2rem;
+  font: 400 .8125rem/1.4 var(--body);
+  color: var(--ink-soft);
+}
+
+/* ── the ordered ladder (the only place numbers mean anything) ─────────── */
+.ladder {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: rung;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+.ladder li {
+  counter-increment: rung;
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: .7rem;
+  align-items: baseline;
+  padding: .5rem .7rem;
+  border-radius: 8px;
+  background: var(--sunk);
+  border: 1px solid var(--edge);
+  font-size: .9375rem;
+}
+.ladder li::before {
+  content: counter(rung);
+  font: 600 .8125rem/1.5 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+.ladder li em {
+  display: block;
+  font-style: normal;
+  color: var(--ink-soft);
+  font-size: .8438rem;
+  margin-top: .1rem;
+}
+.said {
+  font-family: var(--mono);
+  font-size: .875em;
+  background: var(--chip);
+  border-radius: 4px;
+  padding: .08em .34em;
+}
+
+/* ── the loop back: a straight return, labelled ───────────────────────── */
+.loop {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0;
+  padding: .5rem .8rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: .875rem;
+}
+.loop::before {
+  content: "\2191";
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ── what it never does ───────────────────────────────────────────────── */
+.never {
+  margin: 0;
+  padding: .8rem .95rem;
+  border-radius: 8px;
+  background: var(--wash);
+  border: 1px solid var(--wash-edge);
+  font-size: .9063rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.never b {
+  font: 600 .6875rem/1 var(--display);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: .35rem;
+}
+
+/* ── close ────────────────────────────────────────────────────────────── */
+.close {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.6rem;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+.close p { margin: 0; }
+.close strong { color: var(--ink); font-weight: 600; }
+
+/* ── contents ─────────────────────────────────────────────────────────── */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 1.1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.toc > h2 {
+  margin: 0;
+  font: 600 .6875rem/1 var(--display);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.toc-set { display: flex; flex-direction: column; gap: .35rem; }
+.toc-set > b { font: 600 .8438rem/1.4 var(--display); letter-spacing: .03em; }
+.toc-set ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: .2rem .55rem;
+  font-size: .875rem; line-height: 1.5;
+}
+.toc-set li::after { content: "·"; color: var(--line); margin-left: .55rem; }
+.toc-set li:last-child::after { content: ""; margin: 0; }
+.toc-set a { text-decoration: none; border-bottom: 1px solid var(--end-edge); }
+.toc-set a:hover { border-bottom-color: var(--accent); }
+
+/* ── section preamble ─────────────────────────────────────────────────── */
+.intro {
+  margin: -.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  line-height: 1.55;
+  max-width: 34rem;
+}
+
+/* ── a single move, not a path ────────────────────────────────────────── */
+.strips {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: clamp(1.2rem, 4vw, 1.9rem);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+.strips > h3 { margin: 0; font: 600 1.375rem/1.2 var(--display); letter-spacing: -.012em; }
+.strips > .why { margin: -.9rem 0 0; color: var(--ink-soft); font-size: .9375rem; font-style: italic; }
+.strip { display: flex; flex-direction: column; gap: .45rem; }
+.strip > h4 { margin: 0; font: 600 1rem/1.3 var(--display); }
+.move {
+  margin: 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem;
+  font-size: .9063rem;
+}
+.move span:not(.then) {
+  padding: .45rem .65rem;
+  border-radius: 6px;
+  border: 1px solid var(--edge);
+  background: var(--sunk);
+  line-height: 1.4;
+}
+.move span.act {
+  background: var(--act-bg);
+  border-color: var(--act-edge);
+  box-shadow: inset 3px 0 0 var(--warm);
+  padding-left: .85rem;
+}
+.move span.end {
+  background: var(--surface);
+  border-color: var(--end-edge);
+  border-radius: 999px;
+  padding-inline: .9rem;
+}
+.move .then {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+.move i {
+  font-style: normal;
+  color: var(--line);
+  font-family: var(--mono);
+  flex: none;
+}
+.strip > .note { margin: 0; color: var(--ink-soft); font-size: .8594rem; line-height: 1.5; }
+
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">Quietkeep &middot; 3.6.1</p>
+    <h1>Every path through Quietkeep</h1>
+    <p class="standfirst">Every way in, every way through, and every way out — each
+      drawn as the steps you take, not as the app is built underneath.</p>
+    <p class="mast-note">Amber marks the moment you do something. Everything else is
+      the app moving on its own. A path drawn as a single move is a single move —
+      the shape of the diagram is telling you how much there is to it. Nothing here
+      is obliged: the app works if you only ever use the first path on this page.</p>
+  </header>
+
+  <nav class="toc">
+    <h2>What is here</h2>
+    <div class="toc-set"><b>In</b><ul>
+      <li><a href="#capture">Put something down</a></li>
+      <li><a href="#in-quick">Four smaller ways in</a></li>
+      <li><a href="#bother">Something on your mind that isn't a task</a></li>
+      <li><a href="#load">What you are carrying</a></li>
+      <li><a href="#export">Bring a planner in</a></li>
+    </ul></div>
+    <div class="toc-set"><b>Through</b><ul>
+      <li><a href="#hub">Where do you want to be?</a></li>
+      <li><a href="#sort">Sort what you put down</a></li>
+      <li><a href="#next">Do the next thing</a></li>
+      <li><a href="#why">Why it offered that one</a></li>
+      <li><a href="#situation">Narrow what you are offered</a></li>
+      <li><a href="#session">Work on one thing</a></li>
+      <li><a href="#replan">Something you planned did not happen</a></li>
+      <li><a href="#upkeep">Something that comes round again</a></li>
+      <li><a href="#file">Put a thing inside another thing</a></li>
+      <li><a href="#find-project">Get to the project you just made</a></li>
+      <li><a href="#review">Check the shape is still right</a></li>
+      <li><a href="#through-quick">Five ways of looking</a></li>
+      <li><a href="#reentry">Come back after a while away</a></li>
+    </ul></div>
+    <div class="toc-set"><b>Out</b><ul>
+      <li><a href="#out-quick">Four ways a thing stops asking</a></li>
+      <li><a href="#tell">Tell someone where things are</a></li>
+      <li><a href="#export">Take a copy out, or bring one in</a></li>
+      <li><a href="#out-device">Two ways off the device</a></li>
+    </ul></div>
+    <div class="toc-set"><b>When something is wrong</b><ul>
+      <li><a href="#diagnostic">The report the app writes about itself</a></li>
+      <li><a href="#update">A new version is waiting</a></li>
+    </ul></div>
+  </nav>
+
+  <!-- ══ GETTING IT IN ══════════════════════════════════════════════════ -->
+  <section class="group">
+    <h2>In</h2>
+    <p class="intro">Every way something gets from the world into the app. Only the
+      first is used daily; the rest exist so that nothing has to wait for the
+      right moment to be written down.</p>
+
+    <article class="proc">
+      <h3 id="capture">Put something down</h3>
+      <p class="when">When a thing arrives in your head and you cannot act on it now.</p>
+      <ol class="flow">
+        <li>Type it in the box at the top, in whatever words you thought it in</li>
+        <li class="act">Press <b>Hold it</b></li>
+        <li class="end">It is held, and offered back in the words you wrote
+          <span class="aside">No project asked for, no date, no category. That is the whole capture.</span></li>
+      </ol>
+      <p class="never"><b>What it never does</b>Ask you to classify a thing before it will
+        keep it. The question that stops you writing it down is the one that loses it.</p>
+    </article>
+
+
+    <div class="strips" id="in-quick">
+      <h3>Four smaller ways in</h3>
+      <p class="why">Each is one move. They exist so that nothing has to wait for the right moment.</p>
+
+      <div class="strip">
+        <h4>Put down something longer</h4>
+        <p class="move"><span class="act">Press <b>More room</b></span><span class="then"><i>&rarr;</i><span class="end">a bigger box, and the same Hold it</span></span></p>
+        <p class="note">Nothing else changes. It is the same capture with more space to write in.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Put a thought down without leaving what you are doing</h4>
+        <p class="move"><span class="act">Press <b>+</b>, inside any job</span><span class="then"><i>&rarr;</i><span class="end">it is held, and you are still where you were</span></span></p>
+        <p class="note">The point is the second half. Leaving a screen to write something down is how the thing you were doing gets lost as well.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Get things in from another app</h4>
+        <p class="move"><span class="act">Run the Shortcut</span><i>&rarr;</i><span>it opens this address with the text</span><span class="then"><i>&rarr;</i><span class="end">held</span></span></p>
+        <p class="note">Safari gives web apps no share sheet, so a Shortcut is the way in. That is a browser limit, not a decision made here — <b>Getting things in from somewhere else</b> explains the setup.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Try it on invented work</h4>
+        <p class="move"><span class="act"><b>Add some sample work</b></span><span class="then"><i>&rarr;</i><span class="end">a small tidy set, into the store you already have</span></span></p>
+        <p class="move"><span class="act"><b>Make a set to try things on</b></span><i>&rarr;</i><span>a <em>file</em> of about fifteen hundred invented things</span><span class="then"><i>&rarr;</i><span class="end">nothing changes until you import it</span></span></p>
+        <p class="note">The second replaces what is on the device when you import it, so take a copy under <b>Your data</b> first — that is the way back. Most of what it writes is unsorted, because that is what a real store looks like.</p>
+      </div>
+    </div>
+
+    <article class="proc">
+      <h3 id="bother">Something on your mind that isn't a task</h3>
+      <p class="when">When the thing bothering you is not work and will not become work.</p>
+      <ol class="flow">
+        <li class="act">Open <b>Something on your mind that isn't a task?</b></li>
+        <li>Say it in your own words. It is not a task and is not treated as one</li>
+        <li>It must end somewhere — a route, or a park. Nothing is left hanging
+          <span class="aside">Parked is a real ending, not a deferral with a countdown attached.</span></li>
+        <li class="end">Off your mind, and still in the app if you want it back</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Score how you feel, guess at a cause, or turn a worry into a task list. The app plots; you are the one who interprets.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="load">Say what you are carrying</h3>
+      <p class="when">When the problem is not the list, it is how much is on you.</p>
+      <ol class="flow">
+        <li class="act">Open <b>How you are, and anything weighing on you</b></li>
+        <li>Name a weight and say how big it is — a pebble, a rock, a boulder</li>
+        <li class="end">It shows up on <b>Carrying</b>, as a thing you are holding rather than a thing to do
+          <span class="aside">A weight can never carry a clock. Acting on one is a deliberate choice, never an obligation that built up.</span></li>
+      </ol>
+      <p class="never"><b>What it never does</b>Ask you to justify it, rank it against anybody else's, or convert it into work.</p>
+    </article>
+  </section>
+
+  <!-- ══ GETTING IT DONE ════════════════════════════════════════════════ -->
+  <section class="group">
+    <h2>Through</h2>
+    <p class="intro">Every way you meet a thing again and act on it. This is most
+      of the app, and most days it is the first three.</p>
+
+    <article class="proc">
+      <h3 id="hub">Where do you want to be?</h3>
+      <p class="when">The screen you land on, and the one you come back up to.</p>
+      <ol class="flow">
+        <li>A list of doors, each opening one job and saying what is behind it</li>
+        <li><strong>A door only appears when there is something behind it</strong>
+          <span class="aside">So the list is short on a quiet day, and nothing ever asks you to remember to go and look somewhere.</span></li>
+        <li class="act">Press a door</li>
+        <li>That job is now the whole screen — one way back, in the same place every time, and a <b>+</b> for putting a thought down without leaving</li>
+        <li class="end">Press the way back, and you are here again</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Show you a door to an empty room, or make you check somewhere to find out there was nothing there.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="sort">Sort what you put down</h3>
+      <p class="when">When you have a pile and some spare attention. Optional, always.</p>
+      <ol class="flow">
+        <li class="act">Open <b>Sort things out</b></li>
+        <li>It hands you <strong>one thing</strong>, on its own</li>
+      </ol>
+      <div class="fork">
+        <p>What is this one?</p>
+        <ul class="outs">
+          <li>Do now<span>this one is for today</span></li>
+          <li>Next action<span>a real next step, comes back tomorrow</span></li>
+          <li>Waiting for<span>someone else owes you this</span></li>
+          <li>Someday<span>onto the Menu, no clock</span></li>
+          <li>Reference<span>keep it, don't act on it</span></li>
+          <li>Trash<span>not a thing after all</span></li>
+          <li>Put it somewhere<span>file it under a place or a project</span></li>
+          <li>Not this one<span>skip it, records nothing</span></li>
+        </ul>
+      </div>
+      <p class="loop">and it hands you the next one, until you stop</p>
+      <p class="never"><b>What it never does</b>Require this. Unsorted things are still
+        offered — last, behind anything with a real reason to be asking — so a pile
+        costs you a few taps, never a wall.</p>
+    </article>
+
+
+    <article class="proc">
+      <h3 id="next">Do the next thing</h3>
+      <p class="when">The ordinary path. Most days this is the only screen you need.</p>
+      <ol class="flow">
+        <li>Open <b>Next up</b></li>
+        <li>It offers <strong>one thing</strong>, and a short line saying why that one</li>
+      </ol>
+      <div class="fork">
+        <p>What do you want to do with it?</p>
+        <ul class="outs">
+          <li>Done<span>finishes it</span></li>
+          <li>Not this<span>moves past it, as often as you like</span></li>
+          <li>Start smaller<span>turns it into the first physical step</span></li>
+          <li>This one is heavy<span>says it costs more than it looks</span></li>
+          <li>That is enough for now<span>ends the sitting, not the work</span></li>
+          <li>Just one thing<span>strips the screen to the offer alone</span></li>
+        </ul>
+      </div>
+      <p class="loop">Not this brings the next one forward, and records nothing at all</p>
+      <p class="never"><b>What it never does</b>Hand you a list to get through, or keep
+        a count of what you passed over.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="why">Why it offered that one</h3>
+      <p class="when">Read this once and the offer stops being a guess.</p>
+      <p class="lede">The
+        app walks these in order and stops at the first that applies. The card says
+        which rung it stopped on, in these words.</p>
+      <ol class="ladder">
+        <li><span class="said">a real date, and it is here</span><em>you gave it a date and the date arrived</em></li>
+        <li><span class="said">⟨the thing before it⟩ is done</span><em>what it was waiting on has finished</em></li>
+        <li><span class="said">you were about to: ⟨your words⟩</span><em>you were interrupted, in the words you left</em></li>
+        <li><span class="said">ready again</span><em>a recurring thing has come back round</em></li>
+        <li><span class="said">this one is waiting</span><em>it is sorted and nothing is blocking it</em></li>
+        <li><span class="said">you put this down</span><em>never sorted — offered last, and still offered</em></li>
+        <li><span class="said">⟨something⟩ came round</span><em>nothing else asked, so a place you named did</em></li>
+      </ol>
+      <p class="never"><b>What it never does</b>Rank by importance. There is no priority
+        field, and what you marked as interesting is kept as interest, not as a score.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="situation">Narrow what you are offered</h3>
+      <p class="when">On a train, with ten minutes, or sitting with someone.</p>
+      <ol class="flow">
+        <li class="act">Open <b>What's the situation?</b>, under the capture box</li>
+      </ol>
+      <div class="fork">
+        <p>Answer any of the three. They compose.</p>
+        <ul class="outs">
+          <li>Where you are<span>anything with no place turns up everywhere, so this can never empty the screen</span></li>
+          <li>How long you have<span>anything you never estimated fits every answer</span></li>
+          <li>Who is with you<span>anything with nobody named still shows</span></li>
+        </ul>
+      </div>
+      <ol class="flow">
+        <li>The offer and the list both narrow, and a line says what was narrowed</li>
+        <li class="act">Optionally, <b>Recognise this one?</b> names the set</li>
+        <li class="end">It comes back in one tap — the Tuesday meeting, the free weekend</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Take anything away. A filter changes what
+        you are looking at and never what the app is holding.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="session">Work on one thing</h3>
+      <p class="when">When you want the rest of it off the screen while you do this.</p>
+      <ol class="flow">
+        <li class="act">Press <b>Work on this</b> on any row</li>
+        <li><b>Working on</b> — a timer is running, and this is the whole screen</li>
+      </ol>
+      <div class="fork">
+        <p>While it runs</p>
+        <ul class="outs">
+          <li>Something interrupts<span>the <b>+</b> catches it without ending the session</span></li>
+          <li>A long stretch passes<span><b>Coming up for air</b> checks in, once</span></li>
+          <li>You stop<span><b>Stopping for now</b> ends the timer, not the thing</span></li>
+        </ul>
+      </div>
+      <ol class="flow">
+        <li class="end"><b>That was a session.</b> — the close of one, stated without a verdict</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Grade the session, compare it to another, or treat stopping as failing. It says what happened and that is all.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="review">Check the shape is still right</h3>
+      <p class="when">Occasionally, and never because the app asked you to.</p>
+      <ol class="flow">
+        <li class="act">Open <b>Worth a look</b></li>
+        <li>It names things that are structurally odd, three at a time, with the true count
+          <span class="aside">Nothing feeding a goal. A project with no next action. An area where nothing has finished in a month. A thing whose parent is gone.</span></li>
+        <li class="act">Fix one, or decide it is fine as it is</li>
+        <li class="end">It can reach zero, and when it does the screen is gone</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Nag. A surface that can never be empty is a surface you learn to ignore, so this one empties. Rest is legitimate; the question is only whether it is rest.</p>
+    </article>
+
+    <div class="strips" id="through-quick">
+      <h3>Five ways of looking</h3>
+      <p class="why">Each shows you the same things, sliced the way a particular question arrives. None of them changes anything.</p>
+
+      <div class="strip">
+        <h4>Find something</h4>
+        <p class="move"><span class="act">Type in the search box above the list</span><span class="then"><i>&rarr;</i><span class="end">it opens what it finds</span></span></p>
+        <p class="note">Changes nothing, and keeps no record of what you looked for.</p>
+      </div>
+
+      <div class="strip">
+        <h4>See everything you are holding</h4>
+        <p class="move"><span class="act"><b>Every one of them</b></span><span class="then"><i>&rarr;</i><span class="end">the complete list, opened in place</span></span></p>
+        <p class="note">Shut to begin with, because on a full store it is longer than everything else put together. Above it stands the line that nothing has gone quiet — the standing proof that nothing was lost. <b>Looking at</b> narrows the list to one branch without hiding anything from the offer, the proof line or search.</p>
+      </div>
+
+      <div class="strip">
+        <h4>What you are carrying rather than doing</h4>
+        <p class="move"><span class="act"><b>Carrying</b></span><span class="then"><i>&rarr;</i><span class="end">what you are answerable for, and the weights you named</span></span></p>
+        <p class="note">Work somebody else is executing shows here and never in <b>Next up</b> — being offered the next step of somebody else's job is the fastest way to stop trusting a screen that is supposed to have decided for you.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Who owes you, and what you owe</h4>
+        <p class="move"><span class="act"><b>With other people</b></span><span class="then"><i>&rarr;</i><span class="end">both directions, on one screen</span></span></p>
+        <p class="note">It never says how long you have kept anybody waiting. There is no field to hold that, deliberately.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Do something because you want to</h4>
+        <p class="move"><span class="act"><b>The Menu</b></span><span class="then"><i>&rarr;</i><span class="end">the list where nothing is asking</span></span></p>
+        <p class="note">No clocks, no dates, no pressure. You put things there and they wait for you. Acting on one is a choice you make, never an obligation that accrued.</p>
+      </div>
+    </div>
+
+    <article class="proc">
+      <h3 id="replan">Something you planned did not happen</h3>
+      <p class="when">The path the whole app is arranged around.</p>
+      <ol class="flow">
+        <li>The date goes by. Nothing is filed away, and no screen changes colour</li>
+        <li>It becomes a card asking for a <strong>new plan</strong>, with what it fed,
+          what is owed and how long is left already assembled</li>
+      </ol>
+      <div class="fork">
+        <p>What is true about it now?</p>
+        <ul class="outs">
+          <li>Compress<span>the same thing, in less</span></li>
+          <li>Escalate<span>it needs somebody else</span></li>
+          <li>Renegotiate<span>the date was the wrong date</span></li>
+        </ul>
+      </div>
+      <ol class="flow">
+        <li class="end">It carries on from wherever you put it</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Call it late. There is no such state in the
+        app — not in the words, not in the data underneath. Nothing counts your misses
+        and nothing keeps a run going.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="file">Put a thing inside another thing</h3>
+      <p class="when">When two items turn out to be one piece of work.</p>
+      <ol class="flow">
+        <li class="act">Open the thing's own panel and use <b>What is this part of?</b></li>
+        <li>Pick a place that exists — or type a name that does not, and one tap makes
+          it and files this under it
+          <span class="aside">The picker says what kind each option is, so a goal and a project never look alike.</span></li>
+        <li class="end">The panel now says <strong>Part of ⟨name⟩</strong> — and that line
+          is a button</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Require any of it. Nothing needs a place,
+        a person, a project or a goal, and the app works with none of them.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="find-project">Get to the project you just made</h3>
+      <p class="when">The half that was missing until 3.6.0.</p>
+      <ol class="flow">
+        <li class="act">Tap <b>Part of ⟨name⟩</b> at the top of any panel</li>
+        <li class="end">You are on that thing's own panel, which lists everything under it
+          <span class="aside">Each of those is a button too, so the chain walks a step at a time in both directions.</span></li>
+      </ol>
+      <ol class="flow">
+        <li>Or, for the whole shape at once: <b>Your projects, areas and goals</b>,
+          under <em>What you are holding</em>
+          <span class="aside"><span data-was>Called <em>How it hangs together</em> until 3.6.1.</span> The old name described the shape; it never said the thing it holds, so nobody looking for a project could see that is where they are.</span></li>
+        <li class="end">Every row says what it is — Goal, Project, Area, Outcome — with
+          plain tasks left unmarked and indented under what holds them
+          <span class="aside">Those four are every kind that can hold something else. An outcome is a result you are working toward; a project is work with steps.</span></li>
+      </ol>
+      <p class="never"><b>What it never does</b>Make you walk the tree to plan a day. It is
+        a way of seeing, never the screen you land on.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="upkeep">Something that comes round again</h3>
+      <p class="when">The bins, the filter, the call you make every fortnight.</p>
+      <ol class="flow">
+        <li class="act">On the thing's panel, say <b>This one repeats</b></li>
+        <li>Give it an interval, and a window of how long you are comfortable leaving it</li>
+        <li>It goes quiet. Inside the window it asks nothing at all</li>
+        <li>Past the window the pressure rises, gradually, and the card says
+          <span class="said">ready again</span></li>
+        <li class="act">You do it, and mark it done</li>
+        <li class="end">The clock starts from when you actually did it</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Turn red, keep a streak, or hold two weeks
+        of missed repeats against you. One rise, from when it was last done.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="reentry">Come back after a while away</h3>
+      <p class="when">The designed path, not the failure path.</p>
+      <ol class="flow">
+        <li>You open the app after a gap. It measures the gap before anything else runs</li>
+        <li><b>Welcome back</b> says what came round while you were gone — bounded, never
+          the backlog</li>
+      </ol>
+      <div class="fork">
+        <p>If a lot of dates went by</p>
+        <ul class="outs">
+          <li>Move them all to the Menu<span>in one go, where nothing is asking</span></li>
+          <li>Or leave them<span>and take them one at a time</span></li>
+        </ul>
+      </div>
+      <ol class="flow">
+        <li class="end">Nothing deleted, nothing marked done, all of it retrievable</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Greet you with everything at once, or treat
+        the gap as something to explain. Rest is a legitimate thing to have done.</p>
+    </article>
+
+  </section>
+
+
+  <!-- ══ OUT ════════════════════════════════════════════════════════════ -->
+  <section class="group">
+    <h2>Out</h2>
+    <p class="intro">Every way a thing leaves — whether it leaves what you are
+      holding, or leaves the device altogether. The second kind only ever happens
+      because you asked for it.</p>
+
+    <div class="strips" id="out-quick">
+      <h3>Four ways a thing stops asking</h3>
+      <p class="why">None of them is deletion, and none of them is a verdict.</p>
+
+      <div class="strip">
+        <h4>Finish it</h4>
+        <p class="move"><span class="act"><b>Done</b></span><span class="then"><i>&rarr;</i><span class="end">off the list, and in the record</span></span></p>
+        <p class="note">On something that repeats, this is also what starts the next clock — from when you actually did it, not from when it was due.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Let it go</h4>
+        <p class="move"><span class="act"><b>Trash</b></span><span class="then"><i>&rarr;</i><span class="end">not a thing after all</span></span></p>
+        <p class="note">It goes to <b>Trash</b>, which you can open and read. Deciding something was never really a task is a legitimate outcome, and the app treats it as one.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Take back a promise</h4>
+        <p class="move"><span class="act">Release it</span><span class="then"><i>&rarr;</i><span class="end">the undertaking goes, the work stays</span></span></p>
+        <p class="note">The control is on the thing’s own row in <b>With other people</b>. That split is the whole point. You are no longer telling somebody you will do it; you have not thrown away the thing itself.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Stop it asking, without finishing it</h4>
+        <p class="move"><span class="act">Put it on <b>The Menu</b></span><span class="then"><i>&rarr;</i><span class="end">held, with no clock and nothing asking</span></span></p>
+        <p class="note">This is the one <b>Welcome back</b> offers in bulk after a long gap. Nothing is deleted and nothing is marked done — it is all retrievable.</p>
+      </div>
+    </div>
+
+    <article class="proc">
+      <h3 id="tell">Tell someone where things are</h3>
+      <p class="when">Before the meeting where you are asked what is going on.</p>
+      <ol class="flow">
+        <li class="act">Open <b>Telling someone where things are</b>, under <em>Things you can do</em></li>
+        <li>It writes up what has changed since you last told anyone, plus what is
+          still outstanding</li>
+        <li class="act">Press <b>Show me</b> — and choose what goes in it</li>
+      </ol>
+      <div class="fork">
+        <p>Then take it however you need it</p>
+        <ul class="outs">
+          <li>Copy it<span>straight into a message</span></li>
+          <li>Save as Markdown<span>a text file</span></li>
+          <li>Save as a spreadsheet<span>for somebody who wants columns</span></li>
+          <li>Print it<span>on paper</span></li>
+        </ul>
+      </div>
+      <p class="never"><b>What it never does</b>Send it. Nothing leaves on the app's initiative, and you read the whole thing before deciding it should go.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="export">Take a copy out, or bring one in</h3>
+      <p class="when">Moving in, moving on, or keeping a copy.</p>
+      <ol class="flow">
+        <li class="act">Open <b>Your data</b>, behind <em>Everything else</em></li>
+      </ol>
+      <div class="fork">
+        <p>Which direction?</p>
+        <ul class="outs">
+          <li>Export<span>everything as one file, yours to keep</span></li>
+          <li>Import<span>read a file back in</span></li>
+        </ul>
+      </div>
+      <ol class="flow">
+        <li>On an import it reads the file first and tells you what it found, before
+          anything changes</li>
+        <li>It starts a <strong>fresh store</strong> and never merges — so an import
+          cannot half-happen
+          <span class="aside">Projects and what sits inside them come across, with dates and notes. The tags you wrote arrive as places, in your words.</span></li>
+        <li class="end">It comes back on <b>Welcome back</b>, saying everything is here</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Bring in work you already finished — that
+        history belongs to the app it happened in, and the file still holds it. It says
+        how many before you press the button.</p>
+    </article>
+
+    <div class="strips" id="out-device">
+      <h3>Two ways off the device</h3>
+      <p class="why">The app has no reminders of its own and never sends anything by itself. These are how something reaches you somewhere else.</p>
+
+      <div class="strip">
+        <h4>Send one thing to your calendar</h4>
+        <p class="move"><span class="act"><b>Send to my calendar</b></span><span class="then"><i>&rarr;</i><span class="end">one event, in your own calendar</span></span></p>
+        <p class="note">The calendar is what reaches you. That is deliberate: an app with its own notifications is another thing to manage, and you already have one that works.</p>
+      </div>
+
+      <div class="strip">
+        <h4>Today, on paper</h4>
+        <p class="move"><span class="act"><b>Print today</b></span><span class="then"><i>&rarr;</i><span class="end">one page — what is next, what else is ready, what is with other people, what is coming</span></span></p>
+        <p class="note">It builds the page at the moment of printing and empties the area afterwards, so there is never a stale sheet sitting in the app.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ WHEN SOMETHING IS WRONG ════════════════════════════════════════ -->
+  <section class="group">
+    <h2>When something is wrong</h2>
+    <p class="intro">Two paths that are not about your work at all — they are about
+      the app itself.</p>
+
+    <article class="proc">
+      <h3 id="diagnostic">The report the app writes about itself</h3>
+      <p class="when">When something looks wrong and you want to hand somebody a fact.</p>
+      <ol class="flow">
+        <li class="act">Open the ⓘ and find <b>If something is wrong</b> — or tap the
+          version stamp at the bottom of any screen, which goes to the same place</li>
+        <li class="act">Press <b>Show me the report</b></li>
+        <li>It opens with what is actually wrong, if anything is, in plain sentences
+          <span class="aside">Work no copy holds yet. A version that has not finished installing. Storage the browser has not agreed to keep.</span></li>
+        <li>Then the shape of the store — <strong>counts and states, and nothing you wrote</strong>
+          <span class="aside">No titles, no names, no notes, no journal text. You can read the whole thing before deciding to send it.</span></li>
+        <li class="act">Optionally <b>Copy it</b> or <b>Save it as a file</b></li>
+        <li class="end">Nothing has gone anywhere unless you sent it</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Phone home. There is no telemetry and nothing reports itself — which is also why this screen has to exist.</p>
+    </article>
+
+    <article class="proc">
+      <h3 id="update">A new version is waiting</h3>
+      <p class="when">The app is offline-first, so a new version cannot simply appear.</p>
+      <ol class="flow">
+        <li>A new version downloads in the background and then <strong>waits</strong>
+          <span class="aside">It does not take over underneath the page you are reading. Half-old, half-new is the one state worth refusing outright.</span></li>
+        <li>A standing strip tells you it is there, in words, and stays until you deal with it</li>
+        <li class="act">Press it when you are ready</li>
+        <li class="end">The new version loads, whole</li>
+      </ol>
+      <p class="never"><b>What it never does</b>Reload you mid-sentence. An app that caches itself cannot notice it has gone stale — that is what caching means — so being told is the only way you would ever know.</p>
+    </article>
+  </section>
+
+  <footer class="close">
+    <p><strong>All of them are optional except the first.</strong> Put something down and the
+      app holds it and brings it back on its own. Everything on this page is how it does
+      that, and none of it is a step you owe anybody.</p>
+    <p>Drawn from Quietkeep 3.6.1 — the routes, the words on the cards and the order of
+      the ladder are taken from the app as it currently runs, not from a plan for it.</p>
+  </footer>
+
+</div>

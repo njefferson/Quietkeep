@@ -154,6 +154,41 @@ costing you something: on work commits it has never been the one.
 They name the one command instead of spending minutes inside a hook, because a
 hook that silently spends four minutes is a hook somebody disables.
 
+## The help is held to the app that exists — three gates, not one
+`manual.mjs --check` proves `public/manual.html` matches `docs/manual.md`.
+`manual-coverage.mjs` proves every surface the app has is named there and every
+surface the manual claims exists. **Neither reads the words ON the controls, and
+neither looks at the walkthrough or the flowcharts at all** — so 3.6.1 renamed
+one control and left three help surfaces naming a button that no longer existed,
+every one of them freshly generated and fully covered.
+
+[`tools/help-check.mjs`](tools/help-check.mjs) (`npm run help:check`) closes it.
+Each app SET is read from the source that defines it — the sort routes from
+`clarify.ts`, the container words from `tree.ts`, the kind words from
+`kind-words.ts`, the destinations and the tree label from `index.html` — never
+restated in the gate, because a list typed into a checker is the second copy the
+checker exists to prevent. Then, both directions: every label appears verbatim in
+each surface DECLARED to carry that set, and no surface says a retired name.
+
+**Coverage is declared, not swept.** "Every label in every help file" is false —
+the walkthrough is six screens and must not enumerate the app. A gate that fires
+on honest prose is one people route around (`privacy-check.mjs`'s own lesson), so
+each surface names the sets it reproduces and is held to those exactly.
+
+**A help page may say what a thing used to be called** — somebody who learned the
+old name needs the bridge. Wrap it in `<span data-was>`. Per-mention and visible
+in the markup, never a whole-file pass: a file-level exemption is where this
+repo's privacy gate found its material collecting.
+
+Its first run found four things, two of which were the declarations being wrong
+rather than the pages. Planted three ways before landing.
+
+**[`docs/paths.html`](docs/paths.html) is the flowcharts** — every path in,
+through and out, published as an Artifact. It lives in the repo so it is version
+controlled and `help:check` can hold it; it is **not** a shipped app surface, so
+it carries no a11y-gate burden. Putting it in `public/` would be a product
+decision and is not one that has been made.
+
 ## Run the whole Spine before you push: `npm run spine`
 It reads `.github/workflows/spine.yml` and runs every step of it, in order, on
 this machine — no second list to go stale, so a step added to CI is run by it the

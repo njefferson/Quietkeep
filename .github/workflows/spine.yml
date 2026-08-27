@@ -244,6 +244,18 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run manual:coverage
 
+      # AND THE WORDS THE HELP QUOTES ARE THE WORDS THE APP SAYS. The two checks
+      # above prove the manual page matches its source and names every surface.
+      # Neither reads the words ON the controls, and neither looks at the
+      # walkthrough or the flowcharts at all — so a rename left three help
+      # surfaces naming a button that no longer existed, all of them freshly
+      # generated and fully covered. Both directions: every label in an app set
+      # appears in each surface declared to carry it, and no surface says a
+      # retired name outside a span marked as history.
+      - name: The words the help quotes are the words the app says
+        if: ${{ !cancelled() }}
+        run: npm run help:check
+
       # The unit tests prove the spine folds. They cannot prove the bundle
       # loads, that Dexie opens in a browser, or that a captured thought comes
       # back — which is the app's one promise. Only driving the built page does

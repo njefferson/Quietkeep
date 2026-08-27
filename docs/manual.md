@@ -51,8 +51,8 @@ it exists.
 
 ### Decide what a captured thing is
 
-*Sort things out* takes them one at a time and offers eight plain choices: do it
-now, next action, waiting for, someday, reference, trash, put it somewhere, or
+*Sort things out* takes them one at a time and offers eight plain choices: Do
+now, Next action, Waiting for, Someday, Reference, Trash, put it somewhere, or
 not this one. Each choice says what it means underneath.
 
 You never have to do this. Unsorted things are still offered — last, behind

@@ -30,6 +30,7 @@
     "look": "node tools/look.mjs",
     "manual": "node tools/manual.mjs",
     "manual:check": "node tools/manual.mjs --check",
+    "help:check": "node tools/help-check.mjs",
     "manual:coverage": "node tools/manual-coverage.mjs",
     "narrows:check": "node tools/narrows-check.mjs",
     "notify:check": "node tools/notify-voice.mjs",

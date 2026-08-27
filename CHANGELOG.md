@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.6.2 — ITERATION
+
+*2026-08-27*
+
+- **The manual called one of the sorting choices by the wrong name.** It listed *do it now*; the button says **Do now**. Small, and the kind of thing that makes you doubt the rest of a page — if the manual names a button you cannot find, the honest conclusion is that the manual is old.
+- **Found by a new check rather than by reading.** Every set of words the app puts on screen — the sorting choices, what each kind of thing is called, the name of each screen — is now read straight out of the app and held against the manual, the walkthrough and the new flowcharts. If a button is renamed and the help still says the old word, that now fails before it can ship.
+- **It was written because of what happened last release.** Renaming one control left the flowcharts saying the old name, on a page that had been rebuilt and republished the same day. Everything about it looked current. Nothing was checking the words themselves.
+
 ## 3.6.1 — ITERATION
 
 *2026-08-27*

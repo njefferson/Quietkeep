@@ -759,8 +759,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.1**. The tree
-  is called *Your projects, areas and goals*.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.2**. The words
+  the help quotes are now held to the words the app says.
+  **THREE HELP SURFACES NAMED A BUTTON THAT DID NOT EXIST, AND EVERY GATE WAS
+  GREEN.** 3.6.1 renamed one control. `manual.mjs --check` proved the manual page
+  matched its source; `manual-coverage.mjs` proved every surface was named. Both
+  passed, because neither reads the words ON a control, and neither has ever
+  looked at the walkthrough or the flowcharts at all. The flowcharts page had
+  been rebuilt and republished the same day and still said the old name.
+  **`tools/help-check.mjs` reads each set from the source that DEFINES it** —
+  routes from `clarify.ts`, container words from `tree.ts`, kind words from
+  `kind-words.ts`, destinations and the tree label from `index.html` — and never
+  restates one, because a list typed into a checker is the second copy the
+  checker exists to prevent.
+  **ITS FIRST RUN FOUND FOUR THINGS AND TWO OF THEM WERE THE GATE'S OWN
+  DECLARATIONS.** Real: the flowcharts named three of the four container kinds
+  (no *Outcome*), and the manual listed a sorting choice as *do it now* for a
+  button marked **Do now**. Not real: a coverage row claiming the flowcharts
+  enumerate all seven destinations, which they do not and never claimed to. A row
+  in that table is an assertion about a file, not a wish for one.
+  **PLANTED THREE WAYS**: a route renamed in the app (caught in all three help
+  surfaces by name), the tree label renamed (caught in two), and a retired name
+  crept back into help unmarked (caught in both directions at once).
+  **A HELP PAGE MAY STILL SAY WHAT A THING USED TO BE CALLED**, inside
+  `<span data-was>`. Per-mention and visible in the markup — a whole-file
+  exemption is where the privacy gate's material collected, and green there meant
+  *not looked at*.
+  **`docs/paths.html` IS IN THE REPO NOW.** The flowcharts were living in a
+  scratchpad that was cleared three times in one session; in the repo they are
+  version controlled and gateable. Deliberately NOT in `public/`: shipping it
+  would make it a surface owing the a11y walk, and that is a product decision
+  nobody has made.
+- **Superseded, and kept for the record: 3.6.1.** The tree is called
+  *Your projects, areas and goals*.
   **THE LABEL WAS THE HALF 3.6.0 DID NOT FIX, AND IT IS THE HALF THAT DECIDES.**
   3.6.0 made every row in the tree say its kind and left the button reading *How
   it hangs together*, on the reasoning that the surface now answered the question
@@ -1404,7 +1435,20 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.5.2** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.6.1** — promoted at
+  `0d5dd21` on 2026-08-27, carrying 3.6.0, the commit-guard change and 3.6.1.
+  Deploy success on that exact SHA, read at the STEP level: *Deploy to Cloudflare
+  Pages* 8s and *Deploy Quietkeep Sync* 6s, both real work rather than the
+  guard's skip branch, which also concludes success. The merged tree was asserted
+  byte-identical to `52fdf53`, the staging head that was walked.
+  **THE MERGE LANDED ON THE WRONG BRANCH LABEL FIRST.** `git checkout main`
+  aborted on a dirty working tree and the reset and merge that followed both ran
+  on `staging`, producing a correct promote commit — right parents, right tree —
+  sitting on the wrong branch. Nothing was pushed. Recovered by moving `main` to
+  it and restoring `staging` to `origin/staging`. **A compound `checkout && …`
+  that assumes the checkout succeeded is the same defect as LESSONS 170 with a
+  different verb: the second command runs wherever the first one left you.**
+- **Superseded, and kept for the record: 3.5.2** — promoted at
   `04562b5` on 2026-08-27, Deploy success on that exact SHA, read at the STEP
   level: *Deploy to Cloudflare Pages* 5s and *Deploy Quietkeep Sync* 6s, both
   real work rather than the guard's skip branch, which also concludes success.

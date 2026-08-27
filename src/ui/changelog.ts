@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.6.2',
+    kind: 'ITERATION',
+    date: '2026-08-27',
+    notes: [
+      '**The manual called one of the sorting choices by the wrong name.** It listed *do it now*; the button says **Do now**. Small, and the kind of thing that makes you doubt the rest of a page \u2014 if the manual names a button you cannot find, the honest conclusion is that the manual is old.',
+      '**Found by a new check rather than by reading.** Every set of words the app puts on screen \u2014 the sorting choices, what each kind of thing is called, the name of each screen \u2014 is now read straight out of the app and held against the manual, the walkthrough and the new flowcharts. If a button is renamed and the help still says the old word, that now fails before it can ship.',
+      '**It was written because of what happened last release.** Renaming one control left the flowcharts saying the old name, on a page that had been rebuilt and republished the same day. Everything about it looked current. Nothing was checking the words themselves.',
+    ],
+  },
+  {
     triplet: '3.6.1',
     kind: 'ITERATION',
     date: '2026-08-27',
