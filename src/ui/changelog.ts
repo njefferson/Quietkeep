@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.6.1',
+    kind: 'ITERATION',
+    date: '2026-08-27',
+    notes: [
+      '**\u201cHow it hangs together\u201d is called \u201cYour projects, areas and goals\u201d now.** Same screen, same contents, same place \u2014 behind *What you are holding*. Only the words on the button changed.',
+      '**Because the old name never said the thing it holds.** The app calls something a *project* when you make one, and again when you file something under one, and then the one screen that lists them all was named after its shape instead. If you went looking for your projects, nothing you could see said that is where they are.',
+      '**Last release fixed the inside of it, and that was only half.** The rows say *Project*, *Area* and *Goal* now, which is worth having \u2014 but you have to already be in there to read them. The name on the button is what decides whether you open it.',
+      '**It is not called \u201cProjects\u201d, deliberately.** Your goals and areas are in there too, and calling it Projects would be untrue about two of the three. It is also not somewhere to work: it is a way of seeing what you have, and the app never needs you to go there to plan a day.',
+    ],
+  },
+  {
     triplet: '3.6.0',
     kind: 'CAPABILITY',
     date: '2026-08-27',

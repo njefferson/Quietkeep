@@ -86,11 +86,28 @@ the tree by another name."* The tree already lists them, indented, with
 contents, capped per branch with the true total. Building a second one under a
 different name would be the tree twice.
 
-**It is not a rename.** *"How it hangs together"* is still the label on the
-control, and it is named after the shape rather than the thing. Whether that
-changes is a taste decision and it is the owner's, not this ADR's. What changed
-is that the rows inside it now say what they are, so the surface answers the
-question once you are in it.
+**It was not a rename — and then, one release later, it was.** 3.6.0 shipped
+with *"How it hangs together"* still on the control, on the reasoning that the
+rows inside it now said what they were, so the surface answered the question
+once you were in it.
+
+**That reasoning had a hole in it, and the hole is what a label is for.** You
+have to already be inside to read the rows. The label is what decides whether
+anybody opens the screen at all — and the report this ADR is about came from
+somebody standing ON the surface that holds the button, asking where their
+project was. They did not press it, because the label does not answer that
+question.
+
+So 3.6.1 renames it to **"Your projects, areas and goals"**. Not *Projects*:
+the surface holds goals and areas too, so that name is untrue about two of the
+three, and a label reading like a place to work invites exactly the climb law 4
+refuses. The form matches *Your data*, which the app already uses for a
+destination behind a button.
+
+**Nothing was overturned by it.** No ADR ever named that label — checked before
+changing it. It was never a decision, only a phrase that stayed for 140
+releases. The four surfaces that list containers now agree with each other and
+with the two pickers that taught the word in the first place.
 
 ## Consequences
 

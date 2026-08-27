@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.6.1 — ITERATION
+
+*2026-08-27*
+
+- **“How it hangs together” is called “Your projects, areas and goals” now.** Same screen, same contents, same place — behind *What you are holding*. Only the words on the button changed.
+- **Because the old name never said the thing it holds.** The app calls something a *project* when you make one, and again when you file something under one, and then the one screen that lists them all was named after its shape instead. If you went looking for your projects, nothing you could see said that is where they are.
+- **Last release fixed the inside of it, and that was only half.** The rows say *Project*, *Area* and *Goal* now, which is worth having — but you have to already be in there to read them. The name on the button is what decides whether you open it.
+- **It is not called “Projects”, deliberately.** Your goals and areas are in there too, and calling it Projects would be untrue about two of the three. It is also not somewhere to work: it is a way of seeing what you have, and the app never needs you to go there to plan a day.
+
 ## 3.6.0 — CAPABILITY
 
 *2026-08-27*

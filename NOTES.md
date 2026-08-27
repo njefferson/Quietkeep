@@ -759,8 +759,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.0**. The line
-  that says where a thing sits is a door now, and the tree says what each row is.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.1**. The tree
+  is called *Your projects, areas and goals*.
+  **THE LABEL WAS THE HALF 3.6.0 DID NOT FIX, AND IT IS THE HALF THAT DECIDES.**
+  3.6.0 made every row in the tree say its kind and left the button reading *How
+  it hangs together*, on the reasoning that the surface now answered the question
+  once you were inside it. You have to already be inside to read a row. The
+  report that started this came from somebody standing ON the surface that holds
+  that button, asking where their project was — they did not press it, because
+  the label does not answer that question. A label decides whether a screen is
+  opened at all, which is the one thing the rows inside it cannot do.
+  **NOT *PROJECTS*.** The surface holds goals and areas too, so that name is
+  untrue about two of the three, and a label reading like a place to work invites
+  exactly the climb law 4 refuses. *Your projects, areas and goals* carries the
+  word somebody would look for, stays true, and matches the *Your data* form the
+  app already uses for a destination behind a button.
+  **NOTHING WAS OVERTURNED.** No ADR ever named that label — checked before
+  changing it. It was never a decision, only a phrase that stayed for 140
+  releases.
+  **THE 3.6.0 NOTES WERE LEFT EXACTLY AS THEY WERE**, including the line saying
+  there is no screen called Projects and that whether the name changes is a
+  decision. That was true of 3.6.0, and the record says what was true when it was
+  written; the next release answering it is how a changelog is supposed to read.
+  Rewriting a shipped release's notes to match a later decision is the
+  falsification this repo refuses everywhere else.
+  **AND THE UNCOMMITTED FIRST ATTEMPT AT THIS RELEASE WAS DESTROYED BY A
+  MISDIRECTED RESET.** A `cd` into the hub in one shell call did not persist into
+  the next, so `git reset --hard origin/main` — written for the hub — ran here
+  and discarded every uncommitted file of it. Nothing committed was at risk and
+  the work was reproduced from the same sources. The rule it cost: **a destructive
+  git command names its repo by absolute path or `-C`, never by an assumed working
+  directory.**
+- **Superseded, and kept for the record: 3.6.0.** The line that says where a
+  thing sits became a door, and the tree started saying what each row is.
   **THERE WAS NO ROUTE UPWARD AT ALL.** Reported from a device: something was
   made into a container by filing a task under it, and then there was no way to
   see the container. Accurate as stated. The sheet lists what is UNDER a node and

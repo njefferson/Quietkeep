@@ -116,8 +116,9 @@ it, in place, without leaving the screen; the quiet line underneath names the
 groups it holds. It is shut to begin with because on a full store it is longer
 than everything else put together.
 
-- **How it hangs together** shows the tree, on request. It is never the screen
-  you land on.
+- **Your projects, areas and goals** shows the tree, on request — every project,
+  area and goal with what sits under it, and each row saying which it is. It is
+  never the screen you land on.
 - **Looking at** narrows the list to one branch without hiding anything from
   the offer, the proof line or search.
 
@@ -128,7 +129,8 @@ have** — every place you have named and how many things it reaches, counting
 everything inside a project that carries one. It is a readout: nothing on it can
 be changed from there.
 
-For projects and what sits inside what, **How it hangs together** is the tree.
+For projects and what sits inside what, **Your projects, areas and goals** is the
+tree.
 
 ### Say a thing belongs somewhere
 
@@ -280,7 +282,8 @@ when there is a reason.
   actually went, and **The places you have** with how much each one reaches.
 - **What you're working toward** — your goals, areas and outcomes, empty ones
   included.
-- **How it hangs together** — the tree, as an inspection, never a workspace.
+- **Your projects, areas and goals** — the tree, as an inspection, never a
+  workspace.
 - **The Menu** — the list where nothing is asking.
 - **What's here, and what you can open** — every block on the page, as a route
   to it.
