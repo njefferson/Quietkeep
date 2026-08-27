@@ -294,6 +294,17 @@ from `../noahjefferson` here rather than from the CI-only `.hub-gates` checkout.
 ../noahjefferson/docs-check.mjs .` — and dies on `--repo`, which it reads as a
 directory name.
 
+**AND RUN `branch-guard` THE WAY CI RUNS IT: `--repo . --artefact`.** The two
+spellings check different things and one passed while the other failed. Plain
+asserts `.git/hooks/pre-commit` is installed and current — a fact about YOUR
+clone. `--artefact` asserts the TRACKED `.githooks/pre-commit` matches
+`.branch-guard`, which is what every other clone gets. A hub change to
+`branch-guard.mjs` regenerates a different hook, so the tracked copy goes stale
+while yours stays right: the escape added on 2026-08-27 was live locally and
+missing from the tracked file, plain green, `--artefact` red, and CI found it.
+The local Spine cannot help — that step is one of the twelve it prints as
+CI-only.
+
 ## Accessibility
 WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the
 append-only register and it already records the design-time colour bindings —
