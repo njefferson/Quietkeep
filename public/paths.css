@@ -1,0 +1,509 @@
+/* ── Quietkeep's own roles. Light is the base; the two dark blocks only
+      redefine tokens, so nothing is defined solely behind a media query. ── */
+:root {
+  --bg:       #F4F1E9;
+  --surface:  #FFFFFF;
+  --ink:      #1B2333;
+  --ink-soft: #4C5670;
+  --line:     #8E8A7F;
+  --accent:   #33425F;
+  --warm:     #7A4E00;
+  --sunk:     #EDE9DE;
+  --edge:     #DAD5C9;
+  --rule:     #C7C2B5;
+  --act-bg:   #FBF4E6;
+  --act-edge: #C79A4D;
+  --end-edge: #93A0BA;
+  --wash:     #EDEFF4;
+  --wash-edge:#C5CBD8;
+  --chip:     #E6E9F0;
+  --shadow:   0 1px 2px rgba(27, 35, 51, .06), 0 8px 24px -16px rgba(27, 35, 51, .28);
+
+  /* NO WEBFONT, and that is a CSP fact rather than a taste one: this page ships
+     inside the app, whose policy is `style-src 'self'; font-src 'self'`, so a
+     Google Fonts link is refused and the page would render in whatever the
+     browser chose. The sans-display / serif-body pairing survives on faces
+     every device already has, and the page costs no network at all. */
+  --display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --body:    Georgia, "Times New Roman", Times, serif;
+  --mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --col: 40rem;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:       #141A26;
+    --surface:  #1E2637;
+    --ink:      #F2F0EA;
+    --ink-soft: #B3BCCE;
+    --line:     #6A7896;
+    --accent:   #AFC0DC;
+    --warm:     #F5C978;
+    --sunk:     #19212F;
+    --edge:     #3A465C;
+    --rule:     #4A5875;
+    --act-bg:   #262A2E;
+    --act-edge: #8A6E38;
+    --end-edge: #6E7E9C;
+    --wash:     #242E40;
+    --wash-edge:#3D4B66;
+    --chip:     #2A3448;
+    --shadow:   0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+  }
+}
+:root[data-theme="dark"] {
+  --bg:       #141A26;
+  --surface:  #1E2637;
+  --ink:      #F2F0EA;
+  --ink-soft: #B3BCCE;
+  --line:     #6A7896;
+  --accent:   #AFC0DC;
+  --warm:     #F5C978;
+  --sunk:     #19212F;
+  --edge:     #3A465C;
+  --rule:     #4A5875;
+  --act-bg:   #262A2E;
+  --act-edge: #8A6E38;
+  --end-edge: #6E7E9C;
+  --wash:     #242E40;
+  --wash-edge:#3D4B66;
+  --chip:     #2A3448;
+  --shadow:   0 1px 2px rgba(0, 0, 0, .4), 0 8px 24px -16px rgba(0, 0, 0, .8);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1.0625rem/1.65 var(--body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+.wrap {
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 7vw, 5rem) clamp(1.1rem, 4vw, 2rem) 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3rem, 7vw, 4.5rem);
+}
+
+/* ── masthead ─────────────────────────────────────────────────────────── */
+.mast { display: flex; flex-direction: column; gap: 1.1rem; }
+
+.eyebrow {
+  font: 600 .6875rem/1 var(--display);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+}
+/* the lit opening, at label size */
+.eyebrow::before {
+  content: "";
+  width: .5rem; height: .8rem;
+  border-radius: 2px 2px 0 0;
+  background: var(--warm);
+  flex: none;
+}
+
+h1 {
+  margin: 0;
+  font: 700 clamp(2rem, 7vw, 2.9rem)/1.08 var(--display);
+  letter-spacing: -.024em;
+  text-wrap: balance;
+}
+
+.standfirst {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--ink-soft);
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.mast-note {
+  margin: .4rem 0 0;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+  font-size: .9375rem;
+  color: var(--ink-soft);
+}
+
+/* ── group headings ───────────────────────────────────────────────────── */
+.group { display: flex; flex-direction: column; gap: 1.6rem; }
+
+.group > h2 {
+  margin: 0;
+  font: 600 .75rem/1 var(--display);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding-bottom: .8rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ── one process ──────────────────────────────────────────────────────── */
+.proc {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: clamp(1.2rem, 4vw, 1.9rem);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.proc > h3 {
+  margin: 0;
+  font: 600 1.375rem/1.2 var(--display);
+  letter-spacing: -.012em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  line-height: 1.55;
+}
+.when {
+  margin: -.55rem 0 0;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  font-style: italic;
+}
+
+/* ── the flow ─────────────────────────────────────────────────────────── */
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flow li {
+  position: relative;
+  background: var(--sunk);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: .7rem .9rem;
+  font-size: .9688rem;
+  line-height: 1.45;
+}
+/* the connector: a straight rule, never a curl */
+.flow li + li { margin-top: 1.5rem; }
+.flow li + li::before {
+  content: "";
+  position: absolute;
+  left: 1.4rem;
+  top: -1.5rem;
+  width: 2px;
+  height: 1.5rem;
+  background: var(--rule);
+}
+.flow li + li::after {
+  content: "";
+  position: absolute;
+  left: calc(1.4rem - 3px);
+  top: -.42rem;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--line);
+}
+
+/* the moment the person acts — the app's amber, spent only here */
+.flow li.act {
+  background: var(--act-bg);
+  border-color: var(--act-edge);
+  box-shadow: inset 3px 0 0 var(--warm);
+  padding-left: 1.1rem;
+}
+/* where the path ends */
+.flow li.end {
+  background: var(--surface);
+  border-color: var(--end-edge);
+  border-radius: 999px;
+  padding-inline: 1.2rem;
+  font-weight: 500;
+}
+.flow li b { font-weight: 600; font-family: var(--display); }
+
+.flow li .aside {
+  display: block;
+  margin-top: .2rem;
+  color: var(--ink-soft);
+  font-size: .875rem;
+  line-height: 1.4;
+}
+
+/* ── a fork: one question, several ways out ───────────────────────────── */
+.fork {
+  border: 1px dashed var(--rule);
+  border-radius: 8px;
+  padding: .85rem .9rem 1rem;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+}
+.fork > p {
+  margin: 0;
+  font: 600 .9375rem/1.3 var(--display);
+}
+.outs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.outs li {
+  flex: 1 1 11rem;
+  background: var(--sunk);
+  border: 1px solid var(--edge);
+  border-radius: 8px;
+  padding: .55rem .7rem;
+  font: 600 .9063rem/1.3 var(--display);
+}
+.outs li span {
+  display: block;
+  margin-top: .2rem;
+  font: 400 .8125rem/1.4 var(--body);
+  color: var(--ink-soft);
+}
+
+/* ── the ordered ladder (the only place numbers mean anything) ─────────── */
+.ladder {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: rung;
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+.ladder li {
+  counter-increment: rung;
+  display: grid;
+  grid-template-columns: 1.6rem 1fr;
+  gap: .7rem;
+  align-items: baseline;
+  padding: .5rem .7rem;
+  border-radius: 8px;
+  background: var(--sunk);
+  border: 1px solid var(--edge);
+  font-size: .9375rem;
+}
+.ladder li::before {
+  content: counter(rung);
+  font: 600 .8125rem/1.5 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+}
+.ladder li em {
+  display: block;
+  font-style: normal;
+  color: var(--ink-soft);
+  font-size: .8438rem;
+  margin-top: .1rem;
+}
+.said {
+  font-family: var(--mono);
+  font-size: .875em;
+  background: var(--chip);
+  border-radius: 4px;
+  padding: .08em .34em;
+}
+
+/* ── the loop back: a straight return, labelled ───────────────────────── */
+.loop {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0;
+  padding: .5rem .8rem;
+  border-left: 2px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: .875rem;
+}
+.loop::before {
+  content: "\2191";
+  font-family: var(--mono);
+  color: var(--accent);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* ── what it never does ───────────────────────────────────────────────── */
+.never {
+  margin: 0;
+  padding: .8rem .95rem;
+  border-radius: 8px;
+  background: var(--wash);
+  border: 1px solid var(--wash-edge);
+  font-size: .9063rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.never b {
+  font: 600 .6875rem/1 var(--display);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: .35rem;
+}
+
+/* ── close ────────────────────────────────────────────────────────────── */
+.close {
+  border-top: 1px solid var(--rule);
+  padding-top: 1.6rem;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+.close p { margin: 0; }
+.close strong { color: var(--ink); font-weight: 600; }
+
+/* ── contents ─────────────────────────────────────────────────────────── */
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: 1.1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.toc > h2 {
+  margin: 0;
+  font: 600 .6875rem/1 var(--display);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.toc-set { display: flex; flex-direction: column; gap: .35rem; }
+.toc-set > b { font: 600 .8438rem/1.4 var(--display); letter-spacing: .03em; }
+.toc-set ul {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: .2rem .55rem;
+  font-size: .875rem; line-height: 1.5;
+}
+.toc-set li::after { content: "·"; color: var(--line); margin-left: .55rem; }
+.toc-set li:last-child::after { content: ""; margin: 0; }
+/* EVERY LINK IS A TARGET A FINGER TAKES (WCAG 2.5.8, 24px). Measured at 390px
+   these were 16px tall — the page's own walk failed on them the first time it
+   ran, which is what the walk is for. `inline-flex` with a min-height rather
+   than block padding, so they still wrap as a list of words. */
+.toc-set a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--end-edge);
+}
+.toc-set a:hover { border-bottom-color: var(--accent); }
+
+/* ── section preamble ─────────────────────────────────────────────────── */
+.intro {
+  margin: -.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: .9375rem;
+  line-height: 1.55;
+  max-width: 34rem;
+}
+
+/* ── a single move, not a path ────────────────────────────────────────── */
+.strips {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: var(--r);
+  padding: clamp(1.2rem, 4vw, 1.9rem);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+}
+.strips > h3 { margin: 0; font: 600 1.375rem/1.2 var(--display); letter-spacing: -.012em; }
+.strips > .why { margin: -.9rem 0 0; color: var(--ink-soft); font-size: .9375rem; font-style: italic; }
+.strip { display: flex; flex-direction: column; gap: .45rem; }
+.strip > h4 { margin: 0; font: 600 1rem/1.3 var(--display); }
+.move {
+  margin: 0;
+  display: flex; flex-wrap: wrap; align-items: center; gap: .35rem;
+  font-size: .9063rem;
+}
+.move span:not(.then) {
+  padding: .45rem .65rem;
+  border-radius: 6px;
+  border: 1px solid var(--edge);
+  background: var(--sunk);
+  line-height: 1.4;
+}
+.move span.act {
+  background: var(--act-bg);
+  border-color: var(--act-edge);
+  box-shadow: inset 3px 0 0 var(--warm);
+  padding-left: .85rem;
+}
+.move span.end {
+  background: var(--surface);
+  border-color: var(--end-edge);
+  border-radius: 999px;
+  padding-inline: .9rem;
+}
+.move .then {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+}
+.move i {
+  font-style: normal;
+  color: var(--line);
+  font-family: var(--mono);
+  flex: none;
+}
+.strip > .note { margin: 0; color: var(--ink-soft); font-size: .8594rem; line-height: 1.5; }
+
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ── the shell's own chrome (tools/doc-page.mjs adds it) ────────────────── */
+main { max-width: none; margin: 0; }
+.back {
+  /* inline-flex + min-height, not inline-block: at 390px this measured 21px
+     tall and the page's own walk refused it (WCAG 2.5.8 wants 24). */
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  margin: clamp(1.6rem, 5vw, 2.4rem) 0 0 clamp(1.1rem, 4vw, 2rem);
+  font: 600 .9375rem/1.4 var(--display);
+  color: var(--accent);
+}
+main > footer {
+  max-width: var(--col);
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 4vw, 2rem) 3rem;
+  color: var(--ink-soft);
+  font-size: .875rem;
+}
+main > footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  color: var(--accent);
+}

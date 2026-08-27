@@ -759,8 +759,44 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.6.2**. The words
-  the help quotes are now held to the words the app says.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.7.0**. The
+  flowcharts ship as a page, linked from Help, and are measured when they change.
+  **SHIPPING IT WAS NOT A FILE COPY.** The site's CSP is `style-src 'self';
+  font-src 'self'`, so the self-contained source — inline `<style>`, two Google
+  faces — would have rendered as unstyled markup in whatever font the browser
+  chose. `thesis.mjs` records that exact failure from 1.7.2. So `tools/paths.mjs`
+  splits the source into `public/paths.html` + `public/paths.css`, gated by
+  `paths:check`, and the source dropped its webfonts entirely rather than run two
+  typographic realities. The page now makes no network request at all.
+  **MEASURED WHEN IT CHANGES, NOT ON EVERY RUN**, which is the shape asked for. A
+  static document shares no code with the app and cannot regress from an app
+  change. `tools/paths-a11y.mjs` stamps on its own content: unchanged it exits in
+  0.3s and says so; changed it walks both themes at 390px and 320px/200%. Proven
+  both ways before landing.
+  **IT SERVES THE PAGE UNDER THE REAL HEADERS**, which took two attempts: both
+  forms of Playwright's script injection are inline and `script-src 'self'`
+  refuses them, `path` included. Axe is served as a same-origin file instead. The
+  alternative — relaxing the CSP for the walk — measures a page that does not
+  ship.
+  **ITS FIRST RUN FOUND THE PAGE'S OWN LINKS AT 16–21px** against the 24px floor
+  (WCAG 2.5.8). Fixed with `inline-flex` and a min-height, not block padding, so
+  they still wrap as a list of words.
+  **AND THE APP'S OWN WALK REFUSED THE FIRST PLACEMENT.** Linked from the footer,
+  three links in that line wrapped at phone width into two 44px boxes stacked
+  with zero gap — a mis-tap. The footer's own comment already recorded it sitting
+  one over its ceiling. Moved to Help, where somebody looks for this anyway; a
+  reference page is not chrome. The Help copy then blew two size budgets and was
+  cut rather than accommodated, landing at **3699 words against a 3700 budget** —
+  one word of headroom, which is worth knowing before adding a sentence anywhere.
+  **THE THREE OLDER HOSTED PAGES HAVE NEVER BEEN MEASURED.** `manual.html`,
+  `why.html` and `plan.html` have shipped since 2.29.0 with no accessibility
+  check of any kind. This is one quarter of that hole closed and the rest named.
+  **AND NOTHING ASSERTED THE WORKER CACHES THEM.** `help-check` now derives the
+  list from the app's own links: a linked page missing from `SHELL` does not just
+  miss offline, it falls back to the app shell and lands the reader elsewhere
+  (the 1.7.2 defect). `plan.html` passes by being `noindex` and linked nowhere.
+- **Superseded, and kept for the record: 3.6.2.** The words the help quotes are
+  held to the words the app says.
   **THREE HELP SURFACES NAMED A BUTTON THAT DID NOT EXIST, AND EVERY GATE WAS
   GREEN.** 3.6.1 renamed one control. `manual.mjs --check` proved the manual page
   matched its source; `manual-coverage.mjs` proved every surface was named. Both

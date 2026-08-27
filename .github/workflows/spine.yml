@@ -256,6 +256,21 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run help:check
 
+      # The hosted flowcharts page is SPLIT out of docs/paths.html, because the
+      # source has to be self-contained for the Artifact and the shipped page
+      # cannot be: the CSP is `style-src 'self'` and refuses an inline <style>.
+      - name: The flowcharts page matches its source
+        if: ${{ !cancelled() }}
+        run: npm run paths:check
+
+      # AND IT IS MEASURED WHEN IT CHANGES, not on every run. A static document
+      # shares no code with the app and cannot regress from an app change, so
+      # re-walking it every time would buy nothing. Stamped on its own content:
+      # unchanged, it exits in a third of a second and says so.
+      - name: The flowcharts page is measured, when it changes
+        if: ${{ !cancelled() }}
+        run: npm run paths:a11y
+
       # The unit tests prove the spine folds. They cannot prove the bundle
       # loads, that Dexie opens in a browser, or that a captured thought comes
       # back — which is the app's one promise. Only driving the built page does

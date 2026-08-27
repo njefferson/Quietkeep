@@ -93,7 +93,13 @@ const SETS = {
 // A surface appears here only for a set it genuinely reproduces. Adding a row
 // is a claim that the file lists that set in full; it is not a wish.
 const COVERS = [
-  ['docs/paths.html', 'routes',       'the sort fork lists every choice'],
+  ['docs/paths.html',   'routes',    'the sort fork lists every choice'],
+  // THE SHIPPED COPY IS CHECKED SEPARATELY from its source. `paths:check`
+  // proves they match today; this proves the one a reader actually loads names
+  // the app that exists, and does not depend on that other gate having run.
+  ['public/paths.html', 'routes',    'the shipped page a reader loads'],
+  ['public/paths.html', 'kinds',     'the shipped page a reader loads'],
+  ['public/paths.html', 'treeLabel', 'the shipped page a reader loads'],
   ['docs/paths.html', 'kinds',        'the tree path names what each row says'],
   ['docs/paths.html', 'treeLabel',    'the find-a-project path names the destination'],
   ['docs/manual.md',  'routes',       'the sorting section lists them'],
@@ -147,6 +153,25 @@ for (const file of HELP) {
       `${file} does not say "${phrase}" — ${why}`);
   }
 }
+
+// ── AND EVERY PAGE THE APP LINKS TO SURVIVES BEING OFFLINE ───────────────────
+// The worker maps a navigation to its OWN cached body via SHELL, so a hosted
+// page left out of that list does not merely miss offline — it falls back to
+// the app shell and lands the reader somewhere else entirely (the 1.7.2 defect,
+// found on device). Nothing asserted this, which is how `plan.html` ended up
+// uncached and unnoticed.
+//
+// THE POPULATION IS DERIVED FROM THE LINKS, not from a list kept here. A page
+// nobody can reach owes nothing — `plan.html` is `noindex` and linked from
+// nowhere, and passes by being unreachable rather than by being excused.
+const sw = read('public', 'sw.js');
+const linked = [...new Set([...shell.matchAll(/href="\/([a-z0-9-]+\.html)"/g)].map((m) => m[1]))];
+const uncached = linked.filter((f) => !sw.includes(`'./${f}'`));
+(linked.length > 0 ? ok : fail)(
+  `the app links to ${linked.length} hosted page(s) — ${linked.join(', ') || 'NONE FOUND, so the check below is vacuous'}`);
+(uncached.length === 0 ? ok : fail)(
+  `every page the app links to is precached by the worker` +
+  (uncached.length ? ` — NOT CACHED: ${uncached.join(', ')}, so offline they fall back to the app shell` : ''));
 
 console.log(failed === 0
   ? '\nEvery help surface names the app that exists.\n'

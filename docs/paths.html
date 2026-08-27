@@ -5,10 +5,6 @@
      the reason ladder, the container kinds and the destination labels are the
      app's own strings and the gate fails when they drift apart. -->
 <title>Every Path Through Quietkeep</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,400;7..72,500;7..72,600&display=swap">
-
 <style>
 /* ── Quietkeep's own roles. Light is the base; the two dark blocks only
       redefine tokens, so nothing is defined solely behind a media query. ── */
@@ -31,8 +27,13 @@
   --chip:     #E6E9F0;
   --shadow:   0 1px 2px rgba(27, 35, 51, .06), 0 8px 24px -16px rgba(27, 35, 51, .28);
 
-  --display: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --body:    "Literata", Georgia, "Times New Roman", serif;
+  /* NO WEBFONT, and that is a CSP fact rather than a taste one: this page ships
+     inside the app, whose policy is `style-src 'self'; font-src 'self'`, so a
+     Google Fonts link is refused and the page would render in whatever the
+     browser chose. The sans-display / serif-body pairing survives on faces
+     every device already has, and the page costs no network at all. */
+  --display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --body:    Georgia, "Times New Roman", Times, serif;
   --mono:    ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --col: 40rem;
@@ -411,7 +412,17 @@ h1 {
 }
 .toc-set li::after { content: "·"; color: var(--line); margin-left: .55rem; }
 .toc-set li:last-child::after { content: ""; margin: 0; }
-.toc-set a { text-decoration: none; border-bottom: 1px solid var(--end-edge); }
+/* EVERY LINK IS A TARGET A FINGER TAKES (WCAG 2.5.8, 24px). Measured at 390px
+   these were 16px tall — the page's own walk failed on them the first time it
+   ran, which is what the walk is for. `inline-flex` with a min-height rather
+   than block padding, so they still wrap as a list of words. */
+.toc-set a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--end-edge);
+}
 .toc-set a:hover { border-bottom-color: var(--accent); }
 
 /* ── section preamble ─────────────────────────────────────────────────── */

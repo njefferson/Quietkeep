@@ -183,11 +183,43 @@ repo's privacy gate found its material collecting.
 Its first run found four things, two of which were the declarations being wrong
 rather than the pages. Planted three ways before landing.
 
-**[`docs/paths.html`](docs/paths.html) is the flowcharts** — every path in,
-through and out, published as an Artifact. It lives in the repo so it is version
-controlled and `help:check` can hold it; it is **not** a shipped app surface, so
-it carries no a11y-gate burden. Putting it in `public/` would be a product
-decision and is not one that has been made.
+## The flowcharts ship, and are measured only when they change
+**[`docs/paths.html`](docs/paths.html) is the SOURCE** — authored, self-contained,
+one file with its styles inline, which is what an Artifact has to be.
+**`public/paths.html` + `public/paths.css` are the SHIPPED page**, split out by
+[`tools/paths.mjs`](tools/paths.mjs) and gated by `paths:check`. The split is not
+tidiness: the site's CSP is `style-src 'self'; font-src 'self'`, so an inline
+`<style>` is refused and a webfont never loads. `thesis.mjs` learned that in
+1.7.2 when the first deployed thesis shipped unstyled. **The source therefore
+carries no webfont at all** — the sans-display/serif-body pairing runs on faces
+every device already has, and the page makes no network request.
+
+It reuses `doc-page.mjs`'s `page()` rather than a second shell, and is linked
+from **Help**, not the footer: three links in that footer line wrapped at phone
+width into two 44px boxes stacked with no gap, which the a11y walk refused as a
+mis-tap. That line's own comment already recorded it sitting one over its ceiling.
+
+**[`tools/paths-a11y.mjs`](tools/paths-a11y.mjs) measures it when it changes, and
+not otherwise.** A static document shares no code with the app and cannot regress
+from an app change, so re-walking it every run would buy nothing. It is stamped
+on its own content in `.paths-a11y-stamp`: unchanged, it exits in a third of a
+second and says so; changed, it walks both themes at 390px and at 320px/200%.
+It serves the page under the REAL headers and injects axe as a same-origin file,
+because `script-src 'self'` refuses both forms of inline injection — and a walk
+run under a relaxed CSP is not a walk of the page that ships.
+
+Its first run found the page's own links at 16–21px against the 24px floor.
+
+**The three older hosted pages have never been measured at all.**
+`manual.html`, `why.html` and `plan.html` have shipped since 2.29.0 with no
+accessibility check of any kind — the app walk has never looked at them and
+nothing else does. This closes one quarter of that hole and names the rest.
+
+**And every page the app LINKS to must be precached**, asserted by `help-check`
+from the links rather than from a list: the worker maps a navigation to its own
+cached body via `SHELL`, so a page left out does not merely miss offline, it
+falls back to the app shell and lands the reader somewhere else (the 1.7.2
+defect). `plan.html` passes by being `noindex` and linked from nowhere.
 
 ## Run the whole Spine before you push: `npm run spine`
 It reads `.github/workflows/spine.yml` and runs every step of it, in order, on
