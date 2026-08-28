@@ -840,7 +840,43 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.8.2**. Every
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.0**. A passed
+  date can have its date taken off, and more than one can be settled at once
+  without a week's absence first.
+  **THE MISSING RESOLUTION.** The five choices all asked for a fresh decision
+  about the WORK — smaller, hand it over, renegotiate, a new day, or put it down
+  — and none of them said the honest thing about a day that got away, which is
+  that the commitment is unchanged and only the date is wrong. So the way out
+  was either to schedule it again, which is what had just failed, or the Menu,
+  which does not come back on its own. `undate` retires every passed clock and
+  sets a `review` for today: back in the ordinary run of things, ranked like
+  anything else. It keeps a FUTURE suspense, which `to-menu` sheds — the Menu
+  belt refuses a demand-carrying landing and this landing is ordinary.
+  **AND THE BULK GESTURE WAS BUILT AND UNREACHABLE.** The amnesty resolved every
+  passed date in one act and required `LAPSE_DAYS = 7` to appear. What it removes
+  is not work, it is the block of decisions standing between somebody and any
+  work at all — and that block forms after one missed day in the same shape. It
+  is `resolveAllPassedEvents` now, one body with two callers: the replan surface
+  leads with `undate` at two or more dates, the amnesty keeps `to-menu`, which is
+  right after a fortnight and far too strong after a day.
+  **THE RESEARCH IS GRADED IN `docs/nd-collisions.md` AND WAS READ RATHER THAN
+  RECALLED.** Cowan 2001 (refining Miller 1956) and Sweller 1988 on why a block
+  of N decisions costs more than N spread out — which does not care whether N is
+  twenty or four. Dai, Milkman & Riis 2014 on the landmark being *coming back*
+  rather than the passing of a week, which is what the seven-day gate was
+  quietly contradicting. Brehm 1966 on why the bulk route sits BESIDE the
+  per-card options and never replaces them. Demand avoidance is graded
+  **Contested** there and carries none of this.
+  **PLANTED TWICE.** Removing the `undate` clock and capping the bulk act at
+  three each turn assertions red — four of the eight new ones. Two stay green
+  under both plants on purpose: they are the restraint half (nothing marked
+  done, nothing deleted) and must hold either way. One assertion was found to be
+  measuring nothing before that: it read `n.clocks.review` and the GATE writes a
+  cure, so it passed with the branch's own clock removed. The one that fails is
+  the one that asks whether the thing is actually OFFERED.
+  **WHAT IS NAMED AS STILL BROKEN:** the true total is still a number on a
+  screen after a long absence, and no long absence has happened yet.
+- **Superseded, and kept for the record: 3.8.2.** Every
   dialog decides where its own focus lands, and the check asserts the DECISION.
   **TWENTY-ONE SHEETS LEFT IT TO THE ENGINE, AND THE ENGINES DISAGREE.** With no
   `autofocus`, no `tabindex="-1"` target and no `.focus()` after `showModal()`,

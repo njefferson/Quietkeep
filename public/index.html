@@ -676,6 +676,24 @@
          control it was on (WCAG 2.4.3). -->
     <h2 id="replan-heading" class="section" tabindex="-1">Needs a new plan</h2>
     <p id="replan-count" class="replan-count"></p>
+    <!-- ALL OF THEM AT ONCE (3.9.0, ADR-0012). What this removes is not work —
+         it is the block of decisions standing between somebody and any work at
+         all, which is the whole cost of a day that got away. It existed as the
+         amnesty and needed seven days away to reach; the block forms after ONE
+         missed day in the same shape, only smaller.
+
+         RENDERED, not written here. The words say how many dates it will act on
+         and the buttons say what each will do, and neither is knowable from the
+         markup — the count is the true total rather than the three on screen,
+         because the cap governs what a surface may show and never what somebody
+         has asked for. It also keeps the shell's word and control budgets out of
+         a block whose size is a property of somebody's store.
+
+         BESIDE the per-card options, never instead of them. A bulk route that
+         replaced individual choice would be exactly the choice-removing shape
+         that produces resistance (reactance, Brehm 1966 — `docs/nd-collisions.md`
+         grades it), on the one surface least able to afford any. -->
+    <div id="replan-bulk" class="replan-bulk" hidden></div>
     <ul id="replan-cards" class="replan-cards"></ul>
     <p id="replan-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>

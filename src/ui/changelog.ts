@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.9.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-28',
+    notes: [
+      '**A date that went by can now just have its date taken off.** *Take the date off* \u2014 still yours, no date, and it comes back on its own like anything else. The five choices there all asked you to decide something new about the work: make it smaller, hand it over, renegotiate it, name a new day, or put it down. None of them said the honest thing about a day that got away from you, which is that nothing changed except the date.',
+      '**And when more than one date has gone by, you can settle all of them in one go.** A line above the cards, saying how many \u2014 the true number, not the three on screen. Take the dates off all of them, or put them all on the Menu.',
+      '**That gesture already existed and you could not reach it.** It needed seven days away before it appeared. What it takes away is not work; it is the pile of decisions standing between you and doing anything at all \u2014 and that pile forms after ONE missed day in exactly the same shape, only smaller. It is offered wherever the cards are now.',
+      '**Nothing is marked done and nothing is deleted**, and the one-at-a-time choices stay exactly where they were underneath. A shortcut that replaced them would be taking the choice away on the screen least able to afford it.',
+      '**What is still not right:** the count of dates that have gone by is still a number on a screen after a long absence. It is honest and it is capped at three cards, and it is still the closest thing here to the thing this whole surface exists to avoid. It has never been seen after a real fortnight away.',
+    ],
+  },
+  {
     triplet: '3.8.2',
     kind: 'ITERATION',
     date: '2026-08-28',

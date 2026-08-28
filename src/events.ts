@@ -105,7 +105,7 @@ export type Capacity = (typeof CAPACITIES)[number];
 export const MAGNITUDES = ['pebble', 'rock', 'boulder'] as const;
 export type Magnitude = (typeof MAGNITUDES)[number];
 export type ProjectRole = 'execute' | 'track';
-export type ReplanChoice = 'compress' | 'escalate' | 'renegotiate' | 'new-date' | 'to-menu';
+export type ReplanChoice = 'compress' | 'escalate' | 'renegotiate' | 'new-date' | 'undate' | 'to-menu';
 export type MenuCategory = 'read' | 'try' | 'go' | 'make' | 'research' | 'save-for';
 export type Ownership = 'mine-to-solve' | 'mine-to-track' | 'not-mine-to-carry';
 

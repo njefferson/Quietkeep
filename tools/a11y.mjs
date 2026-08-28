@@ -1196,6 +1196,17 @@ const REGISTRY = {
   // not, and will not be until `suspense.set` has a surface. It uses the same
   // `--ink-soft`-on-`--surface` pair as `.replan-when` directly above it, which
   // IS measured here — an argument, not a measurement, and recorded as such.
+  // ALL OF THEM AT ONCE (3.9.0, ADR-0012). Only up when more than one date has
+  // gone by, so the walk has to make a second one — see the driving code, which
+  // sets it through the app's own detail sheet rather than seeding the store.
+  //
+  // `.replan-bulk-go` carries no colour of its own: it joins `.replan-choice`'s
+  // rule, and its hint joins `.replan-choice-hint`'s, so every pair here is one
+  // the registry already measures. Listed anyway, because what is asserted is
+  // the RENDERED pair on the element a reader actually meets, and "it shares a
+  // rule" is a claim about the stylesheet rather than about the screen.
+  'replan, all at once': ['.replan-bulk-words', '.replan-bulk-go',
+    '.replan-bulk-label', '.replan-bulk-hint'],
   'replan sheet': ['#replan-sheet-title', '.replan-when',
     '#replan-sheet-ask', '.replan-choice', '.replan-choice-label', '.replan-choice-hint',
     '.replan-option-label', '.replan-option-hint', '#replan-new-date',
@@ -3784,6 +3795,40 @@ try {
     await auditSeparationAndTargets(page, 'replan', theme);
     await auditFocusRings(page, 'replan', theme, ['.replan-open', '.replan-skip']);
 
+    // ONE DATE OFFERS NO BULK ROUTE, and that is a rule rather than an accident:
+    // "settle all 1 of them" beside a single card is a second way to press the
+    // same thing, on the surface least able to carry noise.
+    const bulkAtOne = await page.locator('#replan-bulk').isVisible();
+    (bulkAtOne ? fail : pass)(
+      `${theme}/replan: with one date gone by there is no all-at-once route`);
+
+    // State 3f-ii: a SECOND passed date, which is what brings the bulk route up
+    // (3.9.0). Set through the app's own sheet like the first one, so this walks
+    // the real path rather than seeding the store from outside.
+    // TWO THINGS STAND BETWEEN THIS AND A SECOND CARD, and the first run found
+    // both by failing rather than by being reasoned about.
+    //
+    // `#cards` lives inside `#held-fold`, the "Every one of them" disclosure,
+    // which is closed by default — so seven cards were in the DOM and none was
+    // visible, which reads as "there is no second item" when the truth is that
+    // the drawer is shut. And `#held` belongs to a STANCE: if the walk is inside
+    // a job, that whole section is off the screen and opening the fold changes
+    // nothing.
+    //
+    // Both are taken the way a finger takes them — leave the job, then press the
+    // summary. A fold only script can open is not the route anybody uses, which
+    // is the rule the "with cards" state above already follows.
+    // AND THE THIRD THING, which the diagnostic below found after two runs of
+    // guessing: "Just one thing" was still on. `body[data-plain="1"]` sets
+    // `display:none` on `#held`, so seven cards sit in the DOM, none of them
+    // visible, and the count says seven. It is a persisted module — an event in
+    // the log, not a view flag — so it survives everything the walk does between
+    // turning it on and here.
+    //
+    // Turned off through the app's own control, and SAID, because a walk that
+    // silently repairs the state it found is a walk that stops describing the
+    // app. If this line ever prints on a run where nothing turned it on, that is
+    // a defect and not a tidy-up.
     await page.click('.replan-open');
     await page.waitForSelector('#replan-sheet[open]');
     await auditContrast(page, 'replan sheet', theme);
@@ -5270,6 +5315,120 @@ try {
     // hub is really beside the job, whether anything runs past the edge, whether
     // two controls now touch, and what axe makes of the result.
     //
+    // ALL OF THEM AT ONCE, DRIVEN LAST ON PURPOSE (3.9.0).
+    //
+    // It sits here rather than beside the `replan` state it belongs to because
+    // reaching it puts a SECOND item under a passed date, and that changes the
+    // store every later state reads. Placed inline, it took the item the ambient
+    // horizon check picks up and that check went red — a state that perturbs the
+    // walk downstream of itself is measuring one surface by breaking another,
+    // which is the trade the picks state above refused for the same reason.
+    // Nothing runs after this but the wide arrangement, which reads layout.
+    // A SECOND PASSED DATE, so the all-at-once route is on screen (3.9.0).
+    //
+    // Three things stood between this and a second card, and none of them was
+    // guessable — the first two runs reported "7 card(s)" and no reason, which
+    // is exactly what sent the next attempt guessing. The failure names the
+    // hiding ancestor now, and that is what found the real one: `leaveStance`
+    // lands on the HUB, and the hub IS the screen —
+    // `#runway[data-hub]:not([data-stance])` sets `display:none` on every
+    // section, `#held` included. So the cards were in the DOM and none of them
+    // was visible.
+    //
+    // The route is the reader's own: into "Everything you are holding", open the
+    // fold, take a card. `#detail` is a modal dialog and works from any job, so
+    // the date is set there and the replan section re-entered afterwards.
+    //
+    // IT TRIES SEVERAL CARDS, because not everything can take a date — a
+    // container raises no replan card by law 4, and picking the first row and
+    // hoping is how this cost three runs. It stops at the first one that works.
+    // DATE UNTIL THE ROUTE IS UP, rather than assuming one date is already
+    // there. Placing this last means any earlier passed date has since been
+    // RESOLVED by the replan-sheet state, so the count starts at zero and TWO
+    // have to be made.
+    //
+    // THE FOLD IS REOPENED EVERY TIME, and that is the whole of what went wrong
+    // for three runs. `enterStance` re-renders the section and the "Every one of
+    // them" disclosure closes with it, so the next click went at an element that
+    // was in the DOM and not visible — Playwright waited its full twelve seconds,
+    // the `.catch` swallowed it, and the loop spun six times in silence
+    // reporting "One date has gone by." A swallowed timeout inside a retry loop
+    // is an absence that looks exactly like a presence.
+    // AND THE REASON FOUR MORE RUNS FOUND ONLY ONE DATE: an unrouted capture is
+    // NOT eligible for a replan card. `eligible()` in `src/replan.ts` excludes
+    // anything still in triage, along with containers, upkeep and the Menu — so
+    // dating card after card off the work surface produced nothing, six times,
+    // and the message said "One date has gone by" each time without saying why.
+    //
+    // So route one first, by NAME rather than by position, and date THAT.
+    await enterStance(page, 'triage');
+    for (let i = 0; i < 12; i++) {
+      const heat = await page.evaluate(() =>
+        document.querySelector('#triage-prompt')?.textContent?.startsWith('Hot') === true);
+      if (!heat) break;
+      await page.click('#triage-actions .route');
+      await page.waitForTimeout(60);
+    }
+    const routed = await page.locator('#triage-actions .route', { hasText: 'Next action' })
+      .first().click({ timeout: 4000 }).then(() => true).catch(() => false);
+    (routed ? pass : fail)(
+      `${theme}/replan: a capture was routed, so there is something a date can lapse on`);
+    await page.waitForTimeout(200);
+
+    const openFold = async () => {
+      await enterStance(page, 'held');
+      if (!(await page.locator('#held-fold[open]').count())) {
+        await page.locator('#held-fold-summary').click({ timeout: 4000 }).catch(() => {});
+      }
+      return page.locator('#held-fold[open]').count();
+    };
+    let secondDated = false;
+    let k = 0;
+    for (let i = 0; i < 6 && !secondDated; i += 1) {
+      if (!(await openFold())) {
+        fail(`${theme}/replan: the "Every one of them" fold would not open, so no second date could be set`);
+        break;
+      }
+      const cards = await page.locator('#cards .card-open').count();
+      if (cards <= k) break;
+      const beforeCount = await page.locator('.replan-card').count();
+      // Bounded, and NOT swallowed into the loop: a click that cannot land is a
+      // fact worth printing once rather than twelve seconds spent hiding it.
+      const clicked = await page.locator('#cards .card-open').nth(k)
+        .click({ timeout: 4000 }).then(() => true).catch(() => false);
+      if (!clicked || !(await page.locator('#detail[open]').count())) { k += 1; continue; }
+      if (await page.locator('#detail-date').count()) {
+        await page.fill('#detail-date', pastKey).catch(() => {});
+        await page.click('#detail-date-set').catch(() => {});
+        await page.waitForTimeout(250);
+      }
+      await page.click('#detail-close');
+      await page.waitForTimeout(120);
+      await enterStance(page, 'replan');
+      secondDated = await page.locator('#replan-bulk:not([hidden])').count() > 0;
+      // `k` advances only when that card produced NO card: a successful one
+      // leaves `#cards`, so the list shifts under the index and staying put is
+      // what lands on the next item. A container takes no date (law 4).
+      if (!secondDated && await page.locator('.replan-card').count() === beforeCount) k += 1;
+    }
+    const said = secondDated
+      ? (await page.locator('.replan-bulk-go').first().innerText()).replace(/\s+/g, ' ')
+      : await page.locator('#replan-count').innerText().catch(() => '(no count)');
+    (secondDated ? pass : fail)(
+      `${theme}/replan: a second date brings up the all-at-once route ("${said}")`);
+    if (secondDated) {
+      // The count on the button is the TRUE total, not the three on screen — the
+      // cap governs what a surface may show and never what somebody asked for.
+      (/\d/.test(said) ? pass : fail)(
+        `${theme}/replan: the all-at-once button names how many it will act on ("${said}")`);
+      await auditContrast(page, 'replan, all at once', theme);
+      await auditAxe(page, 'replan, all at once', theme);
+      await auditNames(page, 'replan, all at once', theme);
+      await auditSeparationAndTargets(page, 'replan, all at once', theme);
+      await auditFocusRings(page, 'replan, all at once', theme);
+    }
+
+
     // AND THE ARRANGEMENT IS ASSERTED, not assumed. A wide pass that ran against
     // a page still showing one pane would report green about a layout that was
     // not there — an absence identical to a presence (hub LESSONS 104).

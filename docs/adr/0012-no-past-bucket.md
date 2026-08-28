@@ -54,6 +54,27 @@ bucket this ADR forbids.
   three triage items. The rest wait; they are not lost, and the gauge proves it.
 - `node.trashed` remains available and is a *different* thing: an explicit
   decision that something is not a thing. That is a decision, not a lapse.
+- **A sixth resolution, `undate`, and a bulk gesture, added 2026-08-28 (3.9.0).**
+  The five options all asked for a fresh decision about the WORK — make it
+  smaller, hand it over, renegotiate it, name a new day, or put it down — and
+  none of them said the honest thing about a day that got away from somebody,
+  which is that the commitment is unchanged and only the date is wrong. So the
+  way out of a passed date was either to schedule it again, which is what had
+  just failed, or the Menu, where it makes no demand and does not come back on
+  its own. `undate` retires every passed clock and sets a `review` for today: the
+  item returns to the ordinary run of things, ranked like anything else, with no
+  date to meet. The Menu stays last by position and equal in weight.
+- **And the bulk gesture is no longer gated behind a lapse.** The amnesty
+  (ADR-0043) resolved every passed date in one act and required seven days away
+  to reach. What it removes is not work, it is *the block of decisions standing
+  between somebody and any work at all* — and that block forms after one missed
+  day in the same shape, only smaller. It is offered wherever the cards are,
+  whenever more than one date has gone by, leading with `undate`; the amnesty
+  keeps `to-menu`, which is the right answer after a fortnight and too strong
+  after a day. Both remain available in both places, and the per-card options are
+  untouched beside them — a bulk route that replaced them would be the
+  choice-removing shape reactance research says produces the resistance this
+  whole surface exists to avoid.
 
 ## What would overturn it
 

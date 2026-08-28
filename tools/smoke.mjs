@@ -2894,7 +2894,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `a date that went by is exactly what a reminder is for ("${lapsedTitle}") ${calPromised}`);
   await tpage.click('#sheet-group-actions-close');
 
-  // The options. Five, forward-facing, and none of them files a failure.
+  // The options. Forward-facing, and none of them files a failure.
+  //
+  // FIVE ONE-TAP OPTIONS SINCE 3.9.0, and the number is asserted rather than
+  // approximated because it is the one that changed: `undate` — "still yours, no
+  // date, it comes back on its own" — was the resolution the set was missing.
+  // The other four all asked for a fresh decision about the WORK, and none of
+  // them said the honest thing about a day that got away, which is that only the
+  // date is wrong.
   const topCard = await tpage.locator('.replan-card-title').first().textContent();
   await tpage.locator('.replan-open').first().click();
   await tpage.waitForSelector('#replan-sheet[open]');
@@ -2902,7 +2909,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'the sheet names the item it is about');
   const optionText = await tpage.locator('#replan-options').textContent();
   const optionCount = await tpage.locator('.replan-choice').count();
-  is(optionCount, 4, `four one-tap options (${optionCount})`);
+  is(optionCount, 5, `five one-tap options (${optionCount})`);
   is(await tpage.locator('#replan-new-date').count(), 1,
     'plus a date box, for when you already know when');
   is(/\b(missed|fail|failed|behind|overdue|late|should have)\b/i.test(optionText || ''), false,

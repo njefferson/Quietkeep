@@ -1320,6 +1320,30 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * of the page. Inside a bordered card that reads as dead space above the title. */
 .replan > .section { margin-top: 0; }
 .replan-count { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
+
+/* --- all of them at once (3.9.0) -------------------------------------------
+ * COLOURS ONLY BY REUSE. The lead line joins `.replan-count`'s rule and the two
+ * buttons join `.replan-choice`'s, so every pair on this block is one the
+ * contrast registry already measures. That is the `.nextup-place` trade and the
+ * honest way past hub LESSONS 28 — same ink, same paper, a different
+ * arrangement — rather than a new pair nobody added to the gate.
+ */
+.replan-bulk { margin: 0 0 1rem; }
+.replan-bulk-words {
+  margin: 0 0 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+/* A column, not a row: at 390px two buttons carrying a label and a hint each
+ * cannot sit side by side without one of them wrapping to two lines and the
+ * pair going ragged. The gap is 0.5rem for the reason `.replan-card`'s is —
+ * two full targets stacked with none are 0.0px apart, and a finger on the seam
+ * gets one of them and cannot tell which. */
+.replan-bulk-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 /* JUST ONE THING (1.36.0) — the minimum state.
    Larger type and more room, and NOTHING that moves: no transition, no
    animation, nothing that redraws itself. Motion is processing, and processing
@@ -1474,7 +1498,8 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   margin: 0.5rem 0 1rem;
 }
 .replan-option { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
-.replan-choice {
+.replan-choice,
+.replan-bulk-go {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1490,7 +1515,8 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   font: inherit;
   cursor: pointer;
 }
-.replan-choice-hint { color: var(--ink-soft); font-size: 0.875rem; overflow-wrap: anywhere; }
+.replan-choice-hint,
+.replan-bulk-hint { color: var(--ink-soft); font-size: 0.875rem; overflow-wrap: anywhere; }
 .replan-option-label { flex: 1 1 100%; }
 .replan-date { min-height: var(--target); flex: 1 1 8rem; min-width: 0; }
 .replan-set { min-height: var(--target); }

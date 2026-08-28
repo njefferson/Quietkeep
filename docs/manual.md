@@ -264,6 +264,11 @@ when there is a reason.
 - **Next up** — the one thing offered, with why.
 - **Sort things out** — captured things, one at a time, with eight plain choices.
 - **Needs a new plan** — a date went by. Not a failure and not a backlog.
+  Each card offers five ways forward, one of which is **Take the date off** —
+  nothing has changed except the date, so it stays yours and comes back on its
+  own. When more than one date has gone by, a line above the cards settles all
+  of them in one go, either way, and says how many that is. Nothing is marked
+  done and nothing is deleted; the one-at-a-time choices stay where they are.
 - **Working on** — a timer is running on something.
 - **Coming up for air** — a check after a long stretch on one thing.
 - **That was a session.** — the close of one, without a verdict.

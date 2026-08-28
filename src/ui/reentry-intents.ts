@@ -11,9 +11,7 @@ import type { AppEvent } from '../events.ts';
 import type { State } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { REENTRY_TRIAGE_CAP } from '../reentry.ts';
-import { replanAll } from '../replan.ts';
-import { replanEvents } from './replan-intents.ts';
-import { demandClocksOf } from './triage-intents.ts';
+import { resolveAllPassedEvents } from './replan-intents.ts';
 
 const base = (ctx: StampContext, kind: string, node: string | null, payload: unknown): AppEvent => ({
   id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
@@ -67,48 +65,20 @@ export const offerAmnestyEvents = (ctx: StampContext, scope: string): AppEvent[]
  * three of the twenty they asked about would be the app deciding it knew better.
  */
 export function acceptAmnestyEvents(ctx: StampContext, state: State, nowIso: string, zone: string): AppEvent[] {
-  const out: AppEvent[] = [base(ctx, 'amnesty.accepted', null, { scope: 'passed-dates' })];
-  // BUILT FROM `replanAll`, which is what the replan surface itself reads, and
-  // NOT from a second walk over held nodes asking a different question. The two
-  // agreed only by coincidence, and the coincidence broke on the arguments.
+  // THE BODY OF THIS MOVED TO `resolveAllPassedEvents` IN 3.9.0, unchanged, and
+  // the replan surface now offers the same act after ONE missed day rather than
+  // seven. What this function keeps is the amnesty's own identity: the recorded
+  // `amnesty.accepted`, and `to-menu` as the resolution.
   //
-  // The defect this fixes: every item went through `replanEvents` with the
-  // arguments DEFAULTED — `passedKinds` fell back to `['due']` and
-  // `demandClocks` to `[]`. Both are wrong per node, and both wrong in a way
-  // that fails at the gate rather than quietly:
-  //
-  //  - an item raised by a passed `suspense` had that clock left live, so the
-  //    card came straight back and the amnesty had resolved nothing;
-  //  - an item carrying ANY other demand clock reached the Menu still owing
-  //    somebody an answer, which the Menu belt rightly refuses (1.3.1) — and
-  //    because this is ONE batch, that refusal took the whole amnesty with it.
-  //
-  // So a single item with the wrong shape moved ZERO of a mixed batch, on the
-  // one surface whose entire purpose is to remove twenty decisions at once, at
-  // the one moment a person has the least patience for a button that does
-  // nothing. Reproduced against the real gate: three clean items and one
-  // carrying a suspense moved none of the four.
-  const cards = replanAll(state, nowIso, zone)
-    .sort((a, b) => (a.node.id < b.node.id ? -1 : 1));   // total order: same log every time
-  for (const c of cards) {
-    out.push(...replanEvents(
-      ctx, c.node.id, 'to-menu',
-      // EVERY passed clock, not the one the card's sentence happens to name.
-      c.passedKinds,
-      undefined,
-      // The node's ACTUAL kind. INERT for `to-menu`, which is the only
-      // resolution the amnesty uses — `fromKind` is read by the `hand-off`
-      // branch alone — and passed anyway so this call stays correct if the
-      // amnesty ever resolves some other way. Said plainly rather than tested:
-      // a test over an argument nothing reads would pass whatever the code did,
-      // and one of those is worse than none.
-      c.node.kind,
-      // And every demand clock it carries RIGHT NOW, so `to-menu` sheds them
-      // all and the landing is legal.
-      demandClocksOf(c.node),
-    ));
-  }
-  return out;
+  // `to-menu` STAYS the amnesty's choice, and the distinction is the point of
+  // having two callers. Coming back after a fortnight, the honest answer to a
+  // date that went by is that it is no longer a commitment — the Menu is the
+  // home a non-decision needs (law 6). After one missed day it is far too
+  // strong, which is why the short-lapse gesture leads with `undate` instead.
+  return [
+    base(ctx, 'amnesty.accepted', null, { scope: 'passed-dates' }),
+    ...resolveAllPassedEvents(ctx, state, nowIso, zone, 'to-menu'),
+  ];
 }
 
 /**
