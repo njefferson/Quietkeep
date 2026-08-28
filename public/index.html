@@ -151,15 +151,6 @@
           title="Put something down"><span aria-hidden="true">+</span><span
           class="visually-hidden">Put something down</span></button>
 </div>
-  <button id="open-more" type="button" class="ghost">Everything else</button>
-  <!-- WHAT IS ON THIS PAGE (2.3.0, ADR-0093), where the app's navigation
-       already lives. `Everything else` is the six destinations that are not this
-       page; this is the parts of the page itself, which the app had no way of
-       reaching at all. THE TWO ARE A PAIR AND NOW SOUND LIKE ONE: what is here,
-       and what is not here. Together they are the whole answer to "where do I go" —
-       and putting them in one place is why neither had to become a floating
-       control over the reader's own work. -->
-  <button id="contents-open" type="button" class="ghost">On this page</button>
 </div>
 
 <!-- Capture first, and it is the thing that has focus on arrival. The gap
@@ -189,6 +180,31 @@
 <!-- A live region, so a screen-reader user learns the write landed without
      hunting for it. It reports what already happened, never a prediction. -->
 <p id="status" role="status" aria-live="polite" class="status"></p>
+
+<!-- THE NAVIGATION SITS BELOW THE BOX (3.8.0), and it used to sit above it.
+     `Everything else` and `On this page` were the first two controls on the
+     screen, before the thing the app is for — reported from a device in those
+     words. The comment on the form below them said "Capture first, and it is
+     the thing that has focus on arrival": it HAD the focus and it was third.
+     The code and the screen disagreed, and the screen is what a reader gets.
+
+     Order now: the box, what it says back, then where else to go. The wordmark
+     and the ⓘ stay in the top bar — a masthead is not navigation, and the app
+     saying its own name first is not the same as making somebody read a menu
+     before they can put a thought down.
+
+     ITS OWN WRAPPER, because `.bar` used to do the spacing and the pair has to
+     keep travelling together when it wraps — the note at `.stance-bar` records
+     what a nested flex row costs without `min-width: 0`. -->
+<div class="page-nav">
+  <button id="open-more" type="button" class="ghost">Everything else</button>
+  <!-- `Everything else` is the six destinations that are not this page; this is
+       the parts of the page itself. THE TWO ARE A PAIR AND SOUND LIKE ONE: what
+       is here, and what is not here — together the whole answer to "where do I
+       go", which is why neither had to become a floating control over the
+       reader's own work (2.3.0, ADR-0093). -->
+  <button id="contents-open" type="button" class="ghost">On this page</button>
+</div>
 
 <!-- THE PROOF, WHERE SOMEBODY CAN ACTUALLY READ IT (2.8.1, ADR-0099).
      This control was the first thing INSIDE the held list — measured 2.73

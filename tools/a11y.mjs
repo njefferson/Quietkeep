@@ -1811,7 +1811,54 @@ async function auditTargets(page, stateName, theme) {
  *  NOT set :focus-visible on buttons, so the first version observed no ring and
  *  passed a build with `outline:none` (audit). Real Tabbing sets the keyboard
  *  modality, so what we measure is what a keyboard user is actually shown. */
+/** Every focusable control this state actually presents, as `#id` selectors.
+ *
+ *  WHY THIS EXISTS. `auditFocusRings` took a hand-written list, so a state was
+ *  covered only if somebody remembered to write one — and 18 of the 112 audited
+ *  states had no ring pass at all. Not a judgement that their rings did not
+ *  matter; nobody had decided anything. The list was the gap.
+ *
+ *  Scoped to the topmost open dialog when there is one, because that is the
+ *  surface the reader is on and everything behind it is inert. Ids only: this
+ *  walk matches `activeElement` against selectors, and a positional selector
+ *  would silently match the wrong control the moment anything reorders. A
+ *  control with no id is REPORTED rather than skipped quietly. */
+const controlsInState = (page) => page.evaluate(() => {
+  const root = document.querySelector('dialog[open]') ?? document;
+  const FOCUSABLE = 'button, [href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])';
+  const out = [], anonymous = [];
+  for (const el of root.querySelectorAll(FOCUSABLE)) {
+    if (el.disabled || el.closest('[hidden]') || el.getAttribute('aria-hidden') === 'true') continue;
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    if (getComputedStyle(el).visibility === 'hidden') continue;
+    if (el.id) { out.push('#' + CSS.escape(el.id)); continue; }
+    // NO ID IS NOT NO SELECTOR. Ids-only left 32 real controls unchecked —
+    // `.donow-done`, `.hub-go`, `.replan-choice` and others that simply never
+    // needed one. A class selector may match several instances, and that is
+    // fine here: the ring comes from ONE CSS rule, so tabbing to any instance
+    // measures the rule. What it must not do is match nothing, which is why the
+    // class is taken from the element itself rather than guessed.
+    const cls = (el.className || '').toString().trim().split(/\s+/).filter(Boolean)[0];
+    if (cls) out.push(el.tagName.toLowerCase() + '.' + CSS.escape(cls));
+    else anonymous.push(el.tagName.toLowerCase() + ' (no id, no class)');
+  }
+  return { ids: [...new Set(out)], anonymous: [...new Set(anonymous)] };
+});
+
 async function auditFocusRings(page, stateName, theme, selectors) {
+  // DERIVED WHEN NOT GIVEN. See `controlsInState`.
+  if (!selectors) {
+    const found = await controlsInState(page);
+    if (found.ids.length === 0) {
+      fail(`${theme}/${stateName}: no focusable control found, so the ring pass measured nothing`);
+      return;
+    }
+    if (found.anonymous.length > 0) {
+      pass(`${theme}/${stateName}: ${found.anonymous.length} control(s) carry neither id nor class and cannot be addressed (${found.anonymous.slice(0, 3).join(', ')})`);
+    }
+    selectors = found.ids;
+  }
   // THROUGH THE SAME GUARD AS EVERY OTHER AUDIT. This looped and ensured for
   // each selector in turn, with no check for already being somewhere that holds
   // them — so a list containing one control that also exists in another job
@@ -2116,6 +2163,7 @@ try {
     await auditAxe(page, 'walkthrough', theme);
     await auditNames(page, 'walkthrough', theme);
     await auditSeparationAndTargets(page, 'walkthrough', theme);
+    await auditFocusRings(page, 'walkthrough', theme);
     // Step to the end. The last step's "Get started" hands off to the (i) panel
     // for the storage step, which is exactly what State 1 audits.
     // Driven to the END rather than clicked a fixed number of times. Four clicks
@@ -2188,6 +2236,7 @@ try {
     // because scope is the entire request.
     await auditContrast(page, 'app size', theme);
     await auditSeparationAndTargets(page, 'app size', theme);
+    await auditFocusRings(page, 'app size', theme);
     const before = await page.evaluate(() => document.documentElement.style.fontSize);
     await page.selectOption('#ui-scale', '1.3');
     await page.waitForTimeout(120);
@@ -2281,6 +2330,7 @@ try {
     await auditAxe(page, 'first-run dialog', theme);
     await auditNames(page, 'first-run dialog', theme);
     await auditSeparationAndTargets(page, 'first-run dialog', theme);
+    await auditFocusRings(page, 'first-run dialog', theme);
     await page.click('#about-close');
 
     // State 2: the empty store.
@@ -2411,6 +2461,7 @@ try {
     await auditAxe(page, 'update stuck', theme);
     await auditNames(page, 'update stuck', theme);
     await auditSeparationAndTargets(page, 'update stuck', theme);
+    await auditFocusRings(page, 'update stuck', theme);
     // Put the strip back so every later state sees what it saw before.
     await page.evaluate(() => {
       document.querySelector('#update-words').textContent = 'A newer version is ready.';
@@ -2595,6 +2646,7 @@ try {
     await enterStance(page, 'held');
     if (await page.locator('.card-place').count() > 0) {
       await auditContrast(page, 'a card that says where it went', theme);
+      await auditFocusRings(page, 'a card that says where it went', theme);
       await auditNames(page, 'a card that says where it went', theme);
     } else {
       fail(`${theme}/a card that says where it went: nothing is filed, so the line that says where cannot be measured`);
@@ -2890,6 +2942,7 @@ try {
     await auditAxe(page, 'first step asked for', theme);
     await auditNames(page, 'first step asked for', theme);
     await auditSeparationAndTargets(page, 'first step asked for', theme);
+    await auditFocusRings(page, 'first step asked for', theme);
 
     // and then UNDONE, so every state after this one meets the ordinary offer.
     // The card now carries two completion controls, so the §4 name check earns
@@ -2929,6 +2982,7 @@ try {
     // so the line is audited AND its content is checked below.
     await page.waitForSelector('#sheet-load-entry-count:not([hidden])');
     await auditContrast(page, 'load door state', theme);
+    await auditFocusRings(page, 'load door state', theme);
     const doorWords = (await page.textContent('#sheet-load-entry-count')).trim();
     (/\bthing\b/.test(doorWords) ? pass : fail)(
       `${theme}/load door state: the door says what is behind it — "${doorWords}"`);
@@ -3168,6 +3222,7 @@ try {
     await auditContrast(page, 'where you are, nothing chosen', theme);
     await auditNames(page, 'where you are, nothing chosen', theme);
     await auditSeparationAndTargets(page, 'where you are, nothing chosen', theme);
+    await auditFocusRings(page, 'where you are, nothing chosen', theme);
 
     await page.selectOption('#where', { label: 'At home' });
     await page.waitForSelector('#where-note:not([hidden])');
@@ -3292,6 +3347,7 @@ try {
     await page.waitForSelector('#roles-open:not([hidden])');
     await auditContrast(page, 'where the attention is', theme);
     await auditSeparationAndTargets(page, 'where the attention is', theme);
+    await auditFocusRings(page, 'where the attention is', theme);
     await page.click('#roles-open');
     await page.waitForSelector('#sheet-roles[open]');
     await auditContrast(page, 'roles open', theme);
@@ -3358,6 +3414,7 @@ try {
     await page.waitForSelector('#horizons-open:not([hidden])');
     await auditContrast(page, 'what you are working toward', theme);
     await auditSeparationAndTargets(page, 'what you are working toward', theme);
+    await auditFocusRings(page, 'what you are working toward', theme);
     await page.click('#horizons-open');
     await page.waitForSelector('#sheet-horizons[open]');
     await auditContrast(page, 'horizons open', theme);
@@ -3477,6 +3534,7 @@ try {
     await auditAxe(page, 'detail sheet, history open', theme);
     await auditNames(page, 'detail sheet, history open', theme);
     await auditSeparationAndTargets(page, 'detail sheet, history open', theme);
+    await auditFocusRings(page, 'detail sheet, history open', theme);
     await page.click('#detail-history summary');
 
     // B-04's hardest case, for the densest surface in the app.
@@ -3679,6 +3737,7 @@ try {
     await page.waitForSelector('#replan-sheet-error:not([hidden])');
     await auditContrast(page, 'replan sheet, refused', theme);
     await auditAxe(page, 'replan sheet, refused', theme);
+    await auditFocusRings(page, 'replan sheet, refused', theme);
     // The wordiest surface in the app: five options, each a label over a hint,
     // one of them carrying a date box. If anything overflows sideways at 320px
     // and 200%, it is this.
@@ -3983,6 +4042,7 @@ try {
     await auditAxe(page, 'people, the other direction', theme);
     await auditNames(page, 'people, the other direction', theme);
     await auditSeparationAndTargets(page, 'people, the other direction', theme);
+    await auditFocusRings(page, 'people, the other direction', theme);
 
     // And the sheet's write side, with a name actually attached — the state in
     // which the linked-people list renders at all.
@@ -4092,6 +4152,7 @@ try {
       (!/\d+\s*(min|hour|hr|:\d\d)/i.test(horizon.onFocus) ? pass : fail)(
         `${theme}/focus: it names the thing and does not count down to it`);
       await auditContrast(page, 'focus, with a fixed thing ahead', theme);
+      await auditFocusRings(page, 'focus, with a fixed thing ahead', theme);
     } else {
       // NOT A PASS. The whole point of driving the date above is that this
       // branch means the drive failed, and reporting that as "correctly absent"
@@ -4105,6 +4166,7 @@ try {
     await page.waitForSelector('#focus-held:not([hidden])');
     await auditContrast(page, 'focus, interrupted', theme);
     await auditAxe(page, 'focus, interrupted', theme);
+    await auditFocusRings(page, 'focus, interrupted', theme);
 
     await page.click('#focus-stop');
     await page.waitForSelector('#focus-sheet[open]');
@@ -4578,6 +4640,7 @@ try {
     await auditAxe(page, 'clock on', theme);
     await auditNames(page, 'clock on', theme);
     await auditSeparationAndTargets(page, 'clock on', theme);
+    await auditFocusRings(page, 'clock on', theme);
     await openSurface(page, 'sheet-group-extras');
     await page.click('#clock-off');
     await page.waitForSelector('#clock-on:not([hidden])');
@@ -5061,6 +5124,7 @@ try {
     await openSurface(page, 'about');
     await auditContrast(page, 'dialog @ 320/200', theme, 'dialog, return visit');
     await auditAxe(page, 'dialog @ 320/200', theme);
+    await auditFocusRings(page, 'dialog @ 320/200', theme);
     await page.click('#about-close');
 
     // NAMES the offender. "42px of overflow" told us the page was broken and
@@ -5126,6 +5190,7 @@ try {
     await auditAxe(page, 'upkeep ready', theme);
     await auditNames(page, 'upkeep ready', theme);
     await auditSeparationAndTargets(page, 'upkeep ready', theme);
+    await auditFocusRings(page, 'upkeep ready', theme);
 
     // --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) ------------------------------
     //

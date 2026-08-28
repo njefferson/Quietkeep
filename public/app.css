@@ -2009,6 +2009,19 @@ dialog[id^="sheet-"][open] {
     radial-gradient(farthest-side at 50% 0, rgba(0 0 0 / 0.16), rgba(0 0 0 / 0)) top / 100% 0.6rem no-repeat scroll,
     radial-gradient(farthest-side at 50% 100%, rgba(0 0 0 / 0.16), rgba(0 0 0 / 0)) bottom / 100% 0.6rem no-repeat scroll;
 }
+/* AND ITS OWN RING GOES INSIDE IT (3.8.0). `.sheet-body` carries `tabindex="0"`
+   so a sheet holding no focusable control can still be scrolled from a keyboard
+   (WCAG 2.1.1) — which makes the box itself a tab stop with a ring of its own.
+   The default `outline-offset: 2px` paints that ring OUTSIDE a box whose
+   horizontal margin already runs 20px past the dialog's padding, so the dialog
+   clipped it: measured 4px horizontally on the situation sheet, both themes.
+   Found the day the ring pass stopped taking a hand-written selector list and
+   started deriving its own controls — this box had never been on one.
+   A negative offset draws the ring inside the container instead. That is the
+   right answer for a full-width scroller rather than a workaround: the element
+   spans the sheet by design, so its ring has nowhere outside to go. */
+.sheet-body:focus-visible { outline-offset: -3px; }
+
 /* The sheets' chrome is the same shape without the ⓘ's two-control bar: a title
  * above the scroller and a Close below it, both `flex: none` so neither is ever
  * inside the box that moves. */
@@ -3372,6 +3385,23 @@ body[data-plain="1"] #held
    BOTH themes and the page scrolled sideways, which is the one thing the shell
    asserts it never does. Caught by the a11y walk before it left this machine.
    `.bar` wrapping does not help here: the group is what has to break. */
+/* The page's two navigation controls, below the capture box since 3.8.0 (they
+   were the first thing on the screen, before the box the app exists for).
+   `min-width: 0` for the reason recorded at `.stance-bar`: a flex row does not
+   shrink below its content width without it, and this pair is what has to break
+   when the line does. */
+.page-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  min-width: 0;
+  /* BOTH ENDS. A top margin alone left these butting against the coverage
+     control below them — measured 0px apart, which is the "no two controls
+     touch" rule the a11y walk enforces and a mis-tap on a real finger. */
+  margin: 0.6rem 0 0.75rem;
+}
+
 .stance-bar {
   display: flex;
   flex-wrap: wrap;

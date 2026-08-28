@@ -784,7 +784,39 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.7.0**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.7.1**. The capture
+  box is the first thing on the screen, and the ring check works out for itself
+  what to look at.
+  **THE BOX YOU PUT THINGS IN WAS THIRD.** *Everything else* and *On this page*
+  sat above it — two ways of leaving, before the thing the app is for. Reported
+  from a device in those words, and the code already agreed: the comment beside
+  the capture form reads *"Capture first, and it is the thing that has focus on
+  arrival."* It had the focus. It was third. The screen is what a reader gets.
+  **THE FIRST PLACEMENT WAS REFUSED BY THE APP'S OWN WALK** — the moved pair
+  butted against the coverage control at 0px, measured rather than eyeballed,
+  which is the "no two controls touch" rule and a mis-tap on a finger.
+  **AND `controls.mjs` REFUSED THE COMMIT UNTIL THE MOVE WAS NAMED** in the
+  release notes, in place-language, carrying the control's own name. It was right
+  to: updating the manifest alone is bookkeeping, and the person whose hands have
+  to relearn the screen is the one owed the sentence.
+  **EIGHTEEN OF 112 AUDITED STATES HAD NO FOCUS-RING PASS.** Not a judgement that
+  their rings did not matter — `auditFocusRings` took a hand-written selector
+  list, so a state was covered only if somebody wrote one, and nobody had decided
+  anything. The list WAS the gap, and the release notes had described it as "the
+  screens the automated walk visits", which reads as a limit of the walk and was
+  really a limit of who had got round to it. It derives its own controls now: id
+  where there is one, else the element's own class, because a class matching
+  several instances still measures the one CSS rule that draws the ring. 786 ring
+  assertions with ids only, **836** with both. `surfaces.mjs` holds the audited
+  set equal to the ringed set, planted by deleting one pass and caught by name.
+  **THE WIDER COVERAGE FOUND A REAL DEFECT.** `.sheet-body` carries
+  `tabindex="0"` so a sheet with nothing focusable inside can still be scrolled
+  from a keyboard — which makes the box a tab stop with a ring of its own, and it
+  was clipped 4px horizontally by the dialog in both themes, because its margin
+  deliberately runs 20px past the panel's padding so the scrollbar sits at the
+  edge. Drawn inside the container now: a full-width scroller has nowhere outside
+  to put a ring.
+- **Superseded, and kept for the record: 3.7.0.** The
   flowcharts ship as a page, linked from Help, and are measured when they change.
   **SHIPPING IT WAS NOT A FILE COPY.** The site's CSP is `style-src 'self';
   font-src 'self'`, so the self-contained source — inline `<style>`, two Google

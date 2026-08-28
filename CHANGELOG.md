@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.7.1 — ITERATION
+
+*2026-08-28*
+
+- **The capture box is now the first thing on the screen; it was third.** *Everything else* and *On this page* used to sit above it — two ways of going somewhere else, before the thing this app is for. They are still there, just below the box and what it says back to you. The name and the ⓘ stay at the top.
+- **Reported from a device, and the code already agreed with you.** The comment sitting beside the capture box read *"Capture first, and it is the thing that has focus on arrival."* It did have the focus. It was third. The screen is what a reader gets.
+- **A focus ring on the situation screen was being cut off**, four pixels at the sides, in both light and dark. That box can be scrolled with a keyboard, so it takes focus and draws a ring — and its ring was painted outside a box that deliberately runs to the edge of the panel. It is drawn inside the box now.
+- **Which was found because the ring check stopped needing to be told what to look at.** It took a hand-written list of controls per screen, so a screen was checked only if somebody had written one — and eighteen of them never had. Nothing had gone wrong on those eighteen; nobody had looked. It works the list out for itself now, and a check holds every measured screen to having one, so the gap cannot come back.
+
 ## 3.7.0 — CAPABILITY
 
 *2026-08-27*
