@@ -55,6 +55,7 @@ import {
 import { eventWords, isCure } from '../log-words.ts';
 import { choosable, chosenToday, composedFull, todayIsOn } from '../composed.ts';
 import { canHold, legalMergeTargets, mergePlan, unmergeEvents } from './merge-intents.ts';
+import { focusSheetTitle } from './sheets.ts';
 import { decisionsFor, foldedIntoDeep } from '../merged.ts';
 import { carryEvents, declineEvents, parkToSlotEvents } from './request-intents.ts';
 import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../requests.ts';
@@ -1770,6 +1771,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     render(node);
     LIVE.textContent = '';
     if (!DLG.open) DLG.showModal();
+    // AND THE FOCUS GOES WHERE THIS APP CHOSE (3.8.2). See `focusSheetTitle`.
+    // This sheet is the longest one in the app and it called `showModal()` and
+    // set nothing, so which element it opened on was the engine's decision —
+    // and on WebKit that means the first tabbable element, with the scroller
+    // dragged to wherever that is. It runs after `render`, because render is
+    // what fills `#detail-title`.
+    focusSheetTitle(DLG);
   }
 
   return { open: showNode };

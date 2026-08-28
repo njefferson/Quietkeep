@@ -4402,6 +4402,36 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       seeThrough.push(`${surface} — the walk could not open it, so nothing was measured`);
       continue;
     }
+    // WHERE THE FOCUS LANDED, AND WHETHER THE APP CHOSE IT (3.8.2, hub LESSONS 175).
+    //
+    // A dialog with no focus target of its own opens wherever the engine
+    // decides, and the two engines decide differently: Chromium makes a
+    // scrolling region focusable in its own right and lands on the sheet body at
+    // the top; WebKit takes the first tabbable element instead, and focusing
+    // something inside a scroller drags that scroller to it. A long sheet can
+    // therefore open partway down, past the thing it exists to say — on the
+    // engine this app is actually read on.
+    //
+    // THIS ASSERTS THE DECISION, NOT THE SYMPTOM, and that distinction is the
+    // whole reason it can fail here. `scrollTop === 0` is the obvious assertion
+    // and it is exactly the one Chromium cannot fail, so a walk driving Chromium
+    // would have certified the defect for ever. "The focused element is the one
+    // this dialog is named by" is false in EVERY engine when nothing set it,
+    // because nothing setting it is the fault.
+    //
+    // Derived from `aria-labelledby`, which every sheet already carries, so
+    // there is no list here to go stale — the rule `data-door` above follows.
+    const landed = await tpage.evaluate((id) => {
+      const d = document.querySelector(`#${CSS.escape(id)}`);
+      const want = d?.getAttribute('aria-labelledby') ?? null;
+      const active = document.activeElement;
+      return { want, got: active?.id || active?.tagName?.toLowerCase() || null };
+    }, surface);
+    if (landed.want) {
+      (landed.got === landed.want ? ok : bad)(
+        `${surface}: the focus went where the app put it (#${landed.want}), not where the engine chose`
+        + (landed.got === landed.want ? '' : ` — it landed on ${landed.got ?? 'nothing'}`));
+    }
     // EVERY WAY OUT, not the first one found. The ⓘ has two — the × in the bar
     // above the scroller and Close below it — and the old single-element read
     // took whichever came first in the document. A rule written as "the scroller

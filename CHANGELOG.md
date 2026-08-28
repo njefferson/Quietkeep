@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.8.2 — ITERATION
+
+*2026-08-28*
+
+- **Every panel now opens at its own heading.** Twenty-one of them opened wherever the browser decided, and on an iPad that means the first button or box it finds — which drags a long panel down to wherever that happens to be. The ⓘ was landing on its dismiss button, six screens from the top.
+- **Nothing about it was visible on the machines that check this app.** Two browser engines answer this question differently, and the checks all run on the one that answers it harmlessly. So every screen measured correct, in both themes, at every size, for as long as the panels have existed.
+- **The check now asks what the app DECIDED rather than what the browser did with the silence.** "Did it open at the top" is the obvious question and it is the one that can never fail on the machine doing the asking. "Is the focus on the thing this panel is named by" is false in every browser when nothing chose it — because nothing choosing it is the fault.
+
 ## 3.8.1 — ITERATION
 
 *2026-08-28*

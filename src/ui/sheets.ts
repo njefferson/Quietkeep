@@ -48,11 +48,46 @@ export function closeEverything(except?: string): void {
  * anything measures a laid-out element, and `hidden` until the same frame is
  * the shape that made the first version of the stuck-update strip unmeasurable.
  */
+/**
+ * PUT THE FOCUS SOMEWHERE THE APP CHOSE, not wherever the engine lands (3.8.2).
+ *
+ * A `<dialog>` with no `autofocus`, no `tabindex="-1"` target and no `.focus()`
+ * after `showModal()` leaves the choice to the browser — and the two engines
+ * choose differently. Chromium makes a scrolling region focusable in its own
+ * right, so it lands on the sheet body at the top and everything looks correct.
+ * WebKit does not: it takes the first tabbable element instead, and focusing
+ * something inside a scroller scrolls that scroller to it. **So a long sheet can
+ * open partway down, past the thing it exists to say.**
+ *
+ * This app is read on an iPad, and every walk in this repo drives Chromium —
+ * which is the one engine where the defect cannot appear. Nothing here was
+ * broken in anything that was ever measured. (Hub LESSONS 175.)
+ *
+ * THE TARGET IS THE ELEMENT THE DIALOG IS ALREADY NAMED BY. Every sheet carries
+ * `aria-labelledby`, so there is no list to keep — the same reason `data-door`
+ * is on the sheet and the page population is read from the app's own links. A
+ * heading is also the right destination on its own terms: it is the house rule
+ * for a navigated view, and `tour.ts`, `replan.ts` and `focus.ts` have all
+ * focused theirs for releases. These two surfaces were the ones that never did.
+ *
+ * `tabIndex = -1` is set here rather than in the markup so a sheet cannot be
+ * added without it — a target that has to be remembered in a second file is the
+ * hand-written mirror this repo keeps finding stale.
+ */
+export function focusSheetTitle(sheet: HTMLDialogElement): void {
+  const id = sheet.getAttribute('aria-labelledby');
+  const title = id ? sheet.querySelector<HTMLElement>(`#${CSS.escape(id)}`) : null;
+  if (!title) return;
+  title.tabIndex = -1;
+  title.focus();
+}
+
 export function openSheet(id: string): boolean {
   const sheet = document.querySelector<HTMLDialogElement>(`#${id}`);
   if (!sheet) return false;
   closeEverything(id);
   if (!sheet.open) sheet.showModal();
+  focusSheetTitle(sheet);
   // A painter that throws must not leave the reader on a surface that never
   // opened — the sheet is already up, and an empty one is recoverable by
   // closing it. Contained like every other surface in this app.

@@ -784,7 +784,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.8.1**. Heat
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.8.2**. Every
+  dialog decides where its own focus lands, and the check asserts the DECISION.
+  **TWENTY-ONE SHEETS LEFT IT TO THE ENGINE, AND THE ENGINES DISAGREE.** With no
+  `autofocus`, no `tabindex="-1"` target and no `.focus()` after `showModal()`,
+  Chromium makes a scrolling region focusable in its own right and lands on the
+  sheet body at the top; WebKit takes the first tabbable element, and focusing
+  something inside a scroller drags that scroller to it. This app is read on an
+  iPad and every walk in this repo drives Chromium — the one engine where the
+  defect cannot appear. The ⓘ was landing on its dismiss control, which is the
+  last element in a panel six screens long. (Hub LESSONS 175.)
+  **THE TARGET IS DERIVED, NOT LISTED.** `focusSheetTitle` reads the dialog's own
+  `aria-labelledby` and focuses that element, so a new sheet cannot be added
+  without one — the rule `data-door` and the hosted-page population already
+  follow. `tour.ts`, `replan.ts` and `focus.ts` had focused their heading for
+  releases; `openSheet`, the detail sheet, the ⓘ and the About panel never did.
+  **THE ASSERTION IS ABOUT WHAT THE CODE CHOSE.** `scrollTop === 0` is the
+  obvious check and it is precisely the one Chromium cannot fail, so a walk here
+  would have certified this for ever. The smoke walk now reads
+  `document.activeElement` against each dialog's `aria-labelledby` — false in
+  every engine when nothing set it. It found three sheets on its first run that
+  the first fix had missed, because they call `showModal()` directly rather than
+  through `openSheet`, and all 21 pass now.
+  **NOT WALKED LOCALLY.** 3.8.1 and 3.8.2 have the smoke walk and every static
+  gate green here; the accessibility walk and the update walk are left to CI,
+  which runs the whole Spine on the push and costs nothing.
+- **Superseded, and kept for the record: 3.8.1.** Heat
   breaks the tie in EVERY tier, not only in `ready`, and the screen says out
   loud that cold is never hidden.
   **TWENTY-THREE OF THIRTY-THREE ANSWERS MOVED NOTHING.** The heat pass has been
