@@ -513,7 +513,6 @@
         <button id="nextup-resume" type="button">What is next</button>
       </div>
     </div>
-    <p id="nextup-count" class="nextup-count"></p>
     <!-- Why the offer is shorter, said as CO-OCCURRENCE and never as cause
          (1.15.0, law 7). ADR-0014 asks that "a stretch of low capacity has a
          visible reason"; the data constitution forbids claiming one thing
@@ -553,6 +552,20 @@
          A count of dates you set yourself is not a remainder and not a score —
          it is what you already decided, said back to you. -->
     <p id="nextup-dated" class="nextup-count" hidden></p>
+    <!-- THE LEAD-IN TO THE LIST, AND IT SITS WITH THE LIST (3.8.0).
+         "A few things you could pick up." was the first line under the offer
+         card's own buttons, three lines above the list it introduces, wearing
+         `.nextup-count` — the class the load, fixed-today and dated-today lines
+         wear, which are facts ABOUT the offer. Reported from a device: it reads
+         as data on the offered item's tile.
+
+         Two changes, and neither is decoration. It moved to sit directly on top
+         of what it names, so the gap above it is three times the gap below and
+         the grouping is visible without reading a word. And it ends in a colon
+         rather than a full stop, which is what the wish variant has always done
+         — a sentence that stops is about what came before it; a sentence that
+         opens is about what comes next. -->
+    <p id="nextup-count" class="nextup-count nextup-lead"></p>
     <ul id="nextup-behind" class="nextup-behind"></ul>
     <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
   </section>
@@ -1540,10 +1553,9 @@
     <div class="detail-row">
       <input id="detail-context" type="text" autocomplete="off" spellcheck="false"
              enterkeyhint="done" placeholder="at home, out, on the phone"
-             list="detail-contexts" aria-describedby="detail-context-hint">
+             aria-describedby="detail-context-hint">
       <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
     </div>
-    <datalist id="detail-contexts"></datalist>
     <!-- The last clause changed in 2.27.0 and the change is honesty, not
          polish. It read "a thing with no place at all can be done anywhere",
          which stopped being true the moment a place on a project began reaching
@@ -1552,9 +1564,40 @@
          quietly wrong about the app's behaviour, which is worse than saying
          less. -->
     <p id="detail-context-hint" class="detail-hint">
-      As many as fit, and none is required. With no place of its own, a thing
-      goes where it lives &mdash; or anywhere, if that has none.
+      As many as fit, commas between them, and none is required. With no place of
+      its own, a thing goes where it lives &mdash; or anywhere, if that has none.
     </p>
+    <!-- THE PLACES YOU ALREADY HAVE, AS TAPS (3.8.0). This was a native
+         `<datalist>` and it is gone from all three fields on this sheet.
+
+         Two reasons, and the first is the one that ended somebody's session.
+         Reported from a device: the suggestion popup takes the caret out of the
+         field mid-word, repeatedly, so typing a place became type-two-letters,
+         tap-back-in, type-two-more. The popup is drawn by the browser, over the
+         keyboard, and this app cannot style it, size it, ring it or measure it —
+         it was the one thing on any surface here that shipped unmeasured, which
+         is precisely what `tools/a11y.mjs` exists to make impossible.
+
+         The second is cheaper and matters daily: the common case is not typing
+         a new place, it is reusing one of the four you have. A tap is one
+         gesture and typing is a dozen. So the set is on screen, in the order
+         `allContexts` fixes, and the field is for names that are genuinely new.
+
+         Rendered, never in the markup — the shell's word budget counts what is
+         written here whether it shows or not, and this list is as long as your
+         store makes it. -->
+    <ul id="detail-context-picks" class="detail-picks"></ul>
+    <!-- AND THE WAY TO TAKE A WRONG ONE BACK OUT, WHERE IT WAS MADE (3.8.0).
+         Saying a label is not a place has worked since 2.34.0 and lived in one
+         spot: the situation sheet, behind choosing that label as where you are.
+         So the correction was two rooms from the field that makes the mistake,
+         and a store carried a place nobody could find the way to remove.
+
+         A TOGGLE, not a second row of controls. The picks above say their own
+         name and add; pressed, this makes them say "— not a place" and remove.
+         The words on the button are what changes, so no control ever means two
+         things at once. -->
+    <p id="detail-context-fix" class="detail-fix"></p>
     <ul id="detail-context-list" class="detail-feeds"></ul>
   </div>
 
@@ -1574,15 +1617,18 @@
     <div class="detail-row">
       <input id="detail-role" type="text" autocomplete="off" spellcheck="false"
              enterkeyhint="done" placeholder="a part of your life this belongs to"
-             list="detail-roles" aria-describedby="detail-role-hint">
+             aria-describedby="detail-role-hint">
       <button id="detail-role-set" type="button" aria-label="Add a role this belongs to">Add</button>
     </div>
-    <datalist id="detail-roles"></datalist>
     <p id="detail-role-hint" class="detail-hint">
       A part of your life that runs through more than one area &mdash; not where
-      the work sits, but who it is for. As many as fit, and most things belong to
-      none.
+      the work sits, but who it is for. As many as fit, commas between them, and
+      most things belong to none.
     </p>
+    <!-- The places' two lists, on this axis, because they are one shape and a
+         gratuitous difference would be two mechanisms wearing one idea. -->
+    <ul id="detail-role-picks" class="detail-picks"></ul>
+    <p id="detail-role-fix" class="detail-fix"></p>
     <ul id="detail-role-list" class="detail-feeds"></ul>
   </div>
 
@@ -1593,7 +1639,7 @@
     <label class="detail-label" for="detail-person">Who is this with?</label>
     <div class="detail-row">
       <input id="detail-person" type="text" autocomplete="off" spellcheck="false"
-             enterkeyhint="done" placeholder="a name" list="detail-people"
+             enterkeyhint="done" placeholder="a name"
              aria-describedby="detail-person-hint">
       <select id="detail-relation" aria-label="How they are involved">
         <option value="waiting-on">they owe me this</option>
@@ -1609,10 +1655,13 @@
       </select>
       <button id="detail-person-set" type="button" aria-label="Link a person">Link</button>
     </div>
-    <datalist id="detail-people"></datalist>
     <p id="detail-person-hint" class="detail-hint">
       Nobody has to be named.
     </p>
+    <!-- The picks, as above. NO "not a person" toggle beside them: a person is
+         not a label somebody mistyped into being, and the sheet already carries
+         the row that unlinks one from this thing. -->
+    <ul id="detail-people-picks" class="detail-picks"></ul>
     <ul id="detail-people-list" class="detail-feeds"></ul>
   </div>
 

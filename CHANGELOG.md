@@ -14,6 +14,17 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.8.0 — CAPABILITY
+
+*2026-08-28*
+
+- **The suggestion list that kept taking the cursor out of the box is gone.** Typing a place, a role or a name used to bring up the browser’s own list of what you already had. On a tablet that list takes the cursor with it mid-word, so you type two letters, tap back into the box, and type two more. It has been taken off all three boxes.
+- **What you already have is a row of taps under the box instead.** Adding a place you have used before is now one tap and no typing, which is what you are usually doing. The box is for names that are new. Nothing about that row is the browser’s — it takes the colours you chose, it is the right size for a finger, and it can be checked, which the old one could not be.
+- **Commas make separate places.** The box has suggested *at home, out, on the phone* since places were added and then took the whole line as ONE place, so following the example gave you a place named after the example. Type three and you get three. The same on *Who is this for?*
+- **And a place you did not mean to make can be taken out where you made it.** Saying a label is not a place has worked for a while, but the only route to it was on the situation screen, after choosing that label as where you are — so a place typed by mistake had no visible way out at all. *Something here is not a place* now sits under the row. It stops being offered and stops narrowing anything you can see; nothing you wrote is deleted, and the record still says it was there.
+- **“A few things you could pick up” has moved down onto the list it is about.** It sat directly under the offered item’s own buttons, three lines above the list, and read as a note about that item. It is now on top of the list, and it ends in a colon rather than a full stop — a sentence that stops is about what came before it.
+- **What is still not right, and it is the bigger half:** marking things hot or cold only changes the order among things you have already sorted. Mark something hot while it is still an unsorted capture and the answer is recorded and nothing moves. Cold is never hidden from you — it sorts last, still comes back, and still fills the offer when it is all there is — but the app has never said so anywhere you can read it.
+
 ## 3.7.1 — ITERATION
 
 *2026-08-28*

@@ -172,7 +172,21 @@ const BUDGET = {
   // floors. The names ARE the control — PALETTES.md and Doctrine §4 both refuse a
   // row of swatches, because a coloured square alone asks the reader to tell
   // colours apart in order to work a colour control.
-  words: 3700,
+  // 3700 -> 3705 on 2026-08-28 (3.8.0). Five words: "commas between them" in the
+  // place hint and again in the role hint.
+  //
+  // THE APP WAS ALREADY MAKING THIS PROMISE AND NOT KEEPING IT. The place
+  // field's placeholder has read `at home, out, on the phone` since 2.2.0, and
+  // the whole string went in as ONE label — so a real store carries a place
+  // named after the instruction the app gave, and the reader who followed the
+  // example got a place they could not find the way to remove. The behaviour is
+  // fixed; these five words are the hint saying out loud what the placeholder
+  // has always implied, because a placeholder vanishes the moment you type and
+  // is the wrong place for the only statement of a rule.
+  //
+  // Nothing on the first screen changes: both lines are inside the detail sheet,
+  // behind a door, under a field nothing requires you to fill.
+  words: 3705,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

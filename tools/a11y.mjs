@@ -169,6 +169,14 @@ const openSurface = async (pg, id) => {
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const AXE = join(ROOT, 'node_modules', 'axe-core', 'axe.min.js');
 requireFreshBundle(ROOT, 'the a11y walk');
+// THE HASH IS TAKEN NOW, NOT AT THE END (2026-08-28). `requireFreshBundle` on
+// the line above proves the bundle matches `src/` AT THIS MOMENT, and this is
+// the tree that the next four minutes actually measure. Reading it at the end
+// would certify whatever the tree had become — and on 3.8.0 the release notes
+// were edited while the browser was still working, which the receipt would have
+// covered without anything having looked at them.
+const { uiHash: uiHashAtStart } = await import('./a11y-stamp.mjs');
+const UI_AT_START = uiHashAtStart();
 
 const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
@@ -591,6 +599,30 @@ const REGISTRY = {
   'detail sheet, creating a place': [
     '#detail-parent-filter', '#detail-parent-create',
     '#detail-parent-kind', 'label[for="detail-parent-kind"]',
+  ],
+  // THE PLACES YOU ALREADY HAVE, AS TAPS (3.8.0), and the toggle that turns them
+  // into the way to take a wrong one back out.
+  //
+  // A native `<datalist>` used to sit on all three of the detail sheet's naming
+  // fields, and it was the only control anywhere in this app that this file
+  // structurally could not measure: the browser draws that popup itself, over
+  // the keyboard, and nothing here can read its colours, its target sizes or
+  // its focus ring. It also took the caret out of the field mid-word on the
+  // device this app is used on, which is what actually ended a session.
+  //
+  // So it came off, and this is what replaced it — joining the gate in the SAME
+  // COMMIT that builds it, which is hub LESSONS 28's rule and the reason a
+  // surface here has never shipped unmeasured.
+  'detail sheet, the places you have': [
+    '#detail-context-picks button', '#detail-context-fix button',
+  ],
+  // The SAME buttons wearing their REMOVAL words, and it is a separate state
+  // rather than a fold of the one above because words are exactly what SC 2.5.3
+  // and the name audits read. "At my desk" and "At my desk — not a place" are
+  // two different controls to everything that measures a control by what it
+  // says, and only one of them would have been measured.
+  'detail sheet, correcting a place': [
+    '#detail-context-picks button', '#detail-context-fix button',
   ],
   // The sheet open on a CONTAINER, with a rhythm set on it (2.17.0). Its own
   // state and not a fold of 'detail sheet', because these three controls carry
@@ -3208,6 +3240,37 @@ try {
     await page.fill('#detail-context', 'At home');
     await page.click('#detail-context-set');
     await page.waitForSelector('#detail-context-list li');
+
+    // THE PICKS, AND THE WAY OUT (3.8.0). "At my desk" was named through the
+    // first-place row further up this walk and is NOT on this item, so it is
+    // offered here as a tap — which is the common case the browser's own popup
+    // was serving badly, and the state a reader actually meets.
+    await page.waitForSelector('#detail-context-picks button');
+    await auditContrast(page, 'detail sheet, the places you have', theme);
+    await auditAxe(page, 'detail sheet, the places you have', theme);
+    await auditNames(page, 'detail sheet, the places you have', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, the places you have', theme);
+    await auditFocusRings(page, 'detail sheet, the places you have', theme);
+
+    // Pressed, the same picks say what they now do, which is the whole reason
+    // one list can carry both acts without a control ever meaning two things.
+    await page.click('#detail-context-fix button');
+    await page.waitForSelector('#detail-context-picks button');
+    const fixWords = await page.locator('#detail-context-picks button').first().innerText();
+    (/not a place/.test(fixWords) ? pass : fail)(
+      `${theme}/detail sheet: the picks change their WORDS to say they now remove ("${fixWords}")`);
+    await auditContrast(page, 'detail sheet, correcting a place', theme);
+    await auditAxe(page, 'detail sheet, correcting a place', theme);
+    await auditNames(page, 'detail sheet, correcting a place', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, correcting a place', theme);
+    await auditFocusRings(page, 'detail sheet, correcting a place', theme);
+    // MEASURED, NOT EXERCISED. Nothing is released here: "At my desk" is chosen
+    // in `#where` a few lines down, and taking it out to prove the button works
+    // would measure one state by breaking another. That the release LANDS is
+    // `test/names.test.ts`'s job, where it costs no browser.
+    await page.click('#detail-context-fix button');
+    await page.waitForSelector('#detail-context-picks button');
+
     await page.click('#detail-close');
     // THROUGH THE DOOR (2.21.0). Both inputs moved out of the pile and into
     // `#sheet-situation`, so this opens it — and opening it is now part of what
@@ -5351,5 +5414,5 @@ console.log('The rendered app passes: both themes, every state, stressed viewpor
 // Only on a clean run: a receipt for a failed walk would be a lie in a file
 // nobody reads. See tools/a11y-stamp.mjs and LESSONS 126.
 const { writeStamp } = await import('./a11y-stamp.mjs');
-writeStamp();
+writeStamp(UI_AT_START);
 console.log('  receipt written to .a11y-stamp — the commit hook reads this.');

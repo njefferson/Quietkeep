@@ -784,7 +784,46 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.7.1**. The capture
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.8.0**. The
+  browser's own suggestion popup is off all three of the detail sheet's naming
+  fields, what you already have is a row of taps, commas make separate labels,
+  and a label typed wrong comes out where it was typed.
+  **THE POPUP TOOK THE CARET OUT OF THE FIELD MID-WORD, REPEATEDLY**, on the
+  device this app is used on, which ended a labelling session rather than
+  slowing one down. It was a native `<datalist>` on three fields, and it was the
+  only control on any surface in this app that `tools/a11y.mjs` structurally
+  could not measure — the browser draws it, over the keyboard, and nothing here
+  can read its colours, its targets or its ring. What replaced it is a row of
+  `.linklike` buttons that reuse a measured colour pair and joined the gate in
+  the same commit, as two driven states rather than one, because the same
+  buttons wear different WORDS in the two modes and words are what SC 2.5.3
+  reads.
+  **THE FIELD HAD INSTRUCTED THE MISTAKE IT THEN COULD NOT UNDO.** The
+  placeholder has read `at home, out, on the phone` since 2.2.0 and the whole
+  string went in as ONE label — so following the app's own example produced a
+  place named after the example. Removing it worked and lived in the situation
+  sheet, behind choosing that label as where you are: two rooms from the field
+  that makes the mistake. Both halves fixed — `src/names.ts` splits on commas,
+  and *Something here is not a place* sits under the row.
+  **WHAT IS NAMED AS STILL BROKEN, in the notes rather than left quiet:** heat
+  only breaks a tie inside the `ready` tier (`src/nextup.ts:672`). A capture
+  that is heated but not routed sits in `unsorted`, where heat is never
+  consulted — so on a store of 33 captures with 33 heat answers and 10 routed,
+  23 of those answers moved nothing. And *cold is never hidden* is true in the
+  code and stated nowhere a reader can see it.
+  **FOUND WHILE HERE AND DELIBERATELY NOT FIXED IN THIS RELEASE — hub LESSONS
+  175 binds on this repo.** `openSheet` in `src/ui/sheets.ts` and `showNode` in
+  `src/ui/detail.ts` call `showModal()` and set no focus target, so which element
+  the dialog opens on is the engine's choice. Chromium makes a scrolling region
+  focusable in its own right and lands on the body at scroll zero; WebKit does
+  not, and takes the first tabbable element instead — which scrolls the sheet to
+  wherever that element happens to be. This app is read on an iPad, and every
+  walk here drives Chromium, which is the one engine where the defect cannot
+  appear. `tour.ts`, `replan.ts` and `focus.ts` already focus their heading, so
+  the pattern exists in this repo and two surfaces are missing it. The assertion
+  to add is about what the code DECIDED — `activeElement` by name — because the
+  symptom assertion is exactly the one that cannot fail in Chromium.
+- **Superseded, and kept for the record: 3.7.1.** The capture
   box is the first thing on the screen, and the ring check works out for itself
   what to look at.
   **THE BOX YOU PUT THINGS IN WAS THIRD.** *Everything else* and *On this page*
@@ -1542,7 +1581,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.7.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.7.1** — promoted at
+  `d638c51` on 2026-08-28. Both hosts read directly afterwards and both serve
+  3.7.1, which is now the ordinary way a promote is confirmed here rather than
+  the new thing it was one release ago.
+- **Superseded, and kept for the record: 3.7.0** — promoted at
   `c275280` on 2026-08-27, carrying 3.7.0 and three gates that did not exist that
   morning. Deploy success on that exact SHA, and the merged tree asserted
   byte-identical to `07b54ea`, the staging head that was walked.

@@ -49,11 +49,38 @@ export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * walk. That is four minutes against what 2.23.1 cost, which was a red CI, a
  * follow-up release, and a filter shipped into the mode built for the worst day.
  */
+/**
+ * WIDENED FROM `src/ui/` TO ALL OF `src/` ON 2026-08-28, and it is the same hole
+ * this docstring already describes one level up.
+ *
+ * The list was every `.ts` under `src/ui/`. But the words on the screen are not
+ * all written there: `offer.ts` owns the line above the list of things you could
+ * pick up, `nextup.ts` owns every reason a card gives, `log-words.ts` owns the
+ * history, `held.ts` owns the holding line. 3.8.0 changed a rendered sentence in
+ * `src/offer.ts` and this receipt could not see it — so the walk's own guarantee
+ * would have carried across a change to what a reader reads.
+ *
+ * The honest input set is the bundle's input set. `public/app.js` is generated
+ * from all of `src/` and IS what the walk serves, which is exactly why
+ * `bundle-fresh.mjs` compares the bundle against the newest file under `src/`
+ * and not under `src/ui/`. Two guards on one artefact disagreeing about what
+ * feeds it is how one of them ends up with the hole.
+ *
+ * The cost goes up and is accepted, on the same terms as before: a change to a
+ * module that renders nothing now asks for the walk too. A guard whose input set
+ * is narrower than the thing it guards reports green through the gap, and this
+ * file's own comment says so about the previous version of this list.
+ */
 export const uiSources = () => {
-  const dir = join(ROOT, 'src', 'ui');
-  const ui = readdirSync(dir).filter((f) => f.endsWith('.ts')).sort()
-    .map((f) => join('src', 'ui', f));
-  return ['public/index.html', 'public/app.css', ...ui];
+  const out = [];
+  const walk = (rel) => {
+    for (const e of readdirSync(join(ROOT, rel), { withFileTypes: true }).sort((a, b) => (a.name < b.name ? -1 : 1))) {
+      if (e.isDirectory()) walk(join(rel, e.name));
+      else if (e.name.endsWith('.ts')) out.push(join(rel, e.name));
+    }
+  };
+  walk('src');
+  return ['public/index.html', 'public/app.css', ...out];
 };
 
 /** Kept as a name for the two callers that print it. */
@@ -72,8 +99,22 @@ export const readStamp = () => {
   return (readFileSync(STAMP, 'utf8').match(/^ui=([0-9a-f]+)$/m) ?? [])[1] ?? null;
 };
 
-/** Written only after a walk with zero failures. A receipt for a run that
- *  failed would be a lie, and a lie in a stamp file is invisible. */
-export const writeStamp = () => {
-  writeFileSync(STAMP, `# Written by tools/a11y.mjs after a clean run. Not hand-edited.\nui=${uiHash()}\n`);
+/**
+ * Written only after a walk with zero failures. A receipt for a run that failed
+ * would be a lie, and a lie in a stamp file is invisible.
+ *
+ * TAKES THE HASH AS AN ARGUMENT SINCE 2026-08-28, and the caller reads it at
+ * the START of the walk. It used to compute the hash HERE, at the end — so a
+ * source file edited during the four minutes the browser was running got
+ * certified by a walk that had never seen it. That is not hypothetical: it
+ * happened on 3.8.0, to the release notes, while the walk that would have
+ * measured them was already halfway through.
+ *
+ * Passing the start hash makes the failure visible instead of silent — the
+ * stamp records what was actually walked, the tree no longer matches it, and
+ * `a11y-fresh.mjs` refuses the commit and asks for another walk. Which is
+ * correct: the tree on disk was never measured.
+ */
+export const writeStamp = (hash = uiHash()) => {
+  writeFileSync(STAMP, `# Written by tools/a11y.mjs after a clean run. Not hand-edited.\nui=${hash}\n`);
 };

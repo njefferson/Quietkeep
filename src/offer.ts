@@ -184,7 +184,10 @@ export function offerNow(state: State, nowIso: string, zone: string, cycle = 0):
 export function offerWords(offer: Offer): string {
   if (offer.work.length === 0 && !offer.wish) return '';
   if (offer.work.length === 0) return 'Nothing is asking. Something you wanted:';
+  // A COLON, NOT A FULL STOP (3.8.0). This line introduces the list under it and
+  // the wish variant above has always said so; this one stopped, three lines
+  // above what it names, and was read as a caption on the offered item itself.
   return offer.work.length === 1 && !offer.wish
-    ? 'Something you could pick up.'
-    : 'A few things you could pick up.';
+    ? 'Something you could pick up:'
+    : 'A few things you could pick up:';
 }

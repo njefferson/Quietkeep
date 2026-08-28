@@ -1569,6 +1569,12 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 
 .nextup-bite-form { margin-block: 0.75rem 0; }
 .nextup-count { margin: 0.75rem 0 0; color: var(--ink-soft); font-size: 0.9375rem; }
+/* LAYOUT ONLY, on top of `.nextup-count` (3.8.0) — same ink, same paper, one
+   different arrangement, so the contrast registry's existing row still covers
+   it. The gap above is three times the gap below `.nextup-behind` sets, which
+   is what makes the line read as the list's opening rather than as the offer
+   card's last fact. */
+.nextup-lead { margin-top: 1.5rem; }
 .nextup-behind {
   list-style: none;
   margin: 0.5rem 0 0;
@@ -2686,6 +2692,27 @@ summary::-webkit-details-marker { display: none; }
   padding: 0.25rem 0;
 }
 .detail-feed button { min-height: var(--target); }
+/* THE SET YOU ALREADY HAVE, AS A ROW OF TAPS (3.8.0). See the note in the
+   markup for why a native <datalist> is not on this sheet any more.
+
+   LAYOUT ONLY. Every colour on these comes from `.linklike`, which is already
+   in the contrast registry with a measured pair, so no unmeasured foreground
+   ships — the trade `.nextup-place` makes on the offer card, and the honest way
+   past LESSONS 28 rather than a second row nobody added to the gate.
+
+   `.linklike` is already `min-height: var(--target)`, so each pick is a full
+   44px box and the row spacing is the height rather than a gap. The row-gap is
+   0.5rem: the walk refuses two controls less than 3px apart, and a row that
+   wraps puts two 44px boxes directly above one another. */
+.detail-picks {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+.detail-fix { margin: 0.5rem 0 0; }
 /* The arithmetic, in words. `--ink`, not an alert colour: "it needed starting
    two days ago" is a fact about the dates, and this app has no red walls. */
 .detail-feed-words { margin-top: 0.35rem; color: var(--ink); font-weight: 600; }

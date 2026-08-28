@@ -84,7 +84,9 @@ shows:
   a place — a person, a topic, a label that came in from somewhere else —
   **Not a place** takes it out of the question. That matters more than tidiness:
   once a thing carries any place it stops turning up everywhere, so a label that
-  is not a place quietly hides whatever carries it.
+  is not a place quietly hides whatever carries it. The same act is on an item's
+  own panel under **Where can this be done?**, as **Something here is not a
+  place** — which is where a place typed by mistake usually needs to come out.
 - **How long you have.** Anything you never estimated fits every answer. At the
   long end it stops narrowing and points at the Menu instead, because a free
   afternoon is rarely short of time — it is short of the thing you want to do.
