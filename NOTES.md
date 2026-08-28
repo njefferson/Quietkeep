@@ -38,6 +38,62 @@ compensating for.
 
 Everything else follows from that.
 
+### The failure this app exists to prevent, stated precisely (2026-08-28)
+
+**A missed day must not become a new list to sort.** That sentence is more
+useful than "no past bucket" because it names the mechanism rather than the
+symptom, and it is the reason this repo exists rather than a subscription to
+something mature.
+
+The mechanism, in order:
+
+- In every established planner and every paper system, a day that goes by
+  becomes **another inbox** — a second list, demanding to be sorted again.
+- Sorting it is not the expensive part. **Re-integrating it with everything that
+  has happened since** is the expensive part, and the ambiguity of that produces
+  delay rather than a decision.
+- The delay makes it older. Repeat twice and everything in it has reached a fail
+  state at once, together, with no single thing to act on.
+- So there is no way to stay current without extra effort — and the extra effort
+  is exactly the capacity that is unavailable on the days it is needed. The
+  system asks most from you at your worst moment, which is the same shape law 8
+  names about re-entry.
+
+**The target is therefore not a clear inbox.** It is *rules you trust to put
+what matters on top*. Noise is acceptable. Being unable to see past the noise is
+not. A system that requires the pile to be empty before it can be trusted has
+made emptiness the precondition for its own usefulness, and emptiness is the one
+state this audience cannot hold.
+
+**Held against the app as it stands (3.8.2), and this is a standing evaluation
+rather than a one-off.** Four structural answers, none of them a setting:
+
+- **A passed `review` clock raises nothing.** Those are the app's own
+  bring-this-back clocks, written by the gate constantly, and treating one as a
+  lapse would manufacture a shame surface at a rate of one per capture
+  (`src/replan.ts`). Only a real date somebody set themselves — `due`,
+  `suspense` — can raise a card, and there are few of those.
+- **Nothing accumulates as a list.** Pressure is continuous, computed from
+  `(last_done, comfort_window, now)`, and never stored. A missed day means some
+  things are more pressured than they were; it does not mean there is a new
+  queue. Nothing has to be sorted for the app to keep working.
+- **The context is pre-assembled on a replan card**, which is precisely the
+  "integrate it with what has happened since" cost — the part that cannot be
+  reconstructed on demand.
+- **`replanWords` gets VAGUER as time passes**, not sharper: yesterday, then a
+  number of days, then "last week", then "that date has been by for a while".
+  The opposite of a counter that climbs.
+- **Re-entry cannot be made to show the pile** — bounded by shape rather than by
+  configuration, not by a long absence and not by a thousand items
+  (`src/reentry.ts`).
+
+**And the one place it could still bite, named rather than assumed:** the replan
+surface states its true total when the cap of three is hiding some. After a
+fortnight away that is a number, on a screen, counting things that want a
+decision. It is honest and it is bounded, and it is still the nearest thing in
+this app to the headline the failure above begins with. Worth watching on a real
+long absence, which has not happened yet.
+
 ---
 
 ## The ten product laws (invariants)
