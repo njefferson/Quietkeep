@@ -665,11 +665,33 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // score, nothing accumulates, and `heat.set` was already in the log being
     // read by nothing but the flow that collects it.
     //
-    // CONFINED TO `ready`, and the confinement is the point. A real date still
-    // outranks everything (entry 13 — the true urgency signal must stay
-    // legible), a chain still comes second, and pressure still sorts by
-    // pressure. Nothing here reorders a tier or fabricates a reason.
-    if (a.reason === 'ready' && b.reason === 'ready') {
+    // IT WAS CONFINED TO `ready` UNTIL 3.8.1, and the confinement was defended
+    // here as the point: a real date still outranks everything (entry 13 — the
+    // true urgency signal must stay legible), a chain still comes second, and
+    // pressure still sorts by pressure. Every one of those sentences is still
+    // true. What was wrong was reading the confinement as *one tier* when the
+    // thing it was protecting was *the tier order*.
+    //
+    // WIDENED TO EVERY TIER IN 3.8.1, AND THAT IS THE WHOLE OF THE CHANGE.
+    //
+    // Reported from a store of 33 captures with 33 heat answers and 10 of them
+    // routed. Heat was consulted inside `ready` only, so a capture that had been
+    // heated but not yet sorted sat in `unsorted` where nothing read it — and
+    // twenty-three of those answers moved nothing at all. Asking a question,
+    // recording the answer and then not using it is worse than not asking.
+    //
+    // THE TIERS DO NOT MOVE, which is what keeps entry 13 intact: a real date
+    // still outranks everything, a chain still comes second, and `unsorted` is
+    // still last among the ordinary tiers. This reorders nothing between tiers.
+    // It is the same two-state fact the reader stated, breaking a tie in each of
+    // them instead of in one.
+    //
+    // AND IT STAYS UNDER PRESSURE, deliberately. The branch above sorts the
+    // `pressure` tier by pressure, and it runs first: that tier is named for the
+    // thing it sorts by, and heat outranking it would make the tier stop meaning
+    // what it says. Heat breaks the tie beneath it, where the numbers are equal
+    // and the order was arrival by id.
+    {
       const h = HEAT_ORDER[a.node.heat ?? 'none'] - HEAT_ORDER[b.node.heat ?? 'none'];
       if (h !== 0) return h;
     }

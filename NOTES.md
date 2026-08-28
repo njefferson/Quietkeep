@@ -784,7 +784,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.8.0**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.8.1**. Heat
+  breaks the tie in EVERY tier, not only in `ready`, and the screen says out
+  loud that cold is never hidden.
+  **TWENTY-THREE OF THIRTY-THREE ANSWERS MOVED NOTHING.** The heat pass has been
+  a two-tap read since 2.7.0 and `nextup.ts` consulted it inside one tier — so a
+  capture that was heated but not yet routed sat in `unsorted`, where nothing
+  looked at it. On a store of 33 captures with 33 heat answers and 10 routed,
+  seventy percent of the answers were recorded and unused. Asking a question and
+  then not using the answer is worse than not asking.
+  **THE TIER ORDER DID NOT MOVE**, which is what keeps nd-collisions entry 13
+  intact: a real date still outranks everything, and inside the `pressure` tier
+  pressure still sorts first, with heat underneath it. The comment defending the
+  old confinement was not wrong about what it was protecting — it was protecting
+  the tier ORDER, and had been read as protecting one tier.
+  **PLANTED BEFORE IT LANDED.** Three of the five new assertions go red against
+  the previous comparator; two stay green, because they are the restraint half
+  and must hold either way. The first draft of the `pressure` one wrapped both
+  its assertions in `if (q.length === 2)` over a queue that folded to nothing —
+  two guards, both green, measuring nothing, caught by probing the queue rather
+  than by trusting the pass.
+  **AND THE COPY HALF.** *Still comes back — nothing is ever hidden* is now the
+  hint under Cold. `HEAT_ORDER` has put cold last and never excluded it since
+  2.7.0, `test/heat-ranking.test.ts` has asserted it for as long, and no screen
+  ever said it — which is a fair reason to stop trusting a two-tap triage and
+  leave.
+- **Superseded, and kept for the record: 3.8.0.** The
   browser's own suggestion popup is off all three of the detail sheet's naming
   fields, what you already have is a row of taps, commas make separate labels,
   and a label typed wrong comes out where it was typed.

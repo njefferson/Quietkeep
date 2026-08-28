@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.8.1 — ITERATION
+
+*2026-08-28*
+
+- **Hot and cold now count everywhere, not only among things you had already sorted.** Marking something hot while it is still an unsorted capture used to record the answer and change nothing — on a store of 33 things put down, 33 answers given and 10 of them sorted, twenty-three of those answers moved nothing at all. They all move something now.
+- **Nothing about the running order changed.** A real date still comes before everything, a step whose blocker just finished still comes second, and things with rising pressure are still sorted by pressure. Hot and cold break the tie inside each of those, which is what they always did inside one of them.
+- **And the screen now says the thing the app has always done: cold is never hidden.** *Still comes back — nothing is ever hidden* sits under the Cold button. It sorts last, it still counts, and it still gets offered when it is all there is. That was true from the day the question was added and there was nowhere to read it, which is a fair reason to stop trusting a two-tap triage.
+
 ## 3.8.0 — CAPABILITY
 
 *2026-08-28*

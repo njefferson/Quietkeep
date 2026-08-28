@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.8.1',
+    kind: 'ITERATION',
+    date: '2026-08-28',
+    notes: [
+      '**Hot and cold now count everywhere, not only among things you had already sorted.** Marking something hot while it is still an unsorted capture used to record the answer and change nothing \u2014 on a store of 33 things put down, 33 answers given and 10 of them sorted, twenty-three of those answers moved nothing at all. They all move something now.',
+      '**Nothing about the running order changed.** A real date still comes before everything, a step whose blocker just finished still comes second, and things with rising pressure are still sorted by pressure. Hot and cold break the tie inside each of those, which is what they always did inside one of them.',
+      '**And the screen now says the thing the app has always done: cold is never hidden.** *Still comes back \u2014 nothing is ever hidden* sits under the Cold button. It sorts last, it still counts, and it still gets offered when it is all there is. That was true from the day the question was added and there was nowhere to read it, which is a fair reason to stop trusting a two-tap triage.',
+    ],
+  },
+  {
     triplet: '3.8.0',
     kind: 'CAPABILITY',
     date: '2026-08-28',

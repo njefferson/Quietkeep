@@ -619,8 +619,25 @@ export function mountTriage(
     CARD.textContent = text;
     paintContext(nodeId);
     ACTIONS.replaceChildren(...(['hot', 'cold'] as Heat[]).map(h => {
-      const b = el('button', 'route', h === 'hot' ? 'Hot' : 'Cold');
+      const b = el('button', 'route');
       b.type = 'button';
+      // THE LINE THAT ANSWERS "WHEN DO THE COLD ONES HIDE FROM ME?" (3.8.1).
+      //
+      // Never. Cold sorts last, still counts, still comes back, and still fills
+      // the offer when it is all there is — `HEAT_ORDER` in `src/nextup.ts` and
+      // the assertions in `test/heat-ranking.test.ts` have said so since 2.7.0,
+      // and nothing on any screen ever did. Reported from a device: not knowing
+      // is what turns a two-tap triage into something you stop trusting, and an
+      // app you do not trust to be holding everything is one you leave.
+      //
+      // On the CONTROL rather than as a standing paragraph, because that is
+      // this surface's own shape — every one of the six routes below carries a
+      // label and a hint — and because the doubt arrives at the moment of
+      // pressing, not before it.
+      b.append(el('span', 'route-label', h === 'hot' ? 'Hot' : 'Cold'));
+      if (h === 'cold') {
+        b.append(el('span', 'route-hint', 'still comes back — nothing is ever hidden'));
+      }
       b.addEventListener('click', () => {
         // A heat pass is a new action, so any pending route-undo is now stale.
         clearUndo();
