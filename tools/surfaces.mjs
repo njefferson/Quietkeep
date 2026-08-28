@@ -198,6 +198,27 @@ const dangling = selectors
   'no audited selector names an element that is not in the markup'
   + (dangling.length ? ` — ${[...new Set(dangling)].join(', ')}` : ''));
 
+// ── AND EVERY AUDITED STATE GETS A FOCUS-RING PASS ───────────────────────────
+// 18 of 112 audited states had none. Not a judgement that their rings did not
+// matter — `auditFocusRings` took a hand-written selector list, so a state was
+// covered only if somebody remembered to write one, and nobody had decided
+// anything. The list WAS the gap.
+//
+// Reported in the release notes as "this checks the screens the automated walk
+// visits", which read as a limit of the walk and was really a limit of who had
+// got round to it. Now the ring pass derives its own controls when none are
+// given, and this holds the two sets equal so the gap cannot reopen.
+const a11ySrc = readFileSync(join(root, 'tools', 'a11y.mjs'), 'utf8');
+const named = (fn) => new Set(
+  [...a11ySrc.matchAll(new RegExp(`await ${fn}\\(page, '([^']+)'`, 'g'))].map((m) => m[1]));
+const audited = named('auditContrast');
+const ringed = named('auditFocusRings');
+const unringed = [...audited].filter((st) => !ringed.has(st)).sort();
+(audited.size > 0 ? ok : fail)(`${audited.size} state(s) are audited by the walk`);
+(unringed.length === 0 ? ok : fail)(
+  'every audited state also gets a focus-ring pass'
+  + (unringed.length ? ` — ${unringed.length} without one: ${unringed.join(', ')}` : ''));
+
 console.log(failed
   ? '\nA surface exists that nothing measures. That is not a green walk, it is a\nwalk that was never told.\n'
   : '\nThe markup and the walk account for each other.\n');
