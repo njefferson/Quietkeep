@@ -447,8 +447,8 @@ const is = (actual, expected, what) =>
 // it says. The guarantee is stated in words when it holds and the failure is
 // counted in words when it does not:
 //
-//   holding  → "nothing here has gone quiet · N ready now · see each"
-//   broken   → "N things have gone quiet · see each"
+//   holding  → "nothing here has gone quiet · N ready now · what comes back, and when"
+//   broken   → "N things have gone quiet · what comes back, and when"
 //
 // Parsed rather than substring-matched, for the reason the previous version of
 // this helper already recorded: `.includes('0 silent')` was also true of "10

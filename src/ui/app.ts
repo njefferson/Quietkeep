@@ -987,7 +987,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     total === 0
       ? 'nothing held yet'
       : silent > 0
-        ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet · see each`
+        ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet · what comes back, and when`
         // "0 ready now" IS THE ONLY PART THAT CHANGED (3.9.1). Walked as a
         // reader: eight things put down, and the page answered "nothing here has
         // gone quiet · 0 ready now", which reads as nothing having happened at
@@ -998,7 +998,26 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         // parses it. What was wrong is a zero standing where a number explains
         // the app icon's badge: with nothing ready there is no badge to explain,
         // so it says so in words, and "yet" is the part a first day needs.
-        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`} · see each`;
+        // AND IT SAYS WHERE IT GOES (3.9.2). The last clause was "see each" —
+        // three vague words at the end of a run-on line, on the one control that
+        // answers "can I stop holding this myself". Behind it is a sheet titled
+        // "What comes back, and when", listing every item and its return date,
+        // one tap from the landing surface. Reported as a missing feature: the
+        // whole list, so the offer can be trusted. It was never missing. The
+        // door did not name its destination, which on this app's own rule — a
+        // door says what it holds — makes it a door nobody opens.
+        //
+        // IT SAYS THE DESTINATION'S OWN WORDS, and that is the whole of the fix.
+        // The first draft read "see every one, and when it comes back" — true,
+        // and six words describing a heading that already exists. The sheet is
+        // titled "What comes back, and when", so the door says that, and what a
+        // reader lands on is the sentence they pressed. Same pattern as
+        // `#tree-open`, which says "Your projects, areas and goals".
+        //
+        // BOTH BRANCHES SAY IT. The loud state said "see each" too, and it is
+        // the same door to the same sheet — a control whose label changes with
+        // the state behind it teaches nobody where it goes.
+        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`} · what comes back, and when`;
 
   // T0's badge (ADR-0007): how many things are actually asking, on the app icon,
   // so a glance at the home screen is informative without opening anything.
@@ -1921,6 +1940,12 @@ export async function main(edition?: Edition): Promise<void> {
   // down at 175% text, so this leaves the stance, puts focus in the field, and
   // the thought is recorded where it always was — no second capture path to
   // drift from the first.
+  //
+  // `leave()` IS THE FIRST THING IT DOES, and until 3.9.2 the button's name did
+  // not say so: it said "Put something down", which is the capture field's own
+  // label, so it read as a second box rather than as the way out with a plus on
+  // it. The wiring is right — one draft, one commit, one Dump — and the label
+  // was the thing lying. See the note on `#stance-capture` in `index.html`.
   document.querySelector<HTMLButtonElement>('#stance-capture')?.addEventListener('click', () => {
     leave();
     document.querySelector<HTMLInputElement>('#capture')?.focus();

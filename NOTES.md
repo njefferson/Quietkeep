@@ -840,7 +840,77 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.1**. Eight
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.2**. Three
+  doors now say where they go. The first of four releases working through the
+  eight things the walk found and left, taken in the order design wants rather
+  than the order they were found: **trust** first (this one), then the conveyor,
+  then filing, then the combined views.
+  **NONE OF THE THREE WAS A MISSING FEATURE, and the first one is why the batch
+  is ordered this way.** *The whole list, so the offer can be trusted* reads as
+  unbuilt and is one tap away: the gauge opens a sheet titled *What comes back,
+  and when* listing every item with its return date, and the door's last clause
+  was `see each`. A door that does not name its destination is a door nobody
+  opens, so the feature is present and absent at once — which is the most
+  expensive kind of defect, because building the thing again is the obvious fix
+  and it is the wrong one. It says the destination's own words now, in BOTH
+  states: the loud branch said `see each` too, and a control whose label changes
+  with the state behind it teaches nobody where it goes.
+  **`Everything else` WAS A LEFTOVER LABEL SITTING FIRST ON THE SCREEN.** *Else*
+  is fine modifying WHERE and wrong modifying WHAT — the second says the contents
+  are the remainder, and behind that door are seven rooms nobody would call
+  leftovers. 3.4.3 retired `More` for naming a quantity rather than a
+  destination, wrote down the reason — these are the APP rather than your work —
+  and never put it on the control. It is `Elsewhere in the app`, which is that
+  sentence, finally on the button. +4 words; the budget moved 3705 to 3709 with
+  the reasoning beside the number.
+  **THE DRAFT WAS `Other places` AND IT COLLIDED WITH THE READER'S OWN FILING.**
+  A *place* is a thing somebody types on the detail sheet, it is a kind word
+  (`A place`), and two live controls on that same page say `Narrow the places`
+  and `Narrow the list of places` to a screen reader. A chrome door named after
+  one of the reader's own nouns tells them their filing is behind it. The voice
+  rule about checking a mark against the audience's own vocabulary is the same
+  rule for copy, and the vocabulary that catches you is the app's own.
+  **`Choose what to do` PROMISED A CHOICE THAT ADR-0060 DELIBERATELY REFUSES.**
+  One thing, a reason, and a way to refuse it. `See what is next` is verb-first
+  like every door beside it — `Sort what you put down`, `Do one thing`, `Tend
+  what recurs` — and 3.4.3 already recorded that shape as the reason `Choose
+  where to be` beat its alternatives. The first draft was `What to do now`, a
+  bare noun phrase, which in that row reads as a heading rather than a way in.
+  **AND THE RENAME WENT STALE IN THREE HELP SURFACES BEFORE ANY GATE SAW IT** —
+  the manual twice, `docs/paths.html` and the shipped `public/paths.html`. That
+  is the failure 3.6.1 paid a release for, one control along. `help-check.mjs`
+  read the seven destinations BEHIND the door and never the label ON it, so the
+  door is its own SET now with three surfaces held to it, planted red before it
+  landed. It did NOT gain a retired-name rule: *Everything else* is ordinary
+  English and the manual's own second paragraph is "That is the whole product.
+  Everything else is how it does it." A backward rule there fires on honest
+  prose, which this repo has already measured as worse than a miss. **Distinctive
+  names get both directions; ordinary words get one, on purpose.**
+  **THE `+` INSIDE A JOB WAS THE WAY OUT WEARING A PLUS.** Its name was "Put
+  something down" — the capture field's OWN label — and its handler calls
+  `leave()` first, so pressing it ends the job you are in and sends you to the
+  box at the top. Walked as a reader it looked like a second capture box beside
+  the one already on screen; it is not a second box and there must not be one
+  (one draft, one commit, one Dump). **The comment above it claimed this route
+  existed so you would not have to leave the job first, while the code four
+  files away left it** — a claim about behaviour, written in the file that does
+  not have the behaviour, which is the shape that survives review because both
+  halves read correctly on their own. The label says "Leave this and put
+  something down" now; the wiring is untouched.
+  **AND THE SECOND HALF OF THE TRUST FINDING IS ANSWERED BY FINDABILITY RATHER
+  THAN BY REVERSING ADR-0102.** The complaint named the `Every one of them` fold
+  being shut by default. `buildCoverage` renders `heldWork` — every held item,
+  its return date, each one openable — and that sheet is ONE TAP from the
+  landing surface now that its door says the sheet's own heading. The fold is a
+  second route to the same set and stays folded, because a decision record is
+  not overturned by a session that found the surface hard to reach.
+  **A SEQUENCING COST WORTH RECORDING: the a11y walk was run before the release
+  was cut.** The receipt hashes all of `src/`, `public/index.html` and
+  `public/app.css`, so adding the notes to `src/ui/changelog.ts` invalidated a
+  nine-minute walk that had just passed. Cut the release first, then render, then
+  walk — the same rule as "finish every source edit before any walk", one step
+  further out than where it was last learned.
+- **Superseded, and kept for the record: 3.9.1.** Eight
   things found by walking the whole app as somebody arriving with a head full of
   work, and fixed.
   **THE WALK IS THE FINDING METHOD, and it found what no gate could.** Every one
@@ -1784,7 +1854,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.7.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.9.1** — promoted at
+  `01ad14e` on 2026-08-29, the merged tree asserted byte-identical to `5ac11c8`,
+  the staging head that was walked. Both editions read directly afterwards and
+  both serve 3.9.1.
+- **Superseded, and kept for the record: 3.7.1** — promoted at
   `d638c51` on 2026-08-28. Both hosts read directly afterwards and both serve
   3.7.1, which is now the ordinary way a promote is confirmed here rather than
   the new thing it was one release ago.

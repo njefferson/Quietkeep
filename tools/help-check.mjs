@@ -78,6 +78,12 @@ const shell = stripHtmlComments(read('public', 'index.html'));
 const destinations = [...shell.matchAll(/class="more-go"[^>]*>([^<]+)</g)]
   .map((m) => m[1].replace(/\s+/g, ' ').trim());
 const treeLabel = (shell.match(/id="tree-open"[^>]*>([^<]+)</) ?? [])[1];
+// THE DOOR ITSELF, not what is behind it. `destinations` above reads the seven
+// rooms; nothing read the label on the control that opens them, so 3.9.2
+// renamed it and three help surfaces went on naming a button that no longer
+// existed — the identical failure 3.6.1 paid for with the tree label, one
+// control along, caught by hand both times.
+const moreDoor = (shell.match(/id="open-more"[^>]*>([^<]+)</) ?? [])[1];
 
 const SETS = {
   routes:       { what: 'the sort routes',        from: 'src/ui/clarify.ts CLARIFY ROUTES', values: routes },
@@ -87,6 +93,7 @@ const SETS = {
   // all seven, and declaring one that does not would make this gate a wish.
   destinations: { what: 'the destination labels', from: 'public/index.html .more-go',       values: destinations },
   treeLabel:    { what: 'the tree label',         from: 'public/index.html #tree-open',     values: treeLabel ? [treeLabel] : [] },
+  moreDoor:     { what: 'the way-to-everything door', from: 'public/index.html #open-more',  values: moreDoor ? [moreDoor] : [] },
 };
 
 // ── WHO COVERS WHAT ──────────────────────────────────────────────────────────
@@ -105,6 +112,9 @@ const COVERS = [
   ['docs/manual.md',  'routes',       'the sorting section lists them'],
   ['docs/manual.md',  'treeLabel',    'named where the tree is described'],
   ['src/ui/tour.ts',  'routes',       "step 3's alt text enumerates the choices"],
+  ['docs/manual.md',    'moreDoor',  'the section on what else the app can do, and the control list'],
+  ['docs/paths.html',   'moreDoor',  'the export path says which door Your data is behind'],
+  ['public/paths.html', 'moreDoor',  'the shipped page a reader loads'],
 ];
 
 // ── RETIRED: never in any help surface, EXCEPT where it is marked as history ──
@@ -116,6 +126,16 @@ const COVERS = [
 // `<span data-was>`. The exemption is per-mention and visible in the markup,
 // never a whole-file pass, because a file-level exemption is where this repo's
 // privacy gate found its material collecting.
+//
+// AND SOME RENAMES CANNOT JOIN THIS LIST, which is worth saying where the list
+// is. 3.9.2 retired `Everything else` from the way-to-everything door, and the
+// phrase is ordinary English — the manual's second paragraph is "That is the
+// whole product. Everything else is how it does it." A backward rule here would
+// fire on honest prose, which this repo has already measured as worse than a
+// miss (`privacy-check.mjs`, and the inline-citation exception in
+// `pages-a11y.mjs`). The forward rule catches that rename instead: the door is
+// its own SET now and three surfaces are held to it. Distinctive names get both
+// directions; ordinary words get one, on purpose.
 const RETIRED = [
   ['How it hangs together', 'renamed in 3.6.1 to the current tree label'],
 ];

@@ -29,6 +29,20 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.9.2',
+    kind: 'ITERATION',
+    date: '2026-08-29',
+    notes: [
+      '**Three buttons now say where they go.** A door that names a destination is one you can use without pressing it to find out, and these three named a mood, a leftover pile and a promise instead.',
+      '**The line under your held things ended in *see each*.** Behind it is the list of everything you are holding with the date each one comes back — which is the answer to *can I stop carrying this myself*, and *see each* was not going to get anybody there. It says **what comes back, and when**, which is the heading you land on. It says that in both states now; when something has gone quiet it used to say *see each* too.',
+      '**The button that said *Everything else* now says *Elsewhere in the app*.** *Else* was doing the wrong job: it read as *the leftovers*, on a button sitting first on the screen, before anything it could be left over from. Behind it are your data, settings, colours, help, the reference, what the app can do and what it is — seven rooms, none of them leftovers. They are the app rather than your work, and now the button says so.',
+      '**Inside a job, the way to the first room said *Choose what to do*.** There is one thing behind it, with a reason and a way to refuse it — which is the whole point and is not a choice. It says **See what is next**, like the rooms beside it: *Sort what you put down*, *Do one thing*, *Tend what recurs*.',
+      '**And the + inside a job now says what it costs you.** It said *Put something down*, which is what the capture box says, so it looked like a second box beside the one already on screen. It is not: it leaves whatever you are in and takes you back to the box at the top. It says **Leave this and put something down**, so you can decide whether the thought is worth your place.',
+      '**Nothing moved and nothing was added.** Every one of these is the same control in the same place with better words on it.',
+      '**Still not right:** every screen still puts the capture box, the gauge and two rows of chrome above the thing you went there for. And sorting still gives you no sense of where you are in the pile, filing something under a place or a project is further away than it should be, and bringing in a file lands you in the same room as everything else. Those are next.',
+    ],
+  },
+  {
     triplet: '3.9.1',
     kind: 'ITERATION',
     date: '2026-08-29',
