@@ -17,6 +17,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # EVERY HUB GATE, CALLED RATHER THAN COPIED.
+  #
+  # These were eighty-odd lines inside the job below — a checkout of the hub and
+  # six of its gates, with the reasoning for each kept alongside. The reasoning
+  # was worth keeping and is not lost: it moved to the hub's own
+  # hub-gates.yml, where it is written once for every repo instead of once per
+  # repo, which is what it was always describing.
+  #
+  # THE HUB IS PINNED NOW. That checkout named a repository and a path and no
+  # `ref:`, so it took whatever the hub's default branch was at the moment the
+  # runner ran. The Spine is the gate this repo trusts most and its most
+  # important checks were being fetched from a moving target.
+  #
+  # `mirror: true` is why this call exists in the shape it does: this repo must
+  # fail `npm test` OFFLINE, so it carries its own copy of the disclosure
+  # patterns, and privacy-mirror-check is what holds that copy to the canon. It
+  # is the only repo that needs it, and the reusable workflow had no input for
+  # it until this swap — a sibling calling the shared wiring would silently have
+  # stopped running the one gate only it runs, which is the exact failure the
+  # shared wiring exists to prevent, arriving through the thing meant to prevent
+  # it.
+  #
+  # `pin-check` is new here, and passes.
+  hub-gates:
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@1de7828224ca881480deb5980e362bfb949eb682
+    with:
+      pwa: true
+      mirror: true
+
   test:
     runs-on: ubuntu-latest
     # A GATE WITH NO ANSWER IS NOT A GATE, and the default here is SIX HOURS.
@@ -46,99 +75,6 @@ jobs:
       # possible check for the least legible possible failure.
       - name: Workflow files parse
         run: npm run workflows:check
-
-      # Doctrine §9b — the FAIL state: nothing personal about the owner lands
-      # in this repo. The canonical patterns live in the hub and are widened
-      # there, so this step checks the hub out fresh and runs THAT copy —
-      # test/privacy.test.ts mirrors the patterns for offline `npm test`, but
-      # this is the gate that cannot lag. The path is untracked, so the scan
-      # (`git ls-files`) never reads the hub's own files as this repo's.
-      - name: Check out the hub's canonical gates
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          repository: njefferson/noahjefferson
-          path: .hub-gates
-          persist-credentials: false
-      - name: The owner's person is not repo material (Doctrine 9b)
-        run: node .hub-gates/privacy-check.mjs --repo .
-
-      # test/privacy.test.ts mirrors the hub's patterns so `npm test` fails
-      # offline. A mirror that drifts is not a smaller gate, it is a different
-      # one — a stale over-broad copy already blocked four consecutive deploys
-      # in a sibling repo (LESSONS §53).
-      - name: The offline pattern mirror has not drifted from the hub
-        run: node .hub-gates/privacy-mirror-check.mjs --repo .
-
-      # THE SECOND HALF OF THE PRIVACY RULE. privacy-check.mjs anchors
-      # every pattern on the owner's NAME or role, so it cannot see a verbatim
-      # sentence of ordinary speech — five of those were in this repo, and one more in
-      # an ADR that had copied one, all of them green on every gate. This holds
-      # every set-apart quotation to a declaration saying whose words it is.
-      # Runs beside the privacy gate because it is the same rule.
-      - name: Every set-apart quotation says whose words it is
-        if: ${{ !cancelled() }}
-        run: node .hub-gates/quote-check.mjs --repo .
-
-      # THE THIRD HALF, and it was enforced by nothing here until 2.18.1.
-      # privacy-check anchors on the NAME and quote-check finds the set-apart
-      # quotation; neither can see a sentence that refers to the owner with a
-      # pronoun and no name at all. A pass for those found 12 live references in
-      # this repo's own tracked files on 2026-08-22 — seven of them in NOTES.md,
-      # the file this repo's CLAUDE.md names first in "read these first".
-      #
-      # It had been run only when a session remembered to, which is the state the
-      # other two gates were in before they were wired. A rule enforced by
-      # memory is enforced on the days somebody has the memory to spare.
-      - name: No third-person reference to the owner
-        if: ${{ !cancelled() }}
-        run: node .hub-gates/third-person-check.mjs --repo .
-
-      # NO TABLES OR GRIDS, ANYWHERE THE OWNER READS (Doctrine 2). Markdown
-      # tables arrive on an iPad as pipes and dashes with the content lost, and
-      # the loss is silent — the prose around them looks fine. This repo was
-      # converted in full on 2026-07-29 and nothing has checked it since; the
-      # rule survived on the fact that nobody happened to write one.
-      - name: No grid in anything the owner reads
-        if: ${{ !cancelled() }}
-        run: node .hub-gates/docs-check.mjs .
-
-      # THE HOOK THAT ENFORCES THE FRESHNESS RULE IS THE ONE THIS REPO DECLARES.
-      # That rule is caught locally by the generated pre-commit hook, which
-      # `--no-verify` walks straight past — so the tracked hook is checked here
-      # against what `.branch-guard` says it should be. A guard that can be
-      # skipped locally and is not verified centrally is a guard that is on
-      # until the first time somebody is in a hurry.
-      #
-      # UP HERE BECAUSE IT NEEDS NOTHING BUT THE TWO CHECKOUTS. It used to sit
-      # near the end, behind the browser install and every walk — so a failure
-      # in a check that takes under a second was reported twenty-odd minutes
-      # into a run, if the run got that far at all. It was red for ten runs and
-      # its position is part of why nobody saw it. Cheap checks that depend on
-      # nothing belong where a failure is answered in seconds.
-      #
-      # `.hub-gates` is where this job already checked the hub out — the sibling
-      # path this is run from locally does not exist in CI, and a step that
-      # cannot find its tool is a step that fails for the wrong reason.
-      #
-      # `--artefact` BECAUSE THIS STEP FAILED EVERY TIME WITHOUT IT, and did so
-      # from the commit that added it. The plain check also asserts that
-      # `.git/hooks/pre-commit` is installed and current, which is a fact about
-      # one CLONE — and `actions/checkout` leaves `.git/hooks` empty by
-      # definition, so it can never hold here. Ten runs since the step was added
-      # — seven concluding failure, three cancelled by a superseding push, none
-      # ever green; the step was watched passing LOCALLY, where the hook is
-      # installed, which is the one place it proves nothing about CI.
-      #
-      # What CI can check, and what this now checks, is the tracked artefact
-      # against what `.branch-guard` declares — the drift that would leave every
-      # developer clone running a rule the repo no longer states. Verified by
-      # planting that drift and watching this exact command exit 1.
-      #
-      # Not `--install` first: that WRITES the tracked file, so a drifted
-      # artefact would be repaired on the spot and the check would pass over the
-      # one defect it exists to find.
-      - name: The commit guard is the one that was declared
-        run: node .hub-gates/branch-guard.mjs --repo . --artefact
 
       # AND THE RECEIPT IN THE TREE IS FOR THIS MARKUP. `.a11y-stamp` records
       # the UI hash the accessibility walk last passed against; the pre-commit
