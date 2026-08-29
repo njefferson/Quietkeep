@@ -840,7 +840,68 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.0**. A passed
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.1**. Eight
+  things found by walking the whole app as somebody arriving with a head full of
+  work, and fixed.
+  **THE WALK IS THE FINDING METHOD, and it found what no gate could.** Every one
+  of these passed twenty-five static gates, 5,294 accessibility assertions and
+  three browser walks, because each is a true sentence in the wrong place or a
+  correct computation of the wrong thing. `Clarify (cold):` — the step's internal
+  name plus the stored heat value — was the prompt on the SECOND thing a new
+  reader ever does. One item sat on screen twice with two different Done buttons,
+  and the collision was already half known: the bar's Done carries
+  `aria-label="Done with what you are on now"` and a comment saying it is
+  "distinct from Next up's Done, which sits on the same screen". Solved for a
+  screen reader, left alone for the eye.
+  **THE COUNT BUG WAS TWO COMPUTATIONS OF ONE THING.** The offer's line came from
+  `offerNow` and the rows under it from `workSurface`'s `up.behind`; they agreed
+  by coincidence until one piece of work plus one wish put "A few things you
+  could pick up" over a list of one. It is counted from the rows now.
+  **AND THE COLON FROM 3.8.0 WAS SHIPPING A DEFECT ON THE HUB.** That string is
+  also read as the door summary, where nothing follows it. The colon is
+  `.nextup-lead::after` now — generated content is not in `textContent`, so the
+  card leads its list and the door reads a sentence.
+  **TWO OF THE TWELVE WERE NOT DEFECTS, and saying so is the point of walking
+  rather than guessing.** The gauge's "nothing here has gone quiet" is ADR-0100's
+  standing proof that nothing was lost, cited by the flowcharts and parsed by the
+  smoke walk — only the bare `0` beside it changed. And the sorting door's
+  silence about HOW MANY is deliberate: `clarify.ts` records that this "was the
+  last place still keeping score" and that a hidden count is still a count to a
+  screen-reader user. The door says what the room does instead, so both rules
+  hold.
+  **WHAT IS NAMED AS STILL BROKEN:** every stance renders the capture box, the
+  gauge and two rows of chrome above the job. Removing the stale undo and the
+  duplicated do-now bar took four lines off it; the rest is a design question,
+  not a fix.
+  **AND THREE THINGS THE GATES THEMSELVES TAUGHT, each of which cost a walk.**
+  Both browser walks stepped through the walkthrough by watching for the literal
+  string `Get started`, and the a11y walk's own comment defended it — "a step
+  count is content; Get started is the guarantee". Renaming that button timed
+  both of them out. The smoke walk likewise waited for the routing prompt to
+  start with `Clarify`, which is the schema word this release removed: **the gate
+  was pinning the defect in place.** Both watch `data-last` and `data-step` now —
+  facts about which step you are on, which is what a walk should key on, leaving
+  the words free to be rewritten.
+  **THE THIRD WAS A FEEDBACK LOOP AND IT LOOKED EXACTLY LIKE A HANG.**
+  `watchJobs` in `hub.ts` observes `hidden` on ANY element under `main`, subtree
+  included, and repaints the hub for each one. The new observer WRITES `hidden`
+  on two elements under `main`, so every stance change fed the hub's observer and
+  the page never settled long enough to be clicked — the smoke walk stopped dead
+  on `#held-fold-summary` with no error. Guarding the write (`if (el.hidden !==
+  v)`) is the whole fix, and the general rule is worth having: an observer that
+  writes an attribute another observer watches is a loop, and a loop presents as
+  a timeout somewhere unrelated.
+  **THE FIRST TWO ATTEMPTS AT THE STRAY-CONTROL RULE WERE BOTH WRONG, and both
+  walks said so in one line each.** Clearing on "not triage any more" fired when
+  the inbox emptied and the stance fell away by itself — the exact case those
+  controls live outside `#triage` to survive (smoke: "the Do now offer survives
+  the triage surface hiding itself"). Clearing at all threw away an undo somebody
+  was entitled to return for (the a11y walk steps out to measure a card and comes
+  back to press it). They HIDE while you are in another named job, and come back
+  when you return. And the hub's doors change identity between visits — position two
+  went from *Sort* to *People* — which is correct by design (a door exists only
+  when it holds something) and still costs any spatial memory of the screen.
+- **Superseded, and kept for the record: 3.9.0.** A passed
   date can have its date taken off, and more than one can be settled at once
   without a week's absence first.
   **THE MISSING RESOLUTION.** The five choices all asked for a fresh decision

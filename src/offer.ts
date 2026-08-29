@@ -180,14 +180,29 @@ export function offerNow(state: State, nowIso: string, zone: string, cycle = 0):
  * coverage gauge states what is held, what is ready and that nothing is
  * silent, a few lines up the same page. Saying it twice, once as a demand,
  * buys nothing.
+ *
+ * IT TAKES THE ROWS IT INTRODUCES, NOT THE OFFER (3.9.1). This read
+ * `offer.work.length` while the list under it was rendered from
+ * `workSurface`'s `up.behind` — two different computations of "what is on
+ * this card", agreeing by luck. They stopped agreeing in the ordinary case:
+ * one piece of work and one wish gave "A few things you could pick up" over a
+ * list of ONE, and a single piece of work with nothing behind it gave
+ * "Something you could pick up" over a list of NONE. A sentence that
+ * introduces a list has to be counted from that list.
+ *
+ * AND IT ENDS IN NOTHING. The colon belongs to the CARD, where the line leads
+ * into rows, and is added there in CSS. This element's text is also read by
+ * the hub as the door's summary, where nothing follows it — 3.8.0 put the
+ * colon in the string and the hub door has read "Something you could pick up:"
+ * ever since, a colon introducing nothing. Punctuation belongs to the use, not
+ * to the fact.
  */
-export function offerWords(offer: Offer): string {
-  if (offer.work.length === 0 && !offer.wish) return '';
-  if (offer.work.length === 0) return 'Nothing is asking. Something you wanted:';
-  // A COLON, NOT A FULL STOP (3.8.0). This line introduces the list under it and
-  // the wish variant above has always said so; this one stopped, three lines
-  // above what it names, and was read as a caption on the offered item itself.
-  return offer.work.length === 1 && !offer.wish
-    ? 'Something you could pick up:'
-    : 'A few things you could pick up:';
+export function offerWords(shown: number, anyWork: boolean): string {
+  if (shown === 0) return '';
+  if (!anyWork) return 'Nothing is asking. Something you wanted';
+  // "One more" was the first singular and `test/offer.test.ts` refused it: the
+  // line may carry no word that implies a pile, and `more` is on that list. It
+  // is a fair refusal — "one more" counts down towards an end, and there is no
+  // end here.
+  return shown === 1 ? 'Something else you could pick up' : 'A few things you could pick up';
 }

@@ -2213,10 +2213,15 @@ try {
     // silently meant "there are four steps", so adding two real ones timed the
     // whole gate out instead of auditing a longer walkthrough. A step count is
     // content; "Get started" is the guarantee.
+    // ON `data-last`, NOT ON THE WORDING (3.9.1). This watched for the literal
+    // "Get started" and the comment above defended that as the guarantee — then
+    // the button was renamed and this timed out for twelve seconds a step. Which
+    // step is last is a fact about the walkthrough; what the button says is copy,
+    // and copy is meant to be rewritable without stopping a gate.
     for (let guard = 0; guard < 20; guard++) {
-      const label = (await page.locator('#tour-next').textContent())?.trim();
+      const last = await page.locator('#tour-next[data-last="yes"]').count() > 0;
       await page.click('#tour-next');
-      if (label === 'Get started') break;
+      if (last) break;
     }
 
     // State 1: THE FOUR DESTINATIONS, each walked as its own screen (1.40.0).

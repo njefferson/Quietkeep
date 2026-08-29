@@ -799,11 +799,10 @@ export function mountWork(
         SITUATION.hidden = !up.head.situation;
       }
       paintBite(up.head.node);
-      // NO NUMBER (1.11.0). "8 things are asking" is a count of pending work on
-      // the landing surface, which is the nearest thing this app has to the
-      // backlog headline law 8 names outright — and the coverage gauge already
-      // states the honest totals a few lines up this same page.
-      COUNT.textContent = offerWords(offer);
+      // THE COUNT LINE MOVED DOWN TO WHERE THE ROWS ARE KNOWN (3.9.1) — see
+      // `offerWords`. It was set here, from `offer`, while the list it
+      // introduces is built from `up.behind` a hundred lines below. Two
+      // computations of the same thing, agreeing by luck until they did not.
       // The visible reason ADR-0014 asks for, in the co-occurrence form law 7
       // requires. Read from the SAME offer the rows were built from, so the
       // sentence and the set can never disagree.
@@ -894,6 +893,8 @@ export function mountWork(
           wish: true,
         });
       }
+      // Counted from the rows themselves, which is the whole of the 3.9.1 fix.
+      COUNT.textContent = offerWords(rows.length, up.head !== null);
       BEHIND.replaceChildren(...rows.map(row => {
         const li = el('li', row.wish ? 'behind-item behind-wish' : 'behind-item');
         const b = el('button', 'behind-open');

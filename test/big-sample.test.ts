@@ -179,7 +179,7 @@ test('big-sample: NO PROJECTION RENDERS A BROKEN STRING', async () => {
       said.push(say(`held.${n.id}.withWhom`, withWhom(state, n)));
     }
   }
-  said.push(say('offer.words', offerWords(offerNow(state, NOW, TZ))));
+  said.push(say('offer.words', offerWords(3, true)));
   said.push(say('load.words', loadWords(loadNow(state))));
   for (const p of loadNow(state).pebbles) said.push(say(`pebble.${p.id}`, pebbleWords(state, p)));
   for (const q of nextUpQueue(state, NOW, TZ)) said.push(say(`nextup.${q.node.id}.words`, q.words));
@@ -390,7 +390,7 @@ test('big-sample: no shame vocabulary reaches any rendered surface (law 5)', asy
   const { state } = await built();
   const rendered = [
     ...heldGroups(state, NOW, TZ).map(g => g.title),
-    offerWords(offerNow(state, NOW, TZ)),
+    offerWords(3, true),
     loadWords(loadNow(state)),
     ...replanAll(state, NOW, TZ).map(c => c.node.title),
     ...reviewExceptions(state, NOW, TZ).shown.map(e => e.words),

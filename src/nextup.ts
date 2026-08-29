@@ -58,7 +58,7 @@ export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | '
  * What is closed is the SET of sentences, not the words inside a title
  * somebody wrote.
  */
-export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean; arrived?: boolean }) => string> = {
+export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean; arrived?: boolean; today?: boolean }) => string> = {
   'hard-date': () => 'a real date, and it is here',
   // YOUR five words when there are five words. Nothing this app composes beats
   // what you wrote at the moment you put it down.
@@ -77,7 +77,18 @@ export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?
   // is the thing entry 5 forbids when it says to treat INCUP as vocabulary and
   // never as a rank. It states what the READER said, in their word, and claims
   // nothing about importance.
-  ready: of => (of.hot ? 'this one is waiting, and you said it was hot' : 'this one is waiting'),
+  // YOU SAID TODAY, SO THE CARD SAYS TODAY (3.9.1). `Do now` writes a review
+  // clock for the end of today, which lands the item in `ready` — the tier whose
+  // words are "this one is waiting". So the app answered a reader who had just
+  // said *today* with *waiting*, on the very next screen.
+  //
+  // ONLY WHILE THE DAY IS STILL TODAY. That clock does not move, so a week later
+  // the same source would have the card claiming a day that has gone; then it is
+  // genuinely waiting and says so. Read from the route's own `source`, never
+  // inferred.
+  ready: of => (of.today
+    ? (of.hot ? 'you said this one was for today, and that it was hot' : 'you said this one was for today')
+    : (of.hot ? 'this one is waiting, and you said it was hot' : 'this one is waiting')),
   // A FACT ABOUT THE WORLD, and the smallest true one there is: you wrote this
   // down and have not said anything else about it. Not "unclassified", not
   // "needs attention", not a count of how many others are like it — the schema
@@ -558,7 +569,13 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       // "Back with you today" was a falsehood for any clock older than today —
       // and gate cure clocks never move, so that was the NORMAL case, not an
       // edge one (Doctrine §5: no copy the data does not support).
-      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({ hot: n.heat === 'hot' }), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
+      // Chosen for today BY THE READER, and still today. `clarify:do-now` is the
+      // only route that means "this one is for today"; the day check is what
+      // keeps the sentence true after the day has gone.
+      const rev = n.clocks.review;
+      const saidToday = rev?.source === 'clarify:do-now' && isValidIso(rev.at)
+        && calendarDaysBetween(nowIso, rev.at, day) === 0;
+      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({ hot: n.heat === 'hot', today: saidToday }), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
     // A THING YOU PUT DOWN AND HAVE NOT TOUCHED SINCE (2.0.0).

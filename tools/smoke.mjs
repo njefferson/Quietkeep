@@ -594,14 +594,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Driven to the END rather than clicked a fixed number of times. It used to
   // click three, which silently meant "there are four steps" — so adding two
   // real ones turned the walkthrough into a failing gate instead of a longer
-  // walkthrough. A step count is content; the last step offering "Get started"
-  // is the guarantee.
+  // walkthrough.
+  //
+  // AND IT NOW WATCHES `data-last` RATHER THAN THE WORDING (3.9.1). "A step
+  // count is content; the last step offering Get started is the guarantee" was
+  // the old note — and then the button was renamed and this stepped past the end
+  // and timed out. Which step is last is a fact; what the button says is copy.
+  // It stops ON the last step rather than past it — the assertions below read
+  // that button and then press it, so a loop that clicks its way out leaves them
+  // reading a control that has gone. (The a11y walk wants the opposite: it steps
+  // THROUGH to the panel, so it clicks and then breaks.)
   for (let guard = 0; guard < 20; guard++) {
-    const label = (await page.locator('#tour-next').textContent())?.trim();
-    if (label === 'Get started') break;
+    if (await page.locator('#tour-next[data-last="yes"]').count() > 0) break;
     await page.click('#tour-next');
   }
-  is((await page.locator('#tour-next').textContent())?.trim(), 'Get started', 'the last step offers to get started');
+  // The LABEL is read and printed rather than pinned: it is copy, and pinning it
+  // here is what stopped this walk when 3.9.1 renamed it. What is asserted is
+  // that the last step is marked as the last step and says something.
+  const lastLabel = (await page.locator('#tour-next').textContent())?.trim();
+  is(await page.locator('#tour-next[data-last="yes"]').count() > 0, true,
+    `the last step is marked as the last one, and it offers "${lastLabel}"`);
   await page.click('#tour-next');
   is(await page.locator('#tour').isVisible(), false, 'finishing closes the walkthrough');
   is(await page.locator('#about').isVisible(), true, 'and opens the panel for the storage step');
@@ -1322,10 +1334,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.click('#triage-actions .route');     // "Hot" is the first button
     await settled(tpage, 20);
   }
+  // ON `data-step`, NOT ON THE WORDING (3.9.1). This waited for the prompt to
+  // start with "Clarify" — the internal name for the step, which was on screen
+  // because it should not have been. Removing it stopped this walk, which is the
+  // gate having pinned the defect in place.
   await tpage.waitForFunction(() =>
-    document.querySelector('#triage-prompt')?.textContent?.startsWith('Clarify'));
-  is((await tpage.locator('#triage-prompt').textContent())?.startsWith('Clarify (hot)'), true,
-    'heat recorded, and clarify now shows the item as hot');
+    document.querySelector('#triage-prompt')?.dataset.step === 'clarify');
+  const clarifyPrompt = (await tpage.locator('#triage-prompt').textContent())?.trim();
+  is(/^[A-Z]/.test(clarifyPrompt ?? '') && !/clarify|\(hot\)|\(cold\)/i.test(clarifyPrompt ?? ''), true,
+    `the routing prompt is a sentence and not the schema ("${clarifyPrompt}")`);
+  // AND THE HEAT IS ASSERTED WHERE IT IS ACTUALLY KEPT. It used to be read off
+  // the prompt, which echoed "(hot)" back — a stored value on a surface. The
+  // answer lives in the log; the card says it later, in words, as "you said it
+  // was hot".
+  const heatSet = await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').getAll();
+      tx.onsuccess = () => res(tx.result.filter(e => e.kind === 'heat.set').length);
+    });
+  });
+  is(heatSet > 0, true, `the heat answers are in the log (${heatSet} of them)`);
   // A tap removes the button it was on; focus must not fall to <body> (WCAG
   // 2.4.3). After the heat pass it rests on the prompt of the next card.
   is(await tpage.evaluate(() => document.activeElement?.id), 'triage-prompt',
@@ -7529,8 +7558,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // not a check, and this file has produced that shape before.
   is(/held/.test(badgeGauge) ? /ready now/.test(badgeGauge) : true, true,
     `whenever the gauge counts what is held it also states what is ready ("${badgeGauge}")`);
+  // THE ZERO CASE IS WORDS NOW (3.9.1). With nothing ready there is no badge to
+  // explain, and "0 ready now" beside eight things just written read as nothing
+  // having happened. The agreement being asserted is unchanged: no badge means
+  // the gauge says nothing is ready, and a badge of N means the gauge says N.
   is(iconNumber === undefined
-      ? /\b0 ready now\b/.test(badgeGauge) || /nothing held yet/.test(badgeGauge)
+      ? /\bnothing ready yet\b/.test(badgeGauge) || /\b0 ready now\b/.test(badgeGauge)
+        || /nothing held yet/.test(badgeGauge)
       : new RegExp(`\\b${iconNumber} ready now\\b`).test(badgeGauge), true,
     `the gauge states the icon's own number ("${badgeGauge}" vs icon ${JSON.stringify(iconNumber ?? 'clear')})`);
   await openSurface(tpage, 'about');

@@ -29,6 +29,20 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.9.1',
+    kind: 'ITERATION',
+    date: '2026-08-29',
+    notes: [
+      '**The sorting question was showing you its own plumbing.** After hot or cold, the next prompt read *Clarify (cold):* \u2014 the internal name for the step with your answer in brackets. It asks **What is this?** now, which is what the walkthrough always said it would ask.',
+      '**Two things followed you out of sorting and should not have.** Send something to *Do now* and it appeared on the Next-up card and again on a bar below it, each with its own Done \u2014 one thing, two Dones. And *Sent to Someday. Undo* was still on screen several actions later, under whatever you had moved on to. Both go with the job now; a running timer stays, because it is the only way to stop it.',
+      '**The door to sorting said nothing**, with everything you had just written behind it. It says what the room does \u2014 *what each one is, and when it comes back*. Still no count: this app stopped keeping score of your inbox on purpose.',
+      '**Two lines were counting wrong.** *A few things you could pick up* appeared above a list of one, because the sentence and the list were worked out separately. And with eight things just put down the page said *0 ready now*, which reads as nothing having happened. They say *Something else you could pick up* and *nothing ready yet*.',
+      '**A thing you sent to *Do now* was described back to you as \u201cwaiting\u201d.** It says *you said this one was for today*, and goes back to waiting once the day has gone \u2014 because by then that is what it is.',
+      '**The walkthrough described a screen that no longer exists**, and its last button said *Get started* while opening a panel of reading. It now describes what is actually there, and the button says **Keep my writing safe**.',
+      '**Still not right:** every screen puts the capture box, the gauge and two rows of chrome above the thing you went there for. Two of those lines came off here; the rest is a bigger question than a fix.',
+    ],
+  },
+  {
     triplet: '3.9.0',
     kind: 'CAPABILITY',
     date: '2026-08-28',

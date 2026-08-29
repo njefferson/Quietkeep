@@ -988,7 +988,17 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       ? 'nothing held yet'
       : silent > 0
         ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet · see each`
-        : `nothing here has gone quiet · ${readyNow} ready now · see each`;
+        // "0 ready now" IS THE ONLY PART THAT CHANGED (3.9.1). Walked as a
+        // reader: eight things put down, and the page answered "nothing here has
+        // gone quiet · 0 ready now", which reads as nothing having happened at
+        // the exact moment somebody is checking whether the app took their work.
+        //
+        // The guarantee clause is NOT touched — ADR-0100 calls it the standing
+        // proof that nothing was lost, the flowcharts cite it and the smoke walk
+        // parses it. What was wrong is a zero standing where a number explains
+        // the app icon's badge: with nothing ready there is no badge to explain,
+        // so it says so in words, and "yet" is the part a first day needs.
+        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`} · see each`;
 
   // T0's badge (ADR-0007): how many things are actually asking, on the app icon,
   // so a glance at the home screen is informative without opening anything.

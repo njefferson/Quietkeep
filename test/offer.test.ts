@@ -135,7 +135,7 @@ test('NO NUMBER: the offer never states how much is waiting', () => {
   for (let i = 0; i < 12; i++) s = dated(s, `D${i}`, '2026-08-02T12:00:00.000Z');
   s = ready(s, 'R');
   s = wish(s, 'A BOOK');
-  const words = offerWords(offerNow(s, NOW, TZ));
+  const words = offerWords(4, true);
   assert.doesNotMatch(words, /\d/, `no digit anywhere (got "${words}")`);
   assert.doesNotMatch(words, /left|remaining|more|others|waiting|behind/i, 'and no word that implies a pile');
   assert.match(words, /pick up/, 'it says what it is: things you could pick up');
@@ -145,8 +145,43 @@ test('nothing asking, but something you wanted — and the words say exactly tha
   const s = wish(emptyState(), 'A BOOK');
   const o = offerNow(s, NOW, TZ);
   assert.equal(o.work.length, 0);
-  assert.match(offerWords(o), /Nothing is asking/);
+  assert.match(offerWords(1, false), /Nothing is asking/);
   // The genuinely empty case says nothing at all rather than inventing cheer.
-  assert.equal(
-    offerWords({ work: [], wish: null, load: loadNow(emptyState()) }), '');
+  assert.equal(offerWords(0, false), '');
+});
+
+// --- the line describes the LIST, not the offer (3.9.1) ---------------------
+//
+// Found by walking the app as a reader. The sentence was computed from
+// `offerNow`'s work list and the rows under it are rendered from
+// `workSurface`'s `up.behind` — two computations of "what is on this card",
+// agreeing by coincidence. One piece of work plus one wish put "A few things
+// you could pick up" over a list of exactly one.
+
+test('one row under the card is not "a few things"', () => {
+  assert.equal(offerWords(1, true), 'Something else you could pick up');
+});
+
+test('no rows means no line at all, not an invitation to an empty list', () => {
+  assert.equal(offerWords(0, true), '');
+  assert.equal(offerWords(0, false), '');
+});
+
+test('the line ends in NOTHING — the colon belongs to the card', () => {
+  // 3.8.0 put a colon in the string so it would lead the rows. The hub reads
+  // this same element's textContent as a door summary, where nothing follows
+  // it, and the door has read "Something you could pick up:" ever since.
+  // `.nextup-lead::after` supplies it on the card, and generated content is not
+  // in textContent.
+  for (const w of [offerWords(1, true), offerWords(3, true), offerWords(1, false)]) {
+    assert.doesNotMatch(w, /[.:;]$/, `"${w}" carries its own punctuation`);
+  }
+});
+
+test('and still no digit and no word that implies a pile, at any count', () => {
+  for (const n of [1, 2, 5, 40]) {
+    const w = offerWords(n, true);
+    assert.doesNotMatch(w, /\d/, `no digit in "${w}"`);
+    assert.doesNotMatch(w, /left|remaining|more|others|waiting|behind/i, `no pile word in "${w}"`);
+  }
 });

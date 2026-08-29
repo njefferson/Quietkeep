@@ -628,6 +628,21 @@
          used to mean ten interruptions on the one path that must stay clear. -->
     <button id="triage-open" type="button" class="ghost" data-stance-opener hidden>Sort what you have put down</button>
     <p id="triage-gauge" class="triage-gauge"></p>
+    <!-- WHAT IS BEHIND THIS DOOR, for the hub (3.9.1). The hub reads
+         `#<id>-count` to say what a job holds, and this section had none — so
+         the door to the busiest thing in the app on day one said nothing at all,
+         which is the out-of-sight collision the hub exists to answer.
+
+         NO TALLY, and that is not an oversight either. The gauge above
+         deliberately stopped keeping score: "a visually-hidden count is still a
+         count to a screen-reader user, and they are owed the same freedom from
+         the tally as anybody else." So the door says what the room DOES rather
+         than how much is in it, and the two rules both hold.
+
+         HIDDEN, because the gauge is already this surface's visible line. This
+         element exists to be published, not read here — `hidden` keeps it out of
+         the accessibility tree entirely rather than reciting a second line. -->
+    <p id="triage-count" class="triage-gauge" hidden></p>
     <!-- tabindex=-1 so focus can land here after a card is replaced: activating a
          route removes the button, and focus must not fall to <body> (WCAG 2.4.3). -->
     <h2 id="triage-prompt" class="triage-prompt" tabindex="-1"></h2>

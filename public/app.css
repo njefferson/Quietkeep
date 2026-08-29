@@ -1601,6 +1601,13 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
    is what makes the line read as the list's opening rather than as the offer
    card's last fact. */
 .nextup-lead { margin-top: 1.5rem; }
+/* THE COLON LIVES HERE AND NOT IN THE STRING (3.9.1). 3.8.0 put it in
+   `offerWords` so the line would lead into the rows under it — correct on this
+   card, and wrong everywhere else, because the hub reads this element's
+   textContent as its door summary and has said "Something you could pick up:"
+   ever since, a colon introducing nothing. Generated content is not in
+   `textContent`, so the card gets its colon and the door gets a sentence. */
+.nextup-lead:not(:empty)::after { content: ':'; }
 .nextup-behind {
   list-style: none;
   margin: 0.5rem 0 0;
