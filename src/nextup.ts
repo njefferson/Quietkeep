@@ -58,7 +58,7 @@ export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | '
  * What is closed is the SET of sentences, not the words inside a title
  * somebody wrote.
  */
-export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean; arrived?: boolean }) => string> = {
+export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean; arrived?: boolean; today?: boolean }) => string> = {
   'hard-date': () => 'a real date, and it is here',
   // YOUR five words when there are five words. Nothing this app composes beats
   // what you wrote at the moment you put it down.
@@ -77,7 +77,18 @@ export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?
   // is the thing entry 5 forbids when it says to treat INCUP as vocabulary and
   // never as a rank. It states what the READER said, in their word, and claims
   // nothing about importance.
-  ready: of => (of.hot ? 'this one is waiting, and you said it was hot' : 'this one is waiting'),
+  // YOU SAID TODAY, SO THE CARD SAYS TODAY (3.9.1). `Do now` writes a review
+  // clock for the end of today, which lands the item in `ready` — the tier whose
+  // words are "this one is waiting". So the app answered a reader who had just
+  // said *today* with *waiting*, on the very next screen.
+  //
+  // ONLY WHILE THE DAY IS STILL TODAY. That clock does not move, so a week later
+  // the same source would have the card claiming a day that has gone; then it is
+  // genuinely waiting and says so. Read from the route's own `source`, never
+  // inferred.
+  ready: of => (of.today
+    ? (of.hot ? 'you said this one was for today, and that it was hot' : 'you said this one was for today')
+    : (of.hot ? 'this one is waiting, and you said it was hot' : 'this one is waiting')),
   // A FACT ABOUT THE WORLD, and the smallest true one there is: you wrote this
   // down and have not said anything else about it. Not "unclassified", not
   // "needs attention", not a count of how many others are like it — the schema
@@ -558,7 +569,13 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       // "Back with you today" was a falsehood for any clock older than today —
       // and gate cure clocks never move, so that was the NORMAL case, not an
       // edge one (Doctrine §5: no copy the data does not support).
-      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({ hot: n.heat === 'hot' }), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
+      // Chosen for today BY THE READER, and still today. `clarify:do-now` is the
+      // only route that means "this one is for today"; the day check is what
+      // keeps the sentence true after the day has gone.
+      const rev = n.clocks.review;
+      const saidToday = rev?.source === 'clarify:do-now' && isValidIso(rev.at)
+        && calendarDaysBetween(nowIso, rev.at, day) === 0;
+      items.push({ node: n, reason: 'ready', pressure: p, words: REASON_WORDS.ready({ hot: n.heat === 'hot', today: saidToday }), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }
     // A THING YOU PUT DOWN AND HAVE NOT TOUCHED SINCE (2.0.0).
@@ -665,11 +682,33 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // score, nothing accumulates, and `heat.set` was already in the log being
     // read by nothing but the flow that collects it.
     //
-    // CONFINED TO `ready`, and the confinement is the point. A real date still
-    // outranks everything (entry 13 — the true urgency signal must stay
-    // legible), a chain still comes second, and pressure still sorts by
-    // pressure. Nothing here reorders a tier or fabricates a reason.
-    if (a.reason === 'ready' && b.reason === 'ready') {
+    // IT WAS CONFINED TO `ready` UNTIL 3.8.1, and the confinement was defended
+    // here as the point: a real date still outranks everything (entry 13 — the
+    // true urgency signal must stay legible), a chain still comes second, and
+    // pressure still sorts by pressure. Every one of those sentences is still
+    // true. What was wrong was reading the confinement as *one tier* when the
+    // thing it was protecting was *the tier order*.
+    //
+    // WIDENED TO EVERY TIER IN 3.8.1, AND THAT IS THE WHOLE OF THE CHANGE.
+    //
+    // Reported from a store of 33 captures with 33 heat answers and 10 of them
+    // routed. Heat was consulted inside `ready` only, so a capture that had been
+    // heated but not yet sorted sat in `unsorted` where nothing read it — and
+    // twenty-three of those answers moved nothing at all. Asking a question,
+    // recording the answer and then not using it is worse than not asking.
+    //
+    // THE TIERS DO NOT MOVE, which is what keeps entry 13 intact: a real date
+    // still outranks everything, a chain still comes second, and `unsorted` is
+    // still last among the ordinary tiers. This reorders nothing between tiers.
+    // It is the same two-state fact the reader stated, breaking a tie in each of
+    // them instead of in one.
+    //
+    // AND IT STAYS UNDER PRESSURE, deliberately. The branch above sorts the
+    // `pressure` tier by pressure, and it runs first: that tier is named for the
+    // thing it sorts by, and heat outranking it would make the tier stop meaning
+    // what it says. Heat breaks the tie beneath it, where the numbers are equal
+    // and the order was arrival by id.
+    {
       const h = HEAT_ORDER[a.node.heat ?? 'none'] - HEAT_ORDER[b.node.heat ?? 'none'];
       if (h !== 0) return h;
     }

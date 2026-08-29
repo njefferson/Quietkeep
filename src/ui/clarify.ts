@@ -431,6 +431,55 @@ export function mountTriage(
     undoRegion.replaceChildren(keep);
   };
 
+  // AN UNDO IS FOR THE ROOM IT WAS MADE IN — SO IT HIDES, IT DOES NOT GO (3.9.1).
+  //
+  // `#triage-undo` and `#triage-donow` carry `data-always` so that routing your
+  // LAST item cannot take them with it: the section hides itself the moment the
+  // inbox empties, and a timer running behind a hidden section is the defect
+  // they were moved out for. But `data-always` also carries them into every
+  // OTHER job, and walked as a reader "Sent to Someday. Undo" was sitting under
+  // the offer card, and under search, several acts later — beside a do-now bar
+  // naming the same item the offer card was already showing, each with its own
+  // Done.
+  //
+  // FIRST ATTEMPT CLEARED THEM AND WAS WRONG TWICE, and both walks said so.
+  // Clearing on "not triage any more" fired when the inbox emptied and the
+  // stance fell away on its own — the exact case these live outside `#triage`
+  // to survive (smoke: "the Do now offer survives the triage surface hiding
+  // itself"). And clearing at all threw away an undo somebody was entitled to
+  // come back for: the a11y walk steps out to measure a card and returns to
+  // press it.
+  //
+  // So: HIDDEN while you are in another named job, and back when you return.
+  // A null stance is the hub — where you land when a job ends under you as much
+  // as when you step back — so it does not count as having moved on. A RUNNING
+  // timer is never hidden: it is live, and this bar carries the only way to
+  // stop it.
+  if (typeof MutationObserver !== 'undefined') {
+    const runway = document.querySelector('#runway');
+    if (runway) {
+      // ONLY WRITE WHEN IT WOULD CHANGE — this is not a micro-optimisation, it
+      // is the difference between working and hanging. `watchJobs` in `hub.ts`
+      // observes `hidden` on ANY element under `main`, subtree included, and
+      // repaints the hub for each one. An observer that writes `hidden` under
+      // `main` therefore feeds that observer on every stance change, and the
+      // page never settles long enough to be clicked: the smoke walk stopped
+      // dead on `#held-fold-summary` and looked like a hang rather than a loop.
+      const set = (el: HTMLElement | null, v: boolean): void => {
+        if (el && el.hidden !== v) el.hidden = v;
+      };
+      const syncStrays = (): void => {
+        const now = runway.getAttribute('data-stance');
+        const away = now !== null && now !== 'triage';
+        set(undoRegion, away);
+        set(DONOW, away && !DONOW.querySelector('.donow-running'));
+      };
+      new MutationObserver(syncStrays)
+        .observe(runway, { attributes: true, attributeFilter: ['data-stance'] });
+      syncStrays();
+    }
+  }
+
   /**
    * Offer to take the just-made route back. Names where the card went and, in
    * one tap, returns it to the inbox — the direct answer to "it moved and I do
@@ -615,12 +664,34 @@ export function mountTriage(
 
   const renderHeat = (nodeId: string, text: string): void => {
     PROMPT.textContent = 'Hot or cold?';
+    // WHICH PASS THIS IS, as a fact rather than as wording (3.9.1). Both browser
+    // walks watched the prompt's TEXT to know when the heat pass had drained —
+    // `startsWith('Clarify')` — so renaming the prompt in this release timed them
+    // out. Which step you are on is structural; what it says is copy.
+    PROMPT.dataset.step = 'heat';
     showing = nodeId;
     CARD.textContent = text;
     paintContext(nodeId);
     ACTIONS.replaceChildren(...(['hot', 'cold'] as Heat[]).map(h => {
-      const b = el('button', 'route', h === 'hot' ? 'Hot' : 'Cold');
+      const b = el('button', 'route');
       b.type = 'button';
+      // THE LINE THAT ANSWERS "WHEN DO THE COLD ONES HIDE FROM ME?" (3.8.1).
+      //
+      // Never. Cold sorts last, still counts, still comes back, and still fills
+      // the offer when it is all there is — `HEAT_ORDER` in `src/nextup.ts` and
+      // the assertions in `test/heat-ranking.test.ts` have said so since 2.7.0,
+      // and nothing on any screen ever did. Reported from a device: not knowing
+      // is what turns a two-tap triage into something you stop trusting, and an
+      // app you do not trust to be holding everything is one you leave.
+      //
+      // On the CONTROL rather than as a standing paragraph, because that is
+      // this surface's own shape — every one of the six routes below carries a
+      // label and a hint — and because the doubt arrives at the moment of
+      // pressing, not before it.
+      b.append(el('span', 'route-label', h === 'hot' ? 'Hot' : 'Cold'));
+      if (h === 'cold') {
+        b.append(el('span', 'route-hint', 'still comes back — nothing is ever hidden'));
+      }
       b.addEventListener('click', () => {
         // A heat pass is a new action, so any pending route-undo is now stale.
         clearUndo();
@@ -726,7 +797,22 @@ export function mountTriage(
   };
 
   const renderClarify = (nodeId: string, text: string, kind: string, heat: Heat | null): void => {
-    PROMPT.textContent = heat ? `Clarify (${heat}):` : 'Clarify:';
+    // THE WALKTHROUGH'S OWN SENTENCE (3.9.1). This read `Clarify (cold):` — the
+    // internal name for the step, plus the stored heat value in brackets. Two
+    // schema words on the second thing a new reader ever does, and the rule is
+    // that the schema word never reaches a surface.
+    //
+    // "What is this?" is not a new phrase: screen 3 of the walkthrough already
+    // promises the app "takes them one at a time and asks what each one is". The
+    // prompt was contradicting the only sentence that had prepared anybody for
+    // it.
+    //
+    // The heat echo goes with it. It was there to say which pass you are on, and
+    // the prompt changing from "Hot or cold?" and the two buttons becoming eight
+    // already say that louder than a bracket can. What you said is read back
+    // where it does something — on the offer card, as "you said it was hot".
+    PROMPT.textContent = 'What is this?';
+    PROMPT.dataset.step = 'clarify';
     showing = nodeId;
     CARD.textContent = text;
     paintContext(nodeId);
@@ -810,6 +896,13 @@ export function mountTriage(
     GAUGE.textContent = inbox.length === 0
       ? 'Nothing here is waiting to be sorted.'
       : 'These are held either way. Sorting decides where they come back, not whether.';
+    // AND WHAT THE HUB'S DOOR SAYS (3.9.1) — see the note on `#triage-count`.
+    // The same fact the gauge carries, in the shape a door needs, and with no
+    // number in it for the reason the line above has none.
+    const doorCount = document.querySelector<HTMLElement>('#triage-count');
+    if (doorCount) {
+      doorCount.textContent = inbox.length === 0 ? '' : 'What each one is, and when it comes back.';
+    }
     // The count still exists for the WALKS, which need to watch a queue drain
     // and cannot read a sentence that deliberately does not change. A data
     // attribute is not a reader surface: `tools/a11y.mjs` measures what is

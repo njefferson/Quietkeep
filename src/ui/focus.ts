@@ -25,6 +25,7 @@ import {
 // things. The dependency runs one way — `app.ts` wires the button that starts a
 // focus, so work.ts never has to import this module back.
 import { doneEvents } from './work.ts';
+import { focusSheetTitle } from './sheets.ts';
 
 export interface FocusUI {
   refresh(): void;
@@ -217,6 +218,11 @@ export function mountFocus(
     }
     cue.value = '';
     if (!sheet.open) sheet.showModal();
+    // The focus is this app's decision, not the engine's (3.8.2). Without it
+    // WebKit takes the first tabbable element — here the interruption box —
+    // so the sheet opened with the caret in a field rather than at the words
+    // saying what the sheet is for.
+    focusSheetTitle(sheet);
   });
 
   q<HTMLButtonElement>('#focus-sheet-cancel')?.addEventListener('click', () => sheet?.close());

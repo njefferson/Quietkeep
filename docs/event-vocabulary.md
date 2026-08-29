@@ -217,7 +217,7 @@ merely *lapsed* — that is a different case entirely, and it is `replan.raised`
     computed from passed clocks at read time ([ADR-0034](adr/0034-replan-cards-are-computed.md));
     a stored one could disagree with the clock it describes.
 - **`replan.resolved`**
-  - Payload: `choice: compress | escalate | renegotiate | new-date | to-menu`
+  - Payload: `choice: compress | escalate | renegotiate | new-date | undate | to-menu`
   - Silent risk: **yes — gated** unless the choice sets a clock or lands on the Menu
 - **`park.set`**
   - Payload: `returnAt, reason?`

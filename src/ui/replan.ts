@@ -23,7 +23,7 @@ import type { ReplanCard } from '../replan.ts';
 import { replanAll, replanWords, contextWords, REPLAN_CAP } from '../replan.ts';
 import { localDayKey, atMidnight} from '../time.ts';
 import { demandClocksOf } from './triage-intents.ts';
-import { replanEvents, canResolve, REPLAN_CHOICES } from './replan-intents.ts';
+import { replanEvents, canResolve, REPLAN_CHOICES, resolveAllPassedEvents, passedDateCount } from './replan-intents.ts';
 import type { ReplanChoice } from '../events.ts';
 import { boundaryOf } from '../day.ts';
 
@@ -46,6 +46,36 @@ export function countWords(total: number, shown: number): string {
   return `${total} dates have gone by. These ${shown} first.`;
 }
 
+/**
+ * The bulk gesture's two ways out, in the order that suits a SHORT lapse (3.9.0).
+ *
+ * `undate` leads because that is the honest answer to a day that got away: the
+ * commitment has not changed, only the date is wrong. `to-menu` is the amnesty's
+ * choice and is right after a fortnight, when a date that went by really has
+ * stopped being a commitment — so it stays, second.
+ *
+ * Both say what they will do to how many things, because a control acting on
+ * twenty items at once and naming none of them has to be exact about the number
+ * or it is asking for trust it has not earned.
+ */
+export const BULK_CHOICES: { choice: ReplanChoice; label: (n: number) => string; hint: string }[] = [
+  {
+    choice: 'undate',
+    label: n => `Take the dates off all ${n}`,
+    hint: 'still yours, no dates — they come back on their own',
+  },
+  {
+    choice: 'to-menu',
+    label: n => `Put all ${n} on the Menu`,
+    hint: 'nothing owed, and no date to meet',
+  },
+];
+
+/** The line above them. States what the gesture acts on, and says the choice is
+ *  there to be declined — the per-card options are untouched below it. */
+export const bulkWords = (total: number): string =>
+  `All ${total} at once, if that is easier — or take them one at a time below.`;
+
 export interface ReplanUI { refresh(): void }
 
 export function mountReplan(session: Session, now: () => number, onChange: () => void): ReplanUI {
@@ -61,6 +91,7 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
   const context = q('#replan-sheet-context');
   const error = q('#replan-sheet-error');
   const options = q('#replan-options');
+  const bulk = q('#replan-bulk');
   const sheetLive = q('#replan-sheet-live');
   if (!region || !heading || !count || !list || !live || !dlg || !title ||
       !when || !context || !error || !options || !sheetLive) {
@@ -69,6 +100,10 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
   const REGION = region, HEADING = heading, COUNT = count, LIST = list, LIVE = live,
     DLG = dlg, TITLE = title, WHEN = when, CONTEXT = context, ERROR = error,
     OPTIONS = options, SHEET_LIVE = sheetLive;
+  // Optional on purpose: every other handle above is required and returns a dead
+  // UI when missing, but this block is one surface's convenience and the cards
+  // must still work without it.
+  const BULK = bulk;
 
   /** What actually happened, in words, after each choice — announced rather than
    *  left for the user to infer from a row disappearing. */
@@ -77,6 +112,7 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
     escalate: 'now a waiting-for, checked in three days.',
     renegotiate: 'the conversation comes back tomorrow.',
     'new-date': 'given a new date.',
+    undate: 'back in the ordinary run of things, with no date to meet.',
     // Not "no clock" — the gate covers the cleared date with a review cure, so
     // the item does still carry one. Nothing is owed, which is the true part and
     // the part that matters.
@@ -110,6 +146,42 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
   const restoreFocus = (): void => {
     if (!REGION.hidden) HEADING.focus();
     else document.querySelector<HTMLElement>('#capture')?.focus();
+  };
+
+  /**
+   * EVERY passed date, in one act (3.9.0). See `resolveAllPassedEvents`.
+   *
+   * `busy` is the same one-write-at-a-time latch the per-card path uses, and it
+   * matters more here: this is the surface where a double-tap would resolve
+   * twenty things twice.
+   *
+   * It announces the COUNT it actually acted on, read before the commit, because
+   * afterwards there is nothing left to count and "settled them" with no number
+   * is the shape that asks somebody to take a bulk write on trust.
+   */
+  const resolveAll = async (choice: ReplanChoice): Promise<void> => {
+    if (busy) return;
+    busy = true;
+    const n = passedDateCount(session.state(), nowIso(), session.zone);
+    let landed = false;
+    try {
+      await session.commit(ctx =>
+        resolveAllPassedEvents(ctx, session.state(), nowIso(), session.zone, choice));
+      landed = true;
+    } catch (err) {
+      LIVE.textContent = `Couldn’t do that — ${(err as Error).message}`;
+    } finally {
+      busy = false;
+    }
+    if (!landed) return;
+    try { onChange(); refresh(); } catch { /* a render bug must not contradict a landed write */ }
+    const what = choice === 'undate'
+      ? 'They keep their place and come back on their own.'
+      : 'They are on the Menu, and nothing is owed.';
+    const words = `${n === 1 ? 'One date' : `All ${n} dates`} settled. ${what} Nothing was marked done, and nothing was deleted.`;
+    LIVE.textContent = words;
+    const status = document.querySelector<HTMLElement>('#status');
+    if (status) status.textContent = words;
   };
 
   const resolve = async (choice: ReplanChoice, dayKey?: string): Promise<void> => {
@@ -234,6 +306,32 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
     const fresh = all.filter(c => !passedOver.has(c.node.id));
     const cards = [...fresh, ...all.filter(c => passedOver.has(c.node.id))]
       .slice(0, REPLAN_CAP);
+    // ALL OF THEM AT ONCE (3.9.0), and only when there is more than one — a
+    // "settle all 1 of them" button beside a single card is a second way to press
+    // the same thing, which is noise on the surface least able to carry any.
+    //
+    // The count it names is the TRUE TOTAL, not the three on screen: the cap
+    // governs what a surface may show (law 8) and never what somebody has asked
+    // for, which is the amnesty's own reasoning and the reason it applies no cap
+    // of its own.
+    if (BULK) {
+      BULK.hidden = total < 2;
+      if (total >= 2) {
+        const line = el('p', 'replan-bulk-words', bulkWords(total));
+        const row = el('div', 'replan-bulk-row');
+        for (const { choice, label, hint } of BULK_CHOICES) {
+          const b = el('button', 'replan-bulk-go');
+          b.type = 'button';
+          b.append(el('span', 'replan-bulk-label', label(total)));
+          b.append(el('span', 'replan-bulk-hint', hint));
+          b.addEventListener('click', () => { void resolveAll(choice); });
+          row.append(b);
+        }
+        BULK.replaceChildren(line, row);
+      } else {
+        BULK.replaceChildren();
+      }
+    }
     // THE COUNT IS THE TRUE TOTAL, always. A number that shrank as things were
     // passed over would be the surface keeping score of what was avoided —
     // clarify's own rule, and the reason its skip records nothing either.

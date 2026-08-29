@@ -38,6 +38,62 @@ compensating for.
 
 Everything else follows from that.
 
+### The failure this app exists to prevent, stated precisely (2026-08-28)
+
+**A missed day must not become a new list to sort.** That sentence is more
+useful than "no past bucket" because it names the mechanism rather than the
+symptom, and it is the reason this repo exists rather than a subscription to
+something mature.
+
+The mechanism, in order:
+
+- In every established planner and every paper system, a day that goes by
+  becomes **another inbox** — a second list, demanding to be sorted again.
+- Sorting it is not the expensive part. **Re-integrating it with everything that
+  has happened since** is the expensive part, and the ambiguity of that produces
+  delay rather than a decision.
+- The delay makes it older. Repeat twice and everything in it has reached a fail
+  state at once, together, with no single thing to act on.
+- So there is no way to stay current without extra effort — and the extra effort
+  is exactly the capacity that is unavailable on the days it is needed. The
+  system asks most from you at your worst moment, which is the same shape law 8
+  names about re-entry.
+
+**The target is therefore not a clear inbox.** It is *rules you trust to put
+what matters on top*. Noise is acceptable. Being unable to see past the noise is
+not. A system that requires the pile to be empty before it can be trusted has
+made emptiness the precondition for its own usefulness, and emptiness is the one
+state this audience cannot hold.
+
+**Held against the app as it stands (3.8.2), and this is a standing evaluation
+rather than a one-off.** Four structural answers, none of them a setting:
+
+- **A passed `review` clock raises nothing.** Those are the app's own
+  bring-this-back clocks, written by the gate constantly, and treating one as a
+  lapse would manufacture a shame surface at a rate of one per capture
+  (`src/replan.ts`). Only a real date somebody set themselves — `due`,
+  `suspense` — can raise a card, and there are few of those.
+- **Nothing accumulates as a list.** Pressure is continuous, computed from
+  `(last_done, comfort_window, now)`, and never stored. A missed day means some
+  things are more pressured than they were; it does not mean there is a new
+  queue. Nothing has to be sorted for the app to keep working.
+- **The context is pre-assembled on a replan card**, which is precisely the
+  "integrate it with what has happened since" cost — the part that cannot be
+  reconstructed on demand.
+- **`replanWords` gets VAGUER as time passes**, not sharper: yesterday, then a
+  number of days, then "last week", then "that date has been by for a while".
+  The opposite of a counter that climbs.
+- **Re-entry cannot be made to show the pile** — bounded by shape rather than by
+  configuration, not by a long absence and not by a thousand items
+  (`src/reentry.ts`).
+
+**And the one place it could still bite, named rather than assumed:** the replan
+surface states its true total when the cap of three is hiding some. After a
+fortnight away that is a number, on a screen, counting things that want a
+decision. It is honest and it is bounded, and it is still the nearest thing in
+this app to the headline the failure above begins with. Worth watching on a real
+long absence, which has not happened yet.
+
 ---
 
 ## The ten product laws (invariants)
@@ -784,7 +840,193 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.7.1**. The capture
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.1**. Eight
+  things found by walking the whole app as somebody arriving with a head full of
+  work, and fixed.
+  **THE WALK IS THE FINDING METHOD, and it found what no gate could.** Every one
+  of these passed twenty-five static gates, 5,294 accessibility assertions and
+  three browser walks, because each is a true sentence in the wrong place or a
+  correct computation of the wrong thing. `Clarify (cold):` — the step's internal
+  name plus the stored heat value — was the prompt on the SECOND thing a new
+  reader ever does. One item sat on screen twice with two different Done buttons,
+  and the collision was already half known: the bar's Done carries
+  `aria-label="Done with what you are on now"` and a comment saying it is
+  "distinct from Next up's Done, which sits on the same screen". Solved for a
+  screen reader, left alone for the eye.
+  **THE COUNT BUG WAS TWO COMPUTATIONS OF ONE THING.** The offer's line came from
+  `offerNow` and the rows under it from `workSurface`'s `up.behind`; they agreed
+  by coincidence until one piece of work plus one wish put "A few things you
+  could pick up" over a list of one. It is counted from the rows now.
+  **AND THE COLON FROM 3.8.0 WAS SHIPPING A DEFECT ON THE HUB.** That string is
+  also read as the door summary, where nothing follows it. The colon is
+  `.nextup-lead::after` now — generated content is not in `textContent`, so the
+  card leads its list and the door reads a sentence.
+  **TWO OF THE TWELVE WERE NOT DEFECTS, and saying so is the point of walking
+  rather than guessing.** The gauge's "nothing here has gone quiet" is ADR-0100's
+  standing proof that nothing was lost, cited by the flowcharts and parsed by the
+  smoke walk — only the bare `0` beside it changed. And the sorting door's
+  silence about HOW MANY is deliberate: `clarify.ts` records that this "was the
+  last place still keeping score" and that a hidden count is still a count to a
+  screen-reader user. The door says what the room does instead, so both rules
+  hold.
+  **WHAT IS NAMED AS STILL BROKEN:** every stance renders the capture box, the
+  gauge and two rows of chrome above the job. Removing the stale undo and the
+  duplicated do-now bar took four lines off it; the rest is a design question,
+  not a fix.
+  **AND THREE THINGS THE GATES THEMSELVES TAUGHT, each of which cost a walk.**
+  Both browser walks stepped through the walkthrough by watching for the literal
+  string `Get started`, and the a11y walk's own comment defended it — "a step
+  count is content; Get started is the guarantee". Renaming that button timed
+  both of them out. The smoke walk likewise waited for the routing prompt to
+  start with `Clarify`, which is the schema word this release removed: **the gate
+  was pinning the defect in place.** Both watch `data-last` and `data-step` now —
+  facts about which step you are on, which is what a walk should key on, leaving
+  the words free to be rewritten.
+  **THE THIRD WAS A FEEDBACK LOOP AND IT LOOKED EXACTLY LIKE A HANG.**
+  `watchJobs` in `hub.ts` observes `hidden` on ANY element under `main`, subtree
+  included, and repaints the hub for each one. The new observer WRITES `hidden`
+  on two elements under `main`, so every stance change fed the hub's observer and
+  the page never settled long enough to be clicked — the smoke walk stopped dead
+  on `#held-fold-summary` with no error. Guarding the write (`if (el.hidden !==
+  v)`) is the whole fix, and the general rule is worth having: an observer that
+  writes an attribute another observer watches is a loop, and a loop presents as
+  a timeout somewhere unrelated.
+  **THE FIRST TWO ATTEMPTS AT THE STRAY-CONTROL RULE WERE BOTH WRONG, and both
+  walks said so in one line each.** Clearing on "not triage any more" fired when
+  the inbox emptied and the stance fell away by itself — the exact case those
+  controls live outside `#triage` to survive (smoke: "the Do now offer survives
+  the triage surface hiding itself"). Clearing at all threw away an undo somebody
+  was entitled to return for (the a11y walk steps out to measure a card and comes
+  back to press it). They HIDE while you are in another named job, and come back
+  when you return. And the hub's doors change identity between visits — position two
+  went from *Sort* to *People* — which is correct by design (a door exists only
+  when it holds something) and still costs any spatial memory of the screen.
+- **Superseded, and kept for the record: 3.9.0.** A passed
+  date can have its date taken off, and more than one can be settled at once
+  without a week's absence first.
+  **THE MISSING RESOLUTION.** The five choices all asked for a fresh decision
+  about the WORK — smaller, hand it over, renegotiate, a new day, or put it down
+  — and none of them said the honest thing about a day that got away, which is
+  that the commitment is unchanged and only the date is wrong. So the way out
+  was either to schedule it again, which is what had just failed, or the Menu,
+  which does not come back on its own. `undate` retires every passed clock and
+  sets a `review` for today: back in the ordinary run of things, ranked like
+  anything else. It keeps a FUTURE suspense, which `to-menu` sheds — the Menu
+  belt refuses a demand-carrying landing and this landing is ordinary.
+  **AND THE BULK GESTURE WAS BUILT AND UNREACHABLE.** The amnesty resolved every
+  passed date in one act and required `LAPSE_DAYS = 7` to appear. What it removes
+  is not work, it is the block of decisions standing between somebody and any
+  work at all — and that block forms after one missed day in the same shape. It
+  is `resolveAllPassedEvents` now, one body with two callers: the replan surface
+  leads with `undate` at two or more dates, the amnesty keeps `to-menu`, which is
+  right after a fortnight and far too strong after a day.
+  **THE RESEARCH IS GRADED IN `docs/nd-collisions.md` AND WAS READ RATHER THAN
+  RECALLED.** Cowan 2001 (refining Miller 1956) and Sweller 1988 on why a block
+  of N decisions costs more than N spread out — which does not care whether N is
+  twenty or four. Dai, Milkman & Riis 2014 on the landmark being *coming back*
+  rather than the passing of a week, which is what the seven-day gate was
+  quietly contradicting. Brehm 1966 on why the bulk route sits BESIDE the
+  per-card options and never replaces them. Demand avoidance is graded
+  **Contested** there and carries none of this.
+  **PLANTED TWICE.** Removing the `undate` clock and capping the bulk act at
+  three each turn assertions red — four of the eight new ones. Two stay green
+  under both plants on purpose: they are the restraint half (nothing marked
+  done, nothing deleted) and must hold either way. One assertion was found to be
+  measuring nothing before that: it read `n.clocks.review` and the GATE writes a
+  cure, so it passed with the branch's own clock removed. The one that fails is
+  the one that asks whether the thing is actually OFFERED.
+  **WHAT IS NAMED AS STILL BROKEN:** the true total is still a number on a
+  screen after a long absence, and no long absence has happened yet.
+- **Superseded, and kept for the record: 3.8.2.** Every
+  dialog decides where its own focus lands, and the check asserts the DECISION.
+  **TWENTY-ONE SHEETS LEFT IT TO THE ENGINE, AND THE ENGINES DISAGREE.** With no
+  `autofocus`, no `tabindex="-1"` target and no `.focus()` after `showModal()`,
+  Chromium makes a scrolling region focusable in its own right and lands on the
+  sheet body at the top; WebKit takes the first tabbable element, and focusing
+  something inside a scroller drags that scroller to it. This app is read on an
+  iPad and every walk in this repo drives Chromium — the one engine where the
+  defect cannot appear. The ⓘ was landing on its dismiss control, which is the
+  last element in a panel six screens long. (Hub LESSONS 175.)
+  **THE TARGET IS DERIVED, NOT LISTED.** `focusSheetTitle` reads the dialog's own
+  `aria-labelledby` and focuses that element, so a new sheet cannot be added
+  without one — the rule `data-door` and the hosted-page population already
+  follow. `tour.ts`, `replan.ts` and `focus.ts` had focused their heading for
+  releases; `openSheet`, the detail sheet, the ⓘ and the About panel never did.
+  **THE ASSERTION IS ABOUT WHAT THE CODE CHOSE.** `scrollTop === 0` is the
+  obvious check and it is precisely the one Chromium cannot fail, so a walk here
+  would have certified this for ever. The smoke walk now reads
+  `document.activeElement` against each dialog's `aria-labelledby` — false in
+  every engine when nothing set it. It found three sheets on its first run that
+  the first fix had missed, because they call `showModal()` directly rather than
+  through `openSheet`, and all 21 pass now.
+  **NOT WALKED LOCALLY.** 3.8.1 and 3.8.2 have the smoke walk and every static
+  gate green here; the accessibility walk and the update walk are left to CI,
+  which runs the whole Spine on the push and costs nothing.
+- **Superseded, and kept for the record: 3.8.1.** Heat
+  breaks the tie in EVERY tier, not only in `ready`, and the screen says out
+  loud that cold is never hidden.
+  **TWENTY-THREE OF THIRTY-THREE ANSWERS MOVED NOTHING.** The heat pass has been
+  a two-tap read since 2.7.0 and `nextup.ts` consulted it inside one tier — so a
+  capture that was heated but not yet routed sat in `unsorted`, where nothing
+  looked at it. On a store of 33 captures with 33 heat answers and 10 routed,
+  seventy percent of the answers were recorded and unused. Asking a question and
+  then not using the answer is worse than not asking.
+  **THE TIER ORDER DID NOT MOVE**, which is what keeps nd-collisions entry 13
+  intact: a real date still outranks everything, and inside the `pressure` tier
+  pressure still sorts first, with heat underneath it. The comment defending the
+  old confinement was not wrong about what it was protecting — it was protecting
+  the tier ORDER, and had been read as protecting one tier.
+  **PLANTED BEFORE IT LANDED.** Three of the five new assertions go red against
+  the previous comparator; two stay green, because they are the restraint half
+  and must hold either way. The first draft of the `pressure` one wrapped both
+  its assertions in `if (q.length === 2)` over a queue that folded to nothing —
+  two guards, both green, measuring nothing, caught by probing the queue rather
+  than by trusting the pass.
+  **AND THE COPY HALF.** *Still comes back — nothing is ever hidden* is now the
+  hint under Cold. `HEAT_ORDER` has put cold last and never excluded it since
+  2.7.0, `test/heat-ranking.test.ts` has asserted it for as long, and no screen
+  ever said it — which is a fair reason to stop trusting a two-tap triage and
+  leave.
+- **Superseded, and kept for the record: 3.8.0.** The
+  browser's own suggestion popup is off all three of the detail sheet's naming
+  fields, what you already have is a row of taps, commas make separate labels,
+  and a label typed wrong comes out where it was typed.
+  **THE POPUP TOOK THE CARET OUT OF THE FIELD MID-WORD, REPEATEDLY**, on the
+  device this app is used on, which ended a labelling session rather than
+  slowing one down. It was a native `<datalist>` on three fields, and it was the
+  only control on any surface in this app that `tools/a11y.mjs` structurally
+  could not measure — the browser draws it, over the keyboard, and nothing here
+  can read its colours, its targets or its ring. What replaced it is a row of
+  `.linklike` buttons that reuse a measured colour pair and joined the gate in
+  the same commit, as two driven states rather than one, because the same
+  buttons wear different WORDS in the two modes and words are what SC 2.5.3
+  reads.
+  **THE FIELD HAD INSTRUCTED THE MISTAKE IT THEN COULD NOT UNDO.** The
+  placeholder has read `at home, out, on the phone` since 2.2.0 and the whole
+  string went in as ONE label — so following the app's own example produced a
+  place named after the example. Removing it worked and lived in the situation
+  sheet, behind choosing that label as where you are: two rooms from the field
+  that makes the mistake. Both halves fixed — `src/names.ts` splits on commas,
+  and *Something here is not a place* sits under the row.
+  **WHAT IS NAMED AS STILL BROKEN, in the notes rather than left quiet:** heat
+  only breaks a tie inside the `ready` tier (`src/nextup.ts:672`). A capture
+  that is heated but not routed sits in `unsorted`, where heat is never
+  consulted — so on a store of 33 captures with 33 heat answers and 10 routed,
+  23 of those answers moved nothing. And *cold is never hidden* is true in the
+  code and stated nowhere a reader can see it.
+  **FOUND WHILE HERE AND DELIBERATELY NOT FIXED IN THIS RELEASE — hub LESSONS
+  175 binds on this repo.** `openSheet` in `src/ui/sheets.ts` and `showNode` in
+  `src/ui/detail.ts` call `showModal()` and set no focus target, so which element
+  the dialog opens on is the engine's choice. Chromium makes a scrolling region
+  focusable in its own right and lands on the body at scroll zero; WebKit does
+  not, and takes the first tabbable element instead — which scrolls the sheet to
+  wherever that element happens to be. This app is read on an iPad, and every
+  walk here drives Chromium, which is the one engine where the defect cannot
+  appear. `tour.ts`, `replan.ts` and `focus.ts` already focus their heading, so
+  the pattern exists in this repo and two surfaces are missing it. The assertion
+  to add is about what the code DECIDED — `activeElement` by name — because the
+  symptom assertion is exactly the one that cannot fail in Chromium.
+- **Superseded, and kept for the record: 3.7.1.** The capture
   box is the first thing on the screen, and the ring check works out for itself
   what to look at.
   **THE BOX YOU PUT THINGS IN WAS THIRD.** *Everything else* and *On this page*
@@ -1542,7 +1784,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.7.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.7.1** — promoted at
+  `d638c51` on 2026-08-28. Both hosts read directly afterwards and both serve
+  3.7.1, which is now the ordinary way a promote is confirmed here rather than
+  the new thing it was one release ago.
+- **Superseded, and kept for the record: 3.7.0** — promoted at
   `c275280` on 2026-08-27, carrying 3.7.0 and three gates that did not exist that
   morning. Deploy success on that exact SHA, and the merged tree asserted
   byte-identical to `07b54ea`, the staging head that was walked.

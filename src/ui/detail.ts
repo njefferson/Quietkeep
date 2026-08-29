@@ -40,6 +40,9 @@ import { biteEvents } from './work-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
+// "home, office, text" is THREE places (3.8.0) — see `src/names.ts` for why the
+// placeholder was kept and the behaviour changed rather than the other way round.
+import { splitNames, andWords } from '../names.ts';
 import { allRoles, rolesOf } from '../roles.ts';
 import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
@@ -52,6 +55,7 @@ import {
 import { eventWords, isCure } from '../log-words.ts';
 import { choosable, chosenToday, composedFull, todayIsOn } from '../composed.ts';
 import { canHold, legalMergeTargets, mergePlan, unmergeEvents } from './merge-intents.ts';
+import { focusSheetTitle } from './sheets.ts';
 import { decisionsFor, foldedIntoDeep } from '../merged.ts';
 import { carryEvents, declineEvents, parkToSlotEvents } from './request-intents.ts';
 import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../requests.ts';
@@ -120,7 +124,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   const mergedList = q<HTMLElement>('#detail-merged-list');
   const personInput = q<HTMLInputElement>('#detail-person');
   const relationSel = q<HTMLSelectElement>('#detail-relation');
-  const peopleData = q<HTMLDataListElement>('#detail-people');
+  const peoplePicks = q('#detail-people-picks');
   const peopleList = q('#detail-people-list');
   const stakeList = q('#detail-stakeholder-list');
   const decisionInput = q<HTMLTextAreaElement>('#detail-decision');
@@ -137,11 +141,17 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   const NAME = name;
   const FEEDS = feedsSel, LEAD = leadInput, FEEDS_LIST = feedsList;
   const PARENT = parentSel, PLACE = placeLine, KIDS = kidsList;
-  const PERSON = personInput, RELATION = relationSel, PEOPLE = peopleData, PEOPLE_LIST = peopleList;
+  const PERSON = personInput, RELATION = relationSel, PEOPLE = peoplePicks, PEOPLE_LIST = peopleList;
   const DLG = dlg, TITLE = title, STATE = state, DATE = date, EVERY = every, SLACK = slack, LIVE = live;
 
   let current: NodeState | null = null;
   let busy = false;
+  // Whether the place and role picks are showing their REMOVAL words (3.8.0).
+  // Device state and never an event: which words this sheet is currently
+  // wearing is not a fact about anybody's work, and law 7 keeps the log to
+  // facts about the work.
+  let fixingPlaces = false;
+  let fixingRoles = false;
 
   const btn = (sel: string): HTMLButtonElement | null => q<HTMLButtonElement>(sel);
 
@@ -476,6 +486,90 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (fresh) render(fresh);
   };
 
+  /** Re-read this item from live state and repaint the sheet from it.
+   *
+   *  The rule `run` already follows, lifted out because the picks' toggle needs
+   *  it too: a handler bound at paint time can be pressed much later, and
+   *  rendering the copy it closed over would put a stale sheet on screen. */
+  const repaint = (): void => {
+    if (!current) return;
+    const fresh = session.state().nodes.get(current.id);
+    if (fresh) render(fresh);
+  };
+
+  /**
+   * WHAT YOU ALREADY HAVE, AS TAPS — AND THE WAY TO TAKE A WRONG ONE OUT (3.8.0).
+   *
+   * This replaces a native `<datalist>` on all three of this sheet's naming
+   * fields, and the reason it is gone is in the markup beside the first one.
+   * The short of it: the browser's popup took the caret out of the field
+   * mid-word, repeatedly, on the device this app is used on — and it was the
+   * one thing on any surface here that could not be styled, sized, ringed or
+   * measured, which is what `tools/a11y.mjs` exists to make impossible.
+   *
+   * ONE FUNCTION FOR THREE FIELDS. Places, roles and people are the same shape
+   * on purpose — each group's own note says so — and three copies of this would
+   * be three places for the next fix to reach two of.
+   *
+   * `drop` is the second half, and only the two label axes get it. A place is a
+   * thing somebody typed into existence, so a place can be typed wrong; saying
+   * one is not a place has worked since 2.34.0 and lived exclusively in the
+   * situation sheet, behind first choosing that label as where you are. Two
+   * rooms from the field that makes the mistake. Pressed, the SAME picks change
+   * their words and remove instead of adding — no control ever means two things
+   * at once, because what changed is what it says.
+   *
+   * A person is not that: nobody mistypes a human into being, and the sheet
+   * already carries the row that unlinks one. So people get picks and no toggle.
+   */
+  const paintPicks = (
+    listEl: HTMLElement | null,
+    all: readonly NodeState[],
+    already: readonly string[],
+    add: (n: NodeState) => void,
+    drop?: {
+      fixEl: HTMLElement | null;
+      on: boolean;
+      set: (v: boolean) => void;
+      noun: string;
+      remove: (n: NodeState) => void;
+    },
+  ): void => {
+    if (!listEl) return;
+    const fixing = drop?.on ?? false;
+    // Adding shows what is NOT on this thing — offering to add what is already
+    // there is a control that does nothing. Correcting shows every one of them,
+    // because the label you typed wrong is usually the one you attached.
+    const shown = fixing ? all : all.filter(c => !already.includes(c.id));
+    listEl.replaceChildren(...shown.map(c => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'linklike';
+      const name = c.title || '(unnamed)';
+      b.textContent = fixing && drop ? `${name} — not a ${drop.noun}` : name;
+      b.addEventListener('click', () => {
+        const fresh = session.state().nodes.get(c.id);
+        if (!fresh) return;
+        if (fixing && drop) drop.remove(fresh);
+        else add(fresh);
+      });
+      li.append(b);
+      return li;
+    }));
+    if (!drop?.fixEl) return;
+    // Nothing to correct when there is nothing there, and the row goes with the
+    // list rather than standing on an empty sheet offering to fix it.
+    if (all.length === 0) { drop.fixEl.replaceChildren(); return; }
+    const t = document.createElement('button');
+    t.type = 'button';
+    t.className = 'linklike';
+    t.textContent = fixing ? 'Never mind' : `Something here is not a ${drop.noun}`;
+    t.addEventListener('click', () => { drop.set(!fixing); repaint(); });
+    drop.fixEl.replaceChildren(t);
+  };
+
+
   function render(n: NodeState): void {
     const changed = current?.id !== n.id;
     current = n;
@@ -557,11 +651,22 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     {
       const cst = session.state();
       const cList = q('#detail-context-list');
-      const cData = q('#detail-contexts');
-      if (cData) {
-        cData.replaceChildren(...allContexts(cst).map(c =>
-          Object.assign(document.createElement('option'), { value: c.title || '' })));
-      }
+      paintPicks(
+        q('#detail-context-picks'), allContexts(cst), n.contexts,
+        c => { void run(ctx => attachContextEvents(ctx, n.id, c.id),
+          `Can be done ${c.title || 'there'}.`); },
+        {
+          fixEl: q('#detail-context-fix'),
+          on: fixingPlaces,
+          set: (v) => { fixingPlaces = v; },
+          noun: 'place',
+          // The situation sheet's own words for the same act, because it is the
+          // same act: the label stops being offered as somewhere you can be, and
+          // stops narrowing the surface for anything still carrying it.
+          remove: c => { void run(ctx => releaseEvents(ctx, c.id),
+            `${c.title || 'That'} is not a place. It stops being offered, and stops hiding anything.`); },
+        },
+      );
       if (cList) {
         cList.replaceChildren(...contextsOf(cst, n).map(c => {
           const li = document.createElement('li');
@@ -586,11 +691,19 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     {
       const rst = session.state();
       const rList = q('#detail-role-list');
-      const rData = q('#detail-roles');
-      if (rData) {
-        rData.replaceChildren(...allRoles(rst).map(r =>
-          Object.assign(document.createElement('option'), { value: r.title || '' })));
-      }
+      paintPicks(
+        q('#detail-role-picks'), allRoles(rst), n.roles,
+        r => { void run(ctx => attachRoleEvents(ctx, n.id, r.id),
+          `Part of ${r.title || 'that'}.`); },
+        {
+          fixEl: q('#detail-role-fix'),
+          on: fixingRoles,
+          set: (v) => { fixingRoles = v; },
+          noun: 'role',
+          remove: r => { void run(ctx => releaseEvents(ctx, r.id),
+            `${r.title || 'That'} is not a role. It stops being offered.`); },
+        },
+      );
       if (rList) {
         rList.replaceChildren(...rolesOf(rst, n).map(r => {
           const li = document.createElement('li');
@@ -611,10 +724,21 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
 
     if (PERSON && PEOPLE && PEOPLE_LIST) {
       const st = session.state();
-      // The datalist offers names already in this vault, so the second thing you
-      // link to Sam does not become a second Sam through a typo.
-      PEOPLE.replaceChildren(...peopleNodes(st).map(p =>
-        Object.assign(document.createElement('option'), { value: p.title || '' })));
+      // The names already in this vault, so the second thing you link to somebody
+      // does not become a second one of them through a typo.
+      //
+      // A PICK FILLS THE FIELD HERE, and does not link. That is the one place
+      // these three lists differ, and the difference is the relation chooser
+      // beside the box: a person link carries how they are involved as well as
+      // who they are, and a tap cannot know which. Committing on the tap would
+      // silently choose "they owe me this" for somebody who never looked.
+      //
+      // Everybody is offered, including anyone already on this thing — the same
+      // person can honestly be owed one thing and running another.
+      paintPicks(PEOPLE, peopleNodes(st), [], p => {
+        PERSON.value = p.title || '';
+        LIVE.textContent = `${p.title || 'That name'} — choose how they are involved, then Link.`;
+      });
 
       // Stakeholders render in their OWN group (1.9.0) — listing them here
       // too would put one link on the sheet twice, and a removal would leave
@@ -1524,36 +1648,50 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   btn('#detail-context-set')?.addEventListener('click', () => {
     const input = q<HTMLInputElement>('#detail-context');
     if (!input || !current) return;
-    const name = input.value.trim();
-    if (!name) { say('A place first — or leave it, and it can be done anywhere.'); return; }
-    const st = session.state();
-    // Match by name before minting a second node for the same place, exactly as
-    // the person input does: "at home" and "At home" are one place, and a
-    // duplicate would split the filter in two for ever.
-    const existing = allContexts(st).find(c => (c.title || '').toLowerCase() === name.toLowerCase());
+    // COMMAS SEPARATE THEM (3.8.0) — see `splitNames`. The placeholder has
+    // invited a list since 2.2.0 and the app used to take the whole string as
+    // one label.
+    const names = splitNames(input.value);
+    if (names.length === 0) { say('A place first — or leave it, and it can be done anywhere.'); return; }
     input.value = '';
     void run(ctx => {
-      const id = existing?.id ?? ctx.id();
-      return attachContextEvents(ctx, current!.id, id, existing ? {} : { createNamed: name });
-    }, `Can be done ${name}.`);
+      const st = session.state();
+      const out = [];
+      for (const name of names) {
+        // Match by name before minting a second node for the same place, exactly
+        // as the person input does: "at home" and "At home" are one place, and a
+        // duplicate would split the filter in two for ever. `splitNames` has
+        // already collapsed the same two spellings WITHIN this one entry, so no
+        // piece here can collide with another piece of it.
+        const existing = allContexts(st).find(c => (c.title || '').toLowerCase() === name.toLowerCase());
+        const id = existing?.id ?? ctx.id();
+        out.push(...attachContextEvents(ctx, current!.id, id, existing ? {} : { createNamed: name }));
+      }
+      return out;
+    }, `Can be done ${andWords(names)}.`);
   });
 
   // WHO THIS IS FOR (2.6.0, ADR-0096). The place input's shape exactly.
   btn('#detail-role-set')?.addEventListener('click', () => {
     const input = q<HTMLInputElement>('#detail-role');
     if (!input || !current) return;
-    const name = input.value.trim();
-    if (!name) { say('A name first — or leave it, and it belongs to no one in particular.'); return; }
-    const st = session.state();
-    // Match by name before minting a second node for the same identity, exactly
-    // as places and people do: "parent" and "Parent" are one role, and a
-    // duplicate would split the readout in two for ever.
-    const existing = allRoles(st).find(r => (r.title || '').toLowerCase() === name.toLowerCase());
+    // Commas separate them, on this axis too — one shape, one behaviour.
+    const names = splitNames(input.value);
+    if (names.length === 0) { say('A name first — or leave it, and it belongs to no one in particular.'); return; }
     input.value = '';
     void run(ctx => {
-      const id = existing?.id ?? ctx.id();
-      return attachRoleEvents(ctx, current!.id, id, existing ? {} : { createNamed: name });
-    }, `Part of ${name}.`);
+      const st = session.state();
+      const out = [];
+      for (const name of names) {
+        // Match by name before minting a second node for the same identity,
+        // exactly as places and people do: "parent" and "Parent" are one role,
+        // and a duplicate would split the readout in two for ever.
+        const existing = allRoles(st).find(r => (r.title || '').toLowerCase() === name.toLowerCase());
+        const id = existing?.id ?? ctx.id();
+        out.push(...attachRoleEvents(ctx, current!.id, id, existing ? {} : { createNamed: name }));
+      }
+      return out;
+    }, `Part of ${andWords(names)}.`);
   });
 
   btn('#detail-track')?.addEventListener('click', () => {
@@ -1618,6 +1756,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   /** Show a node in this sheet. Named so the sheet's own rows can walk to
    *  another node — a person, a folded twin — without leaving it (1.12.0). */
   function showNode(node: NodeState): void {
+    // The picks always open in their ADDING words (3.8.0). Correcting a label is
+    // a rare errand somebody goes looking for; leaving the sheet in that state
+    // means the next item you open offers to delete your places, which is a
+    // destructive control nobody asked for arriving unannounced.
+    fixingPlaces = false;
+    fixingRoles = false;
     // A different item starts with its history folded away — leaving the
     // last item's lines under a fresh title would be the sheet lying.
     if (historyEl && current?.id !== node.id) {
@@ -1627,6 +1771,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     render(node);
     LIVE.textContent = '';
     if (!DLG.open) DLG.showModal();
+    // AND THE FOCUS GOES WHERE THIS APP CHOSE (3.8.2). See `focusSheetTitle`.
+    // This sheet is the longest one in the app and it called `showModal()` and
+    // set nothing, so which element it opened on was the engine's decision —
+    // and on WebKit that means the first tabbable element, with the scroller
+    // dragged to wherever that is. It runs after `render`, because render is
+    // what fills `#detail-title`.
+    focusSheetTitle(DLG);
   }
 
   return { open: showNode };

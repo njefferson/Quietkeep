@@ -62,7 +62,7 @@ const stepsNow = (): readonly Step[] => [
   {
     heading: 'Start with the box',
     body: [
-      'This is the whole app to begin with: a box at the top, and everything you have put down underneath it.',
+      'This is the whole app to begin with: a box at the top. What sits underneath it changes as you put things down \u2014 on the first day there is nothing there at all.',
       'Type whatever is on your mind and press *Hold it*.',
       'There is nothing else to fill in — no folder, no date, no category. Getting it out of your head is the point. Anything else can come later, or never.',
     ],
@@ -101,7 +101,7 @@ const stepsNow = (): readonly Step[] => [
         ? 'Everything stays on your devices — no account, no sign-in. What they trade to stay in step is sealed with a key only they hold.'
         : 'Everything stays on your device — no account, no sign-in, no server holding your writing.',
       'The round button marked i, at the top of the screen beside the name, is where everything else lives: how to add Quietkeep to your Home Screen, how to keep your writing safe, and this walkthrough again whenever you want it.',
-      '*Get started* opens it now, because keeping your writing safe is the one thing worth doing before anything else.',
+      '*Keep my writing safe* opens it now, because that is the one thing worth doing before anything else.',
       // Added in 1.14.0. NOT written for the returning reader specifically —
       // the empty screen behind this dialog now offers them the way back, and a
       // sentence here about data they may never have had would land oddly on
@@ -181,7 +181,23 @@ export function showTour(session: Session, onFinish?: () => void): void {
       return dot;
     }));
     back.hidden = i === 0;
-    next.textContent = i === STEPS.length - 1 ? 'Get started' : 'Next';
+    // IT SAYS WHAT IT DOES (3.9.1). This read "Get started", and what it opens
+    // is the panel about keeping your writing — 250 words, with the control
+    // itself below the fold. Six screens of walkthrough, a button promising a
+    // start, and a seventh screen of reading. The panel is the right destination
+    // (§7e: the storage ask is the one thing worth doing first); the label was
+    // describing a different one.
+    const last = i === STEPS.length - 1;
+    next.textContent = last ? 'Keep my writing safe' : 'Next';
+    // A HOOK THAT IS NOT THE WORDING (3.9.1). Both browser walks stepped to the
+    // end by watching for the literal string "Get started", and the a11y walk's
+    // own comment defended it: "a step count is content; Get started is the
+    // guarantee." Renaming the button in this release turned that guarantee into
+    // content too and timed both walks out.
+    //
+    // Which step is LAST is a fact about the walkthrough. The words on the button
+    // are a thing somebody will rewrite again, and should be able to.
+    if (last) next.dataset.last = 'yes'; else delete next.dataset.last;
     // Focus the heading each step — the house a11y rule for a navigated view, so
     // a screen-reader user lands on what changed rather than nowhere.
     heading.focus();

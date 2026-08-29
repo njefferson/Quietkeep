@@ -84,7 +84,9 @@ shows:
   a place — a person, a topic, a label that came in from somewhere else —
   **Not a place** takes it out of the question. That matters more than tidiness:
   once a thing carries any place it stops turning up everywhere, so a label that
-  is not a place quietly hides whatever carries it.
+  is not a place quietly hides whatever carries it. The same act is on an item's
+  own panel under **Where can this be done?**, as **Something here is not a
+  place** — which is where a place typed by mistake usually needs to come out.
 - **How long you have.** Anything you never estimated fits every answer. At the
   long end it stops narrowing and points at the Menu instead, because a free
   afternoon is rarely short of time — it is short of the thing you want to do.
@@ -262,6 +264,11 @@ when there is a reason.
 - **Next up** — the one thing offered, with why.
 - **Sort things out** — captured things, one at a time, with eight plain choices.
 - **Needs a new plan** — a date went by. Not a failure and not a backlog.
+  Each card offers five ways forward, one of which is **Take the date off** —
+  nothing has changed except the date, so it stays yours and comes back on its
+  own. When more than one date has gone by, a line above the cards settles all
+  of them in one go, either way, and says how many that is. Nothing is marked
+  done and nothing is deleted; the one-at-a-time choices stay where they are.
 - **Working on** — a timer is running on something.
 - **Coming up for air** — a check after a long stretch on one thing.
 - **That was a session.** — the close of one, without a verdict.

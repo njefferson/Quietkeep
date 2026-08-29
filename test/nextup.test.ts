@@ -606,3 +606,46 @@ test('an imported thing is still offered — this demotes, it never excludes', (
   assert.equal(q.length, 1, 'with nothing else to sort behind, it is still offered');
   assert.match(q[0]!.words, /came in with your import/, 'and the card says what it is');
 });
+
+// --- "you said today" (3.9.1) ----------------------------------------------
+//
+// Found by walking the app as a reader. `Do now` writes a review clock for the
+// end of today, which lands the item in the `ready` tier — whose words are
+// "this one is waiting". So the screen answered somebody who had just said
+// TODAY with WAITING, on the very next thing they looked at.
+
+test('a thing you sent to Do now says you said today, not that it is waiting', () => {
+  const s = st(
+    ev('node.created', 'A', { nodeKind: 'action', title: 'renew the truck registration' }),
+    ev('clarify.routed', 'A', { route: 'do-now' }),
+    ev('clock.set', 'A', { clockKind: 'review', at: NOW, source: 'clarify:do-now' }),
+  );
+  const item = nextUpQueue(s, NOW, TZ).find(i => i.node.id === 'A');
+  assert.equal(item?.reason, 'ready', 'it is still the ready tier — only the words changed');
+  assert.match(item!.words, /you said this one was for today/);
+  assert.doesNotMatch(item!.words, /waiting/, 'and it does not also call it waiting');
+});
+
+test('and it stops saying today once the day has gone', () => {
+  // The clock does not move. Without the day check the card would go on
+  // claiming a day that passed a week ago, which is the class of falsehood
+  // "back with you today" was removed for.
+  const old = new Date(Date.parse(NOW) - 6 * 86400000).toISOString();
+  const s = st(
+    ev('node.created', 'A', { nodeKind: 'action', title: 'renew the truck registration' }),
+    ev('clarify.routed', 'A', { route: 'do-now' }),
+    ev('clock.set', 'A', { clockKind: 'review', at: old, source: 'clarify:do-now' }),
+  );
+  const item = nextUpQueue(s, NOW, TZ).find(i => i.node.id === 'A');
+  assert.match(item!.words, /waiting/, 'a week later it is genuinely waiting, and says so');
+  assert.doesNotMatch(item!.words, /today/);
+});
+
+test('an ordinary ready item is untouched by any of it', () => {
+  const s = st(
+    ev('node.created', 'B', { nodeKind: 'action', title: 'book the dentist' }),
+    ev('clock.set', 'B', { clockKind: 'review', at: NOW, source: 'clarify:next-action' }),
+  );
+  const item = nextUpQueue(s, NOW, TZ).find(i => i.node.id === 'B');
+  assert.equal(item?.words, 'this one is waiting');
+});

@@ -15,8 +15,9 @@ import assert from 'node:assert/strict';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import { admit, silentNodes, gateOptionsFor, heldNodes } from '../src/gate.ts';
 import { replanAll, replanCards, replanIds, replanWords, contextWords, REPLAN_CAP } from '../src/replan.ts';
-import { replanEvents, canResolve, REPLAN_CHOICES } from '../src/ui/replan-intents.ts';
-import { countWords } from '../src/ui/replan.ts';
+import { replanEvents, canResolve, REPLAN_CHOICES, resolveAllPassedEvents, passedDateCount } from '../src/ui/replan-intents.ts';
+import { countWords, BULK_CHOICES, bulkWords } from '../src/ui/replan.ts';
+import { acceptAmnestyEvents } from '../src/ui/reentry-intents.ts';
 import { heldGroups, heldStatus } from '../src/held.ts';
 import { workSurface } from '../src/nextup.ts';
 import type { AppEvent, ReplanChoice } from '../src/events.ts';
@@ -211,8 +212,15 @@ test('there is no "mark as missed" — every option is forward-facing', () => {
   // this green — and the order is the decision: the three forward options, then
   // a new date, then the Menu, last by position and equal in weight (audit).
   assert.deepEqual(REPLAN_CHOICES.map(c => c.choice),
-    ['compress', 'escalate', 'renegotiate', 'new-date', 'to-menu'],
+    ['compress', 'escalate', 'renegotiate', 'new-date', 'undate', 'to-menu'],
     'ADR-0012\'s order, which is itself a design decision');
+  // `undate` arrived in 3.9.0 and sits between naming a day and putting it down,
+  // because that is where it belongs: you are not scheduling it again and you
+  // are not letting it go. The Menu stays LAST BY POSITION and equal in weight,
+  // which is the half of the order ADR-0012 actually argues for — so this is the
+  // assertion that would catch the new option being slipped in after it.
+  assert.equal(REPLAN_CHOICES[REPLAN_CHOICES.length - 1]?.choice, 'to-menu',
+    'the Menu is last by position, and adding an option does not change that');
   for (const c of REPLAN_CHOICES) {
     // The shame scan above passes trivially on empty strings, so emptying every
     // hint left it green. The hints are load-bearing: these consequences are not
@@ -465,5 +473,127 @@ test('the list and the replan surface never describe one item differently', () =
       assert.equal(heldStatus(n, NOW, TZ, atMidnight(TZ)) === 'needs a new plan', raised.has(n.id),
         `${n.id}: the list and the card surface agree, in both directions`);
     }
+  }
+});
+
+// --- "still mine, just not on a date" (3.9.0, ADR-0012) --------------------
+//
+// The resolution that was missing. The other five all ask for a fresh decision
+// about the WORK; none of them says the honest thing about a day that got away,
+// which is that the commitment is unchanged and only the date is wrong.
+
+test('undate retires the date that went by and leaves the thing live', () => {
+  const before = write(emptyState(), [node('A', 'Ring the plumber'), clock('A', 'due', -3)]);
+  assert.deepEqual([...replanIds(before, NOW, TZ)], ['A'], 'it is a card to begin with');
+
+  const after = write(before, replanEvents(ctx(), 'A', 'undate', ['due']));
+  assert.deepEqual([...replanIds(after, NOW, TZ)], [], 'the card is gone');
+  const n = after.nodes.get('A')!;
+  assert.equal(n.clocks.due, undefined, 'the date that went by is retired');
+  assert.ok(n.clocks.review, 'and it carries a review, so it is not silent');
+  // The whole point: it is still ordinary work, not put away.
+  assert.ok(!n.trashed, 'and not deleted');
+  assert.ok(!n.lastDone, 'and not marked done');
+  assert.equal(silentNodes(after).length, 0, 'nothing went silent (ADR-0011)');
+});
+
+test('undate leaves it where the ordinary offer can reach it', () => {
+  // "It comes back on its own" has to be true of the SURFACE, not just of the
+  // clock — a resolution that quietly took it off every list would be the Menu
+  // by another name, which is the thing this option exists not to be.
+  const after = write(
+    write(emptyState(), [node('A', 'Ring the plumber'), clock('A', 'due', -3)]),
+    replanEvents(ctx(), 'A', 'undate', ['due']));
+  const { up } = workSurface(after, NOW, TZ);
+  const offered = [up.head, ...up.behind].filter(Boolean).map(i => i!.node.id);
+  assert.ok(offered.includes('A'), `it is offered like anything else — got ${JSON.stringify(offered)}`);
+});
+
+test('undate keeps a FUTURE commitment that nobody has missed', () => {
+  // `to-menu` sheds every demand clock because the Menu belt refuses a
+  // demand-carrying landing. This landing is ordinary, so an answer owed NEXT
+  // week is a real commitment and must survive.
+  const before = write(emptyState(),
+    [node('A'), clock('A', 'due', -3), clock('A', 'suspense', 7)]);
+  const after = write(before, replanEvents(ctx(), 'A', 'undate', ['due'], undefined, 'action', ['due', 'suspense']));
+  assert.equal(after.nodes.get('A')!.clocks.due, undefined, 'the passed date goes');
+  assert.ok(after.nodes.get('A')!.clocks.suspense, 'the future one stays');
+
+  // and the contrast, so this asserts a DIFFERENCE rather than a coincidence
+  const menu = write(before, replanEvents(ctx(), 'A', 'to-menu', ['due'], undefined, 'action', ['due', 'suspense']));
+  assert.equal(menu.nodes.get('A')!.clocks.suspense, undefined,
+    'to-menu still sheds it, because the Menu belt refuses a demand-carrying landing');
+});
+
+// --- all of them at once, after ONE missed day -----------------------------
+
+const threePassed = (): State => write(emptyState(), [
+  node('A'), clock('A', 'due', -1),
+  node('B'), clock('B', 'due', -2),
+  node('C'), clock('C', 'suspense', -4),
+  node('D'), clock('D', 'due', -5),
+]);
+
+test('the bulk act resolves EVERY passed date, not the three the surface shows', () => {
+  const before = threePassed();
+  assert.equal(passedDateCount(before, NOW, TZ), 4);
+  assert.equal(replanCards(before, NOW, TZ).cards.length, REPLAN_CAP,
+    'the surface shows three — the cap governs what is SHOWN');
+
+  const after = write(before, resolveAllPassedEvents(ctx(), before, NOW, TZ, 'undate'));
+  assert.equal(passedDateCount(after, NOW, TZ), 0, 'and the act reaches all four');
+  assert.equal(silentNodes(after).length, 0);
+});
+
+test('a suspense-raised item is resolved too — the defect that moved zero of four', () => {
+  // Every item goes through replanEvents with its OWN passedKinds. Defaulting
+  // them to ['due'] left C's clock live, so the card came straight back and the
+  // batch had resolved nothing while announcing that it had.
+  const before = threePassed();
+  const after = write(before, resolveAllPassedEvents(ctx(), before, NOW, TZ, 'undate'));
+  assert.equal(after.nodes.get('C')!.clocks.suspense, undefined, 'C was raised by a suspense and it is retired');
+  assert.deepEqual([...replanIds(after, NOW, TZ)], []);
+});
+
+test('nothing is marked done and nothing is deleted', () => {
+  const before = threePassed();
+  const after = write(before, resolveAllPassedEvents(ctx(), before, NOW, TZ, 'undate'));
+  for (const id of ['A', 'B', 'C', 'D']) {
+    const n = after.nodes.get(id)!;
+    assert.ok(!n.lastDone, `${id} is not done`);
+    assert.ok(!n.trashed, `${id} is not deleted`);
+  }
+});
+
+test('the amnesty still resolves to the Menu, and now shares one implementation', () => {
+  // The refactor's regression test. `to-menu` is right after a fortnight away;
+  // the short-lapse gesture leads with `undate` because it is far too strong
+  // after one day. Both callers, one body.
+  const before = threePassed();
+  const events = acceptAmnestyEvents(ctx(), before, NOW, TZ);
+  assert.ok(events.some(e => e.kind === 'amnesty.accepted'), 'the amnesty is still recorded as itself');
+  const after = write(before, events);
+  for (const id of ['A', 'B', 'C', 'D']) {
+    assert.ok(after.nodes.get(id)!.onMenu, `${id} landed on the Menu`);
+  }
+  assert.deepEqual([...replanIds(after, NOW, TZ)], []);
+});
+
+test('the bulk words name the true total and say the choice can be declined', () => {
+  // Reactance (Brehm 1966, docs/nd-collisions.md): a bulk route that reads as
+  // the only way through is the choice-removing shape that produces resistance.
+  const words = bulkWords(4).toLowerCase();
+  assert.match(words, /4/, 'it says how many it will act on');
+  assert.match(words, /one at a time/, 'and that the per-card options are still there');
+  assert.equal(BULK_CHOICES[0]?.choice, 'undate',
+    'undate leads: after ONE missed day the commitment is unchanged and only the date is wrong');
+  assert.equal(BULK_CHOICES[1]?.choice, 'to-menu');
+  for (const c of BULK_CHOICES) {
+    assert.ok(c.label(4).includes('4'), `${c.choice} names the count on the button itself`);
+    assert.ok(c.hint.trim().length > 0, `${c.choice} says what it will do`);
+  }
+  const all = BULK_CHOICES.map(c => `${c.label(4)} ${c.hint}`).join(' ').toLowerCase() + ' ' + words;
+  for (const shame of ['missed', 'fail', 'late', 'overdue', 'behind', 'should have', 'forgive']) {
+    assert.doesNotMatch(all, new RegExp(shame), `the bulk route does not say "${shame}"`);
   }
 });

@@ -37,7 +37,7 @@ import { sampleEvents, sampleSummary, sampleWords } from '../sample.ts';
 import { bigSampleEvents, bigSampleSummary, bigSampleWords } from '../big-sample.ts';
 import { CONFIRM_WORD, clearEvents, confirmMatches, eraseEverything, purgeCount, purgeSummary, purgeWords, purgedWords, type PurgeCount, type PurgeMode } from '../purge.ts';
 import { KEY_KV } from '../sync-keys.ts';
-import { openSheet as openSheetById, onSheetOpen, wireSheetClose, closeEverything } from './sheets.ts';
+import { openSheet as openSheetById, onSheetOpen, wireSheetClose, closeEverything, focusSheetTitle } from './sheets.ts';
 import { badgeWords, badgeToggleLabel, isBadgeOn, setBadgeEnabled } from './badge.ts';
 import { importFacts, importSummary, parseAnyExport, taskPaperEvents } from '../taskpaper.ts';
 import { deliverCopy, deliverDiagnostic, deliverGeneratedSet } from './export-copy.ts';
@@ -278,7 +278,13 @@ export async function mountAbout(
 
     const more = document.querySelector<HTMLDialogElement>('#more');
     document.querySelector<HTMLButtonElement>('#open-more')
-      ?.addEventListener('click', () => more?.showModal());
+      ?.addEventListener('click', () => {
+        if (!more) return;
+        more.showModal();
+        // See `focusSheetTitle` (3.8.2). This one does not go through
+        // `openSheet`, so it did not get the decision that function makes.
+        focusSheetTitle(more);
+      });
     document.querySelector<HTMLButtonElement>('#more-close')
       ?.addEventListener('click', () => more?.close());
     for (const b of Array.from(document.querySelectorAll<HTMLButtonElement>('.more-go'))) {
@@ -1882,6 +1888,11 @@ export async function mountAbout(
     // or the panel is the one surface that can stack on top of another.
     closeEverything('about');
     dialog.showModal();
+    // As above (3.8.2): this opens with `showModal` here rather than through
+    // `openSheet`, so it needs the same decision made explicitly. It was landing
+    // on the dismiss button — the first tabbable element in a panel six screens
+    // long, which on WebKit means the panel opens at its own end.
+    focusSheetTitle(dialog);
     void paintStorage();
     // The calendar count is recomputed on every open. It used to be painted once
     // at mount, so reopening the panel showed the PREVIOUS action's outcome —

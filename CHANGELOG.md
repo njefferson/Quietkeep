@@ -14,6 +14,55 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.9.1 — ITERATION
+
+*2026-08-29*
+
+- **The sorting question was showing you its own plumbing.** After hot or cold, the next prompt read *Clarify (cold):* — the internal name for the step with your answer in brackets. It asks **What is this?** now, which is what the walkthrough always said it would ask.
+- **Two things followed you out of sorting and should not have.** Send something to *Do now* and it appeared on the Next-up card and again on a bar below it, each with its own Done — one thing, two Dones. And *Sent to Someday. Undo* was still on screen several actions later, under whatever you had moved on to. Both go with the job now; a running timer stays, because it is the only way to stop it.
+- **The door to sorting said nothing**, with everything you had just written behind it. It says what the room does — *what each one is, and when it comes back*. Still no count: this app stopped keeping score of your inbox on purpose.
+- **Two lines were counting wrong.** *A few things you could pick up* appeared above a list of one, because the sentence and the list were worked out separately. And with eight things just put down the page said *0 ready now*, which reads as nothing having happened. They say *Something else you could pick up* and *nothing ready yet*.
+- **A thing you sent to *Do now* was described back to you as “waiting”.** It says *you said this one was for today*, and goes back to waiting once the day has gone — because by then that is what it is.
+- **The walkthrough described a screen that no longer exists**, and its last button said *Get started* while opening a panel of reading. It now describes what is actually there, and the button says **Keep my writing safe**.
+- **Still not right:** every screen puts the capture box, the gauge and two rows of chrome above the thing you went there for. Two of those lines came off here; the rest is a bigger question than a fix.
+
+## 3.9.0 — CAPABILITY
+
+*2026-08-28*
+
+- **A date that went by can now just have its date taken off.** *Take the date off* — still yours, no date, and it comes back on its own like anything else. The five choices there all asked you to decide something new about the work: make it smaller, hand it over, renegotiate it, name a new day, or put it down. None of them said the honest thing about a day that got away from you, which is that nothing changed except the date.
+- **And when more than one date has gone by, you can settle all of them in one go.** A line above the cards, saying how many — the true number, not the three on screen. Take the dates off all of them, or put them all on the Menu.
+- **That gesture already existed and you could not reach it.** It needed seven days away before it appeared. What it takes away is not work; it is the pile of decisions standing between you and doing anything at all — and that pile forms after ONE missed day in exactly the same shape, only smaller. It is offered wherever the cards are now.
+- **Nothing is marked done and nothing is deleted**, and the one-at-a-time choices stay exactly where they were underneath. A shortcut that replaced them would be taking the choice away on the screen least able to afford it.
+- **What is still not right:** the count of dates that have gone by is still a number on a screen after a long absence. It is honest and it is capped at three cards, and it is still the closest thing here to the thing this whole surface exists to avoid. It has never been seen after a real fortnight away.
+
+## 3.8.2 — ITERATION
+
+*2026-08-28*
+
+- **Every panel now opens at its own heading.** Twenty-one of them opened wherever the browser decided, and on an iPad that means the first button or box it finds — which drags a long panel down to wherever that happens to be. The ⓘ was landing on its dismiss button, six screens from the top.
+- **Nothing about it was visible on the machines that check this app.** Two browser engines answer this question differently, and the checks all run on the one that answers it harmlessly. So every screen measured correct, in both themes, at every size, for as long as the panels have existed.
+- **The check now asks what the app DECIDED rather than what the browser did with the silence.** "Did it open at the top" is the obvious question and it is the one that can never fail on the machine doing the asking. "Is the focus on the thing this panel is named by" is false in every browser when nothing chose it — because nothing choosing it is the fault.
+
+## 3.8.1 — ITERATION
+
+*2026-08-28*
+
+- **Hot and cold now count everywhere, not only among things you had already sorted.** Marking something hot while it is still an unsorted capture used to record the answer and change nothing — on a store of 33 things put down, 33 answers given and 10 of them sorted, twenty-three of those answers moved nothing at all. They all move something now.
+- **Nothing about the running order changed.** A real date still comes before everything, a step whose blocker just finished still comes second, and things with rising pressure are still sorted by pressure. Hot and cold break the tie inside each of those, which is what they always did inside one of them.
+- **And the screen now says the thing the app has always done: cold is never hidden.** *Still comes back — nothing is ever hidden* sits under the Cold button. It sorts last, it still counts, and it still gets offered when it is all there is. That was true from the day the question was added and there was nowhere to read it, which is a fair reason to stop trusting a two-tap triage.
+
+## 3.8.0 — CAPABILITY
+
+*2026-08-28*
+
+- **The suggestion list that kept taking the cursor out of the box is gone.** Typing a place, a role or a name used to bring up the browser’s own list of what you already had. On a tablet that list takes the cursor with it mid-word, so you type two letters, tap back into the box, and type two more. It has been taken off all three boxes.
+- **What you already have is a row of taps under the box instead.** Adding a place you have used before is now one tap and no typing, which is what you are usually doing. The box is for names that are new. Nothing about that row is the browser’s — it takes the colours you chose, it is the right size for a finger, and it can be checked, which the old one could not be.
+- **Commas make separate places.** The box has suggested *at home, out, on the phone* since places were added and then took the whole line as ONE place, so following the example gave you a place named after the example. Type three and you get three. The same on *Who is this for?*
+- **And a place you did not mean to make can be taken out where you made it.** Saying a label is not a place has worked for a while, but the only route to it was on the situation screen, after choosing that label as where you are — so a place typed by mistake had no visible way out at all. *Something here is not a place* now sits under the row. It stops being offered and stops narrowing anything you can see; nothing you wrote is deleted, and the record still says it was there.
+- **“A few things you could pick up” has moved down onto the list it is about.** It sat directly under the offered item’s own buttons, three lines above the list, and read as a note about that item. It is now on top of the list, and it ends in a colon rather than a full stop — a sentence that stops is about what came before it.
+- **What is still not right, and it is the bigger half:** marking things hot or cold only changes the order among things you have already sorted. Mark something hot while it is still an unsorted capture and the answer is recorded and nothing moves. Cold is never hidden from you — it sorts last, still comes back, and still fills the offer when it is all there is — but the app has never said so anywhere you can read it.
+
 ## 3.7.1 — ITERATION
 
 *2026-08-28*

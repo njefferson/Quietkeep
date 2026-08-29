@@ -594,14 +594,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Driven to the END rather than clicked a fixed number of times. It used to
   // click three, which silently meant "there are four steps" — so adding two
   // real ones turned the walkthrough into a failing gate instead of a longer
-  // walkthrough. A step count is content; the last step offering "Get started"
-  // is the guarantee.
+  // walkthrough.
+  //
+  // AND IT NOW WATCHES `data-last` RATHER THAN THE WORDING (3.9.1). "A step
+  // count is content; the last step offering Get started is the guarantee" was
+  // the old note — and then the button was renamed and this stepped past the end
+  // and timed out. Which step is last is a fact; what the button says is copy.
+  // It stops ON the last step rather than past it — the assertions below read
+  // that button and then press it, so a loop that clicks its way out leaves them
+  // reading a control that has gone. (The a11y walk wants the opposite: it steps
+  // THROUGH to the panel, so it clicks and then breaks.)
   for (let guard = 0; guard < 20; guard++) {
-    const label = (await page.locator('#tour-next').textContent())?.trim();
-    if (label === 'Get started') break;
+    if (await page.locator('#tour-next[data-last="yes"]').count() > 0) break;
     await page.click('#tour-next');
   }
-  is((await page.locator('#tour-next').textContent())?.trim(), 'Get started', 'the last step offers to get started');
+  // The LABEL is read and printed rather than pinned: it is copy, and pinning it
+  // here is what stopped this walk when 3.9.1 renamed it. What is asserted is
+  // that the last step is marked as the last step and says something.
+  const lastLabel = (await page.locator('#tour-next').textContent())?.trim();
+  is(await page.locator('#tour-next[data-last="yes"]').count() > 0, true,
+    `the last step is marked as the last one, and it offers "${lastLabel}"`);
   await page.click('#tour-next');
   is(await page.locator('#tour').isVisible(), false, 'finishing closes the walkthrough');
   is(await page.locator('#about').isVisible(), true, 'and opens the panel for the storage step');
@@ -1322,10 +1334,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.click('#triage-actions .route');     // "Hot" is the first button
     await settled(tpage, 20);
   }
+  // ON `data-step`, NOT ON THE WORDING (3.9.1). This waited for the prompt to
+  // start with "Clarify" — the internal name for the step, which was on screen
+  // because it should not have been. Removing it stopped this walk, which is the
+  // gate having pinned the defect in place.
   await tpage.waitForFunction(() =>
-    document.querySelector('#triage-prompt')?.textContent?.startsWith('Clarify'));
-  is((await tpage.locator('#triage-prompt').textContent())?.startsWith('Clarify (hot)'), true,
-    'heat recorded, and clarify now shows the item as hot');
+    document.querySelector('#triage-prompt')?.dataset.step === 'clarify');
+  const clarifyPrompt = (await tpage.locator('#triage-prompt').textContent())?.trim();
+  is(/^[A-Z]/.test(clarifyPrompt ?? '') && !/clarify|\(hot\)|\(cold\)/i.test(clarifyPrompt ?? ''), true,
+    `the routing prompt is a sentence and not the schema ("${clarifyPrompt}")`);
+  // AND THE HEAT IS ASSERTED WHERE IT IS ACTUALLY KEPT. It used to be read off
+  // the prompt, which echoed "(hot)" back — a stored value on a surface. The
+  // answer lives in the log; the card says it later, in words, as "you said it
+  // was hot".
+  const heatSet = await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').getAll();
+      tx.onsuccess = () => res(tx.result.filter(e => e.kind === 'heat.set').length);
+    });
+  });
+  is(heatSet > 0, true, `the heat answers are in the log (${heatSet} of them)`);
   // A tap removes the button it was on; focus must not fall to <body> (WCAG
   // 2.4.3). After the heat pass it rests on the prompt of the next card.
   is(await tpage.evaluate(() => document.activeElement?.id), 'triage-prompt',
@@ -2894,7 +2923,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     `a date that went by is exactly what a reminder is for ("${lapsedTitle}") ${calPromised}`);
   await tpage.click('#sheet-group-actions-close');
 
-  // The options. Five, forward-facing, and none of them files a failure.
+  // The options. Forward-facing, and none of them files a failure.
+  //
+  // FIVE ONE-TAP OPTIONS SINCE 3.9.0, and the number is asserted rather than
+  // approximated because it is the one that changed: `undate` — "still yours, no
+  // date, it comes back on its own" — was the resolution the set was missing.
+  // The other four all asked for a fresh decision about the WORK, and none of
+  // them said the honest thing about a day that got away, which is that only the
+  // date is wrong.
   const topCard = await tpage.locator('.replan-card-title').first().textContent();
   await tpage.locator('.replan-open').first().click();
   await tpage.waitForSelector('#replan-sheet[open]');
@@ -2902,7 +2938,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'the sheet names the item it is about');
   const optionText = await tpage.locator('#replan-options').textContent();
   const optionCount = await tpage.locator('.replan-choice').count();
-  is(optionCount, 4, `four one-tap options (${optionCount})`);
+  is(optionCount, 5, `five one-tap options (${optionCount})`);
   is(await tpage.locator('#replan-new-date').count(), 1,
     'plus a date box, for when you already know when');
   is(/\b(missed|fail|failed|behind|overdue|late|should have)\b/i.test(optionText || ''), false,
@@ -4401,6 +4437,36 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     if (!(await tpage.locator(`#${surface}[open]`).count())) {
       seeThrough.push(`${surface} — the walk could not open it, so nothing was measured`);
       continue;
+    }
+    // WHERE THE FOCUS LANDED, AND WHETHER THE APP CHOSE IT (3.8.2, hub LESSONS 175).
+    //
+    // A dialog with no focus target of its own opens wherever the engine
+    // decides, and the two engines decide differently: Chromium makes a
+    // scrolling region focusable in its own right and lands on the sheet body at
+    // the top; WebKit takes the first tabbable element instead, and focusing
+    // something inside a scroller drags that scroller to it. A long sheet can
+    // therefore open partway down, past the thing it exists to say — on the
+    // engine this app is actually read on.
+    //
+    // THIS ASSERTS THE DECISION, NOT THE SYMPTOM, and that distinction is the
+    // whole reason it can fail here. `scrollTop === 0` is the obvious assertion
+    // and it is exactly the one Chromium cannot fail, so a walk driving Chromium
+    // would have certified the defect for ever. "The focused element is the one
+    // this dialog is named by" is false in EVERY engine when nothing set it,
+    // because nothing setting it is the fault.
+    //
+    // Derived from `aria-labelledby`, which every sheet already carries, so
+    // there is no list here to go stale — the rule `data-door` above follows.
+    const landed = await tpage.evaluate((id) => {
+      const d = document.querySelector(`#${CSS.escape(id)}`);
+      const want = d?.getAttribute('aria-labelledby') ?? null;
+      const active = document.activeElement;
+      return { want, got: active?.id || active?.tagName?.toLowerCase() || null };
+    }, surface);
+    if (landed.want) {
+      (landed.got === landed.want ? ok : bad)(
+        `${surface}: the focus went where the app put it (#${landed.want}), not where the engine chose`
+        + (landed.got === landed.want ? '' : ` — it landed on ${landed.got ?? 'nothing'}`));
     }
     // EVERY WAY OUT, not the first one found. The ⓘ has two — the × in the bar
     // above the scroller and Close below it — and the old single-element read
@@ -7492,8 +7558,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // not a check, and this file has produced that shape before.
   is(/held/.test(badgeGauge) ? /ready now/.test(badgeGauge) : true, true,
     `whenever the gauge counts what is held it also states what is ready ("${badgeGauge}")`);
+  // THE ZERO CASE IS WORDS NOW (3.9.1). With nothing ready there is no badge to
+  // explain, and "0 ready now" beside eight things just written read as nothing
+  // having happened. The agreement being asserted is unchanged: no badge means
+  // the gauge says nothing is ready, and a badge of N means the gauge says N.
   is(iconNumber === undefined
-      ? /\b0 ready now\b/.test(badgeGauge) || /nothing held yet/.test(badgeGauge)
+      ? /\bnothing ready yet\b/.test(badgeGauge) || /\b0 ready now\b/.test(badgeGauge)
+        || /nothing held yet/.test(badgeGauge)
       : new RegExp(`\\b${iconNumber} ready now\\b`).test(badgeGauge), true,
     `the gauge states the icon's own number ("${badgeGauge}" vs icon ${JSON.stringify(iconNumber ?? 'clear')})`);
   await openSurface(tpage, 'about');
