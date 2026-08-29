@@ -68,6 +68,27 @@ export function mountTriage(
   // Non-null bindings, so the nested refresh() closure keeps the narrowing the
   // guard above established.
   const REGION = region, CARD = card, PROMPT = prompt, ACTIONS = actions, GAUGE = gauge, LIVE = live, DONOW = donow;
+  /**
+   * HOW MANY ARE HERE (3.10.0). Optional like `#triage-count`, and for the same
+   * reason: markup presence is a gate's job, not a runtime crash. The smoke walk
+   * asserts it.
+   *
+   * GUARDED WRITE, ALWAYS. `watchJobs` in `hub.ts` observes `hidden` on any
+   * element under `main`, subtree included, and repaints for each change — so an
+   * unguarded write here feeds that observer on every repaint and the page never
+   * settles. That cost 3.9.1 a walk and it presents as a timeout somewhere
+   * unrelated (hub LESSONS 181).
+   */
+  const hereLine = document.querySelector<HTMLElement>('#triage-here');
+  const setHere = (words: string | null): void => {
+    if (!hereLine) return;
+    if (words === null) {
+      if (!hereLine.hidden) hereLine.hidden = true;
+      return;
+    }
+    if (hereLine.textContent !== words) hereLine.textContent = words;
+    if (hereLine.hidden) hereLine.hidden = false;
+  };
   const captureInput = (): HTMLElement | null => document.querySelector<HTMLElement>('#capture');
 
   // The last-action undo lives OUTSIDE the triage section, beside the do-now
@@ -77,7 +98,7 @@ export function mountTriage(
   const undoRegion = document.querySelector<HTMLElement>('#triage-undo');
   const openBtn = document.querySelector<HTMLButtonElement>('#triage-open');
 
-  /** Whether this surface may put itself on screen (1.39.2; inverted 1.43.0).
+  /** Whether this surface may put itself on screen (1.39.2; inverted 1.42.1).
    *
    *  TRUE UNTIL ASKED. Sorting is a place you go, never a place you are sent.
    *
@@ -877,7 +898,10 @@ export function mountTriage(
     // Two scans, not four: the heads and the gauge all derive from these.
     const inbox = unclarified(st);
     const heatQueue = needsHeat(st);
-    // NO COUNT (1.43.0). The reader is told what is TRUE of these things, not
+    // NO COUNT (1.42.1 — the comments here and in the smoke walk said 1.43.0 in
+    // seven places until 3.10.0, and there has never been a 1.43.x; the change
+    // is CHANGELOG.md 1.42.1, the same day as ADR-0085). The reader is told what
+    // is TRUE of these things, not
     // how many of them there are.
     //
     // `12 to clarify` is the countable batch V2 stage 1 deleted from the
@@ -946,6 +970,20 @@ export function mountTriage(
     // user, and they are owed the same freedom from the tally as anybody else.
     GAUGE.dataset.waiting = String(inbox.length);
     GAUGE.dataset.unheated = String(heatQueue.length);
+    // AND THE OTHER NUMBER, for the same reason (3.10.0). `waiting` is the whole
+    // queue the surface will hand you, arrivals included; `yours` is what
+    // `#triage-here` claims. Two different facts, and a walk that reads one of
+    // them to check the other is the shape hub LESSONS 153 is about — a check
+    // whose sentence and predicate are different things. Both seams, neither a
+    // reader surface.
+    //
+    // ONE EXPRESSION FEEDS BOTH THE SEAM AND THE WORDS, and it has to. The first
+    // version computed `inbox.filter(n => !n.arrived).length` here and again
+    // where the line is painted — so a plant that changed the painted number
+    // left the seam correct and the whole walk stayed green. A test hook derived
+    // separately from the thing it vouches for does not vouch for it.
+    const yours = inbox.filter(n => !n.arrived).length;
+    GAUGE.dataset.yours = String(yours);
 
     // Heat pass first while there is anything unheated; then clarify. Both are
     // one card; the surface hides itself when the inbox is clear. A running
@@ -1029,12 +1067,42 @@ export function mountTriage(
       PROMPT.hidden = true;
       PROMPT.textContent = '';
       ACTIONS.replaceChildren();
+      // THE DOOR STATE IS THE ARRIVAL SCREEN, so the count is not on it. This is
+      // the exact state ADR-0085 cleared: you have arrived, things are waiting,
+      // and the app is not asking you anything. A number here would be the
+      // visible debt that ADR removed, wearing different words.
+      setHere(null);
       paintContext(null);
       showing = null;
       return;
     }
     CARD.hidden = false;
     PROMPT.hidden = false;
+    // AND HERE IT IS ON, because there is a card in front of you and you walked
+    // in to get it. Same condition as `CARD.hidden`, one line apart, so the two
+    // cannot drift into the count appearing on a screen with no card on it.
+    //
+    // IT COUNTS WHAT YOU PUT DOWN, NOT WHAT YOU BROUGHT IN — `!n.arrived`, which
+    // is `inboxGauge`'s rule and not a second one. 2.38.0 settled this for the
+    // headline in terms that bind any number on this surface: "a number in the
+    // app's chrome saying you are 1,171 behind, because you once brought a file
+    // in, is the opposite of [law 8] — and it is not even true: an arrival is
+    // not something you owe today."
+    //
+    // Found by the assertion below going red. The import fixture brings in three
+    // rows and the queue moved by exactly three, because `unclarified` holds
+    // arrivals deliberately — the clarify surface is where you GO to sort, and
+    // saying the inbox is clear while a thousand imported rows sit there would
+    // be the dishonest half of that trade. So the SURFACE offers them and the
+    // COUNT does not claim them, which is the same split `inboxGauge` already
+    // makes one file over.
+    //
+    // STILL NOT RIGHT, and named rather than hidden: with an import in the store
+    // the room will hand you cards the count did not promise. The fix is not a
+    // bigger number, it is arrivals having their own set to be worked through —
+    // which is the next piece of work and is why this is the forward-compatible
+    // half of the trade rather than something that has to be undone.
+    setHere(yours === 1 ? 'One here to work through.' : `${yours} here to work through.`);
 
     const mayReveal = !suppressed;
     if (heatItem) {
@@ -1047,6 +1115,7 @@ export function mountTriage(
       REGION.hidden = true;
       showing = null;
       CARD.textContent = '';
+      setHere(null);
       paintContext(null);
       ACTIONS.replaceChildren();
     }

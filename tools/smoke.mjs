@@ -1311,7 +1311,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.waitForFunction(() => document.querySelectorAll('.card').length === 6);
   await tpage.waitForSelector('#triage:not([hidden])');
-  // THE GAUGE SAYS WHAT IS TRUE OF THESE THINGS, AND NEVER HOW MANY (1.43.0).
+  // THE GAUGE SAYS WHAT IS TRUE OF THESE THINGS, AND NEVER HOW MANY (1.42.1).
   //
   // A number that only rises as you put things down turns a good day's capture
   // into a visible debt. Stage 1 deleted exactly that string from the coverage
@@ -1445,7 +1445,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
 
-  // SORTING IS SOMEWHERE YOU GO, NEVER SOMEWHERE YOU ARE SENT (1.43.0).
+  // SORTING IS SOMEWHERE YOU GO, NEVER SOMEWHERE YOU ARE SENT (1.42.1).
   //
   // This is the corridor ADR-0084 named and ADR-0085 removes, and this reload is
   // exactly the arrival that used to walk you into it: six things waiting, and
@@ -1473,11 +1473,45 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and no card is put in front of you before you have asked for one');
   is(await tpage.locator('#hub-doors .hub-go[data-stance-id="triage"]').isVisible(), true,
     'the way in is on screen the whole time, so nothing is stranded by not being shown');
+  // AND NO COUNT ON THE ARRIVAL SCREEN (3.10.0). `#triage-here` says how many
+  // are in the pile and it may not be one of the things you meet on the way in;
+  // a number standing here is the visible debt ADR-0085 removed, wearing
+  // different words.
+  //
+  // READ WHAT THE CODE DECIDED, NOT WHETHER IT SHOWS. `isVisible()` here was
+  // planted against twice and stayed green both times: this element can only be
+  // visible when `#triage` is, so a negative visibility assertion about it is
+  // true whatever the source does — the symptom assertion that cannot fail. The
+  // repo has this lesson already, from the focus-ring work: assert `activeElement`
+  // by name rather than the appearance it produces. So this reads the `hidden`
+  // property, which is the decision `setHere` makes.
+  is(await tpage.evaluate(() => document.querySelector('#triage-here')?.hidden), true,
+    'and no count on the arrival screen — the pile is named inside the room, never on the way in');
 
   await tpage.click('#hub-doors .hub-go[data-stance-id="triage"]');
   await tpage.waitForSelector('#triage:not([hidden]) .route');
   is(await tpage.locator('#triage-card').textContent(), beforeSkip,
     'a reload brings it back to the top — nothing about the skip was kept');
+
+  // AND INSIDE THE ROOM IT SAYS HOW MANY ARE HERE (3.10.0).
+  //
+  // A number stated once at entry — which is what sort mode does — is gone the
+  // moment somebody looks away, and looking away is the thing this app is built
+  // around. So it stands, and it is painted on every repaint. What makes that
+  // legal rather than an exception to law 5 is WHAT IT COUNTS: the pile, not the
+  // person. It says nothing about what was done, and it has no denominator to be
+  // a fraction of.
+  const hereWords = (await tpage.locator('#triage-here').textContent()) ?? '';
+  is(/^\d+ here to work through\.$|^One here to work through\.$/.test(hereWords.trim()), true,
+    `inside the room it says how many are here ("${hereWords.trim()}")`);
+  is(hereWords.replace(/[^0-9]/g, ''),
+    (await tpage.locator('#triage-gauge').getAttribute('data-yours')) ?? 'x',
+    'and the number it shows is what you put down, not a second count of its own');
+  // THE FRACTION BAN, borrowed verbatim from the sort-mode gate below. "19 of
+  // 240", "5 left", "3 to go", a percentage or a bar all measure how far through
+  // somebody is, which turns a pile into a course they are behind on.
+  is(/%|remaining|\d+\s*(of|\/)\s*\d+|\d+\s+left\b|\d+\s+to go\b/.test(hereWords), false,
+    'and it is an inventory rather than progress — no fraction, no remainder, no percentage');
 
   // WHEN IT WAS WRITTEN (1.23.0). Fills in from the log AFTER the card, so it is
   // waited for rather than read straight away — and it must be waited for on
@@ -1504,15 +1538,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     const before = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting') ?? 'NaN');
     await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
-    // The queue drops by one. Read from the data attribute since 1.43.0 — the
-    // words no longer change as it drains, on purpose.
+    // The queue drops by one. Read from the data attribute since 1.42.1 — the
+    // GAUGE's words no longer change as it drains, on purpose. (`#triage-here`
+    // does change, since 3.10.0, and that is asserted right after this helper's
+    // first use rather than inside it — a helper that asserts is a helper whose
+    // failures name the wrong line.)
     await tpage.waitForFunction((n) => {
       const g = document.querySelector('#triage-gauge');
       return Number(g?.dataset.waiting ?? 'NaN') === n - 1;
     }, before);
   };
 
+  const hereBeforeRoute = Number(((await tpage.locator('#triage-here').textContent()) ?? '').replace(/[^0-9]/g, ''));
   await routeByLabel('Do now');
+  // THE ONE THAT MATTERS (3.10.0). A count that were only correct on arrival
+  // would be the thing that was refused — a number you cannot trust after you
+  // look away is worse than none, because you act on it. Routing one thing has
+  // to leave the line saying one fewer, on the same repaint.
+  const hereAfterRoute = Number(((await tpage.locator('#triage-here').textContent()) ?? '').replace(/[^0-9]/g, ''));
+  is(hereAfterRoute, hereBeforeRoute - 1,
+    `and the count is still right after routing one (${hereBeforeRoute} -> ${hereAfterRoute})`);
   await tpage.waitForSelector('.donow');             // added a microtask after the route commits
   is(await tpage.locator('.donow').isVisible(), true,
     'routing to Do now offers what to do about it');
@@ -1539,6 +1584,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#triage', { state: 'hidden' });
   is((await tpage.locator('#triage-gauge').textContent()), 'Nothing here is waiting to be sorted.',
     'the inbox clears and the surface hides itself');
+  // AND THE COUNT GOES WITH IT (3.10.0) — the falsifiable half of the pairing.
+  // There is no card here, so there is nothing for a number to be about; a count
+  // left standing over an empty surface is the debt figure with nothing behind
+  // it. This point is reachable and the `else` branch clears it, so a plant that
+  // stops clearing takes this red.
+  is(await tpage.evaluate(() => document.querySelector('#triage-here')?.hidden), true,
+    'and the count goes with it — no number over a surface with no card on it');
   is(await tpage.locator('.card').count(), 5, 'trash removed exactly its own node; the other five remain held');
   // With the surface gone, focus returns to the capture line, not <body>.
   is(await tpage.evaluate(() => document.activeElement?.id), 'capture',
@@ -3352,7 +3404,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Drain whatever is already in the inbox first, then add these two. Earlier
   // sections leave items behind, and a heat card queued ahead of ours made the
   // wait for a clarify hint time out.
-  // THE INBOX IS BEHIND A DOOR SINCE 1.43.0, so anything that wants to sort has
+  // THE INBOX IS BEHIND A DOOR SINCE 1.42.1, so anything that wants to sort has
   // to open it — the surface no longer shows itself on arrival, on reload, or
   // after a capture (ADR-0085). Idempotent, like `openMenu` further down and for
   // the same reason: a second click would close what the last step opened.
@@ -5119,7 +5171,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#bother').isVisible(), false, 'the flow ends');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
-  // Behind the door since 1.43.0 \u2014 the reload no longer walks you into sorting,
+  // Behind the door since 1.42.1 \u2014 the reload no longer walks you into sorting,
   // so the walk asks for it. The claim being checked is unchanged: the bother
   // question came first and the next-step question comes second, once asked for.
   await openInbox();
@@ -5744,6 +5796,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // never reach, because the captured latch bars anything arriving by
   // node.created. This is a real store's 1,222, at fixture scale.
   const gaugeBeforeLoose = await tpage.locator('#triage-gauge').textContent().catch(() => '') || '';
+  const yoursBeforeLoose = await tpage.locator('#triage-gauge').getAttribute('data-yours').catch(() => null);
   await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
   await openSurface(tpage, 'sheet-group-data');
@@ -5763,6 +5816,32 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const gaugeAfterLoose = await tpage.locator('#triage-gauge').textContent().catch(() => '') || '';
   is(gaugeAfterLoose, gaugeBeforeLoose,
     `the daily triage gauge is untouched by an import ("${gaugeBeforeLoose}" -> "${gaugeAfterLoose}")`);
+  // AND THE COUNT INSIDE THE ROOM IS UNTOUCHED TOO (3.10.0).
+  //
+  // THIS ASSERTION FOUND SOMETHING ON ITS FIRST RUN, and what it found was in
+  // this file. The line above compares a FIXED SENTENCE to itself: `#triage-gauge`
+  // says the same words whatever the queue does, so "the daily triage gauge is
+  // untouched by an import" could never fail and the comment above it promising
+  // "no queue growth" was never checked by anything. A check whose sentence and
+  // predicate are different things (hub LESSONS 153) — and the sentence was the
+  // true half.
+  //
+  // The queue DOES grow: an import latches `captured`, deliberately, so the
+  // clarify surface offers arrivals rather than claiming the inbox is clear
+  // while a thousand of them sit there. What must not move is the number the
+  // reader is shown, which counts what they put down. `data-yours`, not
+  // `data-waiting` — reading the wrong one of the two is how the first version
+  // of this assertion went red against correct behaviour.
+  is(await tpage.locator('#triage-gauge').getAttribute('data-yours').catch(() => null), yoursBeforeLoose,
+    `and the count of what you put down is untouched by it (${yoursBeforeLoose} before and after)`);
+  // THE SUBSTANTIVE HALF: after an import the queue holds MORE than the count
+  // claims, and that gap is the feature rather than a discrepancy. The surface
+  // offers arrivals; the number does not claim them. Asserted as an inequality
+  // because equality here would mean the count had swallowed the import — which
+  // is precisely the "you are 1,171 behind" figure 2.38.0 refused.
+  const waitingAfterLoose = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting').catch(() => 'NaN'));
+  is(waitingAfterLoose > Number(yoursBeforeLoose), true,
+    `and the queue really did grow while the count did not (${yoursBeforeLoose} counted, ${waitingAfterLoose} in the queue)`);
 
   await openViaContents(tpage, 'sort');
   const choiceWords = await tpage.locator('#sort-choices .sort-choice-words').allTextContents();

@@ -693,6 +693,30 @@
          element exists to be published, not read here — `hidden` keeps it out of
          the accessibility tree entirely rather than reciting a second line. -->
     <p id="triage-count" class="triage-gauge" hidden></p>
+    <!-- HOW MANY ARE HERE (3.10.0), and it is a different thing from the tally
+         ADR-0085 removed.
+         WHAT THAT ADR REMOVED was a total STANDING ON THE SCREEN YOU ARRIVE AT,
+         which turns a good day's capture into visible debt. This element is
+         `hidden` in exactly the state that screen is — the door state, where
+         `#triage-card` is hidden too — and appears only once somebody has
+         walked in and there is a card in front of them. Same condition, one
+         line apart in `clarify.ts`, so the two cannot drift.
+         WHAT ADR-0044 FORBIDS is progress arithmetic: "19 of 240", "3/240",
+         "5 left", percentages, bars. Every one of those measures YOU — how far
+         through, how you are doing — and turns a pile into a course you are
+         behind on. A count of what is PRESENT measures the pile. It says
+         nothing about what you did, has no denominator to be a fraction of, and
+         falls because the shelf empties rather than because anybody is being
+         scored.
+         AND IT STANDS RATHER THAN BEING STATED ONCE. Sort mode says its total
+         at entry and never again, which serves a reader who does not look away.
+         This is not that reader. Somebody who loses the thread mid-pile and
+         looks back at the screen needs the answer to be ON the screen, and a
+         number stated once is gone by then. That is the whole reason this is
+         painted on every repaint.
+         REUSES `.triage-gauge` so the contrast pair is the registered one and
+         no new colour enters the app. -->
+    <p id="triage-here" class="triage-gauge" hidden></p>
     <!-- tabindex=-1 so focus can land here after a card is replaced: activating a
          route removes the button, and focus must not fall to <body> (WCAG 2.4.3). -->
     <h2 id="triage-prompt" class="triage-prompt" tabindex="-1"></h2>

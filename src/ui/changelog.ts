@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.10.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-29',
+    notes: [
+      '**Sorting now says how many are here.** Not how many you have done, and not how far through you are \u2014 just what is in front of you: **twenty here to work through**. It stays on the screen the whole time you are sorting, so if you lose the thread and come back to it, the answer is still there.',
+      '**It is not on the screen you arrive at.** Opening the app still never tells you how much is waiting. The number lives inside sorting, once there is something in front of you, because a total sitting on the front page turns a good day of writing things down into a debt you can see.',
+      '**And it is never a fraction.** No *nineteen of two hundred*, no *five left*, no percentage, no bar. Those say how far behind you are; a plain count of what is here says what there is. A missed day should not turn into a list you are behind on.',
+      '**It counts what you put down, not what you brought in.** If you have imported a planner, those things are not added to this number \u2014 an old file you loaded once is not something you owe today. They are still offered while you sort; they just do not turn into a figure telling you how far behind you are.',
+      '**Still not right:** because of that, sorting can hand you something the count did not promise. The answer is imported things having their own set to work through, which is the next piece of work \u2014 not a bigger number here.',
+      '**Still no count of what you passed over**, and passing something over still records nothing, anywhere.',
+    ],
+  },
+  {
     triplet: '3.9.3',
     kind: 'ITERATION',
     date: '2026-08-29',

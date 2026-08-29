@@ -840,7 +840,91 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.3**. Sorting
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.10.0**. The
+  sorting room says how many are in the pile, standing, and ADR-0113 says why
+  that is not the thing ADR-0085 removed.
+  **THE COUNT WAS ASKED FOR, AND THE FIRST ANSWER WAS REFUSED BY ONE SENTENCE
+  BETTER THAN THE REASONING IT OVERTURNED.** The proposal was sort mode's shape —
+  state the total ONCE at entry, which ADR-0044 calls the purge precedent. The
+  answer: how would I know how many are left after getting distracted and looking
+  back at the screen. **A number stated once serves a reader who does not look
+  away, and that is not the reader this product is for.** Losing the thread
+  mid-pile is the ordinary case here, and it is the moment the answer is most
+  wanted, so the answer has to still be on the screen.
+  **THE DISTINCTION THE RECORD HAD NEVER DRAWN.** ADR-0044 forbids "no tally, no
+  remaining count, no percentage, no bar" and calls a per-sitting counter "a score
+  with a different name". It is right about every instrument it lists and it
+  never separated two things. **Progress arithmetic measures the PERSON** — 19 of
+  240, 5 left, a percentage, a filled bar — invites a verdict and turns a pile
+  into a course you are behind on, which is the snowball this product exists to
+  refuse. **A count of what is present measures the PILE**: it says nothing about
+  what was done, has no denominator to be a fraction of, and falls because the
+  shelf empties. Everything ADR-0044 lists stays banned.
+  **AND THE ARRIVAL SCREEN IS UNTOUCHED, WHICH IS THE WHOLE OF WHY THIS IS
+  LEGAL.** The smoke walk's own comment gave it away: arriving with a full inbox
+  puts no card on screen but "the door is there and the gauge is there" — so the
+  gauge IS the landing surface, and a count beside it would have been exactly the
+  visible debt ADR-0085 removed. `#triage-here` is `hidden` in the door state on
+  the same condition as `#triage-card`, one line apart in `clarify.ts`. **Found
+  by reading the gate rather than the markup**, before anything was written.
+  **ITS OWN ELEMENT, so the gauge keeps everything it had**: ADR-0085's sentence,
+  an exact full-string assertion on it, and a `/\d/` prohibition — all three
+  still true and untouched, with the digit living somewhere that has its own
+  rules.
+  **THE ASSERTION THAT MATTERS IS THE ONE AFTER ROUTING.** A count correct only
+  on arrival is worse than none, because it is acted on. Routing one thing has to
+  leave the line saying one fewer on the same repaint, and that is the plant.
+  **AND A SECOND ASSERTION FOUND SOMETHING ON ITS FIRST RUN — IN THE GATE FILE.**
+  The import-boundary check beside it compares a FIXED SENTENCE to itself:
+  `#triage-gauge` says the same words whatever the queue does, so *the daily
+  triage gauge is untouched by an import* could never fail, and the comment above
+  it promising **no queue growth** was checked by nothing at all. A check whose
+  sentence and predicate are different things (hub LESSONS 153) — and here the
+  sentence was the true half, which is why it read as covered for months.
+  **THE QUEUE DOES GROW, AND THAT IS DELIBERATE.** An import latches `captured`,
+  so the clarify surface offers arrivals rather than claiming the inbox is clear
+  while a thousand of them sit in it — 2.38.0 calls saying otherwise "the
+  dishonest half of this trade". What must not move is the number the READER is
+  shown. So the surface offers them and the count does not claim them, which is
+  the same split `inboxGauge` already makes one file over: *a number saying you
+  are 1,171 behind, because you once brought a file in, is the opposite of law 8
+  — and it is not even true: an arrival is not something you owe today.*
+  **THE FIRST VERSION OF THE COUNT READ THE WRONG NUMBER** and the walk caught it
+  by going red against correct behaviour: three rows imported, queue up by
+  exactly three. `data-yours` is a second seam beside `data-waiting` now, because
+  they are two different facts and a walk reading one to check the other is the
+  same defect one level up.
+  **AND THE PLANTS FOUND MORE IN THE GATE THAN IN THE APP — THREE TIMES.**
+  *First:* the count and its test seam were two separate expressions of the same
+  filter, so a plant that changed the painted number left the seam correct and
+  the whole walk stayed green. **A test hook derived separately from the thing it
+  vouches for does not vouch for it.** One expression feeds both now, which
+  removes the defect structurally rather than asserting it away.
+  *Second:* `isVisible()` on `#triage-here` can never be false-negative, because
+  the element can only be visible when `#triage` is — so every negative
+  visibility assertion about it was true whatever the source did. Planted twice,
+  green twice. **The repo already had this lesson** from the focus-ring work:
+  assert what the code DECIDED, by name, because the symptom assertion is exactly
+  the one that cannot fail. Both now read the `hidden` property, and both go red
+  under a plant.
+  *Third:* the arrival state was reasoned about for several turns and then
+  MEASURED with a twenty-line probe, which answered it immediately — the section
+  is hidden entirely, so nothing inside it could ever have been visible there.
+  The reasoning was the expensive part and the measurement was the cheap one.
+  **STILL NOT RIGHT, AND IN THE RELEASE NOTES AS SUCH:** with an import in the
+  store the room hands you cards the count did not promise. The answer is
+  arrivals having their own set to be worked through — the next piece of work —
+  rather than a bigger number here.
+  **SEVEN CITATIONS NAMED A RELEASE THAT HAS NEVER EXISTED.** The comments in
+  `clarify.ts` and `smoke.mjs` credited the no-count change to a triplet absent
+  from CHANGELOG.md and from `changelog.ts` alike; it shipped one iteration
+  earlier, the same day as ADR-0085. Corrected in both files, with the correction
+  itself recorded where the wrong number was — a citation quietly fixed is one
+  the next reader cannot tell from a citation that was always right.
+  **SORT MODE IS NOW INCONSISTENT AND IS LEFT SO ON PURPOSE.** The same argument
+  applies to a 240-row range and it is a separate change to a separate surface;
+  recorded in ADR-0113 so it is a decision rather than an oversight.
+- **Superseded, and kept for the record: 3.9.3.** Sorting
   says where you are in the pile, by landmark rather than by tally.
   **THE COMPLAINT NAMED A TALLY AND THE DEFECT WAS NOT ONE.** Walked as a
   reader: inside the sorting surface there is no way to tell whether this is the
