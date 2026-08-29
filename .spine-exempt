@@ -36,5 +36,5 @@ serve — a static server the walks use; not a check.
 
 # Covered by a fuller command that IS in CI.
 editions:check — a check-only subset of build:sync, which the Spine runs as "Two editions".
-quotes:check — a local wrapper for the hub's quote-check; CI runs the canonical copy out of .hub-gates.
+quotes:check — a local wrapper for the hub's quote-check; CI runs the canonical copy in the hub-gates job, from the hub at the commit spine.yml pins.
 test — `npm run typecheck && npm run test:only`, and the Spine runs both halves as their own steps so a type error and a failing test are told apart in the log.

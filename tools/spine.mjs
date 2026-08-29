@@ -114,6 +114,33 @@ import yaml, json, sys
 d = yaml.safe_load(open(sys.argv[1]))
 out = []
 for job in d.get('jobs', {}).values():
+    # A JOB THAT CALLS THE HUB'S REUSABLE WORKFLOW HAS NO STEPS TO READ. The
+    # doctrine gates used to be steps in this file and are now one call, so
+    # reading only the steps list would silently stop running them here — the
+    # exact shape of failure this whole tool was written after. They are
+    # synthesised back as the commands a session runs from the sibling hub,
+    # which is better than before: they used to be listed as un-runnable and
+    # left to somebody to remember.
+    u = job.get('uses', '')
+    if 'hub-gates.yml@' in u:
+        w = job.get('with', {}) or {}
+        gates = [
+            ("The owner's person is not repo material", 'privacy-check.mjs --repo .'),
+            ('Every set-apart quotation says whose words it is', 'quote-check.mjs --repo .'),
+            ('No grid in anything the owner reads', 'docs-check.mjs .'),
+            ('npm hygiene', 'pin-check.mjs --repo .'),
+            ('The commit guard is the one that was declared', 'branch-guard.mjs --repo . --artefact'),
+        ]
+        if w.get('third-person', True):
+            gates.append(('No third-person reference to the owner', 'third-person-check.mjs --repo .'))
+        if w.get('mirror'):
+            gates.append(('The offline pattern mirror has not drifted', 'privacy-mirror-check.mjs --repo .'))
+        if w.get('pwa'):
+            gates.append(('A new version waits and the reader is told', 'pwa-check.mjs --repo .'))
+        for name, cmd in gates:
+            out.append({'name': name + ' (hub)', 'run': 'node ../noahjefferson/' + cmd,
+                        'uses': '', 'if': ''})
+        continue
     for s in job.get('steps', []):
         out.append({
             'name': s.get('name', ''),
@@ -137,9 +164,12 @@ const cannot = (s) => {
   if (!s.run.trim()) return 'has no command';
   if (/^npm ci\b/.test(s.run.trim())) return 'installs dependencies; this runs against the tree you have';
   if (/playwright(-core)? install/.test(s.run)) return 'installs a browser; this machine already has one';
-  // The hub-gate steps run `.hub-gates/...`, a path that only exists on a runner
-  // after the checkout step. The same gates run from `../noahjefferson` here,
-  // which is what a session actually does, so they are named rather than faked.
+  // The hub gates used to be steps here running `.hub-gates/...`, a path that
+  // only exists on a runner, so they were listed as un-runnable and left to
+  // somebody to remember. They are a called workflow now, and the reader above
+  // synthesises them back as `../noahjefferson/...` — the command a session
+  // actually runs — so they are RUN here rather than named. The rule stays for
+  // any step that still spells the CI-only path.
   if (/\.hub-gates/.test(s.run)) return 'runs the hub gates from a CI-only checkout — run them from ../noahjefferson';
   return null;
 };
