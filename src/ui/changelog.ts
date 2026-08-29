@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.9.3',
+    kind: 'ITERATION',
+    date: '2026-08-29',
+    notes: [
+      '**Sorting now tells you when you have been round everything.** Pass a card over and it goes to the back; when every one had been passed the pile quietly started again, so you could go round the same cards for ever with nothing saying so. It says **you have been round all of these once**, and that this is a fine place to stop.',
+      '**And it tells you when you are on the last one you have not seen.** Those are the only two places in a pile where knowing where you are changes what you would do.',
+      '**Still no count, and that is on purpose.** A number of things waiting turns a good day of writing things down into a debt you can see, which is the thing that stops people writing them down at all. Neither of these carries a number, and passing something over still records nothing anywhere.',
+    ],
+  },
+  {
     triplet: '3.9.2',
     kind: 'ITERATION',
     date: '2026-08-29',

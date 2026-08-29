@@ -840,7 +840,34 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.2**. Three
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.3**. Sorting
+  says where you are in the pile, by landmark rather than by tally.
+  **THE COMPLAINT NAMED A TALLY AND THE DEFECT WAS NOT ONE.** Walked as a
+  reader: inside the sorting surface there is no way to tell whether this is the
+  second card of thirty or the last one. The count is refused there on purpose
+  (1.43.0) and stays refused — a number that only rises turns a good day's
+  capture into a visible debt, which is the mechanism that stops the dumping.
+  What was actually missing is the two BOUNDARIES, and **the app already
+  computed both and said neither**.
+  **PASSING OVER EVERY CARD RESTARTED THE PILE IN SILENCE.** `fresh()` prefers
+  the first card not passed this sitting and falls back to `q[0]` when every one
+  has been — so a sitting can go round for ever re-declining the same cards with
+  nothing saying it has come round. That is the disorientation, and it is not a
+  counting problem. The surface says *you have been round all of these once*,
+  and that this is a fine place to stop; and it says *this is the last one you
+  have not been past* at the other boundary.
+  **NEITHER IS A SCORE AND NEITHER CARRIES A DIGIT**, asserted. A boundary is
+  not progress toward an end, which is why `src/timer.ts` can refuse a fraction
+  and this can say a landmark. Both are computed from `passed`, which is in
+  memory and never written, so going round the whole pile still appends nothing
+  to the log — asserted too, as the strongest version of the invariant that
+  block already held.
+  **STILL OPEN, AND IT IS A PRODUCT DECISION RATHER THAN A DEFECT:** the other
+  half of that sentence — *card two of thirty* — is a tally, and the recorded
+  reasoning against one is about a number STANDING on a surface, not about
+  orientation while working through a pile. Nobody has drawn that line, and a
+  session should not draw it alone.
+- **Superseded, and kept for the record: 3.9.2.** Three
   doors now say where they go. The first of four releases working through the
   eight things the walk found and left, taken in the order design wants rather
   than the order they were found: **trust** first (this one), then the conveyor,

@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.9.3 — ITERATION
+
+*2026-08-29*
+
+- **Sorting now tells you when you have been round everything.** Pass a card over and it goes to the back; when every one had been passed the pile quietly started again, so you could go round the same cards for ever with nothing saying so. It says **you have been round all of these once**, and that this is a fine place to stop.
+- **And it tells you when you are on the last one you have not seen.** Those are the only two places in a pile where knowing where you are changes what you would do.
+- **Still no count, and that is on purpose.** A number of things waiting turns a good day of writing things down into a debt you can see, which is the thing that stops people writing them down at all. Neither of these carries a number, and passing something over still records nothing anywhere.
+
 ## 3.9.2 — ITERATION
 
 *2026-08-29*

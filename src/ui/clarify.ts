@@ -893,9 +893,43 @@ export function mountTriage(
     // covered — the gate clocked each one as it was written — so sorting is not
     // what rescues them. It decides WHERE they come back. Saying so makes the
     // step optional in words as well as in fact (ADR-0029, ADR-0085).
+    //
+    // AND WHERE YOU ARE IN THE PILE, BY LANDMARK RATHER THAN BY TALLY (3.9.3).
+    //
+    // Walked as a reader: inside this surface there is no way to tell whether
+    // this is the second card of thirty or the last one. The count is refused
+    // above and stays refused — but the thing that was actually missing is not
+    // a number, it is the two BOUNDARIES, and the app already computes both and
+    // says neither.
+    //
+    // `fresh()` below prefers the first card not passed over this sitting, and
+    // when every one HAS been passed it falls back to `q[0]` and starts the pile
+    // again. Silently. So somebody can go round a sorting session for ever,
+    // re-declining the same cards, with nothing telling them they have come
+    // round — which is the disorientation, and it is not a counting problem.
+    //
+    // Two landmarks, no digits (the smoke walk asserts the visible text carries
+    // none): the last card you have not been past, and having been round all of
+    // them once. Both are facts about THIS SITTING and both are computed from
+    // `passed`, which is in memory and is never written — so nothing durable is
+    // created, exactly as the note above requires. Neither is a fraction: a
+    // boundary is not progress toward an end, which is why `src/timer.ts` can
+    // refuse the one and this can say the other.
+    //
+    // The round-once line is where "you can stop" belongs. ADR-0029 and
+    // ADR-0085 make sorting optional and the standing sentence says so in
+    // general; the moment somebody is about to re-decline a card they already
+    // declined is the moment it is worth saying in particular.
+    const unpassed = inbox.filter(n => !passed.has(n.id)).length;
+    const roundOnce = inbox.length > 0 && unpassed === 0;
+    const lastFresh = inbox.length > 1 && passed.size > 0 && unpassed === 1;
     GAUGE.textContent = inbox.length === 0
       ? 'Nothing here is waiting to be sorted.'
-      : 'These are held either way. Sorting decides where they come back, not whether.';
+      : roundOnce
+        ? 'You have been round all of these once. They are held either way, so this is a fine place to stop.'
+        : lastFresh
+          ? 'This is the last one you have not been past. They are held either way.'
+          : 'These are held either way. Sorting decides where they come back, not whether.';
     // AND WHAT THE HUB'S DOOR SAYS (3.9.1) — see the note on `#triage-count`.
     // The same fact the gauge carries, in the shape a door needs, and with no
     // number in it for the reason the line above has none.

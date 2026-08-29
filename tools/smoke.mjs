@@ -1398,6 +1398,45 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#triage-gauge').getAttribute('data-waiting'), gaugeBeforeSkip,
     'and the count still says what is in the inbox, not what was passed over');
 
+  // WHERE YOU ARE IN THE PILE, BY LANDMARK (3.9.3). The count is refused on this
+  // surface and stays refused; what was missing is the two BOUNDARIES, which
+  // the app computed and never said. Passing over everything used to restart
+  // the pile in silence, so a sitting could go round for ever re-declining the
+  // same cards with nothing saying so.
+  //
+  // DRIVEN BY `data-waiting`, not by a number typed here. That attribute is the
+  // test seam this surface already keeps for the walks, and reading the fixture
+  // size from the app is what stops this block going stale the day the fixture
+  // grows.
+  const waiting = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting'));
+  is(waiting > 2, true, `the fixture has enough to go round (${waiting} waiting)`);
+  // One already passed above, so `waiting - 2` more reaches the last unpassed.
+  for (let i = 0; i < waiting - 2; i++) {
+    await tpage.locator('#triage-actions button', { hasText: 'Not this one' }).click();
+    await settled(tpage, 120);
+  }
+  const atLast = (await tpage.locator('#triage-gauge').textContent()) ?? '';
+  is(/last one you have not been past/.test(atLast), true,
+    `the last unpassed card says so ("${atLast.trim().slice(0, 64)}")`);
+  await tpage.locator('#triage-actions button', { hasText: 'Not this one' }).click();
+  await settled(tpage, 200);
+  const round = (await tpage.locator('#triage-gauge').textContent()) ?? '';
+  is(/been round all of these once/.test(round), true,
+    `and going round every one says THAT, rather than starting again in silence ("${round.trim().slice(0, 64)}")`);
+  // STILL NO DIGIT. The landmarks are boundaries, not a tally, and the whole
+  // reason they are landmarks is that this surface may not keep score.
+  is(/\d/.test(atLast) || /\d/.test(round), false,
+    'and neither landmark carries a number');
+  // AND STILL NOTHING WRITTEN. `passed` is in memory; going round the whole
+  // pile is the strongest version of the invariant asserted above.
+  is(await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').count();
+      tx.onsuccess = () => res(tx.result);
+    });
+  }), logBeforeSkip, 'and going round every one of them appends nothing to the log');
+
   // IT DOES NOT SURVIVE A RELOAD, and proving that also puts the surface back
   // the way this section found it — the rest of the walk routes specific cards
   // by name, and a skip left in place hands them a different one. (The first
