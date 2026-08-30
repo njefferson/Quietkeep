@@ -602,7 +602,7 @@ closed question filed under this heading now, so the two cannot drift again.
   - **The stratosphere is `aspiration`.** It sits on the Menu and **cannot carry a clock** (law 6) — which is exactly "amorphous, not driving action, not nagging you". Pulling one down to where it can drive action is ordinary parenting; there is no separate promotion machinery and there should not be.
   - **"Allowed to disappear" shipped in 1.32.0** as `node.released` / `node.reclaimed` — an exit that is neither done nor deleted, reversible, leaving no browsable pile and no count. That was built precisely because law 1 otherwise guarantees perpetual return, and the only reset people actually reach for is deleting the app.
   - **Roles and lines-of-effort have a settled SHAPE and are deliberately deferred** — see Q-13. A role crosses areas, and this tree is single-parent, so it is a cross-cutting link and never a container. The deferral is the same one, on the same grounds.
-  - **What is genuinely unbuilt is the projection, not the levels.** `docs/horizon-models.md` says so: the review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts` and **do not reach the surfacing layer**, and a runway card does not print what it serves even though 1.20.0's place line already walks lineage on a different edge. That is law 4's other half — higher horizons project *downward* — and it is the thing worth building.
+  - **What was genuinely unbuilt was the projection, not the levels** — and it is built now, which this line said otherwise about for seven months of releases. The review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts`; a runway card **does** print what it serves, since 2.5.0 and `src/serves.ts`. The claim that it does not was still standing here on 2026-08-30 and in `horizon-models.md` at the same time, which is the one-file-two-answers shape the hub's CLAUDE.md names. **What is unbuilt now is narrower and named in ADR-0115's own record:** the exceptions walk the TREE only, so a cross-cutting line with nothing moving on it is still invisible.
   - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theatre and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
 
   - Status: **Closed.** Answered 2026-08-09 — every altitude asked about already existed. What is genuinely unbuilt is the projection, deferred on purpose until a real store holds a goal or an area.
@@ -840,7 +840,290 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.9.1**. Eight
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.12.0**. A line is
+  somewhere you can stand (ADR-0115).
+  **EVERY LINK IN THIS APP WAS TRAVERSED FORWARD ONLY, AND THAT WAS THE WHOLE
+  DEFECT.** `rolesOf` says which identities a thing carries, `servesNode` which
+  horizon it serves, `dependencyView` what it feeds — and none of them answered
+  the other direction. A repo-wide search for `roles.includes` returned exactly
+  one hit: the fold's own dedupe. So a sheet titled *Where the attention is*
+  could say attention went to an identity and there was **no code path anywhere**
+  to show what was there, and on an item a role's name was a REMOVE control —
+  from a thing, the only thing you could do with the line it was on was take it
+  off.
+  **THE LINK-KINDS WERE ALL BUILT. THE DIRECTION WAS MISSING.** That is why
+  standing at work, or in a meeting, or on a line of effort and seeing what is on
+  it was impossible, and why it read as a missing feature rather than a missing
+  traversal.
+  **NOT THE FILTER `roles.ts` REFUSES, AND THAT REFUSAL STANDS.** Narrowing the
+  working surfaces to an identity is the partition Q-10 argued against — two
+  lists, and you have to remember the other one. A view you open and read is a
+  different act: `horizon-models.md` §3 calls these inspection modes, never
+  workspaces. Nothing about the surfaces anybody works from changes.
+  **A ROLE IS AN ORDINARY NODE, so its own sheet is the home and this cost no new
+  surface** — the same reasoning that put the person lens on a person's sheet in
+  1.12.0, and the same shape one axis over. It joined the a11y walk's states in
+  the same commit, reached the way a reader reaches it rather than opened
+  directly, because the route is half of what is being measured.
+  **AND THE RECORD SAID THE DOWNWARD PROJECTION WAS UNBUILT, IN TWO PLACES, FOR
+  SEVEN MONTHS OF RELEASES.** `horizon-models.md` listed it as a survivor still
+  to build and NOTES Q-14 said a runway card does not print what it serves;
+  `src/serves.ts` shipped it in 2.5.0 and its own header quotes that line back.
+  One file, two answers — the hub's own shape. Both corrected here.
+  **STILL NOT RIGHT, IN THE RELEASE NOTES AND IN THE ADR:** `review.ts` walks the
+  TREE only — `unfedGoals` walks `n.parent`, so "unfed" means nothing beneath it
+  in the tree — so a line with nothing moving on it is visible only to somebody
+  who opens it. The value of that finding is that it should come to you
+  (ADR-0013 puts the clock on the artifact, never the ritual on the person).
+  Extending the exceptions to the cross-cutting links is the next piece, and it
+  is what turns a weekly review into a continuous assessment.
+- **Superseded, and kept for the record: 3.11.1.** The card's
+  filing route says what it files into, and *place* means one thing again.
+  **HALF OF THE COMPLAINT DISSOLVED ON INSPECTION, AND THE OTHER HALF EXPLAINS
+  IT.** Reported as *place and project are both buried in the detail sheet — open
+  the sheet, expand, scroll*. But **what is this part of was never buried**: it
+  is a first-class route on the sorting card, beside the six WHENs, with its own
+  comment saying it is "first-class rather than buried because for an imported
+  backlog it is the only question that matters".
+  **IT WAS WEARING THE OTHER QUESTION'S WORD.** The route files into a CONTAINER
+  — `renderPlaces` filters `CONTAINER_KINDS`, so a project, outcome, area or
+  goal — and it said *into a place*. **A place is already something else in this
+  app**: `kind-words.ts` has `context: 'A place'`, commented "where work can be
+  DONE, which is not a thing to do", and two live controls on the same page say
+  `Narrow the places` to a screen reader about exactly those. So the two
+  questions somebody might be asking sounded identical on the one surface where
+  both matter, and the reachable one read as the unreachable one.
+  **THE FLOWCHARTS PAGE HAD THE CONFUSION IN WRITING** — "file it under a place
+  or a project" — hedging between the two rather than naming either.
+  **THIS IS THE SAME COLLISION THAT KILLED `Other places` AS A DOOR NAME IN
+  3.9.2**, one release and one surface apart, found the same way and from the
+  app's own vocabulary rather than from another product's.
+  **AND BOTH WALKS KEYED ON THE LABEL**, so renaming it would have timed them
+  out — LESSONS 180 for the third time. `data-route="put-under"` now.
+  **STILL OPEN AND NOT DECIDED HERE:** *where can this be done* — the context —
+  is genuinely not on the card, only in the detail sheet. Adding a route for it
+  is a new control on a deliberately spare surface with the control budget at
+  exactly 258 of 258, so it is a raise with a design argument behind it rather
+  than something to slip in beside a copy fix.
+- **Superseded, and kept for the record: 3.11.0.** Each
+  planner brought in is its own named set to work through (ADR-0114).
+  **TWO IMPORTS WERE ONE LUMP, AND SO WAS THE SAMPLE SET.** A second file
+  diluted the first and neither could be worked through on its own — reported in
+  those terms. The sample being in that lump is the half that becomes somebody
+  else's problem later: loose rows they cannot tell from their own forgotten
+  work, in a store they are then afraid to clean. Naming it is a requirement
+  rather than a side effect, and the wholesale verbs already there can now clear
+  it in one act.
+  **THE BATCH NAMED FOR IMPORTS HELD PART OF ONE — the same defect 2.38.0 found,
+  one turn down from where it looked.** `looseFromImport` was keyed on `arrived`,
+  which the importer sets ONLY on a row that came in with nothing to go on; a row
+  that kept a real date and every project in the same file are `arrived: false`.
+  So the batch missed them, and its own docstring recorded 2.38.0's fix to the
+  previous version of exactly this. Keyed on WHICH arrival now, which is the
+  question the batch was always asking.
+  **THE KEY IS THE IMPORTING COMMIT'S OWN TIMESTAMP.** An import lands in ONE
+  commit, so every event in it already shares an `at` — unique per run, and also
+  the date the set gets labelled with. Nothing is minted, no id invented, and no
+  event noun added to a closed list. Named by date and size and never by a
+  source: the format is sniffed from the CONTENT and the filename is never
+  stored, so a source name would be a guess presented as a fact.
+  **ADDITIVE, AND THE GATES SAID SO BEFORE ANY OF IT RAN.** The merge carry table
+  refused to compile without a disposition for the new field — it is `carry: 'no'`,
+  because a survivor did not arrive on the source's arrival and filing it into a
+  set it never came in with would be a lie somebody then works through. And the
+  three-place snapshot test refused a field with no default for a store written
+  before it existed: old rows fold to `null`, which reads as *written here*, the
+  honest answer when the store cannot say otherwise.
+  **AND A FIXTURE WAS WRITING ROWS THE IMPORTER NO LONGER PRODUCES — AGAIN.**
+  Three range tests went red because their `imported()` helper wrote `arrived`
+  and nothing else. That is LESSONS 138's shape and this file's own range tests
+  are where it was first found; the helper writes what the importer writes now.
+  **WHAT IS STILL OWED, AND IT IS IN THE RELEASE NOTES:** finishing an import
+  lands you in the right room (2.35.0) and does not say *these came in together,
+  here is the way to them*. Recorded in ADR-0114 so the next session finds it
+  rather than rediscovering it.
+- **Superseded, and kept for the record: 3.10.0.** The
+  sorting room says how many are in the pile, standing, and ADR-0113 says why
+  that is not the thing ADR-0085 removed.
+  **THE COUNT WAS ASKED FOR, AND THE FIRST ANSWER WAS REFUSED BY ONE SENTENCE
+  BETTER THAN THE REASONING IT OVERTURNED.** The proposal was sort mode's shape —
+  state the total ONCE at entry, which ADR-0044 calls the purge precedent. The
+  answer: how would I know how many are left after getting distracted and looking
+  back at the screen. **A number stated once serves a reader who does not look
+  away, and that is not the reader this product is for.** Losing the thread
+  mid-pile is the ordinary case here, and it is the moment the answer is most
+  wanted, so the answer has to still be on the screen.
+  **THE DISTINCTION THE RECORD HAD NEVER DRAWN.** ADR-0044 forbids "no tally, no
+  remaining count, no percentage, no bar" and calls a per-sitting counter "a score
+  with a different name". It is right about every instrument it lists and it
+  never separated two things. **Progress arithmetic measures the PERSON** — 19 of
+  240, 5 left, a percentage, a filled bar — invites a verdict and turns a pile
+  into a course you are behind on, which is the snowball this product exists to
+  refuse. **A count of what is present measures the PILE**: it says nothing about
+  what was done, has no denominator to be a fraction of, and falls because the
+  shelf empties. Everything ADR-0044 lists stays banned.
+  **AND THE ARRIVAL SCREEN IS UNTOUCHED, WHICH IS THE WHOLE OF WHY THIS IS
+  LEGAL.** The smoke walk's own comment gave it away: arriving with a full inbox
+  puts no card on screen but "the door is there and the gauge is there" — so the
+  gauge IS the landing surface, and a count beside it would have been exactly the
+  visible debt ADR-0085 removed. `#triage-here` is `hidden` in the door state on
+  the same condition as `#triage-card`, one line apart in `clarify.ts`. **Found
+  by reading the gate rather than the markup**, before anything was written.
+  **ITS OWN ELEMENT, so the gauge keeps everything it had**: ADR-0085's sentence,
+  an exact full-string assertion on it, and a `/\d/` prohibition — all three
+  still true and untouched, with the digit living somewhere that has its own
+  rules.
+  **THE ASSERTION THAT MATTERS IS THE ONE AFTER ROUTING.** A count correct only
+  on arrival is worse than none, because it is acted on. Routing one thing has to
+  leave the line saying one fewer on the same repaint, and that is the plant.
+  **AND A SECOND ASSERTION FOUND SOMETHING ON ITS FIRST RUN — IN THE GATE FILE.**
+  The import-boundary check beside it compares a FIXED SENTENCE to itself:
+  `#triage-gauge` says the same words whatever the queue does, so *the daily
+  triage gauge is untouched by an import* could never fail, and the comment above
+  it promising **no queue growth** was checked by nothing at all. A check whose
+  sentence and predicate are different things (hub LESSONS 153) — and here the
+  sentence was the true half, which is why it read as covered for months.
+  **THE QUEUE DOES GROW, AND THAT IS DELIBERATE.** An import latches `captured`,
+  so the clarify surface offers arrivals rather than claiming the inbox is clear
+  while a thousand of them sit in it — 2.38.0 calls saying otherwise "the
+  dishonest half of this trade". What must not move is the number the READER is
+  shown. So the surface offers them and the count does not claim them, which is
+  the same split `inboxGauge` already makes one file over: *a number saying you
+  are 1,171 behind, because you once brought a file in, is the opposite of law 8
+  — and it is not even true: an arrival is not something you owe today.*
+  **THE FIRST VERSION OF THE COUNT READ THE WRONG NUMBER** and the walk caught it
+  by going red against correct behaviour: three rows imported, queue up by
+  exactly three. `data-yours` is a second seam beside `data-waiting` now, because
+  they are two different facts and a walk reading one to check the other is the
+  same defect one level up.
+  **AND THE PLANTS FOUND MORE IN THE GATE THAN IN THE APP — THREE TIMES.**
+  *First:* the count and its test seam were two separate expressions of the same
+  filter, so a plant that changed the painted number left the seam correct and
+  the whole walk stayed green. **A test hook derived separately from the thing it
+  vouches for does not vouch for it.** One expression feeds both now, which
+  removes the defect structurally rather than asserting it away.
+  *Second:* `isVisible()` on `#triage-here` can never be false-negative, because
+  the element can only be visible when `#triage` is — so every negative
+  visibility assertion about it was true whatever the source did. Planted twice,
+  green twice. **The repo already had this lesson** from the focus-ring work:
+  assert what the code DECIDED, by name, because the symptom assertion is exactly
+  the one that cannot fail. Both now read the `hidden` property, and both go red
+  under a plant.
+  *Third:* the arrival state was reasoned about for several turns and then
+  MEASURED with a twenty-line probe, which answered it immediately — the section
+  is hidden entirely, so nothing inside it could ever have been visible there.
+  The reasoning was the expensive part and the measurement was the cheap one.
+  **STILL NOT RIGHT, AND IN THE RELEASE NOTES AS SUCH:** with an import in the
+  store the room hands you cards the count did not promise. The answer is
+  arrivals having their own set to be worked through — the next piece of work —
+  rather than a bigger number here.
+  **SEVEN CITATIONS NAMED A RELEASE THAT HAS NEVER EXISTED.** The comments in
+  `clarify.ts` and `smoke.mjs` credited the no-count change to a triplet absent
+  from CHANGELOG.md and from `changelog.ts` alike; it shipped one iteration
+  earlier, the same day as ADR-0085. Corrected in both files, with the correction
+  itself recorded where the wrong number was — a citation quietly fixed is one
+  the next reader cannot tell from a citation that was always right.
+  **SORT MODE IS NOW INCONSISTENT AND IS LEFT SO ON PURPOSE.** The same argument
+  applies to a 240-row range and it is a separate change to a separate surface;
+  recorded in ADR-0113 so it is a decision rather than an oversight.
+- **Superseded, and kept for the record: 3.9.3.** Sorting
+  says where you are in the pile, by landmark rather than by tally.
+  **THE COMPLAINT NAMED A TALLY AND THE DEFECT WAS NOT ONE.** Walked as a
+  reader: inside the sorting surface there is no way to tell whether this is the
+  second card of thirty or the last one. The count is refused there on purpose
+  (1.43.0) and stays refused — a number that only rises turns a good day's
+  capture into a visible debt, which is the mechanism that stops the dumping.
+  What was actually missing is the two BOUNDARIES, and **the app already
+  computed both and said neither**.
+  **PASSING OVER EVERY CARD RESTARTED THE PILE IN SILENCE.** `fresh()` prefers
+  the first card not passed this sitting and falls back to `q[0]` when every one
+  has been — so a sitting can go round for ever re-declining the same cards with
+  nothing saying it has come round. That is the disorientation, and it is not a
+  counting problem. The surface says *you have been round all of these once*,
+  and that this is a fine place to stop; and it says *this is the last one you
+  have not been past* at the other boundary.
+  **NEITHER IS A SCORE AND NEITHER CARRIES A DIGIT**, asserted. A boundary is
+  not progress toward an end, which is why `src/timer.ts` can refuse a fraction
+  and this can say a landmark. Both are computed from `passed`, which is in
+  memory and never written, so going round the whole pile still appends nothing
+  to the log — asserted too, as the strongest version of the invariant that
+  block already held.
+  **STILL OPEN, AND IT IS A PRODUCT DECISION RATHER THAN A DEFECT:** the other
+  half of that sentence — *card two of thirty* — is a tally, and the recorded
+  reasoning against one is about a number STANDING on a surface, not about
+  orientation while working through a pile. Nobody has drawn that line, and a
+  session should not draw it alone.
+- **Superseded, and kept for the record: 3.9.2.** Three
+  doors now say where they go. The first of four releases working through the
+  eight things the walk found and left, taken in the order design wants rather
+  than the order they were found: **trust** first (this one), then the conveyor,
+  then filing, then the combined views.
+  **NONE OF THE THREE WAS A MISSING FEATURE, and the first one is why the batch
+  is ordered this way.** *The whole list, so the offer can be trusted* reads as
+  unbuilt and is one tap away: the gauge opens a sheet titled *What comes back,
+  and when* listing every item with its return date, and the door's last clause
+  was `see each`. A door that does not name its destination is a door nobody
+  opens, so the feature is present and absent at once — which is the most
+  expensive kind of defect, because building the thing again is the obvious fix
+  and it is the wrong one. It says the destination's own words now, in BOTH
+  states: the loud branch said `see each` too, and a control whose label changes
+  with the state behind it teaches nobody where it goes.
+  **`Everything else` WAS A LEFTOVER LABEL SITTING FIRST ON THE SCREEN.** *Else*
+  is fine modifying WHERE and wrong modifying WHAT — the second says the contents
+  are the remainder, and behind that door are seven rooms nobody would call
+  leftovers. 3.4.3 retired `More` for naming a quantity rather than a
+  destination, wrote down the reason — these are the APP rather than your work —
+  and never put it on the control. It is `Elsewhere in the app`, which is that
+  sentence, finally on the button. +4 words; the budget moved 3705 to 3709 with
+  the reasoning beside the number.
+  **THE DRAFT WAS `Other places` AND IT COLLIDED WITH THE READER'S OWN FILING.**
+  A *place* is a thing somebody types on the detail sheet, it is a kind word
+  (`A place`), and two live controls on that same page say `Narrow the places`
+  and `Narrow the list of places` to a screen reader. A chrome door named after
+  one of the reader's own nouns tells them their filing is behind it. The voice
+  rule about checking a mark against the audience's own vocabulary is the same
+  rule for copy, and the vocabulary that catches you is the app's own.
+  **`Choose what to do` PROMISED A CHOICE THAT ADR-0060 DELIBERATELY REFUSES.**
+  One thing, a reason, and a way to refuse it. `See what is next` is verb-first
+  like every door beside it — `Sort what you put down`, `Do one thing`, `Tend
+  what recurs` — and 3.4.3 already recorded that shape as the reason `Choose
+  where to be` beat its alternatives. The first draft was `What to do now`, a
+  bare noun phrase, which in that row reads as a heading rather than a way in.
+  **AND THE RENAME WENT STALE IN THREE HELP SURFACES BEFORE ANY GATE SAW IT** —
+  the manual twice, `docs/paths.html` and the shipped `public/paths.html`. That
+  is the failure 3.6.1 paid a release for, one control along. `help-check.mjs`
+  read the seven destinations BEHIND the door and never the label ON it, so the
+  door is its own SET now with three surfaces held to it, planted red before it
+  landed. It did NOT gain a retired-name rule: *Everything else* is ordinary
+  English and the manual's own second paragraph is "That is the whole product.
+  Everything else is how it does it." A backward rule there fires on honest
+  prose, which this repo has already measured as worse than a miss. **Distinctive
+  names get both directions; ordinary words get one, on purpose.**
+  **THE `+` INSIDE A JOB WAS THE WAY OUT WEARING A PLUS.** Its name was "Put
+  something down" — the capture field's OWN label — and its handler calls
+  `leave()` first, so pressing it ends the job you are in and sends you to the
+  box at the top. Walked as a reader it looked like a second capture box beside
+  the one already on screen; it is not a second box and there must not be one
+  (one draft, one commit, one Dump). **The comment above it claimed this route
+  existed so you would not have to leave the job first, while the code four
+  files away left it** — a claim about behaviour, written in the file that does
+  not have the behaviour, which is the shape that survives review because both
+  halves read correctly on their own. The label says "Leave this and put
+  something down" now; the wiring is untouched.
+  **AND THE SECOND HALF OF THE TRUST FINDING IS ANSWERED BY FINDABILITY RATHER
+  THAN BY REVERSING ADR-0102.** The complaint named the `Every one of them` fold
+  being shut by default. `buildCoverage` renders `heldWork` — every held item,
+  its return date, each one openable — and that sheet is ONE TAP from the
+  landing surface now that its door says the sheet's own heading. The fold is a
+  second route to the same set and stays folded, because a decision record is
+  not overturned by a session that found the surface hard to reach.
+  **A SEQUENCING COST WORTH RECORDING: the a11y walk was run before the release
+  was cut.** The receipt hashes all of `src/`, `public/index.html` and
+  `public/app.css`, so adding the notes to `src/ui/changelog.ts` invalidated a
+  nine-minute walk that had just passed. Cut the release first, then render, then
+  walk — the same rule as "finish every source edit before any walk", one step
+  further out than where it was last learned.
+- **Superseded, and kept for the record: 3.9.1.** Eight
   things found by walking the whole app as somebody arriving with a head full of
   work, and fixed.
   **THE WALK IS THE FINDING METHOD, and it found what no gate could.** Every one
@@ -1784,7 +2067,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.7.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.9.1** — promoted at
+  `01ad14e` on 2026-08-29, the merged tree asserted byte-identical to `5ac11c8`,
+  the staging head that was walked. Both editions read directly afterwards and
+  both serve 3.9.1.
+- **Superseded, and kept for the record: 3.7.1** — promoted at
   `d638c51` on 2026-08-28. Both hosts read directly afterwards and both serve
   3.7.1, which is now the ordinary way a promote is confirmed here rather than
   the new thing it was one release ago.

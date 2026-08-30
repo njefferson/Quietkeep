@@ -1006,6 +1006,11 @@ const REGISTRY = {
   // fails on fixture shape rather than on contrast.
   'detail sheet, a person': ['#detail-person-count',
     '#detail-person-group .detail-feed', '#detail-person-group button', '.detail-when'],
+  // A ROLE'S OWN SHEET (3.12.0, ADR-0115) — the person state's shape one axis
+  // over, and registered in the same commit that built it, or it ships
+  // unmeasured (hub LESSONS 28).
+  'detail sheet, a line': ['#detail-line-count',
+    '#detail-line-group .detail-feed', '#detail-line-group button', '.detail-when'],
   // The decision log (1.9.0): the day on a row is the quietest text here, and
   // it is a DAY — never a count, never a verdict.
   'detail sheet, decisions': ['#detail-decision', '#detail-decision-set',
@@ -2667,7 +2672,7 @@ try {
     // identity: a control's place in a row is a layout decision and will move
     // again.
     await enterStance(page, 'triage');
-    await page.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
+    await page.locator('#triage-actions .route[data-route="put-under"]').first().click();
     await page.waitForSelector('#triage-place-new');
     await auditContrast(page, 'place picker', theme);
     await auditAxe(page, 'place picker', theme);
@@ -2704,7 +2709,7 @@ try {
     await page.waitForSelector('#triage-actions .route .route-hint');
 
     await enterStance(page, 'triage');
-    await page.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
+    await page.locator('#triage-actions .route[data-route="put-under"]').first().click();
     await page.waitForSelector('#triage-place-new');
     await page.evaluate(() => document.querySelector('#triage-actions .route')?.click()); // Back
     await page.waitForSelector('#triage-actions .route .route-hint');
@@ -4873,6 +4878,29 @@ try {
     await auditNames(page, 'detail sheet, a person', theme);
     await auditSeparationAndTargets(page, 'detail sheet, a person', theme);
     await auditFocusRings(page, 'detail sheet, a person', theme, ['#detail-person-group button']);
+    await page.click('#detail-close');
+
+    // A ROLE'S OWN SHEET (3.12.0). Attach a line to an item, then WALK to it the
+    // way a reader does — through the name on the item, which was a remove
+    // control until this release and is a door now — and audit where they land.
+    // Same method as the person state above: never open the surface directly,
+    // because the route is half of what is being measured.
+    await fillSearch('same errand');
+    await page.waitForSelector('#search-results .search-open');
+    await page.locator('#search-results .search-open', { hasText: /the same errand twice/ }).click();
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    await page.fill('#detail-role', 'Manning');
+    await page.click('#detail-role-set');
+    await page.waitForFunction(() => /Manning/.test(
+      document.querySelector('#detail-role-list')?.textContent ?? ''));
+    await page.locator('#detail-role-list button.linklike', { hasText: /^Manning$/ }).first().click();
+    await page.waitForSelector('#detail-line-group:not([hidden])');
+    await auditContrast(page, 'detail sheet, a line', theme);
+    await auditAxe(page, 'detail sheet, a line', theme);
+    await auditNames(page, 'detail sheet, a line', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, a line', theme);
+    await auditFocusRings(page, 'detail sheet, a line', theme, ['#detail-line-group button']);
     await page.click('#detail-close');
 
     // Asking, and declining (1.8.0, ADR-0056): decline a thing through its own

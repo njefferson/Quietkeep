@@ -107,8 +107,13 @@
        way to learn what was behind it was to press it. All six ARE the app
        rather than your work (settings, your data, help, how it works, about,
        and the app-level actions like printing and the calendar), and the
-       complement of "On this page" beside it. "Everything else" says both:
-       not this page, and all of it. -->
+       complement of "On this page" beside it. "Everything else" said both:
+       not this page, and all of it.
+       AND IT IS "Elsewhere in the app" SINCE 3.9.2 — same reasoning, one fault
+       fixed. *Else* modifying WHAT says the contents are the remainder, and the
+       label sat first on the screen, before anything it could be left over
+       from. The distinction this comment already draws — the APP rather than
+       your work — is now on the control instead of only here. -->
   <!-- THE WAY BACK (3.0.0), IN THE TOP ROW SINCE 3.1.2. Outside <main> so it is
        not a section and cannot become a door.
        IT RODE INSIDE THE RUNWAY UNTIL 3.1.1, which meant it scrolled away: at an
@@ -131,25 +136,37 @@
        alone and unusable once the button two along said "Everything else" —
        one letter apart in sound, and one means your other work while the other
        means the app itself. "Choose where to be" takes the verb-first shape of
-       the doors it lands among ("Choose what to do", "Sort what you put down")
+       the doors it lands among ("See what is next", "Sort what you put down")
        and names its destination, which is the heading "Where do you want to
-       be?". -->
+       be?". That shape is why the first door was renamed rather than reshaped
+       in 3.9.2 — see the note above `#nextup`. -->
 <div id="stance-bar" class="stance-bar" hidden>
   <button id="stance-back" type="button" class="ghost">Choose where to be</button>
   <!-- CAPTURE FROM INSIDE THE JOB. The box lives in the frame, and the frame
        stands down at 175% text (ADR-0101) — so inside a stance, at the size
-       where it matters most, there was no way to put a thought down without
-       leaving the job first. Leaving the job to record a thought is how the
-       thought gets lost, which is the whole thing this app is a rebuttal to.
+       where it matters most, the box has scrolled away and there is no way to
+       put a thought down without going back for it.
        NOT FLOATING. ADR-0100 measured a floating control at two screen sizes
        across thirteen scroll positions: it overlapped ten controls and took the
        centre of three card Done buttons. This is an ordinary button in an
        ordinary row, beside the way out, and it cannot cover anything.
        The glyph is decorative and the NAME is a sentence (hub LESSONS §29):
-       "+" is not a phrase anybody can say to a voice control. -->
+       "+" is not a phrase anybody can say to a voice control.
+       AND THE NAME NOW SAYS WHAT IT COSTS (3.9.2). It read "Put something
+       down" — the capture field's own label, on a control that calls `leave()`
+       and ENDS THE JOB you are in before putting focus in that field. Reported
+       from a walk as a second capture box beside the one already on screen;
+       it is not a second box, it is the way out wearing a plus. The comment
+       here used to say this route existed so you would not have to leave the
+       job first, while the code four files away left it — a claim about
+       behaviour, in the file that does not have the behaviour.
+       There is no second capture path and there should not be (one draft, one
+       commit, one Dump). So the honest fix is the label, not the wiring: this
+       says it leaves, and somebody mid-task can decide whether the thought is
+       worth the place. -->
   <button id="stance-capture" type="button" class="stance-add"
-          title="Put something down"><span aria-hidden="true">+</span><span
-          class="visually-hidden">Put something down</span></button>
+          title="Leave this and put something down"><span aria-hidden="true">+</span><span
+          class="visually-hidden">Leave this and put something down</span></button>
 </div>
 </div>
 
@@ -197,8 +214,27 @@
      keep travelling together when it wraps — the note at `.stance-bar` records
      what a nested flex row costs without `min-width: 0`. -->
 <div class="page-nav">
-  <button id="open-more" type="button" class="ghost">Everything else</button>
-  <!-- `Everything else` is the six destinations that are not this page; this is
+  <!-- "ELSEWHERE IN THE APP", NOT "EVERYTHING ELSE" (3.9.2). Reported:
+       *everything else* is a label for what is left over, and it was sitting
+       FIRST, before anything it could be left over from. The word "else" is
+       fine when it modifies WHERE and wrong when it modifies WHAT, because then
+       it says the contents are the remainder. Behind it are seven rooms nobody
+       would call leftovers: your data, settings, colours, help, the reference,
+       what the app can do, and what it is. So it is locative now, and it names
+       THE APP — which is 3.4.3's own reasoning for retiring `More`, finally
+       said out loud on the control instead of only in the notes.
+       "OTHER PLACES" WAS DRAFTED FIRST AND IS A COLLISION WITH THE READER'S OWN
+       FILING. A *place* is a thing somebody types on the detail sheet, it is a
+       kind word ("A place"), and two live controls on this page say `Narrow the
+       places` and `Narrow the list of places` to a screen reader. A chrome door
+       named for a work noun tells the reader their filing is behind it. The
+       voice rule about checking a mark against the audience's own vocabulary is
+       the same rule for copy, and this is the second time it has been the
+       app's own nouns rather than another product's.
+       It pairs: "On this page" and "Elsewhere in the app" are two halves of one
+       question, which is what they always were. -->
+  <button id="open-more" type="button" class="ghost">Elsewhere in the app</button>
+  <!-- `Elsewhere in the app` is the destinations that are not this page; this is
        the parts of the page itself. THE TWO ARE A PAIR AND SOUND LIKE ONE: what
        is here, and what is not here — together the whole answer to "where do I
        go", which is why neither had to become a floating control over the
@@ -389,7 +425,21 @@
 
   <!-- Next up: one thing, chosen for you, with a short capped list behind it.
        Hidden when nothing is asking — an empty morning says so. -->
-  <section id="nextup" data-stance-name="Choose what to do" class="nextup" aria-labelledby="nextup-heading" hidden>
+  <!-- THE DOOR STOPPED PROMISING A CHOICE (3.9.2). It read "Choose what to do",
+     and behind it is ONE thing with a reason and a way to refuse it — which is
+     ADR-0060 working exactly as intended and is not choosing. Reported in those
+     words: the name implies a choice a single tile does not deliver. The room is
+     right; the door was overstating it. It also disagreed with the room's own
+     heading, which has said "Next up" throughout.
+     "SEE WHAT IS NEXT" RATHER THAN "WHAT TO DO NOW", WHICH WAS THE FIRST DRAFT.
+     Every door in this row is verb-first — "Sort what you put down", "Do one
+     thing", "Tend what recurs", "Find something" — and 3.4.3 recorded that shape
+     as the reason `Choose where to be` beat the alternatives. A bare noun phrase
+     in that row reads as a heading rather than a way in. `See` is also the
+     honest verb: the room SHOWS you one thing and lets you refuse it, so it
+     promises exactly what ADR-0060 delivers and no more. Four words for four —
+     no budget moved. -->
+<section id="nextup" data-stance-name="See what is next" class="nextup" aria-labelledby="nextup-heading" hidden>
     <h2 id="nextup-heading" class="section" tabindex="-1">Next up</h2>
     <!-- A DOOR, not a caption (2.2.0, ADR-0092). This was a <p>. Every other
          thing on this card is a real control — Done, Not this, This one is
@@ -643,6 +693,30 @@
          element exists to be published, not read here — `hidden` keeps it out of
          the accessibility tree entirely rather than reciting a second line. -->
     <p id="triage-count" class="triage-gauge" hidden></p>
+    <!-- HOW MANY ARE HERE (3.10.0), and it is a different thing from the tally
+         ADR-0085 removed.
+         WHAT THAT ADR REMOVED was a total STANDING ON THE SCREEN YOU ARRIVE AT,
+         which turns a good day's capture into visible debt. This element is
+         `hidden` in exactly the state that screen is — the door state, where
+         `#triage-card` is hidden too — and appears only once somebody has
+         walked in and there is a card in front of them. Same condition, one
+         line apart in `clarify.ts`, so the two cannot drift.
+         WHAT ADR-0044 FORBIDS is progress arithmetic: "19 of 240", "3/240",
+         "5 left", percentages, bars. Every one of those measures YOU — how far
+         through, how you are doing — and turns a pile into a course you are
+         behind on. A count of what is PRESENT measures the pile. It says
+         nothing about what you did, has no denominator to be a fraction of, and
+         falls because the shelf empties rather than because anybody is being
+         scored.
+         AND IT STANDS RATHER THAN BEING STATED ONCE. Sort mode says its total
+         at entry and never again, which serves a reader who does not look away.
+         This is not that reader. Somebody who loses the thread mid-pile and
+         looks back at the screen needs the answer to be ON the screen, and a
+         number stated once is gone by then. That is the whole reason this is
+         painted on every repaint.
+         REUSES `.triage-gauge` so the contrast pair is the registered one and
+         no new colour enters the app. -->
+    <p id="triage-here" class="triage-gauge" hidden></p>
     <!-- tabindex=-1 so focus can land here after a card is replaced: activating a
          route removes the button, and focus must not fall to <body> (WCAG 2.4.3). -->
     <h2 id="triage-prompt" class="triage-prompt" tabindex="-1"></h2>
@@ -1560,6 +1634,25 @@
     <ul id="detail-person-owes" class="detail-feeds"></ul>
     <ul id="detail-person-involves" class="detail-feeds"></ul>
   </div>
+  <!-- STANDING ON THE LINE (3.12.0, ADR-0115). The reverse of everything else
+       this app does with a role: `rolesOf` says which identities a thing
+       carries, and until now nothing said what an identity carries.
+       A ROLE IS AN ORDINARY NODE, so its own sheet is the natural home and this
+       costs no new surface on the landing page — the same reasoning that put
+       the person lens above it here in 1.12.0, and the same shape.
+       SHOWN EVEN WHEN THE LINE IS EMPTY, because that is the answer somebody
+       came for: nothing is on it, so nothing there is moving. A group that
+       vanishes leaves the question looking unanswerable. -->
+  <div class="detail-group" id="detail-line-group" hidden>
+    <span class="detail-label">What is on this line</span>
+    <p id="detail-line-count" class="detail-hint"></p>
+    <ul id="detail-line-work" class="detail-feeds"></ul>
+    <!-- WHERE THE LINE RUNS — the horizons its work actually sits under,
+         computed from `servesNode` rather than declared, which is the literal
+         rendering of a named line whose activities hang off different parts of
+         the tree. -->
+    <ul id="detail-line-crosses" class="detail-feeds"></ul>
+  </div>
   <div class="detail-group" id="detail-merged-group" hidden>
     <span class="detail-label">Folded into this</span>
     <ul id="detail-merged-list" class="detail-feeds"></ul>
@@ -1950,7 +2043,7 @@
      More that scrolls is the panel again, and the answer to that is fewer
      destinations, not a second More. -->
 <dialog id="more" aria-labelledby="more-title">
-  <h2 id="more-title" class="section">Everything else</h2>
+  <h2 id="more-title" class="section">Elsewhere in the app</h2>
   <!-- THE SCROLL CONTAINER (3.1.0) — see the note on `#sort`. -->
   <div class="sheet-body">
   <div class="more-list">

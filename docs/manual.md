@@ -186,10 +186,11 @@ that had a context system arrives with it rather than flat. Anything saying how
 long a thing takes comes too. Flags do not: this app has no priority field, and
 the summary says so rather than dropping it quietly.
 
-### Everything else the app can do
+### The rest of what the app can do
 
-**Things you can do**, behind *Everything else*, holds the things that do not belong on any
-screen you use daily:
+**Things you can do**, behind *Elsewhere in the app* <span data-was>(it said *Everything
+else* until 3.9.2)</span>, holds the things that do not belong on any screen you
+use daily:
 
 - **Send to my calendar** puts one item in your own calendar as an event. The
   app never sends anything by itself and has no reminders of its own — the
@@ -308,9 +309,9 @@ why it is not in the list below.
 The named ones:
 - **Every one of them** — the fold that opens the complete list, at the bottom
   of *What you are holding*.
-- **Everything else** — the way to everything below.
+- **Elsewhere in the app** — the way to everything below.
 - **How it works** · **Help** · **Your data** · **Things you can do** ·
-  **Settings** · **Colours** — the six destinations behind *Everything else*.
+  **Settings** · **Colours** — the destinations behind *Elsewhere in the app*.
 - **Quietkeep** — the ⓘ: what this is, what it is not, how to install it, what
   changed, and the licence.
 - **If something is wrong** — inside the ⓘ: the report the app writes about

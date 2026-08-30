@@ -186,7 +186,43 @@ const BUDGET = {
   //
   // Nothing on the first screen changes: both lines are inside the detail sheet,
   // behind a door, under a field nothing requires you to fill.
-  words: 3705,
+  // 3705 -> 3709 on 2026-08-29 (3.9.2). Four words, and they are one rename
+  // counted twice: the way-to-everything door and the heading of the panel it
+  // opens both went from `Everything else` to `Elsewhere in the app`.
+  //
+  // A LEFTOVER LABEL WAS SITTING FIRST. *Else* is fine modifying WHERE and wrong
+  // modifying WHAT — the second says the contents are the remainder, and behind
+  // that door are seven rooms nobody would call leftovers. 3.4.3 retired `More`
+  // for naming a quantity instead of a destination and wrote down the reason —
+  // these are the app rather than your work — without ever putting it on the
+  // control. It is on the control now, which is what the two extra words buy.
+  //
+  // `Other places` was the draft and cost nothing, and it collided with the
+  // reader's own filing: a *place* is a thing somebody types on the detail
+  // sheet, it is a kind word, and two live controls say `Narrow the places` to a
+  // screen reader. Four words that do not lie beat two that do.
+  // 3709 -> 3712 on 2026-08-29 (3.9.2). Three words on the `+` inside a job.
+  // It was named "Put something down" — the capture field's OWN label — on a
+  // control whose handler calls `leave()` first and ends the job you are in.
+  // Walked as a reader it looked like a second capture box beside the one
+  // already on screen; it is the way out with a plus on it. "Leave this and put
+  // something down" is what it does, and somebody mid-task can now decide
+  // whether the thought is worth the place. Three words to stop a control
+  // costing somebody their place in a job is the cheapest raise in this list.
+  // 3712 -> 3717 on 2026-08-30 (3.12.0). Five words: "What is on this line",
+  // the heading of the reverse walk on a role's own sheet.
+  //
+  // EVERY LINK IN THIS APP WAS TRAVERSED FORWARD ONLY. `rolesOf` says which
+  // identities a thing carries, `servesNode` which horizon it serves,
+  // `dependencyView` what it feeds — and nothing answered the other direction.
+  // A repo-wide search for `roles.includes` returned one hit, the fold's own
+  // dedupe. So the attention readout could say attention went somewhere and
+  // there was no way to see what was there.
+  //
+  // Five words for the direction that was missing is the cheapest raise in this
+  // list by some distance, and it costs no new surface: a role is an ordinary
+  // node, so its own sheet is the home, exactly as a person's is.
+  words: 3717,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

@@ -24,6 +24,7 @@
 // PURE. `now`, the zone and the id/seq stamping are all injected.
 
 import type { AppEvent } from './events.ts';
+import { SAMPLE_ARRIVAL } from './events.ts';
 import { endOfLocalDay, atMidnight} from './time.ts';
 
 /** What a caller must provide to stamp events. Structurally the UI's
@@ -78,6 +79,13 @@ export function sampleEvents(ctx: SampleContext, nowIso: string): AppEvent[] {
     const id = ctx.id();
     stamp('node.created', id, {
       nodeKind, title, provenance: { for: 'self' },
+      // THE SAMPLE IS AN ARRIVAL TOO (3.11.0), and naming it is the point.
+      // Unnamed it leaves loose things in a store that read as somebody's
+      // own forgotten work months later, with no way to tell them from it and
+      // no way to clean them out. Named, it is one set that can be told apart
+      // and let go with the wholesale verbs that already exist. A fixed key
+      // rather than a date, because it did not arrive on a day anybody remembers.
+      arrival: SAMPLE_ARRIVAL,
       ...(extra?.parent === undefined ? {} : { parent: extra.parent }),
     });
     return id;

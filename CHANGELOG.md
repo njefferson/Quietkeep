@@ -14,6 +14,66 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.12.0 — CAPABILITY
+
+*2026-08-30*
+
+- **You can stand on a line and see what is on it.** Open one of the identities you have named — from *Where the attention is*, or from its name on any item — and it shows the work carrying it, and the parts of your tree that work sits under. A line runs across your projects and areas rather than living inside one, and this is the first time you can see that.
+- **Its name on an item is a door now.** It used to be a button that took the identity off, so the only thing you could do with a line from a thing on it was remove it. Taking it off is its own control beside the name.
+- **Nothing about the screens you work from changes.** This is somewhere you go to look, not a filter — there is no "show me only this" switch, because that leaves you with two lists and something to remember.
+- **An empty line says so**, and that is the useful part: nothing on it means nothing there is moving.
+- **Still not right:** you have to open a line to find out it has gone quiet. Nothing comes and tells you — that is the next piece.
+
+## 3.11.1 — ITERATION
+
+*2026-08-30*
+
+- **Filing something while sorting now says what it files it into.** The button said *Put it somewhere* — *into a place* — and it does not file into a place: it files into a project, an area or a goal. It says **Put it under something**, and the question it then asks is the one the item’s own panel has always asked: *What is this part of?*
+- **A place is a different thing in this app, and now only one thing.** A place is where work can be DONE — at home, out, on the phone. Using the same word for the box you file into meant the two questions you might be asking sounded identical, and the reference page hedged between them in writing.
+- **Nothing moved.** Same button, same position, same six choices beside it.
+
+## 3.11.0 — CAPABILITY
+
+*2026-08-30*
+
+- **Each planner you bring in is now its own set to work through.** *Sort things out* lists them one per arrival — **Brought in on 20 August**, with how many are still loose in it — instead of pooling every import you have ever done into one heap. Bring a second file in and it does not dilute the first.
+- **And it holds the whole file now, not part of it.** The old batch only collected rows that arrived with nothing to go on, so anything that came in carrying a date, and every project in the same file, was missing from a batch named for the import. All of it is there.
+- **The example set this app came with is named too**, and that is the point. Left unnamed it becomes loose things you cannot tell from your own forgotten work months later, in a store you are then afraid to tidy. It is one set now, so *All of them at once* and *Let go* can clear it whenever you want.
+- **It is named by the day it came in, never by where it came from.** Nothing records which planner a file was — the format is worked out from what is inside it and the filename is never kept — so a name would be a guess dressed up as a fact. A date is something you can check against your own memory.
+- **Nothing you already have is touched.** Things brought in before this update simply have no arrival on them, exactly as if you had written them here, and everything about them behaves as it did.
+- **Still not right:** finishing an import still does not say *these came in together, here is the way to them* — it lands you somewhere sensible and leaves you to find the set.
+
+## 3.10.0 — CAPABILITY
+
+*2026-08-29*
+
+- **Sorting now says how many are here.** Not how many you have done, and not how far through you are — just what is in front of you: **twenty here to work through**. It stays on the screen the whole time you are sorting, so if you lose the thread and come back to it, the answer is still there.
+- **It is not on the screen you arrive at.** Opening the app still never tells you how much is waiting. The number lives inside sorting, once there is something in front of you, because a total sitting on the front page turns a good day of writing things down into a debt you can see.
+- **And it is never a fraction.** No *nineteen of two hundred*, no *five left*, no percentage, no bar. Those say how far behind you are; a plain count of what is here says what there is. A missed day should not turn into a list you are behind on.
+- **It counts what you put down, not what you brought in.** If you have imported a planner, those things are not added to this number — an old file you loaded once is not something you owe today. They are still offered while you sort; they just do not turn into a figure telling you how far behind you are.
+- **Still not right:** because of that, sorting can hand you something the count did not promise. The answer is imported things having their own set to work through, which is the next piece of work — not a bigger number here.
+- **Still no count of what you passed over**, and passing something over still records nothing, anywhere.
+
+## 3.9.3 — ITERATION
+
+*2026-08-29*
+
+- **Sorting now tells you when you have been round everything.** Pass a card over and it goes to the back; when every one had been passed the pile quietly started again, so you could go round the same cards for ever with nothing saying so. It says **you have been round all of these once**, and that this is a fine place to stop.
+- **And it tells you when you are on the last one you have not seen.** Those are the only two places in a pile where knowing where you are changes what you would do.
+- **Still no count, and that is on purpose.** A number of things waiting turns a good day of writing things down into a debt you can see, which is the thing that stops people writing them down at all. Neither of these carries a number, and passing something over still records nothing anywhere.
+
+## 3.9.2 — ITERATION
+
+*2026-08-29*
+
+- **Three buttons now say where they go.** A door that names a destination is one you can use without pressing it to find out, and these three named a mood, a leftover pile and a promise instead.
+- **The line under your held things ended in *see each*.** Behind it is the list of everything you are holding with the date each one comes back — which is the answer to *can I stop carrying this myself*, and *see each* was not going to get anybody there. It says **what comes back, and when**, which is the heading you land on. It says that in both states now; when something has gone quiet it used to say *see each* too.
+- **The button that said *Everything else* now says *Elsewhere in the app*.** *Else* was doing the wrong job: it read as *the leftovers*, on a button sitting first on the screen, before anything it could be left over from. Behind it are your data, settings, colours, help, the reference, what the app can do and what it is — seven rooms, none of them leftovers. They are the app rather than your work, and now the button says so.
+- **Inside a job, the way to the first room said *Choose what to do*.** There is one thing behind it, with a reason and a way to refuse it — which is the whole point and is not a choice. It says **See what is next**, like the rooms beside it: *Sort what you put down*, *Do one thing*, *Tend what recurs*.
+- **And the + inside a job now says what it costs you.** It said *Put something down*, which is what the capture box says, so it looked like a second box beside the one already on screen. It is not: it leaves whatever you are in and takes you back to the box at the top. It says **Leave this and put something down**, so you can decide whether the thought is worth your place.
+- **Nothing moved and nothing was added.** Every one of these is the same control in the same place with better words on it.
+- **Still not right:** every screen still puts the capture box, the gauge and two rows of chrome above the thing you went there for. And sorting still gives you no sense of where you are in the pile, filing something under a place or a project is further away than it should be, and bringing in a file lands you in the same room as everything else. Those are next.
+
 ## 3.9.1 — ITERATION
 
 *2026-08-29*

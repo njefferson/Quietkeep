@@ -68,6 +68,27 @@ export function mountTriage(
   // Non-null bindings, so the nested refresh() closure keeps the narrowing the
   // guard above established.
   const REGION = region, CARD = card, PROMPT = prompt, ACTIONS = actions, GAUGE = gauge, LIVE = live, DONOW = donow;
+  /**
+   * HOW MANY ARE HERE (3.10.0). Optional like `#triage-count`, and for the same
+   * reason: markup presence is a gate's job, not a runtime crash. The smoke walk
+   * asserts it.
+   *
+   * GUARDED WRITE, ALWAYS. `watchJobs` in `hub.ts` observes `hidden` on any
+   * element under `main`, subtree included, and repaints for each change — so an
+   * unguarded write here feeds that observer on every repaint and the page never
+   * settles. That cost 3.9.1 a walk and it presents as a timeout somewhere
+   * unrelated (hub LESSONS 181).
+   */
+  const hereLine = document.querySelector<HTMLElement>('#triage-here');
+  const setHere = (words: string | null): void => {
+    if (!hereLine) return;
+    if (words === null) {
+      if (!hereLine.hidden) hereLine.hidden = true;
+      return;
+    }
+    if (hereLine.textContent !== words) hereLine.textContent = words;
+    if (hereLine.hidden) hereLine.hidden = false;
+  };
   const captureInput = (): HTMLElement | null => document.querySelector<HTMLElement>('#capture');
 
   // The last-action undo lives OUTSIDE the triage section, beside the do-now
@@ -77,7 +98,7 @@ export function mountTriage(
   const undoRegion = document.querySelector<HTMLElement>('#triage-undo');
   const openBtn = document.querySelector<HTMLButtonElement>('#triage-open');
 
-  /** Whether this surface may put itself on screen (1.39.2; inverted 1.43.0).
+  /** Whether this surface may put itself on screen (1.39.2; inverted 1.42.1).
    *
    *  TRUE UNTIL ASKED. Sorting is a place you go, never a place you are sent.
    *
@@ -721,7 +742,11 @@ export function mountTriage(
       .filter(n => !n.trashed && !n.mergedInto && CONTAINER_KINDS.has(n.kind) && n.id !== nodeId)
       .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
-    PROMPT.textContent = 'Where does it go?';
+    // THE DETAIL SHEET'S OWN QUESTION (3.11.1). It read "Where does it go?",
+    // which is the place question and this is the container one. `#detail-parent`
+    // has asked "What is this part of?" all along, and two surfaces asking one
+    // question in two words is how the vocabulary came apart in the first place.
+    PROMPT.textContent = 'What is this part of?';
     CARD.textContent = text;
 
     const back = el('button', 'route ghost');
@@ -856,10 +881,29 @@ export function mountTriage(
     // WHERE, offered beside the six WHENs. Last in the row because the common
     // case is still "when", and first-class rather than buried because for an
     // imported backlog it is the only question that matters.
+    //
+    // AND IT SAID "PLACE" FOR A THING THAT IS NOT ONE (3.11.1). It files into a
+    // CONTAINER — `renderPlaces` filters `CONTAINER_KINDS`, so a project, an
+    // outcome, an area or a goal — and it called that "a place". But *place* is
+    // already taken, by the app, for something else entirely: `kind-words.ts`
+    // has `context: 'A place'` with the comment "where work can be DONE, which
+    // is not a thing to do", and two live controls on the same page say `Narrow
+    // the places` to a screen reader about exactly those.
+    //
+    // So the two questions somebody asked for — *where can this be done* and
+    // *what is this part of* — were one word on this card, and the flowcharts
+    // page hedged between them in writing: "file it under a place or a project".
+    // It takes the detail sheet's own words now, which is the vocabulary the
+    // rest of the app already teaches.
+    //
+    // `data-route` so the walks stop keying on the label. Both of them waited
+    // for the literal "Put it somewhere", which is the gate-pins-the-defect
+    // shape this repo has already paid for twice (LESSONS 180).
     const put = el('button', 'route');
     put.type = 'button';
-    put.append(el('span', 'route-label', 'Put it somewhere'),
-      el('span', 'route-hint', 'into a place — make one if it is not there'));
+    put.dataset.route = 'put-under';
+    put.append(el('span', 'route-label', 'Put it under something'),
+      el('span', 'route-hint', 'a project, area or goal — make one if it is not there'));
     put.addEventListener('click', () => renderPlaces(nodeId, text, kind, heat));
     ACTIONS.append(put);
     // And the way past, last of all: every answer first, then the way out for
@@ -877,7 +921,10 @@ export function mountTriage(
     // Two scans, not four: the heads and the gauge all derive from these.
     const inbox = unclarified(st);
     const heatQueue = needsHeat(st);
-    // NO COUNT (1.43.0). The reader is told what is TRUE of these things, not
+    // NO COUNT (1.42.1 — the comments here and in the smoke walk said 1.43.0 in
+    // seven places until 3.10.0, and there has never been a 1.43.x; the change
+    // is CHANGELOG.md 1.42.1, the same day as ADR-0085). The reader is told what
+    // is TRUE of these things, not
     // how many of them there are.
     //
     // `12 to clarify` is the countable batch V2 stage 1 deleted from the
@@ -893,9 +940,43 @@ export function mountTriage(
     // covered — the gate clocked each one as it was written — so sorting is not
     // what rescues them. It decides WHERE they come back. Saying so makes the
     // step optional in words as well as in fact (ADR-0029, ADR-0085).
+    //
+    // AND WHERE YOU ARE IN THE PILE, BY LANDMARK RATHER THAN BY TALLY (3.9.3).
+    //
+    // Walked as a reader: inside this surface there is no way to tell whether
+    // this is the second card of thirty or the last one. The count is refused
+    // above and stays refused — but the thing that was actually missing is not
+    // a number, it is the two BOUNDARIES, and the app already computes both and
+    // says neither.
+    //
+    // `fresh()` below prefers the first card not passed over this sitting, and
+    // when every one HAS been passed it falls back to `q[0]` and starts the pile
+    // again. Silently. So somebody can go round a sorting session for ever,
+    // re-declining the same cards, with nothing telling them they have come
+    // round — which is the disorientation, and it is not a counting problem.
+    //
+    // Two landmarks, no digits (the smoke walk asserts the visible text carries
+    // none): the last card you have not been past, and having been round all of
+    // them once. Both are facts about THIS SITTING and both are computed from
+    // `passed`, which is in memory and is never written — so nothing durable is
+    // created, exactly as the note above requires. Neither is a fraction: a
+    // boundary is not progress toward an end, which is why `src/timer.ts` can
+    // refuse the one and this can say the other.
+    //
+    // The round-once line is where "you can stop" belongs. ADR-0029 and
+    // ADR-0085 make sorting optional and the standing sentence says so in
+    // general; the moment somebody is about to re-decline a card they already
+    // declined is the moment it is worth saying in particular.
+    const unpassed = inbox.filter(n => !passed.has(n.id)).length;
+    const roundOnce = inbox.length > 0 && unpassed === 0;
+    const lastFresh = inbox.length > 1 && passed.size > 0 && unpassed === 1;
     GAUGE.textContent = inbox.length === 0
       ? 'Nothing here is waiting to be sorted.'
-      : 'These are held either way. Sorting decides where they come back, not whether.';
+      : roundOnce
+        ? 'You have been round all of these once. They are held either way, so this is a fine place to stop.'
+        : lastFresh
+          ? 'This is the last one you have not been past. They are held either way.'
+          : 'These are held either way. Sorting decides where they come back, not whether.';
     // AND WHAT THE HUB'S DOOR SAYS (3.9.1) — see the note on `#triage-count`.
     // The same fact the gauge carries, in the shape a door needs, and with no
     // number in it for the reason the line above has none.
@@ -912,6 +993,20 @@ export function mountTriage(
     // user, and they are owed the same freedom from the tally as anybody else.
     GAUGE.dataset.waiting = String(inbox.length);
     GAUGE.dataset.unheated = String(heatQueue.length);
+    // AND THE OTHER NUMBER, for the same reason (3.10.0). `waiting` is the whole
+    // queue the surface will hand you, arrivals included; `yours` is what
+    // `#triage-here` claims. Two different facts, and a walk that reads one of
+    // them to check the other is the shape hub LESSONS 153 is about — a check
+    // whose sentence and predicate are different things. Both seams, neither a
+    // reader surface.
+    //
+    // ONE EXPRESSION FEEDS BOTH THE SEAM AND THE WORDS, and it has to. The first
+    // version computed `inbox.filter(n => !n.arrived).length` here and again
+    // where the line is painted — so a plant that changed the painted number
+    // left the seam correct and the whole walk stayed green. A test hook derived
+    // separately from the thing it vouches for does not vouch for it.
+    const yours = inbox.filter(n => !n.arrived).length;
+    GAUGE.dataset.yours = String(yours);
 
     // Heat pass first while there is anything unheated; then clarify. Both are
     // one card; the surface hides itself when the inbox is clear. A running
@@ -995,12 +1090,42 @@ export function mountTriage(
       PROMPT.hidden = true;
       PROMPT.textContent = '';
       ACTIONS.replaceChildren();
+      // THE DOOR STATE IS THE ARRIVAL SCREEN, so the count is not on it. This is
+      // the exact state ADR-0085 cleared: you have arrived, things are waiting,
+      // and the app is not asking you anything. A number here would be the
+      // visible debt that ADR removed, wearing different words.
+      setHere(null);
       paintContext(null);
       showing = null;
       return;
     }
     CARD.hidden = false;
     PROMPT.hidden = false;
+    // AND HERE IT IS ON, because there is a card in front of you and you walked
+    // in to get it. Same condition as `CARD.hidden`, one line apart, so the two
+    // cannot drift into the count appearing on a screen with no card on it.
+    //
+    // IT COUNTS WHAT YOU PUT DOWN, NOT WHAT YOU BROUGHT IN — `!n.arrived`, which
+    // is `inboxGauge`'s rule and not a second one. 2.38.0 settled this for the
+    // headline in terms that bind any number on this surface: "a number in the
+    // app's chrome saying you are 1,171 behind, because you once brought a file
+    // in, is the opposite of [law 8] — and it is not even true: an arrival is
+    // not something you owe today."
+    //
+    // Found by the assertion below going red. The import fixture brings in three
+    // rows and the queue moved by exactly three, because `unclarified` holds
+    // arrivals deliberately — the clarify surface is where you GO to sort, and
+    // saying the inbox is clear while a thousand imported rows sit there would
+    // be the dishonest half of that trade. So the SURFACE offers them and the
+    // COUNT does not claim them, which is the same split `inboxGauge` already
+    // makes one file over.
+    //
+    // STILL NOT RIGHT, and named rather than hidden: with an import in the store
+    // the room will hand you cards the count did not promise. The fix is not a
+    // bigger number, it is arrivals having their own set to be worked through —
+    // which is the next piece of work and is why this is the forward-compatible
+    // half of the trade rather than something that has to be undone.
+    setHere(yours === 1 ? 'One here to work through.' : `${yours} here to work through.`);
 
     const mayReveal = !suppressed;
     if (heatItem) {
@@ -1013,6 +1138,7 @@ export function mountTriage(
       REGION.hidden = true;
       showing = null;
       CARD.textContent = '';
+      setHere(null);
       paintContext(null);
       ACTIONS.replaceChildren();
     }

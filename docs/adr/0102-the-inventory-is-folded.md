@@ -99,7 +99,8 @@ about this device).
   replan card, the with-someone card — stay exactly where they are, and the
   inventory that repeats them is folded until asked for. Opening it shows them
   again, which is correct: that is the complete list, and you asked.
-- `#to-held` and the gauge's *see each* still land on the same section. A jump
+- `#to-held` and the gauge's last clause — *see each* when this was written,
+  *what comes back, and when* since 3.9.2 — still land on the same section. A jump
   to a folded block must OPEN it, or the route lands on a heading and reports
   success — the same false receipt shape this repo keeps finding.
 - The a11y walk gains the folded state as its own audited state, in the same

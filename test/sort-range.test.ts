@@ -56,9 +56,21 @@ const write = (prior: State, offered: AppEvent[]): State =>
  *  in 2.15.0, when an import started landing in the inbox with `arrived: true`.
  *  Every range test below kept passing on rows the importer would never produce.
  *  `throughTheImporter` at the foot of this file is the fixture that can fail. */
-const imported = (prior: State, id: string, title: string, parent?: string): State =>
+/** An arrival, written the way the importer writes one.
+ *
+ *  `arrival` AS WELL AS `arrived`, since 3.11.0, and the two say different
+ *  things: `arrived` is "came in with nothing to go on" and decides whether the
+ *  offer may hand the row over; `arrival` is WHICH import, and is on every node
+ *  the importer makes including the dated rows and the projects that `arrived`
+ *  skips. A fixture writing only the first is a fixture writing rows the
+ *  importer no longer produces, which is how this file's range tests stayed
+ *  green through the defect 2.38.0 found (LESSONS 138). */
+const IMPORTED_AT = '2026-08-01T09:00:00.000Z';
+const imported = (
+  prior: State, id: string, title: string, parent?: string, arrival = IMPORTED_AT,
+): State =>
   write(prior, [ev('node.created', id, {
-    nodeKind: 'action', title, provenance: { for: 'self' }, arrived: true,
+    nodeKind: 'action', title, provenance: { for: 'self' }, arrived: true, arrival,
     ...(parent ? { parent } : {}),
   })]);
 
@@ -139,7 +151,7 @@ test('HYGIENE: a MENU range holds only live Menu items of its own category — a
   for (const c of choices) assert.ok(c.family === 'runway' || c.family === 'menu');
 });
 
-test('the loose-import range holds exactly the unfiled, unrouted ARRIVALS', () => {
+test('an arrival range holds exactly the unfiled, unrouted rows of that arrival', () => {
   const s = menagerie();
   assert.deepEqual(looseFromImport(s).map(n => n.id).sort(), ['LOOSE1', 'LOOSE2'],
     'not the filed one, not the capture, not the menagerie');
@@ -432,10 +444,45 @@ test('THE ONE FROM THE DEVICE: a real import lands IN the batch built for it', (
 
 test('and the batch is OFFERED, because an empty one is never shown at all', () => {
   const s = throughTheImporter('- A loose action\n- Another loose one\n');
-  const batch = rangeChoices(() => s, () => NOW, TZ).find(c => c.key === 'loose-import');
+  const batch = rangeChoices(() => s, () => NOW, TZ).find(c => c.key.startsWith('arrival:'));
   assert.ok(batch, 'the batch appears in the picker');
   assert.equal(batch.count, 2);
   assert.equal(batch.family, 'runway', 'so it faces the runway verbs, Let go among them');
+  assert.match(batch.words, /^Brought in on /,
+    'and it says WHEN it came in, because nothing records WHAT it came from');
+});
+
+test('two imports are two doors, and each holds only its own', () => {
+  // THE POINT OF THE ARRIVAL KEY. Before it, every import in the store was one
+  // undifferentiated lump, so bringing a second file in diluted the first and
+  // there was no way to work through either as a set.
+  let s = imported(emptyState(), 'A1', 'from the first file', undefined, '2026-08-01T09:00:00.000Z');
+  s = imported(s, 'A2', 'also from the first file', undefined, '2026-08-01T09:00:00.000Z');
+  s = imported(s, 'B1', 'from the second file', undefined, '2026-08-20T14:00:00.000Z');
+
+  const doors = rangeChoices(() => s, () => NOW, TZ).filter(c => c.key.startsWith('arrival:'));
+  assert.equal(doors.length, 2, 'two arrivals, two doors');
+  assert.deepEqual(doors.map(d => d.count), [1, 2], 'newest arrival first, and each counts its own');
+  const [newest, older] = doors;
+  assert.ok(newest && older);
+  assert.deepEqual(newest.items().map(n => n.id), ['B1'], 'and holds only its own');
+  assert.deepEqual(older.items().map(n => n.id).sort(), ['A1', 'A2']);
+});
+
+test('the example set is its own named arrival, so it can be told apart and let go', () => {
+  // An unnamed sample leaves loose rows in a store that read as somebody's own
+  // forgotten work months later, with no way to tell them from it. Named, it is
+  // one set the wholesale verbs can reach.
+  let s = imported(emptyState(), 'S1', 'a demo row', undefined, 'sample');
+  s = imported(s, 'M1', 'mine, brought in', undefined, '2026-08-20T14:00:00.000Z');
+
+  const doors = rangeChoices(() => s, () => NOW, TZ).filter(c => c.key.startsWith('arrival:'));
+  assert.equal(doors.length, 2);
+  const last = doors[doors.length - 1];
+  assert.ok(last);
+  assert.equal(last.words, 'The example set this app came with',
+    'named rather than dated, and last — nobody chose to bring it in');
+  assert.deepEqual(last.items().map(n => n.id), ['S1']);
 });
 
 test('a thing you typed yourself is not in it, which is what the batch NAME promises', () => {
