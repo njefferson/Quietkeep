@@ -2067,7 +2067,20 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.9.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.12.0** — promoted at
+  `3b5499d` on 2026-08-30, the merged tree asserted byte-identical to `3631a66`,
+  the staging head that was walked. Six releases at once: four doors that say
+  where they go, the two sorting landmarks, the standing count of what is in
+  front of you, each import as its own named set, the filing route saying what it
+  files into, and a line becoming somewhere you can stand.
+  **IT CARRIES TWO CI-WIRING COMMITS FROM ANOTHER SESSION** that move the hub
+  gates behind a pinned reusable workflow. **That job has failed on every run
+  since it landed**, and a failure at its third step skips all fourteen gates
+  behind it — branch guard, privacy, the pattern mirror, quote, third-person,
+  docs, npm hygiene, pwa, palette, text size and zizmor. Every one of them was
+  run locally against this tree and passed, so nothing here is unverified in
+  substance; but CI is checking none of them, on any repo using that wiring.
+- **Superseded, and kept for the record: 3.9.1** — promoted at
   `01ad14e` on 2026-08-29, the merged tree asserted byte-identical to `5ac11c8`,
   the staging head that was walked. Both editions read directly afterwards and
   both serve 3.9.1.
