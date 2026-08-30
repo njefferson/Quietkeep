@@ -40,8 +40,24 @@ jobs:
   # it.
   #
   # `pin-check` is new here, and passes.
+  #
+  # THE PIN WAS BUMPED BECAUSE THE ONE IT CARRIED COULD NOT RUN (3.14.0). At
+  # 4cd365e the hub read its own pin out of a runtime context, and both of the
+  # contexts documented to hold it — `job_workflow_ref` and `job_workflow_sha` —
+  # arrive EMPTY inside a called workflow. So the first step refused the call
+  # with "must be called at a full 40-character commit SHA … resolved to: " and
+  # every gate behind it was skipped. Fourteen of them, on every push, since the
+  # call landed. The job was RED the whole time, which is the only reason this
+  # was findable at all — a skipped gate that reported green would still be
+  # skipped now.
+  #
+  # The hub fixed it at e2a5b7c by reading the pin off the CALLER's own workflow
+  # file, on disk, from the line that made the call — so the gates and the wiring
+  # cannot be two versions even in principle. This pin is the hub's head at the
+  # time of the bump, and all nine of its gates were run against this tree from a
+  # clone at that commit before it was changed.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@4cd365e5cb422e6136cca6741c9d2cf09fa7d11f
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@8a923441133aa42a049896d306e32f00a5d12bd6
     with:
       pwa: true
       mirror: true

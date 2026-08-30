@@ -79,6 +79,25 @@ the class reaching the list, not how it looks when it does. That is stated in
 `test/big-sample.test.ts` at the assertion itself, so a later reader looking for
 it in a walk finds the reason rather than concluding it never shipped.
 
+**This is hub LESSONS 187's shape, and it is worth saying which half applies.**
+That lesson is about a cap applied after a `concat`, where the one row a control
+existed to produce was the only row guaranteed to be ranked out — and its fix is
+to tag each row's origin and cap the populations separately, never to raise the
+cap. `reviewExceptions` does concatenate five classes and then `slice(0,
+REVIEW_CAP)`, so the smell is present. What differs is that here the five
+classes are the same kind of finding rather than one known population and one
+discovery, and the cap is a product law (law 8: a wall of exceptions is the pile
+this app stands between you and) rather than an incidental bound. Review is a
+work queue that trickles, and being fifth in a queue is not the same as being
+erased — `reviewWords` states the total, so nothing is silently dropped.
+
+**What the lesson's `test-the-new-row` checklist did catch is real, and it is
+recorded rather than resolved:** a store with three or more structural breaks
+never shows a quiet line, and the store this repo demonstrates on is such a
+store. Whether that is law 8 working or the feature failing to arrive is a
+product decision about `REVIEW_CAP` and the ranking, not about this class, and
+it is not made here.
+
 ## What would overturn this
 
 A real store where most roles report quiet because work is tagged at the action
