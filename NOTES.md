@@ -840,8 +840,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.15.0**. A
-  situation can name who is in the room (ADR-0118).
+- **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
+  tree was asserted byte-identical to the walked staging head before the push —
+  same tree object, not a diff that looked empty.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.15.0**, and it is
+  what production carries. A situation can name who is in the room (ADR-0118).
   **A MEETING IS A PLACE, A LENGTH AND A SET OF FACES, AND ONLY TWO WERE
   STORABLE.** The situation shortcut has held where-you-are and how-long since
   2.21.0, and the one case it exists for — a recurring meeting — was the case it
@@ -2150,19 +2153,25 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.12.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.15.0** — promoted at
+  `2230a3a` on 2026-08-30, the merged tree asserted byte-identical to `43e1902`,
+  the staging head that was walked. Three releases: where a thing can be done
+  asked on the sorting card, a line that has gone quiet coming to you rather than
+  waiting to be opened, and a situation able to name who is in the room.
+  **AND THE CI WIRING THE LAST PROMOTE CARRIED IS FIXED.** That promote recorded
+  two commits from another session moving the hub gates behind a pinned reusable
+  workflow, and a job that had failed on every run since — skipping fourteen
+  gates. The cause was the hub reading its own pin out of a runtime context that
+  arrives EMPTY inside a called workflow; the hub had already fixed it by reading
+  the pin off the caller's own file, and the pin here was bumped past it. The
+  job has been green since `bcb4c1e`. The text-size gate, which this repo
+  qualified for and had switched off, is wired in the same change and passes.
+- **Superseded, and kept for the record: 3.12.0** — promoted at
   `3b5499d` on 2026-08-30, the merged tree asserted byte-identical to `3631a66`,
   the staging head that was walked. Six releases at once: four doors that say
   where they go, the two sorting landmarks, the standing count of what is in
   front of you, each import as its own named set, the filing route saying what it
   files into, and a line becoming somewhere you can stand.
-  **IT CARRIES TWO CI-WIRING COMMITS FROM ANOTHER SESSION** that move the hub
-  gates behind a pinned reusable workflow. **That job has failed on every run
-  since it landed**, and a failure at its third step skips all fourteen gates
-  behind it — branch guard, privacy, the pattern mirror, quote, third-person,
-  docs, npm hygiene, pwa, palette, text size and zizmor. Every one of them was
-  run locally against this tree and passed, so nothing here is unverified in
-  substance; but CI is checking none of them, on any repo using that wiring.
 - **Superseded, and kept for the record: 3.9.1** — promoted at
   `01ad14e` on 2026-08-29, the merged tree asserted byte-identical to `5ac11c8`,
   the staging head that was walked. Both editions read directly afterwards and
