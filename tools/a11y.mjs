@@ -898,6 +898,15 @@ const REGISTRY = {
   'in the room': ['#sheet-meeting-title',
     '#sheet-meeting-close', '#meeting-words', '#meeting-people .roles-name',
     '#meeting-people .roles-held', '#meeting-people .meeting-thing'],
+  // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
+  // the 'review' state above; this is the same rows without the cap, and its own
+  // chrome. The DOOR is `#review-count`, which is on the review surface, so it
+  // is covered by that state's `.review-count` and not registered here — the
+  // mistake 'in the room' made first time, when a door registered with the sheet
+  // it opens matched nothing, because opening the sheet closed the surface the
+  // door was on.
+  'everything worth a look': ['#sheet-review-title', '#sheet-review-close',
+    '#review-all-words', '#review-all .review-title', '#review-all .review-why'],
   'where the attention is': ['#roles-open'],
   // WHERE THE TIME ACTUALLY WENT joined this in 2.24.0, by ID. The two lists in
   // this sheet share `.roles-name` and `.roles-held`, and the note below is the
@@ -4472,6 +4481,56 @@ try {
     await auditNames(page, 'review', theme);
     await auditSeparationAndTargets(page, 'review', theme);
     await auditFocusRings(page, 'review', theme, ['.review-open']);
+
+    // EVERYTHING WORTH A LOOK (3.17.0), and it needs FOUR findings to reach.
+    //
+    // The total is a door only while there is something behind it — three shown
+    // out of three opens a list identical to the one already on screen, so the
+    // button is disabled there and this state is unreachable with one finding.
+    // Three more cards become containers with nothing under them, the same
+    // `stalled` class the first one is: the point is the COUNT passing the cap,
+    // not a variety of findings.
+    for (let i = 0; i < 3; i++) {
+      await page.locator('#cards .card-open').first().click();
+      await page.waitForSelector('#detail[open]');
+      await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+      await page.click('#detail-make-project');
+      await page.waitForTimeout(220);
+      await page.click('#detail-close');
+      await page.waitForSelector('#detail', { state: 'hidden' });
+    }
+    const capped = await page.evaluate(() => ({
+      said: document.querySelector('#review-count')?.textContent ?? '',
+      shown: document.querySelectorAll('#review-list .review-open').length,
+      door: !(document.querySelector('#review-count')?.disabled ?? true),
+    }));
+    (capped.shown === 3 ? pass : fail)(
+      `${theme}/everything worth a look: the surface still shows three (law 8), got ${capped.shown}`);
+    (capped.door ? pass : fail)(
+      `${theme}/everything worth a look: and the total became a door once there was more behind it`);
+    (/These 3 first/.test(capped.said) ? pass : fail)(
+      `${theme}/everything worth a look: which says so out loud ("${capped.said}")`);
+    await page.click('#review-count');
+    await page.waitForSelector('#sheet-review[open]');
+    const whole = await page.evaluate(() => ({
+      rows: document.querySelectorAll('#review-all .review-open').length,
+      words: document.querySelector('#review-all-words')?.textContent ?? '',
+    }));
+    // THE ASSERTION THAT MATTERS IS THAT NOTHING IS MISSING FROM IT. The whole
+    // point of the door is that a lower-ranked class is later rather than
+    // unreachable, and a list that was itself capped would be the same defect
+    // one surface further in.
+    (whole.rows >= 4 ? pass : fail)(
+      `${theme}/everything worth a look: the whole list is not capped (${whole.rows} rows)`);
+    (!/first/.test(whole.words) ? pass : fail)(
+      `${theme}/everything worth a look: and it does not say "these N first", because these are all of them ("${whole.words}")`);
+    await auditContrast(page, 'everything worth a look', theme);
+    await auditAxe(page, 'everything worth a look', theme);
+    await auditNames(page, 'everything worth a look', theme);
+    await auditSeparationAndTargets(page, 'everything worth a look', theme);
+    await auditFocusRings(page, 'everything worth a look', theme, ['#review-all .review-open']);
+    await page.click('#sheet-review-close');
+    await page.waitForSelector('#sheet-review', { state: 'hidden' });
 
     // And the sheet once something IS inside something — the only state in which
     // `#detail-place` renders at all. Left out, the one line that states a

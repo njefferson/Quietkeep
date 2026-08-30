@@ -843,7 +843,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.16.0**. A meeting
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.17.0**. The total
+  is the way to the rest (ADR-0120).
+  **THE CAP WAS NOT THE DEFECT; THE DEAD END WAS.** Review shows three and states
+  the total, and the total was a `<p>` with no route to the rest anywhere in the
+  app. Because the three come off a RANKED list of five classes, the lowest-
+  ranked class was not later but unreachable — and 3.14.0's quiet lines is
+  fourth of five, so the class built so that staleness would come to you never
+  arrived on any store carrying three structural breaks. Hub LESSONS 187 names
+  that shape and says the fix is not a bigger cap. This is not one: three still
+  greet you, in the same order.
+  **REFUSED ALONG THE WAY, AND EACH FOR A REASON:** raising `REVIEW_CAP`, which
+  is the thing the lesson rules out and law 8 exists for; re-ranking quiet lines
+  above stalled containers, which outrank on merit — a container with no next
+  action looks fine on every surface while nothing happens; and one row per class
+  before any class gets a second, which reaches the fourth class only by raising
+  the cap to five, the refused option renamed.
+  **ONE ROW BUILDER AND ONE PROJECTION PAINT BOTH LISTS.** A second builder is
+  how the surface and the sheet come to disagree about what a finding looks like;
+  a second `reviewExceptions` call is how they disagree across midnight, because
+  `quietAreas` reads the clock.
+  **THE CLONE ROLLED BACK MID-RELEASE AND TOOK THE FIRST BUILD OF THIS WITH IT.**
+  Everything pushed survived; everything uncommitted did not, including a walk
+  chain that then reported green against a tree four releases old. The habit that
+  follows is in the commit order, not in a note: source is committed and PUSHED
+  before the walks are started, and the receipts follow as their own commit.
+- **Superseded, and kept for the record: 3.16.0.** A meeting
   is somewhere you can stand (ADR-0119).
   **ADR-0115'S MOVE ON THE OTHER AXIS.** A role became somewhere you could stand
   in 3.12.0; a situation that names people is the same shape keyed on who is in

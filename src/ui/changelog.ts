@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.17.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**\u201c15 things need a look. These 3 first.\u201d \u2014 and now you can see the other twelve.** The line saying how many there are is the way to them. Tap it.',
+      '**The screen itself has not changed.** Still three, still the same three, still in the same order. A wall of them is the pile this app exists to stand between you and, and that has not moved.',
+      '**What has changed is that nothing is stuck behind them any more.** The three are the top of a ranked list, so the kinds further down were not later \u2014 they were unreachable. A line that had gone quiet, which the last release added so that staleness would come to you, sat fifteenth on a busy store and never arrived.',
+      '**It is a door only while there is somewhere to go.** When the three are all there is, the number still says so and does nothing when pressed, because opening a list you are already looking at is not a door.',
+      '**And what you see there is what you saw here** \u2014 the same rows, the same words, the same way into each one. Not a report, not a grouping, no counts by kind.',
+    ],
+  },
+  {
     triplet: '3.16.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',

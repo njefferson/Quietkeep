@@ -916,29 +916,56 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   try {
     const rv = reviewExceptions(st, nowIso, session.zone);
     const region = document.querySelector<HTMLElement>('#review');
-    const count = document.querySelector<HTMLElement>('#review-count');
+    const count = document.querySelector<HTMLButtonElement>('#review-count');
     const list = document.querySelector<HTMLElement>('#review-list');
+    // ONE ROW BUILDER, TWO LISTS (3.17.0, ADR-0120). The capped list on the
+    // surface and the whole list behind the total are the same rows — a second
+    // builder is how the two would come to disagree about what a finding looks
+    // like, which is the shape `today.ts` already refuses about what matters
+    // today.
+    const reviewRow = (x: { node: NodeState; words: string }): HTMLLIElement => {
+      const li = document.createElement('li');
+      li.className = 'review-item';
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'review-open';
+      const t = document.createElement('span');
+      t.className = 'review-title';
+      t.textContent = x.node.title || '(untitled)';
+      const w = document.createElement('span');
+      w.className = 'review-why';
+      w.textContent = x.words;
+      b.append(t, w);
+      if (openDetail) b.addEventListener('click', () => openDetail(x.node));
+      li.append(b);
+      return li;
+    };
     if (region && count && list) {
       region.hidden = rv.total === 0;
+      // A DOOR, AND ONLY WHILE THERE IS SOMETHING BEHIND IT. When the three
+      // shown ARE all of them the number is still worth stating, but opening a
+      // list identical to the one already on screen is a door onto the room you
+      // are standing in — so it is disabled and unstyled there, because inert
+      // chrome the rest of the time is what ADR-0116's emergence rule refuses.
+      const more = rv.total > rv.shown.length;
+      count.hidden = rv.total === 0;
       count.textContent = rv.total === 0 ? '' : reviewWords(rv.total, rv.shown.length);
-      list.replaceChildren(...rv.shown.map(x => {
-        const li = document.createElement('li');
-        li.className = 'review-item';
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'review-open';
-        const t = document.createElement('span');
-        t.className = 'review-title';
-        t.textContent = x.node.title || '(untitled)';
-        const w = document.createElement('span');
-        w.className = 'review-why';
-        w.textContent = x.words;
-        b.append(t, w);
-        if (openDetail) b.addEventListener('click', () => openDetail(x.node));
-        li.append(b);
-        return li;
-      }));
+      count.disabled = !more;
+      count.classList.toggle('linklike', more);
+      list.replaceChildren(...rv.shown.map(reviewRow));
     }
+    // The whole list, painted from the SAME projection rather than a second
+    // call: two calls a few milliseconds apart can disagree across a midnight
+    // boundary, because `quietAreas` reads the clock.
+    const allWords = document.querySelector<HTMLElement>('#review-all-words');
+    const allList = document.querySelector<HTMLUListElement>('#review-all');
+    if (allWords) {
+      allWords.textContent = rv.total === 0
+        ? 'Nothing needs a look.'
+        : reviewWords(rv.total, rv.total);
+    }
+    if (allList) allList.replaceChildren(...[...rv.orphaned, ...rv.stalled,
+      ...rv.unfed, ...rv.quietLines, ...rv.quiet].map(reviewRow));
   } catch {
     // A surface. It must never take the list down with it.
   }
@@ -1646,6 +1673,13 @@ export async function main(edition?: Edition): Promise<void> {
   };
   onSheetOpen('sheet-meeting', paintMeeting);
   wireSheetClose('sheet-meeting');
+
+  // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). No painter of its own: the list
+  // is filled by the same `render` pass that fills the capped one, from one
+  // projection, so the two cannot disagree. This only opens it.
+  wireSheetClose('sheet-review');
+  document.querySelector<HTMLButtonElement>('#review-count')
+    ?.addEventListener('click', () => { openSheet('sheet-review'); });
 
   onSheetOpen('sheet-situation', () => { paintSituationWho(); paintSituations(); });
   wireSheetClose('sheet-situation');

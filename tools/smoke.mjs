@@ -3616,7 +3616,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#review:not([hidden])');
   const reviewCount = await tpage.locator('#review-count').textContent();
   is(reviewCount, 'One thing needs a look.', `it says how many, plainly (got "${reviewCount}")`);
-  is(await tpage.locator('.review-open').count(), 1, 'one exception, one row');
+  // SCOPED TO THE SURFACE LIST (3.17.0). `.review-open` was unambiguous while
+  // there was one list; the whole list behind the total uses the same rows on
+  // purpose — one builder, so the two cannot disagree about what a finding looks
+  // like — so a bare class now counts both and this read 2. The claim was always
+  // about the surface, and it says so now.
+  is(await tpage.locator('#review-list .review-open').count(), 1, 'one exception, one row');
+  // AND THE WHOLE LIST HOLDS THE SAME ONE. Asserted rather than left implicit:
+  // two lists painted from one projection is the reason this release is safe,
+  // and nothing else in the walk would notice them diverging.
+  is(await tpage.locator('#review-all .review-open').count(), 1,
+    'and the whole list behind the total holds it too, from the same projection');
   is(await tpage.locator('.review-title').first().textContent(), 'the quarterly report',
     'and it names the thing that has stalled');
   is(await tpage.locator('.review-why').first().textContent(), 'nothing under it yet',

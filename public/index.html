@@ -919,7 +919,18 @@
        empty review says so by not being here, never by congratulating anyone. -->
   <section id="review" data-stance-name="Is the ladder in the right place" class="review" aria-labelledby="review-heading" hidden>
     <h2 id="review-heading" class="section" tabindex="-1">Worth a look</h2>
-    <p id="review-count" class="review-count"></p>
+    <!-- THE TOTAL IS A DOOR NOW (3.17.0, ADR-0120). It was a `<p>` — "15 things
+         need a look. These 3 first." — with no route to the other twelve
+         anywhere in the app. The cap is law 8 and stays at three: a wall of
+         exceptions is the pile this app exists to stand between you and. But a
+         cap over a RANKED list means the lowest-ranked class is unreachable
+         rather than merely later, and the class added in 3.14.0 — a line that
+         has gone quiet — is fourth of five, so on any store carrying three
+         structural breaks it never appeared at all.
+         Hub LESSONS 187 names the shape: a cap applied after a merge, hiding
+         the row a feature exists to find. Its fix is not a bigger cap, and this
+         is not one — three still greet you, in the same order. -->
+    <button id="review-count" class="review-count linklike" type="button" hidden></button>
     <ul id="review-list" class="review-list"></ul>
   </section>
 
@@ -3197,6 +3208,33 @@
      Its door is a SECOND LINE in the situation row rather than a fourth control
      beside the name, the words and Forget it — that row is already three across
      at 44px and a fourth was the mis-tap the flowchart footer was refused for. -->
+<!-- ALL OF THEM, WHEN THE THREE ARE NOT ALL OF THEM (3.17.0, ADR-0120).
+     Same rows, same words, same door into each one — this is the review list
+     without the cap, and nothing else. No grouping by class, because the
+     ranking already orders them and a heading per class would turn a list of
+     five things into a taxonomy of five kinds. No count per class, for the
+     reason `roleLoads` gives one axis over: a number beside a category name is
+     read as a score.
+     NO `data-door`, for the reason `#sheet-meeting` below carries the same
+     note: the total is a door only while there is more behind it, and the smoke
+     walk's way-out block stands up a store with ONE finding, so a declared door
+     there reports a surface it could not open and points at this sheet rather
+     than at the state. It joins the printed structural-only remainder. The a11y
+     walk drives it properly, in both themes, from a store with four.
+     AND IT LIVES OUT HERE WITH THE OTHER SHEETS, not beside the section it
+     belongs to. Inside `<main>` it is a region of the work surface, and
+     `plain.ts` requires every one of those to declare whether it survives the
+     worst day — a declaration it would only ever have needed because of where
+     it was written. -->
+<dialog id="sheet-review" aria-labelledby="sheet-review-title">
+  <h2 id="sheet-review-title" class="section">Everything worth a look</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="review-all-words" class="detail-hint"></p>
+    <ul id="review-all" class="review-list"></ul>
+  </div>
+  <button id="sheet-review-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
 <!-- NO `data-door`, DELIBERATELY, AND IT IS PRINTED RATHER THAN DROPPED (3.16.0).
      The smoke walk's way-out block reads each dialog's declared door and opens
      it to measure whether the sheet's own text shows through. This door does
