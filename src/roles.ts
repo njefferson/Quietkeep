@@ -45,6 +45,7 @@ import type { NodeId } from './events.ts';
 // The one place minutes become words. Never re-implemented here: "1h 20m" has
 // to read identically wherever it appears, and two formatters drift.
 import { minutesWords } from './duration.ts';
+import { servesNode } from './serves.ts';
 
 /** Every role the reader has named, by id, in a stable order.
  *
@@ -69,6 +70,99 @@ export function rolesOf(state: State, n: NodeState): NodeState[] {
 /** Their names, for a card. */
 export const roleNames = (state: State, n: NodeState): string[] =>
   rolesOf(state, n).map(r => r.title || '(unnamed)');
+
+/**
+ * STANDING ON THE LINE — the reverse walk (3.12.0, ADR-0115).
+ *
+ * Every link this app has ever built is traversed FORWARD, from a task outward:
+ * `rolesOf` says which identities a thing carries, `servesNode` says which
+ * horizon it serves, `dependencyView` says what it feeds. Not one of them
+ * answers the other direction, and a repo-wide search for `roles.includes`
+ * returned a single hit — the fold's own dedupe. So you could see THAT
+ * attention went to an identity and never WHAT was there.
+ *
+ * That asymmetry is why standing at work, or on a line of effort, and seeing
+ * what is on it was impossible. The edges were all there.
+ *
+ * ## This is an inspection mode, not the filter this file refuses
+ *
+ * The header above rules out a "show me only Parent work" switch, and that
+ * ruling stands: narrowing the working surfaces to an identity is the partition
+ * Q-10 argued against — two lists, and you have to remember the other one.
+ *
+ * A view you OPEN and read is a different act. `docs/horizon-models.md` §3 draws
+ * exactly this line: altitude views are inspection modes, never workspaces. You
+ * come here to see the shape of a line and you leave; nothing about the surfaces
+ * you work from changes because you looked.
+ *
+ * ## Sorted by name, never by size or pressure
+ *
+ * The same rule `roleLoads` and `roleAttention` already follow, and for a
+ * stronger reason here: ranking the work on somebody's own identity would make
+ * this a worklist, which is the workspace it must not become.
+ *
+ * ## `crosses` is the line crossing the tree, computed rather than declared
+ *
+ * The horizons this line's work actually sits under, distinct. It reuses
+ * `servesNode` rather than walking parents here, so "which horizon" has one
+ * definition in this app and cannot drift — and it is the literal rendering of
+ * the doctrine shape: a named line whose activities hang off different parts of
+ * the org chart.
+ */
+export interface LineView {
+  readonly role: NodeState;
+  /** Live work carrying this identity, by title. */
+  readonly work: NodeState[];
+  /** The distinct horizons that work sits under — where the line runs. */
+  readonly crosses: NodeState[];
+}
+
+export function lineView(
+  state: State, roleId: NodeId, heldOf: (s: State) => Iterable<NodeState>,
+): LineView | null {
+  const role = allRoles(state).find(r => r.id === roleId);
+  if (!role) return null;
+  const work: NodeState[] = [];
+  for (const n of heldOf(state)) {
+    // Live work only, exactly as `roleLoads` counts it. A finished thing is not
+    // on the line any more, and listing it would make this a record of output.
+    if (n.lastDone) continue;
+    if (n.roles.includes(roleId)) work.push(n);
+  }
+  work.sort((a, b) => (a.title || '').localeCompare(b.title || '') || (a.id < b.id ? -1 : 1));
+  const seen = new Map<NodeId, NodeState>();
+  for (const n of work) {
+    const h = servesNode(state, n);
+    if (h && !seen.has(h.id)) seen.set(h.id, h);
+  }
+  const crosses = [...seen.values()]
+    .sort((a, b) => (a.title || '').localeCompare(b.title || '') || (a.id < b.id ? -1 : 1));
+  return { role, work, crosses };
+}
+
+/**
+ * What the line view says above its lists.
+ *
+ * AN EMPTY LINE IS AN ANSWER, and the most useful one this view gives: nothing
+ * is on it, so the planning there has gone stale. It says that plainly rather
+ * than hiding, for the reason the person lens states about a person with nothing
+ * with them — a group that vanishes leaves the question looking unanswerable.
+ *
+ * No count of the horizons: how many parts of a tree a line touches is not a
+ * fact anybody acts on, and a second number here would read as a score beside
+ * the first.
+ */
+export const lineViewWords = (v: LineView): string => {
+  if (v.work.length === 0) {
+    return 'Nothing is on this line just now — which is worth knowing, because it '
+      + 'means nothing here is moving.';
+  }
+  const n = v.work.length === 1 ? 'One thing is' : `${v.work.length} things are`;
+  if (v.crosses.length === 0) return `${n} on this line.`;
+  return v.crosses.length === 1
+    ? `${n} on this line, and it runs through one part of your tree:`
+    : `${n} on this line, and it runs through ${v.crosses.length} parts of your tree:`;
+};
 
 /**
  * How much live work each named role is carrying.

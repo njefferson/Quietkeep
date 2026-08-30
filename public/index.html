@@ -1634,6 +1634,25 @@
     <ul id="detail-person-owes" class="detail-feeds"></ul>
     <ul id="detail-person-involves" class="detail-feeds"></ul>
   </div>
+  <!-- STANDING ON THE LINE (3.12.0, ADR-0115). The reverse of everything else
+       this app does with a role: `rolesOf` says which identities a thing
+       carries, and until now nothing said what an identity carries.
+       A ROLE IS AN ORDINARY NODE, so its own sheet is the natural home and this
+       costs no new surface on the landing page — the same reasoning that put
+       the person lens above it here in 1.12.0, and the same shape.
+       SHOWN EVEN WHEN THE LINE IS EMPTY, because that is the answer somebody
+       came for: nothing is on it, so nothing there is moving. A group that
+       vanishes leaves the question looking unanswerable. -->
+  <div class="detail-group" id="detail-line-group" hidden>
+    <span class="detail-label">What is on this line</span>
+    <p id="detail-line-count" class="detail-hint"></p>
+    <ul id="detail-line-work" class="detail-feeds"></ul>
+    <!-- WHERE THE LINE RUNS — the horizons its work actually sits under,
+         computed from `servesNode` rather than declared, which is the literal
+         rendering of a named line whose activities hang off different parts of
+         the tree. -->
+    <ul id="detail-line-crosses" class="detail-feeds"></ul>
+  </div>
   <div class="detail-group" id="detail-merged-group" hidden>
     <span class="detail-label">Folded into this</span>
     <ul id="detail-merged-list" class="detail-feeds"></ul>

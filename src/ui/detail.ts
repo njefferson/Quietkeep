@@ -43,7 +43,9 @@ import { allContexts, contextsOf } from '../contexts.ts';
 // "home, office, text" is THREE places (3.8.0) — see `src/names.ts` for why the
 // placeholder was kept and the behaviour changed rather than the other way round.
 import { splitNames, andWords } from '../names.ts';
-import { allRoles, rolesOf } from '../roles.ts';
+import { allRoles, rolesOf, lineView, lineViewWords } from '../roles.ts';
+import { servesNode } from '../serves.ts';
+import { heldWork } from '../gate.ts';
 import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
@@ -708,15 +710,35 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         rList.replaceChildren(...rolesOf(rst, n).map(r => {
           const li = document.createElement('li');
           li.className = 'detail-feed';
+          // THE NAME IS A DOOR NOW, AND TAKING IT OFF IS ITS OWN CONTROL
+          // (3.12.0, ADR-0115). One button read `Name — take it off`, so from a
+          // thing the only thing you could do with the line it is on was remove
+          // it. The person row three hundred lines up has had a door since
+          // 1.12.0 — tapping a name opens their sheet — and roles never got one,
+          // which is the forward-only asymmetry in miniature: the app knew what
+          // this thing was for and gave you no way to go and look.
           const b = document.createElement('button');
           b.type = 'button';
           b.className = 'linklike';
-          b.textContent = `${r.title || '(unnamed)'} — take it off`;
+          b.textContent = r.title || '(unnamed)';
           b.addEventListener('click', () => {
+            const line = session.state().nodes.get(r.id);
+            if (!line) return;
+            showNode(line);
+            // Same reason the person door does this: a role's sheet is almost
+            // entirely the folded half, and landing on it folded shut puts the
+            // whole point of the trip out of sight (1.39.1).
+            setRest(true);
+          });
+          const off = document.createElement('button');
+          off.type = 'button';
+          off.className = 'ghost';
+          off.textContent = 'Take it off';
+          off.addEventListener('click', () => {
             void run(ctx => detachRoleEvents(ctx, n.id, r.id),
               `No longer part of ${r.title || 'that'}.`);
           });
-          li.append(b);
+          li.append(b, off);
           return li;
         }));
       }
@@ -840,6 +862,47 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         };
         personOwes?.replaceChildren(...owes.map((l: PersonLine) => row(l, true)));
         personInvolves?.replaceChildren(...involves.map((l: PersonLine) => row(l, false)));
+      }
+
+      // WHAT IS ON THIS LINE (3.12.0, ADR-0115) — the person lens's shape, one
+      // axis over. A role is an ordinary node, so its own sheet is the home,
+      // and the group renders even when the line is empty because that is the
+      // answer somebody opened it for.
+      const lineGroup = q<HTMLElement>('#detail-line-group');
+      if (lineGroup) lineGroup.hidden = !(n.kind === 'role' && !n.trashed);
+      if (n.kind === 'role') {
+        const view = lineView(st, n.id, heldWork);
+        const lineCount = q<HTMLElement>('#detail-line-count');
+        if (lineCount) lineCount.textContent = view ? lineViewWords(view) : '';
+        const lineRow = (m: NodeState, where: string): HTMLLIElement => {
+          const li = document.createElement('li');
+          li.className = 'detail-feed';
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'linklike';
+          b.textContent = m.title || '(untitled)';
+          b.addEventListener('click', () => {
+            const fresh = session.state().nodes.get(m.id);
+            if (fresh) showNode(fresh);
+          });
+          const when = document.createElement('span');
+          when.className = 'detail-when';
+          when.textContent = where;
+          li.append(b, when);
+          return li;
+        };
+        // WHERE EACH THING SITS, from the same `servesNode` the runway card
+        // uses — so one item's horizon reads identically here and there.
+        q<HTMLElement>('#detail-line-work')?.replaceChildren(
+          ...(view?.work ?? []).map(m => {
+            const h = servesNode(st, m);
+            return lineRow(m, h ? `serves ${h.title || '(untitled)'}` : 'under no horizon');
+          }));
+        // AND THE DISTINCT PARTS OF THE TREE IT RUNS THROUGH. Doors too: moving
+        // between a line and the containers it crosses is the walk that was
+        // impossible, and a dead-ended list would only prove the point.
+        q<HTMLElement>('#detail-line-crosses')?.replaceChildren(
+          ...(view?.crosses ?? []).map(h => lineRow(h, 'this line runs through it')));
       }
 
       // An open waiting-for says how long, in words, and offers the one action

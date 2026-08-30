@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.12.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**You can stand on a line and see what is on it.** Open one of the identities you have named \u2014 from *Where the attention is*, or from its name on any item \u2014 and it shows the work carrying it, and the parts of your tree that work sits under. A line runs across your projects and areas rather than living inside one, and this is the first time you can see that.',
+      '**Its name on an item is a door now.** It used to be a button that took the identity off, so the only thing you could do with a line from a thing on it was remove it. Taking it off is its own control beside the name.',
+      '**Nothing about the screens you work from changes.** This is somewhere you go to look, not a filter \u2014 there is no "show me only this" switch, because that leaves you with two lists and something to remember.',
+      '**An empty line says so**, and that is the useful part: nothing on it means nothing there is moving.',
+      '**Still not right:** you have to open a line to find out it has gone quiet. Nothing comes and tells you \u2014 that is the next piece.',
+    ],
+  },
+  {
     triplet: '3.11.1',
     kind: 'ITERATION',
     date: '2026-08-30',

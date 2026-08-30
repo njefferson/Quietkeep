@@ -209,7 +209,20 @@ const BUDGET = {
   // something down" is what it does, and somebody mid-task can now decide
   // whether the thought is worth the place. Three words to stop a control
   // costing somebody their place in a job is the cheapest raise in this list.
-  words: 3712,
+  // 3712 -> 3717 on 2026-08-30 (3.12.0). Five words: "What is on this line",
+  // the heading of the reverse walk on a role's own sheet.
+  //
+  // EVERY LINK IN THIS APP WAS TRAVERSED FORWARD ONLY. `rolesOf` says which
+  // identities a thing carries, `servesNode` which horizon it serves,
+  // `dependencyView` what it feeds — and nothing answered the other direction.
+  // A repo-wide search for `roles.includes` returned one hit, the fold's own
+  // dedupe. So the attention readout could say attention went somewhere and
+  // there was no way to see what was there.
+  //
+  // Five words for the direction that was missing is the cheapest raise in this
+  // list by some distance, and it costs no new surface: a role is an ordinary
+  // node, so its own sheet is the home, exactly as a person's is.
+  words: 3717,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

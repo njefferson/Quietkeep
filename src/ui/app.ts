@@ -1299,8 +1299,21 @@ export async function main(edition?: Edition): Promise<void> {
       list.replaceChildren(...rows.map(r => {
         const li = document.createElement('li');
         li.className = 'roles-row';
-        const name = document.createElement('span');
-        name.className = 'roles-name';
+        // A DOOR SINCE 3.12.0 (ADR-0115). This was a `<span>`, and that was the
+        // whole defect: the readout could say attention went to an identity and
+        // there was no way to see WHAT was there — the reverse walk had no code
+        // path anywhere in the app. A role is an ordinary node, so its own sheet
+        // holds the answer, exactly as a person's does.
+        // `detail.open` is the same route the tree rows, the coverage list and
+        // search all take — one way into a node's sheet, so a role opens the way
+        // everything else does.
+        const name = document.createElement('button');
+        name.type = 'button';
+        name.className = 'roles-name linklike';
+        name.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(r.role.id);
+          if (fresh) detail.open(fresh);
+        });
         name.textContent = r.role.title || '(unnamed)';
         const held = document.createElement('span');
         held.className = 'roles-held';

@@ -602,7 +602,7 @@ closed question filed under this heading now, so the two cannot drift again.
   - **The stratosphere is `aspiration`.** It sits on the Menu and **cannot carry a clock** (law 6) — which is exactly "amorphous, not driving action, not nagging you". Pulling one down to where it can drive action is ordinary parenting; there is no separate promotion machinery and there should not be.
   - **"Allowed to disappear" shipped in 1.32.0** as `node.released` / `node.reclaimed` — an exit that is neither done nor deleted, reversible, leaving no browsable pile and no count. That was built precisely because law 1 otherwise guarantees perpetual return, and the only reset people actually reach for is deleting the app.
   - **Roles and lines-of-effort have a settled SHAPE and are deliberately deferred** — see Q-13. A role crosses areas, and this tree is single-parent, so it is a cross-cutting link and never a container. The deferral is the same one, on the same grounds.
-  - **What is genuinely unbuilt is the projection, not the levels.** `docs/horizon-models.md` says so: the review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts` and **do not reach the surfacing layer**, and a runway card does not print what it serves even though 1.20.0's place line already walks lineage on a different edge. That is law 4's other half — higher horizons project *downward* — and it is the thing worth building.
+  - **What was genuinely unbuilt was the projection, not the levels** — and it is built now, which this line said otherwise about for seven months of releases. The review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts`; a runway card **does** print what it serves, since 2.5.0 and `src/serves.ts`. The claim that it does not was still standing here on 2026-08-30 and in `horizon-models.md` at the same time, which is the one-file-two-answers shape the hub's CLAUDE.md names. **What is unbuilt now is narrower and named in ADR-0115's own record:** the exceptions walk the TREE only, so a cross-cutting line with nothing moving on it is still invisible.
   - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theatre and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
 
   - Status: **Closed.** Answered 2026-08-09 — every altitude asked about already existed. What is genuinely unbuilt is the projection, deferred on purpose until a real store holds a goal or an area.
@@ -840,7 +840,44 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.11.1**. The card's
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.12.0**. A line is
+  somewhere you can stand (ADR-0115).
+  **EVERY LINK IN THIS APP WAS TRAVERSED FORWARD ONLY, AND THAT WAS THE WHOLE
+  DEFECT.** `rolesOf` says which identities a thing carries, `servesNode` which
+  horizon it serves, `dependencyView` what it feeds — and none of them answered
+  the other direction. A repo-wide search for `roles.includes` returned exactly
+  one hit: the fold's own dedupe. So a sheet titled *Where the attention is*
+  could say attention went to an identity and there was **no code path anywhere**
+  to show what was there, and on an item a role's name was a REMOVE control —
+  from a thing, the only thing you could do with the line it was on was take it
+  off.
+  **THE LINK-KINDS WERE ALL BUILT. THE DIRECTION WAS MISSING.** That is why
+  standing at work, or in a meeting, or on a line of effort and seeing what is on
+  it was impossible, and why it read as a missing feature rather than a missing
+  traversal.
+  **NOT THE FILTER `roles.ts` REFUSES, AND THAT REFUSAL STANDS.** Narrowing the
+  working surfaces to an identity is the partition Q-10 argued against — two
+  lists, and you have to remember the other one. A view you open and read is a
+  different act: `horizon-models.md` §3 calls these inspection modes, never
+  workspaces. Nothing about the surfaces anybody works from changes.
+  **A ROLE IS AN ORDINARY NODE, so its own sheet is the home and this cost no new
+  surface** — the same reasoning that put the person lens on a person's sheet in
+  1.12.0, and the same shape one axis over. It joined the a11y walk's states in
+  the same commit, reached the way a reader reaches it rather than opened
+  directly, because the route is half of what is being measured.
+  **AND THE RECORD SAID THE DOWNWARD PROJECTION WAS UNBUILT, IN TWO PLACES, FOR
+  SEVEN MONTHS OF RELEASES.** `horizon-models.md` listed it as a survivor still
+  to build and NOTES Q-14 said a runway card does not print what it serves;
+  `src/serves.ts` shipped it in 2.5.0 and its own header quotes that line back.
+  One file, two answers — the hub's own shape. Both corrected here.
+  **STILL NOT RIGHT, IN THE RELEASE NOTES AND IN THE ADR:** `review.ts` walks the
+  TREE only — `unfedGoals` walks `n.parent`, so "unfed" means nothing beneath it
+  in the tree — so a line with nothing moving on it is visible only to somebody
+  who opens it. The value of that finding is that it should come to you
+  (ADR-0013 puts the clock on the artifact, never the ritual on the person).
+  Extending the exceptions to the cross-cutting links is the next piece, and it
+  is what turns a weekly review into a continuous assessment.
+- **Superseded, and kept for the record: 3.11.1.** The card's
   filing route says what it files into, and *place* means one thing again.
   **HALF OF THE COMPLAINT DISSOLVED ON INSPECTION, AND THE OTHER HALF EXPLAINS
   IT.** Reported as *place and project are both buried in the detail sheet — open

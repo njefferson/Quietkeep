@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.12.0 — CAPABILITY
+
+*2026-08-30*
+
+- **You can stand on a line and see what is on it.** Open one of the identities you have named — from *Where the attention is*, or from its name on any item — and it shows the work carrying it, and the parts of your tree that work sits under. A line runs across your projects and areas rather than living inside one, and this is the first time you can see that.
+- **Its name on an item is a door now.** It used to be a button that took the identity off, so the only thing you could do with a line from a thing on it was remove it. Taking it off is its own control beside the name.
+- **Nothing about the screens you work from changes.** This is somewhere you go to look, not a filter — there is no "show me only this" switch, because that leaves you with two lists and something to remember.
+- **An empty line says so**, and that is the useful part: nothing on it means nothing there is moving.
+- **Still not right:** you have to open a line to find out it has gone quiet. Nothing comes and tells you — that is the next piece.
+
 ## 3.11.1 — ITERATION
 
 *2026-08-30*

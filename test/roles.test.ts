@@ -6,6 +6,7 @@ import { heldWork } from '../src/gate.ts';
 import {
   allRoles, rolesOf, roleNames, roleLoads,
   roleAttention, roleAttentionWords, roleAttentionRowWords,
+  lineView, lineViewWords,
 } from '../src/roles.ts';
 import type { AppEvent } from '../src/events.ts';
 
@@ -246,4 +247,61 @@ test('no row is a bare number — a figure beside a name reads as a score', () =
     const words = roleAttentionRowWords(r);
     assert.ok(!/^\d+$/.test(words.trim()), `"${words}" is a bare figure`);
   }
+});
+
+
+// ── Standing on the line (3.12.0, ADR-0115) ─────────────────────────────────
+//
+// Every link this app has was traversed forward only, from a task outward. A
+// repo-wide search for `roles.includes` returned one hit — the fold's own
+// dedupe — so nothing could answer "what is on this line".
+
+const crossing = () => fold([
+  ev('role.created', 'MANNING', { name: 'Manning' }),
+  ev('role.created', 'EMPTY', { name: 'Nothing doing' }),
+  // Two horizons, so the line demonstrably crosses the tree rather than
+  // sitting under one branch of it.
+  ev('node.created', 'G', { nodeKind: 'goal', title: 'A steady shop' }),
+  ev('node.created', 'A', { nodeKind: 'area', title: 'The print room' }),
+  ev('node.created', 'w1', { nodeKind: 'action', title: 'Advertise the post', parent: 'G' }),
+  ev('node.created', 'w2', { nodeKind: 'action', title: 'Brief the national provider', parent: 'A' }),
+  ev('node.created', 'w3', { nodeKind: 'action', title: 'Nothing to do with manning' }),
+  ev('role.attached', 'w1', { node: 'w1', role: 'MANNING' }),
+  ev('role.attached', 'w2', { node: 'w2', role: 'MANNING' }),
+]);
+
+test('standing on a line shows the work on it, and nothing that is not', () => {
+  const v = lineView(crossing(), 'MANNING', heldWork);
+  assert.ok(v);
+  assert.deepEqual(v.work.map(n => n.title),
+    ['Advertise the post', 'Brief the national provider'],
+    'by title, never by size or pressure — this is a view you read, not a worklist');
+});
+
+test('and it names the parts of the tree the line runs through', () => {
+  const v = lineView(crossing(), 'MANNING', heldWork);
+  assert.ok(v);
+  assert.deepEqual(v.crosses.map(n => n.title).sort(), ['A steady shop', 'The print room'],
+    'the line crosses the tree — which is the whole reason it cannot be a container');
+});
+
+test('an empty line says so, because that is the answer somebody came for', () => {
+  const v = lineView(crossing(), 'EMPTY', heldWork);
+  assert.ok(v);
+  assert.deepEqual(v.work, []);
+  assert.match(lineViewWords(v), /Nothing is on this line/,
+    'nothing is moving there, and a view that hid would leave the question unanswerable');
+});
+
+test('finished work is not on the line — this is not a record of output', () => {
+  let s = crossing();
+  s = fold([ev('done.marked', 'w1', { at: AT })], s);
+  const v = lineView(s, 'MANNING', heldWork);
+  assert.ok(v);
+  assert.deepEqual(v.work.map(n => n.title), ['Brief the national provider'],
+    'the same rule roleLoads follows — counting what was finished is the shape law 5 refuses');
+});
+
+test('a line nobody named does not exist, and asking for one is null rather than empty', () => {
+  assert.equal(lineView(crossing(), 'NO-SUCH-ROLE', heldWork), null);
 });
