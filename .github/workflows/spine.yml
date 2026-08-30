@@ -56,11 +56,26 @@ jobs:
   # cannot be two versions even in principle. This pin is the hub's head at the
   # time of the bump, and all nine of its gates were run against this tree from a
   # clone at that commit before it was changed.
+  # `textsize-paths` was declared-off and this repo HAS the fact, which is the
+  # drift hub-gates.yml exists to end: an input left unset is a smaller gate
+  # than the job looks like it is running. Nothing here measured a reader who
+  # enlarges only their DEFAULT TEXT SIZE and not the page — the a11y walk's
+  # stressed viewport is page zoom at 200%, which is a different setting and
+  # scales everything together. Run against this tree before wiring: no fixed
+  # font sizes, 91 relative declarations.
+  #
+  # `palette-path` stays off DELIBERATELY and is not the same omission.
+  # `tools/palette-gate.mjs` (Spine step 49) holds every palette against the
+  # colour inventory the a11y walk actually produced, which is strictly more
+  # than one palette file against the floors. `zizmor` stays off because the hub
+  # holds that opt-in while three repos still carry findings; REPOS.md names
+  # them and it is the hub's call, not this repo's.
   hub-gates:
     uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@8a923441133aa42a049896d306e32f00a5d12bd6
     with:
       pwa: true
       mirror: true
+      textsize-paths: public/app.css public/index.html
 
   test:
     runs-on: ubuntu-latest
