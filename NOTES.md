@@ -840,7 +840,90 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.12.0**. A line is
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.15.0**. A
+  situation can name who is in the room (ADR-0118).
+  **A MEETING IS A PLACE, A LENGTH AND A SET OF FACES, AND ONLY TWO WERE
+  STORABLE.** The situation shortcut has held where-you-are and how-long since
+  2.21.0, and the one case it exists for — a recurring meeting — was the case it
+  could not express. `nd-collisions` entry 24 already recorded it, and 2.26.0
+  left the seam open in `setSituation`'s own comment, saying in as many words
+  that adding a person would widen the payload and that release did not need it.
+  **A LIST, AND THAT IS WHY IT NEEDED A SCHEMA CHANGE AT ALL.** `where.now` and
+  `with.now` are single-valued device preferences. A meeting has several people,
+  and narrowing a working surface to one of them answers a different question —
+  so what will eventually read the whole set is an inspection mode, the rule
+  ADR-0115 and horizon-models §3 already state.
+  **THE SHEET WRITES ONE, ON PURPOSE.** Whoever the existing filter holds. A
+  multi-select whose only consumer is a one-person filter is a control that does
+  nothing, which is ADR-0116's emergence rule; the picker for several arrives
+  with the surface that reads several.
+  **A CLOSED-SHAPE TEST CAUGHT THE WIDENING, WHICH IS WHAT IT IS FOR.** The
+  situation record is asserted to have an exact key list so there is nowhere to
+  keep a usage record. Adding `people` broke it, correctly; the assertion now
+  names three keys and still refuses a fourth.
+  **SIX PLANTS, AND THE FIRST ONE FAILED TO FAIL.** The write intent sorts
+  before it writes, so the test for order-independence passed with the fold's own
+  sort deleted — it went through the intent and never reached the fold. The fold
+  normalises for a log that arrived from ANOTHER DEVICE, and the only way to test
+  that is a raw event: unsorted, with a repeat and a non-string in the list. Two
+  more on the browser walk separate the save side from the recall side.
+- **Superseded, and kept for the record: 3.14.0.** A line
+  that has gone quiet comes and tells you (ADR-0117).
+  **REVIEW HAS COMPUTED EXCEPTIONS SINCE v1 AND EVERY CLASS WAS A FACT ABOUT THE
+  TREE.** `stalled`, `orphaned`, `unfedGoals` and `quietAreas` all walk
+  `n.parent`, so "nothing is moving here" has only ever meant *nothing beneath it
+  in the tree*. A line is not in the tree — a role is a cross-cutting tag, and
+  `heldNodes` excludes roles outright — so no exception class has ever had one in
+  hand to examine. 3.12.0 shipped saying exactly this in its own release notes and
+  in ADR-0115's *Still unbuilt* section; this closes it.
+  **STALENESS NEEDS A BEFORE, AND THAT IS THE PROPERTY THE FEATURE TURNS ON.** A
+  role that has never carried anything is not stale, it is new. Without that
+  guard, naming your identities on a fresh store — the one moment somebody is
+  most likely to do it — fills the surface with every role they just created,
+  which reads as broken rather than as empty. Same restraint `quietAreas` already
+  applies by refusing a null `idleDays` instead of calling "nothing has ever
+  finished" a long time.
+  **THE WALK IS TRANSITIVE, AND THE FIRST TEST OF IT ASSERTED NOTHING.** A role
+  is normally carried by a project, so asking only what is directly tagged would
+  call every properly-structured line quiet. The test written for that was one
+  level deep — a live action directly under the tagged project — so a shallow
+  direct-children check passed it. Planted, green, rewritten two levels deep,
+  planted again, red. Four plants in total and every one lands on the assertion
+  it belongs to.
+  **HONEST COST: NO BROWSER WALK RENDERS THIS CLASS.** The demonstration store
+  has fifteen exceptions, shows three, and structural breaks outrank a stale line
+  every time — so the big sample now carries a quiet line and the cap keeps it
+  off the screen. Both facts are asserted together in `test/big-sample.test.ts`,
+  so a later reader looking for it in a walk finds the reason rather than
+  concluding it never shipped. The row markup is the shared
+  `.review-open`/`.review-title`/`.review-why` already measured in both themes.
+- **Superseded, and kept for the record: 3.13.0.** Where a
+  thing can be done is a question the sorting card asks now.
+  **THE EVIDENCE PICKED THIS, AND IT PICKED IT OVER WHAT WAS NEXT ON THE LIST.**
+  Two pre-registered experiments (`docs/nd-collisions.md` entry 27, read from the
+  primary): reminder-setting falls when it costs more effort at every memory
+  load, **and the accuracy benefit it would have delivered is attenuated even
+  when the cost is paid**. So the price of recording is not paid in convenience,
+  it is paid in the thing the tool exists to provide.
+  **WHICH EXPLAINS A FILTER THAT LOOKED BROKEN.** The place axis has been
+  readable since 2.2.0 — `fitsHere`, a device-level "where you are", a post-filter
+  over the unchanged ranking — and a real store carries almost none of it, because
+  the only way to say a place was to open an item, expand its sheet and scroll,
+  one thing at a time. A filter over an axis nobody can afford to record reads as
+  broken rather than empty, which is entry 24's crux arriving from the other side.
+  **IT ANNOTATES AND DOES NOT RESOLVE, and that is the whole design.** Filing into
+  a container ends the card, because it is a decision about where the thing lives.
+  Saying where it can be DONE is a label, so the same card comes straight back
+  with the six routes still in front of you. Advancing the queue would have bought
+  cheap recording by spending the sorting decision — the same cost in a different
+  currency — and the walk asserts the card does not move.
+  **AND THE COLLISION FROM 3.11.1 WAS STILL LIVE ONE SCREEN DEEPER.** That release
+  renamed the route because it files into a CONTAINER and *place* is where work
+  can be done; the sub-screen behind it still said "Name a new place". Harmless
+  while nothing else used the word on that surface, and live again the moment a
+  real context route landed beside it. A rename that stops at the label it was
+  reported against is half a rename.
+- **Superseded, and kept for the record: 3.12.0.** A line is
   somewhere you can stand (ADR-0115).
   **EVERY LINK IN THIS APP WAS TRAVERSED FORWARD ONLY, AND THAT WAS THE WHOLE
   DEFECT.** `rolesOf` says which identities a thing carries, `servesNode` which
@@ -2067,7 +2150,20 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.9.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.12.0** — promoted at
+  `3b5499d` on 2026-08-30, the merged tree asserted byte-identical to `3631a66`,
+  the staging head that was walked. Six releases at once: four doors that say
+  where they go, the two sorting landmarks, the standing count of what is in
+  front of you, each import as its own named set, the filing route saying what it
+  files into, and a line becoming somewhere you can stand.
+  **IT CARRIES TWO CI-WIRING COMMITS FROM ANOTHER SESSION** that move the hub
+  gates behind a pinned reusable workflow. **That job has failed on every run
+  since it landed**, and a failure at its third step skips all fourteen gates
+  behind it — branch guard, privacy, the pattern mirror, quote, third-person,
+  docs, npm hygiene, pwa, palette, text size and zizmor. Every one of them was
+  run locally against this tree and passed, so nothing here is unverified in
+  substance; but CI is checking none of them, on any repo using that wiring.
+- **Superseded, and kept for the record: 3.9.1** — promoted at
   `01ad14e` on 2026-08-29, the merged tree asserted byte-identical to `5ac11c8`,
   the staging head that was walked. Both editions read directly afterwards and
   both serve 3.9.1.

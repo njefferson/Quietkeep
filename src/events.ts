@@ -388,7 +388,7 @@ export type DeviceRegistered = Ev<'device.registered',  { device: DeviceId; labe
  * fact about your work. A situation you named is a thing you recognise about
  * how you work — nearer a context or a role — and it should survive a device.
  */
-export type SituationSaved   = Ev<'situation.saved',    { name: string; context: string | null; minutes: number | null }>;
+export type SituationSaved   = Ev<'situation.saved',    { name: string; context: string | null; minutes: number | null; people?: NodeId[] }>;
 export type SituationForgotten = Ev<'situation.forgotten', { name: string }>;
 export type ModuleEnabled    = Ev<'module.enabled',     { module: string }>;
 export type ModuleDisabled   = Ev<'module.disabled',    { module: string }>;

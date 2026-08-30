@@ -14,6 +14,37 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.15.0 — CAPABILITY
+
+*2026-08-30*
+
+- **A situation you name now remembers who you are with.** *What’s the situation?* has always set three things — where you are, how long you have, and who you are with — and *Remember it* only ever saved the first two. Save one now and all three come back in one tap.
+- **Which is what a recurring meeting actually is.** A place, a length, and who is in the room. Two of the three were storable and the third was not, so the one case this shortcut exists for was the one it could not hold.
+- **The saved row says who it names**, so you can tell two of them apart before you tap one — *the office, 1h, with Ada*.
+- **Somebody you have let go stops being named**, and the situation still works. It recalls the place and the time and simply says nothing about them. A situation whose people have all gone reads as nobody, not as broken.
+- **Nothing you already saved changed.** A situation named before this has nobody in it and behaves exactly as it did.
+- **Still not right:** it saves the one person the chooser holds, and a real meeting has several. Choosing several comes with the screen that can show you a meeting — a list of people with nothing able to read it yet would be a control that does nothing.
+
+## 3.14.0 — CAPABILITY
+
+*2026-08-30*
+
+- **A line that has gone quiet now comes and tells you.** *Have a look at this* has always named the things that are structurally stuck — a project with no next step, something whose parent is gone, a goal nothing is feeding. It now also names an identity you named, that carried work, and that has nothing running on it.
+- **Which is the thing you could only find by going and looking.** Last release you could open a line and see it was empty. You had to think to open it, and the day you think to check is the day you were already going to.
+- **A line you have just named is not on it.** Nothing is running on it because you made it a minute ago. Something has to have been on it and finished, or be sitting there not moving, before this has anything to say — naming six identities on a fresh store must not hand you six problems.
+- **It counts what is under things too, not just what is tagged.** Put an identity on a project and leave the actions inside it untagged, which is the ordinary way to do it, and the line is not quiet — the work under it is what counts.
+- **It says what is true and stops.** *Everything on it is finished*, or *nothing on it is moving*. No number, no how-long-since, no ordering by how stale, no colour. Whether that is a season off or a thing you have quietly stopped doing is yours to know.
+- **Still not right:** this surface shows three at a time and structural breaks come first, so on a full store a quiet line can sit behind them for a while.
+
+## 3.13.0 — CAPABILITY
+
+*2026-08-30*
+
+- **You can say where something can be done while you are sorting it.** A new choice on the card — **Say where it can be done** — next to the six routes. Pick a place you have already named, or type a new one. Until now the only way to say it was to open the item, expand its panel and scroll, one thing at a time.
+- **It does not use up your decision.** Saying where a thing can be done is a fact about the thing, not a choice about when it comes back — so the same card comes straight back with the six routes still in front of you.
+- **Which makes the *what fits here* filter worth having.** It has been able to narrow to where you are for a long time, and almost nothing had a place on it, because saying so cost too much.
+- **And the screen behind *Put it under something* stopped saying *place*.** It files into a project, an area or a goal; a place is where work can be done. Two screens were using one word for two things.
+
 ## 3.12.0 — CAPABILITY
 
 *2026-08-30*

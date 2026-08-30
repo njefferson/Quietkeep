@@ -1483,7 +1483,19 @@ export async function main(edition?: Edition): Promise<void> {
         // stands down; the time it named still applies.
         const fresh = session.state();
         const stillThere = saved.context && allContexts(fresh).some(c => c.id === saved.context);
-        setSituation(stillThere ? saved.context : null, saved.minutes);
+        // A GHOST PERSON IS THE SAME RULE (3.15.0). Somebody who has been let go
+        // matches nothing, so recalling a situation that names them would empty
+        // the surfaces with nothing on screen saying why — and the person filter
+        // already stands itself down the same way through `withLive`.
+        //
+        // FIRST OF THE LIVE ONES, because the filter holds one and the stored
+        // shape holds several. Sorted by id rather than taken in stored order so
+        // the same situation recalls the same person every time; when the
+        // meeting surface reads the whole list, this stops being a choice.
+        const live = allPeople(fresh);
+        const who = [...saved.people].sort()
+          .find(id => live.some(p => p.id === id)) ?? null;
+        setSituation(stillThere ? saved.context : null, saved.minutes, who);
       });
       const what = document.createElement('span');
       what.className = 'roles-held';
@@ -1512,7 +1524,13 @@ export async function main(edition?: Edition): Promise<void> {
     const name = input.value.trim();
     if (!name) return;
     input.value = '';
-    void session.commit(ctx => saveSituationEvents(ctx, name, whereNow, howLongNow))
+    // WHO IS WITH YOU IS SAVED TOO NOW (3.15.0), which is the third of the three
+    // things this sheet sets and the only one a saved situation could not carry.
+    // A LIST with at most one in it: the filter above is single-valued, and the
+    // stored shape is a list because a MEETING has several — the picker for
+    // several arrives with the surface that reads them, not before it.
+    void session.commit(ctx =>
+      saveSituationEvents(ctx, name, whereNow, howLongNow, withNow ? [withNow] : []))
       .then(() => paintSituations())
       .catch(() => { /* nothing saved, and the inputs are untouched */ });
   });
@@ -1920,11 +1938,14 @@ export async function main(edition?: Edition): Promise<void> {
     whereNow = place;
     howLongNow = minutes;
     // THIRD AXIS, SAME WRITER (2.26.0). It defaults to what is already set so
-    // every existing caller keeps its meaning — recalling a saved situation
-    // restores a place and a length and says nothing about who is with you,
-    // because a saved situation has no person in it. Adding one would widen
-    // `situation.saved`'s payload, which is a schema change this release does
-    // not need and is recorded in the plan instead of smuggled in here.
+    // every caller that does not care keeps its meaning.
+    //
+    // **A SAVED SITUATION DOES CARRY A PERSON NOW (3.15.0)**, and the paragraph
+    // here used to say the opposite and give the reason: adding one would widen
+    // `situation.saved`'s payload, which that release did not need. It was
+    // widened on purpose this time, additively, and the recall passes what it
+    // found — so the default is now for callers with nothing to say about who
+    // is with you, rather than for all of them.
     withNow = person;
     setWhereNow(whereNow);
     setHowLong(howLongNow);

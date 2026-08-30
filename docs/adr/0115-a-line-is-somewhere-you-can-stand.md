@@ -66,6 +66,12 @@ roll-ups by name and none of that arrives here.
 
 ## Still unbuilt, and named so it is not rediscovered
 
+**BUILT IN 3.14.0 — see [ADR-0117](0117-staleness-comes-to-you-or-it-is-not-a-finding.md).**
+`review.ts` gained `quietLines`, its first exception class that is not a fact
+about the tree. The paragraph below is left as written, because it is the
+argument that produced the record and reads better than a summary of it.
+
+
 `src/review.ts` computes its exceptions by walking the **tree** — `unfedGoals`
 walks `n.parent`, so "unfed" means no live work *beneath it in the tree*. It
 knows nothing about lines. **A line with nothing moving on it is therefore

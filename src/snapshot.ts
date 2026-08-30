@@ -28,7 +28,9 @@ export function serialiseState(s: State): unknown {
     lastReportMark: s.lastReportMark,
     lastActivityAt: s.lastActivityAt,
     modules: [...s.modules],
-    situations: [...s.situations].map(([name, v]) => ({ name, ...v })),
+    // `people` is copied out, not shared: a serialised record that aliased the
+    // folded state's array would let a later write reach through the snapshot.
+    situations: [...s.situations].map(([name, v]) => ({ name, ...v, people: [...v.people] })),
     requestSlot: s.requestSlot,
     requestSlotStamp: s.requestSlotStamp,
     timerMinutes: s.timerMinutes,
@@ -53,7 +55,7 @@ export function deserialiseState(raw: unknown): State {
     lastReportMark?: Record<string, number> | null;
     lastActivityAt?: string | null;
     modules?: string[];
-    situations?: { name: string; context: string | null; minutes: number | null }[];
+    situations?: { name: string; context: string | null; minutes: number | null; people?: string[] }[];
     requestSlot?: State['requestSlot'];
     requestSlotStamp?: State['requestSlotStamp'];
     timerMinutes?: State['timerMinutes'];
@@ -189,8 +191,12 @@ export function deserialiseState(raw: unknown): State {
     // is exactly what an empty map means. The three-place rule (clone,
     // deserialise, old-snapshot default) named in phase 1: a new State field
     // has to be handled in all three, and the compiler only catches two.
+    // `people` is the same shape one level down (3.15.0): a snapshot taken
+    // before it existed carries none, which is exactly what an empty list
+    // means. COPIED rather than referenced, like every other container here.
     situations: new Map((r.situations ?? []).map(x => [x.name, {
       context: x.context ?? null, minutes: x.minutes ?? null,
+      people: [...(x.people ?? [])],
     }])),
     // A pre-1.6.0 snapshot stored no modules — none were on, which is exactly
     // what an empty set says.

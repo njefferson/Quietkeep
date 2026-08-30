@@ -437,8 +437,18 @@ export interface State {
    * Last write wins per NAME, reached by replay rather than by a stamp key —
    * the `stakeholder.removed` discipline: fold sorts totally before applying,
    * so the result is a pure function of the event set and not of arrival order.
+   *
+   * **`people` arrived in 3.15.0 and is what makes a MEETING nameable.** Where
+   * you are and how long you have are two answers to one question; who is in
+   * the room is a third, and it is the one that was missing — a recurring
+   * meeting is exactly a place, a length and a set of faces. It is a LIST
+   * because a meeting has several, and that is the whole reason it could not
+   * ride on `where.now`'s single-valued shape.
+   *
+   * A situation saved before 3.15.0 folds to an empty list and behaves exactly
+   * as it did. Additive-only, like every migration here.
    */
-  situations: Map<string, { context: string | null; minutes: number | null }>;
+  situations: Map<string, { context: string | null; minutes: number | null; people: NodeId[] }>;
   /**
    * The one request slot, or null (1.8.0, ADR-0056). Stimulus control for
    * incoming demand: a weekday requests wait for, so they are not evaluated
@@ -1298,10 +1308,21 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
       case 'situation.saved': {
         const name = e.payload.name;
         if (typeof name !== 'string' || !name.trim()) break;
+        // WHO IS IN THE ROOM (3.15.0). Deduped and order-independent, because
+        // two saves naming the same three people in a different order are the
+        // same situation and a list that reordered would read as a change.
+        // Non-strings are dropped rather than stored: a bad id in this list
+        // would resolve to nobody every time it was read, which looks like a
+        // person who was let go and is not.
+        const raw = (e.payload as { people?: unknown }).people;
+        const people = Array.isArray(raw)
+          ? [...new Set(raw.filter((p): p is NodeId => typeof p === 'string' && !!p))].sort()
+          : [];
         s.situations.set(name, {
           context: typeof e.payload.context === 'string' && e.payload.context ? e.payload.context : null,
           minutes: Number.isFinite(e.payload.minutes) && (e.payload.minutes as number) > 0
             ? (e.payload.minutes as number) : null,
+          people,
         });
         break;
       }

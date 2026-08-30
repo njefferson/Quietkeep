@@ -749,6 +749,10 @@ const REGISTRY = {
   // that exercises the contrast registry's input handling.
   'place picker': ['.triage-gauge', '.triage-prompt', '.triage-card',
     '.route', '.route-label', '.route-hint'],
+  // WHERE IT CAN BE DONE (3.13.0). The place picker's shape on the other axis,
+  // registered in the same commit that built it or it ships unmeasured.
+  'context picker': ['.triage-gauge', '.triage-prompt', '.triage-card',
+    '.route', '.route-label', '.route-hint'],
   // What a just-routed "Do now" offers. The timer is an offering, not a gate,
   // so this state exists before any stopwatch is running — and it carries the
   // Done the flow previously had no way to express at all.
@@ -2679,6 +2683,24 @@ try {
     await auditNames(page, 'place picker', theme);
     await auditSeparationAndTargets(page, 'place picker', theme);
     await auditFocusRings(page, 'place picker', theme, ['#triage-actions .route']);
+
+    // State 3b-ii-b: WHERE IT CAN BE DONE (3.13.0). Reached from the card the
+    // way a reader reaches it — `data-route`, never the label, because both
+    // walks have been timed out by a rename before (LESSONS 180). Back out to
+    // the card afterwards so this section leaves the surface as it found it.
+    await page.locator('#triage-actions .route.ghost', { hasText: 'Back' }).first().click();
+    await page.waitForSelector('#triage-actions .route[data-route="add-context"]');
+    await page.locator('#triage-actions .route[data-route="add-context"]').first().click();
+    await page.waitForSelector('#triage-context-new');
+    await auditContrast(page, 'context picker', theme);
+    await auditAxe(page, 'context picker', theme);
+    await auditNames(page, 'context picker', theme);
+    await auditSeparationAndTargets(page, 'context picker', theme);
+    await auditFocusRings(page, 'context picker', theme, ['#triage-actions .route']);
+    await page.locator('#triage-actions .route.ghost', { hasText: 'Back' }).first().click();
+    await page.waitForSelector('#triage-actions .route[data-route="put-under"]');
+    await page.locator('#triage-actions .route[data-route="put-under"]').first().click();
+    await page.waitForSelector('#triage-place-new');
 
     // State 3b-iii: the filed receipt, carrying the question and its answer
     // (V2 stage 3). File into a NEW place — which is the branch that always has

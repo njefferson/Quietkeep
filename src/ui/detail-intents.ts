@@ -655,21 +655,35 @@ export const removeStakeholderEvents = (
 /**
  * Name the situation you are in, so it can be recalled (2.21.0).
  *
- * Either half may be null — "at the office, however long" and "twenty minutes,
- * anywhere" are both real situations, and demanding both would make the feature
- * useful only to somebody who happens to want both.
+ * ANY of the three may be absent — "at the office, however long", "twenty
+ * minutes, anywhere" and "with Sam and Ada, anywhere, however long" are all
+ * real situations, and demanding a full set would make the feature useful only
+ * to somebody who happens to want one.
  *
- * Saving under an existing name replaces it. One name, one situation, which is
- * what a name is for.
+ * `people` arrived in 3.15.0 and is what makes a MEETING nameable: a recurring
+ * meeting is a place, a length and a set of faces, and the third could not be
+ * stored. It is a LIST because a meeting has several, which is exactly why it
+ * could not ride on `with.now`'s single-valued shape.
+ *
+ * Saving under an existing name replaces it — WHOLE, including the people. One
+ * name, one situation, which is what a name is for, and a save that merged the
+ * old attendees with the new would make removing somebody impossible.
  */
 export const saveSituationEvents = (
   ctx: StampContext, name: string, context: string | null, minutes: number | null,
+  people: readonly string[] = [],
 ): AppEvent[] => {
   const clean = name.trim();
   if (!clean) return [];
+  // Deduped and sorted HERE as well as in the fold, and that is not belt and
+  // braces: the fold has to do it because a log can arrive from another device,
+  // and doing it here keeps the event that is written identical to the state it
+  // produces, so a diff of two saves is a diff of two situations.
+  const who = [...new Set(people.filter(p => !!p))].sort();
   // `null as never` for the node, the shape `enableModuleEvents` already uses:
   // this is a state-level fact and belongs to no node.
-  return [base(ctx, 'situation.saved', null as never, { name: clean, context, minutes })];
+  return [base(ctx, 'situation.saved', null as never,
+    { name: clean, context, minutes, ...(who.length > 0 ? { people: who } : {}) })];
 };
 
 /** "I do not recognise that situation any more." Scoped to one name, never a

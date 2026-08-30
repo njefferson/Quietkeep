@@ -9,7 +9,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { fold, type State } from '../src/fold.ts';
-import { stalled, orphaned, reviewExceptions, reviewWords, idleDays, REVIEW_CAP, unfedGoals, quietAreas, QUIET_DAYS } from '../src/review.ts';
+import { stalled, orphaned, reviewExceptions, reviewWords, idleDays, REVIEW_CAP, unfedGoals, quietAreas, quietLines, QUIET_DAYS } from '../src/review.ts';
 import type { AppEvent } from '../src/events.ts';
 
 const TZ = 'America/Denver';
@@ -269,4 +269,124 @@ test('1.6.0: PARTITION — across all four classes, no node is listed twice', ()
   // The ranking: structural breaks, then decisions waiting, then rhythm.
   assert.equal(v.shown[0]!.node.id, 'C', 'the orphan leads');
   assert.equal(v.shown.length, REVIEW_CAP, 'law 8 holds whatever the classes add');
+});
+
+
+// --- quiet lines (3.14.0) --------------------------------------------------
+//
+// The first exception class that is not a fact about the tree. Every assertion
+// below was planted; the plants that carry weight are named on the ones they
+// belong to.
+
+const role = (id: string, name: string): AppEvent => ev('role.created', id, { name });
+const wears = (n: string, r: string): AppEvent => ev('role.attached', n, { node: n, role: r });
+
+test('a role that has never carried anything is not stale — it is new', () => {
+  const s = st(role('R', 'The photography'));
+  assert.deepEqual(quietLines(s), [],
+    'naming six roles on a fresh store must not report six problems');
+  // PLANT: dropping the `carriers.length === 0` guard turns this red, which is
+  // the plant that matters — it is the failure mode that would make somebody
+  // stop opening the surface on their first day.
+});
+
+test('a role carrying live work is not quiet', () => {
+  const s = st(role('R', 'The photography'), mk('A', 'action', 'develop the roll'), wears('A', 'R'));
+  assert.deepEqual(quietLines(s), []);
+});
+
+test('a role whose work is all finished says so, and says nothing else', () => {
+  const s = st(
+    role('R', 'The photography'),
+    mk('A', 'action', 'develop the roll'), wears('A', 'R'),
+    ev('done.marked', 'A', { at: NOW }),
+  );
+  const out = quietLines(s);
+  assert.equal(out.length, 1);
+  assert.equal(out[0]!.node.id, 'R');
+  assert.equal(out[0]!.words, 'everything on it is finished');
+  // Not "you have done nothing since", not a duration, not a count. The words
+  // state what is true and stop, exactly as `stalled`'s two branches do.
+  assert.ok(!/\b(day|week|month|since|ago|behind|should)\b/i.test(out[0]!.words),
+    'no clock and no rebuke reaches this line');
+});
+
+test('a role carried only by a container with nothing moving under it is quiet', () => {
+  const s = st(
+    role('R', 'The photography'),
+    mk('P', 'project', 'the darkroom'), wears('P', 'R'),
+  );
+  const out = quietLines(s);
+  assert.equal(out.length, 1);
+  assert.equal(out[0]!.words, 'nothing on it is moving');
+});
+
+test('a role tagged on the project, with a live action directly beneath, is NOT quiet', () => {
+  const s = st(
+    role('R', 'The photography'),
+    mk('P', 'project', 'the darkroom'), wears('P', 'R'),
+    mk('A', 'action', 'order fixer', 'P'),
+  );
+  assert.deepEqual(quietLines(s), [],
+    'tagging the project instead of every action under it is the ordinary way to use a role');
+});
+
+test('THE TRANSITIVE CASE — the live work is TWO levels below the tagged container', () => {
+  const s = st(
+    role('R', 'The photography'),
+    mk('G', 'goal', 'a body of work'), wears('G', 'R'),
+    mk('P', 'project', 'the darkroom', 'G'),
+    mk('A', 'action', 'order fixer', 'P'),
+  );
+  assert.deepEqual(quietLines(s), [],
+    'a role on a goal, fed through a project — the shape `unfedGoals` exists to get right');
+  // PLANT, and the first version of this test did NOT carry it: written one
+  // level deep, a direct-children check passed it, so it asserted nothing the
+  // shallow version would have failed. Two levels is what makes replacing
+  // `liveBeneath(n.id)` with `(childrenOf.get(n.id) ?? []).some(isLiveWork)` go
+  // red — measured, not assumed. The one-level case above stays, because it is
+  // the ordinary shape and a walk that broke on it would be worse.
+});
+
+test('a role whose only work sits on the Menu is quiet — the Menu is demand-free', () => {
+  const s = st(
+    role('R', 'The photography'),
+    mk('A', 'action', 'reprint the portfolio'), wears('A', 'R'),
+    ev('menu.item.added', 'A', { category: 'make' }),
+  );
+  const out = quietLines(s);
+  assert.equal(out.length, 1, 'law 6 says a Menu item makes no demand, so nothing is running on it');
+  assert.equal(out[0]!.words, 'nothing on it is moving');
+});
+
+test('a quiet line joins the surface, ranked below unfed goals and above quiet areas', () => {
+  const s = st(
+    mk('G', 'goal', 'a calmer house'),
+    role('R', 'The photography'),
+    mk('A', 'action', 'develop the roll'), wears('A', 'R'),
+    ev('done.marked', 'A', { at: NOW }),
+  );
+  const v = reviewExceptions(s, NOW, TZ);
+  assert.equal(v.quietLines.length, 1);
+  assert.equal(v.unfed.length, 1);
+  assert.ok(v.total >= 2);
+  const ids = v.shown.map(x => x.node.id);
+  assert.ok(ids.indexOf('G') < ids.indexOf('R'), 'the stated end outranks the hat worn to serve it');
+});
+
+test('a let-go role leaves the surface with no migration', () => {
+  const s = st(
+    role('R', 'The photography'),
+    mk('A', 'action', 'develop the roll'), wears('A', 'R'),
+    ev('done.marked', 'A', { at: NOW }),
+  );
+  assert.equal(quietLines(s).length, 1);
+  const gone = st(...[
+    role('R', 'The photography'),
+    mk('A', 'action', 'develop the roll'), wears('A', 'R'),
+    ev('done.marked', 'A', { at: NOW }),
+    ev('node.released', 'R', { at: NOW }),
+  ]);
+  assert.deepEqual(quietLines(gone), [],
+    '`allRoles` resolves through state, so letting a role go removes it everywhere at once');
 });
