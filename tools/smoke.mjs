@@ -7847,7 +7847,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const toClarify = await clarifyCard(tpage, {
     want: 'the clarify pass', capture: 'the thing in the shed',
   });
-  const wanted = () => tpage.locator('#triage-actions .route', { hasText: 'Put it somewhere' });
+  const wanted = () => tpage.locator('#triage-actions .route[data-route="put-under"]');
   if (!toClarify.ok || await wanted().count() === 0) {
     const offered = await tpage.locator('#triage-actions .route').allTextContents().catch(() => []);
     bad(`never reached the clarify pass — ${JSON.stringify(toClarify)}, offered ${JSON.stringify(offered.map((t) => t.trim().slice(0, 24)))}`);
@@ -7859,7 +7859,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // and the check caught it by naming what the place really held.
   const filedTitle = (await tpage.locator('#triage-card').textContent()) || '';
   await intoJob(tpage, 'triage');
-  await tpage.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
+  await tpage.locator('#triage-actions .route[data-route="put-under"]').first().click();
   await tpage.waitForSelector('#triage-place-new');
   await tpage.fill('#triage-place-new', 'The shed');
   await intoJob(tpage, 'triage');

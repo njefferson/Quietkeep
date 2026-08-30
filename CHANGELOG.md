@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.11.1 — ITERATION
+
+*2026-08-30*
+
+- **Filing something while sorting now says what it files it into.** The button said *Put it somewhere* — *into a place* — and it does not file into a place: it files into a project, an area or a goal. It says **Put it under something**, and the question it then asks is the one the item’s own panel has always asked: *What is this part of?*
+- **A place is a different thing in this app, and now only one thing.** A place is where work can be DONE — at home, out, on the phone. Using the same word for the box you file into meant the two questions you might be asking sounded identical, and the reference page hedged between them in writing.
+- **Nothing moved.** Same button, same position, same six choices beside it.
+
 ## 3.11.0 — CAPABILITY
 
 *2026-08-30*

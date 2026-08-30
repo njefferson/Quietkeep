@@ -742,7 +742,11 @@ export function mountTriage(
       .filter(n => !n.trashed && !n.mergedInto && CONTAINER_KINDS.has(n.kind) && n.id !== nodeId)
       .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
 
-    PROMPT.textContent = 'Where does it go?';
+    // THE DETAIL SHEET'S OWN QUESTION (3.11.1). It read "Where does it go?",
+    // which is the place question and this is the container one. `#detail-parent`
+    // has asked "What is this part of?" all along, and two surfaces asking one
+    // question in two words is how the vocabulary came apart in the first place.
+    PROMPT.textContent = 'What is this part of?';
     CARD.textContent = text;
 
     const back = el('button', 'route ghost');
@@ -877,10 +881,29 @@ export function mountTriage(
     // WHERE, offered beside the six WHENs. Last in the row because the common
     // case is still "when", and first-class rather than buried because for an
     // imported backlog it is the only question that matters.
+    //
+    // AND IT SAID "PLACE" FOR A THING THAT IS NOT ONE (3.11.1). It files into a
+    // CONTAINER — `renderPlaces` filters `CONTAINER_KINDS`, so a project, an
+    // outcome, an area or a goal — and it called that "a place". But *place* is
+    // already taken, by the app, for something else entirely: `kind-words.ts`
+    // has `context: 'A place'` with the comment "where work can be DONE, which
+    // is not a thing to do", and two live controls on the same page say `Narrow
+    // the places` to a screen reader about exactly those.
+    //
+    // So the two questions somebody asked for — *where can this be done* and
+    // *what is this part of* — were one word on this card, and the flowcharts
+    // page hedged between them in writing: "file it under a place or a project".
+    // It takes the detail sheet's own words now, which is the vocabulary the
+    // rest of the app already teaches.
+    //
+    // `data-route` so the walks stop keying on the label. Both of them waited
+    // for the literal "Put it somewhere", which is the gate-pins-the-defect
+    // shape this repo has already paid for twice (LESSONS 180).
     const put = el('button', 'route');
     put.type = 'button';
-    put.append(el('span', 'route-label', 'Put it somewhere'),
-      el('span', 'route-hint', 'into a place — make one if it is not there'));
+    put.dataset.route = 'put-under';
+    put.append(el('span', 'route-label', 'Put it under something'),
+      el('span', 'route-hint', 'a project, area or goal — make one if it is not there'));
     put.addEventListener('click', () => renderPlaces(nodeId, text, kind, heat));
     ACTIONS.append(put);
     // And the way past, last of all: every answer first, then the way out for

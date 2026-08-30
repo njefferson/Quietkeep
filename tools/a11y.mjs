@@ -2667,7 +2667,7 @@ try {
     // identity: a control's place in a row is a layout decision and will move
     // again.
     await enterStance(page, 'triage');
-    await page.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
+    await page.locator('#triage-actions .route[data-route="put-under"]').first().click();
     await page.waitForSelector('#triage-place-new');
     await auditContrast(page, 'place picker', theme);
     await auditAxe(page, 'place picker', theme);
@@ -2704,7 +2704,7 @@ try {
     await page.waitForSelector('#triage-actions .route .route-hint');
 
     await enterStance(page, 'triage');
-    await page.locator('#triage-actions .route', { hasText: 'Put it somewhere' }).first().click();
+    await page.locator('#triage-actions .route[data-route="put-under"]').first().click();
     await page.waitForSelector('#triage-place-new');
     await page.evaluate(() => document.querySelector('#triage-actions .route')?.click()); // Back
     await page.waitForSelector('#triage-actions .route .route-hint');

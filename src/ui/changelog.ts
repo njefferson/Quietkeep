@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.11.1',
+    kind: 'ITERATION',
+    date: '2026-08-30',
+    notes: [
+      '**Filing something while sorting now says what it files it into.** The button said *Put it somewhere* \u2014 *into a place* \u2014 and it does not file into a place: it files into a project, an area or a goal. It says **Put it under something**, and the question it then asks is the one the item\u2019s own panel has always asked: *What is this part of?*',
+      '**A place is a different thing in this app, and now only one thing.** A place is where work can be DONE \u2014 at home, out, on the phone. Using the same word for the box you file into meant the two questions you might be asking sounded identical, and the reference page hedged between them in writing.',
+      '**Nothing moved.** Same button, same position, same six choices beside it.',
+    ],
+  },
+  {
     triplet: '3.11.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',

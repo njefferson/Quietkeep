@@ -840,7 +840,35 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.11.0**. Each
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.11.1**. The card's
+  filing route says what it files into, and *place* means one thing again.
+  **HALF OF THE COMPLAINT DISSOLVED ON INSPECTION, AND THE OTHER HALF EXPLAINS
+  IT.** Reported as *place and project are both buried in the detail sheet — open
+  the sheet, expand, scroll*. But **what is this part of was never buried**: it
+  is a first-class route on the sorting card, beside the six WHENs, with its own
+  comment saying it is "first-class rather than buried because for an imported
+  backlog it is the only question that matters".
+  **IT WAS WEARING THE OTHER QUESTION'S WORD.** The route files into a CONTAINER
+  — `renderPlaces` filters `CONTAINER_KINDS`, so a project, outcome, area or
+  goal — and it said *into a place*. **A place is already something else in this
+  app**: `kind-words.ts` has `context: 'A place'`, commented "where work can be
+  DONE, which is not a thing to do", and two live controls on the same page say
+  `Narrow the places` to a screen reader about exactly those. So the two
+  questions somebody might be asking sounded identical on the one surface where
+  both matter, and the reachable one read as the unreachable one.
+  **THE FLOWCHARTS PAGE HAD THE CONFUSION IN WRITING** — "file it under a place
+  or a project" — hedging between the two rather than naming either.
+  **THIS IS THE SAME COLLISION THAT KILLED `Other places` AS A DOOR NAME IN
+  3.9.2**, one release and one surface apart, found the same way and from the
+  app's own vocabulary rather than from another product's.
+  **AND BOTH WALKS KEYED ON THE LABEL**, so renaming it would have timed them
+  out — LESSONS 180 for the third time. `data-route="put-under"` now.
+  **STILL OPEN AND NOT DECIDED HERE:** *where can this be done* — the context —
+  is genuinely not on the card, only in the detail sheet. Adding a route for it
+  is a new control on a deliberately spare surface with the control budget at
+  exactly 258 of 258, so it is a raise with a design argument behind it rather
+  than something to slip in beside a copy fix.
+- **Superseded, and kept for the record: 3.11.0.** Each
   planner brought in is its own named set to work through (ADR-0114).
   **TWO IMPORTS WERE ONE LUMP, AND SO WAS THE SAMPLE SET.** A second file
   diluted the first and neither could be worked through on its own — reported in
