@@ -840,7 +840,34 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.14.0**. A line
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.15.0**. A
+  situation can name who is in the room (ADR-0118).
+  **A MEETING IS A PLACE, A LENGTH AND A SET OF FACES, AND ONLY TWO WERE
+  STORABLE.** The situation shortcut has held where-you-are and how-long since
+  2.21.0, and the one case it exists for — a recurring meeting — was the case it
+  could not express. `nd-collisions` entry 24 already recorded it, and 2.26.0
+  left the seam open in `setSituation`'s own comment, saying in as many words
+  that adding a person would widen the payload and that release did not need it.
+  **A LIST, AND THAT IS WHY IT NEEDED A SCHEMA CHANGE AT ALL.** `where.now` and
+  `with.now` are single-valued device preferences. A meeting has several people,
+  and narrowing a working surface to one of them answers a different question —
+  so what will eventually read the whole set is an inspection mode, the rule
+  ADR-0115 and horizon-models §3 already state.
+  **THE SHEET WRITES ONE, ON PURPOSE.** Whoever the existing filter holds. A
+  multi-select whose only consumer is a one-person filter is a control that does
+  nothing, which is ADR-0116's emergence rule; the picker for several arrives
+  with the surface that reads several.
+  **A CLOSED-SHAPE TEST CAUGHT THE WIDENING, WHICH IS WHAT IT IS FOR.** The
+  situation record is asserted to have an exact key list so there is nowhere to
+  keep a usage record. Adding `people` broke it, correctly; the assertion now
+  names three keys and still refuses a fourth.
+  **SIX PLANTS, AND THE FIRST ONE FAILED TO FAIL.** The write intent sorts
+  before it writes, so the test for order-independence passed with the fold's own
+  sort deleted — it went through the intent and never reached the fold. The fold
+  normalises for a log that arrived from ANOTHER DEVICE, and the only way to test
+  that is a raw event: unsorted, with a repeat and a non-string in the list. Two
+  more on the browser walk separate the save side from the recall side.
+- **Superseded, and kept for the record: 3.14.0.** A line
   that has gone quiet comes and tells you (ADR-0117).
   **REVIEW HAS COMPUTED EXCEPTIONS SINCE v1 AND EVERY CLASS WAS A FACT ABOUT THE
   TREE.** `stalled`, `orphaned`, `unfedGoals` and `quietAreas` all walk

@@ -8427,6 +8427,43 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     is(await tpage.locator('#how-long').inputValue(), '30',
       'recalling it sets the inputs back in one tap');
 
+    // WHO IS WITH YOU SURVIVES THE ROUND TRIP (3.15.0) — the third thing this
+    // sheet sets and the only one a saved situation could not carry.
+    //
+    // The sample names exactly one person, so `#with-row` is showing and the
+    // select has two options. ASSERTED rather than assumed: a store with nobody
+    // in it would hide the row, and every check below it would then be true of
+    // a control that was not there — the shape of the unfalsifiable assertion
+    // this walk has already been caught making once.
+    const withOptions = await tpage.locator('#with-who option').count();
+    is(withOptions, 2, 'the sample names one person, so the chooser offers them and nobody');
+    const someone = await tpage.locator('#with-who option').nth(1).getAttribute('value');
+    await tpage.selectOption('#with-who', someone);
+    await settled(tpage, 200);
+    await tpage.fill('#situation-name', 'The Alex catch-up');
+    await tpage.click('#situation-save');
+    await settled(tpage, 250);
+    await tpage.selectOption('#with-who', '');
+    await settled(tpage, 200);
+    is(await tpage.locator('#with-who').inputValue(), '',
+      'the person is cleared, so recalling it has something to restore');
+    await tpage.locator('#situation-list .linklike', { hasText: 'The Alex catch-up' }).click();
+    await settled(tpage, 250);
+    is(await tpage.locator('#with-who').inputValue(), someone,
+      'and recalling the situation puts them back');
+    // The row says so in words too, which is the half a restored input cannot
+    // show: somebody reading the list before tapping it needs to know who it
+    // names.
+    const saidWho = await tpage.locator('#situation-list li', { hasText: 'The Alex catch-up' })
+      .locator('.roles-held').textContent();
+    is(/\bwith \S/.test(saidWho || ''), true,
+      `the saved row names who is in it ("${(saidWho || '').slice(0, 40)}")`);
+    await tpage.locator('#situation-list li', { hasText: 'The Alex catch-up' })
+      .locator('.ghost').click();
+    await settled(tpage, 250);
+    await tpage.selectOption('#with-who', '');
+    await settled(tpage, 200);
+
     await tpage.click('#situation-list .ghost');
     await settled(tpage, 250);
     is(await tpage.locator('#situation-list li').count(), 0,

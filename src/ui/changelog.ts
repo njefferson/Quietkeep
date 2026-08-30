@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.15.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**A situation you name now remembers who you are with.** *What\u2019s the situation?* has always set three things \u2014 where you are, how long you have, and who you are with \u2014 and *Remember it* only ever saved the first two. Save one now and all three come back in one tap.',
+      '**Which is what a recurring meeting actually is.** A place, a length, and who is in the room. Two of the three were storable and the third was not, so the one case this shortcut exists for was the one it could not hold.',
+      '**The saved row says who it names**, so you can tell two of them apart before you tap one \u2014 *the office, 1h, with Ada*.',
+      '**Somebody you have let go stops being named**, and the situation still works. It recalls the place and the time and simply says nothing about them. A situation whose people have all gone reads as nobody, not as broken.',
+      '**Nothing you already saved changed.** A situation named before this has nobody in it and behaves exactly as it did.',
+      '**Still not right:** it saves the one person the chooser holds, and a real meeting has several. Choosing several comes with the screen that can show you a meeting \u2014 a list of people with nothing able to read it yet would be a control that does nothing.',
+    ],
+  },
+  {
     triplet: '3.14.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',

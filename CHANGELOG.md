@@ -14,6 +14,17 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.15.0 — CAPABILITY
+
+*2026-08-30*
+
+- **A situation you name now remembers who you are with.** *What’s the situation?* has always set three things — where you are, how long you have, and who you are with — and *Remember it* only ever saved the first two. Save one now and all three come back in one tap.
+- **Which is what a recurring meeting actually is.** A place, a length, and who is in the room. Two of the three were storable and the third was not, so the one case this shortcut exists for was the one it could not hold.
+- **The saved row says who it names**, so you can tell two of them apart before you tap one — *the office, 1h, with Ada*.
+- **Somebody you have let go stops being named**, and the situation still works. It recalls the place and the time and simply says nothing about them. A situation whose people have all gone reads as nobody, not as broken.
+- **Nothing you already saved changed.** A situation named before this has nobody in it and behaves exactly as it did.
+- **Still not right:** it saves the one person the chooser holds, and a real meeting has several. Choosing several comes with the screen that can show you a meeting — a list of people with nothing able to read it yet would be a control that does nothing.
+
 ## 3.14.0 — CAPABILITY
 
 *2026-08-30*
