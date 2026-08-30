@@ -29,6 +29,20 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.16.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**You can name a meeting and open the room.** *Who is in it?* on the situation sheet names the people; save it, and the saved row gains **See what is in the room**. Inside: each person who will be there, and everything still outstanding with them \u2014 what you owe them, what you are waiting on them for, what they asked for, what they care about. Underneath, the parts of your tree and the lines that work sits on.',
+      '**It is somewhere you look, not a filter.** Nothing is hidden from any other screen while it is open and closing it changes nothing. Standing on a line works the same way, and for the same reason: a filter leaves you with two lists and something to remember.',
+      '**Somebody with nothing outstanding stays in the room and says so.** Walking in knowing that is worth as much as walking in with a list.',
+      '**A thing that involves two people in the room shows under both**, because both of them are expecting it \u2014 and the count at the top still says one thing, not two.',
+      '**Nothing in it grades anybody.** No number beside a name in a roster, no ordering the people by how much you owe each of them, no colour. The people are in name order whoever is carrying more.',
+      '**And *On this page* now comes before *Elsewhere in the app*.** Reported. You cannot be elsewhere until there is a here, and the far door was reached first by anyone tabbing forward.',
+      '**Still not right:** the room can only show you what you have already written down about people and work. The things that actually take the most tracking \u2014 a post you cannot advertise yet, a temporary promotion running out \u2014 have nowhere to live in this app at all, and no screen fixes that.',
+    ],
+  },
+  {
     triplet: '3.15.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',

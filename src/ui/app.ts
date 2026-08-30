@@ -10,7 +10,7 @@
 
 import { openSession, captureEvent, type Session } from './session.ts';
 import type { AppEvent } from '../events.ts';
-import { coverageGauge, heldWork } from '../gate.ts';
+import { coverageGauge, heldWork, heldNodes } from '../gate.ts';
 import type { NodeState } from '../fold.ts';
 import { mountAbout } from './about.ts';
 import { mountTour } from './tour.ts';
@@ -45,6 +45,7 @@ import {
 } from '../horizons.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
+import { meetingView, meetingViewWords, meetingPersonWords } from '../meeting.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
@@ -1463,6 +1464,52 @@ export async function main(edition?: Edition): Promise<void> {
   // shortcut somebody made for themselves, and any of those would turn it into
   // a record of their habits — which is what law 7 keeps this app out of, and
   // the nagging law 8 makes lapse-tolerant.
+  // WHO IS IN IT (3.16.0). Held here rather than read off the DOM at save time
+  // for the reason every other input on this sheet is: the toggles are repainted
+  // whenever the sheet opens, and a set recovered from the buttons would be the
+  // set the last repaint drew rather than the set the reader chose.
+  //
+  // SEEDED from the single-valued filter, and only while the reader has not
+  // touched it. Somebody who never opens this control gets exactly 3.15.0's
+  // behaviour; the moment they toggle anything, this is the answer and the
+  // filter stops feeding it — otherwise turning the last person OFF would put
+  // them straight back.
+  let whoInIt: string[] | null = null;
+  // WHICH situation the room is for. Held rather than passed, because a sheet
+  // is opened by name and `onSheetOpen` takes no argument — the same shape the
+  // other sheets that paint on open already use.
+  let meetingOf: string | null = null;
+  const whoChosen = (): string[] => whoInIt ?? (withNow ? [withNow] : []);
+
+  const paintSituationWho = (): void => {
+    const row = document.querySelector<HTMLElement>('#situation-who-row');
+    const box = document.querySelector<HTMLElement>('#situation-who');
+    if (!row || !box) return;
+    const named = allPeople(session.state());
+    row.hidden = named.length === 0;
+    if (named.length === 0) return;
+    const on = new Set(whoChosen());
+    box.replaceChildren(...named.map(p => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ghost situation-who-one';
+      // `aria-pressed` rather than a checkbox: it is a toggle that acts at once
+      // and has no form to submit, which is exactly what that role is for. The
+      // NAME stays the person's name in both states — a label that changed to
+      // "Remove Ada" would make the button announce a different thing depending
+      // on state, which is the trap the roles row was found in.
+      b.setAttribute('aria-pressed', on.has(p.id) ? 'true' : 'false');
+      b.textContent = p.title || '(unnamed)';
+      b.addEventListener('click', () => {
+        const next = new Set(whoChosen());
+        if (next.has(p.id)) next.delete(p.id); else next.add(p.id);
+        whoInIt = [...next].sort();
+        paintSituationWho();
+      });
+      return b;
+    }));
+  };
+
   const paintSituations = (): void => {
     const st = session.state();
     const list = document.querySelector<HTMLUListElement>('#situation-list');
@@ -1510,10 +1557,97 @@ export async function main(edition?: Edition): Promise<void> {
           .catch(() => { /* the list simply does not change */ });
       });
       li.append(go, what, off);
+      // THE ROOM, ON ITS OWN LINE (3.16.0). Only when the situation still names
+      // somebody: a door onto an empty room is the chooser-with-nothing-in-it
+      // mistake one surface out, and ADR-0116 says a surface exists when it
+      // holds something.
+      //
+      // A SECOND LINE rather than a fourth control beside the name, the words
+      // and Forget it. That row is already three across at the 44px floor, and
+      // a fourth is the wrap that put two boxes on top of each other with no gap
+      // in the flowchart footer — refused by the walk as a mis-tap.
+      const live = allPeople(st);
+      if (saved.people.some(id => live.some(p => p.id === id))) {
+        const room = document.createElement('button');
+        room.type = 'button';
+        room.className = 'ghost situation-room';
+        room.textContent = 'See what is in the room';
+        room.addEventListener('click', () => { meetingOf = nm; openSheet('sheet-meeting'); });
+        li.append(room);
+      }
       return li;
     }));
   };
-  onSheetOpen('sheet-situation', paintSituations);
+  // WHAT THIS MEETING IS ABOUT (3.16.0, ADR-0119). Painted on open, like every
+  // sheet here: a list built once reports the store as it was when the app
+  // started, and the whole value of this one is that it is true on the way in.
+  const paintMeeting = (): void => {
+    const st = session.state();
+    const saved = meetingOf === null ? undefined : st.situations.get(meetingOf);
+    const v = meetingView(st, saved?.people ?? [], heldNodes);
+    const title = document.querySelector<HTMLElement>('#sheet-meeting-title');
+    // The situation's own name, because "In the room" twice over says nothing
+    // about WHICH room and somebody with three saved meetings needs to know.
+    if (title) title.textContent = meetingOf ? `In the room: ${meetingOf}` : 'In the room';
+    const words = document.querySelector<HTMLElement>('#meeting-words');
+    if (words) words.textContent = meetingViewWords(v);
+
+    const people = document.querySelector<HTMLUListElement>('#meeting-people');
+    if (people) {
+      people.replaceChildren(...v.people.map(mp => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        name.textContent = mp.person.title || '(unnamed)';
+        const count = document.createElement('span');
+        count.className = 'roles-held';
+        count.textContent = meetingPersonWords(mp);
+        li.append(name, count);
+        // Each thing is a door onto its own sheet — the one route into a node
+        // that the tree rows, the coverage list, search and the roles readout
+        // all take. A room you can only read is a room you have to leave to act.
+        for (const n of mp.work) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'linklike meeting-thing';
+          b.textContent = n.title || '(untitled)';
+          b.addEventListener('click', () => {
+            const fresh = session.state().nodes.get(n.id);
+            if (fresh) detail.open(fresh);
+          });
+          li.append(b);
+        }
+        return li;
+      }));
+    }
+    const fill = (labelId: string, listId: string, nodes: readonly NodeState[]): void => {
+      const label = document.querySelector<HTMLElement>(labelId);
+      const list = document.querySelector<HTMLUListElement>(listId);
+      if (label) label.hidden = nodes.length === 0;
+      if (!list) return;
+      list.replaceChildren(...nodes.map(n => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'roles-name linklike';
+        b.textContent = n.title || '(untitled)';
+        b.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(n.id);
+          if (fresh) detail.open(fresh);
+        });
+        li.append(b);
+        return li;
+      }));
+    };
+    fill('#meeting-crosses-label', '#meeting-crosses', v.crosses);
+    fill('#meeting-lines-label', '#meeting-lines', v.lines);
+  };
+  onSheetOpen('sheet-meeting', paintMeeting);
+  wireSheetClose('sheet-meeting');
+
+  onSheetOpen('sheet-situation', () => { paintSituationWho(); paintSituations(); });
   wireSheetClose('sheet-situation');
   document.querySelector<HTMLButtonElement>('#situation-open')
     ?.addEventListener('click', () => { openSheet('sheet-situation'); });
@@ -1530,8 +1664,8 @@ export async function main(edition?: Edition): Promise<void> {
     // stored shape is a list because a MEETING has several — the picker for
     // several arrives with the surface that reads them, not before it.
     void session.commit(ctx =>
-      saveSituationEvents(ctx, name, whereNow, howLongNow, withNow ? [withNow] : []))
-      .then(() => paintSituations())
+      saveSituationEvents(ctx, name, whereNow, howLongNow, whoChosen()))
+      .then(() => { whoInIt = null; paintSituationWho(); paintSituations(); })
       .catch(() => { /* nothing saved, and the inputs are untouched */ });
   });
 

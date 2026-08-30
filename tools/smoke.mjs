@@ -8427,6 +8427,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     is(await tpage.locator('#how-long').inputValue(), '30',
       'recalling it sets the inputs back in one tap');
 
+    await tpage.click('#situation-list .ghost');
+    await settled(tpage, 250);
+    is(await tpage.locator('#situation-list li').count(), 0,
+      'and it can be forgotten');
+    is(await tpage.locator('#how-long').inputValue(), '30',
+      'AND FORGETTING IT LEAVES THE SITUATION SET — the shortcut goes, not the answer');
+
     // WHO IS WITH YOU SURVIVES THE ROUND TRIP (3.15.0) — the third thing this
     // sheet sets and the only one a saved situation could not carry.
     //
@@ -8458,18 +8465,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       .locator('.roles-held').textContent();
     is(/\bwith \S/.test(saidWho || ''), true,
       `the saved row names who is in it ("${(saidWho || '').slice(0, 40)}")`);
-    await tpage.locator('#situation-list li', { hasText: 'The Alex catch-up' })
-      .locator('.ghost').click();
-    await settled(tpage, 250);
-    await tpage.selectOption('#with-who', '');
-    await settled(tpage, 200);
 
-    await tpage.click('#situation-list .ghost');
-    await settled(tpage, 250);
-    is(await tpage.locator('#situation-list li').count(), 0,
-      'and it can be forgotten');
-    is(await tpage.locator('#how-long').inputValue(), '30',
-      'AND FORGETTING IT LEAVES THE SITUATION SET — the shortcut goes, not the answer');
+    // AND IT IS LEFT SAVED ON PURPOSE (3.16.0). `#sheet-meeting` declares its
+    // door as this row's `See what is in the room`, which renders only while a
+    // saved situation still names a live person — so deleting this one here
+    // would leave the way-out check reporting a surface it could not open,
+    // pointing at the sheet rather than at the walk that tidied up after itself.
+    is(await tpage.locator('#situation-list .situation-room').count() > 0, true,
+      'a situation that names somebody offers the room, which is the meeting sheet door');
+
+
     await tpage.selectOption('#how-long', '');
     await tpage.click('#sheet-situation-close');
     await tpage.waitForSelector('#sheet-situation', { state: 'hidden' });

@@ -876,6 +876,28 @@ const REGISTRY = {
   // you are' has one: the door and the readout render only once a role exists,
   // so registering them on a state whose store has none would be three false
   // receipts — the failure `#nextup-left` already cost a release for.
+  // WHO IS IN IT (3.16.0, ADR-0119). ITS OWN STATE, not folded into 'the
+  // situation' above, for the reason that entry's own note gives: the row is
+  // hidden until somebody has been named and the situation sheet is walked
+  // before anybody has. Registering it there would be three false receipts.
+  // The room's DOOR is measured here and not with the room, because opening the
+  // room closes the sheet the door is on (ADR-0083 forbids stacked modals) — so
+  // a registry entry for it on that state matches nothing visible, which is
+  // exactly what the gate said the first time this was wired.
+  'who is in it': ['#situation-who-label', '#situation-who .situation-who-one',
+    '#situation-who-hint', '#situation-list .situation-room'],
+  // THE ROOM (3.16.0, ADR-0119). The door is registered HERE rather than with
+  // the situation sheet for the same reason: `.situation-room` renders only on
+  // a saved situation that still names a live person.
+  //
+  // `#meeting-crosses-label` and `#meeting-lines-label` are deliberately ABSENT.
+  // Both render only when the room's work sits under a horizon or carries a
+  // role, and the thing driven into this room is a plain action with neither —
+  // so naming them would be a receipt for something that is not on screen. What
+  // that costs is written in ADR-0119 rather than left to be discovered.
+  'in the room': ['#sheet-meeting-title',
+    '#sheet-meeting-close', '#meeting-words', '#meeting-people .roles-name',
+    '#meeting-people .roles-held', '#meeting-people .meeting-thing'],
   'where the attention is': ['#roles-open'],
   // WHERE THE TIME ACTUALLY WENT joined this in 2.24.0, by ID. The two lists in
   // this sheet share `.roles-name` and `.roles-held`, and the note below is the
@@ -4172,8 +4194,74 @@ try {
     await auditFocusRings(page, 'who is here', theme, ['#with-who']);
     await page.selectOption('#with-who', '');
     await page.waitForSelector('#with-note', { state: 'hidden' });
-    await page.click('#sheet-situation-close');
-    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
+
+    // WHO IS IN IT, AND THE ROOM IT OPENS (3.16.0, ADR-0119).
+    //
+    // DRIVEN HERE for the same reason the block above is: `#situation-who-row`
+    // is hidden until somebody has been named, and `.situation-room` renders
+    // only once a saved situation still names a live person. A registry entry
+    // for either before that point is a false receipt, which is what 2.24.0
+    // cost and what this whole placement rule exists to prevent.
+    //
+    // The room is opened from the SAVED ROW rather than by calling the sheet
+    // directly, because the door existing is half of what is being measured —
+    // a surface reachable only by a walk that knows its id is a surface a
+    // reader does not have.
+    await page.waitForSelector('#situation-who-row:not([hidden])');
+    const whoBtn = page.locator('#situation-who .situation-who-one', { hasText: 'Rowan' });
+    (await whoBtn.getAttribute('aria-pressed') === 'false' ? pass : fail)(
+      `${theme}/who is in it: it starts off, because the filter above was cleared`);
+    await whoBtn.click();
+    await page.waitForTimeout(150);
+    (await whoBtn.getAttribute('aria-pressed') === 'true' ? pass : fail)(
+      `${theme}/who is in it: toggling says so in aria-pressed, not only in colour`);
+    // SAVED BEFORE THE AUDITS, so the row's `See what is in the room` is on
+    // screen for them. It cannot be measured with the room itself: opening the
+    // room closes this sheet, so the door is gone by then.
+    await page.fill('#situation-name', 'The Rowan catch-up');
+    await page.click('#situation-save');
+    await page.waitForSelector('#situation-list .situation-room');
+    await auditContrast(page, 'who is in it', theme);
+    await auditAxe(page, 'who is in it', theme);
+    await auditNames(page, 'who is in it', theme);
+    await auditSeparationAndTargets(page, 'who is in it', theme);
+    await auditFocusRings(page, 'who is in it', theme,
+      ['#situation-who .situation-who-one', '#situation-list .situation-room']);
+
+    await page.click('#situation-list .situation-room');
+    await page.waitForSelector('#sheet-meeting[open]');
+    // AND THE SHEET BEHIND IT IS GONE. `openSheet` calls `closeEverything`
+    // because two stacked modals is the overlap ADR-0083 forbids, so the door
+    // hands the reader ON rather than piling a surface on a surface — the same
+    // thing the roles readout does opening a node. Asserted rather than assumed:
+    // the first version of this walk clicked the situation sheet's Close after
+    // the room and timed out on a button that was no longer there, which is the
+    // behaviour telling the test what it is.
+    const behind = await page.evaluate(() =>
+      document.querySelector('#sheet-situation')?.hasAttribute('open') ?? null);
+    (behind === false ? pass : fail)(
+      `${theme}/in the room: the sheet it was opened from is closed, not stacked under it (open=${behind})`);
+    const roomWords = await page.locator('#meeting-words').innerText();
+    (/in this room/.test(roomWords) ? pass : fail)(
+      `${theme}/in the room: it says what is in it ("${roomWords.slice(0, 60)}")`);
+    // THE NEGATIVE ONE IS THE ASSERTION THAT MATTERS, exactly as on the promise
+    // rows above. Everything here renders identically with a ranking or a
+    // duration in it, and a room that graded the people in it would be the
+    // ledger `roleLoads` refuses one axis over.
+    const roomAll = roomWords + ' ' + await page.locator('#meeting-people').innerText();
+    (!/behind|overdue|late|owes|worst|%|\bscore\b/i.test(roomAll) ? pass : fail)(
+      `${theme}/in the room: nothing in it grades anybody`);
+    (await page.locator('#meeting-people .meeting-thing').count() > 0 ? pass : fail)(
+      `${theme}/in the room: what is outstanding is listed, and each of it is a door`);
+    await auditContrast(page, 'in the room', theme);
+    await auditAxe(page, 'in the room', theme);
+    await auditNames(page, 'in the room', theme);
+    await auditSeparationAndTargets(page, 'in the room', theme);
+    await auditFocusRings(page, 'in the room', theme, ['#meeting-people .meeting-thing']);
+    await page.click('#sheet-meeting-close');
+    await page.waitForSelector('#sheet-meeting', { state: 'hidden' });
+    // No `#sheet-situation-close` here: closing the room lands the reader back
+    // on the app, because the sheet it came from was closed on the way in.
 
     const promisedWordsAll = promised.count + ' ' + promised.rows.map(r => r.why).join(' ');
     (!/\bfor \d|week|day|month|since|ago|yesterday\b/i.test(promisedWordsAll) ? pass : fail)(

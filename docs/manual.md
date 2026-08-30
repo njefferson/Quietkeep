@@ -92,6 +92,28 @@ shows:
   afternoon is rarely short of time — it is short of the thing you want to do.
 - **Who is with you.** Anything with nobody named on it still shows.
 
+### Name a meeting, and open the room
+
+The same sheet has **Recognise this one?** at the bottom. Give what you have set
+a name and it comes back in one tap — the Tuesday standup, a free weekend, a
+call with one person. **Who is in it?** above it names the people; more than one
+makes it a meeting.
+
+A saved situation that names somebody gains **See what is in the room**. Open it
+and you get, for each person who will be there, what is still outstanding with
+them — everything they are named on, in either direction — and underneath, the
+parts of your tree and the lines that work sits under.
+
+**In the room** is somewhere you look, not a filter. Nothing is hidden from any
+other screen while it is open, and closing it changes nothing. It is the same
+kind of thing as standing on a line: a way of seeing what crosses a subject,
+rather than a mode you have to remember to leave.
+
+A person who has been let go stops being named by the situations that named
+them, and the situation still works. Somebody with nothing outstanding stays in
+the room and says so — walking in knowing that is worth as much as walking in
+with a list.
+
 They compose: answer two and you get both. Nothing is ever taken away — the
 line under the button says what has been narrowed, and everything still comes
 back.
@@ -284,7 +306,10 @@ when there is a reason.
 
 ### Behind a button
 
-- **What's the situation?** — where you are, how long you have, who is with you.
+- **What's the situation?** — where you are, how long you have, who is with you,
+  and the situations you have named.
+- **In the room** — what a named meeting is about: what is outstanding with each
+  person in it, and what that work sits under.
 - **What comes back, and when** — every held thing and the date it returns.
 - **Where the attention is** — what each role is carrying, where your time
   actually went, and **The places you have** with how much each one reaches.

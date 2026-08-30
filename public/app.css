@@ -3480,3 +3480,34 @@ body[data-plain="1"] #held
   font-size: 1.25rem;
   line-height: 1;
 }
+
+/* WHO IS IN IT, and the room it opens (3.16.0, ADR-0119).
+   No new colour pair enters the contrast gate: the toggles are `.ghost`, the
+   room door is `.ghost`, and every name inside the room is `.linklike` — all
+   three already have their pairs in the inventory, which is what keeps this
+   release from owing the palette gate a new row. */
+.situation-who {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+  width: 100%;
+}
+/* `aria-pressed` is the state, and it has to be VISIBLE and not only announced.
+   THE APP ALREADY HAS A WAY TO DRAW A PRESSED TOGGLE — `#sort-bulk-verbs .route`
+   — and it is an outline in `--ink` rather than a fill, which introduces no new
+   foreground/background pair for the contrast gate to owe a row to. The first
+   version of this invented `var(--chosen, var(--surface-2, var(--surface)))` and
+   not one of those three tokens is defined anywhere in this stylesheet, so it
+   would have drawn nothing at all while reading as deliberate. */
+.situation-who-one[aria-pressed="true"] {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+/* THE ROOM DOOR TAKES ITS OWN LINE. `flex-basis: 100%` after a wrap rather than
+   a fourth box in the row: three controls across already sit at the 44px floor
+   on a phone, and a fourth is the wrap that put two boxes on top of each other
+   with no gap in the flowchart footer. */
+.situation-room { flex: 1 0 100%; margin-top: 0.25rem; }
+/* Things in the room stack under the person they are with, full width, so a
+   long title never squeezes the name or the count into a column of one word. */
+.meeting-thing { flex: 1 0 100%; text-align: left; margin-top: 0.15rem; }

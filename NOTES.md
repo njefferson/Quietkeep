@@ -843,8 +843,43 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.15.0**, and it is
-  what production carries. A situation can name who is in the room (ADR-0118).
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.16.0**. A meeting
+  is somewhere you can stand (ADR-0119).
+  **ADR-0115'S MOVE ON THE OTHER AXIS.** A role became somewhere you could stand
+  in 3.12.0; a situation that names people is the same shape keyed on who is in
+  the room, and until 3.15.0 there was nothing to key it on. What a meeting needs
+  is not a to-do list — it is what is outstanding with each person who will be
+  there, in either direction, and what that work belongs to.
+  **AN INSPECTION MODE AND NOT A FILTER, WHICH IS THE LOAD-BEARING CHOICE.** The
+  obvious build narrows the working surfaces to these people for the length of
+  the meeting; this app has refused that twice in the same words. Nothing here
+  narrows, nothing writes `with.now`, and the single-valued person filter stays
+  as it is answering a different question.
+  **THE PICKER ARRIVED NOW BECAUSE SOMETHING FINALLY READS SEVERAL.** 3.15.0
+  stored a list and wrote at most one on purpose (ADR-0116). Toggles rather than
+  a multi-select, seeded from the filter until touched, and its door on a SECOND
+  LINE because the saved row is already three across at the 44px floor.
+  **AND THE PAGE NAV SWAPPED, REPORTED.** *On this page* now comes before
+  *Elsewhere in the app*. The markup's own comments had argued it three times
+  without noticing they described the DOM in the opposite order: 3.8.0 moved the
+  pair below the box on near-before-far, 3.9.2 retired a label for what is left
+  over because it "was sitting FIRST, before anything it could be left over
+  from", and the sentence naming the pair writes it here-then-not-here above
+  markup that did the reverse. Reading order is tab order, so the door that
+  LEAVES the page was reached first.
+  **WHAT IT LEAVES UNMEASURED IS NAMED RATHER THAN LEFT TO BE FOUND.** The two
+  group labels in the room render only when its work sits under a horizon or
+  carries a role, and the thing driven into the walk's room has neither — so
+  registering them would be a false receipt, the thing 2.24.0 cost a release for.
+  **THE LARGER FINDING, AND IT IS ABOVE THIS RELEASE.** A room composing only the
+  reader's relationships to work can only ever show a to-do list re-sorted by who
+  is present, because that is all the nouns can express. Every noun here is about
+  the reader — what I hold, owe, wait on, can do where, and who it is for. There
+  is none for a thing in the world with a state of its own and rules about when
+  it may change. `src/` has no establishment, vacancy, incumbent or headcount,
+  and the one place *capacity* appears it means the reader's own energy.
+- **Superseded, and kept for the record: 3.15.0.** A situation can name who is
+  in the room (ADR-0118).
   **A MEETING IS A PLACE, A LENGTH AND A SET OF FACES, AND ONLY TWO WERE
   STORABLE.** The situation shortcut has held where-you-are and how-long since
   2.21.0, and the one case it exists for — a recurring meeting — was the case it
