@@ -840,7 +840,33 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.12.0**. A line is
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.13.0**. Where a
+  thing can be done is a question the sorting card asks now.
+  **THE EVIDENCE PICKED THIS, AND IT PICKED IT OVER WHAT WAS NEXT ON THE LIST.**
+  Two pre-registered experiments (`docs/nd-collisions.md` entry 27, read from the
+  primary): reminder-setting falls when it costs more effort at every memory
+  load, **and the accuracy benefit it would have delivered is attenuated even
+  when the cost is paid**. So the price of recording is not paid in convenience,
+  it is paid in the thing the tool exists to provide.
+  **WHICH EXPLAINS A FILTER THAT LOOKED BROKEN.** The place axis has been
+  readable since 2.2.0 — `fitsHere`, a device-level "where you are", a post-filter
+  over the unchanged ranking — and a real store carries almost none of it, because
+  the only way to say a place was to open an item, expand its sheet and scroll,
+  one thing at a time. A filter over an axis nobody can afford to record reads as
+  broken rather than empty, which is entry 24's crux arriving from the other side.
+  **IT ANNOTATES AND DOES NOT RESOLVE, and that is the whole design.** Filing into
+  a container ends the card, because it is a decision about where the thing lives.
+  Saying where it can be DONE is a label, so the same card comes straight back
+  with the six routes still in front of you. Advancing the queue would have bought
+  cheap recording by spending the sorting decision — the same cost in a different
+  currency — and the walk asserts the card does not move.
+  **AND THE COLLISION FROM 3.11.1 WAS STILL LIVE ONE SCREEN DEEPER.** That release
+  renamed the route because it files into a CONTAINER and *place* is where work
+  can be done; the sub-screen behind it still said "Name a new place". Harmless
+  while nothing else used the word on that surface, and live again the moment a
+  real context route landed beside it. A rename that stops at the label it was
+  reported against is half a rename.
+- **Superseded, and kept for the record: 3.12.0.** A line is
   somewhere you can stand (ADR-0115).
   **EVERY LINK IN THIS APP WAS TRAVERSED FORWARD ONLY, AND THAT WAS THE WHOLE
   DEFECT.** `rolesOf` says which identities a thing carries, `servesNode` which

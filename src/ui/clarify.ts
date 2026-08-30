@@ -20,6 +20,8 @@ import {
 } from './triage-intents.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { captureContextWords } from '../capture-context.ts';
+import { allContexts, contextsOf } from '../contexts.ts';
+import { attachContextEvents } from './detail-intents.ts';
 import { timerMinutesOf, timerWords, timerWordsLower } from '../timer.ts';
 import { doneEvents } from './work.ts';
 import type { AppEvent, ClarifyRoute, Heat, NodeKind } from '../events.ts';
@@ -791,12 +793,17 @@ export function mountTriage(
     const input = document.createElement('input');
     input.type = 'text';
     input.id = 'triage-place-new';
-    input.placeholder = 'Name a new place';
-    const label = el('label', 'visually-hidden', 'Name a new place to put this in');
+    // STILL SAID "PLACE" ONE SCREEN DEEPER (3.13.0). 3.11.1 renamed the route
+    // that opens this screen, because it files into a CONTAINER and a *place* is
+    // where work can be done — a different thing the app names elsewhere. The
+    // sub-screen kept the old word, so the collision survived the fix, and it
+    // became live again the moment a real context route landed beside it.
+    input.placeholder = 'Name a new project, area or goal';
+    const label = el('label', 'visually-hidden', 'Name a new project, area or goal to put this in');
     label.setAttribute('for', 'triage-place-new');
     const make = el('button', 'route');
     make.type = 'button';
-    make.append(el('span', 'route-label', 'Make it'), el('span', 'route-hint', 'a new place, and put this in it'));
+    make.append(el('span', 'route-label', 'Make it'), el('span', 'route-hint', 'a new one, and put this in it'));
     make.addEventListener('click', () => {
       const title = input.value.trim();
       if (!title) { input.focus(); return; }
@@ -814,6 +821,95 @@ export function mountTriage(
       b.setAttribute('aria-label', `${name} — put it in this ${p.kind}`);
       b.addEventListener('click', () => {
         fileInto(c => fileUnderEvents(c, nodeId, p.id, clocksOf(session.state().nodes.get(nodeId))), name, p);
+      });
+      rows.push(b);
+    }
+
+    ACTIONS.replaceChildren(...rows);
+  };
+
+  /**
+   * WHERE THIS CAN BE DONE — the sub-screen behind the context route (3.13.0).
+   *
+   * `renderPlaces`' shape on the other axis, deliberately: two screens with one
+   * shape are one thing to learn, which is the same reasoning `roles.ts` gives
+   * for contexts and roles sharing machinery.
+   *
+   * The difference is what happens after. A container filing ends the card; this
+   * returns to it. A context is a fact about the work, not a decision about when
+   * it comes back, and consuming the sorting decision to record one would make
+   * the cheap thing expensive again in a different currency.
+   */
+  const renderContexts = (nodeId: string, text: string, kind: string, heat: Heat | null): void => {
+    const st = session.state();
+    const places = allContexts(st);
+    const node = st.nodes.get(nodeId);
+    const already = new Set((node ? contextsOf(st, node) : []).map(c => c.id));
+
+    PROMPT.textContent = 'Where can this be done?';
+    CARD.textContent = text;
+
+    const back = el('button', 'route ghost');
+    back.type = 'button';
+    back.append(el('span', 'route-label', 'Back'), el('span', 'route-hint', 'keep deciding when instead'));
+    back.addEventListener('click', () => renderClarify(nodeId, text, kind, heat));
+
+    const attach = (
+      make: Parameters<Session['commit']>[0], said: string,
+    ): void => {
+      clearUndo();
+      void commit(make, said).then(() => {
+        // BACK TO THE SAME CARD. Nothing was routed, so the queue has not moved
+        // and the item is still the one in front of you — now carrying the fact.
+        //
+        // The commit's own repaint would land here anyway; planting proved that.
+        // This stays because it names the DESTINATION rather than relying on the
+        // queue happening to agree — it returns to the clarify view of THIS item
+        // specifically, rather than to whatever a fresh `refresh()` decides,
+        // which on an unheated item is the heat card and not the six routes.
+        renderClarify(nodeId, text, kind, heat);
+        restoreFocus();
+      });
+    };
+
+    const rows: HTMLElement[] = [back];
+
+    // Naming one that does not exist is first, for the reason it is first on the
+    // container screen: it is the case an import runs into constantly, and a
+    // picker with nothing in it teaches the reader the feature is broken.
+    const form = el('div', 'place-new');
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.id = 'triage-context-new';
+    input.placeholder = 'at home, out, on the phone';
+    const label = el('label', 'visually-hidden', 'Name a place where this can be done');
+    label.setAttribute('for', 'triage-context-new');
+    const make = el('button', 'route');
+    make.type = 'button';
+    make.append(el('span', 'route-label', 'Add it'), el('span', 'route-hint', 'a new place, and say this can be done there'));
+    make.addEventListener('click', () => {
+      const name = input.value.trim();
+      if (!name) { input.focus(); return; }
+      // An existing name attaches rather than minting a second one with the same
+      // words — the same match `detail.ts` makes, case-insensitively, because
+      // "Home" and "home" are one place and two would split the axis in half.
+      const existing = allContexts(session.state())
+        .find(c => (c.title || '').toLowerCase() === name.toLowerCase());
+      attach(c => attachContextEvents(c, nodeId, existing?.id ?? c.id(),
+        existing ? {} : { createNamed: name }), `It can be done ${name}.`);
+    });
+    form.append(label, input, make);
+    rows.push(form);
+
+    for (const c of places) {
+      if (already.has(c.id)) continue;
+      const b = el('button', 'route');
+      b.type = 'button';
+      const name = c.title || '(untitled)';
+      b.append(el('span', 'route-label', name), el('span', 'route-hint', 'it can be done here'));
+      b.setAttribute('aria-label', `${name} — this can be done here`);
+      b.addEventListener('click', () => {
+        attach(x => attachContextEvents(x, nodeId, c.id), `It can be done ${name}.`);
       });
       rows.push(b);
     }
@@ -906,6 +1002,33 @@ export function mountTriage(
       el('span', 'route-hint', 'a project, area or goal — make one if it is not there'));
     put.addEventListener('click', () => renderPlaces(nodeId, text, kind, heat));
     ACTIONS.append(put);
+
+    // WHERE IT CAN BE DONE, on the card (3.13.0, entry 27).
+    //
+    // The evidence is the reason this is here rather than three taps into a
+    // detail sheet. Two pre-registered experiments found reminder-setting falls
+    // when it costs more effort at every memory load, AND that the accuracy
+    // benefit it would have delivered is attenuated when it is done anyway —
+    // so the price of recording is not paid in convenience, it is paid in the
+    // thing the tool exists to provide (`docs/nd-collisions.md` entry 27).
+    //
+    // The place axis has been readable since 2.2.0 and a real store carries
+    // almost none of it, because the only way to say it was to open an item,
+    // expand its sheet and scroll. A filter over an axis nobody can afford to
+    // record reads as a broken feature rather than an empty one (entry 24).
+    //
+    // IT ANNOTATES, IT DOES NOT RESOLVE, and that is the difference from the
+    // route above it. Filing into a container is a decision about where a thing
+    // lives and it ends the card; saying where a thing can be DONE is a label,
+    // and the item still has to be sorted. So this returns to the six routes
+    // with the same item in front of you rather than advancing the queue.
+    const where = el('button', 'route');
+    where.type = 'button';
+    where.dataset.route = 'add-context';
+    where.append(el('span', 'route-label', 'Say where it can be done'),
+      el('span', 'route-hint', 'at home, out, on the phone — it stays in front of you'));
+    where.addEventListener('click', () => renderContexts(nodeId, text, kind, heat));
+    ACTIONS.append(where);
     // And the way past, last of all: every answer first, then the way out for
     // when none of them is available yet.
     ACTIONS.append(skipControl(nodeId));

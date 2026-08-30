@@ -7858,6 +7858,52 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // a hard-coded title here was wrong about the walk rather than about the app,
   // and the check caught it by naming what the place really held.
   const filedTitle = (await tpage.locator('#triage-card').textContent()) || '';
+
+  // WHERE IT CAN BE DONE, FROM THE CARD (3.13.0, nd-collisions entry 27).
+  //
+  // The place axis has been readable since 2.2.0 and a real store carries almost
+  // none of it, because saying it meant opening a sheet, expanding and
+  // scrolling. Two pre-registered experiments say the cost of recording decides
+  // whether recording happens — and that the benefit is attenuated even when it
+  // is paid. So the axis moved onto the card.
+  //
+  // IT MUST NOT RESOLVE. Filing into a container ends the card; a context is a
+  // label and the item still has to be sorted, so this comes back to the SAME
+  // item with the six routes. Advancing the queue would buy cheap recording by
+  // spending the sorting decision — the same cost in a different currency.
+  //
+  // WHICH OF THE FOUR BELOW ACTUALLY CARRIES WEIGHT, since planting says they
+  // are not equal and pretending otherwise is how a suite rots. Only "the
+  // context is actually written" goes red under a plant: it was planted twice,
+  // once by making the route advance the queue (green — attaching does not move
+  // the head, so `refresh()` and re-rendering the same card are observationally
+  // identical) and once by acknowledging without committing (RED). The two
+  // navigation assertions are true and are guaranteed by the commit's own
+  // repaint and by the queue rather than by the code path they appear to test.
+  // They are kept because they would catch a gross regression and cost nothing,
+  // and they are labelled so nobody reads them as proof of the return path.
+  await intoJob(tpage, 'triage');
+  await tpage.locator('#triage-actions .route[data-route="add-context"]').first().click();
+  await tpage.waitForSelector('#triage-context-new');
+  is((await tpage.locator('#triage-prompt').textContent()) || '', 'Where can this be done?',
+    'the card offers to say where a thing can be done');
+  await tpage.fill('#triage-context-new', 'On the phone');
+  await tpage.locator('#triage-actions .route', { hasText: 'Add it' }).first().click();
+  await tpage.waitForSelector('#triage-actions .route[data-route="put-under"]');
+  is((await tpage.locator('#triage-card').textContent()) || '', filedTitle,
+    'and saying so returns the SAME card — a context annotates, it never resolves');
+  is((await tpage.locator('#triage-prompt').textContent()) || '', 'What is this?',
+    'with the six routes back in front of you');
+  // AND THE FACT LANDED. A control that returns you politely and records nothing
+  // is the shape this repo keeps finding: complete, reachable, and inert.
+  is(await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').getAll();
+      tx.onsuccess = () => res(tx.result.some(e => e.kind === 'context.attached'));
+    });
+  }), true, 'and the context is actually written, not just acknowledged');
+
   await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route[data-route="put-under"]').first().click();
   await tpage.waitForSelector('#triage-place-new');

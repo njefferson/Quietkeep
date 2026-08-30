@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.13.0 — CAPABILITY
+
+*2026-08-30*
+
+- **You can say where something can be done while you are sorting it.** A new choice on the card — **Say where it can be done** — next to the six routes. Pick a place you have already named, or type a new one. Until now the only way to say it was to open the item, expand its panel and scroll, one thing at a time.
+- **It does not use up your decision.** Saying where a thing can be done is a fact about the thing, not a choice about when it comes back — so the same card comes straight back with the six routes still in front of you.
+- **Which makes the *what fits here* filter worth having.** It has been able to narrow to where you are for a long time, and almost nothing had a place on it, because saying so cost too much.
+- **And the screen behind *Put it under something* stopped saying *place*.** It files into a project, an area or a goal; a place is where work can be done. Two screens were using one word for two things.
+
 ## 3.12.0 — CAPABILITY
 
 *2026-08-30*

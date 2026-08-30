@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.13.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**You can say where something can be done while you are sorting it.** A new choice on the card \u2014 **Say where it can be done** \u2014 next to the six routes. Pick a place you have already named, or type a new one. Until now the only way to say it was to open the item, expand its panel and scroll, one thing at a time.',
+      '**It does not use up your decision.** Saying where a thing can be done is a fact about the thing, not a choice about when it comes back \u2014 so the same card comes straight back with the six routes still in front of you.',
+      '**Which makes the *what fits here* filter worth having.** It has been able to narrow to where you are for a long time, and almost nothing had a place on it, because saying so cost too much.',
+      '**And the screen behind *Put it under something* stopped saying *place*.** It files into a project, an area or a goal; a place is where work can be done. Two screens were using one word for two things.',
+    ],
+  },
+  {
     triplet: '3.12.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',
