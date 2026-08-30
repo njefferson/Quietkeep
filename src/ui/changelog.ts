@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.14.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**A line that has gone quiet now comes and tells you.** *Have a look at this* has always named the things that are structurally stuck \u2014 a project with no next step, something whose parent is gone, a goal nothing is feeding. It now also names an identity you named, that carried work, and that has nothing running on it.',
+      '**Which is the thing you could only find by going and looking.** Last release you could open a line and see it was empty. You had to think to open it, and the day you think to check is the day you were already going to.',
+      '**A line you have just named is not on it.** Nothing is running on it because you made it a minute ago. Something has to have been on it and finished, or be sitting there not moving, before this has anything to say \u2014 naming six identities on a fresh store must not hand you six problems.',
+      '**It counts what is under things too, not just what is tagged.** Put an identity on a project and leave the actions inside it untagged, which is the ordinary way to do it, and the line is not quiet \u2014 the work under it is what counts.',
+      '**It says what is true and stops.** *Everything on it is finished*, or *nothing on it is moving*. No number, no how-long-since, no ordering by how stale, no colour. Whether that is a season off or a thing you have quietly stopped doing is yours to know.',
+      '**Still not right:** this surface shows three at a time and structural breaks come first, so on a full store a quiet line can sit behind them for a while.',
+    ],
+  },
+  {
     triplet: '3.13.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',

@@ -559,6 +559,26 @@ export async function bigSampleEvents(
   stamp('role.detached', reroled, { node: reroled, role: roles[2]! });
   clock(reroled, 'due', int(2, 12));
 
+  // A LINE THAT HAS GONE QUIET (3.14.0) — a role that carried work and carries
+  // nothing live now. Review's fifth exception class had no case in either
+  // sample when it landed, so nothing rendered it and no walk could see it.
+  //
+  // DECLARED OUTSIDE `roles`, and that is the load-bearing part. The random
+  // loop above draws `roles[floor(roleRand() * roles.length)]`, so appending a
+  // fourth to that array would change the divisor and reshape every role
+  // attachment in the set — the exact failure the `roleRand` comment records
+  // having already been caused once by drawing from the wrong stream. This adds
+  // a case and touches nobody else's, which is what that comment asks for.
+  //
+  // Its work is FINISHED rather than absent, because a role with nothing ever
+  // on it is new and Review deliberately leaves it alone. Staleness needs a
+  // before, and this is the store's only example of one.
+  const quietRole = ctx.id();
+  stamp('role.created', quietRole, { name: 'The allotment' });
+  const lastDug = node('action', 'Order the seed potatoes');
+  stamp('role.attached', lastDug, { node: lastDug, role: quietRole });
+  stamp('done.marked', lastDug, { at: day(-96) });
+
   const renamed = node('action', 'Ring the man about the thing');
   clock(renamed, 'due', 3);
   stamp('node.renamed', renamed, { title: 'Ring the roofer about the ridge tiles' });

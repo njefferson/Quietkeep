@@ -317,6 +317,29 @@ test('big-sample: every cap states a total it actually has', async () => {
   assert.ok(rev.total >= rev.shown.length);
 });
 
+test('big-sample: the set carries a line that has gone quiet, and the cap keeps it off the screen', async () => {
+  const { state } = await built();
+  const rev = reviewExceptions(state, NOW, TZ);
+
+  // The fixture exists at all. Before 3.14.0 neither sample carried a role
+  // whose work was finished, so the fifth exception class computed nothing on
+  // any demonstration store and nothing rendered it.
+  assert.equal(rev.quietLines.length, 1, 'exactly one line has gone quiet in this set');
+  assert.equal(rev.quietLines[0]!.node.title, 'The allotment');
+  assert.equal(rev.quietLines[0]!.words, 'everything on it is finished');
+
+  // AND IT IS NOT ON THE SCREEN, which is law 8 working rather than a defect.
+  // This store has fifteen exceptions and shows three, and structural breaks
+  // outrank a stale line every time. Stated here so that a later reader looking
+  // for the class in a walk finds this instead of concluding it never shipped —
+  // no browser walk renders this class on this store, and the row markup it
+  // would use is the same `.review-open` / `.review-title` / `.review-why` the
+  // review surface is already measured on in both themes.
+  assert.ok(!rev.shown.some(x => x.node.title === 'The allotment'),
+    'the cap is what keeps it off, not an absence');
+  assert.ok(rev.total > 3);
+});
+
 test('big-sample: the journal is really sealed, and the stated passphrase opens it', async () => {
   const { admitted } = await built();
   const sealRec = journalSeal(admitted);

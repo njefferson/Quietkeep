@@ -840,7 +840,37 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.13.0**. Where a
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.14.0**. A line
+  that has gone quiet comes and tells you (ADR-0117).
+  **REVIEW HAS COMPUTED EXCEPTIONS SINCE v1 AND EVERY CLASS WAS A FACT ABOUT THE
+  TREE.** `stalled`, `orphaned`, `unfedGoals` and `quietAreas` all walk
+  `n.parent`, so "nothing is moving here" has only ever meant *nothing beneath it
+  in the tree*. A line is not in the tree — a role is a cross-cutting tag, and
+  `heldNodes` excludes roles outright — so no exception class has ever had one in
+  hand to examine. 3.12.0 shipped saying exactly this in its own release notes and
+  in ADR-0115's *Still unbuilt* section; this closes it.
+  **STALENESS NEEDS A BEFORE, AND THAT IS THE PROPERTY THE FEATURE TURNS ON.** A
+  role that has never carried anything is not stale, it is new. Without that
+  guard, naming your identities on a fresh store — the one moment somebody is
+  most likely to do it — fills the surface with every role they just created,
+  which reads as broken rather than as empty. Same restraint `quietAreas` already
+  applies by refusing a null `idleDays` instead of calling "nothing has ever
+  finished" a long time.
+  **THE WALK IS TRANSITIVE, AND THE FIRST TEST OF IT ASSERTED NOTHING.** A role
+  is normally carried by a project, so asking only what is directly tagged would
+  call every properly-structured line quiet. The test written for that was one
+  level deep — a live action directly under the tagged project — so a shallow
+  direct-children check passed it. Planted, green, rewritten two levels deep,
+  planted again, red. Four plants in total and every one lands on the assertion
+  it belongs to.
+  **HONEST COST: NO BROWSER WALK RENDERS THIS CLASS.** The demonstration store
+  has fifteen exceptions, shows three, and structural breaks outrank a stale line
+  every time — so the big sample now carries a quiet line and the cap keeps it
+  off the screen. Both facts are asserted together in `test/big-sample.test.ts`,
+  so a later reader looking for it in a walk finds the reason rather than
+  concluding it never shipped. The row markup is the shared
+  `.review-open`/`.review-title`/`.review-why` already measured in both themes.
+- **Superseded, and kept for the record: 3.13.0.** Where a
   thing can be done is a question the sorting card asks now.
   **THE EVIDENCE PICKED THIS, AND IT PICKED IT OVER WHAT WAS NEXT ON THE LIST.**
   Two pre-registered experiments (`docs/nd-collisions.md` entry 27, read from the

@@ -33,6 +33,21 @@
 // token in the update-copy gate, and one word with two meanings in one
 // codebase is a collision waiting.)
 //
+// **Quiet line** (3.14.0) — a role that has carried work and carries nothing
+// live now. THE FIRST EXCEPTION THAT IS NOT ABOUT THE TREE. Every class above
+// walks `n.parent`, so "nothing is moving here" has only ever meant *nothing
+// beneath it in the tree*, and a line — the cross-cutting thing a role names —
+// was visible only to somebody who opened it. ADR-0115 named that gap in its
+// own "still unbuilt" section and this closes it: the value of the finding is
+// that it should come to you, which is ADR-0038's whole argument for putting
+// the clock on the artifact instead of the ritual on the person.
+//
+// A role that has NEVER carried anything stays out, and that restraint is the
+// same one `quietAreas` applies through `idleDays`: staleness needs a before.
+// Without it, naming your roles on a fresh store — the one moment somebody is
+// most likely to do it — would fill this surface with every role they just
+// created, which reads as broken rather than as empty.
+//
 // PURE. `now` and `zone` are arguments.
 
 import type { NodeState, State } from './fold.ts';
@@ -43,6 +58,7 @@ import { boundaryOf } from './day.ts';
 import { CONTAINER_KINDS } from './tree.ts';
 import type { NodeKind } from './events.ts';
 import { isHeld, isGone } from './fold.ts';
+import { allRoles } from './roles.ts';
 
 /** Kinds that CONTAIN work rather than being work. These are the ones that can
  *  stall, because stalling means "nothing underneath is moving".
@@ -67,6 +83,9 @@ export interface ReviewView {
   unfed: ReviewException[];
   /** Areas holding live work where nothing has finished in a month (1.6.0). */
   quiet: ReviewException[];
+  /** Roles that have carried work and carry nothing live now (3.14.0). The
+   *  first class here that is not a fact about the tree. */
+  quietLines: ReviewException[];
   /** Everything, capped for the surface — law 8 bounds what re-entry may show. */
   shown: ReviewException[];
   /** How many there are altogether, so the cap is never a lie by omission. */
@@ -202,6 +221,73 @@ export function quietAreas(state: State, nowIso: string, zone: string): ReviewEx
 }
 
 /**
+ * Roles carrying nothing live — a line that has gone quiet (3.14.0).
+ *
+ * **The first exception in this file that is not a fact about the tree.** A role
+ * is a cross-cutting tag rather than a parent, so nothing above could see it:
+ * `heldNodes` excludes roles by design (`gate.ts` — a role is WHO work is for,
+ * not work), which means `stalled`, `orphaned` and `quietAreas` have never had
+ * one in hand to examine.
+ *
+ * TRANSITIVE, for `unfedGoals`'s exact reason and not by imitation. A role is
+ * normally carried by a project, and a project is a container rather than live
+ * work — so asking only "is anything tagged with this role live" would call
+ * every properly-structured line quiet the moment its owner tagged the project
+ * instead of each action under it. The walk therefore goes down the tree from
+ * every carrier.
+ *
+ * **A role that has never carried anything is not here.** Staleness needs a
+ * before, the same rule `quietAreas` applies by refusing a null `idleDays`
+ * rather than treating "nothing has ever finished" as a long time. The moment
+ * somebody is most likely to name six roles is on a store with no work in it
+ * yet, and a surface that answered that by listing all six would be reporting
+ * its own emptiness as six problems.
+ *
+ * **It does not disagree with the role readout, and the difference is worth
+ * stating because the two numbers can look contradictory.** `roleLoads` counts
+ * what CARRIES the role — a tagged project counts, done or not moving or not.
+ * This asks whether anything under any carrier is moving. That is precisely the
+ * distance between `stalled` and a container that still has children, and it is
+ * the question somebody is asking when they want to know whether the planning
+ * has gone stale rather than what is on the books.
+ */
+export function quietLines(state: State): ReviewException[] {
+  const childrenOf = new Map<string, NodeState[]>();
+  for (const n of heldNodes(state)) {
+    if (!n.parent) continue;
+    if (!childrenOf.has(n.parent)) childrenOf.set(n.parent, []);
+    childrenOf.get(n.parent)!.push(n);
+  }
+  // Same explicit, cycle-guarded stack as `unfedGoals`. A log that arrived from
+  // another device can carry half a loop neither device ever wrote.
+  const liveBeneath = (id: string): boolean => {
+    const stack = [...(childrenOf.get(id) ?? [])];
+    const seen = new Set<string>();
+    while (stack.length > 0) {
+      const c = stack.pop()!;
+      if (seen.has(c.id)) continue;
+      seen.add(c.id);
+      if (isLiveWork(c)) return true;
+      stack.push(...(childrenOf.get(c.id) ?? []));
+    }
+    return false;
+  };
+  const out: ReviewException[] = [];
+  for (const role of allRoles(state)) {
+    const carriers = [...heldNodes(state)].filter(n => n.roles.includes(role.id));
+    if (carriers.length === 0) continue;       // never used is not gone stale
+    if (carriers.some(n => isLiveWork(n) || liveBeneath(n.id))) continue;
+    out.push({
+      node: role,
+      words: carriers.every(n => n.lastDone)
+        ? 'everything on it is finished'
+        : 'nothing on it is moving',
+    });
+  }
+  return out.sort((a, b) => (a.node.id < b.node.id ? -1 : 1));
+}
+
+/**
  * Nodes whose parent is gone.
  *
  * The gate refuses to create one, so finding any is a real signal rather than
@@ -223,19 +309,28 @@ export function orphaned(state: State): ReviewException[] {
 }
 
 /**
- * The whole surface — the four exceptions (item 36), ranked: structural
- * breaks first (orphans), then decisions waiting (stalled, unfed goals),
- * then rhythm (quiet areas). REVIEW_CAP is unchanged; a lower-ranked class
- * waiting its turn is law 8 working, and the total states everything.
+ * The whole surface — the five exceptions, ranked: structural breaks first
+ * (orphans), then decisions waiting (stalled, unfed goals, quiet lines), then
+ * rhythm (quiet areas). REVIEW_CAP is unchanged; a lower-ranked class waiting
+ * its turn is law 8 working, and the total states everything.
+ *
+ * **Quiet lines rank below unfed goals and above quiet areas (3.14.0)**, and
+ * the placement is the argument. A goal nothing feeds and a line nothing is
+ * running on are the same shape of finding — a stated direction with no work
+ * behind it — so they belong in the same band; the goal goes first because it
+ * is the reader's own stated end and the role is the hat they wear to serve it.
+ * Both sit above rhythm, because a quiet area still has work in it and these
+ * two do not.
  */
 export function reviewExceptions(state: State, nowIso: string, zone: string): ReviewView {
   const orph = orphaned(state);
   const stall = stalled(state);
   const unfed = unfedGoals(state);
+  const lines = quietLines(state);
   const quiet = quietAreas(state, nowIso, zone);
-  const all = [...orph, ...stall, ...unfed, ...quiet];
+  const all = [...orph, ...stall, ...unfed, ...lines, ...quiet];
   return {
-    stalled: stall, orphaned: orph, unfed, quiet,
+    stalled: stall, orphaned: orph, unfed, quietLines: lines, quiet,
     shown: all.slice(0, REVIEW_CAP), total: all.length,
   };
 }
