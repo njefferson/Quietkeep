@@ -258,6 +258,15 @@ unaffordable during recovery.
 → **Rest mode**: pressure hidden, Menu forward, gauge quietly present, nothing red.
 The gauge stays because it is the *reassurance* — nothing was lost while you were
 away — and removing it would remove the reason rest is safe.
+**NOT BUILT, and this arrow has been read as shipped (corrected 2026-08-30).**
+`NOTES.md` struck it as delivered in 0.18.0; that release shipped the re-entry
+greeting and the amnesty and nothing named rest mode, and no source file contains
+it. Three entries in `nd-collisions.md` cite it as an existing protection while
+arguing to refuse other things — those refusals hold on machinery that IS built,
+but the citation was wrong. The nearest shipped surface is `Just one thing`
+(`src/plain.ts`), which caps the offer at one and keeps the Menu reachable, and
+which is invoked and never inferred. Either build the arrow or retire it; leaving
+it standing is what let three arguments lean on nothing.
 → **Capacity is self-declared** (low / steady / sharp / unsure), never inferred.
 "Unsure" is a first-class option because **alexithymia** (Bird & Cook) —
 difficulty identifying one's own internal states, co-occurring at elevated rates
@@ -289,6 +298,17 @@ unresolved thing you are carrying has weight even when it is not a task, and a
 system that only models tasks will consistently over-ask on the days you can
 least afford it. An active pebble may **depress capacity/WIP** — which is the app
 asking for less, automatically, without requiring you to explain yourself.
+**REVERSED IN 1.34.0, and this sentence outlived it (corrected 2026-08-30).**
+`offerCapFor` is now a constant — it returns the cap unchanged — and the argument
+against the old behaviour is kept at that call site rather than the behaviour:
+narrowing the offer on a low day is a pacing mechanism, and two of the populations
+this app serves need opposite things from it, so what bends is **which** things
+are offered (`weightOrderFor`) and never **how many**. The app's copy was fixed
+in the same release, with its own note that copy outliving the behaviour it
+describes is the plainest kind of lie a surface can tell; this research document
+was not, and `what-it-should-be.md` has stated the corrected behaviour correctly
+the whole time. Two research files in one repo disagreed, and the stale one was
+the one being cited.
 → **Pebbles annotate the timeline so low-capacity stretches have a visible
 reason.** Strictly co-occurrence: the app shows the pebble and the capacity in the
 same period. **It never says one caused the other** (product law 7).
@@ -395,6 +415,47 @@ somebody will eventually propose in good faith, because they all appear in
 successful competing products. This table is the answer, with the reason attached.
 
 ---
+
+## 10b · The field this app is in, and had never cited
+
+Added 2026-08-30. Everything above is cognitive psychology — memory, attention,
+capacity. None of it describes the *artefact*, and there are two literatures
+about that which this document had never reached for. Both are directly about
+what this app is, and the second one states its premise better than the repo
+ever has.
+
+**Personal Information Management (PIM)** — Jones; Bergman; Bergman,
+Beyth-Marom & Nachmias. Its central named problem is **project fragmentation**:
+the materials belonging to one project scattered across the very tools built to
+manage them, so that assembling the state of anything is a manual act performed
+from memory. That is the problem an owner of many separate systems is describing
+when they say the integration lives in their head. The field's named remedy is
+unification, and it is the field this product sits in.
+
+→ **The integration is the feature, not a convenience over it.** Anything that
+splits one thing's facts across two surfaces re-creates the problem the tool is
+for. This is the research reason the log is one log and the fold is one fold, and
+the reason a second definition of "what matters today" was refused in
+`src/today.ts` on the app's own instincts before this citation existed.
+
+**Bellotti et al., CHI 2004 — "What a to-do."** Studied how knowledge workers
+actually manage tasks, and found the opposite of what task software assumes:
+people are **not** bad at prioritising. Participants were *"remarkably proficient
+at keeping track of tasks, with everything that mattered getting done in time
+through painstaking use of a variety of resources."* The finding that matters is
+what follows from that — since people still complain, **the problem being reported
+is the effort that must go into being that proficient.**
+
+→ **The target is not rescue. It is cost.** A person running an elaborate manual
+system is succeeding, expensively, and a tool that frames itself as fixing their
+failure has misread them and will read as condescension. Everything this app
+refuses — scores, streaks, completion rates, "you are behind" — is refused
+partly for this reason, and now has a citation for it rather than only a value.
+This is also the cleanest statement of the product's premise available anywhere
+in the corpus, and it is twenty-two years old.
+
+**Neither field appears anywhere else in this repo.** Recorded here so the next
+survey starts from them rather than rediscovering them.
 
 ## 11 · The five things Quietkeep claims are different
 
