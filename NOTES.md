@@ -840,7 +840,44 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.10.0**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.11.0**. Each
+  planner brought in is its own named set to work through (ADR-0114).
+  **TWO IMPORTS WERE ONE LUMP, AND SO WAS THE SAMPLE SET.** A second file
+  diluted the first and neither could be worked through on its own — reported in
+  those terms. The sample being in that lump is the half that becomes somebody
+  else's problem later: loose rows they cannot tell from their own forgotten
+  work, in a store they are then afraid to clean. Naming it is a requirement
+  rather than a side effect, and the wholesale verbs already there can now clear
+  it in one act.
+  **THE BATCH NAMED FOR IMPORTS HELD PART OF ONE — the same defect 2.38.0 found,
+  one turn down from where it looked.** `looseFromImport` was keyed on `arrived`,
+  which the importer sets ONLY on a row that came in with nothing to go on; a row
+  that kept a real date and every project in the same file are `arrived: false`.
+  So the batch missed them, and its own docstring recorded 2.38.0's fix to the
+  previous version of exactly this. Keyed on WHICH arrival now, which is the
+  question the batch was always asking.
+  **THE KEY IS THE IMPORTING COMMIT'S OWN TIMESTAMP.** An import lands in ONE
+  commit, so every event in it already shares an `at` — unique per run, and also
+  the date the set gets labelled with. Nothing is minted, no id invented, and no
+  event noun added to a closed list. Named by date and size and never by a
+  source: the format is sniffed from the CONTENT and the filename is never
+  stored, so a source name would be a guess presented as a fact.
+  **ADDITIVE, AND THE GATES SAID SO BEFORE ANY OF IT RAN.** The merge carry table
+  refused to compile without a disposition for the new field — it is `carry: 'no'`,
+  because a survivor did not arrive on the source's arrival and filing it into a
+  set it never came in with would be a lie somebody then works through. And the
+  three-place snapshot test refused a field with no default for a store written
+  before it existed: old rows fold to `null`, which reads as *written here*, the
+  honest answer when the store cannot say otherwise.
+  **AND A FIXTURE WAS WRITING ROWS THE IMPORTER NO LONGER PRODUCES — AGAIN.**
+  Three range tests went red because their `imported()` helper wrote `arrived`
+  and nothing else. That is LESSONS 138's shape and this file's own range tests
+  are where it was first found; the helper writes what the importer writes now.
+  **WHAT IS STILL OWED, AND IT IS IN THE RELEASE NOTES:** finishing an import
+  lands you in the right room (2.35.0) and does not say *these came in together,
+  here is the way to them*. Recorded in ADR-0114 so the next session finds it
+  rather than rediscovering it.
+- **Superseded, and kept for the record: 3.10.0.** The
   sorting room says how many are in the pile, standing, and ADR-0113 says why
   that is not the thing ADR-0085 removed.
   **THE COUNT WAS ASKED FOR, AND THE FIRST ANSWER WAS REFUSED BY ONE SENTENCE

@@ -22,6 +22,7 @@ import { compareOrdering, type NodeState, type State } from './fold.ts';
 import { heldNodes } from './gate.ts';
 import { isContainer } from './tree.ts';
 import { isValidIso } from './time.ts';
+import { SAMPLE_ARRIVAL } from './events.ts';
 import { normalize, searchHeld } from './search.ts';
 import { raisesReplanCard } from './replan.ts';
 import { isHeld } from './fold.ts';
@@ -87,11 +88,61 @@ const oldestFirst = (a: NodeState, b: NodeState): number => {
  * reached this app, which is exactly the question this batch asks, rather than a
  * property that happened to correlate with it for three weeks.
  */
-export const looseFromImport = (state: State): NodeState[] =>
+/**
+ * AND SELECTED BY WHICH ARRIVAL, not by whether the row arrived empty-handed
+ * (3.11.0). `arrived` is narrower than this batch needs, and 2.38.0's own fix
+ * left half the file behind: the importer sets it ONLY on a row that came in
+ * with nothing to go on, so a row that kept a real date and every project in the
+ * same file are `arrived: false`. They came in on the same arrival, and somebody
+ * working through a planner they brought in wants the planner, not the part of
+ * it the importer could not do anything with.
+ *
+ * The same defect one turn down from where 2.38.0 found it — a batch named for
+ * an import that does not hold the import — which is why the fix is the key that
+ * says WHICH arrival rather than a third correlated property.
+ *
+ * With no key, every arrival. With one, that arrival alone.
+ */
+export const looseFromImport = (state: State, arrival?: string): NodeState[] =>
   heldNodes(state)
     .filter(sortable)
-    .filter(n => n.arrived && n.route === null && n.parent === null)
+    .filter(n => n.arrival !== null && n.route === null && n.parent === null)
+    .filter(n => arrival === undefined || n.arrival === arrival)
     .sort(oldestFirst);
+
+/**
+ * The arrivals that still have something loose in them, newest first.
+ *
+ * Keyed on the importing commit's timestamp, so ordering the keys orders the
+ * arrivals — except the sample set, which carries a fixed key and sorts last
+ * because it is the one nobody chose to bring in.
+ */
+export const arrivalsWaiting = (state: State): string[] => {
+  const keys = new Set<string>();
+  for (const n of looseFromImport(state)) if (n.arrival) keys.add(n.arrival);
+  return [...keys].sort((a, b) => {
+    if (a === SAMPLE_ARRIVAL) return 1;
+    if (b === SAMPLE_ARRIVAL) return -1;
+    return a < b ? 1 : -1;
+  });
+};
+
+/**
+ * What one arrival is called, in the picker.
+ *
+ * A DATE AND A SIZE, never a source name: nothing records which planner a file
+ * came from — the format is sniffed from the CONTENT and the filename is never
+ * stored — so naming one would be a guess presented as a fact. The date is
+ * checkable against somebody's own memory of the day they did it, which is the
+ * same standard `copyDayWords` is held to.
+ */
+export const arrivalWords = (arrival: string, tz: string): string => {
+  if (arrival === SAMPLE_ARRIVAL) return 'The example set this app came with';
+  const day = new Date(arrival).toLocaleDateString(undefined, {
+    day: 'numeric', month: 'long', timeZone: tz,
+  });
+  return `Brought in on ${day}`;
+};
 
 /** "Everything under [container]" — live sortable descendants, transitively.
  *  Cycle-guarded like every tree walk here: a shard can deliver half a loop. */
@@ -243,13 +294,25 @@ export function rangeChoices(
       family: 'runway',
     });
   }
-  const loose = looseFromImport(state);
-  if (loose.length > 0) {
+  // ONE DOOR PER ARRIVAL (3.11.0), where there used to be one door for all of
+  // them together.
+  //
+  // Two imports a month apart were one undifferentiated lump, and so was the
+  // example set the app ships with — which is the half that turns into somebody
+  // else's problem later: loose rows they cannot tell from their own forgotten
+  // work, in a store they are now afraid to clean. Each arrival is its own set
+  // now, named, and reachable by the wholesale verbs that already exist.
+  //
+  // Generated per key, exactly as `under:` and `menu:` below already are, so
+  // nothing here is a list that can go stale against what is in the store.
+  for (const arrival of arrivalsWaiting(state)) {
+    const set = looseFromImport(state, arrival);
+    if (set.length === 0) continue;
     out.push({
-      key: 'loose-import',
-      words: 'Loose things brought in from another planner',
-      count: loose.length,
-      items: () => looseFromImport(getState()),
+      key: `arrival:${arrival}`,
+      words: arrivalWords(arrival, zone),
+      count: set.length,
+      items: () => looseFromImport(getState(), arrival),
       family: 'runway',
     });
   }

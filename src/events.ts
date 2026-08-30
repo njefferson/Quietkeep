@@ -125,11 +125,37 @@ export interface Stamp {
 type Ev<K extends string, P> = Stamp & { kind: K; node: NodeId | null; payload: P };
 
 // --- A · node lifecycle -----------------------------------------------------
+/**
+ * The built-in sample set's arrival key. One constant, imported by both sample
+ * generators, so the two can never disagree about which set they are — and so a
+ * reader who wants the demo data gone has one thing to let go of rather than
+ * loose rows they cannot tell from their own.
+ */
+export const SAMPLE_ARRIVAL = 'sample';
+
+/**
+ * `arrival` NAMES WHICH ARRIVAL, and it is a different question from `arrived`.
+ *
+ * `arrived` below is narrow on purpose — the importer sets it only on a row that
+ * came in with NOTHING TO GO ON, so a dated row and a project from the same file
+ * do not carry it. That is right for what it decides (whether the offer may hand
+ * the row over one at a time) and useless for "which import was this".
+ *
+ * So every node an importer creates carries `arrival`, whatever else is true of
+ * it. The value is the commit's own timestamp: an import lands in ONE commit, so
+ * every event in it already shares an `at`, and that string is both unique per
+ * run and the date the label needs. Nothing is minted and no id is invented.
+ * The built-in sample set uses a fixed key instead of a date, because it did not
+ * arrive on a day anybody remembers.
+ *
+ * Additive, so law 9 holds: a log written before this has no `arrival` anywhere,
+ * folds to `null`, and behaves exactly as it did.
+ */
 /** `arrived` marks a row that came in from ANOTHER PLANNER rather than being
  *  written here. It latches `captured`, which is what makes something an inbox
  *  item — so an import lands in the inbox instead of nowhere. Additive and
  *  optional: every existing log folds identically without it (law 9). */
-export type NodeCreated      = Ev<'node.created',      { nodeKind: NodeKind; title: string; parent?: NodeId; provenance?: Provenance; arrived?: true }>;
+export type NodeCreated      = Ev<'node.created',      { nodeKind: NodeKind; title: string; parent?: NodeId; provenance?: Provenance; arrived?: true; arrival?: string }>;
 export type NodeKindChanged  = Ev<'node.kind.changed', { from: NodeKind; to: NodeKind }>;
 export type NodeFieldSet     = Ev<'node.field.set',    { field: string; value: unknown }>;
 export type NodeRenamed      = Ev<'node.renamed',      { title: string }>;

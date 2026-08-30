@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.11.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**Each planner you bring in is now its own set to work through.** *Sort things out* lists them one per arrival \u2014 **Brought in on 20 August**, with how many are still loose in it \u2014 instead of pooling every import you have ever done into one heap. Bring a second file in and it does not dilute the first.',
+      '**And it holds the whole file now, not part of it.** The old batch only collected rows that arrived with nothing to go on, so anything that came in carrying a date, and every project in the same file, was missing from a batch named for the import. All of it is there.',
+      '**The example set this app came with is named too**, and that is the point. Left unnamed it becomes loose things you cannot tell from your own forgotten work months later, in a store you are then afraid to tidy. It is one set now, so *All of them at once* and *Let go* can clear it whenever you want.',
+      '**It is named by the day it came in, never by where it came from.** Nothing records which planner a file was \u2014 the format is worked out from what is inside it and the filename is never kept \u2014 so a name would be a guess dressed up as a fact. A date is something you can check against your own memory.',
+      '**Nothing you already have is touched.** Things brought in before this update simply have no arrival on them, exactly as if you had written them here, and everything about them behaves as it did.',
+      '**Still not right:** finishing an import still does not say *these came in together, here is the way to them* \u2014 it lands you somewhere sensible and leaves you to find the set.',
+    ],
+  },
+  {
     triplet: '3.10.0',
     kind: 'CAPABILITY',
     date: '2026-08-29',

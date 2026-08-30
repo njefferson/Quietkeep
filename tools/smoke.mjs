@@ -5845,8 +5845,13 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   await openViaContents(tpage, 'sort');
   const choiceWords = await tpage.locator('#sort-choices .sort-choice-words').allTextContents();
-  is(choiceWords.some(w => /Loose things brought in/.test(w)), true,
-    `the picker offers the loose-import range (${JSON.stringify(choiceWords)})`);
+  // ONE DOOR PER ARRIVAL (3.11.0), named by the day it came in. There is no
+  // single "loose things brought in" batch any more: two imports a month apart
+  // were one lump, so bringing a second file in diluted the first and neither
+  // could be worked through as a set. Keyed on the shape of the name rather than
+  // on a fixed sentence, because the date in it is the fixture's own clock.
+  is(choiceWords.some(w => /^Brought in on /.test(w)), true,
+    `the picker offers the arrival that just came in (${JSON.stringify(choiceWords)})`);
   // Sentences and counts, never lists: no item title may appear in the picker.
   const pickerText = await tpage.locator('#sort-picker').textContent() || '';
   is(/Sort me one/.test(pickerText), false, 'the picker shows sentences and counts, never the items');

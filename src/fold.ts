@@ -172,6 +172,15 @@ export interface NodeState {
   /** Came in from another planner rather than being written here. A latch,
    *  like `captured`, and the reason the offer can say so honestly. */
   arrived: boolean;
+  /** WHICH arrival, when this node came in with one — the importing commit's own
+   *  timestamp, or a fixed key for the built-in sample set. `null` for anything
+   *  written here, and for every node in a log written before 3.11.0.
+   *
+   *  NOT the same question as `arrived` above, which is narrower: the importer
+   *  marks only rows that came in with nothing to go on, so a dated row and a
+   *  project from the same file are `arrived: false` and still belong to that
+   *  import. A latch, set at genesis. */
+  arrival: string | null;
   /** A resume card that has been picked up, or that went cold. Either way the
    *  thread is no longer waiting for you, so it stops being offered. A latch. */
   resumeSpent: boolean;
@@ -672,7 +681,7 @@ function ensureNode(s: State, id: NodeId, vault: VaultId, touched: Set<NodeId>):
       id, vault, kind: 'action', title: '', parent: null,
       trashed: false, mergedInto: null, clocks: {}, onMenu: null,
       lastDone: null, comfortWindowDays: null, intervalDays: null,
-      heat: null, route: null, sourceTags: [], captured: false, arrived: false, resumeSpent: false, contexts: [], roles: [],
+      heat: null, route: null, sourceTags: [], captured: false, arrived: false, arrival: null, resumeSpent: false, contexts: [], roles: [],
       resumeFor: null, resumeCue: null, interruptedFocus: null, interruptedAt: null,
       people: [], waitingOn: null, waitingFor: null, waitingSince: null, waitingOutcome: null,
       role: null, opr: null, saveTarget: null, saveSaved: null,
@@ -836,6 +845,11 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         // The app's whole promise is one thing chosen for you, and on the store
         // somebody actually arrives with it had nothing to give.
         if (e.payload.arrived) { n.captured = true; n.arrived = true; }
+        // WHICH ARRIVAL, on every node the importer made — dated rows and
+        // projects included, which `arrived` above deliberately skips. A latch
+        // at genesis like the two beside it: an import is where a thing came
+        // from, and nothing later can change where it came from.
+        if (e.payload.arrival !== undefined && n.arrival === null) n.arrival = e.payload.arrival;
         break;
       }
       // Renaming competes with capture.recorded / node.created for the SAME

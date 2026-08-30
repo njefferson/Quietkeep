@@ -124,7 +124,19 @@ inspect and either complete or refuse. See [ADR-0011](adr/0011-no-silent-nodes-g
 ### A · Node lifecycle
 
 - **`node.created`**
-  - Payload: `nodeKind, title, parent?, provenance, arrived?`
+  - Payload: `nodeKind, title, parent?, provenance, arrived?, arrival?`
+  - `arrival` says WHICH arrival a node came in on, and it is a wider question
+    than `arrived` below. Every node an importer creates carries it — the dated
+    rows and the projects that `arrived` deliberately skips included — because
+    somebody working through a planner they brought in wants the planner, not
+    the part of it the importer could not do anything with. The value is the
+    importing commit's own timestamp: an import lands in ONE commit, so every
+    event in it already shares an `at`, and that string is both unique per run
+    and the date the set is labelled with. Nothing is minted. The built-in
+    sample set uses the fixed key `sample` instead, because it did not arrive on
+    a day anybody remembers — and naming it is the point: unnamed, it leaves
+    loose rows that read as somebody's own forgotten work months later, with no
+    way to tell them apart and no way to clean them out.
   - `arrived` marks a row that came in from another planner carrying nothing to
     go on — no date the app kept, no place in this app's vocabulary. It latches
     `captured`, which is what makes something an inbox item, so an import lands

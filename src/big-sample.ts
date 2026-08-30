@@ -39,6 +39,7 @@
 // nobody can reproduce is not a finding.
 
 import type { AppEvent, ClarifyRoute, NodeId } from './events.ts';
+import { SAMPLE_ARRIVAL } from './events.ts';
 import { MENU_CATEGORIES } from './menu.ts';
 import { deriveKey, KDF_ITERATIONS } from './journal.ts';
 import { seal } from './seal.ts';
@@ -373,6 +374,13 @@ export async function bigSampleEvents(
     const id = ctx.id();
     stamp('node.created', id, {
       nodeKind, title, provenance: { for: 'self' },
+      // THE SAMPLE IS AN ARRIVAL TOO (3.11.0), and naming it is the point.
+      // Unnamed it leaves loose things in a store that read as somebody's
+      // own forgotten work months later, with no way to tell them from it and
+      // no way to clean them out. Named, it is one set that can be told apart
+      // and let go with the wholesale verbs that already exist. A fixed key
+      // rather than a date, because it did not arrive on a day anybody remembers.
+      arrival: SAMPLE_ARRIVAL,
       ...(parent === undefined ? {} : { parent }),
     });
     return id;

@@ -99,6 +99,12 @@ export function deserialiseState(raw: unknown): State {
       // existed cannot have held an imported row, because nothing marked one.
       // Defaulting it true would tell every old item it came from somewhere else.
       arrived: n.arrived ?? false,
+      // `?? null` for the same reason `arrived` is `?? false`: a snapshot
+      // written before arrivals had keys cannot say which import a row came in
+      // on, and inventing one would file somebody's existing rows into a set
+      // they never arrived with. They stay unkeyed, which reads as "written
+      // here" — the honest answer when the store cannot say otherwise.
+      arrival: n.arrival ?? null,
       resumeSpent: n.resumeSpent ?? false,
       resumeFor: n.resumeFor ?? null,
       resumeCue: n.resumeCue ?? null,

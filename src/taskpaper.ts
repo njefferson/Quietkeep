@@ -340,6 +340,17 @@ export function taskPaperEvents(
   parsed: readonly TaskLine[],
 ): AppEvent[] {
   const out: AppEvent[] = [];
+  /**
+   * WHICH ARRIVAL THIS IS (3.11.0). One import is one commit, so every event in
+   * it already shares `ctx.at` — that string is unique per run and is also the
+   * date the set gets labelled with, so nothing is minted and no id invented.
+   *
+   * It goes on EVERY node this importer creates, which is deliberately wider
+   * than `arrived` below: that marks only a row with nothing to go on, so a
+   * dated row and a project from the same file do not carry it. They still came
+   * in on this arrival, and somebody working through the file wants all of it.
+   */
+  const ARRIVAL = ctx.at;
   const stamp = (kind: string, node: string | null, payload: unknown): void => {
     out.push({
       id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
@@ -380,7 +391,7 @@ export function taskPaperEvents(
     const found = projectByTitle.get(title);
     if (found !== undefined) return found;
     const id = ctx.id();
-    stamp('node.created', id, { nodeKind: 'project', title, provenance: { for: 'self' } });
+    stamp('node.created', id, { nodeKind: 'project', title, provenance: { for: 'self' }, arrival: ARRIVAL });
     projectByTitle.set(title, id);
     return id;
   };
@@ -457,6 +468,7 @@ export function taskPaperEvents(
         nodeKind: line.kind === 'project' ? 'project' : 'action',
         title: line.title,
         provenance: { for: 'self' },
+        arrival: ARRIVAL,
         ...(parent === undefined ? {} : { parent }),
         // ONLY A ROW THAT ARRIVES WITH NOTHING TO GO ON. `arrived` puts a row
         // in the inbox so the offer can hand it over one at a time — and a row
