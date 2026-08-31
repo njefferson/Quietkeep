@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.19.3',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**The list behind the number is in date order now.** Tap the line that says what comes back and when, and you get everything you are holding with the day each one returns. That list was ordered by when you wrote each thing DOWN, which tells you nothing about when it comes back \u2014 so the sheet\u2019s own title promised something the order did not deliver. Soonest first now.',
+      '**Anything with no date sits at the end.** The Menu, and anything simply held, has no return date to be early or late against, and putting it first would bury the next thing due underneath a wish list.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. *Who is here* takes one person and *Who is in it?* takes as many as you like. The names under *Who is in it?* are buttons \u2014 press as many as apply. And nothing on that screen adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.19.2',
     kind: 'ITERATION',
     date: '2026-08-31',

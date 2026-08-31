@@ -910,7 +910,22 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.2**. A fourth
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.3**. The
+  coverage list is in return-date order.
+  **REPORTED, AND THE SHEET'S OWN TITLE WAS THE EVIDENCE.** `#sheet-coverage` is
+  headed *What comes back, and when*, and `buildCoverage` sorted by node id —
+  newest-written first, which is a fact about when a thing was CAPTURED and says
+  nothing about when it returns. Asked for as a way to see decision points that
+  have not yet arrived; it could not answer that in the order it was in.
+  **THE CLOCK CHOICE IS NAMED ONCE.** `rowClock` is now one helper feeding both
+  the sort and the rendered words. Two expressions would eventually disagree —
+  a row ordered by its `due` while its words came from its `suspense` is wrong in
+  the one way nobody would check. Same rule `src/today.ts` states about a second
+  definition of what matters today.
+  **UNDATED SORTS LAST**, not first: the Menu and anything simply held have no
+  return date to be early or late against, and leading with them would bury the
+  next thing due beneath a wish list.
+- **Superseded, and kept for the record: 3.19.2.** A fourth
   prohibition on the *Why* page, and it binds the sympathetic direction.
   **THE FINDING IS THE FAILURE MODE THE EPISTEMIC TAGS EXIST FOR.** "Information
   degrades between neurotypes" is cited everywhere from an N = 72 diffusion-chain

@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.19.3 — ITERATION
+
+*2026-08-31*
+
+- **The list behind the number is in date order now.** Tap the line that says what comes back and when, and you get everything you are holding with the day each one returns. That list was ordered by when you wrote each thing DOWN, which tells you nothing about when it comes back — so the sheet’s own title promised something the order did not deliver. Soonest first now.
+- **Anything with no date sits at the end.** The Menu, and anything simply held, has no return date to be early or late against, and putting it first would bury the next thing due underneath a wish list.
+- **Still to sort, unchanged:** the situation screen asks who twice. *Who is here* takes one person and *Who is in it?* takes as many as you like. The names under *Who is in it?* are buttons — press as many as apply. And nothing on that screen adds somebody new.
+
 ## 3.19.2 — ITERATION
 
 *2026-08-31*

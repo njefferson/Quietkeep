@@ -1077,9 +1077,39 @@ export function mountWork(
    *  It read `heldNodes` until 1.15.1, which is one word wider and was the wrong
    *  set: every private journal entry has no title by design, so each one
    *  itemised here as "(untitled) — held". */
+  /** WHICH CLOCK THIS ROW IS ABOUT, named once (3.19.3).
+   *
+   *  The row renders one clock and the list now SORTS by one, and if those were
+   *  two expressions they would eventually disagree — an item ordered by its
+   *  `due` while its row said `returns` from its `suspense` is a list that is
+   *  wrong in the one way nobody would think to check. Same rule `src/today.ts`
+   *  states about a second definition of "what matters today". */
+  const rowClock = (n: NodeState) =>
+    n.clocks.due ?? n.clocks.review ?? n.clocks.start ?? n.clocks.suspense ?? n.clocks.park;
+
   function buildCoverage(): void {
     const state = session.state();
-    const held = [...heldWork(state)].sort((a, b) => (a.id < b.id ? 1 : -1));
+    // SORTED BY WHEN IT COMES BACK (3.19.3). Reported: this list is the answer
+    // to "what is coming, and is it time to act on one", and it was ordered
+    // newest-first by id — which is a fact about when a thing was WRITTEN and
+    // says nothing about when it returns. The sheet's own title is "What comes
+    // back, and when"; the second half of that sentence is now the order.
+    //
+    // Anything with no clock — the Menu, and a thing held with neither — sorts
+    // to the END rather than the start. It has no return date to be early or
+    // late against, and putting the undated first would bury the next thing due
+    // beneath a wish list, which is exactly what law 6 keeps off the work
+    // surface. Ties break on title so the order is stable between repaints.
+    const held = [...heldWork(state)].sort((a, b) => {
+      const ca = rowClock(a), cb = rowClock(b);
+      if (ca && cb) {
+        if (ca.at !== cb.at) return ca.at < cb.at ? -1 : 1;
+        return (a.title || '').localeCompare(b.title || '');
+      }
+      if (ca) return -1;
+      if (cb) return 1;
+      return (a.title || '').localeCompare(b.title || '');
+    });
     COVERAGE.replaceChildren(...held.map(n => {
       const li = el('li', 'coverage-item');
       // A door (1.6.0), still lazily built — the row count is why this list
@@ -1087,7 +1117,7 @@ export function mountWork(
       const b = el('button', 'coverage-open');
       b.type = 'button';
       b.append(el('span', 'coverage-title', n.title || '(untitled)'));
-      const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start ?? n.clocks.suspense ?? n.clocks.park;
+      const clock = rowClock(n);
       b.append(el('span', 'coverage-when',
         clock ? `returns ${returns(clock.at)}` : n.onMenu ? 'on the Menu' : 'held'));
       if (openDetail) b.addEventListener('click', () => {
