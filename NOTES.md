@@ -843,7 +843,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.17.1**. The total
+- **PRODUCTION CARRIES 3.17.1**, promoted 2026-08-31 at `e4fba53`.
+- **https://staging.quietkeep.pages.dev** — **3.17.1**, and it is what production
+  carries. The total
   is the way to the rest (ADR-0120), and one defect the walk found because of it.
   **THE HUB COULD SIT ON TOP OF THE FOOTER, ON A WIDE SCREEN, AND HAD BEEN ABLE
   TO ALL ALONG.** At that breakpoint the hub is `position: absolute` — a pinned
@@ -2238,7 +2240,19 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.15.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.17.1** — promoted at
+  `e4fba53` on 2026-08-31, the merged tree asserted byte-identical to `27811c9`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. Three releases: a meeting became somewhere you can stand, review's
+  total became the way to the rest of what it found, and a hub that could sit on
+  top of the footer on a wide screen stopped being able to.
+  **IT IS THE FIRST PROMOTE IN A WHILE WHOSE SOURCE COMMIT HAD BOTH SPINE JOBS
+  GREEN.** `27811c9` is the first fully green run since `fa6d8ae`; the two before
+  it were red for reasons now recorded against 3.17.1 — a driver that had not yet
+  been debugged when its release was pushed, and a release pushed before its own
+  receipts existed. Both were deliberate: the container rolled back twice that
+  session, and pushing early is what saved the work.
+- **Superseded, and kept for the record: 3.15.0** — promoted at
   `2230a3a` on 2026-08-30, the merged tree asserted byte-identical to `43e1902`,
   the staging head that was walked. Three releases: where a thing can be done
   asked on the sorting card, a line that has gone quiet coming to you rather than
