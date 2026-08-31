@@ -1090,12 +1090,34 @@ button.ghost,
 .tree-empty { color: var(--ink-soft); font-size: 0.9375rem; }
 
 /* The lens (1.7.0): one small row, quiet, above the list it filters. */
+/* A CONTROL AND ITS EXPLANATION ARE NOT ONE LINE (3.19.1).
+ *
+ * Reported from a device, on the situation sheet: the "Not a place" control
+ * read as an ALERT rather than as a button, and the "Who is in it?" label
+ * arrived as three one-word lines beside its own picker.
+ *
+ * One cause, and it is this rule. A flex row does not wrap unless it is told
+ * to, so every row here put its label, its control and its hint on ONE line and
+ * shared out the shortfall by squeezing them — a two-word button became a
+ * two-line box, which is the shape of a warning badge and not of a ghost
+ * button, and a four-word label became a column. `#situation-who-row` is the
+ * worst case because `.situation-who` is `width: 100%` inside it, so the label
+ * and the hint were shrunk against a sibling asking for the whole line.
+ *
+ * The hint takes its OWN line rather than merely being allowed to wrap. Letting
+ * the row wrap where it likes leaves the control's width dependent on how long
+ * the sentence beside it happens to be, which is the same defect one release
+ * along the first time the copy changes. A control keeps its natural width; the
+ * explanation goes underneath, which is where an explanation belongs.
+ */
 .lens-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin: 0 0 0.5rem;
 }
+.lens-row > .detail-hint { flex: 1 0 100%; margin-top: 0.25rem; }
 .lens-row select {
   /* A flex item's min-width is auto, so a long container title made the
      select refuse to shrink and pushed the page sideways at 320px/200%

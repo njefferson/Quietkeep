@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.19.1 — ITERATION
+
+*2026-08-31*
+
+- **“Not a place” looked like a warning.** Reported. It is an ordinary button, and it was being squeezed into a two-line box beside the sentence that explains it — which is the shape of an alert, not of something you press. The sentence goes underneath it now and the button sits on one line, like every other button on that screen.
+- **“Who is in it?” was arriving as three one-word lines.** The same cause: a label, a control and an explanation were all being fitted onto one line, and the shortfall was shared out by shrinking whichever of them gave way first. Anywhere that happens on the situation screen, the explanation now takes its own line and the control keeps its natural width.
+- **Still to sort — that screen asks who twice.** *Who is here* takes one person; *Who is in it?* takes as many as you like; they sit one above the other, and the first one teaches you that the answer is one person. The names under *Who is in it?* are buttons: press as many as apply. And nothing on that screen adds somebody new — people get named on a thing, not here.
+
 ## 3.19.0 — CAPABILITY
 
 *2026-08-31*

@@ -843,7 +843,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.0**. A control
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.1**. A control
+  and its explanation are not one line.
+  **REPORTED FROM THE DEVICE, WITH A PICTURE.** On the situation sheet, `Not a
+  place` read as an ALERT rather than as a button, and the `Who is in it?` label
+  arrived as three one-word lines beside its own picker. One cause for both:
+  `.lens-row` is a flex row and was never told to wrap, so a label, its control
+  and its hint were fitted onto ONE line and the shortfall was shared out by
+  squeezing whichever gave way first. A two-word button became a two-line box,
+  which is the shape of a warning badge and not of a ghost button.
+  `#situation-who-row` is the worst case because `.situation-who` is
+  `width: 100%` inside it — the label and the hint were being shrunk against a
+  sibling asking for the whole line.
+  **THE HINT TAKES ITS OWN LINE rather than merely being allowed to wrap.**
+  Letting the row wrap where it likes leaves the control's width dependent on how
+  long the sentence beside it happens to be, which is the same defect again one
+  release along, the first time the copy changes.
+  **MEASURED AT 1024px, BEFORE AND AFTER:** the label was three lines and is one;
+  the button was two lines and is one, at its natural 127px.
+  **STILL OPEN, AND IT IS WHAT WAS ACTUALLY ASKED.** That sheet asks who TWICE.
+  `#with-who` is a single-valued `<select>`; `#situation-who` is a row of
+  `aria-pressed` toggles that takes as many as you like; they sit one directly
+  above the other and are filled from the same `allPeople`. The single-valued one
+  comes FIRST, so it teaches the reader that the answer is one person — which is
+  the reading that was reported. Neither of them can name somebody new. The
+  layout fix makes both easier to see and does not settle which should exist.
+- **Superseded, and kept for the record: 3.19.0.** A control
   renders beside the thing it acts on.
   **REPORTED FROM THE DEVICE, WITH A PICTURE, AND THE FILE HAD BEEN LYING ABOUT
   IT FOR A YEAR.** `More room` opens the capture box. 2.9.0 took it out of the
