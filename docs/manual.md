@@ -92,6 +92,20 @@ shows:
   afternoon is rarely short of time — it is short of the thing you want to do.
 - **Who is with you.** Anything with nobody named on it still shows.
 
+### When three are not all of them
+
+Review shows at most three things and says how many there are — *15 things need
+a look. These 3 first.* That line is a button. Press it and you get all fifteen:
+the same rows, the same words, the same way into each one.
+
+The screen keeps showing three on purpose. A wall of them is the pile this app
+exists to stand between you and. But the three are the top of an order —
+structural breaks first, then decisions waiting, then rhythm — so without a way
+through, the kinds further down were not merely later, they were out of reach.
+
+When the three are all there is, the line still says so and does nothing when
+pressed. There is nowhere to go.
+
 ### Name a meeting, and open the room
 
 The same sheet has **Recognise this one?** at the bottom. Give what you have set
@@ -306,6 +320,8 @@ when there is a reason.
 
 ### Behind a button
 
+- **Everything worth a look** — the whole of what review has found, when the
+  three on the screen are not all of it.
 - **What's the situation?** — where you are, how long you have, who is with you,
   and the situations you have named.
 - **In the room** — what a named meeting is about: what is outstanding with each

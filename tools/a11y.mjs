@@ -4490,15 +4490,39 @@ try {
     // Three more cards become containers with nothing under them, the same
     // `stalled` class the first one is: the point is the COUNT passing the cap,
     // not a variety of findings.
-    for (let i = 0; i < 3; i++) {
-      await page.locator('#cards .card-open').first().click();
+    // BACK TO THE HELD STANCE FIRST. Reaching the review state above ends on a
+    // closed detail sheet over whatever stance the triage run left, and `#cards`
+    // is not on screen there — the first version of this clicked straight into
+    // it and spent twelve seconds timing out on an element Playwright could see
+    // and could not press.
+    await enterStance(page, 'held');
+    const spare = await page.locator('#cards .card-open').count();
+    (spare >= 3 ? pass : fail)(
+      `${theme}/everything worth a look: the store has cards to make containers from (${spare})`);
+    // BY INDEX, AND ONLY WHERE THE CONTROL IS ACTUALLY OFFERED. `Make it a
+    // project` is not on every card — a thing that is already a container has no
+    // need of it, and the first card in the list is the container the state
+    // above just made. Taking `.first()` three times therefore reopened it and
+    // waited twelve seconds for a button that was correctly absent.
+    let made = 0;
+    for (let i = 0; i < 12 && made < 3; i++) {
+      const cards = await page.locator('#cards .card-open').count();
+      if (i >= cards) break;
+      await page.locator('#cards .card-open').nth(i).click();
       await page.waitForSelector('#detail[open]');
       await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
-      await page.click('#detail-make-project');
-      await page.waitForTimeout(220);
+      const canMake = await page.locator('#detail-make-project').isVisible().catch(() => false);
+      if (canMake) {
+        await page.click('#detail-make-project');
+        await page.waitForTimeout(220);
+        made += 1;
+      }
       await page.click('#detail-close');
       await page.waitForSelector('#detail', { state: 'hidden' });
     }
+    (made === 3 ? pass : fail)(
+      `${theme}/everything worth a look: three more containers were made, so the cap has something behind it (made ${made})`);
+    await page.waitForSelector('#review:not([hidden])');
     const capped = await page.evaluate(() => ({
       said: document.querySelector('#review-count')?.textContent ?? '',
       shown: document.querySelectorAll('#review-list .review-open').length,

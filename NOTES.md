@@ -843,8 +843,33 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.17.0**. The total
-  is the way to the rest (ADR-0120).
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.17.1**. The total
+  is the way to the rest (ADR-0120), and one defect the walk found because of it.
+  **THE HUB COULD SIT ON TOP OF THE FOOTER, ON A WIDE SCREEN, AND HAD BEEN ABLE
+  TO ALL ALONG.** At that breakpoint the hub is `position: absolute` — a pinned
+  sidebar beside the work rather than above it — so nothing below it knows how
+  tall it is. A hub with more doors than the job beside it has content hangs past
+  the bottom of `main` and lands on the footer: measured as `.hub-go` overlapping
+  the diagnostic button by 58x35px, which is a mis-tap.
+  **IT WAS NEVER REACHABLE UNTIL A STATE MADE IT SO.** The walk had only ever
+  arrived there with a short hub. Driving three more containers into the store —
+  which 3.17.0's own new a11y state does, because the total is a door only when
+  there is something behind it — made the sidebar tall enough, and the overlap
+  appeared. Any reader with enough stances and a quiet surface would have found
+  it first. Capped rather than restructured: a grid would also fix it and would
+  turn every job section into a grid item, which is the second layout the note
+  above that rule refuses to introduce.
+  **AND `#menu-open` MOVED ONE PLACE, WHICH THE GATE MADE ME SAY OUT LOUD.** The
+  review total became a button, so it is a control now and everything after it
+  shifts. `controls:check` refuses a moved control unless the running release
+  names it in place-language; updating the manifest alone is bookkeeping.
+  **3.17.0 SHIPPED TO STAGING WITH ITS SPINE RED, ON PURPOSE, AND THIS IS THE
+  REPAIR.** The container rolled back twice in one session, both times mid-walk.
+  Pushing before the walks ran is what saved the release; it also meant the
+  pushed commit carried an a11y driver that had not yet been debugged. The fixes
+  were made and seen green locally, and the second rollback took them before they
+  were committed. The habit that follows is in the commit order: edit, commit,
+  push, and only then start anything that takes ten minutes.
   **THE CAP WAS NOT THE DEFECT; THE DEAD END WAS.** Review shows three and states
   the total, and the total was a `<p>` with no route to the rest anywhere in the
   app. Because the three come off a RANKED list of five classes, the lowest-

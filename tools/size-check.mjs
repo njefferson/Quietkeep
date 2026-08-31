@@ -230,7 +230,12 @@ const BUDGET = {
   // and nothing here is prose a reader has to get past to work: the picker is
   // one label and one hint, and the rest is a surface that only exists once a
   // meeting has been named.
-  words: 3744,
+  // 3744 -> 3749 on 2026-08-30 (3.17.0). Five words: the whole-review sheet's
+  // heading and its Close. The sentence above its list is rendered from the
+  // same `reviewWords` the surface already uses, so it costs the shell nothing,
+  // and the rows are built from the store rather than written here — a store
+  // with forty findings behind the total adds not one word to this file.
+  words: 3749,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -628,7 +633,11 @@ const BUDGET = {
   // shell, so a meeting with nine people costs the shell nothing — which is the
   // shape this budget is trying to protect and the reason the number moved by
   // one rather than by a screenful.
-  controls: 259,
+  // 259 -> 261 on 2026-08-30 (3.17.0), UP by two, and only one of them is new
+  // furniture: the whole-review sheet's Close. The other is the review total
+  // itself, which was a `<p>` and is a button now — the release is that change,
+  // so the count moving is the feature rather than drift beside it.
+  controls: 261,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

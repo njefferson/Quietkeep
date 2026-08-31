@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.17.1 — ITERATION
+
+*2026-08-30*
+
+- **On a wide screen, the list of places to go could sit on top of the version number at the bottom.** It is pinned beside your work rather than above it, and nothing below it knew how tall it had grown — so once you had more places to go than the page beside them had content, it hung over the footer and you could press the wrong thing. It stays inside its own column now.
+- **The Menu button is now one place further down the page than it was.** Nothing about it changed and nothing moved on screen — the line above it saying how many things need a look became a button in the last release, so anything reading the page in order, a screen reader included, reaches Menu one step later than before.
+- **Still not right:** a list of places taller than the page beside it now scrolls on its own. That is better than covering the footer and it is not the same as fitting.
+
 ## 3.17.0 — CAPABILITY
 
 *2026-08-30*

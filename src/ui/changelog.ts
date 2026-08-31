@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.17.1',
+    kind: 'ITERATION',
+    date: '2026-08-30',
+    notes: [
+      '**On a wide screen, the list of places to go could sit on top of the version number at the bottom.** It is pinned beside your work rather than above it, and nothing below it knew how tall it had grown \u2014 so once you had more places to go than the page beside them had content, it hung over the footer and you could press the wrong thing. It stays inside its own column now.',
+      '**The Menu button is now one place further down the page than it was.** Nothing about it changed and nothing moved on screen \u2014 the line above it saying how many things need a look became a button in the last release, so anything reading the page in order, a screen reader included, reaches Menu one step later than before.',
+      '**Still not right:** a list of places taller than the page beside it now scrolls on its own. That is better than covering the footer and it is not the same as fitting.',
+    ],
+  },
+  {
     triplet: '3.17.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',
