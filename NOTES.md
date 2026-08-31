@@ -910,7 +910,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.1**. A control
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.2**. A fourth
+  prohibition on the *Why* page, and it binds the sympathetic direction.
+  **THE FINDING IS THE FAILURE MODE THE EPISTEMIC TAGS EXIST FOR.** "Information
+  degrades between neurotypes" is cited everywhere from an N = 72 diffusion-chain
+  study. A pre-registered replication across three sites at N = 311 found **no
+  difference** in transfer between single- and mixed-neurotype chains (Crompton
+  et al., 2025, *Nature Human Behaviour* 9(7), 1488–1500). **And the rapport half
+  did not survive in the form it is usually restated either** — the 2025 paper's
+  own words are that *non-autistic* chains indicated higher rapport, which is not
+  the claim that rapport is higher within same-neurotype pairs. Only the
+  disclosure effect holds as commonly stated. Nothing in this repo had ever cited
+  either paper, so this is additive rather than a retraction.
+  **THAT CORRECTION WAS FOUND BY VERIFYING, not by reading the summary.** The
+  research arrived stating the rapport finding was robust; the primary says
+  otherwise. Two other glosses in the same handover were also off, and one
+  omitted paper (Wegner, Erber & Raymond, 1991) carries the single most relevant
+  result in the set — imposing a memory structure on a couple who already had one
+  made them **worse than strangers**, which is a caution against the only feature
+  shape that survived. All of it is in `docs/nd-collisions.md` entry 32.
+- **Superseded, and kept for the record: 3.19.1.** A control
   and its explanation are not one line.
   **REPORTED FROM THE DEVICE, WITH A PICTURE.** On the situation sheet, `Not a
   place` read as an ALERT rather than as a button, and the `Who is in it?` label

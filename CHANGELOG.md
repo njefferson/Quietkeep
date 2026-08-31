@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.19.2 — ITERATION
+
+*2026-08-31*
+
+- **The *Why* page names one more thing this app may never do.** It already lists the ideas that sound sensible and did not survive testing — willpower as a tank that empties, brain training, twenty-one days to a habit — and each one is there because somebody would otherwise build it in good faith. A fourth has joined them: **nothing here may explain a misunderstanding between two people by saying their brains work differently.** A large pre-registered study across three sites found no difference in how well information travels between people of different neurotypes, overturning the smaller study that claim is usually built on.
+- **It is on the page as a worked example, not just a rule.** The finding it overturns is one this app is sympathetic to, and the version people repeat is stronger than either study supports. That is the whole reason every claim on that page carries a tag saying how good the evidence is — the tags have to bind hardest on the findings you would like to be true.
+- **Still to sort, unchanged from the last release:** the situation screen asks who twice. *Who is here* takes one person and *Who is in it?* takes as many as you like, one above the other. The names under *Who is in it?* are buttons — press as many as apply. Nothing on that screen adds somebody new.
+
 ## 3.19.1 — ITERATION
 
 *2026-08-31*

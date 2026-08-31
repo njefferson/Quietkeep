@@ -409,6 +409,9 @@ each corresponds to a feature that would look perfectly reasonable in a spec.
 - ****"21 days to a habit"** — no evidential basis; Lally's median is ~66 days with an enormous range**
   - Status: **negative finding**
   - What it forbids here: No habit-formation countdown, no automaticity progress bar, no promise of a timeline the data cannot support.
+- ****Information degrades between neurotypes** — the widely cited N = 72 result did not replicate at N = 311**
+  - Status: **negative finding**
+  - What it forbids here: No feature, copy or record may explain a misunderstanding between two people by a mismatch of neurotype. A pre-registered diffusion-chain study across three sites found **no difference in information transfer** between single-neurotype and mixed-neurotype chains (Crompton et al., 2025, *Nature Human Behaviour* 9(7), 1488–1500), overturning the 2020 original (*Autism* 24(7), 1704–1712). **The rapport half did not survive in the form it is usually restated either** — the 2025 paper's own words are that *non-autistic* chains indicated higher rapport, which is not the claim that rapport is higher within same-neurotype pairs; only "disclosing diagnosis improved rapport" holds as commonly stated. This one is worth reading twice, because it is the cleanest example in this document of the failure mode the epistemic tags exist for: a well-cited finding, congenial to a theory this document is sympathetic to, partly overturned by a larger registered report — **and then restated in a stronger form than either paper supports.** The prohibition binds the sympathetic direction as hard as the hostile one. What autistic chains are *not* is impaired: the 2025 paper states they transfer information as accurately as non-autistic chains, and that is the finding to carry forward.
 
 **Why they are here rather than quietly obeyed:** each of these is a feature
 somebody will eventually propose in good faith, because they all appear in

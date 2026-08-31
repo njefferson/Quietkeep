@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.19.2',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**The *Why* page names one more thing this app may never do.** It already lists the ideas that sound sensible and did not survive testing \u2014 willpower as a tank that empties, brain training, twenty-one days to a habit \u2014 and each one is there because somebody would otherwise build it in good faith. A fourth has joined them: **nothing here may explain a misunderstanding between two people by saying their brains work differently.** A large pre-registered study across three sites found no difference in how well information travels between people of different neurotypes, overturning the smaller study that claim is usually built on.',
+      '**It is on the page as a worked example, not just a rule.** The finding it overturns is one this app is sympathetic to, and the version people repeat is stronger than either study supports. That is the whole reason every claim on that page carries a tag saying how good the evidence is \u2014 the tags have to bind hardest on the findings you would like to be true.',
+      '**Still to sort, unchanged from the last release:** the situation screen asks who twice. *Who is here* takes one person and *Who is in it?* takes as many as you like, one above the other. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing on that screen adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.19.1',
     kind: 'ITERATION',
     date: '2026-08-31',
