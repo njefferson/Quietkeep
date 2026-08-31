@@ -28,6 +28,40 @@ Epigraph: *"It holds the rest, so you can rest."*
 4. [`docs/verifications.md`](docs/verifications.md) — what has actually been
    checked and what merely looks checked. Consult before assuming a platform fact.
 
+## The clone rolls back. Expect it; do not report it.
+
+**This container reverts both clones to an earlier commit, repeatedly, without
+warning.** It is a property of the box, not an incident. It has been narrated to
+the owner as a discovery more than once and that is the thing to stop.
+
+So it is a PRECONDITION, like `npm ci`. At the start of any turn that will touch
+the tree, and again after anything that took ten minutes:
+
+    git fetch origin staging && git reset --hard origin/staging
+    git -C ../noahjefferson fetch origin main && git -C ../noahjefferson reset --hard origin/main
+
+Say nothing about it unless it actually cost something — work lost, or a walk
+that measured the wrong tree. "Rolled back again, as expected" is still
+narrating it.
+
+**What follows for the work, and it is the whole reason this matters: PUSH
+BEFORE ANYTHING LONG.** Edit, commit, push, and only then start a walk. The
+browser walks are eight to fourteen minutes and are exactly what the revert
+lands in the middle of; a release has been lost that way twice in one session.
+Receipts get committed the moment their walk goes green, as their own commit,
+rather than banked to the end.
+
+**And a stale hub clone lies about this repo.** `branch-guard --artefact` and
+`third-person-check` both fail for reasons that are not this tree's when
+`../noahjefferson` has reverted — the first compares against a hook generated
+from whatever hub you have, the second needs a file that older hubs do not
+carry. Check its HEAD against its remote before believing either.
+
+**NEVER ESTIMATE HOW FAR BACK IT WENT — READ THE DATE.** A session reported a
+tree "four months behind" when the gap was eleven days and this repo was
+thirty-four days old, because it converted nineteen releases into calendar time.
+`git log -1 --format=%cd` costs nothing. (Hub LESSONS 75.)
+
 ## The credit is the owner's money (Doctrine §11b)
 A session cannot see billing, the plan, the balance, or what a turn cost, so no
 warning will ever arrive and the restraint is unconditional. **This repo is the
