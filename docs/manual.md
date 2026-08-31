@@ -92,6 +92,37 @@ shows:
   afternoon is rarely short of time — it is short of the thing you want to do.
 - **Who is with you.** Anything with nobody named on it still shows.
 
+### Things that run without you, and things that are simply waiting
+
+Mark a repeating thing **It runs itself** and it stops being something you do
+and becomes something you are trusting. The app keeps one question about it:
+*when did you last check it still does?* That matters because an arrangement
+that stops makes no noise — no error, no reminder — and the first sign is
+running out.
+
+Two boxes sit under that, and the second is the useful one.
+
+**Where does it stand?** is for the things that are not simply on or off — a
+post out to advert, a job filled temporarily until a date, something you cannot
+start until somebody else moves. You write it in your own words. There is no
+list to pick from, because the app does not know your world and will not pretend
+to.
+
+**What would change it?** is the condition you are watching for. Writing it down
+is the point: a change out in the world gives you nothing to walk past, so the
+only way to keep hold of it is to keep checking — and checking costs you
+attention all day, against whatever else you are doing. Put it here and you can
+stop carrying it.
+
+**Nothing watches for it.** The app cannot see your world and will never tell
+you the thing has happened. It holds what you wrote so you do not have to.
+
+**Running without you** — a button that appears once you have marked anything —
+lists all of it, most-pressing first, including the ones that are perfectly
+fine. A list that only ever showed problems would be a wall of them. There is
+nothing to tick off there; you confirm a thing on its own panel, where the
+question is asked.
+
 ### When three are not all of them
 
 Review shows at most three things and says how many there are — *15 things need
@@ -322,6 +353,8 @@ when there is a reason.
 
 - **Everything worth a look** — the whole of what review has found, when the
   three on the screen are not all of it.
+- **Running without you** — everything you have said runs on its own, when you
+  last checked each was still true, and where any of it stands.
 - **What's the situation?** — where you are, how long you have, who is with you,
   and the situations you have named.
 - **In the room** — what a named meeting is about: what is outstanding with each

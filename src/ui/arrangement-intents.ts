@@ -11,7 +11,10 @@
 
 import type { AppEvent } from '../events.ts';
 import type { StampContext } from './session.ts';
-import { ARRANGEMENT_FIELD, DEPENDS_FIELD } from '../arrangement.ts';
+import {
+  ARRANGEMENT_FIELD, DEPENDS_FIELD, STANDS_FIELD, CHANGES_FIELD,
+} from '../arrangement.ts';
+import { cleanNote } from '../note.ts';
 import { endOfLocalDay} from '../time.ts';
 
 // Each intents module carries its own `base`, as every sibling here does.
@@ -48,6 +51,31 @@ export const setDependsEvents = (ctx: StampContext, node: string): AppEvent[] =>
 
 export const clearDependsEvents = (ctx: StampContext, node: string): AppEvent[] =>
   [base(ctx, 'node.field.set', node, { field: DEPENDS_FIELD, value: false })];
+
+/**
+ * Where it stands, and what would change it (3.18.0, ADR-0121).
+ *
+ * `cleanNote` and NOT a cleaner of its own — ADR-0047's rule that two cleaners
+ * is how one file comes to import differently from how it types. It is the same
+ * cleaner the note and the situation already use: prose keeps its newlines,
+ * control and format characters go.
+ *
+ * CLEARING IS WRITING AN EMPTY STRING, not an absence, for exactly the reason
+ * `unmarkArrangementEvents` writes `false` rather than trashing the node:
+ * `node.field.set` is the only field event the closed vocabulary has, and taking
+ * a thing back is a decision the log should keep. `standsAt` and `changedBy`
+ * read an empty string as nothing, so the row disappears from every surface
+ * without the record of it ever having been there disappearing too.
+ */
+export const setStandsEvents = (
+  ctx: StampContext, node: string, text: string,
+): AppEvent[] =>
+  [base(ctx, 'node.field.set', node, { field: STANDS_FIELD, value: cleanNote(text) })];
+
+export const setChangesEvents = (
+  ctx: StampContext, node: string, text: string,
+): AppEvent[] =>
+  [base(ctx, 'node.field.set', node, { field: CHANGES_FIELD, value: cleanNote(text) })];
 
 /**
  * Confirm that it is still arranged.

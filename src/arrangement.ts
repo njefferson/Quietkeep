@@ -59,6 +59,38 @@ export const ARRANGEMENT_FIELD = 'arrangement';
  *  a machine you own, and those you can actually check. */
 export const DEPENDS_FIELD = 'arrangement-depends';
 
+/**
+ * WHERE IT STANDS, in the reader's own words (3.18.0, ADR-0121).
+ *
+ * An arrangement was binary until now: still running, or worth confirming. That
+ * is the whole answer for a standing order and none of it for a post that
+ * cannot be advertised until October, a promotion filled temporarily until a
+ * date, or a position out to advert right now. Those have a STATE, and it is
+ * one the app cannot know — so it is a phrase somebody writes and never an
+ * enumeration the app defines, which would be the app modelling their
+ * organisation (law 7).
+ */
+export const STANDS_FIELD = 'arrangement-stands';
+
+/**
+ * WHAT WOULD CHANGE IT — the condition being watched, and the reason to build
+ * any of this (3.18.0, ADR-0121).
+ *
+ * Prospective memory reaches an intention two ways: a distinctive cue arrives
+ * and brings it, at little ongoing cost; or you MONITOR — hold a readiness to
+ * notice and keep checking, while doing something else. A change in the world
+ * has no cue to walk past, so only the second route exists, and monitoring is
+ * "attentionally demanding and therefore induces a cost to the ongoing task",
+ * rationed by context (`docs/nd-collisions.md` entry 30, read from the primary).
+ * A condition that could change on any day supplies no context to ration by, so
+ * it is paid continuously or dropped.
+ *
+ * Writing the condition down is therefore offloading the MONITORING, which is a
+ * larger saving than offloading a task — and it is the half this app could not
+ * hold at all.
+ */
+export const CHANGES_FIELD = 'arrangement-changes';
+
 /** A marker field is never REMOVED — `node.field.set` is the only field event
  *  the closed vocabulary has, and the fold keeps the last value per field. So
  *  these read the VALUE rather than mere presence: turning a marker off writes
@@ -66,6 +98,30 @@ export const DEPENDS_FIELD = 'arrangement-depends';
  *  trash a node that still exists and still has a rhythm. */
 const flagged = (n: NodeState, field: string): boolean =>
   Object.hasOwn(n.fields, field) && n.fields[field]!.value === true;
+
+/**
+ * A written field's text, or null when there is none.
+ *
+ * THE SAME CARE `flagged` TAKES, for the same reason: a field is never removed,
+ * so clearing one back to empty writes an empty string rather than deleting the
+ * key. Reading presence would report a cleared field as still set, and the
+ * reader would see a row with nothing in it — which is the shape this repo calls
+ * a chooser with nothing in it, and it teaches somebody the feature is broken.
+ *
+ * Anything that is not a non-empty string reads as null, so a `false` left by an
+ * unmark on some other field, or a value that arrived from another device
+ * malformed, cannot render as text.
+ */
+const written = (n: NodeState, field: string): string | null => {
+  const v = n.fields[field]?.value;
+  return typeof v === 'string' && v.trim() !== '' ? v : null;
+};
+
+/** Where this arrangement stands, in the reader's words, or null. */
+export const standsAt = (n: NodeState): string | null => written(n, STANDS_FIELD);
+
+/** What would change it, or null. */
+export const changedBy = (n: NodeState): string | null => written(n, CHANGES_FIELD);
 
 export const isArrangement = (n: NodeState): boolean =>
   isHeld(n) && flagged(n, ARRANGEMENT_FIELD);
@@ -89,6 +145,10 @@ export interface ArrangementCard {
   /** Whether confirming means asking somebody else. */
   depends: boolean;
   words: string;
+  /** Where it stands, in the reader's words, or null (3.18.0). */
+  stands: string | null;
+  /** What would change it, or null (3.18.0). */
+  changes: string | null;
 }
 
 /** Whole days since this was last confirmed still running. Null when it never
@@ -152,7 +212,15 @@ export function arrangementCards(
     if (pressure === null || !Number.isFinite(pressure)) continue;
     const days = confirmedDaysAgo(n, nowIso, zone);
     const depends = dependsOnOthers(n);
-    cards.push({ node: n, pressure, days, depends, words: arrangementWords(days, depends) });
+    cards.push({
+      node: n, pressure, days, depends,
+      words: arrangementWords(days, depends),
+      // CARRIED, NOT SUMMARISED. The card states what the reader wrote and adds
+      // nothing to it: no length limit applied here, no truncation, and above
+      // all no reading of the words. The app never decides that a condition has
+      // been met — it has no way to know and must not imply it has.
+      stands: standsAt(n), changes: changedBy(n),
+    });
   }
   return cards.sort((a, b) => (b.pressure ?? 0) - (a.pressure ?? 0));
 }

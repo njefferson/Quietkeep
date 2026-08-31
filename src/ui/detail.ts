@@ -15,15 +15,20 @@
 // whom a surprising control is expensive.
 
 import type { Session } from './session.ts';
-import type { MenuCategory } from '../events.ts';
+import type { AppEvent, MenuCategory } from '../events.ts';
+import type { StampContext } from './session.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
 import { everyDaysWords, localDayKey, atMidnight} from '../time.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
-import { isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo } from '../arrangement.ts';
+import {
+  isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo,
+  standsAt, changedBy,
+} from '../arrangement.ts';
 import {
   markArrangementEvents, unmarkArrangementEvents, setDependsEvents, clearDependsEvents,
+  setStandsEvents, setChangesEvents,
 } from './arrangement-intents.ts';
 import {
   setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
@@ -121,6 +126,8 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   const estimateInput = q<HTMLInputElement>('#detail-estimate');
   const noteInput = q<HTMLTextAreaElement>('#detail-note');
   const situationInput = q<HTMLTextAreaElement>('#detail-situation');
+  const standsInput = q<HTMLTextAreaElement>('#detail-stands');
+  const changesInput = q<HTMLTextAreaElement>('#detail-changes');
   const mergeFilter = q<HTMLInputElement>('#detail-merge-filter');
   const mergeSel = q<HTMLSelectElement>('#detail-merge');
   const mergedList = q<HTMLElement>('#detail-merged-list');
@@ -633,6 +640,15 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // The note rides the same no-clobber rule as the rename box: `render` runs
     // after every commit here, and prose is the costliest thing to eat.
     if (noteInput && document.activeElement !== noteInput) noteInput.value = noteOf(n) ?? '';
+    // THE SAME FOCUS GUARD THE NOTE TAKES (3.18.0). A repaint that overwrote a
+    // box somebody is typing in would lose the sentence they were halfway
+    // through, and this sheet repaints on every render.
+    if (standsInput && document.activeElement !== standsInput) {
+      standsInput.value = standsAt(n) ?? '';
+    }
+    if (changesInput && document.activeElement !== changesInput) {
+      changesInput.value = changedBy(n) ?? '';
+    }
     // Same in-progress-edit guard as the note: repainting under a cursor throws
     // away what somebody is halfway through typing.
     if (situationInput && document.activeElement !== situationInput) situationInput.value = situationOf(n) ?? '';
@@ -1485,6 +1501,37 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (clean === had) { say(clean ? 'Already kept.' : 'Nothing to keep yet.'); return; }
     void run(ctx => noteEvents(ctx, current!.id, noteInput.value),
       clean ? 'Kept with it.' : 'Note removed.');
+  });
+  // WHERE IT STANDS, AND WHAT WOULD CHANGE IT (3.18.0, ADR-0121).
+  //
+  // The note's rule about a no-op, kept deliberately: no event for no change,
+  // because the log must not carry claims about changes that did not happen.
+  // Clearing one back to empty IS a change and does write, as an empty string —
+  // `node.field.set` is the only field event there is, and taking a thing back
+  // is a decision the log should keep rather than an erasure.
+  const writeField = (
+    input: HTMLTextAreaElement | null,
+    read: (n: NodeState) => string | null,
+    make: (ctx: StampContext, node: string, text: string) => AppEvent[],
+    kept: string, cleared: string,
+  ): void => {
+    if (!input || !current) return;
+    const clean = cleanNote(input.value);
+    const had = read(session.state().nodes.get(current.id) ?? current) ?? '';
+    if (clean === had) { say(clean ? 'Already kept.' : 'Nothing to keep yet.'); return; }
+    void run(ctx => make(ctx, current!.id, input.value), clean ? kept : cleared);
+  };
+  btn('#detail-stands-set')?.addEventListener('click', () => {
+    writeField(standsInput, standsAt, setStandsEvents,
+      'Kept. Nothing watches for it.', 'Cleared.');
+  });
+  btn('#detail-changes-set')?.addEventListener('click', () => {
+    // THE CONFIRMATION SAYS WHAT THE APP WILL NOT DO. Somebody writing a
+    // condition down is entitled to wonder whether the app is now watching for
+    // it, and it is not — it has no way to see their world. Saying so at the
+    // moment of writing is cheaper than a reader discovering it by waiting.
+    writeField(changesInput, changedBy, setChangesEvents,
+      'Written down. The app will not tell you when it happens — you will.', 'Cleared.');
   });
   btn('#detail-situation-set')?.addEventListener('click', () => {
     if (!situationInput || !current) return;

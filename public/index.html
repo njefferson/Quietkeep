@@ -992,6 +992,13 @@
        is broken. -->
   <button id="roles-open" class="gauge" data-hub-part type="button" hidden></button>
 
+  <!-- RUNNING WITHOUT YOU (3.18.0, ADR-0121). Beside the roles door and hidden
+       by the same rule: it exists once an arrangement does, and a door onto an
+       empty room teaches you the feature is broken. Its words are rendered
+       rather than written here, because the count is the whole of what it says
+       and the shell must not carry a number the store owns. -->
+  <button id="arrangements-open" class="gauge" data-hub-part type="button" hidden></button>
+
   <!-- WHAT YOU ARE WORKING TOWARD (2.18.0). Beside the roles door and hidden by
        the same rule: a surface that greets you every morning with a list of
        your goals is a standing report card, and ADR-0013 refuses the tree as a
@@ -1559,6 +1566,41 @@
     </div>
     <p id="detail-arrangement-hint" class="detail-hint">
       Something that happens on its own. This keeps the question: when did you last check it still does?
+    </p>
+
+    <!-- WHERE IT STANDS, AND WHAT WOULD CHANGE IT (3.18.0, ADR-0121).
+         An arrangement was binary — still running, or worth confirming. That is
+         the whole answer for a standing order and none of it for a post that
+         cannot be advertised until a date, a promotion filled temporarily, or a
+         position out to advert now. Those have a state, and one the app cannot
+         know: a phrase somebody writes, never a list the app defines, which
+         would be the app modelling their organisation.
+         The SECOND box is the one that earns the feature. A change in the world
+         has no cue to walk past, so the only way to reach it is to keep
+         checking — and checking costs continuously, against whatever else is
+         being done. Writing the condition down offloads the watching, which is
+         a bigger saving than offloading a task.
+         Inside the arrangement group on purpose: both rows are meaningless on
+         something you do by hand, the group is already gated to an upkeep, and
+         it is already on the accessibility walk as one state. -->
+    <label class="detail-label" for="detail-stands">Where does it stand?</label>
+    <textarea id="detail-stands" rows="2" autocomplete="off" spellcheck="true"
+              aria-describedby="detail-stands-hint"></textarea>
+    <div class="detail-row">
+      <button id="detail-stands-set" type="button">Keep that</button>
+    </div>
+    <p id="detail-stands-hint" class="detail-hint">
+      In your words. Nothing here is a list to pick from &mdash; the app does not know your world.
+    </p>
+
+    <label class="detail-label" for="detail-changes">What would change it?</label>
+    <textarea id="detail-changes" rows="2" autocomplete="off" spellcheck="true"
+              aria-describedby="detail-changes-hint"></textarea>
+    <div class="detail-row">
+      <button id="detail-changes-set" type="button">Keep that</button>
+    </div>
+    <p id="detail-changes-hint" class="detail-hint">
+      Written down so you can stop holding it in mind. Nothing watches for it &mdash; this app cannot see your world, and will never say it has changed.
     </p>
   </div>
 
@@ -3208,6 +3250,32 @@
      Its door is a SECOND LINE in the situation row rather than a fourth control
      beside the name, the words and Forget it — that row is already three across
      at 44px and a fourth was the mis-tap the flowchart footer was refused for. -->
+<!-- WHAT YOU ARE TRUSTING TO RUN WITHOUT YOU (3.18.0, ADR-0121).
+     `arrangementCards` has existed, been exported and been unit-tested since
+     arrangements landed, with NO CALLER anywhere in the app — a complete
+     projection with nowhere to render, which is the shape hub LESSONS 182 names:
+     a feature that cannot be found reads as missing. Arrangements were reachable
+     only by opening each item that carried one, which is exactly the defect the
+     two releases before this were spent fixing.
+     EVERY ARRANGEMENT, INCLUDING THE HEALTHY ONES. The projection says why in
+     its own header and it is the reason this is a list and not a chip: a surface
+     that only ever shows problems is a red wall by omission, and a list of what
+     you are trusting to run without you is worthless if it hides everything
+     currently fine. Most-pressured first, which is the one ordering that is
+     about rhythm rather than about the reader.
+     NO DONE ON IT. A state of affairs is not work, and offering one as the next
+     thing to do is the category error already refused for a person, a place and
+     a role. Confirming still happens on the item's own sheet, where the question
+     is asked. -->
+<dialog id="sheet-arrangements" aria-labelledby="sheet-arrangements-title">
+  <h2 id="sheet-arrangements-title" class="section">Running without you</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="arrangements-words" class="detail-hint"></p>
+    <ul id="arrangements-list" class="roles-list"></ul>
+  </div>
+  <button id="sheet-arrangements-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
 <!-- ALL OF THEM, WHEN THE THREE ARE NOT ALL OF THEM (3.17.0, ADR-0120).
      Same rows, same words, same door into each one — this is the review list
      without the cap, and nothing else. No grouping by class, because the

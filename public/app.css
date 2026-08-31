@@ -3268,6 +3268,7 @@ body[data-plain="1"] #upkeep,
 body[data-plain="1"] #menu-open,
 body[data-plain="1"] #roles-open,
 body[data-plain="1"] #horizons-open,
+body[data-plain="1"] #arrangements-open,
 body[data-plain="1"] #search,
 body[data-plain="1"] #foot-manual,
 body[data-plain="1"] #situation-open,
@@ -3527,3 +3528,19 @@ body[data-plain="1"] #held
 /* Things in the room stack under the person they are with, full width, so a
    long title never squeezes the name or the count into a column of one word. */
 .meeting-thing { flex: 1 0 100%; text-align: left; margin-top: 0.15rem; }
+
+/* WHERE IT STANDS AND WHAT WOULD CHANGE IT, on an arrangement row (3.18.0).
+   `--ink-soft` on the surface is the pair `.roles-held` and `.hub-count`
+   already use, so no new foreground/background enters the contrast gate. Full
+   width after the wrap, because a written sentence squeezed into a column
+   beside a name is a sentence nobody reads. */
+.arrangement-said {
+  flex: 1 0 100%;
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+/* The label carries the weight rather than a colour of its own — two words in
+   front of the reader's own sentence, told apart without a second pair. */
+.arrangement-said-label { font-weight: 600; }

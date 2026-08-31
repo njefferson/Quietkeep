@@ -14,6 +14,17 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.18.0 — CAPABILITY
+
+*2026-08-31*
+
+- **Something that runs without you can now say where it stands, and what would change it.** Mark a repeating thing *It runs itself* and two boxes appear under it. A post out to advert. A job filled temporarily until a date. Something you cannot start until somebody else moves. In your own words — there is no list to pick from, because the app does not know your world.
+- **The second box is the one worth having.** A change out in the world gives you nothing to walk past, so the only way to keep hold of it is to keep checking, and checking costs you attention all day against whatever else you are doing. Write the condition down and you can put it down.
+- **Nothing watches for it, and the app says so when you write it.** It cannot see your world and will never tell you the thing has happened. It holds what you wrote so you do not have to.
+- **And there is finally somewhere to see all of it.** *Running without you* appears once you have marked anything, and lists everything you are trusting to continue — when you last checked each was still true, and where any of it stands. Including the ones that are perfectly fine: a list that only ever showed problems would be a wall of them.
+- **Nothing on that list can be ticked off.** A state of affairs is not a task. You confirm a thing on its own panel, where the question is asked.
+- **Still not right:** the list shows what you wrote and does no more with it. Something that changes on a date can carry a date, but a condition in words is yours to notice.
+
 ## 3.17.1 — ITERATION
 
 *2026-08-30*

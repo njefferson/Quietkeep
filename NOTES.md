@@ -843,6 +843,29 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.18.0**. An
+  arrangement can say where it stands (ADR-0121).
+  **THE APP HAD THE RIGHT NOUN ALREADY AND IT WAS ONE FIELD SHORT.** A previous
+  session reported that nothing here could hold a thing in the world with a state
+  of its own; that was wrong. `src/arrangement.ts` names exactly that class — the
+  thing supposed to run without you, whose failure mode is SILENCE. What it could
+  not do is say WHERE IT STANDS or WHAT WOULD CHANGE IT, because it is binary.
+  **THE SECOND FIELD IS THE ONE THAT EARNS THE BUILD.** A change in the world has
+  no cue to walk past, so the only route to it is monitoring, which is
+  attentionally demanding and rationed by context — and a condition that could
+  change on any day supplies no context to ration by, so it is paid continuously
+  or dropped (nd-collisions entry 30, read from the primary). Writing it down
+  offloads the WATCHING, which is a bigger saving than offloading a task.
+  **AND `arrangementCards` FINALLY HAS A CALLER.** It has been written, exported
+  and unit-tested since arrangements landed, with none anywhere in `src/ui/` — a
+  complete projection with nowhere to render, which is hub LESSONS 182's shape
+  and the same defect the two releases before this were spent fixing.
+  **THREE PLANTS, EACH ON ITS OWN ASSERTION:** reading a field's presence rather
+  than its value (a cleared field then renders a labelled row with nothing after
+  it), dropping the string check (a `false` from some other unmark prints as
+  text), and letting a written field enrol something as an arrangement (the list
+  fills with things nobody said run without them).
+- **Superseded, and kept for the record: 3.17.1.**
 - **PRODUCTION CARRIES 3.17.1**, promoted 2026-08-31 at `e4fba53`.
 - **https://staging.quietkeep.pages.dev** — **3.17.1**, and it is what production
   carries. The total

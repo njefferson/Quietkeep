@@ -545,7 +545,22 @@ const REGISTRY = {
   // entry folded into 'detail sheet' would match nothing visible there and fail
   // by design, which is the registry rule working correctly.
   'arrangement group': ['#detail-arrangement-label', '#detail-arrangement-hint',
-    '#detail-arrangement-set', '#detail-arrangement-stop', '#detail-arrangement-depends'],
+    '#detail-arrangement-set', '#detail-arrangement-stop', '#detail-arrangement-depends',
+    // WHERE IT STANDS AND WHAT WOULD CHANGE IT (3.18.0, ADR-0121). Inside this
+    // state rather than a new one: the two boxes live in the same group, appear
+    // under the same condition, and extending a state that is already driven is
+    // cheaper than standing up another that would need its own route.
+    '#detail-stands', '#detail-stands-hint', '#detail-stands-set',
+    '#detail-changes', '#detail-changes-hint', '#detail-changes-set'],
+  // RUNNING WITHOUT YOU (3.18.0, ADR-0121). `arrangementCards` had no caller at
+  // all until this release, so none of this had ever been on a screen. Its DOOR
+  // is registered here rather than with the sheet: opening a sheet closes the
+  // surface the door is on, so an entry for it on this state would match
+  // nothing visible — the mistake 'in the room' made first time.
+  'running without you': ['#arrangements-open', '#sheet-arrangements-title',
+    '#sheet-arrangements-close', '#arrangements-words',
+    '#arrangements-list .roles-name', '#arrangements-list .roles-held',
+    '#arrangements-list .arrangement-said'],
   // The header clock, opt-in (1.22.0). Two states, because the switch and the
   // thing it switches on are never on screen together — the toggle is in a
   // modal and the clock is in the header behind it.
@@ -3659,6 +3674,70 @@ try {
     await auditNames(page, 'arrangement group', theme);
     await auditSeparationAndTargets(page, 'arrangement group', theme);
     await auditFocusRings(page, 'arrangement group', theme, ['#detail-arrangement-set']);
+
+    // WHERE IT STANDS AND WHAT WOULD CHANGE IT (3.18.0), written the way a
+    // person writes them, and then READ BACK — a box that accepts text and
+    // stores nothing looks identical to one that works, which is why the
+    // assertion is on the value after a reopen rather than on the click.
+    await page.click('#detail-arrangement-set');
+    await page.waitForTimeout(200);
+    await page.fill('#detail-stands', 'Out to advert, closes in a fortnight');
+    await page.click('#detail-stands-set');
+    await page.waitForTimeout(220);
+    await page.fill('#detail-changes', 'The post is released, or the advert closes');
+    await page.click('#detail-changes-set');
+    await page.waitForTimeout(220);
+    const wrote = await page.evaluate(() => ({
+      stands: document.querySelector('#detail-stands')?.value ?? '',
+      changes: document.querySelector('#detail-changes')?.value ?? '',
+      said: document.querySelector('#status')?.textContent ?? '',
+    }));
+    (/Out to advert/.test(wrote.stands) ? pass : fail)(
+      `${theme}/arrangement group: where it stands is kept ("${wrote.stands.slice(0, 40)}")`);
+    (/post is released/.test(wrote.changes) ? pass : fail)(
+      `${theme}/arrangement group: and so is the condition ("${wrote.changes.slice(0, 40)}")`);
+    // THE NEGATIVE ONE IS THE ASSERTION THAT MATTERS. Both boxes render
+    // identically whether or not the app has quietly taken on watching for the
+    // condition, and it has not — it cannot see the reader's world. The
+    // confirmation says so at the moment of writing rather than leaving them to
+    // find out by waiting.
+    (/will not tell you/.test(wrote.said) ? pass : fail)(
+      `${theme}/arrangement group: and it says the app will not watch for it ("${wrote.said.slice(0, 56)}")`);
+    await auditContrast(page, 'arrangement group', theme);
+    await auditNames(page, 'arrangement group', theme);
+    await auditSeparationAndTargets(page, 'arrangement group', theme);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+
+    // AND THE LIST THE PROJECTION FINALLY HAS. The door exists only once an
+    // arrangement does, which the step above has just made — so this is reached
+    // the way a finger reaches it rather than by naming the sheet.
+    await page.waitForSelector('#arrangements-open:not([hidden])');
+    await page.click('#arrangements-open');
+    await page.waitForSelector('#sheet-arrangements[open]');
+    const room = await page.evaluate(() => ({
+      rows: document.querySelectorAll('#arrangements-list .roles-name').length,
+      said: document.querySelector('#arrangements-words')?.textContent ?? '',
+      lines: [...document.querySelectorAll('#arrangements-list .arrangement-said')]
+        .map(p => p.textContent ?? '').join(' | '),
+    }));
+    (room.rows > 0 ? pass : fail)(
+      `${theme}/running without you: the list has what was just made (${room.rows})`);
+    (/Stands:/.test(room.lines) && /Changes:/.test(room.lines) ? pass : fail)(
+      `${theme}/running without you: and carries both written lines ("${room.lines.slice(0, 60)}")`);
+    (!/\bdone\b|\btick\b|\bcomplete\b/i.test(room.said + room.lines) ? pass : fail)(
+      `${theme}/running without you: nothing on it offers to finish a state of affairs`);
+    await auditContrast(page, 'running without you', theme);
+    await auditAxe(page, 'running without you', theme);
+    await auditNames(page, 'running without you', theme);
+    await auditSeparationAndTargets(page, 'running without you', theme);
+    await auditFocusRings(page, 'running without you', theme, ['#arrangements-list .roles-name']);
+    await page.click('#sheet-arrangements-close');
+    await page.waitForSelector('#sheet-arrangements', { state: 'hidden' });
+    // Back to the sheet the states after this one expect to be standing on.
+    await page.click('#cards .card-open');
+    await page.waitForSelector('#detail[open]');
+    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
 
     // 1.4.0: the per-node history, open. The item on this sheet was captured,
     // so its record holds a cure — the quiet indented line is guaranteed
