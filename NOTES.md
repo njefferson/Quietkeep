@@ -858,6 +858,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   typed in them is RENDERED BACK by the app on the arrangements list in its own
   ink, and a box that looks like the platform whose contents come back looking
   like the product is the inconsistency `.colour-ua-owned`'s own header warns of.
+  **AND THE SMOKE WALK FLAKED IN CI, ONCE, ON THIS EXACT COMMIT.** It crashed
+  after 26 seconds waiting 12s for `.card` after opening the held fold — and the
+  same SHA, re-run with nothing changed, passed that step in 4m13s. Recorded
+  rather than shrugged off, because a gate that fails at random is how a team
+  learns to ignore red, which is the argument this repo already makes about
+  `doctrine-sync` not being a CI gate. Nothing was changed to make it pass: the
+  first thing to do with an intermittent red is find out whether it is
+  intermittent, and re-running the identical commit is the cheapest way to ask.
+  If it happens again the wait is the suspect, not the app.
 - **Superseded, and kept for the record: 3.18.0.** An
   arrangement can say where it stands (ADR-0121).
   **THE APP HAD THE RIGHT NOUN ALREADY AND IT WAS ONE FIELD SHORT.** A previous
