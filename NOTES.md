@@ -473,11 +473,78 @@ decided by a session.**
 
 ### Open
 
-**Nothing is open.** All fourteen questions below are closed, and this heading
-says so rather than leaving it to be inferred from an empty list — a heading
-reading *Open* over three closed questions is the same false receipt the
-Status lines were added to fix, one level up. `tools/questions.mjs` refuses a
-closed question filed under this heading now, so the two cannot drift again.
+**One is open — Q-15, below.** The other fourteen are closed and filed under the
+next heading. This paragraph states the count rather than leaving it to be
+inferred from the list, because a heading reading *Open* over three closed
+questions is the same false receipt the Status lines were added to fix, one level
+up. `tools/questions.mjs` refuses a closed question filed under this heading, so
+those two cannot drift again — **but it does not read this paragraph**, so the
+count here is maintained by hand and nothing would catch it going stale.
+
+- **Q-15 · Can the record carry who is holding the rest of something?** Asked
+  2026-08-31, recorded rather than decided. **The thesis and laws 1–2 answer one
+  failure class precisely: an intention leaves the head and does not come back.
+  There is a second class the record does not represent.** Two people leave the
+  same conversation. One holds the whole of what was settled; the other holds the
+  fragment that was salient to them; neither writes anything down, because the
+  second party has no system either. Weeks later the first refers to what was
+  agreed and the second has no access to it. **Nobody forgot. Nothing went
+  silent. No clock could have fired, because the divergence happened at encoding
+  and no future date was ever attached to it.** The outward result is the same as
+  a missed return — someone is hurt — and the return engine structurally cannot
+  reach it. The evidence is [`docs/nd-collisions.md`](docs/nd-collisions.md)
+  entry 32; what follows is what that entry settles and what it leaves to be
+  answered here.
+  - **IT HAS A FORMAL NAME AND IT IS NOT A QUIETKEEP GAP.** Repair in
+    conversation has a structural window, and past it intersubjectivity has no
+    further defense (Schegloff, 1992). Mutual belief is coordinated work rather
+    than transmission, so a mismatched reference point is an undetected grounding
+    failure (Clark & Brennan, 1991). So the question is not whether the app can
+    prevent the divergence — nothing can — but whether an artifact can extend the
+    repair window past the point talk itself stops defending it.
+  - **NOTHING CAN HELP AT THE TIME, WHICH IS WHY THIS IS NOT A PROMPT.** Neither
+    party can detect the mismatch while it is happening. Nothing here may live at
+    capture or in the moment, which is collision entry 17's rule about the wrong
+    moment to ask, arriving from a second direction.
+  - **THERE IS NO CANONICAL COPY ANYWHERE, and that is what puts this in scope.**
+    Both parties are carrying it in their heads and only one is carrying all of
+    it. There is no second copy to sync with, fetch or reconcile against, so
+    nothing here could ever want a channel, and the out-of-scope objection for a
+    local-first single-user planner cannot be raised.
+  - **NEAREST EXISTING CONSTRUCTS, AND WHY NONE IS THIS.** `suspense` is a date
+    owed outward. `promised-to` (2.20.0) is a standing claim about the reader.
+    `requested-by` is provenance — who asked. `mentioned` records that somebody
+    came up. All four record an obligation or a trace; none records that another
+    person is holding the rest of something. Entry 25 covers a promise that
+    evaporates; entry 29 covers the reader's miscalibration about their own
+    memory. Neither is one party holding the whole while the other holds a piece.
+  - **THE OBVIOUS SHAPE IS ALREADY FORBIDDEN, and that half is not open.** Entry
+    32 settles it: storing what the other person is taken to have agreed, and
+    reading it back, is a documented way of overwriting the reader's own memory,
+    and the app cannot tell an accurate second account from an inaccurate one. No
+    attributed transcript, no party field on `decision.logged`, no surface
+    showing two versions of anything.
+  - **WHAT IS ACTUALLY OPEN IS WHETHER A DIRECTORY EARNS ITS PLACE.** The only
+    shape that survives is a link recording that a named person holds the rest of
+    something — a seventh entry in `RELATIONS` (`src/people.ts`), the
+    cross-cutting link with a party attached that Q-13's precedent predicts,
+    carrying no text and nothing to compare. **It has no evidence for it.**
+    Nobody has studied a private directory of who-holds-what as a repair, and the
+    one directly relevant empirical result is a caution: imposing a memory
+    structure on a couple who already had one made them worse than strangers.
+    Whether that transfers to somebody recording their own observation is
+    unknown, and that is the question.
+  - **IT WOULD HAVE TO RECORD WHO HOLDS WHAT IN EITHER DIRECTION.** A noun that
+    only ever says *they have more of this than you* encodes a deficit into the
+    vocabulary, inside an environment where the attribution is already asymmetric
+    (entry 32's evidence). The motivating case is one-sided; the vocabulary must
+    not be. That is law 7 satisfied by the shape rather than by the copy.
+  - **LAW 1 IS SATISFIED STRUCTURALLY, not by exemption.** A relation is a link
+    on an existing node, so it is not a node, cannot be silent, and needs no law
+    6 demand-free carve-out. `person` is already demand-free. Open alongside it:
+    whether it needs a release path, since only `stakeholder.removed` and
+    `promise.released` subtract a person link.
+  - Status: **Open.**
 
 ### Closed
 
