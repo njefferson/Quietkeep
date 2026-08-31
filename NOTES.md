@@ -843,7 +843,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.18.1**. An
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.0**. A control
+  renders beside the thing it acts on.
+  **REPORTED FROM THE DEVICE, WITH A PICTURE, AND THE FILE HAD BEEN LYING ABOUT
+  IT FOR A YEAR.** `More room` opens the capture box. 2.9.0 took it out of the
+  sticky frame for a measured reason — two controls used at the start of a
+  sitting were costing 52px of a 345px frame — and the comment beside it says
+  they then sat "at the top of the runway … still the first thing under the box".
+  True when written. 3.0.0 put `#hub` in as the FIRST child of `<main>`, above
+  them, and the sentence became false the same day. Nothing re-checked it, so on
+  the landing screen the control sat past a rule, a heading and five doors, about
+  1,300px from the box it opens.
+  **THE GATE IS THE OTHER HALF OF ONE THAT ALREADY EXISTED.**
+  `narrows-check.mjs` asserts that a filter renders above what it filters. This
+  is the sibling relation — a control and its OBJECT rather than a filter and its
+  OUTPUT — and it broke in a way the first rule could not see.
+  **THE MEASURE IS A HEADING, not a distance and not a section.** A section is
+  the wrong test: `#update` is a hidden strip inside the frame and separates
+  nothing. A pixel count needs a browser and a viewport and would answer
+  differently on a phone and a tablet for a fault that is structural at every
+  width. A heading between a control and its object means the reader crossed into
+  other content to reach it, which is exactly what happened.
+  **WRITTEN RED FIRST.** The gate was added, `data-acts-on="#capture"` declared,
+  and it named the defect — one heading in between, "Where do you want to be?" —
+  before anything was moved. A gate written after the fix asserts nothing, and
+  this one exists precisely because a position was claimed and never checked.
+- **Superseded, and kept for the record: 3.18.1.** An
   arrangement can say where it stands (ADR-0121), plus two things the walk found.
   **THREE BUTTONS ANSWERED TO ONE NAME.** The situation's *Keep that* and both
   new ones. The a11y walk reports a shared accessible name as a NOTE rather than

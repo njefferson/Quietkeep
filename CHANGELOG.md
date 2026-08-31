@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.19.0 — CAPABILITY
+
+*2026-08-31*
+
+- **“More room” is back under the box it opens.** Reported. It had drifted below the whole list of places to go — past a rule, a heading and five doors — about thirteen hundred pixels from the thing it does something to. It is the first thing under the box again.
+- **It was never moved there on purpose.** It has sat just under the box since the release that took it out of the top bar, and the note beside it in the code still said so. When the list of places to go arrived it was put in above, and that sentence quietly stopped being true — for a year, until you saw it.
+- **And a check now holds it there.** If a heading ever comes between that button and the box again, the build stops. There was already a rule that a filter has to appear above the thing it filters; this is its other half — a control has to appear beside the thing it acts on.
+
 ## 3.18.1 — ITERATION
 
 *2026-08-31*

@@ -300,6 +300,46 @@
 <div class="runway" id="runway">
 <main>
 
+<!-- THE SECOND ROW OF CAPTURE, WHICH THE FRAME COULD NOT AFFORD (2.9.0, ADR-0100).
+     These two were inside the form, on a second line, and measured 52px of a
+     345px frame at 390px wide — a sixth of chrome that never scrolls, for two
+     controls used at the START of a sitting and almost never again.
+     So they sit at the top of the runway instead: still the first thing under
+     the box, still one look away on arrival, and they scroll off with everything
+     else once you are working. That is the trade, and it is a real one — from
+     three screens down, "More room" now needs a trip back to the top. The box it
+     opens is still in the frame, so pressing it from here fills a field you can
+     already see.
+
+     AND FOR ONE RELEASE THAT SENTENCE WAS FALSE (3.19.0). 3.0.0 put the hub in
+     as the FIRST child of `<main>` — above this — so on the landing screen the
+     control sat past a rule, a heading and five doors, some 1,300px from the box
+     it opens. The paragraph above went on claiming "the first thing under the
+     box" the whole time, which is why it was reported from the device rather
+     than found here. It is first again, and `narrows-check.mjs` holds it there
+     now: `data-acts-on` fails if a HEADING comes between a control and the thing
+     it acts on. Being above the hub costs the hub one ghost button of height and
+     is the right way round — the box is in the frame, so its own controls belong
+     against the frame, and the hub is a destination list rather than the first
+     thing you touch. -->
+<div class="capture-extras">
+  <!-- Hidden when the text has more than one line, because collapsing back to
+       a single-line input would silently run the lines together — the exact
+       defect that makes pasting into it useless. A control that would destroy
+       what you wrote is not offered rather than refused. -->
+  <button type="button" id="capture-room" class="ghost" data-acts-on="#capture">More room</button>
+  <!-- Hold what I copied (1.41.0). V-21 closed the other way in: on this
+       platform a link cannot open the installed app, so anything copied
+       elsewhere arrives only if somebody opens Quietkeep and puts it in.
+       Retyping what is already on the clipboard is the friction that decides
+       whether a thought is kept at all.
+
+       Ships HIDDEN and is revealed only where the browser can actually read a
+       clipboard — a control that cannot do its one job is worse than an absent
+       one. Nothing is written by it: the text lands in the field above, where
+       it can be seen, and the ordinary button commits it. -->
+</div>
+
 <!-- HOME (3.0.0, ADR-0108). The surface you come up to.
      Before this the landing view was 15 conditional sections in one scroller,
      and reading it was reading an article: you had a position, never a place,
@@ -317,33 +357,6 @@
   <ul id="hub-doors" class="hub-doors"></ul>
 </section>
 
-<!-- THE SECOND ROW OF CAPTURE, WHICH THE FRAME COULD NOT AFFORD (2.9.0, ADR-0100).
-     These two were inside the form, on a second line, and measured 52px of a
-     345px frame at 390px wide — a sixth of chrome that never scrolls, for two
-     controls used at the START of a sitting and almost never again.
-     So they sit at the top of the runway instead: still the first thing under
-     the box, still one look away on arrival, and they scroll off with everything
-     else once you are working. That is the trade, and it is a real one — from
-     three screens down, "More room" now needs a trip back to the top. The box it
-     opens is still in the frame, so pressing it from here fills a field you can
-     already see. -->
-<div class="capture-extras">
-  <!-- Hidden when the text has more than one line, because collapsing back to
-       a single-line input would silently run the lines together — the exact
-       defect that makes pasting into it useless. A control that would destroy
-       what you wrote is not offered rather than refused. -->
-  <button type="button" id="capture-room" class="ghost">More room</button>
-  <!-- Hold what I copied (1.41.0). V-21 closed the other way in: on this
-       platform a link cannot open the installed app, so anything copied
-       elsewhere arrives only if somebody opens Quietkeep and puts it in.
-       Retyping what is already on the clipboard is the friction that decides
-       whether a thought is kept at all.
-
-       Ships HIDDEN and is revealed only where the browser can actually read a
-       clipboard — a control that cannot do its one job is worse than an absent
-       one. Nothing is written by it: the text lands in the field above, where
-       it can be seen, and the ordinary button commits it. -->
-</div>
   <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
        Both were collapsed lines here, directly under capture: `bother-entry`
        from v1.5 and `load-entry` from 1.15.0. They are surfaces now, reached

@@ -86,7 +86,7 @@ const tagOf = (id) => {
   return end < 0 ? null : html.slice(start, end + 1);
 };
 
-console.log('\nEverything that narrows a surface renders above it\n');
+console.log('\nEverything that narrows a surface renders above it,\nand every control renders beside the thing it acts on\n');
 
 // --- Direction one: every declaration points upward. ----------------------
 const declared = new Set();
@@ -109,6 +109,62 @@ for (const m of html.matchAll(/<[^>]*\sdata-narrows="([^"]+)"[^>]*>/g)) {
       fail(`#${id} narrows ${sel} and renders ${inside ? 'INSIDE' : 'BELOW'} it — a filter you meet after the thing it filtered is a filter nobody finds`);
     }
   }
+}
+
+// --- The sibling rule: a control renders beside the thing it acts on. ------
+//
+// `data-narrows` is about a filter and its OUTPUT. This is about a control and
+// its OBJECT, which is a different relation and broke in a way the rule above
+// could not see.
+//
+// `More room` opens the capture box. It was taken out of the sticky frame in
+// 2.9.0 (ADR-0100) because two controls used at the start of a sitting were
+// costing 52px of a 345px frame — sound, and the comment beside it says they
+// then sat "at the top of the runway … still the first thing under the box".
+// That was true when written. 3.0.0 (ADR-0108) put the hub in as the FIRST child
+// of `<main>`, above them, and the sentence became false the same day. Reported
+// from the device: on the landing screen the control sat below a rule, a heading
+// and five doors, some 1,300px from the box it opens.
+//
+// THE MEASURE IS A HEADING, not a distance and not a section. A section is the
+// wrong test — `#update` is a hidden strip inside the frame and separates
+// nothing. A pixel count needs a browser and a viewport, and would answer
+// differently on a phone and a tablet for a fault that is structural in both.
+// A HEADING between a control and its object means the reader has crossed into
+// different content to reach it, which is exactly what happened here and is
+// true at every width.
+// One entry, and the list is the point rather than its length: an id here with
+// no `data-acts-on` is a FAILURE, so a later edit cannot un-cover the rule by
+// deleting the attribute. `Hold what I copied` stood beside this one until it
+// was retired; anything that joins the row joins this list in the same commit.
+const ACTS_REQUIRED = {
+  '#capture-room': 'it opens the capture box and does nothing else',
+};
+const acts = new Set();
+for (const m of html.matchAll(/<[^>]*\sdata-acts-on="([^"]+)"[^>]*>/g)) {
+  const tag = m[0];
+  const idm = /\sid="([^"]+)"/.exec(tag);
+  if (!idm) { fail(`a data-acts-on declaration is on an element with no id: ${tag.slice(0, 60)}`); continue; }
+  const id = idm[1];
+  acts.add(`#${id}`);
+  const mine = startOf(id);
+  const sel = m[1].trim();
+  if (!sel.startsWith('#')) { fail(`#${id} acts on "${sel}" — only #id selectors are supported`); continue; }
+  const theirs = startOf(sel.slice(1));
+  if (theirs < 0) { fail(`#${id} acts on ${sel}, which does not exist in index.html`); continue; }
+  const [from, to] = mine < theirs ? [mine, theirs] : [theirs, mine];
+  const between = [...html.slice(from, to).matchAll(/<h[1-6][^>]*>([^<]*)/g)].map(h => h[1].trim());
+  if (between.length === 0) {
+    ok(`#${id} renders beside ${sel}, which it acts on`);
+  } else {
+    fail(`#${id} acts on ${sel} with ${between.length} heading${between.length === 1 ? '' : 's'} in between `
+      + `(${between.map(w => `"${w.slice(0, 28)}"`).join(', ')}) — a control you reach by crossing into other content is a control nobody finds`);
+  }
+}
+for (const [sel, why] of Object.entries(ACTS_REQUIRED)) {
+  if (acts.has(sel)) continue;
+  if (startOf(sel.slice(1)) < 0) fail(`${sel} is required to declare data-acts-on and is not in index.html at all`);
+  else fail(`${sel} carries no data-acts-on — ${why}`);
 }
 
 // --- Direction two: nothing on the list quietly stops declaring. ----------
