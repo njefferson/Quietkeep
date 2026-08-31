@@ -233,13 +233,28 @@
        app's own nouns rather than another product's.
        It pairs: "On this page" and "Elsewhere in the app" are two halves of one
        question, which is what they always were. -->
-  <button id="open-more" type="button" class="ghost">Elsewhere in the app</button>
-  <!-- `Elsewhere in the app` is the destinations that are not this page; this is
-       the parts of the page itself. THE TWO ARE A PAIR AND SOUND LIKE ONE: what
-       is here, and what is not here — together the whole answer to "where do I
+  <!-- HERE COMES BEFORE NOT-HERE, AND IT DID NOT UNTIL 3.16.0. Reported, and
+       the comments above had already argued it three times without anybody
+       noticing they were describing the DOM in the opposite order to the DOM.
+       3.8.0 moved this pair below the box on the principle that the order is
+       the box, what it says back, then where to go — near before far. 3.9.2
+       retired `Everything else` because a label for what is left over "was
+       sitting FIRST, before anything it could be left over from", which is the
+       identical fault one level up: *elsewhere* is defined by contrast with
+       *here*, and there was no here yet. And the sentence naming the pair
+       writes it "what is here, and what is not here" — here first, in prose,
+       above markup that did the reverse.
+       Reading order is tab order too, so somebody tabbing forward reached the
+       door that LEAVES the page before the one that moves within it. The page
+       nav is also the one of the two that is duplicated at the end of the held
+       list, which is a fair sign of which gets used. -->
+  <button id="contents-open" type="button" class="ghost">On this page</button>
+  <!-- `On this page` is the parts of the page itself; this is the destinations
+       that are not this page. THE TWO ARE A PAIR AND SOUND LIKE ONE: what is
+       here, and what is not here — together the whole answer to "where do I
        go", which is why neither had to become a floating control over the
        reader's own work (2.3.0, ADR-0093). -->
-  <button id="contents-open" type="button" class="ghost">On this page</button>
+  <button id="open-more" type="button" class="ghost">Elsewhere in the app</button>
 </div>
 
 <!-- THE PROOF, WHERE SOMEBODY CAN ACTUALLY READ IT (2.8.1, ADR-0099).
@@ -904,7 +919,18 @@
        empty review says so by not being here, never by congratulating anyone. -->
   <section id="review" data-stance-name="Is the ladder in the right place" class="review" aria-labelledby="review-heading" hidden>
     <h2 id="review-heading" class="section" tabindex="-1">Worth a look</h2>
-    <p id="review-count" class="review-count"></p>
+    <!-- THE TOTAL IS A DOOR NOW (3.17.0, ADR-0120). It was a `<p>` — "15 things
+         need a look. These 3 first." — with no route to the other twelve
+         anywhere in the app. The cap is law 8 and stays at three: a wall of
+         exceptions is the pile this app exists to stand between you and. But a
+         cap over a RANKED list means the lowest-ranked class is unreachable
+         rather than merely later, and the class added in 3.14.0 — a line that
+         has gone quiet — is fourth of five, so on any store carrying three
+         structural breaks it never appeared at all.
+         Hub LESSONS 187 names the shape: a cap applied after a merge, hiding
+         the row a feature exists to find. Its fix is not a bigger cap, and this
+         is not one — three still greet you, in the same order. -->
+    <button id="review-count" class="review-count linklike" type="button" hidden></button>
     <ul id="review-list" class="review-list"></ul>
   </section>
 
@@ -3129,6 +3155,26 @@
          `situation.saved`. Where you are is not a fact about your work; a
          situation you recognise about how you work is nearer a context or a
          role, and it should survive a new device. -->
+    <!-- WHO IS IN IT (3.16.0, ADR-0119). 3.15.0 made a situation able to CARRY
+         people and this is the control that puts more than one in — the picker
+         arriving with the surface that reads several, which is ADR-0116's
+         emergence rule and the reason it was not built a release earlier.
+         TOGGLES, NOT A MULTI-SELECT. `<select multiple>` on a tablet is a
+         scrolling box with a modifier key nobody has; a row of buttons is
+         44px each and says its state out loud through `aria-pressed`.
+         Hidden until somebody has been named, like every other chooser here: a
+         picker with nothing in it teaches the reader the feature is broken.
+         SEEDED from whoever the single-valued filter above already holds, so
+         the reader who only ever wanted the old behaviour gets it without
+         touching this, and adding a second person is one tap rather than two. -->
+    <div id="situation-who-row" class="lens-row" hidden>
+      <p class="detail-label" id="situation-who-label">Who is in it?</p>
+      <div id="situation-who" class="situation-who" role="group"
+           aria-labelledby="situation-who-label"></div>
+      <p id="situation-who-hint" class="detail-hint">
+        Naming more than one makes it a meeting you can open.
+      </p>
+    </div>
     <p class="detail-label" id="situation-save-label">Recognise this one?</p>
     <div class="detail-row" role="group" aria-labelledby="situation-save-label">
       <label class="visually-hidden" for="situation-name">A name for it</label>
@@ -3143,6 +3189,78 @@
     <ul id="situation-list" class="roles-list"></ul>
   </div>
   <button id="sheet-situation-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- WHAT THIS MEETING IS ABOUT (3.16.0, ADR-0119).
+     `lineView` made a ROLE somewhere you can stand. This is the same move on
+     the other axis: a situation that names people, opened, showing what is
+     outstanding with each of them and the parts of the tree and the lines that
+     work sits under.
+     AN INSPECTION MODE AND NOT A FILTER, which is the refusal `horizon-models`
+     §3 and ADR-0115 both already state. Nothing here narrows a working surface,
+     nothing here writes `with.now`, and closing it leaves every list exactly as
+     it was. The person filter beside it stays single-valued and answers a
+     different question — who is in front of me now, rather than what is this
+     meeting about.
+     GROUPED BY PERSON, and a thing naming two attendees appears under both:
+     each of them is expecting it, and `promisedToAnyone` settled that same case
+     on the grounds that mentioning only the first would be right half the time.
+     Its door is a SECOND LINE in the situation row rather than a fourth control
+     beside the name, the words and Forget it — that row is already three across
+     at 44px and a fourth was the mis-tap the flowchart footer was refused for. -->
+<!-- ALL OF THEM, WHEN THE THREE ARE NOT ALL OF THEM (3.17.0, ADR-0120).
+     Same rows, same words, same door into each one — this is the review list
+     without the cap, and nothing else. No grouping by class, because the
+     ranking already orders them and a heading per class would turn a list of
+     five things into a taxonomy of five kinds. No count per class, for the
+     reason `roleLoads` gives one axis over: a number beside a category name is
+     read as a score.
+     NO `data-door`, for the reason `#sheet-meeting` below carries the same
+     note: the total is a door only while there is more behind it, and the smoke
+     walk's way-out block stands up a store with ONE finding, so a declared door
+     there reports a surface it could not open and points at this sheet rather
+     than at the state. It joins the printed structural-only remainder. The a11y
+     walk drives it properly, in both themes, from a store with four.
+     AND IT LIVES OUT HERE WITH THE OTHER SHEETS, not beside the section it
+     belongs to. Inside `<main>` it is a region of the work surface, and
+     `plain.ts` requires every one of those to declare whether it survives the
+     worst day — a declaration it would only ever have needed because of where
+     it was written. -->
+<dialog id="sheet-review" aria-labelledby="sheet-review-title">
+  <h2 id="sheet-review-title" class="section">Everything worth a look</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="review-all-words" class="detail-hint"></p>
+    <ul id="review-all" class="review-list"></ul>
+  </div>
+  <button id="sheet-review-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- NO `data-door`, DELIBERATELY, AND IT IS PRINTED RATHER THAN DROPPED (3.16.0).
+     The smoke walk's way-out block reads each dialog's declared door and opens
+     it to measure whether the sheet's own text shows through. This door does
+     not exist until a saved situation still names a live person, and that block
+     runs some four thousand lines before the walk saves one — so a declared
+     door here reports "the walk could not open it", which points at this sheet
+     rather than at the order of the walk. `reachable` puts it in the printed
+     `structuralOnly` remainder instead, beside the three surfaces already there
+     for the same reason: reached through a state that block does not stand up.
+     What it still gets from that block is every assertion that needs no app
+     state — it declares a way out, its body is what scrolls, and the way out is
+     not inside the box that scrolls. What it loses is the see-through read of a
+     `.ghost` measured on twenty-two other surfaces.
+     The door is not unmeasured. The a11y walk drives it from the saved row in
+     both themes, and the smoke walk asserts the row offers it. -->
+<dialog id="sheet-meeting" aria-labelledby="sheet-meeting-title">
+  <h2 id="sheet-meeting-title" class="section">In the room</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="meeting-words" class="detail-hint"></p>
+    <ul id="meeting-people" class="roles-list"></ul>
+    <p id="meeting-crosses-label" class="detail-label" hidden>What it runs through</p>
+    <ul id="meeting-crosses" class="roles-list"></ul>
+    <p id="meeting-lines-label" class="detail-label" hidden>Lines it is on</p>
+    <ul id="meeting-lines" class="roles-list"></ul>
+  </div>
+  <button id="sheet-meeting-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">

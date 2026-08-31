@@ -222,7 +222,20 @@ const BUDGET = {
   // Five words for the direction that was missing is the cheapest raise in this
   // list by some distance, and it costs no new surface: a role is an ordinary
   // node, so its own sheet is the home, exactly as a person's is.
-  words: 3717,
+  // 3717 -> 3744 on 2026-08-30 (3.16.0). Twenty-seven words, all of them the
+  // meeting: "Who is in it?", the one line under the toggles saying what more
+  // than one person makes, and the room's own chrome — its title, the sentence
+  // above its lists, and the two group labels that appear when the work in it
+  // sits under a horizon or carries a line. Nothing was removed to pay for it,
+  // and nothing here is prose a reader has to get past to work: the picker is
+  // one label and one hint, and the rest is a surface that only exists once a
+  // meeting has been named.
+  // 3744 -> 3749 on 2026-08-30 (3.17.0). Five words: the whole-review sheet's
+  // heading and its Close. The sentence above its list is rendered from the
+  // same `reviewWords` the surface already uses, so it costs the shell nothing,
+  // and the rows are built from the store rather than written here — a store
+  // with forty findings behind the total adds not one word to this file.
+  words: 3749,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -615,7 +628,16 @@ const BUDGET = {
   // removed: tapping a tile already repainted the app, so the confirm changed
   // nothing visible and read as a control that did not work. A ceiling left
   // above what the app actually has is a ceiling that stops counting.
-  controls: 258,
+  // 258 -> 259 on 2026-08-30 (3.16.0), UP by exactly one: the room's Close. The
+  // controls inside it are rendered from the store rather than written in the
+  // shell, so a meeting with nine people costs the shell nothing — which is the
+  // shape this budget is trying to protect and the reason the number moved by
+  // one rather than by a screenful.
+  // 259 -> 261 on 2026-08-30 (3.17.0), UP by two, and only one of them is new
+  // furniture: the whole-review sheet's Close. The other is the review total
+  // itself, which was a `<p>` and is a button now — the release is that change,
+  // so the count moving is the feature rather than drift beside it.
+  controls: 261,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

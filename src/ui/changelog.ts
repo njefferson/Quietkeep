@@ -29,6 +29,42 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.17.1',
+    kind: 'ITERATION',
+    date: '2026-08-30',
+    notes: [
+      '**On a wide screen, the list of places to go could sit on top of the version number at the bottom.** It is pinned beside your work rather than above it, and nothing below it knew how tall it had grown \u2014 so once you had more places to go than the page beside them had content, it hung over the footer and you could press the wrong thing. It stays inside its own column now.',
+      '**The Menu button is now one place further down the page than it was.** Nothing about it changed and nothing moved on screen \u2014 the line above it saying how many things need a look became a button in the last release, so anything reading the page in order, a screen reader included, reaches Menu one step later than before.',
+      '**Still not right:** a list of places taller than the page beside it now scrolls on its own. That is better than covering the footer and it is not the same as fitting.',
+    ],
+  },
+  {
+    triplet: '3.17.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**\u201c15 things need a look. These 3 first.\u201d \u2014 and now you can see the other twelve.** The line saying how many there are is the way to them. Tap it.',
+      '**The screen itself has not changed.** Still three, still the same three, still in the same order. A wall of them is the pile this app exists to stand between you and, and that has not moved.',
+      '**What has changed is that nothing is stuck behind them any more.** The three are the top of a ranked list, so the kinds further down were not later \u2014 they were unreachable. A line that had gone quiet, which the last release added so that staleness would come to you, sat fifteenth on a busy store and never arrived.',
+      '**It is a door only while there is somewhere to go.** When the three are all there is, the number still says so and does nothing when pressed, because opening a list you are already looking at is not a door.',
+      '**And what you see there is what you saw here** \u2014 the same rows, the same words, the same way into each one. Not a report, not a grouping, no counts by kind.',
+    ],
+  },
+  {
+    triplet: '3.16.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-30',
+    notes: [
+      '**You can name a meeting and open the room.** *Who is in it?* on the situation sheet names the people; save it, and the saved row gains **See what is in the room**. Inside: each person who will be there, and everything still outstanding with them \u2014 what you owe them, what you are waiting on them for, what they asked for, what they care about. Underneath, the parts of your tree and the lines that work sits on.',
+      '**It is somewhere you look, not a filter.** Nothing is hidden from any other screen while it is open and closing it changes nothing. Standing on a line works the same way, and for the same reason: a filter leaves you with two lists and something to remember.',
+      '**Somebody with nothing outstanding stays in the room and says so.** Walking in knowing that is worth as much as walking in with a list.',
+      '**A thing that involves two people in the room shows under both**, because both of them are expecting it \u2014 and the count at the top still says one thing, not two.',
+      '**Nothing in it grades anybody.** No number beside a name in a roster, no ordering the people by how much you owe each of them, no colour. The people are in name order whoever is carrying more.',
+      '**And *On this page* now comes before *Elsewhere in the app*.** Reported. You cannot be elsewhere until there is a here, and the far door was reached first by anyone tabbing forward.',
+      '**Still not right:** the room can only show you what you have already written down about people and work. The things that actually take the most tracking \u2014 a post you cannot advertise yet, a temporary promotion running out \u2014 have nowhere to live in this app at all, and no screen fixes that.',
+    ],
+  },
+  {
     triplet: '3.15.0',
     kind: 'CAPABILITY',
     date: '2026-08-30',

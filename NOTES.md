@@ -840,8 +840,96 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.15.0**. A
-  situation can name who is in the room (ADR-0118).
+- **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
+  tree was asserted byte-identical to the walked staging head before the push —
+  same tree object, not a diff that looked empty.
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.17.1**. The total
+  is the way to the rest (ADR-0120), and one defect the walk found because of it.
+  **THE HUB COULD SIT ON TOP OF THE FOOTER, ON A WIDE SCREEN, AND HAD BEEN ABLE
+  TO ALL ALONG.** At that breakpoint the hub is `position: absolute` — a pinned
+  sidebar beside the work rather than above it — so nothing below it knows how
+  tall it is. A hub with more doors than the job beside it has content hangs past
+  the bottom of `main` and lands on the footer: measured as `.hub-go` overlapping
+  the diagnostic button by 58x35px, which is a mis-tap.
+  **IT WAS NEVER REACHABLE UNTIL A STATE MADE IT SO.** The walk had only ever
+  arrived there with a short hub. Driving three more containers into the store —
+  which 3.17.0's own new a11y state does, because the total is a door only when
+  there is something behind it — made the sidebar tall enough, and the overlap
+  appeared. Any reader with enough stances and a quiet surface would have found
+  it first. Capped rather than restructured: a grid would also fix it and would
+  turn every job section into a grid item, which is the second layout the note
+  above that rule refuses to introduce.
+  **AND `#menu-open` MOVED ONE PLACE, WHICH THE GATE MADE ME SAY OUT LOUD.** The
+  review total became a button, so it is a control now and everything after it
+  shifts. `controls:check` refuses a moved control unless the running release
+  names it in place-language; updating the manifest alone is bookkeeping.
+  **3.17.0 SHIPPED TO STAGING WITH ITS SPINE RED, ON PURPOSE, AND THIS IS THE
+  REPAIR.** The container rolled back twice in one session, both times mid-walk.
+  Pushing before the walks ran is what saved the release; it also meant the
+  pushed commit carried an a11y driver that had not yet been debugged. The fixes
+  were made and seen green locally, and the second rollback took them before they
+  were committed. The habit that follows is in the commit order: edit, commit,
+  push, and only then start anything that takes ten minutes.
+  **THE CAP WAS NOT THE DEFECT; THE DEAD END WAS.** Review shows three and states
+  the total, and the total was a `<p>` with no route to the rest anywhere in the
+  app. Because the three come off a RANKED list of five classes, the lowest-
+  ranked class was not later but unreachable — and 3.14.0's quiet lines is
+  fourth of five, so the class built so that staleness would come to you never
+  arrived on any store carrying three structural breaks. Hub LESSONS 187 names
+  that shape and says the fix is not a bigger cap. This is not one: three still
+  greet you, in the same order.
+  **REFUSED ALONG THE WAY, AND EACH FOR A REASON:** raising `REVIEW_CAP`, which
+  is the thing the lesson rules out and law 8 exists for; re-ranking quiet lines
+  above stalled containers, which outrank on merit — a container with no next
+  action looks fine on every surface while nothing happens; and one row per class
+  before any class gets a second, which reaches the fourth class only by raising
+  the cap to five, the refused option renamed.
+  **ONE ROW BUILDER AND ONE PROJECTION PAINT BOTH LISTS.** A second builder is
+  how the surface and the sheet come to disagree about what a finding looks like;
+  a second `reviewExceptions` call is how they disagree across midnight, because
+  `quietAreas` reads the clock.
+  **THE CLONE ROLLED BACK MID-RELEASE AND TOOK THE FIRST BUILD OF THIS WITH IT.**
+  Everything pushed survived; everything uncommitted did not, including a walk
+  chain that then reported green against a tree four releases old. The habit that
+  follows is in the commit order, not in a note: source is committed and PUSHED
+  before the walks are started, and the receipts follow as their own commit.
+- **Superseded, and kept for the record: 3.16.0.** A meeting
+  is somewhere you can stand (ADR-0119).
+  **ADR-0115'S MOVE ON THE OTHER AXIS.** A role became somewhere you could stand
+  in 3.12.0; a situation that names people is the same shape keyed on who is in
+  the room, and until 3.15.0 there was nothing to key it on. What a meeting needs
+  is not a to-do list — it is what is outstanding with each person who will be
+  there, in either direction, and what that work belongs to.
+  **AN INSPECTION MODE AND NOT A FILTER, WHICH IS THE LOAD-BEARING CHOICE.** The
+  obvious build narrows the working surfaces to these people for the length of
+  the meeting; this app has refused that twice in the same words. Nothing here
+  narrows, nothing writes `with.now`, and the single-valued person filter stays
+  as it is answering a different question.
+  **THE PICKER ARRIVED NOW BECAUSE SOMETHING FINALLY READS SEVERAL.** 3.15.0
+  stored a list and wrote at most one on purpose (ADR-0116). Toggles rather than
+  a multi-select, seeded from the filter until touched, and its door on a SECOND
+  LINE because the saved row is already three across at the 44px floor.
+  **AND THE PAGE NAV SWAPPED, REPORTED.** *On this page* now comes before
+  *Elsewhere in the app*. The markup's own comments had argued it three times
+  without noticing they described the DOM in the opposite order: 3.8.0 moved the
+  pair below the box on near-before-far, 3.9.2 retired a label for what is left
+  over because it "was sitting FIRST, before anything it could be left over
+  from", and the sentence naming the pair writes it here-then-not-here above
+  markup that did the reverse. Reading order is tab order, so the door that
+  LEAVES the page was reached first.
+  **WHAT IT LEAVES UNMEASURED IS NAMED RATHER THAN LEFT TO BE FOUND.** The two
+  group labels in the room render only when its work sits under a horizon or
+  carries a role, and the thing driven into the walk's room has neither — so
+  registering them would be a false receipt, the thing 2.24.0 cost a release for.
+  **THE LARGER FINDING, AND IT IS ABOVE THIS RELEASE.** A room composing only the
+  reader's relationships to work can only ever show a to-do list re-sorted by who
+  is present, because that is all the nouns can express. Every noun here is about
+  the reader — what I hold, owe, wait on, can do where, and who it is for. There
+  is none for a thing in the world with a state of its own and rules about when
+  it may change. `src/` has no establishment, vacancy, incumbent or headcount,
+  and the one place *capacity* appears it means the reader's own energy.
+- **Superseded, and kept for the record: 3.15.0.** A situation can name who is
+  in the room (ADR-0118).
   **A MEETING IS A PLACE, A LENGTH AND A SET OF FACES, AND ONLY TWO WERE
   STORABLE.** The situation shortcut has held where-you-are and how-long since
   2.21.0, and the one case it exists for — a recurring meeting — was the case it
@@ -2150,19 +2238,25 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.12.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.15.0** — promoted at
+  `2230a3a` on 2026-08-30, the merged tree asserted byte-identical to `43e1902`,
+  the staging head that was walked. Three releases: where a thing can be done
+  asked on the sorting card, a line that has gone quiet coming to you rather than
+  waiting to be opened, and a situation able to name who is in the room.
+  **AND THE CI WIRING THE LAST PROMOTE CARRIED IS FIXED.** That promote recorded
+  two commits from another session moving the hub gates behind a pinned reusable
+  workflow, and a job that had failed on every run since — skipping fourteen
+  gates. The cause was the hub reading its own pin out of a runtime context that
+  arrives EMPTY inside a called workflow; the hub had already fixed it by reading
+  the pin off the caller's own file, and the pin here was bumped past it. The
+  job has been green since `bcb4c1e`. The text-size gate, which this repo
+  qualified for and had switched off, is wired in the same change and passes.
+- **Superseded, and kept for the record: 3.12.0** — promoted at
   `3b5499d` on 2026-08-30, the merged tree asserted byte-identical to `3631a66`,
   the staging head that was walked. Six releases at once: four doors that say
   where they go, the two sorting landmarks, the standing count of what is in
   front of you, each import as its own named set, the filing route saying what it
   files into, and a line becoming somewhere you can stand.
-  **IT CARRIES TWO CI-WIRING COMMITS FROM ANOTHER SESSION** that move the hub
-  gates behind a pinned reusable workflow. **That job has failed on every run
-  since it landed**, and a failure at its third step skips all fourteen gates
-  behind it — branch guard, privacy, the pattern mirror, quote, third-person,
-  docs, npm hygiene, pwa, palette, text size and zizmor. Every one of them was
-  run locally against this tree and passed, so nothing here is unverified in
-  substance; but CI is checking none of them, on any repo using that wiring.
 - **Superseded, and kept for the record: 3.9.1** — promoted at
   `01ad14e` on 2026-08-29, the merged tree asserted byte-identical to `5ac11c8`,
   the staging head that was walked. Both editions read directly afterwards and

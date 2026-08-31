@@ -876,6 +876,37 @@ const REGISTRY = {
   // you are' has one: the door and the readout render only once a role exists,
   // so registering them on a state whose store has none would be three false
   // receipts — the failure `#nextup-left` already cost a release for.
+  // WHO IS IN IT (3.16.0, ADR-0119). ITS OWN STATE, not folded into 'the
+  // situation' above, for the reason that entry's own note gives: the row is
+  // hidden until somebody has been named and the situation sheet is walked
+  // before anybody has. Registering it there would be three false receipts.
+  // The room's DOOR is measured here and not with the room, because opening the
+  // room closes the sheet the door is on (ADR-0083 forbids stacked modals) — so
+  // a registry entry for it on that state matches nothing visible, which is
+  // exactly what the gate said the first time this was wired.
+  'who is in it': ['#situation-who-label', '#situation-who .situation-who-one',
+    '#situation-who-hint', '#situation-list .situation-room'],
+  // THE ROOM (3.16.0, ADR-0119). The door is registered HERE rather than with
+  // the situation sheet for the same reason: `.situation-room` renders only on
+  // a saved situation that still names a live person.
+  //
+  // `#meeting-crosses-label` and `#meeting-lines-label` are deliberately ABSENT.
+  // Both render only when the room's work sits under a horizon or carries a
+  // role, and the thing driven into this room is a plain action with neither —
+  // so naming them would be a receipt for something that is not on screen. What
+  // that costs is written in ADR-0119 rather than left to be discovered.
+  'in the room': ['#sheet-meeting-title',
+    '#sheet-meeting-close', '#meeting-words', '#meeting-people .roles-name',
+    '#meeting-people .roles-held', '#meeting-people .meeting-thing'],
+  // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
+  // the 'review' state above; this is the same rows without the cap, and its own
+  // chrome. The DOOR is `#review-count`, which is on the review surface, so it
+  // is covered by that state's `.review-count` and not registered here — the
+  // mistake 'in the room' made first time, when a door registered with the sheet
+  // it opens matched nothing, because opening the sheet closed the surface the
+  // door was on.
+  'everything worth a look': ['#sheet-review-title', '#sheet-review-close',
+    '#review-all-words', '#review-all .review-title', '#review-all .review-why'],
   'where the attention is': ['#roles-open'],
   // WHERE THE TIME ACTUALLY WENT joined this in 2.24.0, by ID. The two lists in
   // this sheet share `.roles-name` and `.roles-held`, and the note below is the
@@ -4172,8 +4203,74 @@ try {
     await auditFocusRings(page, 'who is here', theme, ['#with-who']);
     await page.selectOption('#with-who', '');
     await page.waitForSelector('#with-note', { state: 'hidden' });
-    await page.click('#sheet-situation-close');
-    await page.waitForSelector('#sheet-situation', { state: 'hidden' });
+
+    // WHO IS IN IT, AND THE ROOM IT OPENS (3.16.0, ADR-0119).
+    //
+    // DRIVEN HERE for the same reason the block above is: `#situation-who-row`
+    // is hidden until somebody has been named, and `.situation-room` renders
+    // only once a saved situation still names a live person. A registry entry
+    // for either before that point is a false receipt, which is what 2.24.0
+    // cost and what this whole placement rule exists to prevent.
+    //
+    // The room is opened from the SAVED ROW rather than by calling the sheet
+    // directly, because the door existing is half of what is being measured —
+    // a surface reachable only by a walk that knows its id is a surface a
+    // reader does not have.
+    await page.waitForSelector('#situation-who-row:not([hidden])');
+    const whoBtn = page.locator('#situation-who .situation-who-one', { hasText: 'Rowan' });
+    (await whoBtn.getAttribute('aria-pressed') === 'false' ? pass : fail)(
+      `${theme}/who is in it: it starts off, because the filter above was cleared`);
+    await whoBtn.click();
+    await page.waitForTimeout(150);
+    (await whoBtn.getAttribute('aria-pressed') === 'true' ? pass : fail)(
+      `${theme}/who is in it: toggling says so in aria-pressed, not only in colour`);
+    // SAVED BEFORE THE AUDITS, so the row's `See what is in the room` is on
+    // screen for them. It cannot be measured with the room itself: opening the
+    // room closes this sheet, so the door is gone by then.
+    await page.fill('#situation-name', 'The Rowan catch-up');
+    await page.click('#situation-save');
+    await page.waitForSelector('#situation-list .situation-room');
+    await auditContrast(page, 'who is in it', theme);
+    await auditAxe(page, 'who is in it', theme);
+    await auditNames(page, 'who is in it', theme);
+    await auditSeparationAndTargets(page, 'who is in it', theme);
+    await auditFocusRings(page, 'who is in it', theme,
+      ['#situation-who .situation-who-one', '#situation-list .situation-room']);
+
+    await page.click('#situation-list .situation-room');
+    await page.waitForSelector('#sheet-meeting[open]');
+    // AND THE SHEET BEHIND IT IS GONE. `openSheet` calls `closeEverything`
+    // because two stacked modals is the overlap ADR-0083 forbids, so the door
+    // hands the reader ON rather than piling a surface on a surface — the same
+    // thing the roles readout does opening a node. Asserted rather than assumed:
+    // the first version of this walk clicked the situation sheet's Close after
+    // the room and timed out on a button that was no longer there, which is the
+    // behaviour telling the test what it is.
+    const behind = await page.evaluate(() =>
+      document.querySelector('#sheet-situation')?.hasAttribute('open') ?? null);
+    (behind === false ? pass : fail)(
+      `${theme}/in the room: the sheet it was opened from is closed, not stacked under it (open=${behind})`);
+    const roomWords = await page.locator('#meeting-words').innerText();
+    (/in this room/.test(roomWords) ? pass : fail)(
+      `${theme}/in the room: it says what is in it ("${roomWords.slice(0, 60)}")`);
+    // THE NEGATIVE ONE IS THE ASSERTION THAT MATTERS, exactly as on the promise
+    // rows above. Everything here renders identically with a ranking or a
+    // duration in it, and a room that graded the people in it would be the
+    // ledger `roleLoads` refuses one axis over.
+    const roomAll = roomWords + ' ' + await page.locator('#meeting-people').innerText();
+    (!/behind|overdue|late|owes|worst|%|\bscore\b/i.test(roomAll) ? pass : fail)(
+      `${theme}/in the room: nothing in it grades anybody`);
+    (await page.locator('#meeting-people .meeting-thing').count() > 0 ? pass : fail)(
+      `${theme}/in the room: what is outstanding is listed, and each of it is a door`);
+    await auditContrast(page, 'in the room', theme);
+    await auditAxe(page, 'in the room', theme);
+    await auditNames(page, 'in the room', theme);
+    await auditSeparationAndTargets(page, 'in the room', theme);
+    await auditFocusRings(page, 'in the room', theme, ['#meeting-people .meeting-thing']);
+    await page.click('#sheet-meeting-close');
+    await page.waitForSelector('#sheet-meeting', { state: 'hidden' });
+    // No `#sheet-situation-close` here: closing the room lands the reader back
+    // on the app, because the sheet it came from was closed on the way in.
 
     const promisedWordsAll = promised.count + ' ' + promised.rows.map(r => r.why).join(' ');
     (!/\bfor \d|week|day|month|since|ago|yesterday\b/i.test(promisedWordsAll) ? pass : fail)(
@@ -4384,6 +4481,80 @@ try {
     await auditNames(page, 'review', theme);
     await auditSeparationAndTargets(page, 'review', theme);
     await auditFocusRings(page, 'review', theme, ['.review-open']);
+
+    // EVERYTHING WORTH A LOOK (3.17.0), and it needs FOUR findings to reach.
+    //
+    // The total is a door only while there is something behind it — three shown
+    // out of three opens a list identical to the one already on screen, so the
+    // button is disabled there and this state is unreachable with one finding.
+    // Three more cards become containers with nothing under them, the same
+    // `stalled` class the first one is: the point is the COUNT passing the cap,
+    // not a variety of findings.
+    // BACK TO THE HELD STANCE FIRST. Reaching the review state above ends on a
+    // closed detail sheet over whatever stance the triage run left, and `#cards`
+    // is not on screen there — the first version of this clicked straight into
+    // it and spent twelve seconds timing out on an element Playwright could see
+    // and could not press.
+    await enterStance(page, 'held');
+    const spare = await page.locator('#cards .card-open').count();
+    (spare >= 3 ? pass : fail)(
+      `${theme}/everything worth a look: the store has cards to make containers from (${spare})`);
+    // BY INDEX, AND ONLY WHERE THE CONTROL IS ACTUALLY OFFERED. `Make it a
+    // project` is not on every card — a thing that is already a container has no
+    // need of it, and the first card in the list is the container the state
+    // above just made. Taking `.first()` three times therefore reopened it and
+    // waited twelve seconds for a button that was correctly absent.
+    let made = 0;
+    for (let i = 0; i < 12 && made < 3; i++) {
+      const cards = await page.locator('#cards .card-open').count();
+      if (i >= cards) break;
+      await page.locator('#cards .card-open').nth(i).click();
+      await page.waitForSelector('#detail[open]');
+      await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+      const canMake = await page.locator('#detail-make-project').isVisible().catch(() => false);
+      if (canMake) {
+        await page.click('#detail-make-project');
+        await page.waitForTimeout(220);
+        made += 1;
+      }
+      await page.click('#detail-close');
+      await page.waitForSelector('#detail', { state: 'hidden' });
+    }
+    (made === 3 ? pass : fail)(
+      `${theme}/everything worth a look: three more containers were made, so the cap has something behind it (made ${made})`);
+    await page.waitForSelector('#review:not([hidden])');
+    const capped = await page.evaluate(() => ({
+      said: document.querySelector('#review-count')?.textContent ?? '',
+      shown: document.querySelectorAll('#review-list .review-open').length,
+      door: !(document.querySelector('#review-count')?.disabled ?? true),
+    }));
+    (capped.shown === 3 ? pass : fail)(
+      `${theme}/everything worth a look: the surface still shows three (law 8), got ${capped.shown}`);
+    (capped.door ? pass : fail)(
+      `${theme}/everything worth a look: and the total became a door once there was more behind it`);
+    (/These 3 first/.test(capped.said) ? pass : fail)(
+      `${theme}/everything worth a look: which says so out loud ("${capped.said}")`);
+    await page.click('#review-count');
+    await page.waitForSelector('#sheet-review[open]');
+    const whole = await page.evaluate(() => ({
+      rows: document.querySelectorAll('#review-all .review-open').length,
+      words: document.querySelector('#review-all-words')?.textContent ?? '',
+    }));
+    // THE ASSERTION THAT MATTERS IS THAT NOTHING IS MISSING FROM IT. The whole
+    // point of the door is that a lower-ranked class is later rather than
+    // unreachable, and a list that was itself capped would be the same defect
+    // one surface further in.
+    (whole.rows >= 4 ? pass : fail)(
+      `${theme}/everything worth a look: the whole list is not capped (${whole.rows} rows)`);
+    (!/first/.test(whole.words) ? pass : fail)(
+      `${theme}/everything worth a look: and it does not say "these N first", because these are all of them ("${whole.words}")`);
+    await auditContrast(page, 'everything worth a look', theme);
+    await auditAxe(page, 'everything worth a look', theme);
+    await auditNames(page, 'everything worth a look', theme);
+    await auditSeparationAndTargets(page, 'everything worth a look', theme);
+    await auditFocusRings(page, 'everything worth a look', theme, ['#review-all .review-open']);
+    await page.click('#sheet-review-close');
+    await page.waitForSelector('#sheet-review', { state: 'hidden' });
 
     // And the sheet once something IS inside something — the only state in which
     // `#detail-place` renders at all. Left out, the one line that states a
