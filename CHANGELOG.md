@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.18.1 — ITERATION
+
+*2026-08-31*
+
+- **The two new boxes say what their button keeps.** Both said *Keep that*, and so did the one above them — three controls answering to one name, which is no help at all if you are hearing the screen rather than seeing it. They are **Keep where it stands** and **Keep the condition** now.
+- **And they take the app’s colours rather than the browser’s.** What you type in them is read back to you on the *Running without you* list in the app’s own ink, so a box that looked like your operating system and words that came back looking like the app was two answers to one question.
+
 ## 3.18.0 — CAPABILITY
 
 *2026-08-31*

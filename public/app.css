@@ -2567,8 +2567,18 @@ summary::-webkit-details-marker { display: none; }
 .detail-inline { color: var(--ink-soft); font-size: 0.9375rem; }
 .detail-hint { margin: 0.5rem 0 0; color: var(--ink-soft); font-size: 0.875rem; }
 /* The note (1.4.0): same skin as the inputs, prose-shaped. Vertical resize
-   only — a horizontal drag could push the sheet past 320px (B-16's gate). */
-#detail-note {
+   only — a horizontal drag could push the sheet past 320px (B-16's gate).
+   WHERE IT STANDS AND WHAT WOULD CHANGE IT JOIN IT (3.18.0), and the choice
+   between the two treatments in this file is deliberate. `#detail-situation`
+   and `#journal-text` are declared UA-owned in `.colour-ua-owned`: the app
+   styles their box and never their ink, so the platform paints them. These two
+   go the other way, with the note, because what is typed in them is RENDERED
+   BACK by the app on the arrangements list in its own ink. A box that looks
+   like the platform whose contents come back looking like the product is the
+   inconsistency that file's own header warns about. */
+#detail-note,
+#detail-stands,
+#detail-changes {
   display: block;
   width: 100%;
   min-height: calc(var(--target) * 1.6);

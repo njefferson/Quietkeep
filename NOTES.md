@@ -843,7 +843,22 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.18.0**. An
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.18.1**. An
+  arrangement can say where it stands (ADR-0121), plus two things the walk found.
+  **THREE BUTTONS ANSWERED TO ONE NAME.** The situation's *Keep that* and both
+  new ones. The a11y walk reports a shared accessible name as a NOTE rather than
+  a failure — §4 is not gated — so this would have shipped, and a screen reader
+  offering one name for three controls is the defect the gate does catch when it
+  is a single character wearing an aria-label.
+  **AND THE TWO BOXES WERE PAINTED BY THE BROWSER.** The colour inventory refused
+  them: black on white, owned by no role. There are two established treatments
+  here and the choice between them is real — `#detail-situation` and
+  `#journal-text` are declared UA-owned on purpose, the app styling their box and
+  never their ink. These go the other way with `#detail-note`, because what is
+  typed in them is RENDERED BACK by the app on the arrangements list in its own
+  ink, and a box that looks like the platform whose contents come back looking
+  like the product is the inconsistency `.colour-ua-owned`'s own header warns of.
+- **Superseded, and kept for the record: 3.18.0.** An
   arrangement can say where it stands (ADR-0121).
   **THE APP HAD THE RIGHT NOUN ALREADY AND IT WAS ONE FIELD SHORT.** A previous
   session reported that nothing here could hold a thing in the world with a state

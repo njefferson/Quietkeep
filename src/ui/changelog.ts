@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.18.1',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**The two new boxes say what their button keeps.** Both said *Keep that*, and so did the one above them \u2014 three controls answering to one name, which is no help at all if you are hearing the screen rather than seeing it. They are **Keep where it stands** and **Keep the condition** now.',
+      '**And they take the app\u2019s colours rather than the browser\u2019s.** What you type in them is read back to you on the *Running without you* list in the app\u2019s own ink, so a box that looked like your operating system and words that came back looking like the app was two answers to one question.',
+    ],
+  },
+  {
     triplet: '3.18.0',
     kind: 'CAPABILITY',
     date: '2026-08-31',
