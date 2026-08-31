@@ -3690,7 +3690,12 @@ try {
     const wrote = await page.evaluate(() => ({
       stands: document.querySelector('#detail-stands')?.value ?? '',
       changes: document.querySelector('#detail-changes')?.value ?? '',
-      said: document.querySelector('#status')?.textContent ?? '',
+      // `#detail-live`, NOT `#status`. The sheet announces into its own live
+      // region; `#status` is the capture line and was still holding "Held. It
+      // will come back to you." from an entirely different action — a true
+      // reading of the wrong element, which is the shape that makes an
+      // assertion look broken when the app is right.
+      said: document.querySelector('#detail-live')?.textContent ?? '',
     }));
     (/Out to advert/.test(wrote.stands) ? pass : fail)(
       `${theme}/arrangement group: where it stands is kept ("${wrote.stands.slice(0, 40)}")`);
