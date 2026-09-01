@@ -3355,6 +3355,7 @@ body[data-plain="1"] #menu-open,
 body[data-plain="1"] #roles-open,
 body[data-plain="1"] #horizons-open,
 body[data-plain="1"] #arrangements-open,
+body[data-plain="1"] #dated-open,
 body[data-plain="1"] #search,
 body[data-plain="1"] #foot-manual,
 body[data-plain="1"] #situation-open,
@@ -3627,6 +3628,26 @@ body[data-plain="1"] #held
 #sheet-meeting {
   width: min(58rem, calc(100vw - 1rem));
   max-height: calc(100dvh - 1rem);
+}
+
+/* THE DAYS AHEAD (3.22.0, ADR-0124). The chip says WHICH date is talking, in
+   .tree-kind's exact quiet dress — scenery beside the door, never a second
+   task. `--ink-soft` and `--line` on the surface are pairs the gate already
+   holds, so no new foreground/background enters it. The day heading is the
+   one statement of when, so it gets weight and the rows get none. */
+.dated-day { margin-top: 0.9rem; }
+.dated-day-name {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+.dated-kind {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
 }
 
 /* WHERE IT STANDS AND WHAT WOULD CHANGE IT, on an arrangement row (3.18.0).

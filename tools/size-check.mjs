@@ -263,7 +263,12 @@ const BUDGET = {
   // 3908 -> 3915 on 2026-09-01 (3.21.0). Seven words: the hub's own
   // What's-the-situation? door and the room's two lens buttons. The words ARE
   // the capability's doors.
-  words: 3915,
+  // 3915 -> 3946 on 2026-09-01 (3.22.0). Thirty-one words: The days ahead —
+  // its door, its sheet title and Close, the date box naming the view as the
+  // first route to a dated thing, and the ⓘ calendar caveat saying the same
+  // list lives inside the app. The demand the release answers was seeing
+  // dated work in the app; these words are where the seeing starts.
+  words: 3946,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -352,7 +357,10 @@ const BUDGET = {
   // the per-surface budget protects and it improved; sprawl is what this one
   // refuses and it got worse, deliberately, by one door.
   // 12600 -> 12640 on 2026-09-01 (3.20.3): one door row on the i panel.
-  allSurfacesPx: 12640,
+  // 12640 -> 12669 on 2026-09-01 (3.22.0): one sentence on the calendar
+  // caveat — the same list now lives inside the app, said where the export
+  // lives so the two halves point at each other.
+  allSurfacesPx: 12669,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.
@@ -674,9 +682,11 @@ const BUDGET = {
   // 267 -> 268 on 2026-09-01 (3.20.3): the i panel's Elsewhere door. A new
   // control is exactly what this budget exists to make deliberate, and this
   // one closes a wayfinding dead-end rather than adding a destination.
-  controls: 271,
+  controls: 273,
   // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
   // room's two lenses. Three controls, each one of the pass's asks.
+  // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.
+  // The door is the demand itself — dated work visible inside the app.
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

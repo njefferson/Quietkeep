@@ -253,6 +253,10 @@ export const PLAIN_CHROME_HIDDEN = [
                       // an invitation to go and worry about whether they are
                       // still true, which is precisely the checking this feature
                       // exists to take off somebody.
+  '#dated-open',      // THE DAYS AHEAD (3.22.0). A survey of every dated day is
+                      // exactly the altitude Just-one-thing exists to come down
+                      // from — #horizons-open's reasoning, on the time axis. The
+                      // one date that matters on this day is on the card itself.
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.

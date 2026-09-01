@@ -34,6 +34,8 @@ import { mountPrint } from './print.ts';
 import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
+import { datedDays, datedDayWords, datedWords, datedKindWords } from '../dated.ts';
+import { calendarCount } from '../ics.ts';
 import { servesWords } from '../serves.ts';
 import {
   roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS,
@@ -769,6 +771,21 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
           horizonsBtn.hidden = anyHorizons === 0;
           horizonsBtn.textContent = 'What you\u2019re working toward';
           if (anyHorizons === 0) closeSheet('sheet-horizons');
+        }
+      }
+      // THE DAYS AHEAD (3.22.0, ADR-0124), on the same pass and by the same
+      // rules as the doors above: what it OPENS and no number, hidden until
+      // something carries a date, closed behind anybody standing in it when
+      // the last date goes. `calendarCount` \u2014 the export's own selection \u2014 is
+      // the door's condition, so the door, the sheet and the .ics can never
+      // disagree about whether anything is dated.
+      {
+        const datedBtn = document.querySelector<HTMLButtonElement>('#dated-open');
+        const anyDated = calendarCount(st, nowIso, session.zone) > 0;
+        if (datedBtn) {
+          datedBtn.hidden = !anyDated;
+          datedBtn.textContent = 'The days ahead';
+          if (!anyDated) closeSheet('sheet-dated');
         }
       }
       const rows: HTMLElement[] = [];
@@ -1840,6 +1857,68 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLButtonElement>('#meeting-by-thing')
     ?.addEventListener('click', () => { meetingLens = 'thing'; paintMeeting(); });
   wireSheetClose('sheet-meeting');
+
+  // THE DAYS AHEAD (3.22.0, ADR-0124) — the calendar story's live half.
+  // Painted on open, like every sheet here, and that is what makes it live:
+  // one surface at a time means every arrival is a fresh read of the log, so
+  // a date moved a minute ago already sits under its new day. The rows come
+  // from the export's own selection — src/dated.ts says why nothing here may
+  // walk the clocks itself.
+  const paintDated = (): void => {
+    const st = session.state();
+    const nowIso = new Date(now()).toISOString();
+    const days = datedDays(st, nowIso, session.zone);
+    const words = document.querySelector<HTMLElement>('#dated-words');
+    if (words) words.textContent = datedWords(days.reduce((n, d) => n + d.items.length, 0));
+    const list = document.querySelector<HTMLElement>('#dated-list');
+    if (!list) return;
+    list.replaceChildren(...days.map(d => {
+      const sec = document.createElement('section');
+      sec.className = 'dated-day';
+      const h = document.createElement('h3');
+      h.className = 'dated-day-name';
+      h.textContent = datedDayWords(d, nowIso, session.zone);
+      const ul = document.createElement('ul');
+      ul.className = 'roles-list';
+      ul.append(...d.items.map(it => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        // The thing is a door onto its own sheet — the room's rule: a list
+        // you can only read is a list you have to leave to act.
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'linklike dated-thing';
+        b.textContent = it.node.title || '(untitled)';
+        b.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(it.node.id);
+          if (fresh) detail.open(fresh);
+        });
+        const kind = document.createElement('span');
+        kind.className = 'dated-kind';
+        kind.textContent = datedKindWords(it.kind);
+        li.append(b, kind);
+        if (it.whom) {
+          const who = document.createElement('span');
+          who.className = 'roles-held';
+          who.textContent = `with ${it.whom}`;
+          li.append(who);
+        }
+        if (it.note) {
+          const note = document.createElement('span');
+          note.className = 'roles-held';
+          note.textContent = it.note;
+          li.append(note);
+        }
+        return li;
+      }));
+      sec.append(h, ul);
+      return sec;
+    }));
+  };
+  onSheetOpen('sheet-dated', paintDated);
+  wireSheetClose('sheet-dated');
+  document.querySelector<HTMLButtonElement>('#dated-open')
+    ?.addEventListener('click', () => { openSheet('sheet-dated'); });
 
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). No painter of its own: the list
   // is filled by the same `render` pass that fills the capped one, from one

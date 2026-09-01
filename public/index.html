@@ -1033,6 +1033,14 @@
        anything under it yet. -->
   <button id="horizons-open" class="gauge" data-hub-part type="button" hidden></button>
 
+  <!-- THE DAYS AHEAD (3.22.0, ADR-0124). Beside the doors above and hidden by
+       the same rule: it exists once something carries a date, and a door onto
+       an empty room teaches you the feature is broken. Inside is every dated
+       thing, day by day — the live half of the calendar story, from the same
+       selection the .ics export sends, which stays the notifying half
+       (ADR-0007). Words rendered, not written here, same as its neighbours. -->
+  <button id="dated-open" class="gauge" data-hub-part type="button" hidden></button>
+
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
@@ -1391,8 +1399,9 @@
       <button id="detail-date-clear" type="button" class="ghost">No date</button>
     </div>
     <p id="detail-date-reach" class="detail-hint">
-      A dated thing can reach your own calendar: <em>Send to my calendar</em>,
-      under <em>Things you can do</em>.
+      A dated thing shows in <em>The days ahead</em>, on the front page, and can
+      reach your own calendar: <em>Send to my calendar</em>, under
+      <em>Things you can do</em>.
     </p>
     <!-- A PICKED DAY IS NOT A SAVED DAY, and the markup alone cannot show the
          difference (1.38.2, found on device). The native picker fills this field
@@ -2590,7 +2599,8 @@
   <p id="calendar-note" class="storage-note" role="status" aria-live="polite"></p>
   <p class="about-p about-caveat">
     Only days <em>you</em> set are sent. Your calendar runs when Quietkeep does not,
-    so it is the thing that can reach you.
+    so it is the thing that can reach you. <em>The days ahead</em>, on the front
+    page, shows the same list inside the app, live.
   </p>
 
   <h3 class="about-section">Today, on paper</h3>
@@ -3382,6 +3392,22 @@
     <ul id="meeting-lines" class="roles-list"></ul>
   </div>
   <button id="sheet-meeting-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- THE DAYS AHEAD (3.22.0, ADR-0124) — the calendar story's live half. Every
+     row and every day comes from the export's own selection (`calendarEntries`
+     and `calendarDay` in src/ics.ts, read through src/dated.ts), so this sheet
+     and the .ics file can never name different mornings. The day heading is
+     the ONE place a day is said: rows carry which date is talking and who it
+     is with, never a second statement of when — a row that restated its day
+     could contradict its own heading, which is ADR-0032's class. -->
+<dialog id="sheet-dated" aria-labelledby="sheet-dated-title" data-door="#dated-open">
+  <h2 id="sheet-dated-title" class="section">The days ahead</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="dated-words" class="detail-hint"></p>
+    <div id="dated-list"></div>
+  </div>
+  <button id="sheet-dated-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">

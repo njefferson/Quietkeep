@@ -920,6 +920,17 @@ const REGISTRY = {
   'in the room': ['#sheet-meeting-title',
     '#sheet-meeting-close', '#meeting-words', '#meeting-people .roles-name',
     '#meeting-people .roles-held', '#meeting-people .meeting-thing', '#meeting-by-person', '#meeting-by-thing'],
+  // THE DAYS AHEAD (3.22.0, ADR-0124). The DOOR is in this entry on the
+  // arrangements precedent: it stands on the hub, which stays in layout under
+  // the open sheet, so both halves measure in one state. The with-name and
+  // needs-a-new-plan spans are NOT registered — whether the walk's store
+  // renders one depends on what earlier states linked, and a selector that can
+  // match nothing is the silent non-coverage the review-count lesson records;
+  // their pair (`--ink-soft` on the surface) is already held by the room's
+  // `.roles-held` and their words by test/dated.test.ts.
+  'the days ahead': ['#dated-open', '#sheet-dated-title', '#sheet-dated-close',
+    '#dated-words', '#dated-list .dated-day-name', '#dated-list .dated-kind',
+    '#dated-list .dated-thing'],
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
   // the 'review' state above; this is the same rows without the cap, and its own
   // chrome. The DOOR is `#review-count`, which is on the review surface, so it
@@ -5770,6 +5781,44 @@ try {
     await auditNames(page, 'upkeep ready', theme);
     await auditSeparationAndTargets(page, 'upkeep ready', theme);
     await auditFocusRings(page, 'upkeep ready', theme);
+
+    // THE DAYS AHEAD (3.22.0, ADR-0124) — the calendar story's live half,
+    // driven from its own door on the hub. Placed HERE on purpose: the store
+    // is at its fullest (the sample just landed, and state 3f0's answer-owed
+    // date is still carried), the state reads and writes nothing, and only
+    // the wide arrangement — which reads layout — runs after it, so it can
+    // perturb nothing downstream. The door exists only once something is
+    // dated, which is long since true; reached the way a finger reaches it.
+    await leaveStance(page);
+    await page.waitForSelector('#dated-open:not([hidden])');
+    await page.click('#dated-open');
+    await page.waitForSelector('#sheet-dated[open]');
+    const daysSaid = await page.locator('#dated-words').innerText();
+    (/dated thing/.test(daysSaid) ? pass : fail)(
+      `${theme}/the days ahead: it says what it holds ("${daysSaid.slice(0, 56)}")`);
+    (/Send to my calendar/.test(daysSaid) ? pass : fail)(
+      `${theme}/the days ahead: it names the export as the other half of one selection`);
+    const dayHeads = await page.locator('#dated-list .dated-day-name').count();
+    (dayHeads > 0 ? pass : fail)(
+      `${theme}/the days ahead: at least one day stands as a heading (${dayHeads})`);
+    // THE CHIP THE RELEASE EXISTS FOR: the answer-owed date is named as one,
+    // never folded into a generic "due" — 3f0's suspense is in this store.
+    const daysList = await page.locator('#dated-list').innerText();
+    (/answer owed/.test(daysList) ? pass : fail)(
+      `${theme}/the days ahead: the answer-owed date is named as one`);
+    (await page.locator('#dated-list .dated-thing').count() > 0 ? pass : fail)(
+      `${theme}/the days ahead: each thing is a door onto its own sheet`);
+    // THE NEGATIVE ONE IS THE ASSERTION THAT MATTERS, as everywhere: this
+    // surface renders identically with a countdown or a rebuke in it.
+    (!/overdue|late|behind|missed|slipped/i.test(daysSaid + ' ' + daysList) ? pass : fail)(
+      `${theme}/the days ahead: no day and no row grades the reader`);
+    await auditContrast(page, 'the days ahead', theme);
+    await auditAxe(page, 'the days ahead', theme);
+    await auditNames(page, 'the days ahead', theme);
+    await auditSeparationAndTargets(page, 'the days ahead', theme);
+    await auditFocusRings(page, 'the days ahead', theme, ['#dated-list .dated-thing']);
+    await page.click('#sheet-dated-close');
+    await page.waitForSelector('#sheet-dated', { state: 'hidden' });
 
     // --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) ------------------------------
     //

@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.22.0',
+    kind: 'CAPABILITY',
+    date: '2026-09-01',
+    notes: [
+      '**The days ahead: your dated things, day by day, inside the app.** A new door on the front page opens every dated thing you hold, under the day it is waiting on — today first, never a day in the past. Each row says which date is talking — *due*, *starts*, *comes back*, or *answer owed* — and an answer owed names who is waiting, when you have said so. It reads the store every time it opens, so when a date moves, the day it sits under moves with it. Tap a thing to open it.',
+      '**It is the same list *Send to my calendar* sends — always.** The screen and the calendar file are drawn from one selection, so they cannot name different mornings. The calendar copy is for being reminded while the app is closed; this is the half that is never stale. A date that already went by sits under today marked *needs a new plan*, in the replan surface&rsquo;s own words.',
+      '**The door appears once something carries a date**, like its neighbours, and the date box on a thing&rsquo;s page now names both routes: the days ahead on the front page, and your own calendar.',
+      '**Two controls are one step later in the reading order than they were.** The new door stands with its neighbours on the front page, so the *What’s the situation?* copy on the working screens is now one control later than it was, and the *Menu* door is now one further along than it was. Nothing moved on screen by feel; the count is about reading order.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.21.0',
     kind: 'CAPABILITY',
     date: '2026-09-01',

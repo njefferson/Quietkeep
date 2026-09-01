@@ -973,8 +973,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.21.0**, carrying
-  3.20.4 beneath it. The capability half of the twelve-finding pass
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.0**, carrying
+  3.21.0 and 3.20.4 beneath it. The days ahead (ADR-0124): every dated thing,
+  day by day, inside the app — the demand from use, answered as the calendar
+  story's live half. One selection three readers share (`calendarEntries` and
+  `calendarDay` in `src/ics.ts`): the `.ics` file, the ⓘ count and the new
+  view cannot name different mornings. Answer-owed dates are named as such,
+  the waiting-on name beside them; a passed date sits under today wearing the
+  replan surface's own words; review clocks stay out for the export's recorded
+  reason; no past day is ever rendered and nothing grades anybody. The door
+  stands on the hub beside its neighbours, hidden until something carries a
+  date; the sheet paints on every open, which under one-surface-at-a-time is
+  what live means. Replaces an invented refusal — no record ever decided
+  against an in-app dated view, and ADR-0124 says so.
+- **Superseded beneath the above: 3.21.0.** The capability half of the
+  twelve-finding pass
   (ADR-0123): the room readable by thing — each thing once, wearing the names
   that share it, the names being the only label a set ever gets — with by
   person the standing default; people carrying places stated on their own
@@ -994,7 +1007,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   above the fold (1.39.1's note amended in place), and the room is room-sized.
   The walk asserts the two-press flow end to end, the gesture words, and
   places-without-the-fold. The capability half — the meeting by thing,
-  place-aware people, a situation door on the hub — is next as 3.21.0.
+  place-aware people, a situation door on the hub — landed above as 3.21.0.
 - **Superseded: 3.20.3.** The cold
   read-back's remaining two findings, closed on the owner's ruling that routing
   them upward was fake carefulness: the walkthrough names both doors truthfully
