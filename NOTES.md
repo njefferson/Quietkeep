@@ -953,7 +953,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.20.1**, promoted 2026-09-01 at `46439c6`. The merged
+- **PRODUCTION CARRIES 3.20.3**, promoted 2026-09-01 at `af5f14c` — tree
+  asserted identical to the walked staging head `0294ad0`, both editions read
+  back by content (workers naming 3.20.3, the notes-window sentence in the
+  bundle, the About door in the page).
+- **Superseded: 3.20.1**, promoted 2026-09-01 at `46439c6`. The merged
   tree was asserted byte-identical to the walked staging head `3196d04` before
   the push — same tree object, not a diff that looked empty — and both
   editions were then read back from their production URLs: workers naming
@@ -2599,7 +2603,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.20.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.20.3** — promoted at
+  `af5f14c` on 2026-09-01, the merged tree asserted byte-identical to `0294ad0`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. **Verified live by content on both editions**: workers naming
+  3.20.3, the notes-window sentence in the bundle, the About door in the page.
+  Two releases: the cold read-back's fixes (a thing somebody owes you arrives
+  as one, every sheet heading draws the app's own ring, the feeds picker
+  offers only work), then both doors told truthfully with a way through from
+  the ⓘ panel and the notes opening everything since this device last looked.
+- Superseded: production was **3.20.1** — promoted at
   `46439c6` on 2026-09-01, the merged tree asserted byte-identical to `3196d04`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by content on both editions**: workers naming
