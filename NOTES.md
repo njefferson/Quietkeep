@@ -947,7 +947,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.19.6**, promoted 2026-09-01 at `3d187d9`. The merged
+- **PRODUCTION CARRIES 3.20.1**, promoted 2026-09-01 at `46439c6`. The merged
+  tree was asserted byte-identical to the walked staging head `3196d04` before
+  the push — same tree object, not a diff that looked empty — and both
+  editions were then read back from their production URLs: workers naming
+  3.20.1, the picker carrying `rest-with-them`, the bundle carrying the
+  gauge's door words.
+- **Superseded: 3.19.6**, promoted 2026-09-01 at `3d187d9`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
   **THIS LINE SAID 3.15.0 UNTIL NOW, THROUGH TWO PROMOTES, AND EVERY GATE WAS
@@ -2564,7 +2570,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.19.6** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.20.1** — promoted at
+  `46439c6` on 2026-09-01, the merged tree asserted byte-identical to `3196d04`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. **Verified live by content on both editions**: workers naming
+  3.20.1, the picker carrying the directory pair, the bundle carrying the
+  gauge's door words. Two releases: who holds the rest (both directions, with
+  its take-back and the import carrying people, ADR-0122), and the gauge told
+  apart from its door with every sheet title drawing the app's own ring.
+- Superseded, and kept for the record — production was **3.19.6**, promoted at
   `3d187d9` on 2026-09-01, the merged tree asserted byte-identical to `220823e`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by CONTENT and not by version**: the cache name says
