@@ -913,7 +913,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.4**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.5**. The
+  curb-cut grade was too harsh and is corrected.
+  **THE FIRST GRADE CAME OFF ONE SEARCH.** Recorded as unsupported on a single
+  web query plus one Crossref query. Asked to check whether it holds, a second
+  search found the instance is well counted: roughly four in five caption users
+  have no hearing loss, with reasons that differ by age — noisy environments 40%
+  and multitasking 30% among younger viewers, accents 52% among older. Survey
+  and industry sources rather than peer-reviewed, consistent across several.
+  **THE SPLIT IS THE FINDING.** The instances are real; the RULE has a
+  denominator problem — the same few cases are cited every time and nobody
+  counts the accessibility features that never generalised, because no one has
+  reason to. Survivorship. So the instance may be stated and the rule may not.
+  **AND THE PROCESS POINT IS THE REASON THIS IS WRITTEN DOWN:** grading a claim
+  off one search is the same defect as trusting a citation without opening it,
+  and it went the other way — too harsh rather than too generous. Both are
+  wrong, and only one of them feels like rigour.
+- **Superseded, and kept for the record: 3.19.4.** The
   *Why* page cites the outcome evidence for its own founding claim, and the
   study that failed to reproduce it.
   **THE PAIR IS THE FINDING.** Haynes et al. (2009, NEJM, PMID 19144931): a

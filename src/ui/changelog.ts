@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.19.5',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**Yesterday\u2019s note about the curb-cut idea was too harsh, and it is corrected.** The claim that designing for people at the edges helps everyone was recorded as unsupported. Looked at properly it splits in two. The named cases are real and some are well counted \u2014 about four in five people using captions have no hearing loss, and the reasons differ by age, from noisy rooms to difficulty with accents. **The general rule is the part that does not hold**, because the same handful of examples get cited every time and nobody counts the accessibility features that never caught on. So the page now says the instance may be stated and the rule may not.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing on that screen adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.19.4',
     kind: 'ITERATION',
     date: '2026-09-01',

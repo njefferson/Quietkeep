@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.19.5 — ITERATION
+
+*2026-09-01*
+
+- **Yesterday’s note about the curb-cut idea was too harsh, and it is corrected.** The claim that designing for people at the edges helps everyone was recorded as unsupported. Looked at properly it splits in two. The named cases are real and some are well counted — about four in five people using captions have no hearing loss, and the reasons differ by age, from noisy rooms to difficulty with accents. **The general rule is the part that does not hold**, because the same handful of examples get cited every time and nobody counts the accessibility features that never caught on. So the page now says the instance may be stated and the rule may not.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing on that screen adds somebody new.
+
 ## 3.19.4 — ITERATION
 
 *2026-09-01*

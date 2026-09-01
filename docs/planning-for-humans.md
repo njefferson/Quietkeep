@@ -501,22 +501,36 @@ time.
 ### And one claim this document should not lean on
 
 **The curb-cut effect** — that designing for people at the margin ends up
-benefiting everybody — is repeated constantly in accessibility and design
-writing, and it is an appealing frame for what this app is doing. **A search for
-its evidence returns advocacy**: design blogs, vendor posts, explainers. What it
-also returns is a named scholarly critique arguing that justifying accessibility
-by its incidental benefit to non-disabled people is itself a hazard *(Reid, "The
-Curb-Cut Effect and the Perils of Accessibility without Disability", in Feminist
-Cyberlaw, 2024, DOI 10.1525/9780520388550-009 — citation verified, argument not
-read)*. No empirical review was found in either direction. *(community-construct
-— widely held, sincerely meant, and not something this document has grounds to
-assert.)*
+benefiting everybody — is an appealing frame for what this app is doing, and it
+splits cleanly in two when the evidence is actually looked for.
 
-**So it stays out of the framing.** The reason to design for people under load
-is that the design is better for the people it is for; whether it incidentally
-helps everyone else is a claim this repo cannot currently support, and saying it
-anyway would be exactly the confident nonsense the epistemic tags exist to keep
-out.
+- **The named instances are real and some are well quantified.** Captions are
+  the strongest case: industry and survey work converges on roughly **four in
+  five caption users having no hearing loss**, and a general-population survey
+  finds the reasons differ by age — younger viewers citing noisy environments
+  (40%) and multitasking (30%), older viewers citing difficulty with accents
+  (52%). Around half of students reporting no hearing difficulty use them at
+  least sometimes. *(These are survey and industry sources rather than
+  peer-reviewed studies; the direction is consistent across several of them.)*
+  *(established, for this instance)*
+- **The general principle is a heuristic, and it has a denominator problem.**
+  The same handful of cases are cited every time — curb cuts, captions, voice
+  control, kitchen tools — and **nobody counts the accessibility features that
+  did not generalise**, because there is no reason anyone would. That is
+  survivorship, and it means the instances cannot support the rule they are
+  used to prove. No empirical review was found in either direction. There is a
+  named scholarly argument that justifying accessibility by its incidental
+  benefit to non-disabled people is itself a hazard *(Reid, "The Curb-Cut Effect
+  and the Perils of Accessibility without Disability", in Feminist Cyberlaw,
+  2024, DOI 10.1525/9780520388550-009 — citation verified, argument not read)*.
+  *(community-construct)*
+
+**So the instance may be said and the rule may not.** This app can honestly note
+that what makes it work under load is not exotic — plenty of people meet those
+conditions sometimes. It may not claim that designing for the margin
+*therefore* benefits everyone, because that is the half with no denominator, and
+asserting it would be exactly the confident nonsense the epistemic tags exist to
+keep out.
 
 ## 11 · The five things Quietkeep claims are different
 
