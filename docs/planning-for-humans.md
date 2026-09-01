@@ -409,6 +409,9 @@ each corresponds to a feature that would look perfectly reasonable in a spec.
 - ****"21 days to a habit"** — no evidential basis; Lally's median is ~66 days with an enormous range**
   - Status: **negative finding**
   - What it forbids here: No habit-formation countdown, no automaticity progress bar, no promise of a timeline the data cannot support.
+- ****Information degrades between neurotypes** — the widely cited N = 72 result did not replicate at N = 311**
+  - Status: **negative finding**
+  - What it forbids here: No feature, copy or record may explain a misunderstanding between two people by a mismatch of neurotype. A pre-registered diffusion-chain study across three sites found **no difference in information transfer** between single-neurotype and mixed-neurotype chains (Crompton et al., 2025, *Nature Human Behaviour* 9(7), 1488–1500), overturning the 2020 original (*Autism* 24(7), 1704–1712). **The rapport half did not survive in the form it is usually restated either** — the 2025 paper's own words are that *non-autistic* chains indicated higher rapport, which is not the claim that rapport is higher within same-neurotype pairs; only "disclosing diagnosis improved rapport" holds as commonly stated. This one is worth reading twice, because it is the cleanest example in this document of the failure mode the epistemic tags exist for: a well-cited finding, congenial to a theory this document is sympathetic to, partly overturned by a larger registered report — **and then restated in a stronger form than either paper supports.** The prohibition binds the sympathetic direction as hard as the hostile one. What autistic chains are *not* is impaired: the 2025 paper states they transfer information as accurately as non-autistic chains, and that is the finding to carry forward.
 
 **Why they are here rather than quietly obeyed:** each of these is a feature
 somebody will eventually propose in good faith, because they all appear in
@@ -456,6 +459,121 @@ in the corpus, and it is twenty-two years old.
 
 **Neither field appears anywhere else in this repo.** Recorded here so the next
 survey starts from them rather than rediscovering them.
+
+### What this app is aimed at, and the rule that comes with saying so
+
+Added 2026-09-01. Everything in this document is here because it describes
+**neurodivergent** readers, who are who this is built for. What the document had
+never said is what it is aimed *at*, which is a condition rather than a
+diagnosis: **low capacity, high demand, interruption, and engagement that
+varies.**
+
+Saying that is not a widening of the audience. It is a statement of the
+mechanism, and it earns its place because it makes whole literatures legitimately
+applicable — cognitive aids and structured protocols below, structured handover,
+high-reliability organisations, distributed cognition, situation awareness. Every
+one of those studies competent people in degraded conditions, none of them is
+reachable from a diagnosis alone, and all of them bear directly on what this app
+is trying to do.
+
+**Military planning doctrine belongs on that list too, and it is worth saying
+why.** Doctrine assumes people who are capable, under load, and out of contact
+when it matters — so it externalises exactly what is expensive to hold: the
+conditions being watched for, what must be reported at once, and intent written
+so somebody can act correctly without asking. That is the same conclusion this
+document reaches from cognitive psychology, arrived at institutionally and
+decades earlier. It is an acknowledged influence on how the problem is framed.
+**It stays out of the product's own vocabulary entirely** — the voice is adult,
+calm and civilian, and no military term appears in any name or line of copy in
+this app. Influence on the thinking is not licence over the words.
+
+> **THE RULE THAT COMES WITH THE FRAMING, and it exists because it will not
+> announce itself.** The moment this reads as *for people under load*, ordinary
+> productivity research becomes reachable — a literature built on streaks,
+> ranking by importance, nudges and completion metrics, every one of which is
+> refused here on the evidence above. Somebody will eventually arrive holding a
+> real finding for a thing this app structurally may not do, and it will look
+> like diligence.
+>
+> **A general-population finding may inform a design. It may never override a
+> refusal.** Where the two conflict, the narrower finding governs — and the
+> reason is arithmetic rather than loyalty. **A general-population result is
+> averaged over people for whom the failure is cheap.** Every refusal in this
+> document exists because this is where that failure is most expensive and least
+> recoverable, and an intervention that is positive on average can be negative
+> exactly there while the average never shows it.
+
+### A third literature, and it is the one with the outcome numbers
+
+Added 2026-09-01. This whole document argues that moving something out of a head
+and into a structure changes what happens. **The strongest outcome evidence for
+that claim anywhere is in patient safety, and none of it was cited here.**
+
+- **A structured cognitive aid, implemented with training, produced large
+  measured effects.** The WHO surgical safety checklist — nineteen items, eight
+  hospitals in eight cities across very different health systems — was followed
+  by death falling from 1.5% to 0.8% (P=0.003) and inpatient complications from
+  11.0% to 7.0% (P<0.001). *(Haynes et al., 2009, New England Journal of
+  Medicine, PMID 19144931; read from the primary.)* *(established)*
+- **The same checklist, mandated across a whole system, did not reproduce it.**
+  Ontario required adoption by every acute hospital, which made a natural
+  experiment out of it: 101 hospitals, about 109,000 procedures before and
+  106,000 after. Adjusted mortality moved 0.71% to 0.65% — odds ratio 0.91,
+  **P=0.13** — and complications 3.86% to 3.82%, odds ratio 0.97. The authors'
+  own conclusion is that implementation "was not associated with significant
+  reductions in operative mortality or complications". *(Urbach et al., 2014,
+  New England Journal of Medicine, PMID 24620866; read from the primary.)*
+  *(negative finding)*
+
+**The pair is the finding, and it is a prohibition.** The structure did not stop
+working between 2009 and 2014. What differed is that the first was an
+intervention people were trained into and the second was a form they were
+required to file. **A structure does not do the work by existing.**
+
+> **Nothing in Quietkeep may assume that offering a shape produces the
+> outcome the shape was measured with.** Not a template, not a field, not a
+> prompt, not a checklist of its own. The measured effect belongs to the
+> implementation, and this app cannot implement anything into somebody's life —
+> it can only be cheap enough to use and honest about what it does.
+
+That reads as a limitation and is closer to a licence: it is the argument for
+why capture is one box, why nothing here has a setup flow, and why every
+surface has to earn its place at the moment of use rather than at configuration
+time.
+
+### And one claim this document should not lean on
+
+**The curb-cut effect** — that designing for people at the margin ends up
+benefiting everybody — is an appealing frame for what this app is doing, and it
+splits cleanly in two when the evidence is actually looked for.
+
+- **The named instances are real and some are well quantified.** Captions are
+  the strongest case: industry and survey work converges on roughly **four in
+  five caption users having no hearing loss**, and a general-population survey
+  finds the reasons differ by age — younger viewers citing noisy environments
+  (40%) and multitasking (30%), older viewers citing difficulty with accents
+  (52%). Around half of students reporting no hearing difficulty use them at
+  least sometimes. *(These are survey and industry sources rather than
+  peer-reviewed studies; the direction is consistent across several of them.)*
+  *(established, for this instance)*
+- **The general principle is a heuristic, and it has a denominator problem.**
+  The same handful of cases are cited every time — curb cuts, captions, voice
+  control, kitchen tools — and **nobody counts the accessibility features that
+  did not generalise**, because there is no reason anyone would. That is
+  survivorship, and it means the instances cannot support the rule they are
+  used to prove. No empirical review was found in either direction. There is a
+  named scholarly argument that justifying accessibility by its incidental
+  benefit to non-disabled people is itself a hazard *(Reid, "The Curb-Cut Effect
+  and the Perils of Accessibility without Disability", in Feminist Cyberlaw,
+  2024, DOI 10.1525/9780520388550-009 — citation verified, argument not read)*.
+  *(community-construct)*
+
+**So the instance may be said and the rule may not.** This app can honestly note
+that what makes it work under load is not exotic — plenty of people meet those
+conditions sometimes. It may not claim that designing for the margin
+*therefore* benefits everyone, because that is the half with no denominator, and
+asserting it would be exactly the confident nonsense the epistemic tags exist to
+keep out.
 
 ## 11 · The five things Quietkeep claims are different
 

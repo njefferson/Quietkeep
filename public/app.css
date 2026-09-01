@@ -1090,12 +1090,34 @@ button.ghost,
 .tree-empty { color: var(--ink-soft); font-size: 0.9375rem; }
 
 /* The lens (1.7.0): one small row, quiet, above the list it filters. */
+/* A CONTROL AND ITS EXPLANATION ARE NOT ONE LINE (3.19.1).
+ *
+ * Reported from a device, on the situation sheet: the "Not a place" control
+ * read as an ALERT rather than as a button, and the "Who is in it?" label
+ * arrived as three one-word lines beside its own picker.
+ *
+ * One cause, and it is this rule. A flex row does not wrap unless it is told
+ * to, so every row here put its label, its control and its hint on ONE line and
+ * shared out the shortfall by squeezing them — a two-word button became a
+ * two-line box, which is the shape of a warning badge and not of a ghost
+ * button, and a four-word label became a column. `#situation-who-row` is the
+ * worst case because `.situation-who` is `width: 100%` inside it, so the label
+ * and the hint were shrunk against a sibling asking for the whole line.
+ *
+ * The hint takes its OWN line rather than merely being allowed to wrap. Letting
+ * the row wrap where it likes leaves the control's width dependent on how long
+ * the sentence beside it happens to be, which is the same defect one release
+ * along the first time the copy changes. A control keeps its natural width; the
+ * explanation goes underneath, which is where an explanation belongs.
+ */
 .lens-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
   margin: 0 0 0.5rem;
 }
+.lens-row > .detail-hint { flex: 1 0 100%; margin-top: 0.25rem; }
 .lens-row select {
   /* A flex item's min-width is auto, so a long container title made the
      select refuse to shrink and pushed the page sideways at 320px/200%
@@ -2567,8 +2589,18 @@ summary::-webkit-details-marker { display: none; }
 .detail-inline { color: var(--ink-soft); font-size: 0.9375rem; }
 .detail-hint { margin: 0.5rem 0 0; color: var(--ink-soft); font-size: 0.875rem; }
 /* The note (1.4.0): same skin as the inputs, prose-shaped. Vertical resize
-   only — a horizontal drag could push the sheet past 320px (B-16's gate). */
-#detail-note {
+   only — a horizontal drag could push the sheet past 320px (B-16's gate).
+   WHERE IT STANDS AND WHAT WOULD CHANGE IT JOIN IT (3.18.0), and the choice
+   between the two treatments in this file is deliberate. `#detail-situation`
+   and `#journal-text` are declared UA-owned in `.colour-ua-owned`: the app
+   styles their box and never their ink, so the platform paints them. These two
+   go the other way, with the note, because what is typed in them is RENDERED
+   BACK by the app on the arrangements list in its own ink. A box that looks
+   like the platform whose contents come back looking like the product is the
+   inconsistency that file's own header warns about. */
+#detail-note,
+#detail-stands,
+#detail-changes {
   display: block;
   width: 100%;
   min-height: calc(var(--target) * 1.6);
@@ -3268,6 +3300,7 @@ body[data-plain="1"] #upkeep,
 body[data-plain="1"] #menu-open,
 body[data-plain="1"] #roles-open,
 body[data-plain="1"] #horizons-open,
+body[data-plain="1"] #arrangements-open,
 body[data-plain="1"] #search,
 body[data-plain="1"] #foot-manual,
 body[data-plain="1"] #situation-open,
@@ -3527,3 +3560,19 @@ body[data-plain="1"] #held
 /* Things in the room stack under the person they are with, full width, so a
    long title never squeezes the name or the count into a column of one word. */
 .meeting-thing { flex: 1 0 100%; text-align: left; margin-top: 0.15rem; }
+
+/* WHERE IT STANDS AND WHAT WOULD CHANGE IT, on an arrangement row (3.18.0).
+   `--ink-soft` on the surface is the pair `.roles-held` and `.hub-count`
+   already use, so no new foreground/background enters the contrast gate. Full
+   width after the wrap, because a written sentence squeezed into a column
+   beside a name is a sentence nobody reads. */
+.arrangement-said {
+  flex: 1 0 100%;
+  margin: 0.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+}
+/* The label carries the weight rather than a colour of its own — two words in
+   front of the reader's own sentence, told apart without a second pair. */
+.arrangement-said-label { font-weight: 600; }

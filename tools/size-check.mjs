@@ -235,7 +235,16 @@ const BUDGET = {
   // same `reviewWords` the surface already uses, so it costs the shell nothing,
   // and the rows are built from the store rather than written here — a store
   // with forty findings behind the total adds not one word to this file.
-  words: 3749,
+  // 3749 -> 3815 on 2026-08-31 (3.18.0). Sixty-six words, and they are the
+  // release: two labelled boxes on the arrangement group with a hint each, and
+  // the `Running without you` sheet's heading and Close. The hints carry most of
+  // it and they are load-bearing rather than decoration — one says the app does
+  // not know your world and offers no list to pick from, the other says nothing
+  // watches for the condition. A reader who has just written a condition down
+  // will otherwise assume the app is now watching, and finding out by waiting is
+  // the expensive way. The rows in the list come from the store, so an
+  // arrangement with a paragraph in it adds nothing to this file.
+  words: 3815,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -637,7 +646,12 @@ const BUDGET = {
   // furniture: the whole-review sheet's Close. The other is the review total
   // itself, which was a `<p>` and is a button now — the release is that change,
   // so the count moving is the feature rather than drift beside it.
-  controls: 261,
+  // 261 -> 267 on 2026-08-31 (3.18.0), UP by six: two textareas and two Keep
+  // buttons on the arrangement group, the `Running without you` door, and that
+  // sheet's Close. All six are the feature. Everything inside the sheet is
+  // rendered from the store, so somebody trusting forty things to run without
+  // them still costs the shell exactly these six.
+  controls: 267,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

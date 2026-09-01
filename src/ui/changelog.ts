@@ -29,6 +29,99 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.19.6',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**The *Why* page now says what this app is aimed at, not only who it is for.** It is for neurodivergent people \u2014 that has not changed and is the first thing said. What it is aimed AT is a condition: low capacity, high demand, interruption, and engagement that varies. Naming that is not a widening; it is what makes whole fields of research apply here that a diagnosis alone cannot reach \u2014 the work on checklists and cognitive aids, on handing a role over, on how teams stay reliable under pressure.',
+      '**And it names a rule that protects the first half from the second.** Once a thing is described as being for people under load, ordinary productivity research becomes fair game \u2014 and that literature runs on streaks, ranking, nudges and completion scores, all of which this app refuses. So the page states plainly: a finding from the general population may inform a design and may never overturn a refusal. A result averaged across everybody is averaged across people for whom the failure is cheap, and every refusal here exists because of where it is expensive.',
+      '**Military planning is credited as an influence, and kept out of the words.** It assumes capable people under load and out of contact, so it writes down exactly what is costly to keep in a head. Same conclusion, reached elsewhere, decades earlier. The voice of this app stays adult, calm and civilian, and no term from that world appears anywhere in it.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
+    triplet: '3.19.5',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**Yesterday\u2019s note about the curb-cut idea was too harsh, and it is corrected.** The claim that designing for people at the edges helps everyone was recorded as unsupported. Looked at properly it splits in two. The named cases are real and some are well counted \u2014 about four in five people using captions have no hearing loss, and the reasons differ by age, from noisy rooms to difficulty with accents. **The general rule is the part that does not hold**, because the same handful of examples get cited every time and nobody counts the accessibility features that never caught on. So the page now says the instance may be stated and the rule may not.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing on that screen adds somebody new.',
+    ],
+  },
+  {
+    triplet: '3.19.4',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**The *Why* page now cites the strongest evidence there is for what this app claims.** The whole argument here is that moving something out of your head and into a structure changes what happens \u2014 and the best measured proof of that is in surgery, where a nineteen-item checklist was followed by deaths falling from 1.5% to 0.8% across eight hospitals on four continents. That was never cited on the page that makes the claim.',
+      '**And beside it, the study that did not find the same thing \u2014 which is the more useful half.** When Ontario required every hospital to adopt the same checklist, across roughly two hundred thousand operations, it made no significant difference at all. The structure had not stopped working. The difference is that one was something people were trained into and the other was a form they had to file. **A structure does not do the work by existing**, and the page now says so as a rule this app is held to: nothing here may assume that offering you a shape produces the result the shape was measured with.',
+      '**One idea has been taken back out of the framing.** The claim that designing for people at the edges ends up helping everyone is repeated everywhere, it flatters this project, and a search for its evidence turns up opinion pieces and one scholarly argument against it. So it is recorded as unsupported rather than used. The reason to build this way is that it is better for the people it is for.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing on that screen adds somebody new.',
+    ],
+  },
+  {
+    triplet: '3.19.3',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**The list behind the number is in date order now.** Tap the line that says what comes back and when, and you get everything you are holding with the day each one returns. That list was ordered by when you wrote each thing DOWN, which tells you nothing about when it comes back \u2014 so the sheet\u2019s own title promised something the order did not deliver. Soonest first now.',
+      '**Anything with no date sits at the end.** The Menu, and anything simply held, has no return date to be early or late against, and putting it first would bury the next thing due underneath a wish list.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. *Who is here* takes one person and *Who is in it?* takes as many as you like. The names under *Who is in it?* are buttons \u2014 press as many as apply. And nothing on that screen adds somebody new.',
+    ],
+  },
+  {
+    triplet: '3.19.2',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**The *Why* page names one more thing this app may never do.** It already lists the ideas that sound sensible and did not survive testing \u2014 willpower as a tank that empties, brain training, twenty-one days to a habit \u2014 and each one is there because somebody would otherwise build it in good faith. A fourth has joined them: **nothing here may explain a misunderstanding between two people by saying their brains work differently.** A large pre-registered study across three sites found no difference in how well information travels between people of different neurotypes, overturning the smaller study that claim is usually built on.',
+      '**It is on the page as a worked example, not just a rule.** The finding it overturns is one this app is sympathetic to, and the version people repeat is stronger than either study supports. That is the whole reason every claim on that page carries a tag saying how good the evidence is \u2014 the tags have to bind hardest on the findings you would like to be true.',
+      '**Still to sort, unchanged from the last release:** the situation screen asks who twice. *Who is here* takes one person and *Who is in it?* takes as many as you like, one above the other. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing on that screen adds somebody new.',
+    ],
+  },
+  {
+    triplet: '3.19.1',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**“Not a place” looked like a warning.** Reported. It is an ordinary button, and it was being squeezed into a two-line box beside the sentence that explains it — which is the shape of an alert, not of something you press. The sentence goes underneath it now and the button sits on one line, like every other button on that screen.',
+      '**“Who is in it?” was arriving as three one-word lines.** The same cause: a label, a control and an explanation were all being fitted onto one line, and the shortfall was shared out by shrinking whichever of them gave way first. Anywhere that happens on the situation screen, the explanation now takes its own line and the control keeps its natural width.',
+      '**Still to sort — that screen asks who twice.** *Who is here* takes one person; *Who is in it?* takes as many as you like; they sit one above the other, and the first one teaches you that the answer is one person. The names under *Who is in it?* are buttons: press as many as apply. And nothing on that screen adds somebody new — people get named on a thing, not here.',
+    ],
+  },
+  {
+    triplet: '3.19.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-31',
+    notes: [
+      '**\u201cMore room\u201d is back under the box it opens.** Reported. It had drifted below the whole list of places to go \u2014 past a rule, a heading and five doors \u2014 about thirteen hundred pixels from the thing it does something to. It is the first thing under the box again.',
+      '**It was never moved there on purpose.** It has sat just under the box since the release that took it out of the top bar, and the note beside it in the code still said so. When the list of places to go arrived it was put in above, and that sentence quietly stopped being true \u2014 for a year, until you saw it.',
+      '**And a check now holds it there.** If a heading ever comes between that button and the box again, the build stops. There was already a rule that a filter has to appear above the thing it filters; this is its other half \u2014 a control has to appear beside the thing it acts on.',
+    ],
+  },
+  {
+    triplet: '3.18.1',
+    kind: 'ITERATION',
+    date: '2026-08-31',
+    notes: [
+      '**The two new boxes say what their button keeps.** Both said *Keep that*, and so did the one above them \u2014 three controls answering to one name, which is no help at all if you are hearing the screen rather than seeing it. They are **Keep where it stands** and **Keep the condition** now.',
+      '**And they take the app\u2019s colours rather than the browser\u2019s.** What you type in them is read back to you on the *Running without you* list in the app\u2019s own ink, so a box that looked like your operating system and words that came back looking like the app was two answers to one question.',
+    ],
+  },
+  {
+    triplet: '3.18.0',
+    kind: 'CAPABILITY',
+    date: '2026-08-31',
+    notes: [
+      '**Something that runs without you can now say where it stands, and what would change it.** Mark a repeating thing *It runs itself* and two boxes appear under it. A post out to advert. A job filled temporarily until a date. Something you cannot start until somebody else moves. In your own words \u2014 there is no list to pick from, because the app does not know your world.',
+      '**The second box is the one worth having.** A change out in the world gives you nothing to walk past, so the only way to keep hold of it is to keep checking, and checking costs you attention all day against whatever else you are doing. Write the condition down and you can put it down.',
+      '**Nothing watches for it, and the app says so when you write it.** It cannot see your world and will never tell you the thing has happened. It holds what you wrote so you do not have to.',
+      '**And there is finally somewhere to see all of it.** *Running without you* appears once you have marked anything, and lists everything you are trusting to continue \u2014 when you last checked each was still true, and where any of it stands. Including the ones that are perfectly fine: a list that only ever showed problems would be a wall of them.',
+      '**Nothing on that list can be ticked off.** A state of affairs is not a task. You confirm a thing on its own panel, where the question is asked.',
+      '**Still not right:** the list shows what you wrote and does no more with it. Something that changes on a date can carry a date, but a condition in words is yours to notice.',
+    ],
+  },
+  {
     triplet: '3.17.1',
     kind: 'ITERATION',
     date: '2026-08-30',

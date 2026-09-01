@@ -46,6 +46,7 @@ import {
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
 import { meetingView, meetingViewWords, meetingPersonWords } from '../meeting.ts';
+import { arrangementNodes, arrangementCards } from '../arrangement.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
 import { SCALE_KEY, applyScale, getScale, setScale, normaliseScale } from '../scale.ts';
@@ -712,6 +713,19 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
           rolesBtn.hidden = anyRoles === 0;
           rolesBtn.textContent = 'Where the attention is';
           if (anyRoles === 0) closeSheet('sheet-roles');
+        }
+      }
+      // RUNNING WITHOUT YOU (3.18.0, ADR-0121), on the same pass and by the same
+      // rules as the door above it: what it OPENS and no number, hidden until an
+      // arrangement exists, closed behind anybody standing in it when the last
+      // one goes.
+      {
+        const arrBtn = document.querySelector<HTMLButtonElement>('#arrangements-open');
+        const anyArrangements = arrangementNodes(st).length;
+        if (arrBtn) {
+          arrBtn.hidden = anyArrangements === 0;
+          arrBtn.textContent = 'Running without you';
+          if (anyArrangements === 0) closeSheet('sheet-arrangements');
         }
       }
       // WHAT YOU ARE WORKING TOWARD (2.18.0), on the same pass and by the same
@@ -1434,6 +1448,64 @@ export async function main(edition?: Edition): Promise<void> {
   wireSheetClose('sheet-roles');
   document.querySelector<HTMLButtonElement>('#roles-open')
     ?.addEventListener('click', () => { openSheet('sheet-roles'); });
+
+  // RUNNING WITHOUT YOU (3.18.0, ADR-0121). `arrangementCards` has been written,
+  // exported and unit-tested since arrangements landed and had NO CALLER — a
+  // complete projection with nowhere to render, which is hub LESSONS 182's shape
+  // exactly. Painted on open like every sheet here.
+  const paintArrangements = (): void => {
+    const st = session.state();
+    const cards = arrangementCards(st, new Date(now()).toISOString(), session.zone);
+    const words = document.querySelector<HTMLElement>('#arrangements-words');
+    if (words) {
+      // WHAT IT IS, AND WHAT IT IS NOT. The count is a fact about the list; the
+      // second sentence is there because a reader who has written a condition
+      // down is entitled to wonder whether the app is now watching for it.
+      words.textContent = cards.length === 0
+        ? 'Nothing here runs without you yet.'
+        : `${cards.length === 1 ? 'One thing runs' : `${cards.length} things run`} `
+          + 'without you. Nothing here watches your world — it holds what you wrote.';
+    }
+    const list = document.querySelector<HTMLUListElement>('#arrangements-list');
+    if (!list) return;
+    list.replaceChildren(...cards.map(c => {
+      const li = document.createElement('li');
+      li.className = 'roles-row';
+      // A DOOR, like every other row that names a node. Confirming happens on
+      // the item's own sheet, where the question is asked — there is no Done
+      // here, because a state of affairs is not work.
+      const name = document.createElement('button');
+      name.type = 'button';
+      name.className = 'roles-name linklike';
+      name.textContent = c.node.title || '(untitled)';
+      name.addEventListener('click', () => {
+        const fresh = session.state().nodes.get(c.node.id);
+        if (fresh) detail.open(fresh);
+      });
+      const said = document.createElement('span');
+      said.className = 'roles-held';
+      said.textContent = c.words;
+      li.append(name, said);
+      // WHERE IT STANDS AND WHAT WOULD CHANGE IT, each on its own line and only
+      // when written. An empty row would be the chooser-with-nothing-in-it
+      // mistake, and most arrangements are a standing order with neither.
+      for (const [label, text] of [['Stands', c.stands], ['Changes', c.changes]] as const) {
+        if (!text) continue;
+        const p = document.createElement('p');
+        p.className = 'arrangement-said';
+        const k = document.createElement('span');
+        k.className = 'arrangement-said-label';
+        k.textContent = `${label}: `;
+        p.append(k, document.createTextNode(text));
+        li.append(p);
+      }
+      return li;
+    }));
+  };
+  onSheetOpen('sheet-arrangements', paintArrangements);
+  wireSheetClose('sheet-arrangements');
+  document.querySelector<HTMLButtonElement>('#arrangements-open')
+    ?.addEventListener('click', () => { openSheet('sheet-arrangements'); });
 
   // WHAT YOU ARE WORKING TOWARD (2.18.0, the plan's phase 2 step 3). Painted on
   // open like every other sheet, because a list built once reports the store as

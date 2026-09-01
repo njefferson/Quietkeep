@@ -38,6 +38,23 @@ compensating for.
 
 Everything else follows from that.
 
+**THE AUDIENCE IS NEURODIVERGENT PEOPLE. THE TARGET IS A CONDITION.** Those are
+not in tension and the distinction earns its place: the condition is low
+capacity, high demand, interruption, and engagement that varies. Naming it is
+what makes cognitive aids, structured handover, high-reliability work and
+distributed cognition legitimately applicable here — literatures a diagnosis
+alone cannot reach, and every one of them about competent people in degraded
+conditions.
+
+**AND THE HAZARD THAT ARRIVES WITH IT, which `CLAUDE.md` states as a rule
+because it will not announce itself.** Once the frame reads as *people under
+load*, ordinary productivity research becomes reachable, and that literature is
+built on streaks, ranking, nudges and completion metrics — all refused here. A
+general-population finding may inform a design; it may never override a refusal
+that rests on a finding about this audience. **A general-population result is
+averaged over people for whom the failure is cheap**, and every refusal here
+exists because this is where the cost is largest and least recoverable.
+
 ### The failure this app exists to prevent, stated precisely (2026-08-28)
 
 **A missed day must not become a new list to sort.** That sentence is more
@@ -473,11 +490,81 @@ decided by a session.**
 
 ### Open
 
-**Nothing is open.** All fourteen questions below are closed, and this heading
-says so rather than leaving it to be inferred from an empty list — a heading
-reading *Open* over three closed questions is the same false receipt the
-Status lines were added to fix, one level up. `tools/questions.mjs` refuses a
-closed question filed under this heading now, so the two cannot drift again.
+**One is open — Q-15, below.** The other fourteen are closed and filed under the
+next heading. This paragraph states the count rather than leaving it to be
+inferred from the list, because a heading reading *Open* over three closed
+questions is the same false receipt the Status lines were added to fix, one level
+up. `tools/questions.mjs` refuses a closed question filed under this heading, so
+those two cannot drift again — **but it does not read this paragraph**, so the
+count here is maintained by hand and nothing would catch it going stale.
+
+- **Q-15 · Can the record carry who is holding the rest of something?** Asked
+  2026-08-31, recorded rather than decided. **The thesis and laws 1–2 answer one
+  failure class precisely: an intention leaves the head and does not come back.
+  There is a second class the record does not represent.** Two people leave the
+  same conversation. One holds the whole of what was settled; the other holds the
+  fragment that was salient to them; neither writes anything down, because the
+  second party has no system either. Weeks later the first refers to what was
+  agreed and the second has no access to it. **Nobody forgot. Nothing went
+  silent. No clock could have fired, because the divergence happened at encoding
+  and no future date was ever attached to it.** The outward result is the same as
+  a missed return — someone is hurt — and the return engine structurally cannot
+  reach it. The evidence is [`docs/nd-collisions.md`](docs/nd-collisions.md)
+  entry 32; what follows is what that entry settles and what it leaves to be
+  answered here. **Entry 33 is this same failure at organisational scale** — a
+  role changing hands with the whole of what was agreed in one head — and it
+  carries the one Strong remedy anybody has measured, which is a structured
+  verbal handover with a read-back and not a document.
+  - **IT HAS A FORMAL NAME AND IT IS NOT A QUIETKEEP GAP.** Repair in
+    conversation has a structural window, and past it intersubjectivity has no
+    further defense (Schegloff, 1992). Mutual belief is coordinated work rather
+    than transmission, so a mismatched reference point is an undetected grounding
+    failure (Clark & Brennan, 1991). So the question is not whether the app can
+    prevent the divergence — nothing can — but whether an artifact can extend the
+    repair window past the point talk itself stops defending it.
+  - **NOTHING CAN HELP AT THE TIME, WHICH IS WHY THIS IS NOT A PROMPT.** Neither
+    party can detect the mismatch while it is happening. Nothing here may live at
+    capture or in the moment, which is collision entry 17's rule about the wrong
+    moment to ask, arriving from a second direction.
+  - **THERE IS NO CANONICAL COPY ANYWHERE, and that is what puts this in scope.**
+    Both parties are carrying it in their heads and only one is carrying all of
+    it. There is no second copy to sync with, fetch or reconcile against, so
+    nothing here could ever want a channel, and the out-of-scope objection for a
+    local-first single-user planner cannot be raised.
+  - **NEAREST EXISTING CONSTRUCTS, AND WHY NONE IS THIS.** `suspense` is a date
+    owed outward. `promised-to` (2.20.0) is a standing claim about the reader.
+    `requested-by` is provenance — who asked. `mentioned` records that somebody
+    came up. All four record an obligation or a trace; none records that another
+    person is holding the rest of something. Entry 25 covers a promise that
+    evaporates; entry 29 covers the reader's miscalibration about their own
+    memory. Neither is one party holding the whole while the other holds a piece.
+  - **THE OBVIOUS SHAPE IS ALREADY FORBIDDEN, and that half is not open.** Entry
+    32 settles it: storing what the other person is taken to have agreed, and
+    reading it back, is a documented way of overwriting the reader's own memory,
+    and the app cannot tell an accurate second account from an inaccurate one. No
+    attributed transcript, no party field on `decision.logged`, no surface
+    showing two versions of anything.
+  - **WHAT IS ACTUALLY OPEN IS WHETHER A DIRECTORY EARNS ITS PLACE.** The only
+    shape that survives is a link recording that a named person holds the rest of
+    something — a seventh entry in `RELATIONS` (`src/people.ts`), the
+    cross-cutting link with a party attached that Q-13's precedent predicts,
+    carrying no text and nothing to compare. **It has no evidence for it.**
+    Nobody has studied a private directory of who-holds-what as a repair, and the
+    one directly relevant empirical result is a caution: imposing a memory
+    structure on a couple who already had one made them worse than strangers.
+    Whether that transfers to somebody recording their own observation is
+    unknown, and that is the question.
+  - **IT WOULD HAVE TO RECORD WHO HOLDS WHAT IN EITHER DIRECTION.** A noun that
+    only ever says *they have more of this than you* encodes a deficit into the
+    vocabulary, inside an environment where the attribution is already asymmetric
+    (entry 32's evidence). The motivating case is one-sided; the vocabulary must
+    not be. That is law 7 satisfied by the shape rather than by the copy.
+  - **LAW 1 IS SATISFIED STRUCTURALLY, not by exemption.** A relation is a link
+    on an existing node, so it is not a node, cannot be silent, and needs no law
+    6 demand-free carve-out. `person` is already demand-free. Open alongside it:
+    whether it needs a release path, since only `stakeholder.removed` and
+    `promise.released` subtract a person link.
+  - Status: **Open.**
 
 ### Closed
 
@@ -843,7 +930,196 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.17.1**. The total
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.6**. The app
+  says what it is aimed at, and states the rule that protects it.
+  **AUDIENCE AND TARGET ARE DIFFERENT THINGS AND BOTH ARE NOW SAID.** The
+  audience is neurodivergent people, first sentence, unchanged. The target is a
+  condition — low capacity, high demand, interruption, engagement that varies.
+  Naming the mechanism is what makes cognitive aids, structured handover,
+  high-reliability work and distributed cognition legitimately applicable; a
+  diagnosis alone reaches none of them.
+  **THE HAZARD IS THE REASON THE RULE EXISTS.** Once the frame reads as *people
+  under load*, ordinary productivity research becomes reachable — streaks,
+  ranking, nudges, completion metrics, all refused here. Somebody will arrive
+  holding a real finding for a thing this app may not do, and it will look like
+  diligence. So: a general-population finding may inform a design and may never
+  override a refusal. **A general-population result is averaged over people for
+  whom the failure is cheap**, and every refusal exists because of where it is
+  expensive. Stated in `CLAUDE.md`, in the thesis above, and on the Why page.
+  **DOCTRINE IS CREDITED AS AN INFLUENCE AND KEPT OUT OF THE WORDS.** It assumes
+  capable people under load and out of contact, so it externalises what is
+  expensive to hold — the same conclusion reached institutionally and decades
+  earlier. Influence on the thinking is not licence over the vocabulary; the
+  voice rule stands unchanged.
+- **Superseded, and kept for the record: 3.19.5.** The
+  curb-cut grade was too harsh and is corrected.
+  **THE FIRST GRADE CAME OFF ONE SEARCH.** Recorded as unsupported on a single
+  web query plus one Crossref query. Asked to check whether it holds, a second
+  search found the instance is well counted: roughly four in five caption users
+  have no hearing loss, with reasons that differ by age — noisy environments 40%
+  and multitasking 30% among younger viewers, accents 52% among older. Survey
+  and industry sources rather than peer-reviewed, consistent across several.
+  **THE SPLIT IS THE FINDING.** The instances are real; the RULE has a
+  denominator problem — the same few cases are cited every time and nobody
+  counts the accessibility features that never generalised, because no one has
+  reason to. Survivorship. So the instance may be stated and the rule may not.
+  **AND THE PROCESS POINT IS THE REASON THIS IS WRITTEN DOWN:** grading a claim
+  off one search is the same defect as trusting a citation without opening it,
+  and it went the other way — too harsh rather than too generous. Both are
+  wrong, and only one of them feels like rigour.
+- **Superseded, and kept for the record: 3.19.4.** The
+  *Why* page cites the outcome evidence for its own founding claim, and the
+  study that failed to reproduce it.
+  **THE PAIR IS THE FINDING.** Haynes et al. (2009, NEJM, PMID 19144931): a
+  nineteen-item surgical checklist across eight hospitals, death 1.5% → 0.8%
+  (P=0.003), complications 11.0% → 7.0% (P<0.001). Urbach et al. (2014, NEJM,
+  PMID 24620866): the same checklist MANDATED across 101 Ontario hospitals,
+  ~109k procedures against ~106k, mortality odds ratio 0.91 at **P=0.13** and
+  complications 0.97 — "not associated with significant reductions". Both read
+  from the primaries. The structure did not stop working between the two; one
+  was an intervention people were trained into and the other was a form they had
+  to file. **A structure does not do the work by existing**, and that is now a
+  stated prohibition: nothing here may assume that offering a shape produces the
+  outcome the shape was measured with.
+  **AND THE CURB-CUT EFFECT IS RECORDED AS UNSUPPORTED RATHER THAN USED.** It
+  was about to become this project's public framing. Its evidence is advocacy,
+  and the one scholarly result is an argument against the framing (Reid, 2024,
+  DOI 10.1525/9780520388550-009 — citation verified, argument not read). Graded
+  `community-construct` and kept out of the copy.
+- **Superseded, and kept for the record: 3.19.3.** The
+  coverage list is in return-date order.
+  **REPORTED, AND THE SHEET'S OWN TITLE WAS THE EVIDENCE.** `#sheet-coverage` is
+  headed *What comes back, and when*, and `buildCoverage` sorted by node id —
+  newest-written first, which is a fact about when a thing was CAPTURED and says
+  nothing about when it returns. Asked for as a way to see decision points that
+  have not yet arrived; it could not answer that in the order it was in.
+  **THE CLOCK CHOICE IS NAMED ONCE.** `rowClock` is now one helper feeding both
+  the sort and the rendered words. Two expressions would eventually disagree —
+  a row ordered by its `due` while its words came from its `suspense` is wrong in
+  the one way nobody would check. Same rule `src/today.ts` states about a second
+  definition of what matters today.
+  **UNDATED SORTS LAST**, not first: the Menu and anything simply held have no
+  return date to be early or late against, and leading with them would bury the
+  next thing due beneath a wish list.
+- **Superseded, and kept for the record: 3.19.2.** A fourth
+  prohibition on the *Why* page, and it binds the sympathetic direction.
+  **THE FINDING IS THE FAILURE MODE THE EPISTEMIC TAGS EXIST FOR.** "Information
+  degrades between neurotypes" is cited everywhere from an N = 72 diffusion-chain
+  study. A pre-registered replication across three sites at N = 311 found **no
+  difference** in transfer between single- and mixed-neurotype chains (Crompton
+  et al., 2025, *Nature Human Behaviour* 9(7), 1488–1500). **And the rapport half
+  did not survive in the form it is usually restated either** — the 2025 paper's
+  own words are that *non-autistic* chains indicated higher rapport, which is not
+  the claim that rapport is higher within same-neurotype pairs. Only the
+  disclosure effect holds as commonly stated. Nothing in this repo had ever cited
+  either paper, so this is additive rather than a retraction.
+  **THAT CORRECTION WAS FOUND BY VERIFYING, not by reading the summary.** The
+  research arrived stating the rapport finding was robust; the primary says
+  otherwise. Two other glosses in the same handover were also off, and one
+  omitted paper (Wegner, Erber & Raymond, 1991) carries the single most relevant
+  result in the set — imposing a memory structure on a couple who already had one
+  made them **worse than strangers**, which is a caution against the only feature
+  shape that survived. All of it is in `docs/nd-collisions.md` entry 32.
+- **Superseded, and kept for the record: 3.19.1.** A control
+  and its explanation are not one line.
+  **REPORTED FROM THE DEVICE, WITH A PICTURE.** On the situation sheet, `Not a
+  place` read as an ALERT rather than as a button, and the `Who is in it?` label
+  arrived as three one-word lines beside its own picker. One cause for both:
+  `.lens-row` is a flex row and was never told to wrap, so a label, its control
+  and its hint were fitted onto ONE line and the shortfall was shared out by
+  squeezing whichever gave way first. A two-word button became a two-line box,
+  which is the shape of a warning badge and not of a ghost button.
+  `#situation-who-row` is the worst case because `.situation-who` is
+  `width: 100%` inside it — the label and the hint were being shrunk against a
+  sibling asking for the whole line.
+  **THE HINT TAKES ITS OWN LINE rather than merely being allowed to wrap.**
+  Letting the row wrap where it likes leaves the control's width dependent on how
+  long the sentence beside it happens to be, which is the same defect again one
+  release along, the first time the copy changes.
+  **MEASURED AT 1024px, BEFORE AND AFTER:** the label was three lines and is one;
+  the button was two lines and is one, at its natural 127px.
+  **STILL OPEN, AND IT IS WHAT WAS ACTUALLY ASKED.** That sheet asks who TWICE.
+  `#with-who` is a single-valued `<select>`; `#situation-who` is a row of
+  `aria-pressed` toggles that takes as many as you like; they sit one directly
+  above the other and are filled from the same `allPeople`. The single-valued one
+  comes FIRST, so it teaches the reader that the answer is one person — which is
+  the reading that was reported. Neither of them can name somebody new. The
+  layout fix makes both easier to see and does not settle which should exist.
+- **Superseded, and kept for the record: 3.19.0.** A control
+  renders beside the thing it acts on.
+  **REPORTED FROM THE DEVICE, WITH A PICTURE, AND THE FILE HAD BEEN LYING ABOUT
+  IT FOR A YEAR.** `More room` opens the capture box. 2.9.0 took it out of the
+  sticky frame for a measured reason — two controls used at the start of a
+  sitting were costing 52px of a 345px frame — and the comment beside it says
+  they then sat "at the top of the runway … still the first thing under the box".
+  True when written. 3.0.0 put `#hub` in as the FIRST child of `<main>`, above
+  them, and the sentence became false the same day. Nothing re-checked it, so on
+  the landing screen the control sat past a rule, a heading and five doors, about
+  1,300px from the box it opens.
+  **THE GATE IS THE OTHER HALF OF ONE THAT ALREADY EXISTED.**
+  `narrows-check.mjs` asserts that a filter renders above what it filters. This
+  is the sibling relation — a control and its OBJECT rather than a filter and its
+  OUTPUT — and it broke in a way the first rule could not see.
+  **THE MEASURE IS A HEADING, not a distance and not a section.** A section is
+  the wrong test: `#update` is a hidden strip inside the frame and separates
+  nothing. A pixel count needs a browser and a viewport and would answer
+  differently on a phone and a tablet for a fault that is structural at every
+  width. A heading between a control and its object means the reader crossed into
+  other content to reach it, which is exactly what happened.
+  **WRITTEN RED FIRST.** The gate was added, `data-acts-on="#capture"` declared,
+  and it named the defect — one heading in between, "Where do you want to be?" —
+  before anything was moved. A gate written after the fix asserts nothing, and
+  this one exists precisely because a position was claimed and never checked.
+- **Superseded, and kept for the record: 3.18.1.** An
+  arrangement can say where it stands (ADR-0121), plus two things the walk found.
+  **THREE BUTTONS ANSWERED TO ONE NAME.** The situation's *Keep that* and both
+  new ones. The a11y walk reports a shared accessible name as a NOTE rather than
+  a failure — §4 is not gated — so this would have shipped, and a screen reader
+  offering one name for three controls is the defect the gate does catch when it
+  is a single character wearing an aria-label.
+  **AND THE TWO BOXES WERE PAINTED BY THE BROWSER.** The colour inventory refused
+  them: black on white, owned by no role. There are two established treatments
+  here and the choice between them is real — `#detail-situation` and
+  `#journal-text` are declared UA-owned on purpose, the app styling their box and
+  never their ink. These go the other way with `#detail-note`, because what is
+  typed in them is RENDERED BACK by the app on the arrangements list in its own
+  ink, and a box that looks like the platform whose contents come back looking
+  like the product is the inconsistency `.colour-ua-owned`'s own header warns of.
+  **AND THE SMOKE WALK FLAKED IN CI, ONCE, ON THIS EXACT COMMIT.** It crashed
+  after 26 seconds waiting 12s for `.card` after opening the held fold — and the
+  same SHA, re-run with nothing changed, passed that step in 4m13s. Recorded
+  rather than shrugged off, because a gate that fails at random is how a team
+  learns to ignore red, which is the argument this repo already makes about
+  `doctrine-sync` not being a CI gate. Nothing was changed to make it pass: the
+  first thing to do with an intermittent red is find out whether it is
+  intermittent, and re-running the identical commit is the cheapest way to ask.
+  If it happens again the wait is the suspect, not the app.
+- **Superseded, and kept for the record: 3.18.0.** An
+  arrangement can say where it stands (ADR-0121).
+  **THE APP HAD THE RIGHT NOUN ALREADY AND IT WAS ONE FIELD SHORT.** A previous
+  session reported that nothing here could hold a thing in the world with a state
+  of its own; that was wrong. `src/arrangement.ts` names exactly that class — the
+  thing supposed to run without you, whose failure mode is SILENCE. What it could
+  not do is say WHERE IT STANDS or WHAT WOULD CHANGE IT, because it is binary.
+  **THE SECOND FIELD IS THE ONE THAT EARNS THE BUILD.** A change in the world has
+  no cue to walk past, so the only route to it is monitoring, which is
+  attentionally demanding and rationed by context — and a condition that could
+  change on any day supplies no context to ration by, so it is paid continuously
+  or dropped (nd-collisions entry 30, read from the primary). Writing it down
+  offloads the WATCHING, which is a bigger saving than offloading a task.
+  **AND `arrangementCards` FINALLY HAS A CALLER.** It has been written, exported
+  and unit-tested since arrangements landed, with none anywhere in `src/ui/` — a
+  complete projection with nowhere to render, which is hub LESSONS 182's shape
+  and the same defect the two releases before this were spent fixing.
+  **THREE PLANTS, EACH ON ITS OWN ASSERTION:** reading a field's presence rather
+  than its value (a cleared field then renders a labelled row with nothing after
+  it), dropping the string check (a `false` from some other unmark prints as
+  text), and letting a written field enrol something as an arrangement (the list
+  fills with things nobody said run without them).
+- **Superseded, and kept for the record: 3.17.1.**
+- **PRODUCTION CARRIES 3.17.1**, promoted 2026-08-31 at `e4fba53`.
+- **https://staging.quietkeep.pages.dev** — **3.17.1**, and it is what production
+  carries. The total
   is the way to the rest (ADR-0120), and one defect the walk found because of it.
   **THE HUB COULD SIT ON TOP OF THE FOOTER, ON A WIDE SCREEN, AND HAD BEEN ABLE
   TO ALL ALONG.** At that breakpoint the hub is `position: absolute` — a pinned
@@ -2238,7 +2514,19 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.15.0** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.17.1** — promoted at
+  `e4fba53` on 2026-08-31, the merged tree asserted byte-identical to `27811c9`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. Three releases: a meeting became somewhere you can stand, review's
+  total became the way to the rest of what it found, and a hub that could sit on
+  top of the footer on a wide screen stopped being able to.
+  **IT IS THE FIRST PROMOTE IN A WHILE WHOSE SOURCE COMMIT HAD BOTH SPINE JOBS
+  GREEN.** `27811c9` is the first fully green run since `fa6d8ae`; the two before
+  it were red for reasons now recorded against 3.17.1 — a driver that had not yet
+  been debugged when its release was pushed, and a release pushed before its own
+  receipts existed. Both were deliberate: the container rolled back twice that
+  session, and pushing early is what saved the work.
+- **Superseded, and kept for the record: 3.15.0** — promoted at
   `2230a3a` on 2026-08-30, the merged tree asserted byte-identical to `43e1902`,
   the staging head that was walked. Three releases: where a thing can be done
   asked on the sorting card, a line that has gone quiet coming to you rather than

@@ -246,6 +246,13 @@ export const PLAIN_CHROME_HIDDEN = [
                       // that has been reduced to one thing is not a day for
                       // looking at what you are working toward — that is the
                       // altitude this mode exists to get somebody out of.
+  '#arrangements-open', // WHAT RUNS WITHOUT YOU (3.18.0), and it is the clearest
+                      // of the four. A list of things you are trusting to
+                      // continue is a list of things that are, by definition,
+                      // not asking anything of you today. On the worst day it is
+                      // an invitation to go and worry about whether they are
+                      // still true, which is precisely the checking this feature
+                      // exists to take off somebody.
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.
