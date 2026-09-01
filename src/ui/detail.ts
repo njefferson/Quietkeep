@@ -631,6 +631,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (words) bits.push(words);
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
     if (clock) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
+    // AN IDENTITY SAYS WHAT IT IS (3.20.4, device report: a role's sheet
+    // "looks like a task except for the little role label"). The kind word was
+    // already first; these add the sentence that stops the task-chrome around
+    // it reading as an error. A person's sheet already explains itself.
+    if (n.kind === 'role') bits.push('a part of your life that work can belong to');
+    if (n.kind === 'context') bits.push('a place where things can be done');
     STATE.textContent = bits.length ? bits.join(' · ') : 'held';
 
     // Seed the date box with the date it already has, so "Set" is an edit rather

@@ -253,7 +253,14 @@ const BUDGET = {
   // 3827 -> 3831 on 2026-09-01 (3.20.3). Four words: the i panel's own
   // "Elsewhere in the app" door, so the walkthrough's pointer stops
   // dead-ending — the cold read-back's finding, closed on the owner's ruling.
-  words: 3831,
+  // 3831 -> 3908 on 2026-09-01 (3.20.4). Seventy-seven words, all of them
+  // answers the device pass asked for in as many words: the Menu row finally
+  // says what the Menu is and what the kind-of-want choice does, the date
+  // group says a dated thing can reach your own calendar, and who-is-in-it
+  // names the gesture. Every one is a hint beside the control it explains —
+  // the accumulation rule (1.39.1) still holds because none of them is a
+  // control and none repeats a sentence said elsewhere on the sheet.
+  words: 3908,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

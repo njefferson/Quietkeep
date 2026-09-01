@@ -54,7 +54,7 @@ import { THEME_KEY, applyTheme, getTheme, setTheme } from '../theme.ts';
 import { PALETTE_KEY, applyPalette, getPalette, setPalette } from '../palette.ts';
 import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
-import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
+import { saveSituationEvents, forgetSituationEvents, releaseEvents, reclaimEvents } from './detail-intents.ts';
 import { paintHub, leave, watchJobs, enter as enterStance } from './hub.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
@@ -71,6 +71,13 @@ import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../m
 import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
 import { markSyncEdition } from './edition.ts';
 import { boundaryOf } from '../day.ts';
+
+/* "Not a place" is two presses with a sitting-long way back (3.20.4). Armed
+   by the first press, disarmed by choosing another place; after the put-down
+   the same button reclaims. Session memory only, like every reveal. */
+let notPlaceArmedId: string | null = null;
+let notPlaceUndoId: string | null = null;
+
 
 const now = () => Date.now();
 
@@ -326,20 +333,38 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     whereHint.hidden = !news;
     if (news) whereHint.textContent = 'Some of these may not be places. Pick one and you can say so.';
   }
+  // Two-press state for "Not a place", and the sitting's way back (3.20.4).
+  // Module lets, not dataset: the paint above and the handler far below are
+  // the only readers, and a reveal-style memory is exactly what this is.
   // The way to say one of them is not a place (2.34.0) — see the note on the
   // markup. Present only while one is chosen: there is nothing to say it about
-  // when the answer is "anywhere".
+  // when the answer is "anywhere". Since 3.20.4 it is TWO presses with the
+  // consequence on the button, and the row stays while a put-down place can
+  // still be brought back this sitting (device report: no confirmation, no
+  // visible undo — the write was always reversible and nothing said so).
   const notPlaceRow = document.querySelector<HTMLElement>('#where-notplace-row');
   if (notPlaceRow) {
-    notPlaceRow.hidden = whereNow === null || !places.some(c => c.id === whereNow);
+    notPlaceRow.hidden = (whereNow === null || !places.some(c => c.id === whereNow))
+      && notPlaceUndoId === null;
     // RENDERED, NOT IN THE MARKUP. The shell's word budget counts what is in
     // `index.html` whether it is showing or not, and this line is only ever
     // read by somebody who has already chosen a place. Same trade the places
     // readout makes: the heading earns its place in the shell, the sentence
     // under it does not.
+    const notPlaceBtn = document.querySelector<HTMLButtonElement>('#where-notplace');
     const notPlaceHint = document.querySelector<HTMLElement>('#where-notplace-hint');
+    if (notPlaceArmedId !== null && notPlaceArmedId !== whereNow) notPlaceArmedId = null;
+    if (notPlaceBtn && !notPlaceRow.hidden) {
+      notPlaceBtn.textContent = notPlaceUndoId !== null ? 'Bring it back'
+        : notPlaceArmedId === whereNow ? 'Press again to put it down'
+        : 'Not a place';
+    }
     if (notPlaceHint && !notPlaceRow.hidden) {
-      notPlaceHint.textContent = 'It stops being offered here, and stops hiding things that carry it.';
+      notPlaceHint.textContent = notPlaceUndoId !== null
+        ? 'It stopped being offered. Nothing was deleted, and everything that carried it still does.'
+        : notPlaceArmedId === whereNow
+          ? 'It stops being offered and stops narrowing. Press once more to say so.'
+          : 'It stops being offered here, and stops hiding things that carry it.';
     }
   }
   // If the chosen place was trashed, the filter stands down rather than
@@ -2238,10 +2263,29 @@ export async function main(edition?: Edition): Promise<void> {
   });
 
   document.querySelector<HTMLButtonElement>('#where-notplace')?.addEventListener('click', () => {
+    // The sitting's way back first: after a put-down, the same button brings
+    // the place straight back (node.reclaimed — the write was always the
+    // reversible pair, and now the surface says so).
+    if (notPlaceUndoId !== null) {
+      const back = notPlaceUndoId;
+      notPlaceUndoId = null;
+      void session.commit(ctx => reclaimEvents(ctx, back))
+        .then(() => { setSituation(back, howLongNow); })
+        .catch(() => { /* the readout repaints from state either way */ });
+      return;
+    }
     const id = whereNow;
     if (id === null) return;
+    if (notPlaceArmedId !== id) {
+      // First press arms; the button and the hint carry the consequence, and
+      // choosing a different place disarms (the paint checks).
+      notPlaceArmedId = id;
+      setSituation(id, howLongNow);
+      return;
+    }
+    notPlaceArmedId = null;
     void session.commit(ctx => releaseEvents(ctx, id))
-      .then(() => { setSituation(null, howLongNow); })
+      .then(() => { notPlaceUndoId = id; setSituation(null, howLongNow); })
       .catch(() => { /* the readout repaints from state either way */ });
   });
 

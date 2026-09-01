@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.20.4',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**Nine small truths from one pass of real use.** Typing boxes wear a calmer keyboard ring — the old one sat on the box’s own border as a heavy doubled frame, photographed and fixed. *Who is in it?* says the gesture: tap a name to put them in the room, tap again to take them out — and a pressed name now looks pressed. The Menu row explains itself: the shelf of things you want rather than owe, with the choice beside it saying which kind of want. *Who is this for?* is now *What part of your life is this for?*, which is what it always meant.',
+      '**“Not a place” takes two presses, says what it does, and can be undone.** The first press says what will happen, the second does it — and nothing was ever deleted: everything that carried the place still does, the record keeps it, and *Bring it back* stands right there for the rest of the sitting.',
+      '**Where a thing can be done is one press from the thing.** The places box moved out from behind *More about this* — places feed the situation, the room and who-is-here now, and the most-used fact should not sit a press deeper than the rest. And a role’s own page says what a role is, instead of wearing task furniture with a one-word label.',
+      '**The room is room-sized, and a date says where it can reach.** *In the room* takes the width your screen has instead of a reading column. The date box now says a dated thing can reach your own calendar — *Send to my calendar*, under *Things you can do*.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.20.3',
     kind: 'ITERATION',
     date: '2026-09-01',

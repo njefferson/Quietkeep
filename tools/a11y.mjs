@@ -3366,7 +3366,15 @@ try {
     // nothing about whether it can be made.
     await page.click('#cards .card-open');
     await page.waitForSelector('#detail[open]');
-    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    // ONE PRESS FROM THE ITEM (3.20.4): the places group moved out of the More
+    // fold — the device pass asked in as many words why the most-used fact sat
+    // a press deeper than the rest. Asserted BEFORE the fold is opened, so a
+    // regression back behind it cannot pass.
+    (await page.evaluate(() => {
+      const more = document.querySelector('#detail-more');
+      const ctx = document.querySelector('#detail-context');
+      return more?.getAttribute('aria-expanded') !== 'true' && !!ctx && ctx.offsetParent !== null;
+    }) ? pass : fail)(`${theme}/places on the sheet: reachable without opening the fold`);
     await page.fill('#detail-context', 'At home');
     await page.click('#detail-context-set');
     await page.waitForSelector('#detail-context-list li');
@@ -3429,6 +3437,33 @@ try {
     await auditNames(page, 'where you are', theme);
     await auditSeparationAndTargets(page, 'where you are', theme);
     await auditFocusRings(page, 'where you are', theme, ['#where']);
+
+    // NOT A PLACE IS TWO PRESSES WITH A WAY BACK (3.20.4, device report: no
+    // confirmation, no visible undo — the write was always the reversible
+    // put-down and nothing said so). Driven end to end: arm, read the
+    // consequence, do it, bring it back, and see the place stand again.
+    {
+      const npBtn = page.locator('#where-notplace');
+      (/^Not a place$/.test((await npBtn.textContent())?.trim() ?? '') ? pass : fail)(
+        `${theme}/not a place: the resting words are the resting words`);
+      await npBtn.click();
+      await page.waitForTimeout(150);
+      (/Press again/.test((await npBtn.textContent()) ?? '') ? pass : fail)(
+        `${theme}/not a place: the first press arms and says the consequence`);
+      (/stops being offered/.test(await page.locator('#where-notplace-hint').textContent() ?? '') ? pass : fail)(
+        `${theme}/not a place: and the hint carries what happens`);
+      await npBtn.click();
+      await page.waitForFunction(() => /Bring it back/.test(
+        document.querySelector('#where-notplace')?.textContent ?? ''));
+      (/Nothing was deleted/.test(await page.locator('#where-notplace-hint').textContent() ?? '') ? pass : fail)(
+        `${theme}/not a place: the after-words say nothing was deleted`);
+      await npBtn.click();
+      await page.waitForFunction(() => {
+        const sel = document.querySelector('#where');
+        return sel && [...sel.options].some(o => o.textContent === 'At home') && sel.value !== '';
+      });
+      pass(`${theme}/not a place: brought back, and standing as where you are again`);
+    }
 
     // HOW LONG YOU HAVE (2.19.0, the plan's phase 3). The other half of the
     // situation, driven the same way — chosen on the work surface, with the
@@ -4342,6 +4377,10 @@ try {
     // a surface reachable only by a walk that knows its id is a surface a
     // reader does not have.
     await page.waitForSelector('#situation-who-row:not([hidden])');
+    // THE GESTURE IS NAMED (3.20.4, device report: the toggles read as
+    // "selected and waiting to be added").
+    (/Tap a name/.test(await page.locator('#situation-who-hint').textContent() ?? '') ? pass : fail)(
+      `${theme}/who is in it: the hint says tap to add, tap to take out`);
     const whoBtn = page.locator('#situation-who .situation-who-one', { hasText: 'Rowan' });
     (await whoBtn.getAttribute('aria-pressed') === 'false' ? pass : fail)(
       `${theme}/who is in it: it starts off, because the filter above was cleared`);

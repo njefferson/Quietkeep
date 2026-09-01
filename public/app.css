@@ -459,6 +459,18 @@ body {
   outline-offset: 2px;
   border-radius: 4px;
 }
+/* FORM FIELDS WEAR A CALMER RING WITH REAL AIR (3.20.4, device photo: the
+   3px-at-2px ring stacked on a field's own border read as one heavy doubled
+   frame, colliding at the corners). 2px at 3px offset is the sheet-title
+   treatment — visibly separate from the border, same accent, and the audit
+   floor (>=2px, >=3:1) still holds. The radius override is dropped for
+   fields so the ring follows the field's own corners instead of fighting
+   them. */
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline-width: 2px;
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
 
 /* ONE ROW ON A PHONE (2.9.0, ADR-0100), because every pixel here is spent at
    every scroll position now rather than only at the top. Measured at 390px: the
@@ -1086,11 +1098,18 @@ button.ghost,
 /* What kind of thing the row is (3.6.0) — the tree was the one container-listing
    surface that drew every row as a bare title. `--ink-soft` on `--surface` is a
    pair the contrast gate already carries, so this adds a word and not a colour. */
+/* SAID AS A CHIP, NOT A STRAY WORD (3.20.4, device report: a role row "looks
+   like a task except for the little role label" — the label was bare small
+   text, which reads as debris). A bordered chip in the quiet pair the row
+   already uses says the word is deliberate. */
 .tree-kind {
-  display: block;
+  display: inline-block;
   margin-top: 0.1rem;
+  padding: 0 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
   color: var(--ink-soft);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
 }
 .tree-more {
   min-height: var(--target);
@@ -3583,9 +3602,16 @@ body[data-plain="1"] #held
    version of this invented `var(--chosen, var(--surface-2, var(--surface)))` and
    not one of those three tokens is defined anywhere in this stylesheet, so it
    would have drawn nothing at all while reading as deliberate. */
+/* PRESSED READS AS IN THE ROOM (3.20.4, device report: the ring read as
+   "selected and waiting to be added"). The outline stays, and the border
+   itself turns ink and the words gain weight — three signals, no new colour
+   pair (ink on bg is the text's own). The hint under the group now names the
+   gesture. */
 .situation-who-one[aria-pressed="true"] {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
+  border-color: var(--ink);
+  font-weight: 600;
 }
 /* THE ROOM DOOR TAKES ITS OWN LINE. `flex-basis: 100%` after a wrap rather than
    a fourth box in the row: three controls across already sit at the 44px floor
@@ -3595,6 +3621,13 @@ body[data-plain="1"] #held
 /* Things in the room stack under the person they are with, full width, so a
    long title never squeezes the name or the count into a column of one word. */
 .meeting-thing { flex: 1 0 100%; text-align: left; margin-top: 0.15rem; }
+/* THE ROOM IS ROOM-SIZED (3.20.4, device report: "too small for my meeting").
+   Every other sheet is a reading column; this one is a working surface stood
+   in for an hour, so it takes what the viewport has. Presentation only. */
+#sheet-meeting {
+  width: min(58rem, calc(100vw - 1rem));
+  max-height: calc(100dvh - 1rem);
+}
 
 /* WHERE IT STANDS AND WHAT WOULD CHANGE IT, on an arrangement row (3.18.0).
    `--ink-soft` on the surface is the pair `.roles-held` and `.hub-count`

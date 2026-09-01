@@ -973,7 +973,19 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.3**. The cold
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.4**. Nine of
+  the twelve-finding device pass, the small-truths half: form fields wear a
+  calmer ring (the photographed border collision), who-is-in-it names the
+  gesture and a pressed name looks pressed, the Menu row and the date group
+  explain themselves, the role label says what it meant, identity sheets say
+  what they are and the tree's kind word is a chip, *Not a place* is two
+  presses with *Bring it back* standing for the sitting (the write was always
+  the reversible put-down — now the surface says so), the places group sits
+  above the fold (1.39.1's note amended in place), and the room is room-sized.
+  The walk asserts the two-press flow end to end, the gesture words, and
+  places-without-the-fold. The capability half — the meeting by thing,
+  place-aware people, a situation door on the hub — is next as 3.21.0.
+- **Superseded: 3.20.3.** The cold
   read-back's remaining two findings, closed on the owner's ruling that routing
   them upward was fake carefulness: the walkthrough names both doors truthfully
   and the ⓘ panel carries an *Elsewhere in the app* door of its own
