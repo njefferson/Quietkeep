@@ -696,6 +696,14 @@ export const releasePromiseEvents = (
   ctx: StampContext, node: string, person: string,
 ): AppEvent[] => [base(ctx, 'promise.released', node, { person })];
 
+/** Take a directory pointer back (3.20.0, ADR-0122). Scoped one person, one
+ *  relation — and the relation may only be one of the holding pair, which the
+ *  fold enforces as a no-op for anything else rather than guessing. */
+export const releaseHoldingEvents = (
+  ctx: StampContext, node: string, person: string,
+  relation: 'rest-with-them' | 'rest-with-me',
+): AppEvent[] => [base(ctx, 'holding.released', node, { person, relation })];
+
 /**
  * Log what was decided (1.9.0, ADR-0057).
  *

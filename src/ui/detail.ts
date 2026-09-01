@@ -67,7 +67,7 @@ import { decisionsFor, foldedIntoDeep } from '../merged.ts';
 import { carryEvents, declineEvents, parkToSlotEvents } from './request-intents.ts';
 import { nextSlotOccurrence, slotDayWords, slotOf, standingDecline } from '../requests.ts';
 import { personView, stakeholdersOf, type PersonLine } from '../people.ts';
-import { logDecisionEvents, removeStakeholderEvents, releasePromiseEvents } from './detail-intents.ts';
+import { logDecisionEvents, removeStakeholderEvents, releasePromiseEvents, releaseHoldingEvents } from './detail-intents.ts';
 import { rangeWords, timedRange } from '../duration.ts';
 import { boundaryOf } from '../day.ts';
 
@@ -78,6 +78,11 @@ const RELATION_WORDS: Record<string, string> = {
   'promised-to': 'I said I would',
   'requested-by': 'they asked for it',
   'opr': 'they are running it',
+  // The directory, in both directions (3.20.0, ADR-0122): where the rest of a
+  // thing sits, stated as a fact about the thing and never as a deficit of
+  // anybody. No surface may ever put an age beside either.
+  'rest-with-them': 'they hold the rest of this',
+  'rest-with-me': 'I hold the rest of this',
   'stakeholder': 'they care about it',
   'mentioned': 'they came up',
 };
@@ -824,6 +829,23 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
           off.addEventListener('click', () => {
             void run(ctx => releasePromiseEvents(ctx, n.id, l.person),
               'No longer promised. The work is still here.');
+          });
+          li.append(off);
+        }
+        // AND SO CAN A DIRECTORY POINTER (3.20.0, ADR-0122), for the same
+        // reason turned outward: where the rest of a thing sits is a fact that
+        // moves — they wrote it down, it was handed over, it settled — and a
+        // pointer nobody could correct would go on asserting it after it
+        // stopped being true. The release takes the POINTER, never the work.
+        if (l.relation === 'rest-with-them' || l.relation === 'rest-with-me') {
+          const rel = l.relation;
+          const off = document.createElement('button');
+          off.type = 'button';
+          off.className = 'ghost';
+          off.textContent = rel === 'rest-with-them' ? 'No longer holds the rest' : 'I no longer hold the rest';
+          off.addEventListener('click', () => {
+            void run(ctx => releaseHoldingEvents(ctx, n.id, l.person, rel),
+              'That note is off. The work is still here.');
           });
           li.append(off);
         }

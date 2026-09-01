@@ -1025,41 +1025,53 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   // The failure state is loud, because a guarantee with an exception does not
   // degrade gracefully — it collapses. So a non-zero `silent` says so first, in
   // words, and the total is genuinely the information in that one case.
-  $('#gauge').textContent =
-    total === 0
-      ? 'nothing held yet'
-      : silent > 0
-        ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet · what comes back, and when`
-        // "0 ready now" IS THE ONLY PART THAT CHANGED (3.9.1). Walked as a
-        // reader: eight things put down, and the page answered "nothing here has
-        // gone quiet · 0 ready now", which reads as nothing having happened at
-        // the exact moment somebody is checking whether the app took their work.
-        //
-        // The guarantee clause is NOT touched — ADR-0100 calls it the standing
-        // proof that nothing was lost, the flowcharts cite it and the smoke walk
-        // parses it. What was wrong is a zero standing where a number explains
-        // the app icon's badge: with nothing ready there is no badge to explain,
-        // so it says so in words, and "yet" is the part a first day needs.
-        // AND IT SAYS WHERE IT GOES (3.9.2). The last clause was "see each" —
-        // three vague words at the end of a run-on line, on the one control that
-        // answers "can I stop holding this myself". Behind it is a sheet titled
-        // "What comes back, and when", listing every item and its return date,
-        // one tap from the landing surface. Reported as a missing feature: the
-        // whole list, so the offer can be trusted. It was never missing. The
-        // door did not name its destination, which on this app's own rule — a
-        // door says what it holds — makes it a door nobody opens.
-        //
-        // IT SAYS THE DESTINATION'S OWN WORDS, and that is the whole of the fix.
-        // The first draft read "see every one, and when it comes back" — true,
-        // and six words describing a heading that already exists. The sheet is
-        // titled "What comes back, and when", so the door says that, and what a
-        // reader lands on is the sentence they pressed. Same pattern as
-        // `#tree-open`, which says "Your projects, areas and goals".
-        //
-        // BOTH BRANCHES SAY IT. The loud state said "see each" too, and it is
-        // the same door to the same sheet — a control whose label changes with
-        // the state behind it teaches nobody where it goes.
-        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`} · what comes back, and when`;
+  // "0 ready now" WAS THE FIRST PART TO CHANGE (3.9.1). Walked as a reader:
+  // eight things put down, and the page answered "nothing here has gone quiet ·
+  // 0 ready now", which reads as nothing having happened at the exact moment
+  // somebody is checking whether the app took their work.
+  //
+  // The guarantee clause is NOT touched — ADR-0100 calls it the standing
+  // proof that nothing was lost, the flowcharts cite it and the smoke walk
+  // parses it. What was wrong is a zero standing where a number explains
+  // the app icon's badge: with nothing ready there is no badge to explain,
+  // so it says so in words, and "yet" is the part a first day needs.
+  //
+  // AND IT SAYS WHERE IT GOES (3.9.2). The last clause was "see each" —
+  // three vague words at the end of a run-on line, on the one control that
+  // answers "can I stop holding this myself". Behind it is a sheet titled
+  // "What comes back, and when", one tap from the landing surface. The door
+  // says the destination's own words — a reader lands on the sentence they
+  // pressed, `#tree-open`'s pattern — and BOTH branches say it, because a
+  // control whose label changes with the state behind it teaches nobody
+  // where it goes.
+  //
+  // THE FACT AND THE DOOR ARE TOLD APART NOW (3.20.1, device report). As one
+  // run-on line the destination read as a typo on the end of a statement, and
+  // nothing about the row said button: three fragments, two registers, wrapping
+  // mid-phrase on a phone. Still ONE control — the whole row is the target, and
+  // halving a 44px target to make a point the colour makes would be a worse
+  // trade — but the facts sit on their own line in quiet ink and the door sits
+  // under them in the accent the app's other doors wear, with its capital
+  // letter, exactly as the sheet spells it.
+  {
+    const gauge = $('#gauge');
+    if (total === 0) {
+      gauge.textContent = 'nothing held yet';
+    } else {
+      const fact = document.createElement('span');
+      fact.className = 'gauge-fact';
+      fact.textContent = silent > 0
+        ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet`
+        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`}`;
+      const door = document.createElement('span');
+      door.className = 'gauge-door';
+      door.textContent = 'What comes back, and when';
+      // A real space between the two, so `textContent` — which is what the
+      // smoke walk parses and what a name computation falls back on — keeps a
+      // word boundary where the eye sees a line break.
+      gauge.replaceChildren(fact, ' ', door);
+    }
+  }
 
   // T0's badge (ADR-0007): how many things are actually asking, on the app icon,
   // so a glance at the home screen is informative without opening anything.

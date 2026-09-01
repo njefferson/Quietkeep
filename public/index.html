@@ -1857,6 +1857,14 @@
         <option value="promised-to">I said I would</option>
         <option value="requested-by">they asked for it</option>
         <option value="opr">they are running it</option>
+        <!-- THE DIRECTORY, BOTH DIRECTIONS (3.20.0, ADR-0122, Q-15). Two people
+             leave one conversation holding different amounts of it; this is the
+             pointer saying where the rest sits. A pair on purpose: a relation
+             that could only say the other person holds more would encode a
+             deficit. It carries no text and no age — what was agreed goes under
+             "What was decided", unattributed, and only the pointer lives here. -->
+        <option value="rest-with-them">they hold the rest of this</option>
+        <option value="rest-with-me">I hold the rest of this</option>
         <option value="stakeholder">they care about it</option>
         <option value="mentioned">they came up</option>
       </select>

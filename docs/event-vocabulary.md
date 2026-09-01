@@ -729,7 +729,13 @@ agreed to survives a copy change (law 10).
   - Payload: `name` — vault-scoped
   - Silent risk: no
 - **`person.linked`**
-  - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned | promised-to`
+  - Payload: `node, person, relation: opr | stakeholder | waiting-on | requested-by | mentioned | promised-to | rest-with-them | rest-with-me`
+  - The last two (3.20.0, ADR-0122) are the DIRECTORY — a pointer that a named
+    person holds the rest of something, or that the reader does. A pair rather
+    than one noun because a relation that could only say *they hold more than
+    you* would encode a deficit into the vocabulary; the pointer carries no
+    text, no version and no age, which is the whole reason it survives the
+    research catalogue's entry 32.
 - **`promise.released`**
   - Payload: `person`
   - Silent risk: no — a person link carries no coverage, so taking one off
@@ -743,6 +749,21 @@ agreed to survives a copy change (law 10).
     claim that you owe somebody something, which is the ledger `src/requests.ts`
     says this app exists not to keep.
   - Silent risk: no
+- **`holding.released`** (3.20.0, ADR-0122)
+  - Payload: `person, relation: rest-with-them | rest-with-me`
+  - Silent risk: no — a person link carries no coverage, so taking one off
+    removes none.
+  - **The third subtraction**, scoped like the other two: one person, one
+    relation. The relation rides in the payload rather than in the noun — the
+    holding axis has two directions and one act of release, and two nouns would
+    be two spellings of one act. The payload may name ONLY those two: any other
+    relation is the false sentence the `stakeholder.removed{relation}` shortcut
+    was refused over, and the fold treats it as a no-op, never a remove-all.
+  - Load-bearing for `promise.released`'s reason, pointed at somebody else: a
+    directory pointer nobody can take back goes on asserting who holds the rest
+    of a thing after it has stopped being true, and a directory that cannot be
+    corrected is worse than no directory. Q-15's reversibility condition,
+    discharged.
 - **`context.created`** (emitter 2.2.0, ADR-0092)
   - Payload: `name` — vault-scoped
   - Silent risk: no

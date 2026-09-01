@@ -472,9 +472,30 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Nothing outstanding right now** — and the line is here rather than an empty
-gap, because a section that has been emptied and a section nobody has written in
-look identical.
+**One outstanding**, and the way it was found is the argument for this section
+existing at all.
+
+- **The situation sheet asks who TWICE, and nothing there can name somebody
+  new.** `#with-who` is a single-valued `<select>` labelled *Who is here*;
+  `#situation-who` is a row of `aria-pressed` toggles labelled *Who is in it?*
+  that takes as many as you like. They sit one directly above the other and are
+  filled from the same `allPeople`. The single-valued one comes FIRST, so it
+  teaches the reader the answer is one person — which is exactly how it was
+  reported. Neither control can add a person who is not already named; people
+  are named on a thing, not here. Reported from the device 2026-08-31, measured,
+  and deliberately not fixed in 3.19.1 because the fix is a product decision
+  about which control should exist rather than a defect with one right answer.
+  **CARRIED IN SIX CONSECUTIVE RELEASES' PATCH NOTES AND ABSENT FROM HERE UNTIL
+  2026-09-01.** 3.19.1 through 3.19.6 each ended with a *still to sort* naming
+  it, which is the right thing to tell a reader and the wrong place to keep a
+  defect — the header above says so in its own words: a release's *what is still
+  not right* "rotates out of view the moment the next release is cut". Six
+  releases is how long that took to demonstrate. Meanwhile this section read
+  *nothing outstanding*, which was a false receipt of exactly the kind every
+  other list here has a gate against.
+
+The line about an empty section is kept below, because a section that has been
+emptied and a section nobody has written in look identical.
 
 Struck 2026-08-25, in 3.4.1: *the focus ring on the capture box is clipped, on
 every side, by 5px*. It was not only that box. Three scrolling containers cut
@@ -490,13 +511,14 @@ decided by a session.**
 
 ### Open
 
-**One is open — Q-15, below.** The other fourteen are closed and filed under the
-next heading. This paragraph states the count rather than leaving it to be
+**None are open.** All fifteen are closed and filed under the next heading. This paragraph states the count rather than leaving it to be
 inferred from the list, because a heading reading *Open* over three closed
 questions is the same false receipt the Status lines were added to fix, one level
 up. `tools/questions.mjs` refuses a closed question filed under this heading, so
 those two cannot drift again — **but it does not read this paragraph**, so the
 count here is maintained by hand and nothing would catch it going stale.
+
+### Closed
 
 - **Q-15 · Can the record carry who is holding the rest of something?** Asked
   2026-08-31, recorded rather than decided. **The thesis and laws 1–2 answer one
@@ -564,10 +586,8 @@ count here is maintained by hand and nothing would catch it going stale.
     6 demand-free carve-out. `person` is already demand-free. Open alongside it:
     whether it needs a release path, since only `stakeholder.removed` and
     `promise.released` subtract a person link.
-  - Status: **Open.**
-
-### Closed
-
+  - **BUILT 2026-09-01 as 3.20.0 ([ADR-0122](docs/adr/0122-who-holds-the-rest.md)), the same day the owner answered.** The answer was the direction of the build: a PAIR of relations rather than one — `rest-with-them` (*they hold the rest of this*) and `rest-with-me` (*I hold the rest of this*) — because this question's own either-direction bullet rules a one-way noun out. The release-path sub-question closed with it: `holding.released`, the third subtraction, scoped one person and one relation, because a directory that cannot be corrected goes on asserting who holds what after it has stopped being true. The import carries the pointer in (`@holds(Name)`), beside the two existing directions (`@owes`, with the sheet's own waiting window; `@promised`), through the same write path as a keystroke, deduped against the store the way the sheet dedupes. Entry 32's SINCE WRITTEN records the build and restates every refusal untouched.
+  - Status: **Closed.** Answered 2026-09-01 by the owner directing the build; shipped the same day as 3.20.0. What stays is not a question but the named WATCH: nobody has measured a private directory of who-holds-what as a repair, the one adjacent result is a caution about imposing structure on a system that already works, and the on-device pass is where this one gets watched — one relation pair and one noun, removable whole.
 - **Q-13 · Roles are IDENTITIES that cross multiple areas — how are they
   modelled?** Settled 2026-08-04, answering the roles-vs-areas question
   directly: **a role is an identity, and it crosses multiple areas.** That settles
@@ -927,10 +947,40 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
+- **PRODUCTION CARRIES 3.19.6**, promoted 2026-09-01 at `3d187d9`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.6**. The app
+  **THIS LINE SAID 3.15.0 UNTIL NOW, THROUGH TWO PROMOTES, AND EVERY GATE WAS
+  GREEN.** `branch-state-check.mjs` reads the bullet whose text starts with the
+  bare URL; this one starts with prose, so it is outside what the gate can see
+  and drifted silently while the line eleven hundred lines below it stayed
+  right. Same shape as the `### Open` preamble that `questions.mjs` does not
+  read. **A second statement of a fact a gate already guards is a second thing
+  to maintain by hand, and it will lose.**
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.1**. Two
+  defects from the first minutes of the on-device pass, fixed the same morning:
+  the gauge's run-on line is a fact line and a door line now (the door in the
+  accent, saying the sheet's own words, arrow after), and the heading a sheet
+  hands focus to draws the app's own ring instead of the engine's default —
+  which Chromium never drew at all, so no walk could have measured what the
+  device was showing. The walk asserts the title ring on open now: focused, the
+  app's own, and unclipped. Shell word budget raised 3815 → 3827, deliberately,
+  for the two directory options that ARE the 3.20.0 release.
+- **Superseded, and kept for the record: 3.20.0.** The record
+  can carry who holds the rest of something, and the import can carry people.
+  **Q-15 CLOSED BY THE OWNER, BUILT THE SAME DAY (ADR-0122).** Two relations —
+  *they hold the rest of this*, *I hold the rest of this* — a pair because a
+  one-way noun would encode a deficit into the vocabulary; a scoped take-back,
+  `holding.released`, because a directory that cannot be corrected keeps
+  asserting what has stopped being true; and three import tags, one per
+  direction — `@owes` (opening the sheet's own waiting window), `@promised`,
+  `@holds` — consumed before the place logic so none of them mints a place, and
+  deduped against the store the way the sheet dedupes. No new surface anywhere:
+  the pointer renders through the item's sheet, the person's own page,
+  who-is-here and the meeting room, and `involves` hard-codes `days: null` so
+  no surface can age it. Entry 32's refusals all stand; its Wegner caution is
+  the named watch for the on-device pass.
+- **Superseded, and kept for the record: 3.19.6.** The app
   says what it is aimed at, and states the rule that protects it.
   **AUDIENCE AND TARGET ARE DIFFERENT THINGS AND BOTH ARE NOW SAID.** The
   audience is neurodivergent people, first sentence, unchanged. The target is a
@@ -2514,12 +2564,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.17.1** — promoted at
-  `e4fba53` on 2026-08-31, the merged tree asserted byte-identical to `27811c9`,
+- **https://quietkeep.pages.dev** — production, **3.19.6** — promoted at
+  `3d187d9` on 2026-09-01, the merged tree asserted byte-identical to `220823e`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
-  as empty. Three releases: a meeting became somewhere you can stand, review's
-  total became the way to the rest of what it found, and a hub that could sit on
-  top of the footer on a wide screen stopped being able to.
+  as empty. **Verified live by CONTENT and not by version**: the cache name says
+  3.19.6 and the deployed `app.js` contains the string, which is the check a
+  hand-edited `sw.js` can pass while the bundle behind it is stale. Nine
+  releases: an arrangement can say where it stands and what would change it, a
+  control renders beside the thing it acts on with a gate to hold it there, the
+  coverage list is in return-date order, the *Why* page cites the outcome
+  evidence for its own founding claim together with the study that failed to
+  reproduce it, and the app now says what it is aimed at and states the rule
+  that stops general-population research overriding a refusal.
+  **Nine, and only two are capabilities.** Six of the rest came from something
+  reported off a device or found by a gate; one came from being asked whether a
+  claim actually held and finding the earlier grade too harsh.
   **IT IS THE FIRST PROMOTE IN A WHILE WHOSE SOURCE COMMIT HAD BOTH SPINE JOBS
   GREEN.** `27811c9` is the first fully green run since `fa6d8ae`; the two before
   it were red for reasons now recorded against 3.17.1 — a driver that had not yet

@@ -244,7 +244,13 @@ const BUDGET = {
   // will otherwise assume the app is now watching, and finding out by waiting is
   // the expensive way. The rows in the list come from the store, so an
   // arrangement with a paragraph in it adds nothing to this file.
-  words: 3815,
+  // 3815 -> 3827 on 2026-09-01 (3.20.0). Twelve words, and they are the
+  // release: the two directory options on the person picker — "they hold the
+  // rest of this" and "I hold the rest of this" (ADR-0122). The relation words
+  // ARE the feature; there is no shorter honest spelling of either direction
+  // that keeps the pair symmetric, and the import summary's sentences are
+  // rendered from the store side so they cost the shell nothing.
+  words: 3827,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

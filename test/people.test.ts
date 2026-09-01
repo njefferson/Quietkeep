@@ -15,11 +15,11 @@ import {
   people, personView, waitingOnAnyone, withWhom, openDays, waitingWords,
   peopleWords, isOpenWaiting, personName,
   promisedToAnyone, promisedWords, promisedRowWords,
-  fitsWith, withWords, allPeople,
+  fitsWith, withWords, allPeople, RELATIONS,
 } from '../src/people.ts';
 import { silentNodes } from '../src/gate.ts';
 import {
-  linkPersonEvents, closeWaitingEvents, releasePromiseEvents,
+  linkPersonEvents, closeWaitingEvents, releasePromiseEvents, releaseHoldingEvents,
 } from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
 import { atMidnight } from '../src/time.ts';
@@ -426,4 +426,58 @@ test('the standing line states the scope and never a count of what is hidden', (
   assert.match(w, /still held and still comes back/);
   assert.ok(!/\d+ hidden|\d+ others|hiding/.test(w),
     'an aggregate about work you are deliberately not looking at only ever rises');
+});
+
+// --- who holds the rest (Q-15 / ADR-0122) -----------------------------------
+//
+// The directory relation, in both directions, because a noun that only ever
+// says "they have more of this than you" would encode a deficit into the
+// vocabulary (Q-15's own bullet). A pointer carries no text, no version and no
+// age — there is nothing to compare, which is the whole reason it survives
+// entry 32's prohibitions.
+
+test('the vocabulary holds both directions of holding', () => {
+  assert.ok(RELATIONS.includes('rest-with-them' as (typeof RELATIONS)[number]));
+  assert.ok(RELATIONS.includes('rest-with-me' as (typeof RELATIONS)[number]));
+});
+
+test('a holding pointer never ages, in either direction', () => {
+  const s0 = st(mk('A', 'action', 'the venue contract'), clocked('A'),
+    mk('B', 'action', 'the seating list'), clocked('B'));
+  const s = apply(s0, [
+    ...linkPersonEvents(ctxAt(AGO(40)), 'A', 'p1', 'rest-with-them', { createNamed: 'Sam' }),
+    ...linkPersonEvents(ctxAt(AGO(40)), 'B', 'p1', 'rest-with-me'),
+  ]);
+  const view = personView(s, 'p1', NOW, TZ)!;
+  assert.equal(view.involves.length, 2, 'both directions are on their page');
+  for (const line of view.involves) {
+    assert.equal(line.days, null, 'forty days on, there is still no number');
+  }
+});
+
+test('a holding can be taken back, exactly as scoped', () => {
+  // `promise.released`'s discipline: one person, one relation. Sam can hold the
+  // rest of a thing AND care how it goes, and taking the pointer off must not
+  // strip the other — nor touch the same pointer on any other node.
+  const s0 = st(mk('A', 'action', 'x'), clocked('A'), mk('B', 'action', 'y'), clocked('B'));
+  const s1 = apply(s0, [
+    ...linkPersonEvents(ctx, 'A', 'p1', 'rest-with-them', { createNamed: 'Sam' }),
+    ...linkPersonEvents(ctx, 'A', 'p1', 'stakeholder'),
+    ...linkPersonEvents(ctx, 'B', 'p1', 'rest-with-them'),
+  ]);
+  const s2 = apply(s1, releaseHoldingEvents(ctx, 'A', 'p1', 'rest-with-them'));
+  const a = s2.nodes.get('A')!;
+  assert.equal(a.people.some(l => l.relation === 'rest-with-them'), false, 'the pointer is off');
+  assert.ok(a.people.some(l => l.person === 'p1' && l.relation === 'stakeholder'),
+    'the same person\'s other link survives');
+  assert.ok(s2.nodes.get('B')!.people.some(l => l.relation === 'rest-with-them'),
+    'and the pointer on the other node survives');
+});
+
+test('a release naming a relation outside the pair is a no-op, never a remove-all', () => {
+  const s0 = st(mk('A', 'action', 'x'), clocked('A'));
+  const s1 = apply(s0, linkPersonEvents(ctx, 'A', 'p1', 'promised-to', { createNamed: 'Sam' }));
+  const s2 = fold([ev('holding.released', 'A', { person: 'p1', relation: 'promised-to' })], s1);
+  assert.ok(s2.nodes.get('A')!.people.some(l => l.relation === 'promised-to'),
+    'a promise comes off through its own noun, not through this one');
 });

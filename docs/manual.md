@@ -253,6 +253,15 @@ that had a context system arrives with it rather than flat. Anything saying how
 long a thing takes comes too. Flags do not: this app has no priority field, and
 the summary says so rather than dropping it quietly.
 
+**People come too, when a line names them.** Three tags, one direction each:
+`@owes(Sam)` brings a thing in as something Sam owes you, with the waiting open
+from the moment it arrives; `@promised(Sam)` marks it *I said I would*; and
+`@holds(Sam)` records that Sam holds the rest of it — the pointer for a thing
+that was settled in conversation and mostly lives in someone else's head. Each
+writes the same link the item's own sheet writes, and a name that matches
+somebody already in your planner lands on them rather than making a second
+person. Several names go in one tag, separated by commas.
+
 ### The rest of what the app can do
 
 **Things you can do**, behind *Elsewhere in the app* <span data-was>(it said *Everything

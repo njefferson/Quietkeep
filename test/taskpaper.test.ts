@@ -30,6 +30,8 @@ import { calendarCount } from '../src/ics.ts';
 import { allContexts, contextsOf, placesReaching } from '../src/contexts.ts';
 import { estimateOf } from '../src/duration.ts';
 import { replanAll } from '../src/replan.ts';
+import { people } from '../src/people.ts';
+import type { AppEvent } from '../src/events.ts';
 
 // The summary as ONE string. The app never composes it: the lead goes into a
 // live region and the facts render as a navigable list beside it, because a
@@ -534,6 +536,143 @@ test('the boundary is the READER\'s day, not UTC\'s', () => {
   // getting that backwards would silently discard a live commitment.
   assert.equal(isPastDay('2026-07-29', NOW, DENVER), false, 'still today in Denver');
   assert.equal(isPastDay('2026-07-29', NOW, KIRITIMATI), true, 'yesterday in Kiritimati');
+});
+
+// --- people come across (Q-15 / ADR-0122) -----------------------------------
+//
+// Three tags, three directions: `@owes(Name)` is a thing somebody owes the
+// reader, `@promised(Name)` is a thing the reader said they would do, and
+// `@holds(Name)` is the directory pointer — that person holds the rest of it.
+// The tests hold the mapper to the SHEET's own writes, because the whole point
+// of importing through `session.commit` is that a file gets no more trust and
+// no different semantics than a keystroke.
+
+const PEOPLE_SAMPLE = `Transition:
+\t- Collect the network diagram @owes(Sam)
+\t- Send the parking memo @promised(Ana)
+\t- Update the roster @holds(Kim)
+`;
+
+test('who owes, who was told, and who holds the rest come across as people, not places', () => {
+  const { lines, offered, admitted, state } = build(PEOPLE_SAMPLE);
+
+  // The parse keeps each direction apart, and none of the three leaks into the
+  // place vocabulary or the dropped list — `@owes(Sam)` becoming a place called
+  // "owes" would be the `PLACE_IS_THE_VALUE` trap, for people.
+  const [diagram, memo, roster] = lines.filter(l => l.kind === 'action');
+  assert.deepEqual(diagram!.owes, ['Sam']);
+  assert.deepEqual(memo!.promised, ['Ana']);
+  assert.deepEqual(roster!.holds, ['Kim']);
+  assert.deepEqual(allContexts(state), [], 'no tag name became a place');
+  const s = importSummary(lines, [], NOW, DENVER);
+  assert.deepEqual(s.droppedTags, [], 'nothing here is reported as lost');
+
+  // Every event still passes the real write boundary.
+  for (const e of offered) {
+    assert.ok(admitted.some(a => a.id === e.id), `${e.kind} was refused`);
+  }
+
+  // Three humans, and each link points the way it was written.
+  assert.deepEqual(people(state).map(p => p.title), ['Ana', 'Kim', 'Sam']);
+  const held = heldNodes(state);
+  const byTitle = (t: string) => held.find(n => n.title === t)!;
+  const idOf = (name: string) => people(state).find(p => p.title === name)!.id;
+  assert.ok(byTitle('Collect the network diagram').people
+    .some(l => l.person === idOf('Sam') && l.relation === 'waiting-on'));
+  assert.ok(byTitle('Send the parking memo').people
+    .some(l => l.person === idOf('Ana') && l.relation === 'promised-to'));
+  assert.ok(byTitle('Update the roster').people
+    .some(l => l.person === idOf('Kim') && l.relation === 'rest-with-them'));
+});
+
+test('the waiting an @owes opens is the one the sheet opens', () => {
+  // `detail.ts` links waiting-on with a window: who, for what, since now. The
+  // import writes the same three facts the same way, so "with Sam" and the
+  // open-days count read identically however the link arrived.
+  const { offered, state } = build(PEOPLE_SAMPLE);
+  const opened = offered.filter(e => e.kind === 'waiting.opened');
+  assert.equal(opened.length, 1, 'one @owes, one window');
+  const p = (opened[0] as unknown as { payload: { person: string; forWhat: string; since: string } }).payload;
+  assert.equal(p.forWhat, 'Collect the network diagram');
+  assert.equal(p.since, NOW, 'ageing starts at the import, not at a guessed past');
+  const diagram = heldNodes(state).find(n => n.title === 'Collect the network diagram')!;
+  assert.equal(diagram.waitingOn, p.person);
+  assert.equal(diagram.waitingSince, NOW);
+});
+
+test('one human, however many lines, directions and capitalisations name them', () => {
+  const text = '- First thing @owes(Sam)\n- Second thing @promised(sam)\n- Third thing @holds(SAM)\n';
+  const { offered, state } = build(text);
+  assert.equal(offered.filter(e => e.kind === 'person.created').length, 1,
+    'one person.created for one human');
+  assert.deepEqual(people(state).map(p => p.title), ['Sam'],
+    'created in the words first written');
+  const links = heldNodes(state).flatMap(n => n.people);
+  assert.equal(new Set(links.map(l => l.person)).size, 1, 'every link points at the same node');
+  assert.deepEqual(links.map(l => l.relation).sort(),
+    ['promised-to', 'rest-with-them', 'waiting-on']);
+});
+
+test('a person already in the store is reused, never minted twice', () => {
+  // The sheet's rule, applied at the door: "sam" and "Sam" are one person, and
+  // a duplicate here would split what you are owed across two rows for ever.
+  let n = 0;
+  const prior: AppEvent[] = [
+    { id: 'pc0', vault: 'personal', at: '2026-07-01T12:00:00.000Z', device: 'd0', seq: 0,
+      kind: 'person.created', node: 'p-sam', payload: { name: 'Sam' } } as AppEvent,
+  ];
+  const priorState = fold(prior);
+  const ctx: ImportContext = {
+    at: NOW, device: 'imp', vault: 'personal', zone: DENVER, seq: () => n, id: () => `i${n++}`,
+  };
+  const { lines } = parseAnyExport('- Chase the invoices @owes(sam)\n');
+  const offered = taskPaperEvents(ctx, lines, [{ id: 'p-sam', title: 'Sam' }]);
+  assert.equal(offered.some(e => e.kind === 'person.created'), false, 'no second Sam');
+  const state = fold(admit(offered, priorState, gateOptionsFor(DENVER)), priorState);
+  const invoices = heldNodes(state).find(x => x.title === 'Chase the invoices')!;
+  assert.ok(invoices.people.some(l => l.person === 'p-sam' && l.relation === 'waiting-on'));
+  assert.deepEqual(people(state).map(p => p.title), ['Sam']);
+});
+
+test('several names in one tag, a repeated tag, and a tag naming nobody', () => {
+  const text = '- Chase the invoices @owes(Sam, Ana) @owes(Kim)\n- Send the memo @promised()\n';
+  const { lines, state } = build(text);
+  assert.deepEqual(lines[0]!.owes, ['Sam', 'Ana', 'Kim'], 'commas and repeats both accumulate');
+  assert.deepEqual(people(state).map(p => p.title), ['Ana', 'Kim', 'Sam']);
+  const s = importSummary(lines, [], NOW, DENVER);
+  assert.deepEqual(s.droppedTags, ['promised'],
+    'an empty tag names nobody, and is named as lost rather than guessed at');
+});
+
+test('a finished row keeps its people out too', () => {
+  // 2.34.1: finished rows are not brought in. Their people are part of the row.
+  const { offered, state } = build('- Old thing @done @owes(Sam)\n');
+  assert.equal(offered.some(e => e.kind === 'person.created'), false);
+  assert.equal(offered.some(e => e.kind === 'waiting.opened'), false);
+  assert.deepEqual(people(state), []);
+});
+
+test('the summary says who comes, in each direction, and ages nobody', () => {
+  const { lines } = build(PEOPLE_SAMPLE);
+  const s = importSummary(lines, [], NOW, DENVER);
+  assert.equal(s.people, 3);
+  assert.equal(s.owed, 1);
+  assert.equal(s.promised, 1);
+  assert.equal(s.holding, 1);
+  const { facts } = importFacts(s);
+  const said = facts.join(' ');
+  assert.match(said, /3 people come with them/, 'the humans are counted out loud');
+  assert.match(said, /somebody owes you/, 'the incoming direction is said');
+  assert.match(said, /you said you would/, 'the outgoing direction is said');
+  assert.match(said, /holds the rest/, 'the directory is said');
+  // `promisedToAnyone`'s own regex, applied at the door: none of these sentences
+  // may age a person or a promise.
+  const newFacts = facts.filter(f =>
+    /people come with them|owes you|said you would|holds the rest/.test(f));
+  assert.equal(newFacts.length, 4);
+  for (const f of newFacts) {
+    assert.doesNotMatch(f, /week|day|month|since|ago|still|yet|late/i, `"${f}" ages somebody`);
+  }
 });
 
 test('the summary says how many dates had gone, and why they did not come', () => {

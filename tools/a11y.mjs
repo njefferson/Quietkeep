@@ -533,6 +533,9 @@ const REGISTRY = {
     // It is measured as a `.contents-go` row on the 'contents open' state now,
     // on the surface it actually lives on — leaving it here would have named a
     // selector matching nothing visible, which this gate fails on by design.
+    // The gauge's two lines are NOT here: on an empty store it says "nothing
+    // held yet" in one piece, so the fact and door spans exist only once
+    // something is held — they are audited on 'next up', where they render.
     'button.info', '.section', '.gauge', '.empty', '.foot', '.foot a', '.build',
     '#update-words', '#update-save', '#update-reload', '#update-dismiss',
     // The way back (1.14.0, ADR-0062). This is the ONLY state it appears in —
@@ -805,7 +808,9 @@ const REGISTRY = {
   // the list" is how a surface goes unmeasured the moment its class changes.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
     '#nextup-dated',
-    '#nextup-done', '#nextup-skip', '#gauge',
+    // The gauge's fact and door lines (3.20.1) — audited HERE and not on the
+    // empty store, because they exist only while something is held.
+    '#nextup-done', '#nextup-skip', '#gauge', '.gauge-fact', '.gauge-door',
     // `.card-done`, `#tree-open`, `#to-held` and `#to-top` used to ride here.
     // Under the hub (3.0.0) a state cannot span three places: the cards are in
     // the pile, the tree door is page navigation that lives on the hub, and the
@@ -1047,6 +1052,12 @@ const REGISTRY = {
   // Who cares how it goes (1.9.0, ADR-0057): a name and one ghost verb.
   'detail sheet, who cares': ['#detail-stakeholders-label',
     '#detail-stakeholder-list .detail-feed', '#detail-stakeholder-list button'],
+  // THE DIRECTORY ROW (3.20.0, ADR-0122): the pointer's rendered words and its
+  // take-back control, registered in the same commit that built them. The words
+  // are the feature — a fact about where the rest of a thing sits — and the
+  // negative assertion beside this state holds them to carrying no age.
+  'detail sheet, who holds the rest': ['#detail-people-list .detail-feed',
+    '#detail-people-list button'],
   // A person's own sheet (1.12.0): what is with them. The relation and the
   // duration are the quietest text, and both are FACTS — never a grade.
   // Scoped to the GROUP, not to one of its two lists: what someone owes you
@@ -3128,6 +3139,34 @@ try {
     // the surface underneath.
     await page.click('#gauge');
     await page.waitForSelector('#sheet-coverage[open]');
+    // THE RING A SHEET OPENS WITH (3.20.1). `focusSheetTitle` has always put
+    // focus on the title, and the ring that showed was each engine's default —
+    // unstyled, unmeasured, and broken on the device. The tab-driven ring audit
+    // can never reach a tabindex="-1" heading, so this asserts it directly:
+    // focus landed on the title, the app's own ring is drawn (`:focus`, so this
+    // engine renders what the device renders), and the whole ring fits inside
+    // the sheet rather than being clipped by its edge.
+    {
+      const ring = await page.evaluate(() => {
+        const t = document.querySelector('#sheet-coverage-title');
+        const d = document.querySelector('#sheet-coverage');
+        if (!t || !d) return null;
+        const cs = getComputedStyle(t);
+        const room = parseFloat(cs.outlineWidth) + parseFloat(cs.outlineOffset);
+        const tr = t.getBoundingClientRect(), dr = d.getBoundingClientRect();
+        return {
+          focused: document.activeElement === t,
+          width: parseFloat(cs.outlineWidth),
+          style: cs.outlineStyle,
+          headroom: tr.top - dr.top - room,
+        };
+      });
+      (ring && ring.focused ? pass : fail)(`${theme}/coverage open: the sheet hands focus to its title`);
+      (ring && ring.style !== 'none' && ring.width >= 2 ? pass : fail)(
+        `${theme}/coverage open: the title's ring is the app's own (${ring ? `${ring.style} ${ring.width}px` : 'unmeasured'})`);
+      (ring && ring.headroom >= 0 ? pass : fail)(
+        `${theme}/coverage open: and the whole ring fits inside the sheet (${ring ? `${Math.round(ring.headroom)}px to spare` : 'unmeasured'})`);
+    }
     await auditContrast(page, 'coverage open', theme);
     await auditAxe(page, 'coverage open', theme);
     await auditNames(page, 'coverage open', theme);
@@ -5139,6 +5178,34 @@ try {
     await auditNames(page, 'detail sheet, decisions', theme);
     await auditSeparationAndTargets(page, 'detail sheet, decisions', theme);
     await auditFocusRings(page, 'detail sheet, decisions', theme, ['#detail-decision', '#detail-decision-set']);
+
+    // WHO HOLDS THE REST (3.20.0, ADR-0122). Link the directory pointer, read
+    // the words a reader reads, and take it back — the release is the half
+    // nothing else exercises, and a control that only ever renders is a
+    // control nobody measured. The negative assertion is the one that matters:
+    // the row would render identically with a duration on it, and an age on
+    // either holding direction is refused in terms by entry 32.
+    await page.fill('#detail-person', 'Marta');
+    await page.selectOption('#detail-relation', 'rest-with-them');
+    await page.click('#detail-person-set');
+    await page.waitForFunction(() => /Marta.*hold the rest of this/.test(
+      document.querySelector('#detail-people-list')?.textContent ?? ''));
+    const holdingRow = await page.evaluate(() =>
+      [...document.querySelectorAll('#detail-people-list li')]
+        .map(li => li.textContent ?? '').find(t => /Marta/.test(t)) ?? '');
+    (/they hold the rest of this/.test(holdingRow) ? pass : fail)(
+      `${theme}/who holds the rest: the pointer says its words ("${holdingRow.trim().slice(0, 60)}")`);
+    (!/week|month|since|ago|\bdays?\b/i.test(holdingRow) ? pass : fail)(
+      `${theme}/who holds the rest: and no age rides on it`);
+    await auditContrast(page, 'detail sheet, who holds the rest', theme);
+    await auditAxe(page, 'detail sheet, who holds the rest', theme);
+    await auditNames(page, 'detail sheet, who holds the rest', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, who holds the rest', theme);
+    await auditFocusRings(page, 'detail sheet, who holds the rest', theme, ['#detail-people-list button']);
+    await page.locator('#detail-people-list button', { hasText: /No longer holds the rest/ }).first().click();
+    await page.waitForFunction(() => !/hold the rest of this/.test(
+      document.querySelector('#detail-people-list')?.textContent ?? ''));
+    pass(`${theme}/who holds the rest: the pointer can be taken back, and the work stays`);
 
     // A person's own sheet (1.12.0). Link somebody as owing something, then
     // WALK to them the way a reader does — through the name on the item — and
