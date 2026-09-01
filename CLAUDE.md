@@ -12,8 +12,17 @@
 > lives in the hub too; append to it from this repo's sessions, never copy it.
 
 ## What this repo is
-**Quietkeep** — a free, local-first planner for neurodivergent users. Static PWA,
-no accounts, no telemetry, no server-side user data. Deployed to Cloudflare Pages.
+**Quietkeep** — a free, local-first planner for neurodivergent users, designed
+against a *condition* rather than a diagnosis: low capacity, high demand,
+interruption, and engagement that varies. Neurodivergent people are who meet
+that condition most often and most severely, which is why the design aims there
+and why the refusals are absolute. Static PWA, no accounts, no telemetry, no
+server-side user data. Deployed to Cloudflare Pages.
+
+**Naming the condition is what makes whole literatures legitimately applicable** —
+cognitive aids, structured handover, high-reliability work, distributed
+cognition — none of which is reachable from a diagnosis alone, and all of which
+bear on the design (`docs/planning-for-humans.md` §10b).
 
 Tagline: *"Out of sight. Never out of mind."*
 Epigraph: *"It holds the rest, so you can rest."*
@@ -92,6 +101,25 @@ running without opening with the declaration. Wait for the thing and carry on;
 that is the way past it, and it is the one that was wanted all along.
 
 ## Rules specific to this app
+- **THE CONDITION FRAMING WIDENS WHAT MAY BE RESEARCHED. IT NEVER RELAXES A
+  REFUSAL.** This is the hazard that arrives with the framing above, and it is
+  written here because it will not announce itself. The moment the frame reads
+  as *people under load*, ordinary productivity research becomes reachable — and
+  that literature is built on streaks, gamification, priority ranking, nudges
+  and completion metrics, every one of which this app structurally may not do.
+  A session will eventually arrive holding real evidence for a thing that is
+  refused here, and it will look like diligence.
+  **So: a general-population finding may inform a design; it may never override
+  a refusal that rests on a finding about this audience.** Where the two
+  conflict, the narrower finding governs. The reason is arithmetic rather than
+  loyalty — **a general-population result is averaged over people for whom the
+  failure is cheap**, and every refusal here exists because this is where the
+  cost is largest and least recoverable. An intervention that is positive on
+  average can be negative exactly where this app lives, and the average will
+  never show it.
+  **The test, before citing anything from a general literature: would this
+  finding have been measured on people for whom the failure it prevents is
+  expensive?** If not, it is background, not grounds.
 - **NOTHING PERSONAL ABOUT THE OWNER EVER LANDS IN THIS REPO — a FAIL state**
   (the owner's instruction, 2026-08-04). No diagnosis, health fact, or identity
   disclosure attached to the owner, in any file, commit message, or PR body. The product's framing ("for neurodivergent users") and research

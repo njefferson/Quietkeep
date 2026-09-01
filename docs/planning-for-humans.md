@@ -460,6 +460,49 @@ in the corpus, and it is twenty-two years old.
 **Neither field appears anywhere else in this repo.** Recorded here so the next
 survey starts from them rather than rediscovering them.
 
+### What this app is aimed at, and the rule that comes with saying so
+
+Added 2026-09-01. Everything in this document is here because it describes
+**neurodivergent** readers, who are who this is built for. What the document had
+never said is what it is aimed *at*, which is a condition rather than a
+diagnosis: **low capacity, high demand, interruption, and engagement that
+varies.**
+
+Saying that is not a widening of the audience. It is a statement of the
+mechanism, and it earns its place because it makes whole literatures legitimately
+applicable — cognitive aids and structured protocols below, structured handover,
+high-reliability organisations, distributed cognition, situation awareness. Every
+one of those studies competent people in degraded conditions, none of them is
+reachable from a diagnosis alone, and all of them bear directly on what this app
+is trying to do.
+
+**Military planning doctrine belongs on that list too, and it is worth saying
+why.** Doctrine assumes people who are capable, under load, and out of contact
+when it matters — so it externalises exactly what is expensive to hold: the
+conditions being watched for, what must be reported at once, and intent written
+so somebody can act correctly without asking. That is the same conclusion this
+document reaches from cognitive psychology, arrived at institutionally and
+decades earlier. It is an acknowledged influence on how the problem is framed.
+**It stays out of the product's own vocabulary entirely** — the voice is adult,
+calm and civilian, and no military term appears in any name or line of copy in
+this app. Influence on the thinking is not licence over the words.
+
+> **THE RULE THAT COMES WITH THE FRAMING, and it exists because it will not
+> announce itself.** The moment this reads as *for people under load*, ordinary
+> productivity research becomes reachable — a literature built on streaks,
+> ranking by importance, nudges and completion metrics, every one of which is
+> refused here on the evidence above. Somebody will eventually arrive holding a
+> real finding for a thing this app structurally may not do, and it will look
+> like diligence.
+>
+> **A general-population finding may inform a design. It may never override a
+> refusal.** Where the two conflict, the narrower finding governs — and the
+> reason is arithmetic rather than loyalty. **A general-population result is
+> averaged over people for whom the failure is cheap.** Every refusal in this
+> document exists because this is where that failure is most expensive and least
+> recoverable, and an intervention that is positive on average can be negative
+> exactly there while the average never shows it.
+
 ### A third literature, and it is the one with the outcome numbers
 
 Added 2026-09-01. This whole document argues that moving something out of a head

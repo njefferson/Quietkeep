@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.19.6',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**The *Why* page now says what this app is aimed at, not only who it is for.** It is for neurodivergent people \u2014 that has not changed and is the first thing said. What it is aimed AT is a condition: low capacity, high demand, interruption, and engagement that varies. Naming that is not a widening; it is what makes whole fields of research apply here that a diagnosis alone cannot reach \u2014 the work on checklists and cognitive aids, on handing a role over, on how teams stay reliable under pressure.',
+      '**And it names a rule that protects the first half from the second.** Once a thing is described as being for people under load, ordinary productivity research becomes fair game \u2014 and that literature runs on streaks, ranking, nudges and completion scores, all of which this app refuses. So the page states plainly: a finding from the general population may inform a design and may never overturn a refusal. A result averaged across everybody is averaged across people for whom the failure is cheap, and every refusal here exists because of where it is expensive.',
+      '**Military planning is credited as an influence, and kept out of the words.** It assumes capable people under load and out of contact, so it writes down exactly what is costly to keep in a head. Same conclusion, reached elsewhere, decades earlier. The voice of this app stays adult, calm and civilian, and no term from that world appears anywhere in it.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.19.5',
     kind: 'ITERATION',
     date: '2026-09-01',

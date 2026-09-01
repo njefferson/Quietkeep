@@ -38,6 +38,23 @@ compensating for.
 
 Everything else follows from that.
 
+**THE AUDIENCE IS NEURODIVERGENT PEOPLE. THE TARGET IS A CONDITION.** Those are
+not in tension and the distinction earns its place: the condition is low
+capacity, high demand, interruption, and engagement that varies. Naming it is
+what makes cognitive aids, structured handover, high-reliability work and
+distributed cognition legitimately applicable here — literatures a diagnosis
+alone cannot reach, and every one of them about competent people in degraded
+conditions.
+
+**AND THE HAZARD THAT ARRIVES WITH IT, which `CLAUDE.md` states as a rule
+because it will not announce itself.** Once the frame reads as *people under
+load*, ordinary productivity research becomes reachable, and that literature is
+built on streaks, ranking, nudges and completion metrics — all refused here. A
+general-population finding may inform a design; it may never override a refusal
+that rests on a finding about this audience. **A general-population result is
+averaged over people for whom the failure is cheap**, and every refusal here
+exists because this is where the cost is largest and least recoverable.
+
 ### The failure this app exists to prevent, stated precisely (2026-08-28)
 
 **A missed day must not become a new list to sort.** That sentence is more
@@ -913,7 +930,28 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.5**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.6**. The app
+  says what it is aimed at, and states the rule that protects it.
+  **AUDIENCE AND TARGET ARE DIFFERENT THINGS AND BOTH ARE NOW SAID.** The
+  audience is neurodivergent people, first sentence, unchanged. The target is a
+  condition — low capacity, high demand, interruption, engagement that varies.
+  Naming the mechanism is what makes cognitive aids, structured handover,
+  high-reliability work and distributed cognition legitimately applicable; a
+  diagnosis alone reaches none of them.
+  **THE HAZARD IS THE REASON THE RULE EXISTS.** Once the frame reads as *people
+  under load*, ordinary productivity research becomes reachable — streaks,
+  ranking, nudges, completion metrics, all refused here. Somebody will arrive
+  holding a real finding for a thing this app may not do, and it will look like
+  diligence. So: a general-population finding may inform a design and may never
+  override a refusal. **A general-population result is averaged over people for
+  whom the failure is cheap**, and every refusal exists because of where it is
+  expensive. Stated in `CLAUDE.md`, in the thesis above, and on the Why page.
+  **DOCTRINE IS CREDITED AS AN INFLUENCE AND KEPT OUT OF THE WORDS.** It assumes
+  capable people under load and out of contact, so it externalises what is
+  expensive to hold — the same conclusion reached institutionally and decades
+  earlier. Influence on the thinking is not licence over the vocabulary; the
+  voice rule stands unchanged.
+- **Superseded, and kept for the record: 3.19.5.** The
   curb-cut grade was too harsh and is corrected.
   **THE FIRST GRADE CAME OFF ONE SEARCH.** Recorded as unsupported on a single
   web query plus one Crossref query. Asked to check whether it holds, a second
