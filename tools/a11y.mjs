@@ -533,7 +533,10 @@ const REGISTRY = {
     // It is measured as a `.contents-go` row on the 'contents open' state now,
     // on the surface it actually lives on — leaving it here would have named a
     // selector matching nothing visible, which this gate fails on by design.
-    'button.info', '.section', '.gauge', '.gauge-fact', '.gauge-door', '.empty', '.foot', '.foot a', '.build',
+    // The gauge's two lines are NOT here: on an empty store it says "nothing
+    // held yet" in one piece, so the fact and door spans exist only once
+    // something is held — they are audited on 'next up', where they render.
+    'button.info', '.section', '.gauge', '.empty', '.foot', '.foot a', '.build',
     '#update-words', '#update-save', '#update-reload', '#update-dismiss',
     // The way back (1.14.0, ADR-0062). This is the ONLY state it appears in —
     // it shows on an empty store and nowhere else — so it is audited exactly
@@ -805,7 +808,9 @@ const REGISTRY = {
   // the list" is how a surface goes unmeasured the moment its class changes.
   'next up': ['#nextup-heading', '.nextup-title', '.nextup-why', '#nextup-written', '.nextup-count',
     '#nextup-dated',
-    '#nextup-done', '#nextup-skip', '#gauge',
+    // The gauge's fact and door lines (3.20.1) — audited HERE and not on the
+    // empty store, because they exist only while something is held.
+    '#nextup-done', '#nextup-skip', '#gauge', '.gauge-fact', '.gauge-door',
     // `.card-done`, `#tree-open`, `#to-held` and `#to-top` used to ride here.
     // Under the hub (3.0.0) a state cannot span three places: the cards are in
     // the pile, the tree door is page navigation that lives on the hub, and the
