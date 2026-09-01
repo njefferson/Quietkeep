@@ -14,13 +14,20 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.22.1 — ITERATION
+
+*2026-09-01*
+
+- **These notes print words again.** The two releases beneath this one wrote an apostrophe as a seven-character code in three places, and this panel printed the code instead of the mark. The strings now carry the real apostrophe. The check that catches this ran too late that day; nothing else was touched.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.22.0 — CAPABILITY
 
 *2026-09-01*
 
 - **The days ahead: your dated things, day by day, inside the app.** A new door on the front page opens every dated thing you hold, under the day it is waiting on — today first, never a day in the past. Each row says which date is talking — *due*, *starts*, *comes back*, or *answer owed* — and an answer owed names who is waiting, when you have said so. It reads the store every time it opens, so when a date moves, the day it sits under moves with it. Tap a thing to open it.
-- **It is the same list *Send to my calendar* sends — always.** The screen and the calendar file are drawn from one selection, so they cannot name different mornings. The calendar copy is for being reminded while the app is closed; this is the half that is never stale. A date that already went by sits under today marked *needs a new plan*, in the replan surface&rsquo;s own words.
-- **The door appears once something carries a date**, like its neighbours, and the date box on a thing&rsquo;s page now names both routes: the days ahead on the front page, and your own calendar.
+- **It is the same list *Send to my calendar* sends — always.** The screen and the calendar file are drawn from one selection, so they cannot name different mornings. The calendar copy is for being reminded while the app is closed; this is the half that is never stale. A date that already went by sits under today marked *needs a new plan*, in the replan surface’s own words.
+- **The door appears once something carries a date**, like its neighbours, and the date box on a thing’s page now names both routes: the days ahead on the front page, and your own calendar.
 - **Two controls are one step later in the reading order than they were.** The new door stands with its neighbours on the front page, so the *What’s the situation?* copy on the working screens is now one control later than it was, and the *Menu* door is now one further along than it was. Nothing moved on screen by feel; the count is about reading order.
 - **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
 
@@ -30,7 +37,7 @@ triplet and what it did for you.
 
 - **The room can be read by thing as well as by person.** With one thing every person shares, the by-person room repeats it under each name — truly, since each is its own conversation — but repetitively when the room is large. *By thing* collapses the same room to each thing once, wearing the names of everyone on it. The names are the only label a set of people ever gets; nothing invents a group name. *By person* stays the default every open returns to.
 - **People can carry places, and the choosers respect them.** Open a person and the places box now reads *Their places* — name one, and they are offered first when you are there. Someone with no stated places is offered everywhere, exactly as an unlabelled thing fits every place. Someone stated only elsewhere waits behind one press — *Everyone (2 more)* — never gone, never guessed: the only thing that moves anybody is a place you put on their own page.
-- **What&rsquo;s the situation? asks from the front page too.** It always felt like the setup step, and it lived one screen deep. The same question now stands on the opening screen; the original stays where it was, beside the lines that show what it changed.
+- **What’s the situation? asks from the front page too.** It always felt like the setup step, and it lived one screen deep. The same question now stands on the opening screen; the original stays where it was, beside the lines that show what it changed.
 - **Two controls are one step later in the reading order than they were.** *What’s the situation?* now stands on the opening screen too, so on the working screens the copy there is now one control below where it was; and the *Menu* door is now a step further along than it was, because the places box arrived above the fold in the release beneath this one. Nothing moved on screen by feel; the count is about reading order.
 - **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
 

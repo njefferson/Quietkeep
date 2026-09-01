@@ -973,8 +973,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.0**, carrying
-  3.21.0 and 3.20.4 beneath it. The days ahead (ADR-0124): every dated thing,
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.1**, carrying
+  3.22.0, 3.21.0 and 3.20.4 beneath it. 3.22.1 is the notes-panel fix: three
+  apostrophes had been written as their seven-character entity in the release
+  notes themselves, and the panel — which renders text, never markup, by
+  design — printed the code. Found by the Spine's smoke pin in CI on the
+  3.21.0 push; the local smoke that day had refused a stale build instead of
+  measuring, so CI was the first place the assertion actually ran. Beneath
+  it, 3.22.0 — the days ahead (ADR-0124): every dated thing,
   day by day, inside the app — the demand from use, answered as the calendar
   story's live half. One selection three readers share (`calendarEntries` and
   `calendarDay` in `src/ics.ts`): the `.ics` file, the ⓘ count and the new
