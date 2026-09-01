@@ -973,8 +973,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.1**, carrying
-  3.22.0, 3.21.0 and 3.20.4 beneath it. 3.22.1 is the notes-panel fix: three
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.2**, carrying
+  3.22.1, 3.22.0, 3.21.0 and 3.20.4 beneath it. 3.22.2 keeps the note box —
+  and its focus ring — fully on screen when Tabbed to: the 3.22.0 date hint
+  had grown a third line and nudged it past the sheet fold (the walk's
+  finding, reproduced headlessly before fixing), and the shorter hint then
+  needed its own triplet because a shipped byte behind an unmoved cache name
+  never reaches an installed reader (release:check's finding, in CI first —
+  the local re-run list after the fix was hand-picked, which is the exact
+  failure the Spine exists to prevent). 3.22.1 beneath it is the notes-panel
+  fix: three
   apostrophes had been written as their seven-character entity in the release
   notes themselves, and the panel — which renders text, never markup, by
   design — printed the code. Found by the Spine's smoke pin in CI on the

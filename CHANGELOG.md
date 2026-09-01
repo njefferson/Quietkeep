@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.22.2 — ITERATION
+
+*2026-09-01*
+
+- **The note box stays fully on screen.** On a thing’s page, the date hint had grown a line and could nudge the bottom of the note box — and its focus ring — just past the fold when you Tab to it. The hint is a line shorter and still names both routes a date can take.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.22.1 — ITERATION
 
 *2026-09-01*

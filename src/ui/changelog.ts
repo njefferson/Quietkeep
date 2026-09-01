@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.22.2',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**The note box stays fully on screen.** On a thing’s page, the date hint had grown a line and could nudge the bottom of the note box — and its focus ring — just past the fold when you Tab to it. The hint is a line shorter and still names both routes a date can take.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.22.1',
     kind: 'ITERATION',
     date: '2026-09-01',
