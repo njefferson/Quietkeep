@@ -14,6 +14,23 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.20.3 — ITERATION
+
+*2026-09-01*
+
+- **The walkthrough now tells the truth about the two doors.** It said everything else lives under the *i* — which stopped being true as the app grew, and a careful stranger following that pointer never found Settings, Colours, Help or Your data at all. It now names both: the *i* for what this app is and keeping your writing safe, *Elsewhere in the app* for the rest. And the *i* panel carries an *Elsewhere in the app* door of its own, so neither door dead-ends.
+- **The notes open everything since you last looked.** These notes used to open on the newest entry alone — right most days, and wrong exactly when two releases land together, which is how a big change ended up folded out of sight below a small one. This device now remembers the last version these notes showed you, and opens every entry newer than that, saying how many there are. After a long time away it opens the six newest and says the true count.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
+## 3.20.2 — ITERATION
+
+*2026-09-01*
+
+- **A thing somebody owes you now arrives as one.** Bringing in a line tagged `@owes(Sam)` opened the waiting in the record and forgot to make it visible: the item landed as ordinary work, so *What they owe you* never showed it. It arrives as a waiting-for now — on the owed lists from its first moment, counted from the day it landed, exactly as if you had named Sam by hand on a waiting item.
+- **The ring that shows where you landed truly appears on every sheet now.** The last release said “every sheet” and drew it only on headings of one styling — the item sheet itself, the About panel, and the walkthrough on any second viewing were missed. A colder pair of eyes than the ones that wrote it caught all three within the hour. Every sheet heading draws it now, and the walk checks the item sheet by name.
+- **“What does this hold up?” no longer offers people or places.** The picker for saying one thing feeds another listed everything alive — including people and places, which cannot be done first. It offers only work now, matching its sibling question, *Does something have to happen first?*, which always knew.
+- **Still to sort, unchanged:** the situation screen asks who twice. **And newly noticed:** the walkthrough points at the ⓘ for everything, but ⓘ opens onto keeping your data safe — the fuller doors (Settings, Colours, Help, Your data) are behind *Elsewhere in the app* on the main page. Until that is rethought, know both doors exist.
+
 ## 3.20.1 — ITERATION
 
 *2026-09-01*

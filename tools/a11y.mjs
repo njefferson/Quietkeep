@@ -336,6 +336,8 @@ const DIALOG_COMMON = [
   '.about-section',
   '#about-close',
   '#about-dismiss',
+  // The way through to the hub (3.20.3) — always rendered, so registrable.
+  '#about-elsewhere',
   '.note-triplet',
   '.note-kind',
   '.note-list li',
@@ -4408,6 +4410,25 @@ try {
     // which the linked-people list renders at all.
     await page.locator('.people-open').first().click();
     await page.waitForSelector('#detail[open]');
+    // THE ITEM SHEET'S OWN TITLE RING (3.20.2), read at the only moment it is
+    // true — right after open, before any control below has taken focus.
+    // 3.20.1 asserted this on the coverage sheet and scoped the CSS to
+    // `.section` titles; the cold read-back found the ring missing on exactly
+    // the sheet that carries the most features, because its title is
+    // `.detail-title`. Asserted on the real element, so the widened rule
+    // cannot narrow again without this going red.
+    {
+      const ring = await page.evaluate(() => {
+        const t = document.querySelector('#detail-title');
+        if (!t) return null;
+        const cs = getComputedStyle(t);
+        return { width: parseFloat(cs.outlineWidth), style: cs.outlineStyle,
+          focused: document.activeElement === t };
+      });
+      (ring && ring.focused ? pass : fail)(`${theme}/detail sheet: the sheet hands focus to its title`);
+      (ring && ring.style !== 'none' && ring.width >= 2 ? pass : fail)(
+        `${theme}/detail sheet: the title's ring is the app's own (${ring ? `${ring.style} ${ring.width}px` : 'unmeasured'})`);
+    }
     await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.fill('#detail-person', 'Sam');
     await page.click('#detail-person-set');

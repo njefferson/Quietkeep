@@ -28,7 +28,7 @@ import { admit, coverageGauge, gateOptionsFor, heldNodes, trashedNodes } from '.
 import type { NodeState } from '../fold.ts';
 import type { ExportFile } from '../portability.ts';
 import type { AppEvent } from '../events.ts';
-import { RELEASES, CURRENT } from './changelog.ts';
+import { RELEASES, CURRENT, releasesSince, newerCount } from './changelog.ts';
 import { marked } from './marks.ts';
 import { diagnosticReport, type DeviceReading } from '../diagnostic.ts';
 import { ARRIVAL_KEY } from '../contexts.ts';
@@ -288,6 +288,18 @@ export async function mountAbout(
       });
     document.querySelector<HTMLButtonElement>('#more-close')
       ?.addEventListener('click', () => more?.close());
+    // THE WAY THROUGH FROM THE i PANEL (3.20.3): the walkthrough sends people
+    // here, the seven destinations live behind "Elsewhere in the app", and a
+    // cold reader following the walkthrough's pointer never found that second
+    // door. Same open as `#open-more`, with this panel closed first so the
+    // reader lands on the hub and not under it.
+    document.querySelector<HTMLButtonElement>('#about-elsewhere')
+      ?.addEventListener('click', () => {
+        if (!more) return;
+        document.querySelector<HTMLDialogElement>('#about')?.close();
+        more.showModal();
+        focusSheetTitle(more);
+      });
     for (const b of Array.from(document.querySelectorAll<HTMLButtonElement>('.more-go'))) {
       b.addEventListener('click', () => {
         const target = b.dataset.go ?? '';
@@ -342,19 +354,44 @@ export async function mountAbout(
     ul.append(...r.notes.map(noteLine));
     return [h, ul];
   };
-  const [latest, ...older] = RELEASES;
-  const rendered: HTMLElement[] = latest ? noteBlock(latest) : [];
-  if (older.length > 0) {
-    const d = document.createElement('details');
-    d.className = 'note-older';
-    const sum = document.createElement('summary');
-    sum.textContent = older.length === 1
-      ? 'One earlier release'
-      : `${older.length} earlier releases`;
-    d.append(sum, ...older.flatMap(noteBlock));
-    rendered.push(d);
-  }
-  notes.replaceChildren(...rendered);
+  // EVERYTHING SINCE YOU LAST LOOKED (3.20.3, `releasesSince`). One entry
+  // expanded is right day to day and wrong in exactly the case of a promote
+  // spanning releases: 3.20.0 and 3.20.1 landed together and the first open
+  // showed the small iteration with the capability release folded out of
+  // sight (cold read-back, 2026-09-01). The device remembers the last version
+  // these notes showed; everything newer opens expanded, the true count is
+  // said when there is more than one, and first looks, re-reads, garbage and
+  // futures all collapse to the newest alone. Async for the kv read — the
+  // panel opens long after mount, and a failed read or write just means the
+  // next look behaves like this one.
+  void (async () => {
+    const NOTES_SEEN = 'notes.seen';
+    let seenVersion: string | null = null;
+    try { seenVersion = (await session.store.getKv<string>(NOTES_SEEN)) ?? null; } catch { /* first look */ }
+    const shown = releasesSince(seenVersion);
+    const older = RELEASES.slice(shown.length);
+    const rendered: HTMLElement[] = [];
+    if (shown.length > 1) {
+      const n = newerCount(seenVersion);
+      rendered.push(el('p', 'about-p note-since',
+        n === shown.length
+          ? `${n} releases have landed since you last looked.`
+          : `${n} releases have landed since you last looked — the ${shown.length} newest are open here.`));
+    }
+    rendered.push(...shown.flatMap(noteBlock));
+    if (older.length > 0) {
+      const d = document.createElement('details');
+      d.className = 'note-older';
+      const sum = document.createElement('summary');
+      sum.textContent = older.length === 1
+        ? 'One earlier release'
+        : `${older.length} earlier releases`;
+      d.append(sum, ...older.flatMap(noteBlock));
+      rendered.push(d);
+    }
+    notes.replaceChildren(...rendered);
+    try { await session.store.setKv(NOTES_SEEN, RELEASES[0]!.triplet); } catch { /* said no; next look repeats */ }
+  })();
 
   // --- storage -------------------------------------------------------------
   const paintStorage = async (): Promise<void> => {

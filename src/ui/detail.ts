@@ -54,7 +54,7 @@ import { heldWork } from '../gate.ts';
 import { setTrackRoleEvents, setSuspenseEvents } from './detail-intents.ts';
 import { setSaveForEvents } from './detail-intents.ts';
 import { people as peopleNodes, withWhom, openDays, waitingWords, isOpenWaiting } from '../people.ts';
-import { dependencyView, dependencyWords, wouldCycle } from '../dependencies.ts';
+import { dependencyView, dependencyWords, wouldCycle, feedCandidates } from '../dependencies.ts';
 import {
   legalParents, childrenOf, placeWords, isContainer, CONTAINER_ORDER, CONTAINER_DEFAULT,
   containerOptionWords,
@@ -1042,11 +1042,13 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // that lies about what it does.
     if (FEEDS && LEAD && FEEDS_LIST) {
       const st = session.state();
-      const legal = [...st.nodes.values()]
-        .filter(t => !t.trashed && !t.mergedInto && !t.lastDone && t.id !== n.id)
-        .filter(t => !wouldCycle(st, n.id, t.id))
-        .filter(t => !n.feeds.includes(t.id))
-        .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+      // One builder with the after-picker (3.20.2, `feedCandidates`): this
+      // inline filter had everything except KIND, so people and places were
+      // offered as things work could queue behind. Only the already-fed
+      // exclusion stays here, because it is about this node's list, not about
+      // candidacy.
+      const legal = feedCandidates(st, n.id)
+        .filter(t => !n.feeds.includes(t.id));
       const keep = FEEDS.value;
       FEEDS.replaceChildren(...[
         Object.assign(document.createElement('option'), { value: '', textContent: 'nothing yet' }),

@@ -472,8 +472,14 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**One outstanding**, and the way it was found is the argument for this section
-existing at all.
+**One outstanding.** Two more stood here for about an hour on 2026-09-01 — the
+ⓘ/*Elsewhere* door split and the promote-spanning notes window, both from the
+cold read-back — labelled "product decisions, the owner's". The ruling that came
+back: neither needed the owner, and routing them upward was fake carefulness —
+the record could answer both (hub LESSONS §96's shape, deference direction).
+Both closed the same day in 3.20.3 — the walkthrough now names both doors
+truthfully and the ⓘ panel carries a door through to the hub; the notes open
+everything since this device last looked, capped, with the true count said.
 
 - **The situation sheet asks who TWICE, and nothing there can name somebody
   new.** `#with-who` is a single-valued `<select>` labelled *Who is here*;
@@ -947,7 +953,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.19.6**, promoted 2026-09-01 at `3d187d9`. The merged
+- **PRODUCTION CARRIES 3.20.1**, promoted 2026-09-01 at `46439c6`. The merged
+  tree was asserted byte-identical to the walked staging head `3196d04` before
+  the push — same tree object, not a diff that looked empty — and both
+  editions were then read back from their production URLs: workers naming
+  3.20.1, the picker carrying `rest-with-them`, the bundle carrying the
+  gauge's door words.
+- **Superseded: 3.19.6**, promoted 2026-09-01 at `3d187d9`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
   **THIS LINE SAID 3.15.0 UNTIL NOW, THROUGH TWO PROMOTES, AND EVERY GATE WAS
@@ -957,7 +969,30 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.1**. Two
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.3**. The cold
+  read-back's remaining two findings, closed on the owner's ruling that routing
+  them upward was fake carefulness: the walkthrough names both doors truthfully
+  and the ⓘ panel carries an *Elsewhere in the app* door of its own
+  (`#about-elsewhere`, registered same-commit); the notes open everything since
+  this device last looked (`releasesSince`, capped at six with the true count
+  said, seen-version in kv — never an event). V-17 records that the source map
+  ships deliberately.
+- **Superseded: 3.20.2.** Three
+  defects found by the first COLD READ-BACK — a second session walking the
+  promoted app with only the release claims in hand, forbidden the source, its
+  report diffed against intent (the owner's design, 2026-09-01; the
+  disagreement-is-strong / agreement-is-weak asymmetry stated up front).
+  Fixed the same hour: `@owes` rows arrive as the waiting-for KIND so the owed
+  surfaces show them (the waiting was open in the data and invisible on the
+  surface); the sheet-title ring widened from `.section` headings to every
+  `dialog h2` (the item sheet, the About panel and the walkthrough replay had
+  no ring — 3.20.1's own note over-claimed "every sheet"); and the feeds
+  picker now uses the same kind-filtered builder the after-picker always had
+  (`feedCandidates`), so people and places stop being offered as things work
+  queues behind. Two findings recorded and NOT fixed, below. One dissolved on
+  verification: "One thing per line" belongs to the More-room textarea, not
+  the single-line box the reader first meets.
+- **Superseded: 3.20.1.** Two
   defects from the first minutes of the on-device pass, fixed the same morning:
   the gauge's run-on line is a fact line and a door line now (the door in the
   accent, saying the sheet's own words, arrow after), and the heading a sheet
@@ -2564,7 +2599,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.19.6** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.20.1** — promoted at
+  `46439c6` on 2026-09-01, the merged tree asserted byte-identical to `3196d04`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. **Verified live by content on both editions**: workers naming
+  3.20.1, the picker carrying the directory pair, the bundle carrying the
+  gauge's door words. Two releases: who holds the rest (both directions, with
+  its take-back and the import carrying people, ADR-0122), and the gauge told
+  apart from its door with every sheet title drawing the app's own ring.
+- Superseded, and kept for the record — production was **3.19.6**, promoted at
   `3d187d9` on 2026-09-01, the merged tree asserted byte-identical to `220823e`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by CONTENT and not by version**: the cache name says

@@ -1473,3 +1473,16 @@ Two lessons from sibling apps apply to every future row here:
   what it actually measures and when it last measured it.
 - **When the only witness is the owner, ask clearly and believe the answer.**
   V-11 again: a weaker instrument was used to contradict the owner about the owner's own repo.
+
+## V-17 · The source map ships, and that is a decision now
+**Status: VERIFIED 2026-09-01.** `esbuild --sourcemap` writes `public/app.js.map`,
+the deploy publishes `public/` whole, and production answers 200 for it — so the
+complete TypeScript source, comments included, is served from the app's own
+origin. Nothing is *exposed* by this that the public repository does not already
+publish, and the privacy, quote and third-person gates scan every file that
+feeds it. Found when the cold read-back's isolation declaration mentioned
+reading shipped HTML comments, which prompted the question of what else ships.
+Kept deliberately: the app's source is public on purpose, a served map makes
+the deployed bundle debuggable exactly as shipped, and stripping it would hide
+nothing from anybody who can open GitHub. If the repo ever stops being public,
+this row is the reminder that the map must stop shipping the same day.
