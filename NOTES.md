@@ -494,7 +494,10 @@ count here is maintained by hand and nothing would catch it going stale.
   a missed return — someone is hurt — and the return engine structurally cannot
   reach it. The evidence is [`docs/nd-collisions.md`](docs/nd-collisions.md)
   entry 32; what follows is what that entry settles and what it leaves to be
-  answered here.
+  answered here. **Entry 33 is this same failure at organisational scale** — a
+  role changing hands with the whole of what was agreed in one head — and it
+  carries the one Strong remedy anybody has measured, which is a structured
+  verbal handover with a read-back and not a document.
   - **IT HAS A FORMAL NAME AND IT IS NOT A QUIETKEEP GAP.** Repair in
     conversation has a structural window, and past it intersubjectivity has no
     further defense (Schegloff, 1992). Mutual belief is coordinated work rather
