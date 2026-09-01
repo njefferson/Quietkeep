@@ -957,7 +957,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.0**. The record
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.1**. Two
+  defects from the first minutes of the on-device pass, fixed the same morning:
+  the gauge's run-on line is a fact line and a door line now (the door in the
+  accent, saying the sheet's own words, arrow after), and the heading a sheet
+  hands focus to draws the app's own ring instead of the engine's default —
+  which Chromium never drew at all, so no walk could have measured what the
+  device was showing. The walk asserts the title ring on open now: focused, the
+  app's own, and unclipped. Shell word budget raised 3815 → 3827, deliberately,
+  for the two directory options that ARE the 3.20.0 release.
+- **Superseded, and kept for the record: 3.20.0.** The record
   can carry who holds the rest of something, and the import can carry people.
   **Q-15 CLOSED BY THE OWNER, BUILT THE SAME DAY (ADR-0122).** Two relations —
   *they hold the rest of this*, *I hold the rest of this* — a pair because a

@@ -810,6 +810,21 @@ button.ghost,
   cursor: pointer;
 }
 
+/* The fact and the door, told apart inside one control (3.20.1, device
+   report: as a run-on line the destination read as a typo on the end of a
+   statement, and nothing said button). The fact wears quiet ink because it is
+   a fact; the door keeps the accent every other way-to-somewhere wears, on
+   its own line so a phone never wraps it mid-phrase, with `.jump`'s
+   decorative arrow after the words — pointing onward rather than down,
+   because it opens a sheet instead of moving down the page. One control, one
+   target: splitting them in two would halve a 44px target to make a point
+   the colour already makes. */
+.gauge-fact { color: var(--ink-soft); }
+.gauge-door { display: block; margin-top: 0.125rem; }
+.gauge-door::after {
+  content: " \2192";        /* an onward arrow, decorative — the words carry it */
+}
+
 /* THE WAY PAST THE STACK (2.0.8, ADR-0090). Built on `.gauge`'s shape — a full
    width, left-aligned, quiet row — because that is already the idiom for "a line
    on this surface that takes you somewhere", and a reader's hands have learned
@@ -2301,6 +2316,22 @@ dialog, dialog * { overflow-wrap: anywhere; }
 .tour-heading { margin: 0 0 0.75rem; font-size: 1.25rem; }
 /* The heading takes focus each step; its ring is the app's, not a stray outline. */
 .tour-heading:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+
+/* THE TITLE A SHEET HANDS FOCUS TO (3.20.1). `focusSheetTitle` puts focus on
+   the h2 of every sheet it opens, and no rule ever drew that ring — what
+   showed was each engine's default: on the device, WebKit's tight box with a
+   broken corner (reported 2026-09-01, the coverage sheet); in the walk's
+   Chromium, nothing at all, so no audit could ever see it. This is
+   `.tour-heading`'s treatment — the one programmatically-focused heading that
+   has never been reported broken — on `:focus` rather than `:focus-visible`,
+   because engines disagree about whether a programmatic focus is "visible"
+   and a you-are-here cue on a sheet that just opened is wanted under every
+   modality. */
+dialog h2.section:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
 /* A CONTROL'S NAME INSIDE A SENTENCE (2.31.0).
    Reported from a device: in the walkthrough the italicised names were the
    hardest part to read, because italic is emphasis and a first-time reader

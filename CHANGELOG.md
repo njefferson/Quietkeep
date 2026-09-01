@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.20.1 — ITERATION
+
+*2026-09-01*
+
+- **The line that opens *What comes back, and when* now looks like a way in.** It was one run-on line — two facts and a destination joined by dots, wrapping wherever the phone felt like it — and it read as a statement with a typo on the end, not as something to press. The facts sit on their own line now, in quiet ink; the way in sits under them in the colour every other way-in wears, saying exactly what the sheet it opens is called, with a small arrow after the words. Still one control, and the whole row is still the target.
+- **The heading a sheet opens on draws its own ring now.** Every sheet hands your place to its title when it opens, and the ring around it was whatever the browser chose to draw — which on the device meant a tight box with a broken corner. The app draws that ring itself now, the same on every sheet and every browser, with room around the words — and the walk measures it, so it cannot quietly fall back to the browser’s whim.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.20.0 — CAPABILITY
 
 *2026-09-01*

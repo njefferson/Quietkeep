@@ -533,7 +533,7 @@ const REGISTRY = {
     // It is measured as a `.contents-go` row on the 'contents open' state now,
     // on the surface it actually lives on — leaving it here would have named a
     // selector matching nothing visible, which this gate fails on by design.
-    'button.info', '.section', '.gauge', '.empty', '.foot', '.foot a', '.build',
+    'button.info', '.section', '.gauge', '.gauge-fact', '.gauge-door', '.empty', '.foot', '.foot a', '.build',
     '#update-words', '#update-save', '#update-reload', '#update-dismiss',
     // The way back (1.14.0, ADR-0062). This is the ONLY state it appears in —
     // it shows on an empty store and nowhere else — so it is audited exactly
@@ -3134,6 +3134,34 @@ try {
     // the surface underneath.
     await page.click('#gauge');
     await page.waitForSelector('#sheet-coverage[open]');
+    // THE RING A SHEET OPENS WITH (3.20.1). `focusSheetTitle` has always put
+    // focus on the title, and the ring that showed was each engine's default —
+    // unstyled, unmeasured, and broken on the device. The tab-driven ring audit
+    // can never reach a tabindex="-1" heading, so this asserts it directly:
+    // focus landed on the title, the app's own ring is drawn (`:focus`, so this
+    // engine renders what the device renders), and the whole ring fits inside
+    // the sheet rather than being clipped by its edge.
+    {
+      const ring = await page.evaluate(() => {
+        const t = document.querySelector('#sheet-coverage-title');
+        const d = document.querySelector('#sheet-coverage');
+        if (!t || !d) return null;
+        const cs = getComputedStyle(t);
+        const room = parseFloat(cs.outlineWidth) + parseFloat(cs.outlineOffset);
+        const tr = t.getBoundingClientRect(), dr = d.getBoundingClientRect();
+        return {
+          focused: document.activeElement === t,
+          width: parseFloat(cs.outlineWidth),
+          style: cs.outlineStyle,
+          headroom: tr.top - dr.top - room,
+        };
+      });
+      (ring && ring.focused ? pass : fail)(`${theme}/coverage open: the sheet hands focus to its title`);
+      (ring && ring.style !== 'none' && ring.width >= 2 ? pass : fail)(
+        `${theme}/coverage open: the title's ring is the app's own (${ring ? `${ring.style} ${ring.width}px` : 'unmeasured'})`);
+      (ring && ring.headroom >= 0 ? pass : fail)(
+        `${theme}/coverage open: and the whole ring fits inside the sheet (${ring ? `${Math.round(ring.headroom)}px to spare` : 'unmeasured'})`);
+    }
     await auditContrast(page, 'coverage open', theme);
     await auditAxe(page, 'coverage open', theme);
     await auditNames(page, 'coverage open', theme);
