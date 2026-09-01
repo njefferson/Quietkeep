@@ -260,7 +260,10 @@ const BUDGET = {
   // names the gesture. Every one is a hint beside the control it explains —
   // the accumulation rule (1.39.1) still holds because none of them is a
   // control and none repeats a sentence said elsewhere on the sheet.
-  words: 3908,
+  // 3908 -> 3915 on 2026-09-01 (3.21.0). Seven words: the hub's own
+  // What's-the-situation? door and the room's two lens buttons. The words ARE
+  // the capability's doors.
+  words: 3915,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -671,7 +674,9 @@ const BUDGET = {
   // 267 -> 268 on 2026-09-01 (3.20.3): the i panel's Elsewhere door. A new
   // control is exactly what this budget exists to make deliberate, and this
   // one closes a wayfinding dead-end rather than adding a destination.
-  controls: 268,
+  controls: 271,
+  // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
+  // room's two lenses. Three controls, each one of the pass's asks.
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

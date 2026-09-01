@@ -973,7 +973,17 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.4**. Nine of
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.21.0**, carrying
+  3.20.4 beneath it. The capability half of the twelve-finding pass
+  (ADR-0123): the room readable by thing — each thing once, wearing the names
+  that share it, the names being the only label a set ever gets — with by
+  person the standing default; people carrying places stated on their own
+  sheets, and every people-chooser shelving stated-here first, unplaced always
+  (the fitsHere default restated), stated-elsewhere behind one press and never
+  gone; and the situation asked from the hub too, the stance door staying with
+  the consequence lines it narrows. Stated facts only, no inference, per
+  entries 23/24. Beneath it, 3.20.4's nine small truths.
+- **Superseded beneath the above: 3.20.4.** Nine of
   the twelve-finding device pass, the small-truths half: form fields wear a
   calmer ring (the photographed border collision), who-is-in-it names the
   gesture and a pressed name looks pressed, the Menu row and the date group

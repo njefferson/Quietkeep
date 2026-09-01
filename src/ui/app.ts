@@ -45,7 +45,7 @@ import {
 } from '../horizons.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
-import { meetingView, meetingViewWords, meetingPersonWords } from '../meeting.ts';
+import { meetingView, meetingViewWords, meetingPersonWords, meetingByThing } from '../meeting.ts';
 import { arrangementNodes, arrangementCards } from '../arrangement.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
@@ -64,8 +64,7 @@ import {
 import {
   waitingOnAnyone, withWhom, waitingWords, peopleWords,
   promisedToAnyone, promisedWords, promisedRowWords,
-  allPeople, withWords, WITH_KEY, getWithNow, setWithNow,
-} from '../people.ts';
+  allPeople, withWords, WITH_KEY, getWithNow, setWithNow, peopleForPlace } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
@@ -426,9 +425,14 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   if (withSel && withRow) {
     withRow.hidden = named.length === 0;
     const keep = withNow ?? '';
+    // Ordered by the place you are in (3.21.0): stated-here, then the
+    // unplaced, then stated-elsewhere — a select cannot shelve, so the order
+    // says what the toggles say, and nobody is missing from it.
+    const shelves = peopleForPlace(st, whereNow);
+    const ordered = [...shelves.here, ...shelves.anywhere, ...shelves.elsewhere];
     withSel.replaceChildren(...[
       Object.assign(document.createElement('option'), { value: '', textContent: 'nobody in particular' }),
-      ...named.map(p => Object.assign(document.createElement('option'), {
+      ...ordered.map(p => Object.assign(document.createElement('option'), {
         value: p.id, textContent: p.title || '(unnamed)',
       })),
     ]);
@@ -1617,14 +1621,28 @@ export async function main(edition?: Edition): Promise<void> {
   let meetingOf: string | null = null;
   const whoChosen = (): string[] => whoInIt ?? (withNow ? [withNow] : []);
 
+  /** "Everyone" pressed this sitting — the reveal past the place's shelf.
+   *  Reset each time the sheet opens, like every reveal. */
+  let whoEveryone = false;
   const paintSituationWho = (): void => {
     const row = document.querySelector<HTMLElement>('#situation-who-row');
     const box = document.querySelector<HTMLElement>('#situation-who');
     if (!row || !box) return;
-    const named = allPeople(session.state());
-    row.hidden = named.length === 0;
-    if (named.length === 0) return;
+    const st = session.state();
+    const all = allPeople(st);
+    row.hidden = all.length === 0;
+    if (all.length === 0) return;
     const on = new Set(whoChosen());
+    // THE PLACE SORTS THE CHOOSER (3.21.0, ADR-0123): stated-here first, the
+    // unplaced always (fitsHere's own default), and stated-only-elsewhere
+    // behind one press — never gone, never inferred, only places the reader
+    // put on the person's own sheet. Anyone already IN the room stays visible
+    // whatever shelf they came from: a chosen name must never vanish.
+    const shelves = peopleForPlace(st, whereNow);
+    const front = [...shelves.here, ...shelves.anywhere,
+      ...shelves.elsewhere.filter(p => on.has(p.id))];
+    const behind = shelves.elsewhere.filter(p => !on.has(p.id));
+    const named = whoEveryone ? [...front, ...behind] : front;
     box.replaceChildren(...named.map(p => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -1644,6 +1662,14 @@ export async function main(edition?: Edition): Promise<void> {
       });
       return b;
     }));
+    if (!whoEveryone && behind.length > 0) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'ghost situation-who-one';
+      more.textContent = behind.length === 1 ? 'Everyone (1 more)' : `Everyone (${behind.length} more)`;
+      more.addEventListener('click', () => { whoEveryone = true; paintSituationWho(); });
+      box.append(more);
+    }
   };
 
   const paintSituations = (): void => {
@@ -1717,10 +1743,17 @@ export async function main(edition?: Edition): Promise<void> {
   // WHAT THIS MEETING IS ABOUT (3.16.0, ADR-0119). Painted on open, like every
   // sheet here: a list built once reports the store as it was when the app
   // started, and the whole value of this one is that it is true on the way in.
+  /** Which lens the room is worn through — reset to By person on each open,
+   *  so the default is predictable and the choice is the sitting's. */
+  let meetingLens: 'person' | 'thing' = 'person';
   const paintMeeting = (): void => {
     const st = session.state();
     const saved = meetingOf === null ? undefined : st.situations.get(meetingOf);
     const v = meetingView(st, saved?.people ?? [], heldNodes);
+    const byP = document.querySelector<HTMLButtonElement>('#meeting-by-person');
+    const byT = document.querySelector<HTMLButtonElement>('#meeting-by-thing');
+    if (byP) byP.setAttribute('aria-pressed', meetingLens === 'person' ? 'true' : 'false');
+    if (byT) byT.setAttribute('aria-pressed', meetingLens === 'thing' ? 'true' : 'false');
     const title = document.querySelector<HTMLElement>('#sheet-meeting-title');
     // The situation's own name, because "In the room" twice over says nothing
     // about WHICH room and somebody with three saved meetings needs to know.
@@ -1729,7 +1762,28 @@ export async function main(edition?: Edition): Promise<void> {
     if (words) words.textContent = meetingViewWords(v);
 
     const people = document.querySelector<HTMLUListElement>('#meeting-people');
-    if (people) {
+    if (people && meetingLens === 'thing') {
+      // THE SAME ROOM, BY THING (3.21.0, ADR-0123): each thing once, wearing
+      // the names that share it — the names are the only label a set gets.
+      const rows = meetingByThing(st, saved?.people ?? [], heldNodes);
+      people.replaceChildren(...rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'linklike meeting-thing';
+        b.textContent = r.node.title || '(untitled)';
+        b.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(r.node.id);
+          if (fresh) detail.open(fresh);
+        });
+        const who = document.createElement('span');
+        who.className = 'roles-held';
+        who.textContent = r.people.map(p => p.title || '(unnamed)').join(' · ');
+        li.append(b, who);
+        return li;
+      }));
+    } else if (people) {
       people.replaceChildren(...v.people.map(mp => {
         const li = document.createElement('li');
         li.className = 'roles-row';
@@ -1780,7 +1834,11 @@ export async function main(edition?: Edition): Promise<void> {
     fill('#meeting-crosses-label', '#meeting-crosses', v.crosses);
     fill('#meeting-lines-label', '#meeting-lines', v.lines);
   };
-  onSheetOpen('sheet-meeting', paintMeeting);
+  onSheetOpen('sheet-meeting', () => { meetingLens = 'person'; paintMeeting(); });
+  document.querySelector<HTMLButtonElement>('#meeting-by-person')
+    ?.addEventListener('click', () => { meetingLens = 'person'; paintMeeting(); });
+  document.querySelector<HTMLButtonElement>('#meeting-by-thing')
+    ?.addEventListener('click', () => { meetingLens = 'thing'; paintMeeting(); });
   wireSheetClose('sheet-meeting');
 
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). No painter of its own: the list
@@ -1790,7 +1848,7 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLButtonElement>('#review-count')
     ?.addEventListener('click', () => { openSheet('sheet-review'); });
 
-  onSheetOpen('sheet-situation', () => { paintSituationWho(); paintSituations(); });
+  onSheetOpen('sheet-situation', () => { whoEveryone = false; paintSituationWho(); paintSituations(); });
   wireSheetClose('sheet-situation');
   document.querySelector<HTMLButtonElement>('#situation-open')
     ?.addEventListener('click', () => { openSheet('sheet-situation'); });
@@ -2261,6 +2319,11 @@ export async function main(edition?: Edition): Promise<void> {
     leave();
     document.querySelector<HTMLInputElement>('#capture')?.focus();
   });
+
+  // The hub's own way into the situation (3.21.0) — a second door to the one
+  // sheet; the original stays with the consequence lines it narrows.
+  document.querySelector<HTMLButtonElement>('#situation-open-hub')
+    ?.addEventListener('click', () => { openSheet('sheet-situation'); });
 
   document.querySelector<HTMLButtonElement>('#where-notplace')?.addEventListener('click', () => {
     // The sitting's way back first: after a put-down, the same button brings

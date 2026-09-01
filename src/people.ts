@@ -17,6 +17,7 @@ import type { NodeId } from './events.ts';
 import { heldNodes } from './gate.ts';
 import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
 import { boundaryOf } from './day.ts';
+import { contextsOf } from './contexts.ts';
 import { isHeld } from './fold.ts';
 
 /** The vocabulary's closed relation set. */
@@ -401,4 +402,53 @@ export function stakeholderWords(names: readonly string[]): string | null {
   if (names.length === 2) return `${names[0]} and ${names[1]} care how it goes`;
   const rest = names.length - 2;
   return `${names[0]}, ${names[1]} and ${rest} ${rest === 1 ? 'other' : 'others'} care how it goes`;
+}
+
+
+/** The three shelves of a place-aware people chooser (3.21.0). */
+export interface PeopleByPlace {
+  /** Stated at this place, on their own sheet. */
+  here: NodeState[];
+  /** No stated places at all — offered everywhere, `fitsHere`'s own default. */
+  anywhere: NodeState[];
+  /** Stated only at other places — one press away, never gone. */
+  elsewhere: NodeState[];
+}
+
+/**
+ * People, sorted by the place you are standing in (3.21.0, ADR-0123).
+ *
+ * The device pass, in its own words: "a way to group or select people as
+ * affiliated with contexts, so my wife isn't an option for staff call."
+ * STATED FACTS ONLY: a person carries places the reader put on that person's
+ * own sheet — entry 24's shape — and nothing is ever inferred from who was
+ * around when (entry 23's refusal, the with-trail this app must never keep).
+ *
+ * The load-bearing default is `fitsHere`'s, restated for people: someone with
+ * NO stated places fits every answer and is always offered, because on a store
+ * where almost nobody carries a place, an empty chooser is the app teaching
+ * that the feature is broken. Someone stated only elsewhere moves behind one
+ * press — never removed, never hidden for good — so the chooser narrows
+ * without the roster ever lying about who exists.
+ *
+ * A trashed place neither holds nor exiles anybody: affiliation resolves
+ * through `contextsOf`, which drops dead places, so a person whose only stated
+ * place was let go is simply unplaced again — no migration, `personName`'s
+ * resolve-through-state rule on one more axis.
+ */
+export function peopleForPlace(state: State, place: NodeId | null): PeopleByPlace {
+  const everyone = allPeople(state);
+  const placeLive = place !== null
+    && [...state.nodes.values()].some(c => c.id === place && c.kind === 'context' && alive(c));
+  if (!placeLive) return { here: [], anywhere: everyone, elsewhere: [] };
+  const here: NodeState[] = [];
+  const anywhere: NodeState[] = [];
+  const elsewhere: NodeState[] = [];
+  for (const p of everyone) {
+    const places = contextsOf(state, p);
+    if (places.length === 0) anywhere.push(p);
+    else if (places.some(c => c.id === place)) here.push(p);
+    else elsewhere.push(p);
+  }
+  return { here, anywhere, elsewhere };
 }

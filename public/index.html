@@ -355,6 +355,15 @@
 <section id="hub" class="hub" aria-labelledby="hub-heading" data-not-a-stop>
   <h2 id="hub-heading" class="section" tabindex="-1">Where do you want to be?</h2>
   <ul id="hub-doors" class="hub-doors"></ul>
+  <!-- THE SITUATION, FROM THE HUB TOO (3.21.0, device report: "mentally seems
+       like a setup step before going deeper, not a filter applied later in a
+       smaller window"). A SECOND door to the same sheet, not a move: the
+       original stays on the stances beside the consequence lines, because a
+       filter's effect must stand with what it narrows (the rule that placed
+       it). This one is the same question asked where the day starts. The
+       gauge idiom — a quiet line that takes you somewhere. -->
+  <button id="situation-open-hub" class="gauge" type="button"
+          data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
 </section>
 
   <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
@@ -3358,6 +3367,14 @@
   <h2 id="sheet-meeting-title" class="section">In the room</h2>
   <div class="sheet-body" tabindex="0">
     <p id="meeting-words" class="detail-hint"></p>
+    <!-- TWO LENSES OVER ONE ROOM (3.21.0, ADR-0123). By person stays the
+         default — a thing naming two attendees is two conversations
+         (ADR-0119) — and by thing collapses to each thing once, wearing the
+         names that share it. The names are the only label a set ever gets. -->
+    <div class="detail-row" role="group" aria-label="How the room is shown">
+      <button id="meeting-by-person" type="button" aria-pressed="true">By person</button>
+      <button id="meeting-by-thing" type="button" class="ghost" aria-pressed="false">By thing</button>
+    </div>
     <ul id="meeting-people" class="roles-list"></ul>
     <p id="meeting-crosses-label" class="detail-label" hidden>What it runs through</p>
     <ul id="meeting-crosses" class="roles-list"></ul>

@@ -919,7 +919,7 @@ const REGISTRY = {
   // that costs is written in ADR-0119 rather than left to be discovered.
   'in the room': ['#sheet-meeting-title',
     '#sheet-meeting-close', '#meeting-words', '#meeting-people .roles-name',
-    '#meeting-people .roles-held', '#meeting-people .meeting-thing'],
+    '#meeting-people .roles-held', '#meeting-people .meeting-thing', '#meeting-by-person', '#meeting-by-thing'],
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
   // the 'review' state above; this is the same rows without the cap, and its own
   // chrome. The DOOR is `#review-count`, which is on the review surface, so it
@@ -1292,7 +1292,9 @@ const REGISTRY = {
   // the one state that must never ship unmeasured. The doors are the only
   // controls; each carries a place name and, when its surface publishes one, a
   // sentence about what is behind it.
-  'the hub': ['#hub-heading', '.hub-go', '.hub-name', '.hub-count'],
+  'the hub': ['#hub-heading', '.hub-go', '.hub-name', '.hub-count',
+    // The situation, from the hub too (3.21.0) — registered the day it exists.
+    '#situation-open-hub'],
   // And the row that is present inside every job: the way back, and the way to
   // put a thought down without leaving the job to find the box.
   'inside a job': ['#stance-back', '#stance-capture'],
@@ -2635,6 +2637,14 @@ try {
     // level up.
     await leaveStance(page);
     await page.waitForSelector('#hub-doors .hub-go');
+    // THE HUB'S OWN WAY INTO THE SITUATION (3.21.0): pressed, it opens the
+    // sheet; closed, the hub is still there. A second door to one sheet, and
+    // the original stays with the consequence lines it narrows.
+    await page.click('#situation-open-hub');
+    await page.waitForSelector('#sheet-situation[open]');
+    pass(`${theme}/the hub: What's the situation? opens from the hub`);
+    await page.click('#sheet-situation-close').catch(() => page.keyboard.press('Escape'));
+    await page.waitForFunction(() => !document.querySelector('#sheet-situation')?.open);
     await auditContrast(page, 'the hub', theme);
     await auditAxe(page, 'the hub', theme);
     await auditNames(page, 'the hub', theme);
@@ -4381,6 +4391,12 @@ try {
     // "selected and waiting to be added").
     (/Tap a name/.test(await page.locator('#situation-who-hint').textContent() ?? '') ? pass : fail)(
       `${theme}/who is in it: the hint says tap to add, tap to take out`);
+    // NOBODY HAS STATED PLACES in this store, so the place-aware shelves must
+    // change NOTHING here: everyone offered, no "Everyone" reveal — the
+    // fitsHere default restated for people (3.21.0). The shelving itself is
+    // held by unit tests; this guards the default the screen shows.
+    (await page.locator('#situation-who .situation-who-one', { hasText: /Everyone/ }).count() === 0 ? pass : fail)(
+      `${theme}/who is in it: with nobody placed, nobody is shelved away`);
     const whoBtn = page.locator('#situation-who .situation-who-one', { hasText: 'Rowan' });
     (await whoBtn.getAttribute('aria-pressed') === 'false' ? pass : fail)(
       `${theme}/who is in it: it starts off, because the filter above was cleared`);
@@ -4403,6 +4419,17 @@ try {
 
     await page.click('#situation-list .situation-room');
     await page.waitForSelector('#sheet-meeting[open]');
+    // TWO LENSES OVER ONE ROOM (3.21.0, ADR-0123). By thing collapses to each
+    // thing once, wearing the names that share it — pressed, said in
+    // aria-pressed, and the row carries the attendee's own name as its label.
+    await page.click('#meeting-by-thing');
+    await page.waitForTimeout(200);
+    (await page.locator('#meeting-by-thing').getAttribute('aria-pressed') === 'true' ? pass : fail)(
+      `${theme}/in the room: the lens flip says so in aria-pressed`);
+    (/Rowan/.test(await page.locator('#meeting-people .roles-held').first().textContent().catch(() => '') ?? '') ? pass : fail)(
+      `${theme}/in the room: a by-thing row wears the names that share it`);
+    await page.click('#meeting-by-person');
+    await page.waitForTimeout(150);
     // AND THE SHEET BEHIND IT IS GONE. `openSheet` calls `closeEverything`
     // because two stacked modals is the overlap ADR-0083 forbids, so the door
     // hands the reader ON rather than piling a surface on a surface — the same
@@ -5277,6 +5304,13 @@ try {
       document.querySelector('#detail-people-list')?.textContent ?? ''));
     await page.locator('#detail-people-list button', { hasText: /Ada/ }).first().click();
     await page.waitForSelector('#detail-person-group:not([hidden])');
+    // A PERSON'S PLACES, IN A PERSON'S WORDS (3.21.0): the same group that says
+    // "Where can this be done?" on work says "Their places" here — the stated
+    // affiliation the choosers sort by, in words that are true of a person.
+    (/Their places/.test(await page.locator('label[for="detail-context"]').textContent() ?? '') ? pass : fail)(
+      `${theme}/a person's sheet: the places group speaks person words`);
+    (/offered when you are there/.test(await page.locator('#detail-context-hint').textContent() ?? '') ? pass : fail)(
+      `${theme}/a person's sheet: and the hint says what stating a place does`);
     await auditContrast(page, 'detail sheet, a person', theme);
     await auditAxe(page, 'detail sheet, a person', theme);
     await auditNames(page, 'detail sheet, a person', theme);

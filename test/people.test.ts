@@ -15,7 +15,7 @@ import {
   people, personView, waitingOnAnyone, withWhom, openDays, waitingWords,
   peopleWords, isOpenWaiting, personName,
   promisedToAnyone, promisedWords, promisedRowWords,
-  fitsWith, withWords, allPeople, RELATIONS,
+  fitsWith, withWords, allPeople, RELATIONS, peopleForPlace,
 } from '../src/people.ts';
 import { silentNodes } from '../src/gate.ts';
 import {
@@ -480,4 +480,52 @@ test('a release naming a relation outside the pair is a no-op, never a remove-al
   const s2 = fold([ev('holding.released', 'A', { person: 'p1', relation: 'promised-to' })], s1);
   assert.ok(s2.nodes.get('A')!.people.some(l => l.relation === 'promised-to'),
     'a promise comes off through its own noun, not through this one');
+});
+
+// --- people, by the place you are in (3.21.0) -------------------------------
+//
+// The device pass: "I would like a way to group or select people as affiliated
+// with contexts, so my wife isn't an option for staff call." Stated facts only
+// — a place put on the person's own sheet — never inference (entry 23's
+// refusal), and the load-bearing default is `fitsHere`'s own: a person with no
+// stated places fits every answer and is always offered. Everyone else stays
+// one press away; nothing is hidden for good.
+
+test('a place sorts the people choosers: stated-here, unplaced, elsewhere', () => {
+  const s0 = st(
+    ev('person.created', 'PW', { name: 'Wren' }),
+    ev('person.created', 'PC', { name: 'Cole' }),
+    ev('person.created', 'PU', { name: 'Uma' }),
+    ev('context.created', 'CW', { name: 'At work' }),
+    ev('context.created', 'CH', { name: 'At home' }),
+    ev('context.attached', 'PC', { node: 'PC', context: 'CW' }),
+    ev('context.attached', 'PW', { node: 'PW', context: 'CH' }),
+  );
+  const g = peopleForPlace(s0, 'CW');
+  assert.deepEqual(g.here.map(p => p.title), ['Cole'], 'stated at this place');
+  assert.deepEqual(g.anywhere.map(p => p.title), ['Uma'], 'no stated places — offered everywhere');
+  assert.deepEqual(g.elsewhere.map(p => p.title), ['Wren'], 'stated only elsewhere — one press away, never gone');
+});
+
+test('no place chosen: everyone is simply offered', () => {
+  const s0 = st(
+    ev('person.created', 'PB', { name: 'Bea' }),
+    ev('person.created', 'PA', { name: 'Ash' }),
+  );
+  const g = peopleForPlace(s0, null);
+  assert.deepEqual(g.here, []);
+  assert.deepEqual(g.anywhere.map(p => p.title), ['Ash', 'Bea']);
+  assert.deepEqual(g.elsewhere, []);
+});
+
+test('a trashed place stops sorting anybody, without a migration', () => {
+  const s0 = st(
+    ev('person.created', 'PC', { name: 'Cole' }),
+    ev('context.created', 'CW', { name: 'At work' }),
+    ev('context.attached', 'PC', { node: 'PC', context: 'CW' }),
+    ev('node.trashed', 'CW', { at: NOW }),
+  );
+  const g = peopleForPlace(s0, 'CW');
+  assert.deepEqual(g.anywhere.map(p => p.title), ['Cole'],
+    'a dead place neither holds people nor exiles them — contextsOf resolves live');
 });

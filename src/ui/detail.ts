@@ -631,6 +631,23 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (words) bits.push(words);
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
     if (clock) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
+    // A PERSON'S PLACES, IN A PERSON'S WORDS (3.21.0, ADR-0123). The places
+    // group has always rendered on every kind, so places could be put on a
+    // person before anything read them — the affiliation the choosers now
+    // sort by. On a person the work-words are wrong, so the label swaps.
+    {
+      const ctxLabel = q<HTMLElement>('label[for="detail-context"]');
+      const ctxHint = q<HTMLElement>('#detail-context-hint');
+      if (ctxLabel) {
+        ctxLabel.textContent = n.kind === 'person'
+          ? 'Their places' : 'Where can this be done?';
+      }
+      if (ctxHint) {
+        ctxHint.textContent = n.kind === 'person'
+          ? 'Name a place and they are offered when you are there. No places means offered everywhere.'
+          : 'As many as fit, commas between them, and none is required. With no place of its own, a thing goes where it lives — or anywhere, if that has none.';
+      }
+    }
     // AN IDENTITY SAYS WHAT IT IS (3.20.4, device report: a role's sheet
     // "looks like a task except for the little role label"). The kind word was
     // already first; these add the sentence that stops the task-chrome around

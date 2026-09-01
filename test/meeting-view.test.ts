@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 
 import { fold, type State } from '../src/fold.ts';
 import { heldNodes } from '../src/gate.ts';
-import { meetingView, meetingViewWords, meetingPersonWords } from '../src/meeting.ts';
+import { meetingView, meetingViewWords, meetingPersonWords, meetingByThing } from '../src/meeting.ts';
 import type { AppEvent } from '../src/events.ts';
 
 let seq = 0;
@@ -145,4 +145,52 @@ test('it narrows nothing — the projection is pure and touches no preference', 
   const before = JSON.stringify([...s.nodes.keys()].sort());
   view(s, ['PA']);
   assert.equal(JSON.stringify([...s.nodes.keys()].sort()), before, 'nothing was written');
+});
+
+// --- the room, by thing (3.21.0) --------------------------------------------
+//
+// The device pass, with one task every person shares: "it looks repetitive.
+// Can it allow sort by person, or by task where it would collapse to one
+// instance that several people owe, potentially grouped as appropriate without
+// creating a manufactured label of any set of people." ADR-0119's per-person
+// duplication stands — two attendees ARE two conversations — and this is the
+// OTHER lens over the same room: each thing once, the attendees on it named.
+// The names are the only grouping label there is.
+
+test('by thing: each thing once, wearing the names that share it', () => {
+  const s = st(...room(),
+    mk('A', 'action', 'the shared submission'),
+    link('A', 'PA', 'waiting-on'), link('A', 'PS', 'promised-to'), link('A', 'PO', 'stakeholder'),
+    mk('B', 'action', 'a thing only Sam has'), link('B', 'PS', 'waiting-on'),
+  );
+  const rows = meetingByThing(s, ['PA', 'PS', 'PO'], heldNodes);
+  assert.equal(rows.length, 2, 'two things, not four rows');
+  assert.deepEqual(rows.map(r => r.node.title), ['a thing only Sam has', 'the shared submission']);
+  assert.deepEqual(rows[1]!.people.map(p => p.title), ['Ada', 'Ola', 'Sam'],
+    'the names on the row are the grouping, and the whole grouping');
+  assert.deepEqual(rows[0]!.people.map(p => p.title), ['Sam']);
+});
+
+test('by thing and by person agree about what is in the room', () => {
+  const s = st(...room(),
+    mk('A', 'action', 'one'), link('A', 'PA', 'waiting-on'), link('A', 'PS', 'waiting-on'),
+    mk('B', 'action', 'two'), link('B', 'PA', 'mentioned'),
+    mk('C', 'action', 'not in the room'), 
+  );
+  const who = ['PA', 'PS'];
+  const v = view(s, who);
+  const rows = meetingByThing(s, who, heldNodes);
+  assert.equal(rows.length, v.total, 'one lens cannot claim a different room than the other');
+  assert.ok(!rows.some(r => r.node.id === 'C'));
+});
+
+test('by thing names only the attendees, and only the living', () => {
+  const s = st(...room(),
+    mk('A', 'action', 'x'),
+    link('A', 'PA', 'waiting-on'), link('A', 'PO', 'stakeholder'),
+    ev('node.trashed', 'PO', { at: NOW }),
+  );
+  const rows = meetingByThing(s, ['PA', 'PS', 'PO'], heldNodes);
+  assert.deepEqual(rows[0]!.people.map(p => p.title), ['Ada'],
+    'a let-go person neither groups nor labels');
 });
