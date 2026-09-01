@@ -927,9 +927,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
+- **PRODUCTION CARRIES 3.19.6**, promoted 2026-09-01 at `3d187d9`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
+  **THIS LINE SAID 3.15.0 UNTIL NOW, THROUGH TWO PROMOTES, AND EVERY GATE WAS
+  GREEN.** `branch-state-check.mjs` reads the bullet whose text starts with the
+  bare URL; this one starts with prose, so it is outside what the gate can see
+  and drifted silently while the line eleven hundred lines below it stayed
+  right. Same shape as the `### Open` preamble that `questions.mjs` does not
+  read. **A second statement of a fact a gate already guards is a second thing
+  to maintain by hand, and it will lose.**
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.19.6**. The app
   says what it is aimed at, and states the rule that protects it.
   **AUDIENCE AND TARGET ARE DIFFERENT THINGS AND BOTH ARE NOW SAID.** The
@@ -2514,12 +2521,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.17.1** — promoted at
-  `e4fba53` on 2026-08-31, the merged tree asserted byte-identical to `27811c9`,
+- **https://quietkeep.pages.dev** — production, **3.19.6** — promoted at
+  `3d187d9` on 2026-09-01, the merged tree asserted byte-identical to `220823e`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
-  as empty. Three releases: a meeting became somewhere you can stand, review's
-  total became the way to the rest of what it found, and a hub that could sit on
-  top of the footer on a wide screen stopped being able to.
+  as empty. **Verified live by CONTENT and not by version**: the cache name says
+  3.19.6 and the deployed `app.js` contains the string, which is the check a
+  hand-edited `sw.js` can pass while the bundle behind it is stale. Nine
+  releases: an arrangement can say where it stands and what would change it, a
+  control renders beside the thing it acts on with a gate to hold it there, the
+  coverage list is in return-date order, the *Why* page cites the outcome
+  evidence for its own founding claim together with the study that failed to
+  reproduce it, and the app now says what it is aimed at and states the rule
+  that stops general-population research overriding a refusal.
+  **Nine, and only two are capabilities.** Six of the rest came from something
+  reported off a device or found by a gate; one came from being asked whether a
+  claim actually held and finding the earlier grade too harsh.
   **IT IS THE FIRST PROMOTE IN A WHILE WHOSE SOURCE COMMIT HAD BOTH SPINE JOBS
   GREEN.** `27811c9` is the first fully green run since `fa6d8ae`; the two before
   it were red for reasons now recorded against 3.17.1 — a driver that had not yet
