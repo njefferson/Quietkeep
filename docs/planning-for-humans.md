@@ -460,6 +460,64 @@ in the corpus, and it is twenty-two years old.
 **Neither field appears anywhere else in this repo.** Recorded here so the next
 survey starts from them rather than rediscovering them.
 
+### A third literature, and it is the one with the outcome numbers
+
+Added 2026-09-01. This whole document argues that moving something out of a head
+and into a structure changes what happens. **The strongest outcome evidence for
+that claim anywhere is in patient safety, and none of it was cited here.**
+
+- **A structured cognitive aid, implemented with training, produced large
+  measured effects.** The WHO surgical safety checklist — nineteen items, eight
+  hospitals in eight cities across very different health systems — was followed
+  by death falling from 1.5% to 0.8% (P=0.003) and inpatient complications from
+  11.0% to 7.0% (P<0.001). *(Haynes et al., 2009, New England Journal of
+  Medicine, PMID 19144931; read from the primary.)* *(established)*
+- **The same checklist, mandated across a whole system, did not reproduce it.**
+  Ontario required adoption by every acute hospital, which made a natural
+  experiment out of it: 101 hospitals, about 109,000 procedures before and
+  106,000 after. Adjusted mortality moved 0.71% to 0.65% — odds ratio 0.91,
+  **P=0.13** — and complications 3.86% to 3.82%, odds ratio 0.97. The authors'
+  own conclusion is that implementation "was not associated with significant
+  reductions in operative mortality or complications". *(Urbach et al., 2014,
+  New England Journal of Medicine, PMID 24620866; read from the primary.)*
+  *(negative finding)*
+
+**The pair is the finding, and it is a prohibition.** The structure did not stop
+working between 2009 and 2014. What differed is that the first was an
+intervention people were trained into and the second was a form they were
+required to file. **A structure does not do the work by existing.**
+
+> **Nothing in Quietkeep may assume that offering a shape produces the
+> outcome the shape was measured with.** Not a template, not a field, not a
+> prompt, not a checklist of its own. The measured effect belongs to the
+> implementation, and this app cannot implement anything into somebody's life —
+> it can only be cheap enough to use and honest about what it does.
+
+That reads as a limitation and is closer to a licence: it is the argument for
+why capture is one box, why nothing here has a setup flow, and why every
+surface has to earn its place at the moment of use rather than at configuration
+time.
+
+### And one claim this document should not lean on
+
+**The curb-cut effect** — that designing for people at the margin ends up
+benefiting everybody — is repeated constantly in accessibility and design
+writing, and it is an appealing frame for what this app is doing. **A search for
+its evidence returns advocacy**: design blogs, vendor posts, explainers. What it
+also returns is a named scholarly critique arguing that justifying accessibility
+by its incidental benefit to non-disabled people is itself a hazard *(Reid, "The
+Curb-Cut Effect and the Perils of Accessibility without Disability", in Feminist
+Cyberlaw, 2024, DOI 10.1525/9780520388550-009 — citation verified, argument not
+read)*. No empirical review was found in either direction. *(community-construct
+— widely held, sincerely meant, and not something this document has grounds to
+assert.)*
+
+**So it stays out of the framing.** The reason to design for people under load
+is that the design is better for the people it is for; whether it incidentally
+helps everyone else is a claim this repo cannot currently support, and saying it
+anyway would be exactly the confident nonsense the epistemic tags exist to keep
+out.
+
 ## 11 · The five things Quietkeep claims are different
 
 Stated as **claims, not conclusions**. The competitive pass that would test them

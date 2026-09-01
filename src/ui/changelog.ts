@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.19.4',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**The *Why* page now cites the strongest evidence there is for what this app claims.** The whole argument here is that moving something out of your head and into a structure changes what happens \u2014 and the best measured proof of that is in surgery, where a nineteen-item checklist was followed by deaths falling from 1.5% to 0.8% across eight hospitals on four continents. That was never cited on the page that makes the claim.',
+      '**And beside it, the study that did not find the same thing \u2014 which is the more useful half.** When Ontario required every hospital to adopt the same checklist, across roughly two hundred thousand operations, it made no significant difference at all. The structure had not stopped working. The difference is that one was something people were trained into and the other was a form they had to file. **A structure does not do the work by existing**, and the page now says so as a rule this app is held to: nothing here may assume that offering you a shape produces the result the shape was measured with.',
+      '**One idea has been taken back out of the framing.** The claim that designing for people at the edges ends up helping everyone is repeated everywhere, it flatters this project, and a search for its evidence turns up opinion pieces and one scholarly argument against it. So it is recorded as unsupported rather than used. The reason to build this way is that it is better for the people it is for.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing on that screen adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.19.3',
     kind: 'ITERATION',
     date: '2026-08-31',

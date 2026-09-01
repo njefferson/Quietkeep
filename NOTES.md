@@ -913,7 +913,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 - **PRODUCTION CARRIES 3.15.0**, promoted 2026-08-30 at `2230a3a`. The merged
   tree was asserted byte-identical to the walked staging head before the push —
   same tree object, not a diff that looked empty.
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.3**. The
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.4**. The
+  *Why* page cites the outcome evidence for its own founding claim, and the
+  study that failed to reproduce it.
+  **THE PAIR IS THE FINDING.** Haynes et al. (2009, NEJM, PMID 19144931): a
+  nineteen-item surgical checklist across eight hospitals, death 1.5% → 0.8%
+  (P=0.003), complications 11.0% → 7.0% (P<0.001). Urbach et al. (2014, NEJM,
+  PMID 24620866): the same checklist MANDATED across 101 Ontario hospitals,
+  ~109k procedures against ~106k, mortality odds ratio 0.91 at **P=0.13** and
+  complications 0.97 — "not associated with significant reductions". Both read
+  from the primaries. The structure did not stop working between the two; one
+  was an intervention people were trained into and the other was a form they had
+  to file. **A structure does not do the work by existing**, and that is now a
+  stated prohibition: nothing here may assume that offering a shape produces the
+  outcome the shape was measured with.
+  **AND THE CURB-CUT EFFECT IS RECORDED AS UNSUPPORTED RATHER THAN USED.** It
+  was about to become this project's public framing. Its evidence is advocacy,
+  and the one scholarly result is an argument against the framing (Reid, 2024,
+  DOI 10.1525/9780520388550-009 — citation verified, argument not read). Graded
+  `community-construct` and kept out of the copy.
+- **Superseded, and kept for the record: 3.19.3.** The
   coverage list is in return-date order.
   **REPORTED, AND THE SHEET'S OWN TITLE WAS THE EVIDENCE.** `#sheet-coverage` is
   headed *What comes back, and when*, and `buildCoverage` sorted by node id —
