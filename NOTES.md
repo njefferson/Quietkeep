@@ -472,9 +472,30 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Nothing outstanding right now** — and the line is here rather than an empty
-gap, because a section that has been emptied and a section nobody has written in
-look identical.
+**One outstanding**, and the way it was found is the argument for this section
+existing at all.
+
+- **The situation sheet asks who TWICE, and nothing there can name somebody
+  new.** `#with-who` is a single-valued `<select>` labelled *Who is here*;
+  `#situation-who` is a row of `aria-pressed` toggles labelled *Who is in it?*
+  that takes as many as you like. They sit one directly above the other and are
+  filled from the same `allPeople`. The single-valued one comes FIRST, so it
+  teaches the reader the answer is one person — which is exactly how it was
+  reported. Neither control can add a person who is not already named; people
+  are named on a thing, not here. Reported from the device 2026-08-31, measured,
+  and deliberately not fixed in 3.19.1 because the fix is a product decision
+  about which control should exist rather than a defect with one right answer.
+  **CARRIED IN SIX CONSECUTIVE RELEASES' PATCH NOTES AND ABSENT FROM HERE UNTIL
+  2026-09-01.** 3.19.1 through 3.19.6 each ended with a *still to sort* naming
+  it, which is the right thing to tell a reader and the wrong place to keep a
+  defect — the header above says so in its own words: a release's *what is still
+  not right* "rotates out of view the moment the next release is cut". Six
+  releases is how long that took to demonstrate. Meanwhile this section read
+  *nothing outstanding*, which was a false receipt of exactly the kind every
+  other list here has a gate against.
+
+The line about an empty section is kept below, because a section that has been
+emptied and a section nobody has written in look identical.
 
 Struck 2026-08-25, in 3.4.1: *the focus ring on the capture box is clipped, on
 every side, by 5px*. It was not only that box. Three scrolling containers cut
