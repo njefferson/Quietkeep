@@ -511,13 +511,14 @@ decided by a session.**
 
 ### Open
 
-**One is open — Q-15, below.** The other fourteen are closed and filed under the
-next heading. This paragraph states the count rather than leaving it to be
+**None are open.** All fifteen are closed and filed under the next heading. This paragraph states the count rather than leaving it to be
 inferred from the list, because a heading reading *Open* over three closed
 questions is the same false receipt the Status lines were added to fix, one level
 up. `tools/questions.mjs` refuses a closed question filed under this heading, so
 those two cannot drift again — **but it does not read this paragraph**, so the
 count here is maintained by hand and nothing would catch it going stale.
+
+### Closed
 
 - **Q-15 · Can the record carry who is holding the rest of something?** Asked
   2026-08-31, recorded rather than decided. **The thesis and laws 1–2 answer one
@@ -585,10 +586,8 @@ count here is maintained by hand and nothing would catch it going stale.
     6 demand-free carve-out. `person` is already demand-free. Open alongside it:
     whether it needs a release path, since only `stakeholder.removed` and
     `promise.released` subtract a person link.
-  - Status: **Open.**
-
-### Closed
-
+  - **BUILT 2026-09-01 as 3.20.0 ([ADR-0122](docs/adr/0122-who-holds-the-rest.md)), the same day the owner answered.** The answer was the direction of the build: a PAIR of relations rather than one — `rest-with-them` (*they hold the rest of this*) and `rest-with-me` (*I hold the rest of this*) — because this question's own either-direction bullet rules a one-way noun out. The release-path sub-question closed with it: `holding.released`, the third subtraction, scoped one person and one relation, because a directory that cannot be corrected goes on asserting who holds what after it has stopped being true. The import carries the pointer in (`@holds(Name)`), beside the two existing directions (`@owes`, with the sheet's own waiting window; `@promised`), through the same write path as a keystroke, deduped against the store the way the sheet dedupes. Entry 32's SINCE WRITTEN records the build and restates every refusal untouched.
+  - Status: **Closed.** Answered 2026-09-01 by the owner directing the build; shipped the same day as 3.20.0. What stays is not a question but the named WATCH: nobody has measured a private directory of who-holds-what as a repair, the one adjacent result is a caution about imposing structure on a system that already works, and the on-device pass is where this one gets watched — one relation pair and one noun, removable whole.
 - **Q-13 · Roles are IDENTITIES that cross multiple areas — how are they
   modelled?** Settled 2026-08-04, answering the roles-vs-areas question
   directly: **a role is an identity, and it crosses multiple areas.** That settles
@@ -958,7 +957,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.19.6**. The app
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.0**. The record
+  can carry who holds the rest of something, and the import can carry people.
+  **Q-15 CLOSED BY THE OWNER, BUILT THE SAME DAY (ADR-0122).** Two relations —
+  *they hold the rest of this*, *I hold the rest of this* — a pair because a
+  one-way noun would encode a deficit into the vocabulary; a scoped take-back,
+  `holding.released`, because a directory that cannot be corrected keeps
+  asserting what has stopped being true; and three import tags, one per
+  direction — `@owes` (opening the sheet's own waiting window), `@promised`,
+  `@holds` — consumed before the place logic so none of them mints a place, and
+  deduped against the store the way the sheet dedupes. No new surface anywhere:
+  the pointer renders through the item's sheet, the person's own page,
+  who-is-here and the meeting room, and `involves` hard-codes `days: null` so
+  no surface can age it. Entry 32's refusals all stand; its Wegner caution is
+  the named watch for the on-device pass.
+- **Superseded, and kept for the record: 3.19.6.** The app
   says what it is aimed at, and states the rule that protects it.
   **AUDIENCE AND TARGET ARE DIFFERENT THINGS AND BOTH ARE NOW SAID.** The
   audience is neurodivergent people, first sentence, unchanged. The target is a

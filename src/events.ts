@@ -419,7 +419,7 @@ export type ShardCompacted   = Ev<'shard.compacted',    { device: DeviceId; thro
 
 // --- H · people and journal --------------------------------------------------
 export type PersonCreated    = Ev<'person.created',     { name: string }>;
-export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned'|'promised-to' }>;
+export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: NodeId; relation: 'opr'|'stakeholder'|'waiting-on'|'requested-by'|'mentioned'|'promised-to'|'rest-with-them'|'rest-with-me' }>;
 /**
  * "I am not promising that any more" (2.20.0).
  *
@@ -446,6 +446,28 @@ export type PersonLinked     = Ev<'person.linked',      { node: NodeId; person: 
  * keeps every clock it had, and it was your own work before and after.
  */
 export type PromiseReleased  = Ev<'promise.released',   { person: NodeId }>;
+/**
+ * "The rest of this is no longer with them" — or no longer with me (3.20.0,
+ * ADR-0122).
+ *
+ * THE THIRD SUBTRACTION, scoped like the other two: one person, one relation.
+ * The relation rides in the payload rather than in the noun — a departure from
+ * `promise.released`, and a narrower one than it looks: the payload may name
+ * only the two holding directions, `rest-with-them` and `rest-with-me`, which
+ * are one axis. Two nouns would be two spellings of one act; a payload naming
+ * any OTHER relation is the false sentence the `stakeholder.removed{relation}`
+ * shortcut was refused over, so the fold treats it as a no-op, never a
+ * remove-all.
+ *
+ * Load-bearing for the same reason `promise.released` is, pointed at somebody
+ * else: a directory pointer nobody can take back goes on asserting who holds
+ * the rest of a thing after it has stopped being true, and a directory that
+ * cannot be corrected is worse than no directory (Q-15's reversibility
+ * condition, discharged here).
+ *
+ * Not silent-risk. Removing a person link takes no coverage away.
+ */
+export type HoldingReleased  = Ev<'holding.released',   { person: NodeId; relation: 'rest-with-them'|'rest-with-me' }>;
 // --- H2 · contexts (2.2.0, ADR-0092) ----------------------------------------
 //
 // `person.linked`'s shape exactly. A context is a node so it can be renamed and
@@ -569,7 +591,7 @@ export type AppEvent =
   | ModuleEnabled | ModuleDisabled | ConsentGranted | ConsentRevoked
   | SnapshotWritten | SchemaMigrated | ExportWritten | ImportSeeded | ShardFolded
   | TerminologySkinApplied | TemplateLoaded | ShardCompacted
-  | PersonCreated | PersonLinked | PromiseReleased
+  | PersonCreated | PersonLinked | PromiseReleased | HoldingReleased
   | SituationSaved | SituationForgotten
   | ContextCreated | ContextAttached | ContextDetached
   | RoleCreated | RoleAttached | RoleDetached | JournalEntryWritten | JournalSealed | JournalTagAttached
@@ -599,7 +621,7 @@ export const EVENT_KINDS = [
   'module.enabled','module.disabled','consent.granted','consent.revoked',
   'snapshot.written','schema.migrated','export.written','import.seeded','shard.folded',
   'terminology.skin.applied','template.loaded','shard.compacted',
-  'person.created','person.linked','promise.released','situation.saved','situation.forgotten','journal.entry.written','journal.sealed','journal.tag.attached',
+  'person.created','person.linked','promise.released','holding.released','situation.saved','situation.forgotten','journal.entry.written','journal.sealed','journal.tag.attached',
   'context.created','context.attached','context.detached',
   'role.created','role.attached','role.detached',
   'menu.item.added','menu.item.removed','menu.item.promoted','save-for.updated',

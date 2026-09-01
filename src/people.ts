@@ -31,8 +31,21 @@ import { isHeld } from './fold.ts';
 // is where a thing came from; this one records that you UNDERTOOK it, which is
 // a thing somebody is now expecting. The first is provenance and the second is
 // a standing claim about you, which is why only the second can be released.
+//
+// `rest-with-them` and `rest-with-me` (3.20.0, ADR-0122) are the DIRECTORY —
+// Q-15's answer, and the only shape entry 32's evidence lets survive: a pointer
+// saying a named person holds the rest of something, carrying no text, no
+// version, and nothing to compare. It is a PAIR because a noun that only ever
+// said *they hold more of this than you* would encode a deficit into the
+// vocabulary inside an attribution environment that is already asymmetric —
+// law 7 satisfied by the shape, not by the copy. Neither direction ever ages:
+// `involves` hard-codes `days: null`, there is no aggregate for these anywhere,
+// and what was actually agreed goes where it always goes — "What was decided",
+// unattributed — because a second account of someone else's version is the one
+// thing entry 32 refuses permanently.
 export const RELATIONS = [
   'opr', 'stakeholder', 'waiting-on', 'requested-by', 'mentioned', 'promised-to',
+  'rest-with-them', 'rest-with-me',
 ] as const;
 export type Relation = typeof RELATIONS[number];
 

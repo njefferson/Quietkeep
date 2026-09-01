@@ -38,6 +38,14 @@
 //   silently reordering anything (ADR-0097). So the distinction survives the
 //   move and the refusal of ranking-on-importance is untouched.
 //   Recording it as a clock would still be inventing a demand nobody made.
+// - `@owes(Name)`, `@promised(Name)` and `@holds(Name)` carry **people**
+//   (3.20.0, ADR-0122), one direction each: a thing somebody owes the reader —
+//   linked `waiting-on`, with the same waiting window the sheet opens; a thing
+//   the reader said they would do — linked `promised-to`; and the directory
+//   pointer, that the named person holds the rest of it — linked
+//   `rest-with-them`. Names split on commas, are matched case-insensitively
+//   against the file AND the store (the sheet's own dedupe rule), and are
+//   created in the words first written. A tag naming nobody is dropped-and-named.
 // - `@estimate`, `@context`, `@tags` other than the above are dropped for now, and
 //   the importer SAYS SO rather than quietly discarding them.
 // - **notes are carried** (1.4.0) — TaskPaper note lines attach to the item
@@ -87,6 +95,14 @@ export interface TaskLine {
    *  (2.33.0). OmniFocus tags are its context system, so this is where a
    *  store's whole situational vocabulary lives — see the header. */
   tags: string[];
+  /** People, one field per direction (3.20.0, ADR-0122), in the words they
+   *  were written in. `owes` is what somebody owes the reader, `promised` is
+   *  what the reader said they would do, `holds` is the directory — that
+   *  person holds the rest of it. Kept apart because the directions fold to
+   *  different relations and a merged list would have to guess. */
+  owes: string[];
+  promised: string[];
+  holds: string[];
   /** `@estimate(30m)` in minutes, or null. Their own word about how long
    *  something takes, which is exactly what `estimate.recorded` holds. */
   estimateMinutes: number | null;
@@ -123,6 +139,15 @@ export interface ImportSummary {
    *  the other. */
   places: number;
   placed: number;
+  /** Distinct humans named across the three person tags (3.20.0), and how many
+   *  arriving rows carry each direction. Counted off what ARRIVES — a finished
+   *  row keeps its people out too (2.34.1). None of these is ever a duration
+   *  and none may become one: the promise surface's own rule, applied at the
+   *  door. */
+  people: number;
+  owed: number;
+  promised: number;
+  holding: number;
   /** Things that arrived with their own estimate of how long they take. */
   estimates: number;
   /** Things flagged in the other planner, arriving hot (2.34.0). */
@@ -236,6 +261,9 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
 
     const dropped: string[] = [];
     const tags: string[] = [];
+    const owes: string[] = [];
+    const promised: string[] = [];
+    const holds: string[] = [];
     let due: string | null = null;
     let start: string | null = null;
     let done = false;
@@ -245,6 +273,20 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
       const raw = m[1] ?? '';
       const name = raw.toLowerCase();
       const value = m[2];
+      // PEOPLE, ONE DIRECTION PER TAG (3.20.0, ADR-0122) — and consumed BEFORE
+      // the place logic below, because the fall-through pushes the tag NAME:
+      // left alone, `@owes(Sam)` would mint a place called "owes" and drop Sam,
+      // which is the `PLACE_IS_THE_VALUE` trap with a person in it. Several
+      // names in one value is ordinary (`@owes(Sam, Ana)`), the split the
+      // `@tags(...)` branch already uses. A tag naming nobody names nothing,
+      // and inventing a person from an empty value would be a guess.
+      if (name === 'owes' || name === 'promised' || name === 'holds') {
+        const into = name === 'owes' ? owes : name === 'promised' ? promised : holds;
+        const names = (value ?? '').split(/[,;]/).map(t => t.trim()).filter(t => t !== '');
+        for (const one of names) if (!into.includes(one)) into.push(one);
+        if (names.length === 0) dropped.push(name);
+        continue;
+      }
       if (name === 'due') { due = dayOf(value); if (due === null && value !== undefined) dropped.push('due'); continue; }
       if (name === 'defer' || name === 'start') {
         start = dayOf(value);
@@ -310,6 +352,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
       depth,
       kind: isProject ? 'project' : isAction ? 'action' : 'note',
       title, due, start, done, flagged, dropped, tags, estimateMinutes,
+      owes, promised, holds,
     });
   }
   return { lines, unreadable };
@@ -338,6 +381,11 @@ export const isPastDay = (day: string, nowIso: string, zone: string): boolean =>
 export function taskPaperEvents(
   ctx: ImportContext,
   parsed: readonly TaskLine[],
+  /** People already in the store, for the sheet's own dedupe rule: "sam" and
+   *  "Sam" are one person, and a second node would split what you are owed
+   *  across two rows for ever. Optional because this stays PURE — the call
+   *  site passes `allPeople(state)`, and the tests pass what they mean. */
+  existingPeople: ReadonlyArray<{ id: string; title: string }> = [],
 ): AppEvent[] {
   const out: AppEvent[] = [];
   /**
@@ -382,6 +430,26 @@ export function taskPaperEvents(
     stamp('context.created', id, { name });
     contextByName.set(key, id);
     return id;
+  };
+
+  /** Person name -> id: `ensureContext`'s shape, seeded from the STORE as well
+   *  as the file (3.20.0). A duplicate place is two entries in a chooser; a
+   *  duplicate person splits what you are owed, which is why the sheet has
+   *  always deduped and this door must too. Created in the words first
+   *  written, matched without regard to case, exactly like places. */
+  const personByName = new Map<string, string>();
+  for (const p of existingPeople) {
+    const key = p.title.trim().toLowerCase();
+    if (key !== '' && !personByName.has(key)) personByName.set(key, p.id);
+  }
+  const ensurePerson = (name: string): string => {
+    const key = name.toLowerCase();
+    const found = personByName.get(key);
+    if (found !== undefined) return found;
+    const pid = ctx.id();
+    stamp('person.created', pid, { name });
+    personByName.set(key, pid);
+    return pid;
   };
 
   /** A project named by a child but never listed. Created rather than dropped:
@@ -512,6 +580,24 @@ export function taskPaperEvents(
     // Never on a project: heat informs which candidate fills one slot of the
     // offer, and a container is not offered.
     if (line.flagged && line.kind !== 'project') stamp('heat.set', id, { heat: 'hot' });
+
+    // WHO IS ON IT (3.20.0, ADR-0122). Each direction folds to its own
+    // relation, and `@owes` also opens the waiting window — who, for what,
+    // since NOW — because that is exactly what the sheet writes for a
+    // `waiting-on` link (`detail.ts`), and this door promises the same
+    // semantics as a keystroke. `since` is the import moment: the app learned
+    // of the debt today, and a guessed past would be an invented age.
+    for (const nm of line.owes) {
+      const pid = ensurePerson(nm);
+      stamp('person.linked', id, { node: id, person: pid, relation: 'waiting-on' });
+      stamp('waiting.opened', id, { person: pid, forWhat: line.title, since: ctx.at });
+    }
+    for (const nm of line.promised) {
+      stamp('person.linked', id, { node: id, person: ensurePerson(nm), relation: 'promised-to' });
+    }
+    for (const nm of line.holds) {
+      stamp('person.linked', id, { node: id, person: ensurePerson(nm), relation: 'rest-with-them' });
+    }
 
     if (line.kind === 'project') {
       projectByTitle.set(line.title, id);
@@ -664,7 +750,9 @@ export function parseOmniFocusCsv(text: string): { lines: TaskLine[]; unreadable
       kind: isProject ? 'project' : 'action',
       title, due, start,
       done: completion !== '' || status === 'completed' || status === 'done',
-      dropped, tags, estimateMinutes, flagged,
+      // No OmniFocus CSV column says who owes what, so the person fields are
+      // empty by construction here — the capability is the tag door's (3.20.0).
+      dropped, tags, estimateMinutes, flagged, owes: [], promised: [], holds: [],
       // Only for non-projects, and only when named — a project claiming itself as
       // its own parent would be a cycle the write boundary would rightly refuse.
       ...(isProject || projectName === '' || projectName === title ? {} : { parentName: projectName }),
@@ -719,9 +807,21 @@ export function importSummary(
     (l.due !== null && !gone(l.due)) || (l.start !== null && !gone(l.start));
   const placeNames = new Set<string>();
   for (const l of parsed) for (const t of l.tags) placeNames.add(t.toLowerCase());
+  // Humans counted the way `ensurePerson` matches them — without regard to
+  // case — and only off rows that arrive (a finished row keeps its people out
+  // too, 2.34.1), so the number and the store agree.
+  const humans = new Set<string>();
+  for (const l of parsed) {
+    if (l.done) continue;
+    for (const nm of [...l.owes, ...l.promised, ...l.holds]) humans.add(nm.toLowerCase());
+  }
   return {
     places: placeNames.size,
     placed: parsed.filter(l => l.tags.length > 0).length,
+    people: humans.size,
+    owed: parsed.filter(l => !l.done && l.owes.length > 0).length,
+    promised: parsed.filter(l => !l.done && l.promised.length > 0).length,
+    holding: parsed.filter(l => !l.done && l.holds.length > 0).length,
     estimates: parsed.filter(l => l.estimateMinutes !== null).length,
     flagged: parsed.filter(l => l.flagged && l.kind !== 'project' && !l.done).length,
     // WHAT ARRIVES, not what the file held (2.34.1). Finished rows are no
@@ -808,6 +908,23 @@ export function importFacts(s: ImportSummary): { lead: string; facts: string[] }
   if (s.places > 0) {
     facts.push(`${s.places === 1 ? 'One place comes' : `${s.places} places come`} too, in the words`
       + ` you wrote — ${s.placed} of these things carry at least one.`);
+  }
+  // Each direction is its own line, said plainly and aged never — the promise
+  // surface's rule, applied to the announcement (3.20.0, ADR-0122).
+  if (s.people > 0) {
+    facts.push(`${s.people === 1 ? 'One person comes' : `${s.people} people come`} with them, by name.`);
+    if (s.owed > 0) {
+      facts.push(`${s.owed === 1 ? 'One arrives as a thing somebody owes you'
+        : `${s.owed} arrive as things somebody owes you`}.`);
+    }
+    if (s.promised > 0) {
+      facts.push(`${s.promised === 1 ? 'One arrives as a thing you said you would do'
+        : `${s.promised} arrive as things you said you would do`}.`);
+    }
+    if (s.holding > 0) {
+      facts.push(`${s.holding === 1 ? 'One says who holds the rest of it'
+        : `${s.holding} say who holds the rest of them`}.`);
+    }
   }
   if (s.flagged > 0) {
     facts.push(`${s.flagged === 1 ? 'One was flagged and comes' : `${s.flagged} were flagged and come`}`

@@ -1000,6 +1000,21 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         n.people = n.people.filter(l => !(l.person === person && l.relation === 'promised-to'));
         break;
       }
+      // The third subtraction (3.20.0, ADR-0122), scoped one person AND one
+      // relation like the other two. The relation is in the payload because the
+      // holding axis has two directions and one act of release — and it may name
+      // ONLY those two. Any other value is the false sentence the
+      // `stakeholder.removed{relation}` shortcut was refused over: a no-op,
+      // never a remove-all, never a guess.
+      case 'holding.released': {
+        const n = ensureNode(s, e.node!, e.vault, touched);
+        const person = e.payload.person;
+        const rel = e.payload.relation;
+        if (typeof person !== 'string' || !person) break;
+        if (rel !== 'rest-with-them' && rel !== 'rest-with-me') break;
+        n.people = n.people.filter(l => !(l.person === person && l.relation === rel));
+        break;
+      }
       // The decision log (1.9.0, ADR-0057). APPEND-ONLY and idempotent by
       // event id — a log is not a slot, so LWW is wrong: two devices logging
       // different decisions must end with both. Never edited, never removed;

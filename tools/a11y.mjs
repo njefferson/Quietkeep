@@ -1047,6 +1047,12 @@ const REGISTRY = {
   // Who cares how it goes (1.9.0, ADR-0057): a name and one ghost verb.
   'detail sheet, who cares': ['#detail-stakeholders-label',
     '#detail-stakeholder-list .detail-feed', '#detail-stakeholder-list button'],
+  // THE DIRECTORY ROW (3.20.0, ADR-0122): the pointer's rendered words and its
+  // take-back control, registered in the same commit that built them. The words
+  // are the feature — a fact about where the rest of a thing sits — and the
+  // negative assertion beside this state holds them to carrying no age.
+  'detail sheet, who holds the rest': ['#detail-people-list .detail-feed',
+    '#detail-people-list button'],
   // A person's own sheet (1.12.0): what is with them. The relation and the
   // duration are the quietest text, and both are FACTS — never a grade.
   // Scoped to the GROUP, not to one of its two lists: what someone owes you
@@ -5139,6 +5145,34 @@ try {
     await auditNames(page, 'detail sheet, decisions', theme);
     await auditSeparationAndTargets(page, 'detail sheet, decisions', theme);
     await auditFocusRings(page, 'detail sheet, decisions', theme, ['#detail-decision', '#detail-decision-set']);
+
+    // WHO HOLDS THE REST (3.20.0, ADR-0122). Link the directory pointer, read
+    // the words a reader reads, and take it back — the release is the half
+    // nothing else exercises, and a control that only ever renders is a
+    // control nobody measured. The negative assertion is the one that matters:
+    // the row would render identically with a duration on it, and an age on
+    // either holding direction is refused in terms by entry 32.
+    await page.fill('#detail-person', 'Marta');
+    await page.selectOption('#detail-relation', 'rest-with-them');
+    await page.click('#detail-person-set');
+    await page.waitForFunction(() => /Marta.*hold the rest of this/.test(
+      document.querySelector('#detail-people-list')?.textContent ?? ''));
+    const holdingRow = await page.evaluate(() =>
+      [...document.querySelectorAll('#detail-people-list li')]
+        .map(li => li.textContent ?? '').find(t => /Marta/.test(t)) ?? '');
+    (/they hold the rest of this/.test(holdingRow) ? pass : fail)(
+      `${theme}/who holds the rest: the pointer says its words ("${holdingRow.trim().slice(0, 60)}")`);
+    (!/week|month|since|ago|\bdays?\b/i.test(holdingRow) ? pass : fail)(
+      `${theme}/who holds the rest: and no age rides on it`);
+    await auditContrast(page, 'detail sheet, who holds the rest', theme);
+    await auditAxe(page, 'detail sheet, who holds the rest', theme);
+    await auditNames(page, 'detail sheet, who holds the rest', theme);
+    await auditSeparationAndTargets(page, 'detail sheet, who holds the rest', theme);
+    await auditFocusRings(page, 'detail sheet, who holds the rest', theme, ['#detail-people-list button']);
+    await page.locator('#detail-people-list button', { hasText: /No longer holds the rest/ }).first().click();
+    await page.waitForFunction(() => !/hold the rest of this/.test(
+      document.querySelector('#detail-people-list')?.textContent ?? ''));
+    pass(`${theme}/who holds the rest: the pointer can be taken back, and the work stays`);
 
     // A person's own sheet (1.12.0). Link somebody as owing something, then
     // WALK to them the way a reader does — through the name on the item — and

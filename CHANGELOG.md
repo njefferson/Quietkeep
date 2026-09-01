@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.20.0 — CAPABILITY
+
+*2026-09-01*
+
+- **You can now write down who holds the rest of something.** Two people leave one conversation carrying different amounts of it — one holds the whole of what was settled, the other holds the piece that was salient to them, and no clock could ever ring on the difference. On any item, *Who is this with?* has two more answers: *they hold the rest of this*, and *I hold the rest of this*. Each is a pointer and nothing more, on purpose: no record of what the other person is thought to believe, no age, nothing to reconcile — just where the rest of it sits, so when the thing comes up again you know whose head to ask.
+- **And a pointer can be taken back.** Things get written down, handed over, settled. *No longer holds the rest* takes the note off and keeps the work — the same shape as *No longer promised*.
+- **Bringing work in from another planner now carries who is on it.** Three tags, one direction each: `@owes(Sam)` arrives as a thing Sam owes you, with the waiting open from the moment it lands; `@promised(Sam)` arrives marked *I said I would*; `@holds(Sam)` records that Sam holds the rest of it. Several names fit in one tag, a name that matches somebody already in your planner lands on them rather than making a double, and the note at the door counts each direction before anything is written.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.19.6 — ITERATION
 
 *2026-09-01*

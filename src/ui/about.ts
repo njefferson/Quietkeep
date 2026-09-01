@@ -40,6 +40,7 @@ import { KEY_KV } from '../sync-keys.ts';
 import { openSheet as openSheetById, onSheetOpen, wireSheetClose, closeEverything, focusSheetTitle } from './sheets.ts';
 import { badgeWords, badgeToggleLabel, isBadgeOn, setBadgeEnabled } from './badge.ts';
 import { importFacts, importSummary, parseAnyExport, taskPaperEvents } from '../taskpaper.ts';
+import { allPeople } from '../people.ts';
 import { deliverCopy, deliverDiagnostic, deliverGeneratedSet } from './export-copy.ts';
 import { eventWords, isCure } from '../log-words.ts';
 import { localDayKey, recordDayWords, atMidnight} from '../time.ts';
@@ -2097,7 +2098,10 @@ export async function mountAbout(
           // trust than a keystroke does and law 1 is enforced on every row.
           let made: AppEvent[] = [];
           await session.commit(ctx => {
-            made = taskPaperEvents(ctx, lines);
+            // The store's people ride along so a name in the file lands on the
+            // person who already exists — the sheet's dedupe, at this door too.
+            made = taskPaperEvents(ctx, lines,
+              allPeople(session.state()).map(p => ({ id: p.id, title: p.title || '' })));
             return made;
           });
           otherNote.textContent = `Brought in ${made.filter(e => e.kind === 'node.created').length} things. Reloading…`;

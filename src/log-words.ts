@@ -259,6 +259,12 @@ export function eventWords(
     // "you broke a promise", not "unkept", not a duration. Releasing an
     // undertaking is an ordinary act and the words treat it as one.
     case 'promise.released': return `No longer promised to ${name(p['person'])}.`;
+    // The same register for the directory (3.20.0): what changed, nobody graded.
+    // Where the rest of a thing sits is a fact that moves; the record says it
+    // moved and stops.
+    case 'holding.released': return p['relation'] === 'rest-with-me'
+      ? `The rest of this is no longer with you — ${name(p['person'])} is off it.`
+      : `${name(p['person'])} no longer holds the rest of this.`;
     // A situation is a shortcut somebody made for themselves, so the record
     // says what they did and nothing about whether they used it.
     case 'situation.saved': return `You named a situation: ${String(p['name'] ?? '')}.`;

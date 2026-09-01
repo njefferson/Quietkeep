@@ -665,6 +665,24 @@ export async function bigSampleEvents(
   // Not promised any more, and STILL HERE — the work outlives the undertaking.
   stamp('promise.released', letGo, { person: people[1]! });
 
+  // --- the directory: who holds the rest (3.20.0, ADR-0122) -----------------
+  //
+  // Both directions, because the vocabulary is a pair on purpose — and one
+  // taken back, because the release is the half nothing else exercises. No
+  // ageing anywhere: a pointer is a fact about where the rest of a thing sits,
+  // not a score about anybody.
+  const handedOver = node('action', 'Pick up the paperwork for the transfer');
+  stamp('person.linked', handedOver, { node: handedOver, person: people[3]!, relation: 'rest-with-them' });
+  clock(handedOver, 'review', int(2, 14));
+  const heldHere = node('action', 'Walk through the plan for the move');
+  stamp('person.linked', heldHere, { node: heldHere, person: people[0]!, relation: 'rest-with-me' });
+  clock(heldHere, 'review', int(2, 14));
+  const writtenDown = node('action', 'Sort out the shared boxes');
+  stamp('person.linked', writtenDown, { node: writtenDown, person: people[2]!, relation: 'rest-with-them' });
+  clock(writtenDown, 'due', int(3, 18));
+  // They wrote it down themselves, so nobody is holding anything for anybody.
+  stamp('holding.released', writtenDown, { person: people[2]!, relation: 'rest-with-them' });
+
   // --- the meeting half: OPR, stakeholders, decisions, a report -------------
   stamp('opr.assigned', projects[0]!, { person: people[0]! });
   stamp('person.linked', projects[0]!, { node: projects[0]!, person: people[0]!, relation: 'opr' });
