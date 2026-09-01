@@ -533,7 +533,17 @@ export function taskPaperEvents(
 
     if (!alreadyThere) {
       stamp('node.created', id, {
-        nodeKind: line.kind === 'project' ? 'project' : 'action',
+        // A ROW TAGGED @owes ARRIVES AS A WAITING-FOR (3.20.2). The waiting was
+        // open in the data and invisible on the surface: the owed lists and the
+        // waiting pill key on the KIND, and the row arrived as an action (found
+        // by a cold read-back against the release's own notes). The tag has
+        // declared the row's nature at the door exactly as a trailing colon
+        // declares a project — "someone else owes you this" IS the kind's
+        // meaning, and `personView` calls the kind and the relation two ways of
+        // saying the same thing. Projects stay projects: a container that also
+        // gathers what somebody owes is still a container.
+        nodeKind: line.kind === 'project' ? 'project'
+          : line.owes.length > 0 ? 'waiting-for' : 'action',
         title: line.title,
         provenance: { for: 'self' },
         arrival: ARRIVAL,

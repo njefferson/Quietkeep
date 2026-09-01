@@ -2315,19 +2315,23 @@ dialog, dialog * { overflow-wrap: anywhere; }
 }
 .tour-heading { margin: 0 0 0.75rem; font-size: 1.25rem; }
 /* The heading takes focus each step; its ring is the app's, not a stray outline. */
-.tour-heading:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+/* THE TITLE A SHEET HANDS FOCUS TO (3.20.1, widened 3.20.2). `focusSheetTitle`
+   puts focus on the h2 of every sheet it opens, and no rule ever drew that
+   ring — what showed was each engine's default: on the device, WebKit's tight
+   box with a broken corner (reported 2026-09-01, the coverage sheet); in the
+   walk's Chromium, nothing at all, so no audit could ever see it. This is the
+   walkthrough heading's old bespoke treatment, given to every dialog h2 — on
+   `:focus` rather than `:focus-visible`, because engines disagree about
+   whether a programmatic focus is "visible" and a you-are-here cue on a sheet
+   that just opened is wanted under every modality.
 
-/* THE TITLE A SHEET HANDS FOCUS TO (3.20.1). `focusSheetTitle` puts focus on
-   the h2 of every sheet it opens, and no rule ever drew that ring — what
-   showed was each engine's default: on the device, WebKit's tight box with a
-   broken corner (reported 2026-09-01, the coverage sheet); in the walk's
-   Chromium, nothing at all, so no audit could ever see it. This is
-   `.tour-heading`'s treatment — the one programmatically-focused heading that
-   has never been reported broken — on `:focus` rather than `:focus-visible`,
-   because engines disagree about whether a programmatic focus is "visible"
-   and a you-are-here cue on a sheet that just opened is wanted under every
-   modality. */
-dialog h2.section:focus {
+   `dialog h2`, NOT a title class: 3.20.1 scoped this to `.section` and the
+   cold read-back found the ring missing on the three headings that are not one
+   — the item sheet's own title (the most-opened sheet in the app), the About
+   panel's, and the walkthrough's on any reopen. Every dialog's labelling
+   heading is an h2 and every one takes focus, so the element is the honest
+   scope and a new sheet is covered on the day it exists. */
+dialog h2:focus {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
   border-radius: 2px;

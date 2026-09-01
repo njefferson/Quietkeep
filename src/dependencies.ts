@@ -21,6 +21,7 @@
 import type { NodeState, State } from './fold.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from './time.ts';
 import { isHeld, isGone } from './fold.ts';
+import { DEMAND_FREE_KINDS } from './events.ts';
 
 /** A downstream commitment, resolved to something a surface can say. */
 export interface Downstream {
@@ -155,3 +156,27 @@ export function dependencyWords(v: DependencyView): string | null {
 
 const dayPhrase = (d: number): string =>
   d === 0 ? 'which is today' : d === 1 ? 'which is tomorrow' : `which is ${d} days away`;
+
+/**
+ * What may be OFFERED as an antecedent (3.20.2).
+ *
+ * The after-picker has always excluded the demand-free kinds and the resume
+ * card; the feeds picker grew its own inline filter and forgot both, so a
+ * person's name sat in a dropdown asking what this thing holds up (found by a
+ * cold read-back against the release notes, 2026-09-01). One builder now, so
+ * the two askers of "what work could stand before this" cannot drift apart
+ * again — a person cannot be done first, a place cannot finish, and the
+ * arithmetic above is meaningless on anything that can never be work.
+ *
+ * The caller layers its own concerns on top (a feeds picker drops what is
+ * already fed; a search box narrows by title). This holds only what is TRUE of
+ * candidacy: live, not itself, able to be work, and no loop.
+ */
+export function feedCandidates(state: State, id: string): NodeState[] {
+  return [...state.nodes.values()]
+    .filter(t => !t.trashed && !t.mergedInto && !t.lastDone && t.id !== id)
+    .filter(t => !(DEMAND_FREE_KINDS as readonly string[]).includes(t.kind))
+    .filter(t => t.kind !== 'resume-card')
+    .filter(t => !wouldCycle(state, id, t.id))
+    .sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+}

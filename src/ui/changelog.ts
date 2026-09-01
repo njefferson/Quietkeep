@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.20.2',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**A thing somebody owes you now arrives as one.** Bringing in a line tagged `@owes(Sam)` opened the waiting in the record and forgot to make it visible: the item landed as ordinary work, so *What they owe you* never showed it. It arrives as a waiting-for now — on the owed lists from its first moment, counted from the day it landed, exactly as if you had named Sam by hand on a waiting item.',
+      '**The ring that shows where you landed truly appears on every sheet now.** The last release said “every sheet” and drew it only on headings of one styling — the item sheet itself, the About panel, and the walkthrough on any second viewing were missed. A colder pair of eyes than the ones that wrote it caught all three within the hour. Every sheet heading draws it now, and the walk checks the item sheet by name.',
+      '**“What does this hold up?” no longer offers people or places.** The picker for saying one thing feeds another listed everything alive — including people and places, which cannot be done first. It offers only work now, matching its sibling question, *Does something have to happen first?*, which always knew.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. **And newly noticed:** the walkthrough points at the ⓘ for everything, but ⓘ opens onto keeping your data safe — the fuller doors (Settings, Colours, Help, Your data) are behind *Elsewhere in the app* on the main page. Until that is rethought, know both doors exist.',
+    ],
+  },
+  {
     triplet: '3.20.1',
     kind: 'ITERATION',
     date: '2026-09-01',

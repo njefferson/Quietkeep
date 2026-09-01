@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 
 import { fold, emptyState, type State } from '../src/fold.ts';
 import { admit, gateOptionsFor, GateRejection } from '../src/gate.ts';
-import { dependencyView, dependencyWords, fedBy, wouldCycle } from '../src/dependencies.ts';
+import { dependencyView, dependencyWords, fedBy, wouldCycle, feedCandidates } from '../src/dependencies.ts';
 import { replanCards, contextWords } from '../src/replan.ts';
 import { declareFeedsEvents, releaseFeedsEvents } from '../src/ui/detail-intents.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -210,4 +210,35 @@ test('with no dependency declared, the card claims none', () => {
   assert.deepEqual(card.fed, []);
   const words = contextWords(card, TZ);
   if (words) assert.doesNotMatch(words, /feeds/, 'no relationship is asserted');
+});
+
+// --- who may be offered as an antecedent (3.20.2) ---------------------------
+
+test('the feeds picker offers work, never a person or a place', () => {
+  // Found by the cold read-back (2026-09-01): the after-picker filtered the
+  // demand-free kinds and the feeds picker forgot, so a person's name sat in a
+  // dropdown asking what this thing holds up. A person cannot be done first;
+  // dependency arithmetic means nothing on a node that can never be work.
+  const s = st(
+    node('A', 'write the brief'),
+    node('B', 'send the brief'),
+    ev('person.created', 'P', { name: 'Sam' }),
+    ev('context.created', 'C', { name: 'At the office' }),
+    ev('node.created', 'ASP', { nodeKind: 'aspiration', title: 'learn the cello' }),
+  );
+  const offered = feedCandidates(s, 'B').map(t => t.id);
+  assert.ok(offered.includes('A'), 'ordinary work is offered');
+  assert.ok(!offered.includes('P'), 'a person is not');
+  assert.ok(!offered.includes('C'), 'a place is not');
+  assert.ok(!offered.includes('ASP'), 'an aspiration is not');
+  assert.ok(!offered.includes('B'), 'nor the thing itself');
+});
+
+test('feed candidates refuse a loop before the gate has to', () => {
+  // A already feeds B, so offering A on B's picker would let B feed A back —
+  // the loop. (Offering B on A's picker is merely a duplicate, and the caller
+  // already drops what is fed.)
+  const s = st(node('A'), node('B'), feeds('A', 'B', 1));
+  assert.ok(!feedCandidates(s, 'B').map(t => t.id).includes('A'),
+    'the option that would close a cycle is never shown');
 });

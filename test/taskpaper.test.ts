@@ -30,7 +30,7 @@ import { calendarCount } from '../src/ics.ts';
 import { allContexts, contextsOf, placesReaching } from '../src/contexts.ts';
 import { estimateOf } from '../src/duration.ts';
 import { replanAll } from '../src/replan.ts';
-import { people } from '../src/people.ts';
+import { people, waitingOnAnyone } from '../src/people.ts';
 import type { AppEvent } from '../src/events.ts';
 
 // The summary as ONE string. The app never composes it: the lead goes into a
@@ -583,6 +583,25 @@ test('who owes, who was told, and who holds the rest come across as people, not 
     .some(l => l.person === idOf('Ana') && l.relation === 'promised-to'));
   assert.ok(byTitle('Update the roster').people
     .some(l => l.person === idOf('Kim') && l.relation === 'rest-with-them'));
+});
+
+test('a thing somebody owes you ARRIVES as one — the kind the app already uses', () => {
+  // Found by the cold read-back (2026-09-01): the waiting was open in the DATA
+  // and invisible on the SURFACE, because the owed lists and the waiting pill
+  // key on the waiting-for kind and the row arrived as an action. A row tagged
+  // @owes has declared its nature at the door, exactly as a trailing colon
+  // declares a project — so it lands as the kind that means "someone else owes
+  // you this", and every owed surface shows it from the first paint.
+  const { state } = build(PEOPLE_SAMPLE);
+  const diagram = heldNodes(state).find(n => n.title === 'Collect the network diagram')!;
+  assert.equal(diagram.kind, 'waiting-for');
+  const owed = waitingOnAnyone(state, NOW, DENVER);
+  assert.ok(owed.some(l => l.node.id === diagram.id), 'it is on "what you are owed" at once');
+  assert.equal(owed.find(l => l.node.id === diagram.id)!.days, 0, 'aged from the import moment, not a guessed past');
+  // The other two directions stay ordinary work: a promise is your own work
+  // with a person attached, and a holding pointer changes nothing about kind.
+  assert.equal(heldNodes(state).find(n => n.title === 'Send the parking memo')!.kind, 'action');
+  assert.equal(heldNodes(state).find(n => n.title === 'Update the roster')!.kind, 'action');
 });
 
 test('the waiting an @owes opens is the one the sheet opens', () => {
