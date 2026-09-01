@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.20.3',
+    kind: 'ITERATION',
+    date: '2026-09-01',
+    notes: [
+      '**The walkthrough now tells the truth about the two doors.** It said everything else lives under the *i* — which stopped being true as the app grew, and a careful stranger following that pointer never found Settings, Colours, Help or Your data at all. It now names both: the *i* for what this app is and keeping your writing safe, *Elsewhere in the app* for the rest. And the *i* panel carries an *Elsewhere in the app* door of its own, so neither door dead-ends.',
+      '**The notes open everything since you last looked.** These notes used to open on the newest entry alone — right most days, and wrong exactly when two releases land together, which is how a big change ended up folded out of sight below a small one. This device now remembers the last version these notes showed you, and opens every entry newer than that, saying how many there are. After a long time away it opens the six newest and says the true count.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.20.2',
     kind: 'ITERATION',
     date: '2026-09-01',
@@ -2944,3 +2954,48 @@ export const RELEASES: readonly Release[] = [
 ];
 
 export const CURRENT = RELEASES[0]!;
+
+/**
+ * Everything since you last looked (3.20.3).
+ *
+ * The notes' first open used to show only the newest entry, which is right day
+ * to day and wrong in exactly the case of a promote spanning releases: 3.20.0
+ * and 3.20.1 landed together and the reader's first open showed the small
+ * iteration with the capability release folded out of sight (found by the cold
+ * read-back, 2026-09-01). The surface cannot know about promotes; it can know
+ * the last version THIS DEVICE showed, and open everything newer.
+ *
+ * Newest first, exactly the order the surface renders. A first-ever look, a
+ * re-read from the current version, an unparseable memory and a version from
+ * the future all fail safe to the newest alone. A long absence is CAPPED —
+ * the caps convention: a true count is stated by the caller, the fold holds
+ * the rest, and a reader back after forty releases gets a readable page
+ * rather than a flood.
+ */
+export const SINCE_CAP = 6;
+
+const tripletValue = (t: string): number | null => {
+  const m = /^(\d+)\.(\d+)\.(\d+)$/.exec(t);
+  if (!m) return null;
+  return Number(m[1]) * 1_000_000 + Number(m[2]) * 1_000 + Number(m[3]);
+};
+
+/** The TRUE number newer than `seen` — the caps convention's honest count,
+ *  for the sentence beside a capped window. Zero for anything that fails
+ *  safe, so a caller never announces a count the window is not showing. */
+export function newerCount(seen: string | null | undefined): number {
+  const sv = seen == null ? null : tripletValue(seen);
+  if (sv === null) return 0;
+  const n = RELEASES.filter(r => (tripletValue(r.triplet) ?? -1) > sv).length;
+  return n === RELEASES.length ? 0 : n;
+}
+
+export function releasesSince(seen: string | null | undefined): readonly Release[] {
+  const head = RELEASES[0];
+  if (!head) return [];
+  const sv = seen == null ? null : tripletValue(seen);
+  if (sv === null) return [head];
+  const newer = RELEASES.filter(r => (tripletValue(r.triplet) ?? -1) > sv);
+  if (newer.length === 0 || newer.length === RELEASES.length) return [head];
+  return newer.slice(0, SINCE_CAP);
+}

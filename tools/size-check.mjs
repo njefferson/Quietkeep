@@ -250,7 +250,10 @@ const BUDGET = {
   // ARE the feature; there is no shorter honest spelling of either direction
   // that keeps the pair symmetric, and the import summary's sentences are
   // rendered from the store side so they cost the shell nothing.
-  words: 3827,
+  // 3827 -> 3831 on 2026-09-01 (3.20.3). Four words: the i panel's own
+  // "Elsewhere in the app" door, so the walkthrough's pointer stops
+  // dead-ending — the cold read-back's finding, closed on the owner's ruling.
+  words: 3831,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -338,7 +341,8 @@ const BUDGET = {
   // This is the trade the two numbers exist to price separately. Travel is what
   // the per-surface budget protects and it improved; sprawl is what this one
   // refuses and it got worse, deliberately, by one door.
-  allSurfacesPx: 12600,
+  // 12600 -> 12640 on 2026-09-01 (3.20.3): one door row on the i panel.
+  allSurfacesPx: 12640,
   // The current release's notes, measured alone. Their own budget rather than a
   // share of the ratchet above, because they rotate out and standing prose does
   // not — see the long note at the measurement.
@@ -657,7 +661,10 @@ const BUDGET = {
   // sheet's Close. All six are the feature. Everything inside the sheet is
   // rendered from the store, so somebody trusting forty things to run without
   // them still costs the shell exactly these six.
-  controls: 267,
+  // 267 -> 268 on 2026-09-01 (3.20.3): the i panel's Elsewhere door. A new
+  // control is exactly what this budget exists to make deliberate, and this
+  // one closes a wayfinding dead-end rather than adding a destination.
+  controls: 268,
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

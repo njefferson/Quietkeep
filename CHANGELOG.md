@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.20.3 — ITERATION
+
+*2026-09-01*
+
+- **The walkthrough now tells the truth about the two doors.** It said everything else lives under the *i* — which stopped being true as the app grew, and a careful stranger following that pointer never found Settings, Colours, Help or Your data at all. It now names both: the *i* for what this app is and keeping your writing safe, *Elsewhere in the app* for the rest. And the *i* panel carries an *Elsewhere in the app* door of its own, so neither door dead-ends.
+- **The notes open everything since you last looked.** These notes used to open on the newest entry alone — right most days, and wrong exactly when two releases land together, which is how a big change ended up folded out of sight below a small one. This device now remembers the last version these notes showed you, and opens every entry newer than that, saying how many there are. After a long time away it opens the six newest and says the true count.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.20.2 — ITERATION
 
 *2026-09-01*

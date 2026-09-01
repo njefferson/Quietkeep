@@ -100,8 +100,15 @@ const stepsNow = (): readonly Step[] => [
       isSyncEdition()
         ? 'Everything stays on your devices — no account, no sign-in. What they trade to stay in step is sealed with a key only they hold.'
         : 'Everything stays on your device — no account, no sign-in, no server holding your writing.',
-      'The round button marked i, at the top of the screen beside the name, is where everything else lives: how to add Quietkeep to your Home Screen, how to keep your writing safe, and this walkthrough again whenever you want it.',
-      '*Keep my writing safe* opens it now, because that is the one thing worth doing before anything else.',
+      // TWO DOORS, SAID TRUTHFULLY (3.20.3). This sentence used to say the i
+      // was "where everything else lives", which stopped being true as the app
+      // grew: the seven destinations moved behind "Elsewhere in the app" on the
+      // main screen, and a cold reader following this pointer never found them
+      // except by reading the page source. The i panel carries a door through
+      // now, and this names both rather than promising one.
+      'The round button marked i, at the top beside the name, holds what this app is: how to add it to your Home Screen, how to keep your writing safe, what changed lately, and this walkthrough again whenever you want it.',
+      '*Elsewhere in the app*, on the main screen, is the door to the rest — Settings, Colours, Help, Your data, and everything this app can do. The i panel has that door too.',
+      '*Keep my writing safe* opens the i panel now, because that is the one thing worth doing before anything else.',
       // Added in 1.14.0. NOT written for the returning reader specifically —
       // the empty screen behind this dialog now offers them the way back, and a
       // sentence here about data they may never have had would land oddly on

@@ -336,6 +336,8 @@ const DIALOG_COMMON = [
   '.about-section',
   '#about-close',
   '#about-dismiss',
+  // The way through to the hub (3.20.3) — always rendered, so registrable.
+  '#about-elsewhere',
   '.note-triplet',
   '.note-kind',
   '.note-list li',

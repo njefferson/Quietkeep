@@ -472,29 +472,14 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Three outstanding** — the count is maintained by hand, like the question
-preamble, and nothing would catch it going stale.
-
-- **The ⓘ and *Elsewhere in the app* split one promise between two doors.** The
-  walkthrough's closing screen says everything lives under the ⓘ; in an
-  ordinary browser tab the ⓘ opens onto the keep-your-data panel every time
-  (the persistence ask is refused in a plain tab, so the pitch stays first),
-  while Settings, Colours, Help and Your data sit behind *Elsewhere in the
-  app*. A cold reader following the walkthrough's own pointer never found the
-  second door except by reading the page source (cold read-back, 2026-09-01).
-  Deliberately not fixed today: which door should be the one door is a product
-  decision. Said to the reader in 3.20.2's *still to sort* until it is made.
-- **After a promote spanning releases, the patch notes show only the newest.**
-  The notes surface expands the current entry and folds the rest behind
-  "earlier releases" — correct day to day, and wrong in exactly the case of
-  3.20.0/3.20.1 landing together: the reader's first open showed the small
-  iteration and hid the capability release one notch down (cold read-back,
-  2026-09-01). The honest fix is probably "everything since you last looked",
-  which the update machinery already knows enough to say — a design worth its
-  own release, not a patch. Until then the walkthrough of a promote should
-  say when two entries landed at once.
-
-**And the one this section was built for:**
+**One outstanding.** Two more stood here for about an hour on 2026-09-01 — the
+ⓘ/*Elsewhere* door split and the promote-spanning notes window, both from the
+cold read-back — labelled "product decisions, the owner's". The ruling that came
+back: neither needed the owner, and routing them upward was fake carefulness —
+the record could answer both (hub LESSONS §96's shape, deference direction).
+Both closed the same day in 3.20.3 — the walkthrough now names both doors
+truthfully and the ⓘ panel carries a door through to the hub; the notes open
+everything since this device last looked, capped, with the true count said.
 
 - **The situation sheet asks who TWICE, and nothing there can name somebody
   new.** `#with-who` is a single-valued `<select>` labelled *Who is here*;
@@ -984,7 +969,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.2**. Three
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.3**. The cold
+  read-back's remaining two findings, closed on the owner's ruling that routing
+  them upward was fake carefulness: the walkthrough names both doors truthfully
+  and the ⓘ panel carries an *Elsewhere in the app* door of its own
+  (`#about-elsewhere`, registered same-commit); the notes open everything since
+  this device last looked (`releasesSince`, capped at six with the true count
+  said, seen-version in kv — never an event). V-17 records that the source map
+  ships deliberately.
+- **Superseded: 3.20.2.** Three
   defects found by the first COLD READ-BACK — a second session walking the
   promoted app with only the release claims in hand, forbidden the source, its
   report diffed against intent (the owner's design, 2026-09-01; the
