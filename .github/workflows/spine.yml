@@ -71,7 +71,7 @@ jobs:
   # holds that opt-in while three repos still carry findings; REPOS.md names
   # them and it is the hub's call, not this repo's.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@8a923441133aa42a049896d306e32f00a5d12bd6
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@3f2a37374fd7fb9fa5671f6c6b79e1c95d660b06
     with:
       pwa: true
       mirror: true
@@ -99,6 +99,13 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
+      # THE PIN AND THE MARKER ARE THE SAME FACT, in two files. A pin left
+      # behind means CI runs the hub's gates from an older commit and every one
+      # of them goes green. It runs on every commit through .branch-guard as
+      # well; here it is because a fresh clone has no hook.
+      - name: The hub pin and the doctrine marker agree
+        run: node tools/hub-pin-check.mjs
+
       - run: npm ci
 
       # FIRST, because a workflow that does not parse fails in under a second
