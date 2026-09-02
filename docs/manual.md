@@ -201,6 +201,22 @@ be changed from there.
 For projects and what sits inside what, **Your projects, areas and goals** is the
 tree.
 
+### See the days ahead
+
+**The days ahead**, on the front page, is every dated thing you hold, day by
+day — today first, then each day something is waiting on. Each row says which
+date is talking: *due*, *starts*, *comes back*, or *answer owed* — and an
+answer owed names who is waiting, when you have said so. The list reads the
+store every time it opens, so when a date moves, the day it sits under moves
+with it. A date that already went by sits under today, marked *needs a new
+plan*, because the past is not a place here. Tap a row to open the thing
+itself.
+
+It is the same list **Send to my calendar** sends out — the same things, on
+the same days, always. The calendar copy is for being reminded while the app
+is closed; this is for looking, and it is never stale. The door appears once
+something carries a date.
+
 ### Say a thing belongs somewhere
 
 On a thing's own panel: give it a **place** where it can be done, a **person**

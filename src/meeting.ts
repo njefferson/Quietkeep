@@ -144,6 +144,52 @@ export function meetingView(
  * gives: walking in knowing nothing is outstanding is worth as much as walking
  * in with a list.
  */
+/** One row of the by-thing lens (3.21.0). */
+export interface MeetingThing {
+  readonly node: NodeState;
+  /** The attendees this thing names, alive, by name — the row's only label. */
+  readonly people: NodeState[];
+}
+
+/**
+ * The same room, by thing (3.21.0, ADR-0123 — the device pass, verbatim: with
+ * one task every person shares "it looks repetitive. Can it allow sort by
+ * person, or by task where it would collapse to one instance that several
+ * people owe, potentially grouped as appropriate without creating a
+ * manufactured label of any set of people").
+ *
+ * ADR-0119's per-person duplication STANDS — a node naming two attendees is
+ * genuinely two conversations, and that stays the default. This is the other
+ * lens over the identical membership: each thing once, wearing the names of
+ * the attendees on it. **The names are the grouping and the whole of the
+ * label** — no set is ever christened, which is the reporter's own constraint
+ * and law 7's.
+ *
+ * Membership is `meetingView`'s to the letter (same live-people map, same
+ * namedOn set-over-people), so the two lenses can never claim different rooms
+ * — the tests hold row-count-by-thing equal to the other lens's `total`.
+ */
+export function meetingByThing(
+  state: State, attendees: readonly NodeId[], heldOf: (s: State) => Iterable<NodeState>,
+): MeetingThing[] {
+  const live = new Map(allPeople(state).map(p => [p.id, p]));
+  const wanted = new Set([...new Set(attendees)].filter(id => live.has(id)));
+  const byTitle = (a: NodeState, b: NodeState): number =>
+    (a.title || '').localeCompare(b.title || '') || (a.id < b.id ? -1 : 1);
+  if (wanted.size === 0) return [];
+  const out: MeetingThing[] = [];
+  for (const n of heldOf(state)) {
+    if (n.lastDone) continue;
+    const mine = new Set(namedOn(state, n).map(l => l.person).filter(id => wanted.has(id)));
+    if (mine.size === 0) continue;
+    out.push({
+      node: n,
+      people: [...mine].map(id => live.get(id)!).sort(byTitle),
+    });
+  }
+  return out.sort((a, b) => byTitle(a.node, b.node));
+}
+
 export const meetingViewWords = (v: MeetingView): string => {
   if (v.people.length === 0) {
     return 'Nobody this names is still here, so there is nothing to show.';

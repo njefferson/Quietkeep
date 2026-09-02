@@ -34,6 +34,8 @@ import { mountPrint } from './print.ts';
 import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
+import { datedDays, datedDayWords, datedWords, datedKindWords } from '../dated.ts';
+import { calendarCount } from '../ics.ts';
 import { servesWords } from '../serves.ts';
 import {
   roleNames, roleLoads, allRoles, ROLE_READOUT_WORDS,
@@ -45,7 +47,7 @@ import {
 } from '../horizons.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
 import { reviewExceptions, reviewWords } from '../review.ts';
-import { meetingView, meetingViewWords, meetingPersonWords } from '../meeting.ts';
+import { meetingView, meetingViewWords, meetingPersonWords, meetingByThing } from '../meeting.ts';
 import { arrangementNodes, arrangementCards } from '../arrangement.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
 import { LENS_KEY, lensChoices, lensWords, underLensIds } from '../lens.ts';
@@ -54,7 +56,7 @@ import { THEME_KEY, applyTheme, getTheme, setTheme } from '../theme.ts';
 import { PALETTE_KEY, applyPalette, getPalette, setPalette } from '../palette.ts';
 import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
-import { saveSituationEvents, forgetSituationEvents, releaseEvents } from './detail-intents.ts';
+import { saveSituationEvents, forgetSituationEvents, releaseEvents, reclaimEvents } from './detail-intents.ts';
 import { paintHub, leave, watchJobs, enter as enterStance } from './hub.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
@@ -64,13 +66,19 @@ import {
 import {
   waitingOnAnyone, withWhom, waitingWords, peopleWords,
   promisedToAnyone, promisedWords, promisedRowWords,
-  allPeople, withWords, WITH_KEY, getWithNow, setWithNow,
-} from '../people.ts';
+  allPeople, withWords, WITH_KEY, getWithNow, setWithNow, peopleForPlace } from '../people.ts';
 import { trackPortfolio, trackWords, portfolioWords } from '../portfolio.ts';
 import { menuGroups, menuCount, menuWords, saveForWords, MENU_WORDS } from '../menu.ts';
 import { calendarDaysBetween, isValidIso, atMidnight} from '../time.ts';
 import { markSyncEdition } from './edition.ts';
 import { boundaryOf } from '../day.ts';
+
+/* "Not a place" is two presses with a sitting-long way back (3.20.4). Armed
+   by the first press, disarmed by choosing another place; after the put-down
+   the same button reclaims. Session memory only, like every reveal. */
+let notPlaceArmedId: string | null = null;
+let notPlaceUndoId: string | null = null;
+
 
 const now = () => Date.now();
 
@@ -326,20 +334,38 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     whereHint.hidden = !news;
     if (news) whereHint.textContent = 'Some of these may not be places. Pick one and you can say so.';
   }
+  // Two-press state for "Not a place", and the sitting's way back (3.20.4).
+  // Module lets, not dataset: the paint above and the handler far below are
+  // the only readers, and a reveal-style memory is exactly what this is.
   // The way to say one of them is not a place (2.34.0) — see the note on the
   // markup. Present only while one is chosen: there is nothing to say it about
-  // when the answer is "anywhere".
+  // when the answer is "anywhere". Since 3.20.4 it is TWO presses with the
+  // consequence on the button, and the row stays while a put-down place can
+  // still be brought back this sitting (device report: no confirmation, no
+  // visible undo — the write was always reversible and nothing said so).
   const notPlaceRow = document.querySelector<HTMLElement>('#where-notplace-row');
   if (notPlaceRow) {
-    notPlaceRow.hidden = whereNow === null || !places.some(c => c.id === whereNow);
+    notPlaceRow.hidden = (whereNow === null || !places.some(c => c.id === whereNow))
+      && notPlaceUndoId === null;
     // RENDERED, NOT IN THE MARKUP. The shell's word budget counts what is in
     // `index.html` whether it is showing or not, and this line is only ever
     // read by somebody who has already chosen a place. Same trade the places
     // readout makes: the heading earns its place in the shell, the sentence
     // under it does not.
+    const notPlaceBtn = document.querySelector<HTMLButtonElement>('#where-notplace');
     const notPlaceHint = document.querySelector<HTMLElement>('#where-notplace-hint');
+    if (notPlaceArmedId !== null && notPlaceArmedId !== whereNow) notPlaceArmedId = null;
+    if (notPlaceBtn && !notPlaceRow.hidden) {
+      notPlaceBtn.textContent = notPlaceUndoId !== null ? 'Bring it back'
+        : notPlaceArmedId === whereNow ? 'Press again to put it down'
+        : 'Not a place';
+    }
     if (notPlaceHint && !notPlaceRow.hidden) {
-      notPlaceHint.textContent = 'It stops being offered here, and stops hiding things that carry it.';
+      notPlaceHint.textContent = notPlaceUndoId !== null
+        ? 'It stopped being offered. Nothing was deleted, and everything that carried it still does.'
+        : notPlaceArmedId === whereNow
+          ? 'It stops being offered and stops narrowing. Press once more to say so.'
+          : 'It stops being offered here, and stops hiding things that carry it.';
     }
   }
   // If the chosen place was trashed, the filter stands down rather than
@@ -401,9 +427,14 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   if (withSel && withRow) {
     withRow.hidden = named.length === 0;
     const keep = withNow ?? '';
+    // Ordered by the place you are in (3.21.0): stated-here, then the
+    // unplaced, then stated-elsewhere — a select cannot shelve, so the order
+    // says what the toggles say, and nobody is missing from it.
+    const shelves = peopleForPlace(st, whereNow);
+    const ordered = [...shelves.here, ...shelves.anywhere, ...shelves.elsewhere];
     withSel.replaceChildren(...[
       Object.assign(document.createElement('option'), { value: '', textContent: 'nobody in particular' }),
-      ...named.map(p => Object.assign(document.createElement('option'), {
+      ...ordered.map(p => Object.assign(document.createElement('option'), {
         value: p.id, textContent: p.title || '(unnamed)',
       })),
     ]);
@@ -740,6 +771,21 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
           horizonsBtn.hidden = anyHorizons === 0;
           horizonsBtn.textContent = 'What you\u2019re working toward';
           if (anyHorizons === 0) closeSheet('sheet-horizons');
+        }
+      }
+      // THE DAYS AHEAD (3.22.0, ADR-0124), on the same pass and by the same
+      // rules as the doors above: what it OPENS and no number, hidden until
+      // something carries a date, closed behind anybody standing in it when
+      // the last date goes. `calendarCount` \u2014 the export's own selection \u2014 is
+      // the door's condition, so the door, the sheet and the .ics can never
+      // disagree about whether anything is dated.
+      {
+        const datedBtn = document.querySelector<HTMLButtonElement>('#dated-open');
+        const anyDated = calendarCount(st, nowIso, session.zone) > 0;
+        if (datedBtn) {
+          datedBtn.hidden = !anyDated;
+          datedBtn.textContent = 'The days ahead';
+          if (!anyDated) closeSheet('sheet-dated');
         }
       }
       const rows: HTMLElement[] = [];
@@ -1592,14 +1638,28 @@ export async function main(edition?: Edition): Promise<void> {
   let meetingOf: string | null = null;
   const whoChosen = (): string[] => whoInIt ?? (withNow ? [withNow] : []);
 
+  /** "Everyone" pressed this sitting — the reveal past the place's shelf.
+   *  Reset each time the sheet opens, like every reveal. */
+  let whoEveryone = false;
   const paintSituationWho = (): void => {
     const row = document.querySelector<HTMLElement>('#situation-who-row');
     const box = document.querySelector<HTMLElement>('#situation-who');
     if (!row || !box) return;
-    const named = allPeople(session.state());
-    row.hidden = named.length === 0;
-    if (named.length === 0) return;
+    const st = session.state();
+    const all = allPeople(st);
+    row.hidden = all.length === 0;
+    if (all.length === 0) return;
     const on = new Set(whoChosen());
+    // THE PLACE SORTS THE CHOOSER (3.21.0, ADR-0123): stated-here first, the
+    // unplaced always (fitsHere's own default), and stated-only-elsewhere
+    // behind one press — never gone, never inferred, only places the reader
+    // put on the person's own sheet. Anyone already IN the room stays visible
+    // whatever shelf they came from: a chosen name must never vanish.
+    const shelves = peopleForPlace(st, whereNow);
+    const front = [...shelves.here, ...shelves.anywhere,
+      ...shelves.elsewhere.filter(p => on.has(p.id))];
+    const behind = shelves.elsewhere.filter(p => !on.has(p.id));
+    const named = whoEveryone ? [...front, ...behind] : front;
     box.replaceChildren(...named.map(p => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -1619,6 +1679,14 @@ export async function main(edition?: Edition): Promise<void> {
       });
       return b;
     }));
+    if (!whoEveryone && behind.length > 0) {
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'ghost situation-who-one';
+      more.textContent = behind.length === 1 ? 'Everyone (1 more)' : `Everyone (${behind.length} more)`;
+      more.addEventListener('click', () => { whoEveryone = true; paintSituationWho(); });
+      box.append(more);
+    }
   };
 
   const paintSituations = (): void => {
@@ -1692,10 +1760,17 @@ export async function main(edition?: Edition): Promise<void> {
   // WHAT THIS MEETING IS ABOUT (3.16.0, ADR-0119). Painted on open, like every
   // sheet here: a list built once reports the store as it was when the app
   // started, and the whole value of this one is that it is true on the way in.
+  /** Which lens the room is worn through — reset to By person on each open,
+   *  so the default is predictable and the choice is the sitting's. */
+  let meetingLens: 'person' | 'thing' = 'person';
   const paintMeeting = (): void => {
     const st = session.state();
     const saved = meetingOf === null ? undefined : st.situations.get(meetingOf);
     const v = meetingView(st, saved?.people ?? [], heldNodes);
+    const byP = document.querySelector<HTMLButtonElement>('#meeting-by-person');
+    const byT = document.querySelector<HTMLButtonElement>('#meeting-by-thing');
+    if (byP) byP.setAttribute('aria-pressed', meetingLens === 'person' ? 'true' : 'false');
+    if (byT) byT.setAttribute('aria-pressed', meetingLens === 'thing' ? 'true' : 'false');
     const title = document.querySelector<HTMLElement>('#sheet-meeting-title');
     // The situation's own name, because "In the room" twice over says nothing
     // about WHICH room and somebody with three saved meetings needs to know.
@@ -1704,7 +1779,28 @@ export async function main(edition?: Edition): Promise<void> {
     if (words) words.textContent = meetingViewWords(v);
 
     const people = document.querySelector<HTMLUListElement>('#meeting-people');
-    if (people) {
+    if (people && meetingLens === 'thing') {
+      // THE SAME ROOM, BY THING (3.21.0, ADR-0123): each thing once, wearing
+      // the names that share it — the names are the only label a set gets.
+      const rows = meetingByThing(st, saved?.people ?? [], heldNodes);
+      people.replaceChildren(...rows.map(r => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'linklike meeting-thing';
+        b.textContent = r.node.title || '(untitled)';
+        b.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(r.node.id);
+          if (fresh) detail.open(fresh);
+        });
+        const who = document.createElement('span');
+        who.className = 'roles-held';
+        who.textContent = r.people.map(p => p.title || '(unnamed)').join(' · ');
+        li.append(b, who);
+        return li;
+      }));
+    } else if (people) {
       people.replaceChildren(...v.people.map(mp => {
         const li = document.createElement('li');
         li.className = 'roles-row';
@@ -1755,8 +1851,74 @@ export async function main(edition?: Edition): Promise<void> {
     fill('#meeting-crosses-label', '#meeting-crosses', v.crosses);
     fill('#meeting-lines-label', '#meeting-lines', v.lines);
   };
-  onSheetOpen('sheet-meeting', paintMeeting);
+  onSheetOpen('sheet-meeting', () => { meetingLens = 'person'; paintMeeting(); });
+  document.querySelector<HTMLButtonElement>('#meeting-by-person')
+    ?.addEventListener('click', () => { meetingLens = 'person'; paintMeeting(); });
+  document.querySelector<HTMLButtonElement>('#meeting-by-thing')
+    ?.addEventListener('click', () => { meetingLens = 'thing'; paintMeeting(); });
   wireSheetClose('sheet-meeting');
+
+  // THE DAYS AHEAD (3.22.0, ADR-0124) — the calendar story's live half.
+  // Painted on open, like every sheet here, and that is what makes it live:
+  // one surface at a time means every arrival is a fresh read of the log, so
+  // a date moved a minute ago already sits under its new day. The rows come
+  // from the export's own selection — src/dated.ts says why nothing here may
+  // walk the clocks itself.
+  const paintDated = (): void => {
+    const st = session.state();
+    const nowIso = new Date(now()).toISOString();
+    const days = datedDays(st, nowIso, session.zone);
+    const words = document.querySelector<HTMLElement>('#dated-words');
+    if (words) words.textContent = datedWords(days.reduce((n, d) => n + d.items.length, 0));
+    const list = document.querySelector<HTMLElement>('#dated-list');
+    if (!list) return;
+    list.replaceChildren(...days.map(d => {
+      const sec = document.createElement('section');
+      sec.className = 'dated-day';
+      const h = document.createElement('h3');
+      h.className = 'dated-day-name';
+      h.textContent = datedDayWords(d, nowIso, session.zone);
+      const ul = document.createElement('ul');
+      ul.className = 'roles-list';
+      ul.append(...d.items.map(it => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        // The thing is a door onto its own sheet — the room's rule: a list
+        // you can only read is a list you have to leave to act.
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'linklike dated-thing';
+        b.textContent = it.node.title || '(untitled)';
+        b.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(it.node.id);
+          if (fresh) detail.open(fresh);
+        });
+        const kind = document.createElement('span');
+        kind.className = 'dated-kind';
+        kind.textContent = datedKindWords(it.kind);
+        li.append(b, kind);
+        if (it.whom) {
+          const who = document.createElement('span');
+          who.className = 'roles-held';
+          who.textContent = `with ${it.whom}`;
+          li.append(who);
+        }
+        if (it.note) {
+          const note = document.createElement('span');
+          note.className = 'roles-held';
+          note.textContent = it.note;
+          li.append(note);
+        }
+        return li;
+      }));
+      sec.append(h, ul);
+      return sec;
+    }));
+  };
+  onSheetOpen('sheet-dated', paintDated);
+  wireSheetClose('sheet-dated');
+  document.querySelector<HTMLButtonElement>('#dated-open')
+    ?.addEventListener('click', () => { openSheet('sheet-dated'); });
 
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). No painter of its own: the list
   // is filled by the same `render` pass that fills the capped one, from one
@@ -1765,7 +1927,7 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLButtonElement>('#review-count')
     ?.addEventListener('click', () => { openSheet('sheet-review'); });
 
-  onSheetOpen('sheet-situation', () => { paintSituationWho(); paintSituations(); });
+  onSheetOpen('sheet-situation', () => { whoEveryone = false; paintSituationWho(); paintSituations(); });
   wireSheetClose('sheet-situation');
   document.querySelector<HTMLButtonElement>('#situation-open')
     ?.addEventListener('click', () => { openSheet('sheet-situation'); });
@@ -2237,11 +2399,35 @@ export async function main(edition?: Edition): Promise<void> {
     document.querySelector<HTMLInputElement>('#capture')?.focus();
   });
 
+  // The hub's own way into the situation (3.21.0) — a second door to the one
+  // sheet; the original stays with the consequence lines it narrows.
+  document.querySelector<HTMLButtonElement>('#situation-open-hub')
+    ?.addEventListener('click', () => { openSheet('sheet-situation'); });
+
   document.querySelector<HTMLButtonElement>('#where-notplace')?.addEventListener('click', () => {
+    // The sitting's way back first: after a put-down, the same button brings
+    // the place straight back (node.reclaimed — the write was always the
+    // reversible pair, and now the surface says so).
+    if (notPlaceUndoId !== null) {
+      const back = notPlaceUndoId;
+      notPlaceUndoId = null;
+      void session.commit(ctx => reclaimEvents(ctx, back))
+        .then(() => { setSituation(back, howLongNow); })
+        .catch(() => { /* the readout repaints from state either way */ });
+      return;
+    }
     const id = whereNow;
     if (id === null) return;
+    if (notPlaceArmedId !== id) {
+      // First press arms; the button and the hint carry the consequence, and
+      // choosing a different place disarms (the paint checks).
+      notPlaceArmedId = id;
+      setSituation(id, howLongNow);
+      return;
+    }
+    notPlaceArmedId = null;
     void session.commit(ctx => releaseEvents(ctx, id))
-      .then(() => { setSituation(null, howLongNow); })
+      .then(() => { notPlaceUndoId = id; setSituation(null, howLongNow); })
       .catch(() => { /* the readout repaints from state either way */ });
   });
 

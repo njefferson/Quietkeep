@@ -953,7 +953,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.20.1**, promoted 2026-09-01 at `46439c6`. The merged
+- **PRODUCTION CARRIES 3.20.3**, promoted 2026-09-01 at `af5f14c` — tree
+  asserted identical to the walked staging head `0294ad0`, both editions read
+  back by content (workers naming 3.20.3, the notes-window sentence in the
+  bundle, the About door in the page).
+- **Superseded: 3.20.1**, promoted 2026-09-01 at `46439c6`. The merged
   tree was asserted byte-identical to the walked staging head `3196d04` before
   the push — same tree object, not a diff that looked empty — and both
   editions were then read back from their production URLs: workers naming
@@ -969,7 +973,56 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.20.3**. The cold
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.2**, carrying
+  3.22.1, 3.22.0, 3.21.0 and 3.20.4 beneath it. 3.22.2 keeps the note box —
+  and its focus ring — fully on screen when Tabbed to: the 3.22.0 date hint
+  had grown a third line and nudged it past the sheet fold (the walk's
+  finding, reproduced headlessly before fixing), and the shorter hint then
+  needed its own triplet because a shipped byte behind an unmoved cache name
+  never reaches an installed reader (release:check's finding, in CI first —
+  the local re-run list after the fix was hand-picked, which is the exact
+  failure the Spine exists to prevent). 3.22.1 beneath it is the notes-panel
+  fix: three
+  apostrophes had been written as their seven-character entity in the release
+  notes themselves, and the panel — which renders text, never markup, by
+  design — printed the code. Found by the Spine's smoke pin in CI on the
+  3.21.0 push; the local smoke that day had refused a stale build instead of
+  measuring, so CI was the first place the assertion actually ran. Beneath
+  it, 3.22.0 — the days ahead (ADR-0124): every dated thing,
+  day by day, inside the app — the demand from use, answered as the calendar
+  story's live half. One selection three readers share (`calendarEntries` and
+  `calendarDay` in `src/ics.ts`): the `.ics` file, the ⓘ count and the new
+  view cannot name different mornings. Answer-owed dates are named as such,
+  the waiting-on name beside them; a passed date sits under today wearing the
+  replan surface's own words; review clocks stay out for the export's recorded
+  reason; no past day is ever rendered and nothing grades anybody. The door
+  stands on the hub beside its neighbours, hidden until something carries a
+  date; the sheet paints on every open, which under one-surface-at-a-time is
+  what live means. Replaces an invented refusal — no record ever decided
+  against an in-app dated view, and ADR-0124 says so.
+- **Superseded beneath the above: 3.21.0.** The capability half of the
+  twelve-finding pass
+  (ADR-0123): the room readable by thing — each thing once, wearing the names
+  that share it, the names being the only label a set ever gets — with by
+  person the standing default; people carrying places stated on their own
+  sheets, and every people-chooser shelving stated-here first, unplaced always
+  (the fitsHere default restated), stated-elsewhere behind one press and never
+  gone; and the situation asked from the hub too, the stance door staying with
+  the consequence lines it narrows. Stated facts only, no inference, per
+  entries 23/24. Beneath it, 3.20.4's nine small truths.
+- **Superseded beneath the above: 3.20.4.** Nine of
+  the twelve-finding device pass, the small-truths half: form fields wear a
+  calmer ring (the photographed border collision), who-is-in-it names the
+  gesture and a pressed name looks pressed, the Menu row and the date group
+  explain themselves, the role label says what it meant, identity sheets say
+  what they are and the tree's kind word is a chip, *Not a place* is two
+  presses with *Bring it back* standing for the sitting (the write was always
+  the reversible put-down — now the surface says so), the places group sits
+  above the fold (1.39.1's note amended in place), and the room is room-sized.
+  The walk asserts the two-press flow end to end, the gesture words, and
+  places-without-the-fold. The capability half — the meeting by thing,
+  place-aware people, a situation door on the hub — landed above as 3.21.0.
+- **Superseded: 3.20.3.** The cold
   read-back's remaining two findings, closed on the owner's ruling that routing
   them upward was fake carefulness: the walkthrough names both doors truthfully
   and the ⓘ panel carries an *Elsewhere in the app* door of its own
@@ -2599,7 +2652,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.20.1** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.20.3** — promoted at
+  `af5f14c` on 2026-09-01, the merged tree asserted byte-identical to `0294ad0`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. **Verified live by content on both editions**: workers naming
+  3.20.3, the notes-window sentence in the bundle, the About door in the page.
+  Two releases: the cold read-back's fixes (a thing somebody owes you arrives
+  as one, every sheet heading draws the app's own ring, the feeds picker
+  offers only work), then both doors told truthfully with a way through from
+  the ⓘ panel and the notes opening everything since this device last looked.
+- Superseded: production was **3.20.1** — promoted at
   `46439c6` on 2026-09-01, the merged tree asserted byte-identical to `3196d04`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by content on both editions**: workers naming

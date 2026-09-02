@@ -919,7 +919,18 @@ const REGISTRY = {
   // that costs is written in ADR-0119 rather than left to be discovered.
   'in the room': ['#sheet-meeting-title',
     '#sheet-meeting-close', '#meeting-words', '#meeting-people .roles-name',
-    '#meeting-people .roles-held', '#meeting-people .meeting-thing'],
+    '#meeting-people .roles-held', '#meeting-people .meeting-thing', '#meeting-by-person', '#meeting-by-thing'],
+  // THE DAYS AHEAD (3.22.0, ADR-0124). The DOOR is in this entry on the
+  // arrangements precedent: it stands on the hub, which stays in layout under
+  // the open sheet, so both halves measure in one state. The with-name and
+  // needs-a-new-plan spans are NOT registered — whether the walk's store
+  // renders one depends on what earlier states linked, and a selector that can
+  // match nothing is the silent non-coverage the review-count lesson records;
+  // their pair (`--ink-soft` on the surface) is already held by the room's
+  // `.roles-held` and their words by test/dated.test.ts.
+  'the days ahead': ['#dated-open', '#sheet-dated-title', '#sheet-dated-close',
+    '#dated-words', '#dated-list .dated-day-name', '#dated-list .dated-kind',
+    '#dated-list .dated-thing'],
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
   // the 'review' state above; this is the same rows without the cap, and its own
   // chrome. The DOOR is `#review-count`, which is on the review surface, so it
@@ -1292,7 +1303,9 @@ const REGISTRY = {
   // the one state that must never ship unmeasured. The doors are the only
   // controls; each carries a place name and, when its surface publishes one, a
   // sentence about what is behind it.
-  'the hub': ['#hub-heading', '.hub-go', '.hub-name', '.hub-count'],
+  'the hub': ['#hub-heading', '.hub-go', '.hub-name', '.hub-count',
+    // The situation, from the hub too (3.21.0) — registered the day it exists.
+    '#situation-open-hub'],
   // And the row that is present inside every job: the way back, and the way to
   // put a thought down without leaving the job to find the box.
   'inside a job': ['#stance-back', '#stance-capture'],
@@ -2635,6 +2648,14 @@ try {
     // level up.
     await leaveStance(page);
     await page.waitForSelector('#hub-doors .hub-go');
+    // THE HUB'S OWN WAY INTO THE SITUATION (3.21.0): pressed, it opens the
+    // sheet; closed, the hub is still there. A second door to one sheet, and
+    // the original stays with the consequence lines it narrows.
+    await page.click('#situation-open-hub');
+    await page.waitForSelector('#sheet-situation[open]');
+    pass(`${theme}/the hub: What's the situation? opens from the hub`);
+    await page.click('#sheet-situation-close').catch(() => page.keyboard.press('Escape'));
+    await page.waitForFunction(() => !document.querySelector('#sheet-situation')?.open);
     await auditContrast(page, 'the hub', theme);
     await auditAxe(page, 'the hub', theme);
     await auditNames(page, 'the hub', theme);
@@ -3366,7 +3387,15 @@ try {
     // nothing about whether it can be made.
     await page.click('#cards .card-open');
     await page.waitForSelector('#detail[open]');
-    await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+    // ONE PRESS FROM THE ITEM (3.20.4): the places group moved out of the More
+    // fold — the device pass asked in as many words why the most-used fact sat
+    // a press deeper than the rest. Asserted BEFORE the fold is opened, so a
+    // regression back behind it cannot pass.
+    (await page.evaluate(() => {
+      const more = document.querySelector('#detail-more');
+      const ctx = document.querySelector('#detail-context');
+      return more?.getAttribute('aria-expanded') !== 'true' && !!ctx && ctx.offsetParent !== null;
+    }) ? pass : fail)(`${theme}/places on the sheet: reachable without opening the fold`);
     await page.fill('#detail-context', 'At home');
     await page.click('#detail-context-set');
     await page.waitForSelector('#detail-context-list li');
@@ -3429,6 +3458,33 @@ try {
     await auditNames(page, 'where you are', theme);
     await auditSeparationAndTargets(page, 'where you are', theme);
     await auditFocusRings(page, 'where you are', theme, ['#where']);
+
+    // NOT A PLACE IS TWO PRESSES WITH A WAY BACK (3.20.4, device report: no
+    // confirmation, no visible undo — the write was always the reversible
+    // put-down and nothing said so). Driven end to end: arm, read the
+    // consequence, do it, bring it back, and see the place stand again.
+    {
+      const npBtn = page.locator('#where-notplace');
+      (/^Not a place$/.test((await npBtn.textContent())?.trim() ?? '') ? pass : fail)(
+        `${theme}/not a place: the resting words are the resting words`);
+      await npBtn.click();
+      await page.waitForTimeout(150);
+      (/Press again/.test((await npBtn.textContent()) ?? '') ? pass : fail)(
+        `${theme}/not a place: the first press arms and says the consequence`);
+      (/stops being offered/.test(await page.locator('#where-notplace-hint').textContent() ?? '') ? pass : fail)(
+        `${theme}/not a place: and the hint carries what happens`);
+      await npBtn.click();
+      await page.waitForFunction(() => /Bring it back/.test(
+        document.querySelector('#where-notplace')?.textContent ?? ''));
+      (/Nothing was deleted/.test(await page.locator('#where-notplace-hint').textContent() ?? '') ? pass : fail)(
+        `${theme}/not a place: the after-words say nothing was deleted`);
+      await npBtn.click();
+      await page.waitForFunction(() => {
+        const sel = document.querySelector('#where');
+        return sel && [...sel.options].some(o => o.textContent === 'At home') && sel.value !== '';
+      });
+      pass(`${theme}/not a place: brought back, and standing as where you are again`);
+    }
 
     // HOW LONG YOU HAVE (2.19.0, the plan's phase 3). The other half of the
     // situation, driven the same way — chosen on the work surface, with the
@@ -4342,6 +4398,16 @@ try {
     // a surface reachable only by a walk that knows its id is a surface a
     // reader does not have.
     await page.waitForSelector('#situation-who-row:not([hidden])');
+    // THE GESTURE IS NAMED (3.20.4, device report: the toggles read as
+    // "selected and waiting to be added").
+    (/Tap a name/.test(await page.locator('#situation-who-hint').textContent() ?? '') ? pass : fail)(
+      `${theme}/who is in it: the hint says tap to add, tap to take out`);
+    // NOBODY HAS STATED PLACES in this store, so the place-aware shelves must
+    // change NOTHING here: everyone offered, no "Everyone" reveal — the
+    // fitsHere default restated for people (3.21.0). The shelving itself is
+    // held by unit tests; this guards the default the screen shows.
+    (await page.locator('#situation-who .situation-who-one', { hasText: /Everyone/ }).count() === 0 ? pass : fail)(
+      `${theme}/who is in it: with nobody placed, nobody is shelved away`);
     const whoBtn = page.locator('#situation-who .situation-who-one', { hasText: 'Rowan' });
     (await whoBtn.getAttribute('aria-pressed') === 'false' ? pass : fail)(
       `${theme}/who is in it: it starts off, because the filter above was cleared`);
@@ -4364,6 +4430,17 @@ try {
 
     await page.click('#situation-list .situation-room');
     await page.waitForSelector('#sheet-meeting[open]');
+    // TWO LENSES OVER ONE ROOM (3.21.0, ADR-0123). By thing collapses to each
+    // thing once, wearing the names that share it — pressed, said in
+    // aria-pressed, and the row carries the attendee's own name as its label.
+    await page.click('#meeting-by-thing');
+    await page.waitForTimeout(200);
+    (await page.locator('#meeting-by-thing').getAttribute('aria-pressed') === 'true' ? pass : fail)(
+      `${theme}/in the room: the lens flip says so in aria-pressed`);
+    (/Rowan/.test(await page.locator('#meeting-people .roles-held').first().textContent().catch(() => '') ?? '') ? pass : fail)(
+      `${theme}/in the room: a by-thing row wears the names that share it`);
+    await page.click('#meeting-by-person');
+    await page.waitForTimeout(150);
     // AND THE SHEET BEHIND IT IS GONE. `openSheet` calls `closeEverything`
     // because two stacked modals is the overlap ADR-0083 forbids, so the door
     // hands the reader ON rather than piling a surface on a surface — the same
@@ -5238,6 +5315,13 @@ try {
       document.querySelector('#detail-people-list')?.textContent ?? ''));
     await page.locator('#detail-people-list button', { hasText: /Ada/ }).first().click();
     await page.waitForSelector('#detail-person-group:not([hidden])');
+    // A PERSON'S PLACES, IN A PERSON'S WORDS (3.21.0): the same group that says
+    // "Where can this be done?" on work says "Their places" here — the stated
+    // affiliation the choosers sort by, in words that are true of a person.
+    (/Their places/.test(await page.locator('label[for="detail-context"]').textContent() ?? '') ? pass : fail)(
+      `${theme}/a person's sheet: the places group speaks person words`);
+    (/offered when you are there/.test(await page.locator('#detail-context-hint').textContent() ?? '') ? pass : fail)(
+      `${theme}/a person's sheet: and the hint says what stating a place does`);
     await auditContrast(page, 'detail sheet, a person', theme);
     await auditAxe(page, 'detail sheet, a person', theme);
     await auditNames(page, 'detail sheet, a person', theme);
@@ -5697,6 +5781,44 @@ try {
     await auditNames(page, 'upkeep ready', theme);
     await auditSeparationAndTargets(page, 'upkeep ready', theme);
     await auditFocusRings(page, 'upkeep ready', theme);
+
+    // THE DAYS AHEAD (3.22.0, ADR-0124) — the calendar story's live half,
+    // driven from its own door on the hub. Placed HERE on purpose: the store
+    // is at its fullest (the sample just landed, and state 3f0's answer-owed
+    // date is still carried), the state reads and writes nothing, and only
+    // the wide arrangement — which reads layout — runs after it, so it can
+    // perturb nothing downstream. The door exists only once something is
+    // dated, which is long since true; reached the way a finger reaches it.
+    await leaveStance(page);
+    await page.waitForSelector('#dated-open:not([hidden])');
+    await page.click('#dated-open');
+    await page.waitForSelector('#sheet-dated[open]');
+    const daysSaid = await page.locator('#dated-words').innerText();
+    (/dated thing/.test(daysSaid) ? pass : fail)(
+      `${theme}/the days ahead: it says what it holds ("${daysSaid.slice(0, 56)}")`);
+    (/Send to my calendar/.test(daysSaid) ? pass : fail)(
+      `${theme}/the days ahead: it names the export as the other half of one selection`);
+    const dayHeads = await page.locator('#dated-list .dated-day-name').count();
+    (dayHeads > 0 ? pass : fail)(
+      `${theme}/the days ahead: at least one day stands as a heading (${dayHeads})`);
+    // THE CHIP THE RELEASE EXISTS FOR: the answer-owed date is named as one,
+    // never folded into a generic "due" — 3f0's suspense is in this store.
+    const daysList = await page.locator('#dated-list').innerText();
+    (/answer owed/.test(daysList) ? pass : fail)(
+      `${theme}/the days ahead: the answer-owed date is named as one`);
+    (await page.locator('#dated-list .dated-thing').count() > 0 ? pass : fail)(
+      `${theme}/the days ahead: each thing is a door onto its own sheet`);
+    // THE NEGATIVE ONE IS THE ASSERTION THAT MATTERS, as everywhere: this
+    // surface renders identically with a countdown or a rebuke in it.
+    (!/overdue|late|behind|missed|slipped/i.test(daysSaid + ' ' + daysList) ? pass : fail)(
+      `${theme}/the days ahead: no day and no row grades the reader`);
+    await auditContrast(page, 'the days ahead', theme);
+    await auditAxe(page, 'the days ahead', theme);
+    await auditNames(page, 'the days ahead', theme);
+    await auditSeparationAndTargets(page, 'the days ahead', theme);
+    await auditFocusRings(page, 'the days ahead', theme, ['#dated-list .dated-thing']);
+    await page.click('#sheet-dated-close');
+    await page.waitForSelector('#sheet-dated', { state: 'hidden' });
 
     // --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) ------------------------------
     //

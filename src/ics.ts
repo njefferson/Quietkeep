@@ -101,9 +101,6 @@ function fold(line: string): string {
   return out.join('\r\n');
 }
 
-/** `YYYYMMDD` for an all-day DATE value, resolved in the reader's zone. */
-const dateValue = (iso: string, zone: string): string => localDayKey(iso, atMidnight(zone)).replace(/-/g, '');
-
 /** `YYYYMMDDTHHMMSSZ` — used only for DTSTAMP, which is a UTC instant by spec. */
 const stampValue = (iso: string): string =>
   new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
@@ -153,20 +150,85 @@ export const CALENDAR_KINDS: ReadonlySet<string> = new Set(['due', 'start', 'sus
 export const exportsToCalendar = (n: NodeState): boolean =>
   n.kind !== 'bother' && standingDecline(n) === null;
 
-/** The soonest clock a calendar may carry. NOT `soonestClock`, which answers a
- *  different question — `held.ts` groups on any clock, because the app genuinely
- *  should resurface a review-clocked item. Only the export is narrower. */
-const soonestAt = (n: NodeState, zone: string, nowIso: string): string | null => {
+/** Tie order when two clocks name one instant. The deadline outranks the door
+ *  opening (held's own "tie goes to the DEADLINE" rule), and the answer-owed
+ *  date outranks plain due because it is the one a reader most needs to see
+ *  named. Only the dated view reads the kind — the file writes `at` alone, so
+ *  this choice cannot alter a single byte of the export. */
+const KIND_PRIORITY: readonly string[] = ['suspense', 'due', 'start', 'park'];
+
+/** The soonest clock a calendar may carry, and WHICH kind is speaking. NOT
+ *  `soonestClock`, which answers a different question — `held.ts` groups on any
+ *  clock, because the app genuinely should resurface a review-clocked item.
+ *  Only the export is narrower. */
+const soonestAt = (n: NodeState, zone: string, nowIso: string): { at: string; kind: string } | null => {
   void zone; void nowIso;
-  let best: { at: string; ms: number } | null = null;
+  const rank = (k: string): number => {
+    const i = KIND_PRIORITY.indexOf(k);
+    return i === -1 ? KIND_PRIORITY.length : i;
+  };
+  let best: { at: string; kind: string; ms: number } | null = null;
   for (const c of Object.values(n.clocks)) {
     if (!c || !isValidIso(c.at)) continue;
     if (!CALENDAR_KINDS.has(c.kind)) continue;
     const ms = Date.parse(c.at);
-    if (best === null || ms < best.ms) best = { at: c.at, ms };
+    if (best === null || ms < best.ms || (ms === best.ms && rank(c.kind) < rank(best.kind))) {
+      best = { at: c.at, kind: c.kind, ms };
+    }
   }
-  return best?.at ?? null;
+  return best ? { at: best.at, kind: best.kind } : null;
 };
+
+/** One selected row: the node, the instant the diary will date it, and which
+ *  clock kind that instant came from. */
+export interface CalendarEntry {
+  node: NodeState;
+  at: string;
+  kind: string;
+  /** The held group the node sits in — carried so the dated view can say
+   *  "needs a new plan" in the held list's own words, never re-deriving it. */
+  group: string;
+}
+
+/**
+ * THE selection — every item the calendar file will hold, with the instant it
+ * will be dated. One function, three readers: the file, the count the ⓘ
+ * panel states, and the in-app dated view (`src/dated.ts`). The view exists so
+ * the reader can watch these days move without leaving the app; if it walked
+ * the clocks itself it would eventually disagree with the file, and the 0.9.0
+ * dropped-replan defect above is what that costs. Nothing may re-derive this.
+ */
+export function calendarEntries(state: State, nowIso: string, zone: string): CalendarEntry[] {
+  const out: CalendarEntry[] = [];
+  for (const group of heldGroups(state, nowIso, zone)) {
+    if (!inCalendar(group.key)) continue;
+    for (const n of group.items) {
+      if (!exportsToCalendar(n)) continue;
+      const best = soonestAt(n, zone, nowIso);
+      // No real clock, nothing to put in a calendar. Skipping rather than
+      // throwing is deliberate: one malformed stored date must not take the
+      // whole export down (the audit's crash class).
+      if (!best) continue;
+      out.push({ node: n, at: best.at, kind: best.kind, group: group.key });
+    }
+  }
+  return out;
+}
+
+/**
+ * The local DAY the diary carries for a selected instant — never in the past.
+ * Passed clocks genuinely reach the selection (a soft clock that went by sits
+ * in `ready`, and a passed HARD date arrives via the `replan` group) and those
+ * are exactly the items a reminder is most for, so dating one yesterday would
+ * reliably remind nobody about precisely the work that needs it. The dated
+ * view groups on this same day, so the screen and the file name the same
+ * mornings.
+ */
+export function calendarDay(at: string, nowIso: string, zone: string): string {
+  const day = localDayKey(at, atMidnight(zone));
+  const today = localDayKey(nowIso, atMidnight(zone));
+  return day < today ? today : day;
+}
 
 export interface CalendarOptions {
   /** Overridable so tests do not depend on the wall clock. */
@@ -208,54 +270,41 @@ export function toCalendar(
     // Strict importers reject the mismatch (audit).
   ];
 
-  for (const group of heldGroups(state, nowIso, zone)) {
-    if (!inCalendar(group.key)) continue;
-    for (const n of group.items) {
-      if (!exportsToCalendar(n)) continue;
-      const at = soonestAt(n, zone, nowIso);
-      // No real clock, nothing to put in a calendar. Skipping rather than
-      // throwing is deliberate: one malformed stored date must not take the
-      // whole export down (the audit's crash class).
-      if (!at) continue;
-
-      lines.push('BEGIN:VEVENT');
-      // Stable per node, so re-importing UPDATES the event rather than adding a
-      // second copy — the failure that makes calendar exports unusable.
-      lines.push(`UID:${esc(n.id)}@quietkeep`);
-      lines.push(`DTSTAMP:${stamp}`);
-      // All-day, so no VTIMEZONE is needed anywhere in this file: a DATE value
-      // has no offset to get wrong.
-      // Never dated in the past. Passed clocks genuinely reach here — a soft
-      // clock that went by sits in `ready` (`days <= 0`), and a passed HARD date
-      // now arrives via the `replan` group — and those are exactly the items this
-      // feature exists to remind about, so sending one with an elapsed alarm
-      // would reliably remind nobody about precisely the work that needs it.
-      const day = dateValue(at, zone);
-      const today = dateValue(nowIso, zone);
-      lines.push(`DTSTART;VALUE=DATE:${day < today ? today : day}`);
-      lines.push(`SUMMARY:${esc(n.title || '(untitled)')}`);
-      lines.push(`DESCRIPTION:${esc(
-        `From Quietkeep, as it stood on ${madeOn}. This is a snapshot — if you change ` +
-        `this in Quietkeep, the calendar will not follow.`)}`);
-      // A repeat becomes a real recurrence, so the calendar keeps asking on its
-      // own rather than needing a fresh export every cycle.
-      // 3.3.10 wants a positive INTEGER. `Math.round` alone yielded `INTERVAL=0`
-      // for any cadence under half a day and exponential notation above 1e21 -
-      // both malformed, and nothing validates intervalDays on the way in (audit).
-      const iv = Math.round(Number(n.intervalDays));
-      if (Number.isSafeInteger(iv) && iv > 0) {
-        lines.push(`RRULE:FREQ=DAILY;INTERVAL=${iv}`);
-      }
-      lines.push('BEGIN:VALARM');
-      lines.push('ACTION:DISPLAY');
-      lines.push(`DESCRIPTION:${esc(n.title || '(untitled)')}`);
-      // Relative to the start of an all-day event, which the calendar resolves
-      // in the reader's own local time — so this is 9am where they are, without
-      // this file having to name a zone at all.
-      lines.push(`TRIGGER;RELATED=START:PT${hour}H`);
-      lines.push('END:VALARM');
-      lines.push('END:VEVENT');
+  // The membership and the day both come from the shared selection, so this
+  // file, the count, and the in-app dated view can never name different
+  // mornings for one node.
+  for (const { node: n, at } of calendarEntries(state, nowIso, zone)) {
+    lines.push('BEGIN:VEVENT');
+    // Stable per node, so re-importing UPDATES the event rather than adding a
+    // second copy — the failure that makes calendar exports unusable.
+    lines.push(`UID:${esc(n.id)}@quietkeep`);
+    lines.push(`DTSTAMP:${stamp}`);
+    // All-day, so no VTIMEZONE is needed anywhere in this file: a DATE value
+    // has no offset to get wrong. `calendarDay` clamps a passed clock to
+    // today — the "never dated in the past" rule, stated on that function.
+    lines.push(`DTSTART;VALUE=DATE:${calendarDay(at, nowIso, zone).replace(/-/g, '')}`);
+    lines.push(`SUMMARY:${esc(n.title || '(untitled)')}`);
+    lines.push(`DESCRIPTION:${esc(
+      `From Quietkeep, as it stood on ${madeOn}. This is a snapshot — if you change ` +
+      `this in Quietkeep, the calendar will not follow.`)}`);
+    // A repeat becomes a real recurrence, so the calendar keeps asking on its
+    // own rather than needing a fresh export every cycle.
+    // 3.3.10 wants a positive INTEGER. `Math.round` alone yielded `INTERVAL=0`
+    // for any cadence under half a day and exponential notation above 1e21 -
+    // both malformed, and nothing validates intervalDays on the way in (audit).
+    const iv = Math.round(Number(n.intervalDays));
+    if (Number.isSafeInteger(iv) && iv > 0) {
+      lines.push(`RRULE:FREQ=DAILY;INTERVAL=${iv}`);
     }
+    lines.push('BEGIN:VALARM');
+    lines.push('ACTION:DISPLAY');
+    lines.push(`DESCRIPTION:${esc(n.title || '(untitled)')}`);
+    // Relative to the start of an all-day event, which the calendar resolves
+    // in the reader's own local time — so this is 9am where they are, without
+    // this file having to name a zone at all.
+    lines.push(`TRIGGER;RELATED=START:PT${hour}H`);
+    lines.push('END:VALARM');
+    lines.push('END:VEVENT');
   }
 
   lines.push('END:VCALENDAR');
@@ -265,13 +314,5 @@ export function toCalendar(
 /** How many events the file will carry — so the surface can say plainly what it
  *  is about to hand over, rather than delivering a mystery. */
 export function calendarCount(state: State, nowIso: string, zone: string): number {
-  let n = 0;
-  for (const group of heldGroups(state, nowIso, zone)) {
-    if (!inCalendar(group.key)) continue;
-    for (const item of group.items) {
-      if (!exportsToCalendar(item)) continue;
-      if (soonestAt(item, zone, nowIso)) n++;
-    }
-  }
-  return n;
+  return calendarEntries(state, nowIso, zone).length;
 }

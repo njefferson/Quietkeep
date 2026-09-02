@@ -355,6 +355,15 @@
 <section id="hub" class="hub" aria-labelledby="hub-heading" data-not-a-stop>
   <h2 id="hub-heading" class="section" tabindex="-1">Where do you want to be?</h2>
   <ul id="hub-doors" class="hub-doors"></ul>
+  <!-- THE SITUATION, FROM THE HUB TOO (3.21.0, device report: "mentally seems
+       like a setup step before going deeper, not a filter applied later in a
+       smaller window"). A SECOND door to the same sheet, not a move: the
+       original stays on the stances beside the consequence lines, because a
+       filter's effect must stand with what it narrows (the rule that placed
+       it). This one is the same question asked where the day starts. The
+       gauge idiom — a quiet line that takes you somewhere. -->
+  <button id="situation-open-hub" class="gauge" type="button"
+          data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
 </section>
 
   <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
@@ -1024,6 +1033,14 @@
        anything under it yet. -->
   <button id="horizons-open" class="gauge" data-hub-part type="button" hidden></button>
 
+  <!-- THE DAYS AHEAD (3.22.0, ADR-0124). Beside the doors above and hidden by
+       the same rule: it exists once something carries a date, and a door onto
+       an empty room teaches you the feature is broken. Inside is every dated
+       thing, day by day — the live half of the calendar story, from the same
+       selection the .ics export sends, which stays the notifying half
+       (ADR-0007). Words rendered, not written here, same as its neighbours. -->
+  <button id="dated-open" class="gauge" data-hub-part type="button" hidden></button>
+
   <!-- Find anything you are holding. Read-only: it opens what it finds and
        changes nothing, and it keeps no record of the looking. The results only
        exist once you have typed, so it is a tool you reach for, never a surface
@@ -1381,6 +1398,10 @@
               aria-describedby="detail-date-unsaved">Set</button>
       <button id="detail-date-clear" type="button" class="ghost">No date</button>
     </div>
+    <p id="detail-date-reach" class="detail-hint">
+      A dated thing shows in <em>The days ahead</em>, and <em>Send to my
+      calendar</em>, under <em>Things you can do</em>, reaches yours.
+    </p>
     <!-- A PICKED DAY IS NOT A SAVED DAY, and the markup alone cannot show the
          difference (1.38.2, found on device). The native picker fills this field
          the instant a day is chosen, which looks exactly like a date that has
@@ -1415,12 +1436,76 @@
        it: it stays out of the way until the day, comes back as ready on it, and
        a passed start is never a card demanding a new plan — that is what makes
        it different from a due date, and why it gets its own words. -->
-  <!-- MOST OF AN ITEM IS NOT MOST ITEMS (1.39.1).
+  <!-- WHERE THIS CAN BE DONE (2.2.0, ADR-0092). Contexts.
+       The tree gives a thing exactly one parent — where it LIVES. This is a
+       different axis: where it can be DONE, and a thing can be doable in more
+       than one place, so it is a list of links and never a second parent.
+       Nothing is required. A thing with no context is doable anywhere, which is
+       why an unlabelled thing is never filtered away by "where you are" — the
+       filter narrows to what fits, and everything unlabelled always fits. -->
+  <div class="detail-group">
+    <label class="detail-label" for="detail-context">Where can this be done?</label>
+    <div class="detail-row">
+      <input id="detail-context" type="text" autocomplete="off" spellcheck="false"
+             enterkeyhint="done" placeholder="at home, out, on the phone"
+             aria-describedby="detail-context-hint">
+      <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
+    </div>
+    <!-- The last clause changed in 2.27.0 and the change is honesty, not
+         polish. It read "a thing with no place at all can be done anywhere",
+         which stopped being true the moment a place on a project began reaching
+         the work inside it: a thing with none of its own can now be reached by
+         one it inherits. Leaving the old sentence would have made the sheet
+         quietly wrong about the app's behaviour, which is worse than saying
+         less. -->
+    <p id="detail-context-hint" class="detail-hint">
+      As many as fit, commas between them, and none is required. With no place of
+      its own, a thing goes where it lives &mdash; or anywhere, if that has none.
+    </p>
+    <!-- THE PLACES YOU ALREADY HAVE, AS TAPS (3.8.0). This was a native
+         `<datalist>` and it is gone from all three fields on this sheet.
+
+         Two reasons, and the first is the one that ended somebody's session.
+         Reported from a device: the suggestion popup takes the caret out of the
+         field mid-word, repeatedly, so typing a place became type-two-letters,
+         tap-back-in, type-two-more. The popup is drawn by the browser, over the
+         keyboard, and this app cannot style it, size it, ring it or measure it —
+         it was the one thing on any surface here that shipped unmeasured, which
+         is precisely what `tools/a11y.mjs` exists to make impossible.
+
+         The second is cheaper and matters daily: the common case is not typing
+         a new place, it is reusing one of the four you have. A tap is one
+         gesture and typing is a dozen. So the set is on screen, in the order
+         `allContexts` fixes, and the field is for names that are genuinely new.
+
+         Rendered, never in the markup — the shell's word budget counts what is
+         written here whether it shows or not, and this list is as long as your
+         store makes it. -->
+    <ul id="detail-context-picks" class="detail-picks"></ul>
+    <!-- AND THE WAY TO TAKE A WRONG ONE BACK OUT, WHERE IT WAS MADE (3.8.0).
+         Saying a label is not a place has worked since 2.34.0 and lived in one
+         spot: the situation sheet, behind choosing that label as where you are.
+         So the correction was two rooms from the field that makes the mistake,
+         and a store carried a place nobody could find the way to remove.
+
+         A TOGGLE, not a second row of controls. The picks above say their own
+         name and add; pressed, this makes them say "— not a place" and remove.
+         The words on the button are what changes, so no control ever means two
+         things at once. -->
+    <p id="detail-context-fix" class="detail-fix"></p>
+    <ul id="detail-context-list" class="detail-feeds"></ul>
+  </div>
+
+  <!-- MOST OF AN ITEM IS NOT MOST ITEMS (1.39.1; amended 3.20.4).
        Twenty-four groups and sixty-eight controls sat on the sheet for every
        item, whether or not any of it applied — the same accumulation as the ⓘ
        panel, in control form rather than in prose. Folding is not hiding: every
        one of these is one press away and none of them moved.
-       What stays out: what it says, its date, a note, and where it lives. -->
+       What stays out: what it says, its date, a note, where it lives — and,
+       since 3.20.4, where it can be done. Places were foldable when they were
+       a label; now they feed the situation, who-is-here and the room, and the
+       device pass asked in as many words why the most-used fact sat a press
+       deeper than the rest. -->
   <div class="detail-group">
     <button id="detail-more" type="button" class="ghost"
             aria-expanded="false" aria-controls="detail-rest">More about this</button>
@@ -1748,65 +1833,6 @@
     </p>
   </div>
 
-  <!-- WHERE THIS CAN BE DONE (2.2.0, ADR-0092). Contexts.
-       The tree gives a thing exactly one parent — where it LIVES. This is a
-       different axis: where it can be DONE, and a thing can be doable in more
-       than one place, so it is a list of links and never a second parent.
-       Nothing is required. A thing with no context is doable anywhere, which is
-       why an unlabelled thing is never filtered away by "where you are" — the
-       filter narrows to what fits, and everything unlabelled always fits. -->
-  <div class="detail-group">
-    <label class="detail-label" for="detail-context">Where can this be done?</label>
-    <div class="detail-row">
-      <input id="detail-context" type="text" autocomplete="off" spellcheck="false"
-             enterkeyhint="done" placeholder="at home, out, on the phone"
-             aria-describedby="detail-context-hint">
-      <button id="detail-context-set" type="button" aria-label="Add a place this can be done">Add</button>
-    </div>
-    <!-- The last clause changed in 2.27.0 and the change is honesty, not
-         polish. It read "a thing with no place at all can be done anywhere",
-         which stopped being true the moment a place on a project began reaching
-         the work inside it: a thing with none of its own can now be reached by
-         one it inherits. Leaving the old sentence would have made the sheet
-         quietly wrong about the app's behaviour, which is worse than saying
-         less. -->
-    <p id="detail-context-hint" class="detail-hint">
-      As many as fit, commas between them, and none is required. With no place of
-      its own, a thing goes where it lives &mdash; or anywhere, if that has none.
-    </p>
-    <!-- THE PLACES YOU ALREADY HAVE, AS TAPS (3.8.0). This was a native
-         `<datalist>` and it is gone from all three fields on this sheet.
-
-         Two reasons, and the first is the one that ended somebody's session.
-         Reported from a device: the suggestion popup takes the caret out of the
-         field mid-word, repeatedly, so typing a place became type-two-letters,
-         tap-back-in, type-two-more. The popup is drawn by the browser, over the
-         keyboard, and this app cannot style it, size it, ring it or measure it —
-         it was the one thing on any surface here that shipped unmeasured, which
-         is precisely what `tools/a11y.mjs` exists to make impossible.
-
-         The second is cheaper and matters daily: the common case is not typing
-         a new place, it is reusing one of the four you have. A tap is one
-         gesture and typing is a dozen. So the set is on screen, in the order
-         `allContexts` fixes, and the field is for names that are genuinely new.
-
-         Rendered, never in the markup — the shell's word budget counts what is
-         written here whether it shows or not, and this list is as long as your
-         store makes it. -->
-    <ul id="detail-context-picks" class="detail-picks"></ul>
-    <!-- AND THE WAY TO TAKE A WRONG ONE BACK OUT, WHERE IT WAS MADE (3.8.0).
-         Saying a label is not a place has worked since 2.34.0 and lived in one
-         spot: the situation sheet, behind choosing that label as where you are.
-         So the correction was two rooms from the field that makes the mistake,
-         and a store carried a place nobody could find the way to remove.
-
-         A TOGGLE, not a second row of controls. The picks above say their own
-         name and add; pressed, this makes them say "— not a place" and remove.
-         The words on the button are what changes, so no control ever means two
-         things at once. -->
-    <p id="detail-context-fix" class="detail-fix"></p>
-    <ul id="detail-context-list" class="detail-feeds"></ul>
-  </div>
 
   <!-- WHO THIS IS FOR (2.6.0, ADR-0096). Roles.
        Recorded in NOTES Q-13 as the owner's own framing: roles are identities
@@ -1820,7 +1846,7 @@
        Nothing is required, nothing is inferred, and the honest majority of what
        anybody writes down belongs to no named identity at all. -->
   <div class="detail-group">
-    <label class="detail-label" for="detail-role">Who is this for?</label>
+    <label class="detail-label" for="detail-role">What part of your life is this for?</label>
     <div class="detail-row">
       <input id="detail-role" type="text" autocomplete="off" spellcheck="false"
              enterkeyhint="done" placeholder="a part of your life this belongs to"
@@ -1829,7 +1855,7 @@
     </div>
     <p id="detail-role-hint" class="detail-hint">
       A part of your life that runs through more than one area &mdash; not where
-      the work sits, but who it is for. As many as fit, commas between them, and
+      the work sits, and not who asked. As many as fit, commas between them, and
       most things belong to none.
     </p>
     <!-- The places' two lists, on this axis, because they are one shape and a
@@ -2032,6 +2058,11 @@
     </div>
     <p id="detail-release-hint" class="detail-hint">
       Stops it coming back. Not finished, not binned — and you can pick it up again.
+    </p>
+    <p id="detail-menu-hint" class="detail-hint">
+      The Menu is the shelf of things you want rather than owe &mdash; nothing
+      there carries a clock or nags. <em>Put on the Menu</em> moves this to it,
+      and the choice beside it says which kind of want it is.
     </p>
   </div>
 
@@ -2567,7 +2598,8 @@
   <p id="calendar-note" class="storage-note" role="status" aria-live="polite"></p>
   <p class="about-p about-caveat">
     Only days <em>you</em> set are sent. Your calendar runs when Quietkeep does not,
-    so it is the thing that can reach you.
+    so it is the thing that can reach you. <em>The days ahead</em>, on the front
+    page, shows the same list inside the app, live.
   </p>
 
   <h3 class="about-section">Today, on paper</h3>
@@ -3235,6 +3267,7 @@
       <div id="situation-who" class="situation-who" role="group"
            aria-labelledby="situation-who-label"></div>
       <p id="situation-who-hint" class="detail-hint">
+        Tap a name to put them in the room; tap again to take them out.
         Naming more than one makes it a meeting you can open.
       </p>
     </div>
@@ -3343,6 +3376,14 @@
   <h2 id="sheet-meeting-title" class="section">In the room</h2>
   <div class="sheet-body" tabindex="0">
     <p id="meeting-words" class="detail-hint"></p>
+    <!-- TWO LENSES OVER ONE ROOM (3.21.0, ADR-0123). By person stays the
+         default — a thing naming two attendees is two conversations
+         (ADR-0119) — and by thing collapses to each thing once, wearing the
+         names that share it. The names are the only label a set ever gets. -->
+    <div class="detail-row" role="group" aria-label="How the room is shown">
+      <button id="meeting-by-person" type="button" aria-pressed="true">By person</button>
+      <button id="meeting-by-thing" type="button" class="ghost" aria-pressed="false">By thing</button>
+    </div>
     <ul id="meeting-people" class="roles-list"></ul>
     <p id="meeting-crosses-label" class="detail-label" hidden>What it runs through</p>
     <ul id="meeting-crosses" class="roles-list"></ul>
@@ -3350,6 +3391,22 @@
     <ul id="meeting-lines" class="roles-list"></ul>
   </div>
   <button id="sheet-meeting-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
+<!-- THE DAYS AHEAD (3.22.0, ADR-0124) — the calendar story's live half. Every
+     row and every day comes from the export's own selection (`calendarEntries`
+     and `calendarDay` in src/ics.ts, read through src/dated.ts), so this sheet
+     and the .ics file can never name different mornings. The day heading is
+     the ONE place a day is said: rows carry which date is talking and who it
+     is with, never a second statement of when — a row that restated its day
+     could contradict its own heading, which is ADR-0032's class. -->
+<dialog id="sheet-dated" aria-labelledby="sheet-dated-title" data-door="#dated-open">
+  <h2 id="sheet-dated-title" class="section">The days ahead</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="dated-words" class="detail-hint"></p>
+    <div id="dated-list"></div>
+  </div>
+  <button id="sheet-dated-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <dialog id="sheet-horizons" aria-labelledby="sheet-horizons-title" data-door="#horizons-open">

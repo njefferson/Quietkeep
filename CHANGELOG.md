@@ -14,6 +14,50 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.22.2 — ITERATION
+
+*2026-09-01*
+
+- **The note box stays fully on screen.** On a thing’s page, the date hint had grown a line and could nudge the bottom of the note box — and its focus ring — just past the fold when you Tab to it. The hint is a line shorter and still names both routes a date can take.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
+## 3.22.1 — ITERATION
+
+*2026-09-01*
+
+- **These notes print words again.** The two releases beneath this one wrote an apostrophe as a seven-character code in three places, and this panel printed the code instead of the mark. The strings now carry the real apostrophe. The check that catches this ran too late that day; nothing else was touched.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
+## 3.22.0 — CAPABILITY
+
+*2026-09-01*
+
+- **The days ahead: your dated things, day by day, inside the app.** A new door on the front page opens every dated thing you hold, under the day it is waiting on — today first, never a day in the past. Each row says which date is talking — *due*, *starts*, *comes back*, or *answer owed* — and an answer owed names who is waiting, when you have said so. It reads the store every time it opens, so when a date moves, the day it sits under moves with it. Tap a thing to open it.
+- **It is the same list *Send to my calendar* sends — always.** The screen and the calendar file are drawn from one selection, so they cannot name different mornings. The calendar copy is for being reminded while the app is closed; this is the half that is never stale. A date that already went by sits under today marked *needs a new plan*, in the replan surface’s own words.
+- **The door appears once something carries a date**, like its neighbours, and the date box on a thing’s page now names both routes: the days ahead on the front page, and your own calendar.
+- **Two controls are one step later in the reading order than they were.** The new door stands with its neighbours on the front page, so the *What’s the situation?* copy on the working screens is now one control later than it was, and the *Menu* door is now one further along than it was. Nothing moved on screen by feel; the count is about reading order.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
+## 3.21.0 — CAPABILITY
+
+*2026-09-01*
+
+- **The room can be read by thing as well as by person.** With one thing every person shares, the by-person room repeats it under each name — truly, since each is its own conversation — but repetitively when the room is large. *By thing* collapses the same room to each thing once, wearing the names of everyone on it. The names are the only label a set of people ever gets; nothing invents a group name. *By person* stays the default every open returns to.
+- **People can carry places, and the choosers respect them.** Open a person and the places box now reads *Their places* — name one, and they are offered first when you are there. Someone with no stated places is offered everywhere, exactly as an unlabelled thing fits every place. Someone stated only elsewhere waits behind one press — *Everyone (2 more)* — never gone, never guessed: the only thing that moves anybody is a place you put on their own page.
+- **What’s the situation? asks from the front page too.** It always felt like the setup step, and it lived one screen deep. The same question now stands on the opening screen; the original stays where it was, beside the lines that show what it changed.
+- **Two controls are one step later in the reading order than they were.** *What’s the situation?* now stands on the opening screen too, so on the working screens the copy there is now one control below where it was; and the *Menu* door is now a step further along than it was, because the places box arrived above the fold in the release beneath this one. Nothing moved on screen by feel; the count is about reading order.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
+## 3.20.4 — ITERATION
+
+*2026-09-01*
+
+- **Nine small truths from one pass of real use.** Typing boxes wear a calmer keyboard ring — the old one sat on the box’s own border as a heavy doubled frame, photographed and fixed. *Who is in it?* says the gesture: tap a name to put them in the room, tap again to take them out — and a pressed name now looks pressed. The Menu row explains itself: the shelf of things you want rather than owe, with the choice beside it saying which kind of want. *Who is this for?* is now *What part of your life is this for?*, which is what it always meant.
+- **“Not a place” takes two presses, says what it does, and can be undone.** The first press says what will happen, the second does it — and nothing was ever deleted: everything that carried the place still does, the record keeps it, and *Bring it back* stands right there for the rest of the sitting.
+- **Where a thing can be done is one press from the thing.** The places box moved out from behind *More about this* — places feed the situation, the room and who-is-here now, and the most-used fact should not sit a press deeper than the rest. And a role’s own page says what a role is, instead of wearing task furniture with a one-word label.
+- **The room is room-sized, and a date says where it can reach.** *In the room* takes the width your screen has instead of a reading column. The date box now says a dated thing can reach your own calendar — *Send to my calendar*, under *Things you can do*.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.20.3 — ITERATION
 
 *2026-09-01*
