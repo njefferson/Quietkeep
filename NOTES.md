@@ -953,7 +953,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.20.3**, promoted 2026-09-01 at `af5f14c` — tree
+- **PRODUCTION CARRIES 3.22.2**, promoted 2026-09-01 at `dbf2171` — tree
+  asserted identical to the walked staging head `d6eaee5`, both editions read
+  back by content (workers naming 3.22.2, the days-ahead door and sheet in the
+  root document, the answer-owed words in the sync bundle).
+- **Superseded: 3.20.3**, promoted 2026-09-01 at `af5f14c` — tree
   asserted identical to the walked staging head `0294ad0`, both editions read
   back by content (workers naming 3.20.3, the notes-window sentence in the
   bundle, the About door in the page).
@@ -973,7 +977,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.2**, carrying
+- **https://staging.quietkeep.pages.dev** — **3.22.2**, and it is now what
+  production carries too: promoted 2026-09-01, so the two hosts are one tree
+  until the next change lands here. It carried
   3.22.1, 3.22.0, 3.21.0 and 3.20.4 beneath it. 3.22.2 keeps the note box —
   and its focus ring — fully on screen when Tabbed to: the 3.22.0 date hint
   had grown a third line and nudged it past the sheet fold (the walk's
@@ -2652,7 +2658,24 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.20.3** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.22.2** — promoted at
+  `dbf2171` on 2026-09-01, the merged tree asserted byte-identical to `d6eaee5`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. **Verified live by content on both editions**: workers naming
+  3.22.2, the root document carrying the days-ahead door and its sheet, the
+  sync bundle carrying the answer-owed words. Five releases: the days ahead
+  (ADR-0124) — every dated thing day by day inside the app, from the export's
+  own selection so the screen and the diary cannot name different mornings —
+  over the twelve-finding device pass beneath it: the room readable by thing,
+  people carrying places, the situation asked from the hub, and nine small
+  truths. Then two fixes the gates found rather than a reader: the notes panel
+  printing an entity instead of an apostrophe, and a hint that had grown a line
+  and pushed the note box's ring past the sheet fold.
+  **The local `main` ref was stale when the merge was first made** — it had
+  never seen `af5f14c`, so the merge built on the wrong base and the push was
+  refused for it. Reset to `origin/main` and redone; the pushed merge carries
+  both parents, previous production and walked staging.
+- Superseded: production was **3.20.3** — promoted at
   `af5f14c` on 2026-09-01, the merged tree asserted byte-identical to `0294ad0`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by content on both editions**: workers naming
