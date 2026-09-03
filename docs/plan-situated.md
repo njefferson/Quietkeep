@@ -554,8 +554,8 @@ situations are the acceptance test — walked end to end, not asserted.
   filter. 2.23.2 is the fix; the a11y walk was then run LOCALLY on that markup
   and read green, both themes, zero failures. The head is `825aa12` and its
   Spine is the one to read — the runs on `1627350` and `fe60e5f` were CANCELLED
-  by the pushes that followed them, which is not the same as failed and was
-  first reported here as if it were.
+  by the pushes that followed them, which is not the same as failed — and an
+  earlier version of this line said otherwise.
   The lesson is 126 in the hub: `plain:check` checked the offer card both ways
   and the chrome only one way, and the missing direction ran in a browser.
   **A session cannot read the deployed site** — the network policy answers 403

@@ -953,7 +953,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.22.2**, promoted 2026-09-01 at `dbf2171` — tree
+- **PRODUCTION CARRIES 3.23.1**, promoted 2026-09-03 at `3ce634e` — tree
+  asserted identical to the walked staging head `ba01903`, CI green on that SHA
+  first, both editions read back by content (workers naming 3.23.1, the proof's
+  line and sheet in the root document, its words in both bundles).
+- **Superseded: 3.22.2**, promoted 2026-09-01 at `dbf2171` — tree
   asserted identical to the walked staging head `d6eaee5`, both editions read
   back by content (workers naming 3.22.2, the days-ahead door and sheet in the
   root document, the answer-owed words in the sync bundle).
@@ -977,7 +981,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.23.1**, which is
+- **https://staging.quietkeep.pages.dev** — **3.23.1**, and it is now what
+  production carries too: promoted 2026-09-03, so the two hosts are one tree
+  until the next change lands here. It is
   3.23.0 plus the walk's own finding: on the reduced screen the new line steps
   aside, because its fact counts how many things are in front of you and that
   count is the pile in miniature on the day somebody asked for one thing. The
@@ -2676,7 +2682,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.22.2** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.23.1** — promoted at
+  `3ce634e` on 2026-09-03, the merged tree asserted byte-identical to `ba01903`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty, and CI's Spine and Deploy green on that SHA before the merge.
+  **Verified live by content on both editions**: workers naming 3.23.1, the
+  root document carrying the proof's line and its sheet, both bundles carrying
+  its words. Two releases: the proof of judgement (ADR-0125), law 4's analogue
+  of the coverage gauge — under the line that says nothing has gone quiet, a
+  second saying everything is accounted for, opening onto where each thing is
+  in `heldGroups`' own words, total over `heldWork`, able to say it does not
+  add up, and naming the review exceptions that reach no other surface — then
+  the walk's own finding, that the new line steps aside on the reduced screen
+  because its fact counts what is in front of you.
+  **The merge was made twice.** The first attempt passed its message on stdin,
+  which `git merge` does not read, so nothing merged — and the tree-identity
+  assert caught the non-merge rather than a person noticing. Redone from a file.
+- Superseded: production was **3.22.2** — promoted at
   `dbf2171` on 2026-09-01, the merged tree asserted byte-identical to `d6eaee5`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by content on both editions**: workers naming
