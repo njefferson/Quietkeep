@@ -566,9 +566,20 @@ count here is maintained by hand and nothing would catch it going stale.
     exclusive in placement and no warm accent may touch the silhouette), and the
     rule that the list's entries bind by MEANING rather than by their shape
     words. Both are in the checklist now, so a ninth round starts further along.
-  - **What only the owner can settle:** whether the current mark stays as a
-    known-imperfect one with the finding recorded against it, or whether it
-    waits for a drawing of the owner's own. A session can generate and measure;
+  - **A ninth round, 2026-09-03, on a direction the owner gave**: a flowing
+    current with a section of gold, part of the river rather than another thing
+    in a stack. It is the first direction in nine that sits outside the retired
+    families, and the first to produce candidates that survive both the list and
+    the eye. Two live: a wide navy current meandering across the field with a
+    gold section mid-stream, and a field divided by a smooth flowing edge with
+    gold along it. Both keep the navy carrying the silhouette, both keep the
+    gold touching only navy, and both survive the amber being removed. The
+    findings are in the checklist; the readings still to be judged on a device
+    are *wave* and *water level*, which are close by and not on the list.
+  - **What only the owner can settle:** whether either of those two is worth
+    taking further, or whether the current mark stays as a known-imperfect one
+    with the finding recorded against it, or whether it waits for a drawing of
+    the owner's own. A session can generate and measure;
     it cannot decide that the face of the app is good enough, and eight rounds
     are the evidence that generating more candidates is not the bottleneck.
   - Status: **Open.**

@@ -153,6 +153,28 @@ and none of them says *stays in view*. Filtering wide is genuinely better than
 drawing three and asking — it produced the two constraints above — but it did
 not produce a mark.
 
+**A NINTH ROUND, 2026-09-03, on a direction given by the owner: a flowing
+current with a section of gold — part of the river, not another thing in a
+stack.** It is the first direction in nine that is not in the retired families,
+and it produced the first candidates that survive both passes and read as
+intended. Three things it established:
+
+- **A river drawn as an OBJECT on the field reads as a stroke, not a current.**
+  Fourteen straight and stepped bands: a gold tip on a navy body is a pencil, a
+  band with a lighter middle is a sticking plaster, a thin line inside a thick
+  one is a ruler, and equal gold segments are a progress bar. Constant width is
+  what makes a band a stroke; a current has to vary along its length.
+- **The river drawn as a DIVISION of the field works, and one shape of it does
+  not.** A blocky staircase edge reads as a *descending bar chart* — a graph of
+  decline, which is the worst accidental reading available to an app that
+  refuses scores. A smooth flowing edge, or a wide band that meanders across the
+  whole field, both survive.
+- **Gold bisecting a navy field fails the constraints, and the reason is the
+  amber-removed test.** If the gold is the mark and the navy is the ground,
+  removing the gold leaves a plain navy square: nothing survives. The river must
+  be the navy, carrying a gold section — which is the owner's third formulation
+  and not the second.
+
 **A METHOD WARNING, because this trap has now cost twice.** The round's first
 pass rejected five candidates for painting a colour outside the palette, at
 0.17–0.27% of pixels. Every one was a disc: a curve antialiases much further
@@ -160,7 +182,17 @@ along the line between two palette colours than a flat edge does, and a naive
 nearest-colour tolerance counts those blends as a fourth colour. That is the
 same artefact that once put a false "56% on navy" finding into ADR-0025.
 **Classify a pixel as a blend when it lies near the segment between any two
-palette colours, and only then ask whether it is off-palette.** Two of the
+palette colours, and only then ask whether it is off-palette.**
+
+**AND THE SAFE-CIRCLE RULE IS ABOUT WHAT A CROP WOULD LOSE, not about which
+pixels are painted.** The ninth round's filter counted every non-field pixel
+outside r=204.8 as artwork that strayed, and rejected six candidates on it —
+wrongly, because a composition that DIVIDES the field has both regions as
+ground, and navy in the corners is cropped away without the mark losing
+anything. Ask whether the distinguishing accent survives the circle, not
+whether the canvas is empty outside it. Third assumption in one round that held
+for one class of mark and not for another; the pattern is that a check written
+against the current mark inherits the current mark's shape. Two of the
 collisions surfaced only after the candidate had been rendered at six sizes
 and studied. The next attempt should
 either generate a much wider field and filter it hard against this list before
