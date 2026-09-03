@@ -274,7 +274,7 @@ a half-remembered name landing on a neighbour. Recorded in ADR-0022.
 
 ### The method, which is the part that transfers
 
-Perennial was reported here as "un-killed" on the strength of two searches that **asked
+This file called Perennial "un-killed" on the strength of two searches that **asked
 the wrong question**. It is in fact held by **three** software companies — Perennial Labs
 (DeFi, and serving `perennial.pages.dev`), Perennial Systems (web dev/fintech), and
 Perennial Software (security). Found on a real device, in seconds.

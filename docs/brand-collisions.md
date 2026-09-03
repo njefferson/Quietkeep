@@ -1,9 +1,8 @@
 # What a simple flat mark already means
 
 A checklist for anyone attempting Quietkeep's icon. **Go down it deliberately.**
-Every entry below was found the hard way, and most were found by the owner
-*after* a session had rendered the candidate at six sizes and looked at it
-carefully. Looking is necessary and it is not sufficient — the eye that drew a
+Every entry below was found the hard way, and most of them only *after* a
+candidate had been rendered at six sizes and looked at carefully. Looking is necessary and it is not sufficient — the eye that drew a
 shape is the worst one for asking what else it is.
 
 ADR-0025 states the rule this list serves: *a mark has to be checked against the
@@ -116,8 +115,8 @@ of forty icons at 48px.
 Directions tried and exhausted: enclosure, stacking, cradles, horizons, cuts and
 notches, letterforms, arrival, presence and return — **seven rounds, in three
 palettes, every one of them collided with something on this list.** Two of the
-collisions were caught by the owner after a session had rendered the candidate
-at six sizes and studied it. The next attempt should
+collisions surfaced only after the candidate had been rendered at six sizes
+and studied. The next attempt should
 either generate a much wider field and filter it hard against this list before
 anyone falls in love with a candidate, or go to somebody who does this for a
 living. **What must not happen is another round of drawing three shapes and
