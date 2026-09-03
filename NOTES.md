@@ -547,12 +547,30 @@ count here is maintained by hand and nothing would catch it going stale.
     the enclosure. **A replacement that must not enclose has to change the
     COLOUR, not only the geometry.** Every open composition attempted in that
     amber failed on contrast before it was ever judged on taste.
-  - **What only the owner can settle:** whether to spend another round in-house
-    against the collisions checklist, to commission somebody who does this, or
-    to keep the current mark as a known-imperfect one and say so. A session can
-    draw and measure candidates; it cannot decide that the face of the app is
-    good enough, and the last seven rounds are the evidence that generating
-    more of them is not the bottleneck.
+  - **HIRING IS OFF THE TABLE, by the owner's word, 2026-09-03 — never offer it
+    again.** The checklist's own closing line names going to somebody who does
+    this for a living as one of two ways forward; that half is closed and this
+    entry is where a future session finds that out, because the line in
+    `docs/brand-collisions.md` still reads as an open option and cannot be
+    edited away without losing the reasoning around it. The mark stays in-house
+    or is drawn by the owner. This is the same shape as the settled questions
+    about branch deletion, repo metadata and git history: a remedy that reads as
+    available and is not.
+  - **An eighth round ran on 2026-09-03**, the way the checklist asks: thirty
+    candidates across distinct concepts, tagged by construction, filtered
+    mechanically against every list entry and the four constraints with the
+    pixels measured. Eighteen fell to the list, nine more fell on looking, three
+    survived and **none is recommended** — they are quiet rather than good. It
+    produced two things the drawing rounds never did: the measured mirror
+    constraint (`#7A4E00` is 1.40:1 on navy, so the two warms are mutually
+    exclusive in placement and no warm accent may touch the silhouette), and the
+    rule that the list's entries bind by MEANING rather than by their shape
+    words. Both are in the checklist now, so a ninth round starts further along.
+  - **What only the owner can settle:** whether the current mark stays as a
+    known-imperfect one with the finding recorded against it, or whether it
+    waits for a drawing of the owner's own. A session can generate and measure;
+    it cannot decide that the face of the app is good enough, and eight rounds
+    are the evidence that generating more candidates is not the bottleneck.
   - Status: **Open.**
 
 ### Closed

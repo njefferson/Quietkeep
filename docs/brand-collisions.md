@@ -62,6 +62,19 @@ blend pixels as *not navy* — a tolerance artefact read as a finding.
 `#F5C978` and you have committed to a dark ground somewhere in the mark. A
 replacement that must not enclose has to change the colour, not the geometry.
 
+**AND THE MIRROR OF IT, MEASURED 2026-09-03 AND NOT PREVIOUSLY WRITTEN DOWN.**
+The obvious way to change the colour is `#7A4E00`, which clears 6.38:1 on paper
+and is the only warm that can describe a shape there. Against the navy it is
+**1.40:1** — the same unusable figure as `#F5C978` on paper, pointing the other
+way. So the two warms are **mutually exclusive in placement**: `#F5C978` may
+only sit on navy, `#7A4E00` may only sit on paper, and neither may touch the
+other's ground, because the edge between them disappears.
+
+That is a much sharper constraint than "pick one". **Any warm accent that
+touches the navy silhouette is dead on arrival, whichever warm it is** — which
+removes the most natural placement for an accent and is why so many candidates
+end up putting the warm inside the dark form, i.e. back in the enclosure.
+
 ## The current mark also fails this list
 
 **A warm arched form inside a dark rounded square reads as a prison cell.**
@@ -105,6 +118,18 @@ same reason.
 - Static composition intended to show motion — reads as neither; arrival and
   return do not survive being still, and adding an arrow makes it a refresh icon
 
+- Three or more vertical bars of similar height — bar chart, equaliser, and one
+  more is a menu
+- A large form with a small accent at its edge or corner — notification badge,
+  **whatever the large form is**. First written as "on the corner of a dark
+  square"; a disc does it too, and so does anything else
+
+**READ EVERY ENTRY BY ITS MEANING, NOT BY ITS SHAPE WORDS.** Added 2026-09-03,
+after a filtering round encoded this list literally and let two badge
+compositions through because the entry said *square* and the candidates were
+circles. The list is a catalogue of what a reader will RECOGNISE; the shape
+words are examples of how each one has turned up so far, never the definition.
+
 ## What this list is telling you
 
 **Two or three soft blobs in two colours is a saturated space.** Nearly every
@@ -114,7 +139,28 @@ of forty icons at 48px.
 
 Directions tried and exhausted: enclosure, stacking, cradles, horizons, cuts and
 notches, letterforms, arrival, presence and return — **seven rounds, in three
-palettes, every one of them collided with something on this list.** Two of the
+palettes, every one of them collided with something on this list.**
+
+**AN EIGHTH ROUND, 2026-09-03, run the way this paragraph asks for.** Thirty
+candidates authored across distinct concepts and tagged by construction, then
+filtered mechanically against every entry here and against the four constraints
+below, with the pixels measured rather than eyeballed. Eighteen were rejected by
+the list. Twelve reached the eye, and nine of those were then rejected on
+looking — two badges, a pause, a bar chart, a card-with-a-stripe, a battery, and
+two that are simply generic interface glyphs saying nothing. **Three survived
+both passes and none of them is recommended**; they are quiet rather than good,
+and none of them says *stays in view*. Filtering wide is genuinely better than
+drawing three and asking — it produced the two constraints above — but it did
+not produce a mark.
+
+**A METHOD WARNING, because this trap has now cost twice.** The round's first
+pass rejected five candidates for painting a colour outside the palette, at
+0.17–0.27% of pixels. Every one was a disc: a curve antialiases much further
+along the line between two palette colours than a flat edge does, and a naive
+nearest-colour tolerance counts those blends as a fourth colour. That is the
+same artefact that once put a false "56% on navy" finding into ADR-0025.
+**Classify a pixel as a blend when it lies near the segment between any two
+palette colours, and only then ask whether it is off-palette.** Two of the
 collisions surfaced only after the candidate had been rendered at six sizes
 and studied. The next attempt should
 either generate a much wider field and filter it hard against this list before
