@@ -587,6 +587,12 @@ count here is maintained by hand and nothing would catch it going stale.
     open reading risks on all three are *road or route* and *ribbon*, and an
     S-band is not a spiral — a spiral tightens inward with no way out, and this
     comes from somewhere and goes somewhere, which is the opposite.
+  - **The three finalists were put to the owner on 2026-09-03 and none was
+    taken, for now.** Recorded so the next session does not re-offer them as if
+    they were new, redraw the same field, or read the open Status below as
+    meaning nothing has been shown. What is open is the mark; what is settled
+    is that these three were seen and declined at this point. The current mark
+    stays, with ADR-0025's finding standing against it.
   - **What only the owner can settle:** whether one of those three finalists
     becomes the mark — which means superseding ADR-0025, regenerating every
     raster through `tools/brand.mjs` and the social preview, and a release —
