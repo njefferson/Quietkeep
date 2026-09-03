@@ -682,11 +682,17 @@ const BUDGET = {
   // 267 -> 268 on 2026-09-01 (3.20.3): the i panel's Elsewhere door. A new
   // control is exactly what this budget exists to make deliberate, and this
   // one closes a wayfinding dead-end rather than adding a destination.
-  controls: 273,
+  controls: 275,
   // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
   // room's two lenses. Three controls, each one of the pass's asks.
   // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.
   // The door is the demand itself — dated work visible inside the app.
+  // 273 -> 275 on 2026-09-03 (3.23.0): the proof of judgement's line on the
+  // landing surface and its sheet's Close. Two controls, and the first of them
+  // is the release: law 1 has had a visible proof since 2.8.1 and law 4 has
+  // never had one, so checking the offer meant reading the whole store. A
+  // budget exists to make an addition deliberate, and this one buys the thing
+  // NOTES calls the highest-value thing to build.
 };
 
 const launchOpts = process.env.PLAYWRIGHT_CHROMIUM

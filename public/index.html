@@ -271,6 +271,19 @@
      Same control, same words, same sheet behind it. Moved. -->
 <button id="gauge" class="gauge" type="button"></button>
 
+<!-- AND THE OTHER PROOF, BESIDE IT (3.23.0, ADR-0125). The control above is
+     law 1's: nothing is LOST, and here is the number. Nothing said the same
+     about law 4 — that what is being SHOWN is right — so the only way to check
+     the offer was to read the whole store, which is the reviewing this app
+     exists to remove rather than require.
+
+     Same idiom deliberately, because it is the same kind of object: a fact in
+     quiet ink, a door under it, one target, and behind the door the thing it
+     claims so the claim can be disagreed with. It is hidden until something is
+     held — a proof about an empty store is a sentence with nothing to check,
+     and the gauge above already says that state in its own words. -->
+<button id="assurance" class="gauge" type="button" hidden></button>
+
 <!-- A newer version is ready. A LINE, never a modal: it must not stand between
      somebody and their capture box, and it has a way out from the first frame
      (Doctrine §4). Hidden until there is genuinely something to say.
@@ -3400,6 +3413,24 @@
      the ONE place a day is said: rows carry which date is talking and who it
      is with, never a second statement of when — a row that restated its day
      could contradict its own heading, which is ADR-0032's class. -->
+<!-- WHERE EVERYTHING IS (3.23.0, ADR-0125) — the proof of judgement, opened.
+     The places ARE the held list's own groups in its own words, drawn from
+     `heldGroups` rather than restated, so this sheet and that list can never
+     describe one item differently. The gap at the foot is the half that makes
+     it a proof rather than a reassurance: the review exceptions are computed
+     and reach no other surface, and a claim with no failure mode is asking for
+     the faith the reader does not have. -->
+<dialog id="sheet-assurance" aria-labelledby="sheet-assurance-title" data-door="#assurance">
+  <h2 id="sheet-assurance-title" class="section">Where everything is</h2>
+  <div class="sheet-body" tabindex="0">
+    <p id="assurance-words" class="detail-hint"></p>
+    <ul id="assurance-places" class="roles-list"></ul>
+    <p id="assurance-gap" class="detail-hint" hidden></p>
+    <ul id="assurance-gap-list" class="roles-list"></ul>
+  </div>
+  <button id="sheet-assurance-close" data-way-out type="button" class="ghost">Close</button>
+</dialog>
+
 <dialog id="sheet-dated" aria-labelledby="sheet-dated-title" data-door="#dated-open">
   <h2 id="sheet-dated-title" class="section">The days ahead</h2>
   <div class="sheet-body" tabindex="0">

@@ -35,6 +35,7 @@ import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
 import { datedDays, datedDayWords, datedWords, datedKindWords } from '../dated.ts';
+import { judgementProof, assuranceFact, assuranceWords, placeCountWords, gapWords } from '../assurance.ts';
 import { calendarCount } from '../ics.ts';
 import { servesWords } from '../serves.ts';
 import {
@@ -1119,6 +1120,30 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     }
   }
 
+  // AND THE PROOF OF JUDGEMENT UNDER IT (3.23.0, ADR-0125). Law 1's control is
+  // above; this is law 4's, painted on the same pass so the two can never
+  // describe one store differently. Hidden until something is held, by the rule
+  // every other door here follows: a proof about an empty store has nothing in
+  // it to check, and the gauge already says that state in its own words.
+  {
+    const claim = document.querySelector<HTMLButtonElement>('#assurance');
+    if (claim) {
+      const proof = judgementProof(session.state(), nowIso, session.zone);
+      claim.hidden = proof.total === 0;
+      if (proof.total > 0) {
+        const fact = document.createElement('span');
+        fact.className = 'gauge-fact';
+        fact.textContent = assuranceFact(proof);
+        const door = document.createElement('span');
+        door.className = 'gauge-door';
+        door.textContent = 'Where everything is';
+        // The same real space as the gauge above, for the same reason: what
+        // `textContent` joins is what a name computation and the smoke walk read.
+        claim.replaceChildren(fact, ' ', door);
+      }
+    }
+  }
+
   // T0's badge (ADR-0007): how many things are actually asking, on the app icon,
   // so a glance at the home screen is informative without opening anything.
   // Counts the READY group ONLY — a badge showing everything you hold is a number
@@ -1919,6 +1944,68 @@ export async function main(edition?: Edition): Promise<void> {
   wireSheetClose('sheet-dated');
   document.querySelector<HTMLButtonElement>('#dated-open')
     ?.addEventListener('click', () => { openSheet('sheet-dated'); });
+
+  // WHERE EVERYTHING IS (3.23.0, ADR-0125) — the proof of judgement, opened.
+  // Painted on open like every sheet here, so what it claims is read off the
+  // log at the moment somebody asks rather than at mount. The places are
+  // `heldGroups`' own rows; nothing here re-derives them, and nothing here
+  // orders or grades them — the order is the held list's order, which is the
+  // reader's own reading order and not a ranking.
+  const paintAssurance = (): void => {
+    const st = session.state();
+    const nowIso = new Date(now()).toISOString();
+    const proof = judgementProof(st, nowIso, session.zone);
+    const words = document.querySelector<HTMLElement>('#assurance-words');
+    if (words) words.textContent = assuranceWords(proof);
+    const list = document.querySelector<HTMLUListElement>('#assurance-places');
+    if (list) {
+      list.replaceChildren(...proof.places.map(place => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const name = document.createElement('span');
+        name.className = 'roles-name';
+        name.textContent = place.title;
+        const count = document.createElement('span');
+        count.className = 'roles-held';
+        count.textContent = placeCountWords(place).split(' — ')[1] ?? '';
+        li.append(name, count);
+        return li;
+      }));
+    }
+    // THE GAP, and it is the half that makes this a proof. Each one is a door
+    // onto the thing itself, because a named exception you cannot open is a
+    // worry with a number on it.
+    const gap = document.querySelector<HTMLElement>('#assurance-gap');
+    const gapList = document.querySelector<HTMLUListElement>('#assurance-gap-list');
+    const said = gapWords(proof.neverSurfacedTotal);
+    if (gap) {
+      gap.hidden = said === null;
+      gap.textContent = said ?? '';
+    }
+    if (gapList) {
+      gapList.replaceChildren(...proof.neverSurfaced.map(exc => {
+        const li = document.createElement('li');
+        li.className = 'roles-row';
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'linklike assurance-thing';
+        b.textContent = exc.node.title || '(untitled)';
+        b.addEventListener('click', () => {
+          const fresh = session.state().nodes.get(exc.node.id);
+          if (fresh) detail.open(fresh);
+        });
+        const why = document.createElement('span');
+        why.className = 'roles-held';
+        why.textContent = exc.words;
+        li.append(b, why);
+        return li;
+      }));
+    }
+  };
+  onSheetOpen('sheet-assurance', paintAssurance);
+  wireSheetClose('sheet-assurance');
+  document.querySelector<HTMLButtonElement>('#assurance')
+    ?.addEventListener('click', () => { openSheet('sheet-assurance'); });
 
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). No painter of its own: the list
   // is filled by the same `render` pass that fills the capped one, from one
