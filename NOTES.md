@@ -517,12 +517,43 @@ decided by a session.**
 
 ### Open
 
-**None are open.** All fifteen are closed and filed under the next heading. This paragraph states the count rather than leaving it to be
+**One is open** — Q-16, the mark — and the other fifteen are closed and filed
+under the next heading. This paragraph states the count rather than leaving it to be
 inferred from the list, because a heading reading *Open* over three closed
 questions is the same false receipt the Status lines were added to fix, one level
 up. `tools/questions.mjs` refuses a closed question filed under this heading, so
 those two cannot drift again — **but it does not read this paragraph**, so the
 count here is maintained by hand and nothing would catch it going stale.
+
+- **Q-16 · What replaces the mark?** Recorded here 2026-09-03, and it has been
+  open since 2026-08-19 without being written down as a question — which is the
+  whole reason it is here now. [ADR-0025](docs/adr/0025-visual-identity.md)
+  carries the finding and says in terms that *a replacement is OPEN, not
+  decided*; the ADR rules say only settled things belong in that file and
+  anything open belongs here as a numbered question. It was in neither list a
+  reader scans, so it went quiet for a fortnight in exactly the way Q-11's own
+  entry describes.
+  - **What is settled, and it is most of the work.** The current mark — a warm
+    opening within a sheltering form, drawn 2026-07-28 — reads as an enclosure,
+    and for this audience that fails for the same reason the spiral does. The
+    replacement brief is *stays in view* rather than *held safely*, which
+    retires vessels, cradles, boxes and stacks as a family. Seven rounds in
+    three palettes have been tried and every one collided with something on
+    [`docs/brand-collisions.md`](docs/brand-collisions.md), which is the
+    checklist to work from and the durable part of that attempt.
+  - **The constraint that decides it, and it is not taste.** `--warm` measures
+    6.38:1 on the icon's paper field in light mode and 1.38:1 in dark, so any
+    mark carrying the dark-mode amber has to supply a dark ground — which is
+    the enclosure. **A replacement that must not enclose has to change the
+    COLOUR, not only the geometry.** Every open composition attempted in that
+    amber failed on contrast before it was ever judged on taste.
+  - **What only the owner can settle:** whether to spend another round in-house
+    against the collisions checklist, to commission somebody who does this, or
+    to keep the current mark as a known-imperfect one and say so. A session can
+    draw and measure candidates; it cannot decide that the face of the app is
+    good enough, and the last seven rounds are the evidence that generating
+    more of them is not the bottleneck.
+  - Status: **Open.**
 
 ### Closed
 
