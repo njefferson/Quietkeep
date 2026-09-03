@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.1',
+    kind: 'ITERATION',
+    date: '2026-09-03',
+    notes: [
+      '**On the reduced screen, the new line steps aside.** *Just one thing* strips the screen back to what you are doing; the line above it stays, because *nothing here has gone quiet* is what makes everything being out of sight safe. The new one counts how many things are in front of you, and a count of the rest is the pile arriving in miniature on the day you have asked for one thing. The door to it is still one tap away.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.23.0',
     kind: 'CAPABILITY',
     date: '2026-09-03',

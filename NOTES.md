@@ -977,7 +977,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.23.0**: the
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.23.1**, which is
+  3.23.0 plus the walk's own finding: on the reduced screen the new line steps
+  aside, because its fact counts how many things are in front of you and that
+  count is the pile in miniature on the day somebody asked for one thing. The
+  release beneath it is the
   proof of judgement (ADR-0125), law 4's analogue of the coverage gauge. Law 1
   has had a visible proof that nothing is LOST since the gauge moved to the
   landing surface; nothing said the same about what is being SHOWN, so the only

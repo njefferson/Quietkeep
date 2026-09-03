@@ -5863,7 +5863,12 @@ try {
     await auditAxe(page, 'where everything is', theme);
     await auditNames(page, 'where everything is', theme);
     await auditSeparationAndTargets(page, 'where everything is', theme);
-    await auditFocusRings(page, 'where everything is', theme, ['#assurance']);
+    // DERIVED, not named: the sheet is a modal, so the landing line behind it
+    // is inert and cannot be tabbed to — naming it here asked the walk to reach
+    // a control the dialog had deliberately made unreachable, and it spent 90
+    // tab stops finding that out. Contrast and names still measure it from the
+    // registry, which is what the header staying in layout is for.
+    await auditFocusRings(page, 'where everything is', theme);
     await page.click('#sheet-assurance-close');
     await page.waitForSelector('#sheet-assurance', { state: 'hidden' });
 

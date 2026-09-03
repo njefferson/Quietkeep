@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.1 — ITERATION
+
+*2026-09-03*
+
+- **On the reduced screen, the new line steps aside.** *Just one thing* strips the screen back to what you are doing; the line above it stays, because *nothing here has gone quiet* is what makes everything being out of sight safe. The new one counts how many things are in front of you, and a count of the rest is the pile arriving in miniature on the day you have asked for one thing. The door to it is still one tap away.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.23.0 — CAPABILITY
 
 *2026-09-03*
