@@ -953,7 +953,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.20.3**, promoted 2026-09-01 at `af5f14c` — tree
+- **PRODUCTION CARRIES 3.22.2**, promoted 2026-09-01 at `dbf2171` — tree
+  asserted identical to the walked staging head `d6eaee5`, both editions read
+  back by content (workers naming 3.22.2, the days-ahead door and sheet in the
+  root document, the answer-owed words in the sync bundle).
+- **Superseded: 3.20.3**, promoted 2026-09-01 at `af5f14c` — tree
   asserted identical to the walked staging head `0294ad0`, both editions read
   back by content (workers naming 3.20.3, the notes-window sentence in the
   bundle, the About door in the page).
@@ -973,7 +977,27 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — the candidate, **3.22.2**, carrying
+- **https://staging.quietkeep.pages.dev** — the candidate, **3.23.1**, which is
+  3.23.0 plus the walk's own finding: on the reduced screen the new line steps
+  aside, because its fact counts how many things are in front of you and that
+  count is the pile in miniature on the day somebody asked for one thing. The
+  release beneath it is the
+  proof of judgement (ADR-0125), law 4's analogue of the coverage gauge. Law 1
+  has had a visible proof that nothing is LOST since the gauge moved to the
+  landing surface; nothing said the same about what is being SHOWN, so the only
+  way to check the offer was to read the whole store — the reviewing this app
+  exists to remove rather than require. Under the gauge now: *everything
+  accounted for*, and a door onto where each thing is, in `heldGroups`' own
+  groups and its own words so the two cannot describe one item differently.
+  It is TOTAL — the counts sum to what the gate holds, and `holds` can be false
+  — and it NAMES what it cannot account for: the review exceptions, computed in
+  `review.ts` and reaching no other surface. It ranks nothing: entry 5 refuses
+  an importance rank in terms and Q-11 carries the argument, that a loose
+  capture is very often the most important thing in the store. **This is the
+  thing NOTES called the highest-value one to build, gated on Q-11 saying
+  ranking or trust; Q-11 closed on the ranking half on 2026-08-17 and the trust
+  half stood unbuilt until now.**
+- **Superseded: 3.22.2**, which production carries — promoted 2026-09-01. It carried
   3.22.1, 3.22.0, 3.21.0 and 3.20.4 beneath it. 3.22.2 keeps the note box —
   and its focus ring — fully on screen when Tabbed to: the 3.22.0 date hint
   had grown a third line and nudged it past the sheet fold (the walk's
@@ -2652,7 +2676,24 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.20.3** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.22.2** — promoted at
+  `dbf2171` on 2026-09-01, the merged tree asserted byte-identical to `d6eaee5`,
+  the staging head that was walked — the same tree OBJECT, not a diff that read
+  as empty. **Verified live by content on both editions**: workers naming
+  3.22.2, the root document carrying the days-ahead door and its sheet, the
+  sync bundle carrying the answer-owed words. Five releases: the days ahead
+  (ADR-0124) — every dated thing day by day inside the app, from the export's
+  own selection so the screen and the diary cannot name different mornings —
+  over the twelve-finding device pass beneath it: the room readable by thing,
+  people carrying places, the situation asked from the hub, and nine small
+  truths. Then two fixes the gates found rather than a reader: the notes panel
+  printing an entity instead of an apostrophe, and a hint that had grown a line
+  and pushed the note box's ring past the sheet fold.
+  **The local `main` ref was stale when the merge was first made** — it had
+  never seen `af5f14c`, so the merge built on the wrong base and the push was
+  refused for it. Reset to `origin/main` and redone; the pushed merge carries
+  both parents, previous production and walked staging.
+- Superseded: production was **3.20.3** — promoted at
   `af5f14c` on 2026-09-01, the merged tree asserted byte-identical to `0294ad0`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
   as empty. **Verified live by content on both editions**: workers naming
@@ -4099,6 +4140,17 @@ nothing* would be a session deciding that filing something under a goal means it
 matters more, and a loose capture is very often the most important thing in the
 store. That is the open half of Q-11, now stated with the numbers instead of as
 two abstract readings.
+
+**AND IT DID NOT STAY OPEN — corrected 2026-09-03.** Q-11 closed on 2026-08-17
+(2.7.0, ADR-0097), and this paragraph's own proposal is the thing that close
+REFUSED: an importance rank, which `docs/nd-collisions.md` entry 5 forbids in
+terms. The sentence above is right that it was never a session's to decide and
+wrong that it was ever the owner's to be asked — the research had already
+answered it, which is Q-11's own recorded lesson. The half that really did
+stand was the OTHER reading, trust, and it is built as 3.23.0 (ADR-0125).
+**This is the fourth place to have said Q-11 was open after it was closed**,
+and the entry itself records why that matters: the loudest line is the one
+somebody scans.
 
 **2.4.0 — A CARD SAYS WHAT IT IS** (ADR-0094). The second half of the same
 device report as 2.3.0: **nothing on a card said which KIND of thing it was**, so

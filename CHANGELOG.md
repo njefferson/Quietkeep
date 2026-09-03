@@ -14,6 +14,24 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.1 — ITERATION
+
+*2026-09-03*
+
+- **On the reduced screen, the new line steps aside.** *Just one thing* strips the screen back to what you are doing; the line above it stays, because *nothing here has gone quiet* is what makes everything being out of sight safe. The new one counts how many things are in front of you, and a count of the rest is the pile arriving in miniature on the day you have asked for one thing. The door to it is still one tap away.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
+## 3.23.0 — CAPABILITY
+
+*2026-09-03*
+
+- **A second proof, under the first one.** The line on the front page has always been able to show that nothing is lost — that is what *nothing here has gone quiet* means. It could not show that what you are being handed is right, so the only way to check was to read everything. Under it now: *everything accounted for*, and a door onto where each thing actually is.
+- **It is the held list’s own groups, in the held list’s own words** — ready now, coming up, later, on the Menu, not sorted yet, needs a new plan — each with its count, adding up to everything you hold. If they ever stop adding up, it says so plainly instead of reassuring you.
+- **And it names what it cannot account for.** Things the app has worked out are worth a look — a goal with nothing feeding it, something whose home is gone — reach no other screen on their own. They are listed at the foot of the sheet, each one a door onto the thing itself. A claim with nothing it could get wrong is not worth reading.
+- **It does not tell you what matters most, and it never will.** Nothing here ranks, scores or grades anything. What it says is where everything is, so that looking at all of it stops being the only way to be sure.
+- **Two controls are one step later in the reading order than they were.** The new line sits under the one above it on the opening screen, so *What’s the situation?* is now one control later than it was, and the *Menu* door is now one further along than it was. Nothing moved on screen by feel; the count is about reading order.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.22.2 — ITERATION
 
 *2026-09-01*

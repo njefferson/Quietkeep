@@ -201,6 +201,23 @@ be changed from there.
 For projects and what sits inside what, **Your projects, areas and goals** is the
 tree.
 
+### Check that everything is somewhere
+
+Under the line that says nothing has gone quiet is a second one: **everything
+accounted for**, and how many things are in front of you right now. Open
+**Where everything is** and it shows each of the app's own groups — ready now,
+coming up, later, on the Menu, not sorted yet, needs a new plan — with how many
+things are in each. Those counts add up to everything you are holding. If they
+ever do not add up, it says so instead of reassuring you.
+
+At the foot is the part that makes it worth reading: things the app has worked
+out are worth a look — a goal with nothing feeding it, something whose home is
+gone — which do not turn up on any other screen by themselves. Each is a door
+onto the thing itself.
+
+It never says which of your things matters most. It says where they all are, so
+that reading all of them stops being the only way to be sure.
+
 ### See the days ahead
 
 **The days ahead**, on the front page, is every dated thing you hold, day by

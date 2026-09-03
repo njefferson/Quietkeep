@@ -253,6 +253,16 @@ export const PLAIN_CHROME_HIDDEN = [
                       // an invitation to go and worry about whether they are
                       // still true, which is precisely the checking this feature
                       // exists to take off somebody.
+  '#assurance',       // THE PROOF OF JUDGEMENT (3.23.0). `#gauge` above is KEPT
+                      // and this is not, and the difference is the whole reason
+                      // the two are separate controls: the gauge's claim is that
+                      // nothing has gone QUIET, which carries no demand at all,
+                      // and this one's fact line names HOW MANY THINGS ARE IN
+                      // FRONT OF YOU. On the day the screen has been reduced to
+                      // one thing, a number counting the rest is the pile
+                      // arriving in miniature — `#nextup-dated`'s recorded
+                      // reasoning exactly, and this mode has already answered
+                      // the question by existing. The sheet stays one tap away.
   '#dated-open',      // THE DAYS AHEAD (3.22.0). A survey of every dated day is
                       // exactly the altitude Just-one-thing exists to come down
                       // from — #horizons-open's reasoning, on the time axis. The

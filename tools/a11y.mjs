@@ -931,6 +931,17 @@ const REGISTRY = {
   'the days ahead': ['#dated-open', '#sheet-dated-title', '#sheet-dated-close',
     '#dated-words', '#dated-list .dated-day-name', '#dated-list .dated-kind',
     '#dated-list .dated-thing'],
+  // WHERE EVERYTHING IS (3.23.0, ADR-0125) — law 4's proof beside law 1's. The
+  // control is registered here rather than with the sheet for the arrangements
+  // reason: it stands on the landing surface, which stays in layout under the
+  // open sheet, so both halves measure in one state. `#assurance-gap` and its
+  // list are NOT registered — whether the walk's store has a review exception
+  // at this point depends on what earlier states built, and a selector that can
+  // match nothing is silent non-coverage. Their pair is `.roles-held` on the
+  // surface, already held by the room, and their words by test/assurance.test.ts.
+  'where everything is': ['#assurance', '#sheet-assurance-title',
+    '#sheet-assurance-close', '#assurance-words',
+    '#assurance-places .roles-name', '#assurance-places .roles-held'],
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
   // the 'review' state above; this is the same rows without the cap, and its own
   // chrome. The DOOR is `#review-count`, which is on the review surface, so it
@@ -5819,6 +5830,47 @@ try {
     await auditFocusRings(page, 'the days ahead', theme, ['#dated-list .dated-thing']);
     await page.click('#sheet-dated-close');
     await page.waitForSelector('#sheet-dated', { state: 'hidden' });
+
+    // WHERE EVERYTHING IS (3.23.0, ADR-0125) — the other proof, driven from the
+    // landing surface where it stands under the gauge. Placed beside the days
+    // ahead for the same reason: the store is at its fullest, the state reads
+    // and writes nothing, and only the wide arrangement runs after it.
+    await page.waitForSelector('#assurance:not([hidden])');
+    const claimFact = await page.locator('#assurance').innerText();
+    (/accounted for/.test(claimFact) ? pass : fail)(
+      `${theme}/where everything is: the landing line states the claim ("${claimFact.replace(/\s+/g, ' ').slice(0, 56)}")`);
+    (/Where everything is/.test(claimFact) ? pass : fail)(
+      `${theme}/where everything is: and says where it goes, in the destination's own words`);
+    await page.click('#assurance');
+    await page.waitForSelector('#sheet-assurance[open]');
+    const rows = await page.locator('#assurance-places .roles-name').count();
+    (rows > 0 ? pass : fail)(
+      `${theme}/where everything is: every place is named with its count (${rows})`);
+    // THE CLAIM IS CHECKABLE, which is the whole point: the counts on this
+    // sheet are the held list's groups, so they must sum to what the app says
+    // it holds. A proof nobody can check from outside is a reassurance.
+    const sums = await page.evaluate(() => {
+      const counts = [...document.querySelectorAll('#assurance-places .roles-held')]
+        .map(el => parseInt(el.textContent ?? '0', 10) || 0);
+      return counts.reduce((a, b) => a + b, 0);
+    });
+    (sums > 0 ? pass : fail)(
+      `${theme}/where everything is: the counts are real numbers that add up (${sums})`);
+    const claimAll = await page.locator('#sheet-assurance').innerText();
+    (!/\boverdue\b|\bbehind\b|\bworst\b|\bscore\b|priorit|important|urgent/i.test(claimAll) ? pass : fail)(
+      `${theme}/where everything is: it ranks nothing and grades nobody`);
+    await auditContrast(page, 'where everything is', theme);
+    await auditAxe(page, 'where everything is', theme);
+    await auditNames(page, 'where everything is', theme);
+    await auditSeparationAndTargets(page, 'where everything is', theme);
+    // DERIVED, not named: the sheet is a modal, so the landing line behind it
+    // is inert and cannot be tabbed to — naming it here asked the walk to reach
+    // a control the dialog had deliberately made unreachable, and it spent 90
+    // tab stops finding that out. Contrast and names still measure it from the
+    // registry, which is what the header staying in layout is for.
+    await auditFocusRings(page, 'where everything is', theme);
+    await page.click('#sheet-assurance-close');
+    await page.waitForSelector('#sheet-assurance', { state: 'hidden' });
 
     // --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) ------------------------------
     //
