@@ -175,6 +175,33 @@ intended. Three things it established:
   be the navy, carrying a gold section — which is the owner's third formulation
   and not the second.
 
+**A TENTH ROUND, 2026-09-03, refining the ninth's survivor rather than drawing
+anew.** Sixteen variants of one current, generated from a single centreline so
+the gold is a true slice of the river and the axis is a parameter. Four
+findings, three of them measured against controls drawn for the purpose:
+
+- **The diagonal is what kills the wave.** Horizontal controls were drawn
+  alongside and they read as water and nothing else; the same band on a
+  lower-left-to-upper-right axis does not, and it fills a circular crop
+  properly instead of floating between two empty caps. If the current runs
+  across, it is weather; if it runs corner to corner, it is a river.
+- **A straight band is a stroke, however it is coloured.** The control with the
+  meander removed went straight back to pencil-and-bandage. The meander is not
+  decoration; it is the whole difference between a current and a line.
+- **More than one inflection reads as a zigzag or a staircase at 32px**, and a
+  third makes it restless. One bend is the ceiling.
+- **Gold spanning the river's full width touches the paper field** — measured
+  at a 1px rim — and a 1.38:1 edge is no edge. The gold has to be inset, which
+  makes it a section held inside the current rather than a cut across it.
+
+**AND THE RIM IS SUB-PIXEL WHERE IT MATTERS, which is a constraint on every
+accent-inside-a-form idea and not only on this one.** The navy rim that keeps
+the gold legal measures 11–18 source pixels on a normally-proportioned river —
+**0.69 to 1.13 pixels at 32**. Only a broad river with a deliberately generous
+rim (26 source px) clears 1.5px at 32. So an inset accent is legal at 512 and
+approximate at favicon size, and any candidate relying on a thin margin between
+two colours should be measured at 32 before it is believed.
+
 **A METHOD WARNING, because this trap has now cost twice.** The round's first
 pass rejected five candidates for painting a colour outside the palette, at
 0.17–0.27% of pixels. Every one was a disc: a curve antialiases much further

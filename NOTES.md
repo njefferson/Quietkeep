@@ -576,7 +576,21 @@ count here is maintained by hand and nothing would catch it going stale.
     gold touching only navy, and both survive the amber being removed. The
     findings are in the checklist; the readings still to be judged on a device
     are *wave* and *water level*, which are close by and not on the list.
-  - **What only the owner can settle:** whether either of those two is worth
+  - **A tenth round, 2026-09-03, refined the ninth's survivor** across sixteen
+    variants of one current, generated from a single centreline. The diagonal
+    the brief asked for turns out to be what kills the wave reading — horizontal
+    controls drawn alongside read as water and nothing else — and it fills a
+    circular crop properly. A straight control went back to pencil-and-bandage,
+    so the meander is load-bearing; more than one bend reads as a zigzag at
+    32px. **Three finalists**: a broad river with a generous rim, which is the
+    most legible at 32; a lighter single-bend river; and one between them. The
+    open reading risks on all three are *road or route* and *ribbon*, and an
+    S-band is not a spiral — a spiral tightens inward with no way out, and this
+    comes from somewhere and goes somewhere, which is the opposite.
+  - **What only the owner can settle:** whether one of those three finalists
+    becomes the mark — which means superseding ADR-0025, regenerating every
+    raster through `tools/brand.mjs` and the social preview, and a release —
+    or whether either of those two is worth
     taking further, or whether the current mark stays as a known-imperfect one
     with the finding recorded against it, or whether it waits for a drawing of
     the owner's own. A session can generate and measure;
