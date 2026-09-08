@@ -104,3 +104,29 @@ export function marked(text: string, marker: string, tag: string, className?: st
  * The element stays `<em>` so nothing about the spoken output changes.
  */
 export const namedControls = (text: string): Node[] => marked(text, '*', 'em', 'ui-name');
+
+/**
+ * BOTH MARKS, IN ONE LINE OF COPY — `**lead**` and `*Control name*` together.
+ *
+ * The ceiling above says a string mixing the two is not supported, and the
+ * patch notes have mixed them since 3.22.0: `**The line that opens *What comes
+ * back, and when* now looks like a way in.**` is one of the app's own strings.
+ * The panel ran the `**` pass only, so every `*name*` printed its asterisks on
+ * screen — visible in the ⓘ, in the release notes, in the release that
+ * ANNOUNCED the control being named. 3.22.1 was a whole release spent on the
+ * adjacent defect in this same panel, where entity names printed literally.
+ *
+ * This does not lift the ceiling into a markdown engine. It is still two marks
+ * with fixed precedence and one level of nesting — `**` splits first, and each
+ * run is then handed to `namedControls`, so a name inside a lead and a name
+ * beside one both work and nothing else does. An unpaired marker still renders
+ * as the character somebody typed.
+ */
+export function richLine(text: string): Node[] {
+  return segments(text, '**').flatMap((s) => {
+    if (!s.marked) return namedControls(s.text);
+    const strong = document.createElement('strong');
+    strong.append(...namedControls(s.text));
+    return [strong];
+  });
+}

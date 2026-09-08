@@ -472,7 +472,14 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Eight outstanding.** Seven of them arrived together on 2026-09-08, from the
+**Five outstanding.** Three of the seven below were closed the day they were
+found: the days-ahead promise in 3.23.2, and in 3.23.3 the asterisks printing
+in the patch notes, the route word no control ever showed, and a finished thing
+announcing its return. Their entries are struck at the foot of this section
+rather than deleted, because an entry that vanishes reads as one that was never
+there.
+
+**Eight when they were written.** Seven of them arrived together on 2026-09-08, from the
 SECOND cold read this repo has had: a fresh reader given the served app and
 nothing else, asked to report confusion, anything reading as code, anything
 broken, and anything expected and not seen. Every gate was green at the time and
@@ -1163,7 +1170,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.2**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.3**, which production does
   not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
   tree plus this release. 3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition

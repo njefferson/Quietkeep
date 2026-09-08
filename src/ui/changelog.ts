@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.3',
+    kind: 'ITERATION',
+    date: '2026-09-08',
+    notes: [
+      '**These notes print control names again, instead of asterisks.** This panel writes the name of a control differently from the words around it, and since 3.22.0 the notes have been asking for both that and a bold opening in one line. It could only do the bold one, so the other mark stayed on screen as the characters it is \u2014 in the release that announced controls being named, which is as bad a place for it as there is. Both now work, including one inside the other. One note from an earlier release had its marks written in an order nothing could read; its words are unchanged.',
+      '**A thing you filed says what you actually pressed.** The line on a thing\u2019s page that tells you where it went is meant to be in the sorting\u2019s own words, and every route was \u2014 *Do now*, *Next action*, *Waiting for*, *Someday*, *Reference* \u2014 except one, which said *sorted as filed*. Nothing has ever shown you a button called Filed. It says *sorted as put under something* now, which is the control you pressed.',
+      '**A finished thing has stopped saying it will be back.** Nothing here is ever thrown away, so the day a thing was carrying is kept after you finish it \u2014 and that kept day was being read out as *comes back*, one line under the word *done*. Something you had settled in September announced itself returning in October. A thing that repeats still says both, because for a repeating thing both are true; that is what a rhythm is.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.23.2',
     kind: 'ITERATION',
     date: '2026-09-08',
@@ -817,7 +828,7 @@ export const RELEASES: readonly Release[] = [
       '**The invented set now looks like a real store, not a tidy one.** It was built to contain one of every kind, and to manage that three quarters of it sat inside a project and over half carried a place. A store read from a real device is the other way round \u2014 1,432 things, 1,255 of them with no project, no place, nobody named and no estimate. The set is about fifteen hundred things now and most of them are unsorted.',
       '**That matters because it is what everything gets judged against.** Anything that helps you narrow what you are offered works beautifully on a set where everything is labelled, and does almost nothing on a store where nothing is. A set tidier than reality does not fail \u2014 it agrees with you.',
       '**The manual now covers *Things you can do*.** Sending an item to your calendar, replaying the walkthrough, printing today, telling someone where things are and its four formats, bringing work in from elsewhere, and both sets of invented work \u2014 including which one touches your store and which one only writes a file.',
-      '**And *Every one of them*** \u2014 the fold that opens the complete list \u2014 **is described at last.** The manual said *What you are holding* was the complete list without saying how to see it.',
+      '**And** *Every one of them* \u2014 the fold that opens the complete list \u2014 **is described at last.** The manual said *What you are holding* was the complete list without saying how to see it.',
     ],
   },
   {

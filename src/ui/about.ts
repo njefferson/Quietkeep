@@ -29,7 +29,7 @@ import type { NodeState } from '../fold.ts';
 import type { ExportFile } from '../portability.ts';
 import type { AppEvent } from '../events.ts';
 import { RELEASES, CURRENT, releasesSince, newerCount } from './changelog.ts';
-import { marked } from './marks.ts';
+import { richLine } from './marks.ts';
 import { diagnosticReport, type DeviceReading } from '../diagnostic.ts';
 import { ARRIVAL_KEY } from '../contexts.ts';
 import type { Session } from './session.ts';
@@ -343,7 +343,7 @@ export async function mountAbout(
   // not add a second one for the sake of ten lines.
   const noteLine = (text: string): HTMLLIElement => {
     const li = el('li');
-    li.append(...marked(text, '**', 'strong'));
+    li.append(...richLine(text));
     return li;
   };
   const noteBlock = (r: typeof RELEASES[number]): HTMLElement[] => {

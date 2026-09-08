@@ -617,7 +617,18 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
     // The quiet fact line (1.4.0): where a sorted thing went, in the sorting's
     // own words — the sheet is where "it feels lost" gets its answer.
-    if (n.route && n.route !== 'trash') bits.push(`sorted as ${String(n.route).replace(/-/g, ' ')}`);
+    // IN THE SORTING'S OWN WORDS, and one of them was not. Every route value
+    // doubles as the label on the button that set it — Do now, Next action,
+    // Waiting for, Someday, Reference — except `filed`, which no control has
+    // ever shown anybody. A reader who pressed *Put it under something* was
+    // told their thing was "sorted as filed", a word from the event vocabulary
+    // wearing the line whose stated job is the reader's vocabulary.
+    if (n.route && n.route !== 'trash') {
+      const said = n.route === 'filed'
+        ? 'put under something'
+        : String(n.route).replace(/-/g, ' ');
+      bits.push(`sorted as ${said}`);
+    }
     if (standingDecline(n)) bits.push('in the Not Now ledger');
     if (isArrangement(n)) {
       // The words say CONFIRMED rather than done, because that is the whole
@@ -629,8 +640,18 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
     const words = pressureWords(p);
     if (words) bits.push(words);
+    // A CLOCK THAT IS KEPT IS NOT A CLOCK THAT WILL SPEAK. The log is
+    // append-only, so finishing a thing does not erase the day it carried —
+    // and this line read that retained day out as `comes back`, on a thing the
+    // same line had already called `done`. One row of the sheet said the work
+    // was finished and the next said it was returning in October.
+    //
+    // An upkeep is the case where both ARE true: it is done AND it comes back,
+    // which is what a cadence means, so the interval is what separates them
+    // rather than the word `done`.
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
-    if (clock) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
+    const willReturn = !n.lastDone || Boolean(n.intervalDays);
+    if (clock && willReturn) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
     // A PERSON'S PLACES, IN A PERSON'S WORDS (3.21.0, ADR-0123). The places
     // group has always rendered on every kind, so places could be put on a
     // person before anything read them — the affiliation the choosers now

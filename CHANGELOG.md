@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.3 — ITERATION
+
+*2026-09-08*
+
+- **These notes print control names again, instead of asterisks.** This panel writes the name of a control differently from the words around it, and since 3.22.0 the notes have been asking for both that and a bold opening in one line. It could only do the bold one, so the other mark stayed on screen as the characters it is — in the release that announced controls being named, which is as bad a place for it as there is. Both now work, including one inside the other. One note from an earlier release had its marks written in an order nothing could read; its words are unchanged.
+- **A thing you filed says what you actually pressed.** The line on a thing’s page that tells you where it went is meant to be in the sorting’s own words, and every route was — *Do now*, *Next action*, *Waiting for*, *Someday*, *Reference* — except one, which said *sorted as filed*. Nothing has ever shown you a button called Filed. It says *sorted as put under something* now, which is the control you pressed.
+- **A finished thing has stopped saying it will be back.** Nothing here is ever thrown away, so the day a thing was carrying is kept after you finish it — and that kept day was being read out as *comes back*, one line under the word *done*. Something you had settled in September announced itself returning in October. A thing that repeats still says both, because for a repeating thing both are true; that is what a rhythm is.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.23.2 — ITERATION
 
 *2026-09-08*
@@ -664,7 +673,7 @@ triplet and what it did for you.
 - **The invented set now looks like a real store, not a tidy one.** It was built to contain one of every kind, and to manage that three quarters of it sat inside a project and over half carried a place. A store read from a real device is the other way round — 1,432 things, 1,255 of them with no project, no place, nobody named and no estimate. The set is about fifteen hundred things now and most of them are unsorted.
 - **That matters because it is what everything gets judged against.** Anything that helps you narrow what you are offered works beautifully on a set where everything is labelled, and does almost nothing on a store where nothing is. A set tidier than reality does not fail — it agrees with you.
 - **The manual now covers *Things you can do*.** Sending an item to your calendar, replaying the walkthrough, printing today, telling someone where things are and its four formats, bringing work in from elsewhere, and both sets of invented work — including which one touches your store and which one only writes a file.
-- **And *Every one of them*** — the fold that opens the complete list — **is described at last.** The manual said *What you are holding* was the complete list without saying how to see it.
+- **And** *Every one of them* — the fold that opens the complete list — **is described at last.** The manual said *What you are holding* was the complete list without saying how to see it.
 
 ## 2.31.2 — ITERATION
 
