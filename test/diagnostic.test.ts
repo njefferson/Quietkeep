@@ -248,7 +248,7 @@ test('diag-findings: no copy, and work since a copy, are different sentences', (
 
   const copied = [...log, ev('export.written', null, { scope: 'all', at: NOW }, { at: NOW, seq: 9999 })];
   assert.equal(findings(state, copied, wellDevice()).some(x => /No copy has ever left/.test(x)), false);
-  assert.ok(lastCopy(copied), 'fixture: the copy is recognised as a whole copy');
+  assert.ok(lastCopy(copied), 'fixture: the copy is recognized as a whole copy');
 
   const after = [...copied, ev('node.created', 'LATER', { nodeKind: 'action', title: 'after the copy' },
     { at: '2026-08-03T19:00:00.000Z', seq: 10_000 })];
@@ -464,7 +464,7 @@ test('and the moment there IS something, the finding comes back', () => {
 
 test('the storage line says what the number measures, not what it seems to', () => {
   // `navigator.storage.estimate()` is per-ORIGIN and counts the app's own
-  // downloaded code. Labelled "Used by Quietkeep" it read as the reader's own
+  // downloaded code. Labeled "Used by Quietkeep" it read as the reader's own
   // things, and 1.3 MB beside a log of 0 events reads as a lie or a bug.
   const r = diagnosticReport(emptyState(), [], wellDevice({ usageMb: 1.3 }), NOW);
   assert.match(r, /Used at this address: 1\.3 MB/);
@@ -492,7 +492,7 @@ test('diag-reach: an inherited place counts, because that is what the filter doe
 });
 
 test('diag-reach: the count AGREES with fitsHere rather than describing it', () => {
-  // The invariant that fails if the census and the behaviour ever drift.
+  // The invariant that fails if the census and the behavior ever drift.
   //
   // `fitsHere` accepts a thing when it is unreached (fits every answer) OR when
   // it is reached BY THIS PLACE. So for any chosen place, the number it accepts
@@ -536,9 +536,9 @@ test('diag-reach: an empty store reads "0 of 0" and never NaN', () => {
   assert.equal(/NaN|undefined|of Infinity/.test(text), false, text);
 });
 
-test('diag-reach: nothing labelled is a FACT, never a finding (law 5)', () => {
+test('diag-reach: nothing labeled is a FACT, never a finding (law 5)', () => {
   // Filing is optional in this app, always. A report that listed "you have not
-  // labelled anything" under WHAT IS WRONG would be scoring somebody for using
+  // labeled anything" under WHAT IS WRONG would be scoring somebody for using
   // the product exactly as promised. This is the guard against it becoming a
   // nag in some later release, when the section looks like an obvious candidate
   // for a warning.
@@ -548,11 +548,11 @@ test('diag-reach: nothing labelled is a FACT, never a finding (law 5)', () => {
     put([ev('node.created', `U${i}`, { nodeKind: 'action', title: `thing ${i}` })]);
   }
   const reach = situationReach(s);
-  assert.equal(reach.withPlace, 0, 'fixture: nothing is labelled');
+  assert.equal(reach.withPlace, 0, 'fixture: nothing is labeled');
   assert.ok(reach.total >= 5, 'fixture: and there is plenty of it');
 
   for (const f of findings(s, [], wellDevice())) {
-    assert.equal(/place|label|situation|narrow|unlabelled/i.test(f), false,
+    assert.equal(/place|label|situation|narrow|unlabeled/i.test(f), false,
       `the report scolds somebody for not filing: "${f}"`);
   }
 });
@@ -569,7 +569,7 @@ test('diag-reach: the section says the numbers are not a fault', () => {
 test('diag-reach: a trashed person stops counting, exactly as it stops filtering', () => {
   // `fitsWith` resolves links through state so somebody trashed stops narrowing
   // without a migration. The census shares that clause via `namedOn`; if it
-  // counted the raw links instead, the report would claim a store is labelled
+  // counted the raw links instead, the report would claim a store is labeled
   // with people who are gone.
   const { state, log } = loaded(SECRETS);
   assert.equal(situationReach(state).withPerson, 1, 'fixture: one thing names somebody');

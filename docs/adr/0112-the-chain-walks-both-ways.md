@@ -121,10 +121,10 @@ with the two pickers that taught the word in the first place.
   of the walk never ran.
 - `tools/a11y.mjs` registers `.detail-place-open` **separately from**
   `#detail-place`. The paragraph carries `--ink-soft` and the button carries
-  `--accent`; a registry naming only the paragraph measures a colour that is no
+  `--accent`; a registry naming only the paragraph measures a color that is no
   longer on screen and calls it green.
 - The state that renders it — `'detail sheet, inside something'` — now also
   runs the focus-ring pass, and already carried a `fail()` for the case where
   nothing could be parented, so it cannot pass vacuously.
 - `.tree-kind` is `--ink-soft` on `--surface`, a pair the inventory already
-  carries. A word, not a colour.
+  carries. A word, not a color.

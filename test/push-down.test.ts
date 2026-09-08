@@ -80,7 +80,7 @@ test('WHAT ELSE IS IN THERE: a place coming round names its contents, not just a
     'the offered thing\'s own ancestors are already on the place line');
   // Asserted as a PROPERTY, not a title. Which leaf heads the queue depends on
   // the tier's own ordering, and a test that hard-codes one is asserting the
-  // fixture rather than the behaviour — it failed on exactly that when the
+  // fixture rather than the behavior — it failed on exactly that when the
   // fixture grew from one leaf to five.
   const leaves = ['buy tap washers', 'ring the plumber', 'clear under the sink',
     'order a new filter', 'book the tiler'];

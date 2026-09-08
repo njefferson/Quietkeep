@@ -390,36 +390,36 @@
       "floor": 4.5
     },
     {
-      "state": "colours",
+      "state": "colors",
       "sel": ".about-p",
       "fg": "ink-soft",
       "bg": "surface",
       "floor": 4.5
     },
     {
-      "state": "colours",
+      "state": "colors",
       "sel": ".palette-name",
       "fg": "ink",
       "bg": "surface",
       "floor": 4.5
     },
     {
-      "state": "colours",
+      "state": "colors",
       "sel": ".palette-pick legend",
       "fg": "ink-soft",
       "bg": "surface",
       "floor": 4.5
     },
     {
-      "state": "colours",
-      "sel": "#sheet-group-colour-close",
+      "state": "colors",
+      "sel": "#sheet-group-color-close",
       "fg": "accent",
       "bg": "surface",
       "floor": 4.5
     },
     {
-      "state": "colours",
-      "sel": "#sheet-group-colour-title",
+      "state": "colors",
+      "sel": "#sheet-group-color-title",
       "fg": "ink",
       "bg": "surface",
       "floor": 4.5
@@ -3632,7 +3632,7 @@
       "state": "settings",
       "sel": "#slot-day",
       "uaOwned": true,
-      "why": "a <select>: the UA paints its own control colours, and its popup list is not stylable at all on iOS"
+      "why": "a <select>: the UA paints its own control colors, and its popup list is not stylable at all on iOS"
     },
     {
       "state": "settings",

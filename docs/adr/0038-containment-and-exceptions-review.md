@@ -61,7 +61,7 @@ So `src/tree.ts` **also** walks defensively: `ancestors()` is bounded by a seen
 set, and `wouldParentCycle` returns `true` when it meets a pre-existing loop,
 because a walk that terminated early cannot prove the absence of one. A shard
 exchange (ADR-0035) can deliver two halves of a loop that neither device ever
-wrote whole. The defence exists so the app survives data it did not write; the
+wrote whole. The defense exists so the app survives data it did not write; the
 gate exists so the app never writes it. Both, not either.
 
 ### 3. Review shows exceptions and nothing else

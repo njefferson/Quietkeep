@@ -22,7 +22,7 @@ interface Block {
   /** Not a direct child of <main> — a section inside a dialog, say. */
   readonly nested?: boolean;
   /** No aria-labelledby at all. */
-  readonly unlabelled?: boolean;
+  readonly unlabeled?: boolean;
 }
 
 /** The two methods `stops` calls, over a described page. */
@@ -38,7 +38,7 @@ const pageOf = (blocks: readonly Block[]): Document => {
       return blocks.filter(b => !b.nested).map(b => ({
         id: b.id,
         hidden: b.hidden === true,
-        getAttribute: (a: string) => (a === 'aria-labelledby' && !b.unlabelled ? b.label : null),
+        getAttribute: (a: string) => (a === 'aria-labelledby' && !b.unlabeled ? b.label : null),
       }));
     },
     getElementById: (id: string) => byId.get(id) ?? null,
@@ -59,7 +59,7 @@ test('a row is named by whatever labels the block — never by a list kept here'
     { id: 'replan', label: 'replan-heading', name: 'Needs a new plan' },
   ]);
   assert.deepEqual(named(doc), ['The top of the page', 'Next up', 'Needs a new plan']);
-  // Focus goes to the labelling element, which is the one carrying tabindex=-1.
+  // Focus goes to the labeling element, which is the one carrying tabindex=-1.
   assert.equal(stops(doc)[1]!.focus, '#nextup-heading');
 });
 
@@ -93,9 +93,9 @@ test('a heading the app has not filled in yet is skipped, not rendered wordless'
   assert.deepEqual(named(doc), ['The top of the page', 'Next up']);
 });
 
-test('a block with nothing labelling it is skipped rather than guessed at', () => {
+test('a block with nothing labeling it is skipped rather than guessed at', () => {
   const doc = pageOf([
-    { id: 'mystery', label: 'x', name: 'Whatever', unlabelled: true },
+    { id: 'mystery', label: 'x', name: 'Whatever', unlabeled: true },
     { id: 'nextup', label: 'nextup-heading', name: 'Next up' },
   ]);
   assert.deepEqual(named(doc), ['The top of the page', 'Next up']);

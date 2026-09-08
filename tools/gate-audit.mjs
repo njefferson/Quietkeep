@@ -185,13 +185,21 @@ const create = (rel, body) =>
 const GATES = [
   {
     name: 'brand:check',
-    catches: 'the brand words and colours drifting from what is declared',
-    // A DECLARED COLOUR PAIR, which is what `:check` actually measures — it
+    catches: 'the brand words and colors drifting from what is declared',
+    // A DECLARED COLOR PAIR, which is what `:check` actually measures — it
     // reports `warm/surface`, `line/bg` and so on, computed from the tokens.
     // Two earlier plants edited the wordmark and then the icon file; rendering
     // the assets is `npm run brand`, and `:check` reads the palette, so both
     // were aimed at a gate that was doing exactly its job.
-    plant: () => edit('public/app.css', (s) =>
+    // AND THE FILE IS palettes.css, NOT app.css. The token has never lived in
+    // app.css — 0 occurrences there against 24 here, on every commit this
+    // audit has run — so the plant made no edit, the gate saw an unchanged
+    // tree, and the audit reported brand:check as "not doing its job" about a
+    // gate that was never given anything to catch. An unverified gate is a
+    // hypothesis wearing a green tick, and a MISAIMED plant is worse: it
+    // accuses a working gate. Nothing surfaced it because `gates:audit` is not
+    // a Spine step.
+    plant: () => edit('public/palettes.css', (s) =>
       s.replace(/--line:\s*#[0-9A-Fa-f]{6}/, '--line: #F3F0E8')),
   },
   {
@@ -290,7 +298,7 @@ const GATES = [
   },
   {
     name: 'controls:check',
-    catches: 'a core control moving or being relabelled without the release saying so',
+    catches: 'a core control moving or being relabeled without the release saying so',
     plant: () => edit('public/index.html', (s) =>
       s.replace('<button id="menu-open"', '<button id="gate-audit-decoy" type="button">Decoy</button>\n  <button id="menu-open"')),
   },

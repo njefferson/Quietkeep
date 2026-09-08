@@ -123,7 +123,7 @@ test('the key names the thing rather than the widget', () => {
 // --- words ------------------------------------------------------------------
 
 test('the button says what pressing it DOES, not what the state is', () => {
-  // A button labelled with its own state makes somebody guess whether pressing it
+  // A button labeled with its own state makes somebody guess whether pressing it
   // describes or changes — and nobody should have to run that experiment on their
   // own home screen.
   assert.equal(badgeToggleLabel(true), 'Stop showing a number on the icon');

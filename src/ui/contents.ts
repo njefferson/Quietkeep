@@ -68,7 +68,7 @@ export interface Stop {
   readonly name: string;
   /** What the block already publishes about its own size, or null. */
   readonly count: string | null;
-  /** Where focus lands: the labelling element, which carries `tabindex="-1"`. */
+  /** Where focus lands: the labeling element, which carries `tabindex="-1"`. */
   readonly focus: string;
 }
 
@@ -162,7 +162,7 @@ export function goTo(stop: Stop, doc: Document = document): void {
     doc.getElementById(stop.id)?.scrollIntoView({ block: 'start', behavior: 'auto' });
   }
   // Focus after the scroll, and `preventScroll` with it: the browser's own
-  // scroll-into-view on focus would centre the heading and undo the `start`
+  // scroll-into-view on focus would center the heading and undo the `start`
   // alignment, putting the block's first line above the fold on a short screen.
   focus?.focus({ preventScroll: true });
 }

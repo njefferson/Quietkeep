@@ -33,7 +33,7 @@
 // A tool built to show the truth about a screen had been quietly rendering a
 // state no person can reach. That is this repo's oldest defect — the gate whose
 // passing branch measures something other than the thing — and it very nearly
-// bought a "fix" to correct behaviour that was already correct.
+// bought a "fix" to correct behavior that was already correct.
 
 import { chromium } from 'playwright-core';
 import { existsSync, mkdirSync } from 'node:fs';

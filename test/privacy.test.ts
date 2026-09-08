@@ -142,7 +142,7 @@ const OWNER_LIFE = [
   // and explicit on purpose: each earns its place by having no product meaning.
   /\b(?:cpap|bipap|sleep apnoea|sleep apnea|blood pressure|insulin|antidepressant|adhd meds|stimulant medication)\b/i,
   // A first-person account of a real day. The repo's own prose is written in
-  // the repo's voice about the software; "I noticed in the shower", "I realise
+  // the repo's voice about the software; "I noticed in the shower", "I realize
   // I need to", "I remember I have to" is somebody's morning, not a design note.
   /\bI\s+(?:noticed|realis|realiz|remember|forgot|need to|have to|keep forgetting)\w*\b[^\n]{0,40}\b(?:shower|sink|driving|drive|car|work|appointment|doctor|order|refill)\b/i,
 ];

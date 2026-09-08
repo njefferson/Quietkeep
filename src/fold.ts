@@ -48,7 +48,7 @@ export interface Clock {
  *   `gate:capture.recorded`, `gate:resume.card.created` — somebody DID something,
  *   and the cure is how that choice becomes "now". These are demands.
  * - `gate:node.created` — a node exists and nobody said when. The clearest case,
- *   and for a long time the only one recognised. **It is not the only one**: see
+ *   and for a long time the only one recognized. **It is not the only one**: see
  *   `NO_INTENT_CURES` below, which classifies every kind the gate cures and is
  *   held total by `test/cure-intent.test.ts`. This line used to end "that is the
  *   only cure with no intent behind it", which read as a finding and was really
@@ -214,7 +214,7 @@ export interface NodeState {
    */
   people: { person: NodeId; relation: string }[];
   /** WHERE THIS CAN BE DONE (2.2.0, ADR-0092). Several, because a thing can be
-   *  doable at home AND out; empty means "anywhere", which is why an unlabelled
+   *  doable at home AND out; empty means "anywhere", which is why an unlabeled
    *  thing is never filtered away. A LABEL, never a container: the parent still
    *  says where it lives, and law 1 does not read this list — attaching a
    *  context can never make a silent node non-silent. */
@@ -431,7 +431,7 @@ export interface State {
    * **AN EVENT, unlike `where.now` and `how.long`**, which are device
    * preferences precisely because where you are is not a fact about your work
    * and a stored trail of it is what law 7 keeps the app out of. A situation
-   * you NAMED is not where you are; it is something you recognise about how you
+   * you NAMED is not where you are; it is something you recognize about how you
    * work, and it should survive a new device the way a context or a role does.
    *
    * Last write wins per NAME, reached by replay rather than by a stamp key —
@@ -1397,7 +1397,7 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         break;
       }
       // The one request slot (1.8.0, ADR-0056): state-level LWW like focus.
-      // '' is the honest clear; an unrecognised recurrence is REFUSED at read
+      // '' is the honest clear; an unrecognized recurrence is REFUSED at read
       // time (parseSlot), never guessed at here — the fold keeps what was said.
       // How long a timer runs (1.10.0). State-level LWW, the `requestSlot`
       // shape. A non-finite or non-positive number is REFUSED, not guessed —
@@ -1468,7 +1468,7 @@ export function applyEvent(s: State, e: AppEvent, touched: Set<NodeId>): void {
         break;
 
       // How you said things are going. State-level LWW, the `timerMinutes`
-      // shape. An unrecognised level is REFUSED rather than guessed — the fold
+      // shape. An unrecognized level is REFUSED rather than guessed — the fold
       // keeps what was said or keeps nothing, and a capacity nobody chose would
       // be the app deciding how you are, which is law 7's whole prohibition.
       case 'capacity.declared': {

@@ -137,14 +137,14 @@ export function reentryView(
 /**
  * The greeting, in words.
  *
- * It says how long, states what is waiting, and **does not apologise for you or
+ * It says how long, states what is waiting, and **does not apologize for you or
  * on your behalf**. "Welcome back, you have 47 things" is a bill. "You were away
  * a fortnight" is a fact, and the difference is the whole of law 8.
  */
 export function reentryWords(v: ReentryView): string {
   // AN ARRIVAL IS NOT AN ABSENCE, and must not borrow its sentence. "You were
   // away 0 days" is false, and the greeting's own rule is that it does not
-  // apologise for you or on your behalf — so this says what is true of somebody
+  // apologize for you or on your behalf — so this says what is true of somebody
   // who has just brought a file in, and nothing about where they have been.
   //
   // ABOVE THE GUARD, which is where it was not: the guard returns early on

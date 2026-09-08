@@ -10,7 +10,7 @@ permission.
 
 ## The promises
 
-1. **Your data is yours.** The [licence](../LICENSE.md) covers the software. It
+1. **Your data is yours.** The [license](../LICENSE.md) covers the software. It
    makes no claim on the log, the snapshots, or the exports. Nothing you write is
    ours.
 2. **It stays on your device** unless you explicitly say otherwise, in a
@@ -73,7 +73,7 @@ is a closed list, so these are structural absences, not policy promises.
   integration and never sees a message.
 - **No location, no contacts, no calendar reading.** The `.ics` export is
   one-way — Quietkeep writes a file, and never reads your calendar.
-- **No behavioural analytics.** Nothing counts how often you open the app, how
+- **No behavioral analytics.** Nothing counts how often you open the app, how
   long you looked at a screen, or what you declined. **"Not this" on the Next-up
   card is not recorded as a rejection** — there is no event for it, so no future
   feature can start showing you one.
@@ -197,7 +197,7 @@ The vault split is a **convenience for keeping content separate**, not a policy
 boundary. Work and personal material tend to want different exports, different
 audiences, and different moments — so the app makes that easy.
 
-**What goes in it is the user's judgement**, exactly as with any other personal app on
+**What goes in it is the user's judgment**, exactly as with any other personal app on
 any other personal device. Quietkeep does not inspect, classify, or police what you
 write, and it could not do so meaningfully if it tried.
 
@@ -224,7 +224,7 @@ A commitment that costs nothing to make and matters most when it is needed:
 - The **format is documented here and in
   [`event-vocabulary.md`](event-vocabulary.md)** thoroughly enough to write an
   importer without our help.
-- The source is available under [its licence](../LICENSE.md).
+- The source is available under [its license](../LICENSE.md).
 
-There is no kill switch, no licence check, no phone-home. There is nothing we
+There is no kill switch, no license check, no phone-home. There is nothing we
 could turn off that would stop your copy working.

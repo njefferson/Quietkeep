@@ -115,7 +115,7 @@ const settled = async (pg, ms) => {
   // it to land and for one paint, which is both faster and actually correct.
   //
   // Self-selecting, so no call site needs judging one at a time — and the
-  // failure mode is the OLD behaviour rather than a shorter one.
+  // failure mode is the OLD behavior rather than a shorter one.
   const busy = await pg.evaluate(() =>
     document.body?.dataset.settled === 'false').catch(() => false);
   if (!busy) { await pg.waitForTimeout(ms); return; }
@@ -453,11 +453,11 @@ const is = (actual, expected, what) =>
 //
 // Parsed rather than substring-matched, for the reason the previous version of
 // this helper already recorded: `.includes('0 silent')` was also true of "10
-// silent" and "100 silent" (audit). Returning NaN on an unrecognised gauge is
+// silent" and "100 silent" (audit). Returning NaN on an unrecognized gauge is
 // deliberate — every `is(silentCount(...), 0, ...)` then FAILS rather than
 // quietly passing, so a future rewording cannot make this check vacuous.
 // The gauge's total moved into the claim it opens. Parsed, and NaN on anything
-// unrecognised so a rewording fails the check rather than making it vacuous.
+// unrecognized so a rewording fails the check rather than making it vacuous.
 const claimedTotal = (countText) => {
   const t = countText || '';
   if (/^One thing\b/.test(t)) return 1;
@@ -634,7 +634,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await settled(page, 250);
   is(await page.locator('#intro-ask').isVisible(), true,
     'and it is still there after the store answers — it does not appear and then vanish');
-  is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras','sheet-group-colour']
+  is(await page.evaluate(() => ['sheet-group-why','sheet-group-help','sheet-group-data','sheet-group-extras','sheet-group-color']
     .every(id => !document.querySelector('#' + id)?.open)), true,
     'and no other surface opened itself — you arrive at one place (1.40.0)');
   await openSurface(page, 'about');
@@ -690,7 +690,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // meaningless now — a stale assertion that would have passed by accident.
   is(await page.evaluate(() => {
     const shut = ['sheet-group-why', 'sheet-group-help', 'sheet-group-data',
-      'sheet-group-actions', 'sheet-group-extras', 'sheet-group-colour', 'more']
+      'sheet-group-actions', 'sheet-group-extras', 'sheet-group-color', 'more']
       .every(id => !document.querySelector('#' + id)?.open);
     return shut && document.querySelector('#intro-ask')?.checkVisibility() === true;
   }), true, 'and it is reachable with no other surface open at all');
@@ -975,7 +975,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // opens Quietkeep and puts it in. This is that door, and the thing it must
   // never do is write.
   // DRIVEN BY A REAL PASTE SINCE 2.12.1, when the `Hold what I copied` button
-  // was removed. Every behaviour below belonged to `takeText`, which an ordinary
+  // was removed. Every behavior below belonged to `takeText`, which an ordinary
   // paste into the field has always called — the button only read the clipboard
   // for you. So this block is not deleted with it; it is pointed at the route
   // that remains, which is what actually proves nothing was lost.
@@ -1212,7 +1212,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // A THING IS A TASK THE MOMENT IT EXISTS (2.0.0) — the headline claim, gated.
   //
   // This walk PASSED UNCHANGED when the offer gate came out, which is the whole
-  // reason this block exists: nothing here was asserting the behaviour either
+  // reason this block exists: nothing here was asserting the behavior either
   // way, so the biggest change the app has had would have shipped ungated and a
   // silent revert would have gone green. A change nobody's test can see is a
   // change nobody's test is holding.
@@ -1904,7 +1904,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/left/.test(clockLine), true,
     `and the clock, once asked for, still says what is left of the day ("${clockLine}")`);
   is(/%|should|hurry|only|behind/i.test(clockLine), false,
-    'with no percentage, no instruction and no judgement in it');
+    'with no percentage, no instruction and no judgment in it');
   await tpage.click('#clock-off');
   await tpage.waitForFunction(() => document.querySelector('#clock')?.hidden === true);
   await openSurface(tpage, 'about');
@@ -1976,7 +1976,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // Two seconds instead of the chosen length. `data-seconds` is a seam that
   // exists so this check can happen at all; nothing in the app writes it, so
-  // shipped behaviour is always the choice.
+  // shipped behavior is always the choice.
   await tpage.evaluate(() => { document.querySelector('#triage-donow').dataset.seconds = '2'; });
   await tpage.locator('.donow button', { hasText: 'Start five minutes' }).click();
   await settled(tpage, 200);
@@ -2280,7 +2280,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // THE SURFACE SETTLES NOW (1.35.0), so the walk asks for the next thing the
   // way a person does. Every block after this one meets the ordinary offer —
   // without this, one Done early in the walk left the surface settled for the
-  // rest of it, and eight later blocks failed against correct behaviour.
+  // rest of it, and eight later blocks failed against correct behavior.
   const settleAfterDone = await tpage.locator('#nextup-settled').isVisible();
   is(settleAfterDone, true, 'finishing it settles the surface rather than offering the next thing');
   await tpage.click('#nextup-resume');
@@ -2411,7 +2411,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(back.y === 0, true, `pressing it returns to the top (runway scrollTop ${back.y})`);
   is(back.focus, 'hub-heading', 'and puts focus on the hub, which is what you came back up to');
   // A CONTROL LOOKS LIKE A CONTROL. Five routes off this page rendered as plain
-  // grey sentences; 45 of the other controls carried a border or a fill.
+  // gray sentences; 45 of the other controls carried a border or a fill.
   const bare = await tpage.evaluate(() => {
     const vis = el => !!(el.offsetParent || el.getClientRects().length);
     return [...document.querySelectorAll('main button')].filter(vis).filter(b => {
@@ -2494,7 +2494,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // left outside it, so engineering prose about SC 2.5.3 — and a bare closing
   // arrow — painted at the bottom of every screen, on PRODUCTION, until it was
   // read off a phone. Every gate was green throughout: the a11y pass measures
-  // contrast, names and target size; this walk drives behaviour; neither had
+  // contrast, names and target size; this walk drives behavior; neither had
   // any opinion about text nobody meant to publish.
   //
   // Comment syntax in rendered text is the cheapest possible signature of it,
@@ -4097,7 +4097,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/is left where you can pick it back up/.test(closeText), true,
     'the win is stated in words — stopping is not failing');
   is(/covered — (\d+ things, none silent|one thing, not silent)/.test(closeText), true,
-    `the gauge speaks in words, never colour ("${closeText.replace(/\n/g, ' / ').slice(0, 100)}")`);
+    `the gauge speaks in words, never color ("${closeText.replace(/\n/g, ' / ').slice(0, 100)}")`);
   is(/%|streak|minutes/.test(closeText), false, 'no score, no duration, no streak');
 
   await tpage.reload({ waitUntil: 'load' });
@@ -4120,7 +4120,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // And Next up offers it back, in YOUR words. NOT "it leads" — a real date
   // outranks a resume card by design (nextup.ts), and this walk has items
   // carrying dates from earlier sections, so asserting the head would have been
-  // asserting the order of THIS walk rather than the behaviour.
+  // asserting the order of THIS walk rather than the behavior.
   const upText = await tpage.evaluate(() =>
     document.querySelector('#nextup')?.innerText ?? '');
   is(/you were about to: the paragraph about ferries/.test(upText), true,
@@ -4357,7 +4357,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // The hit test above is the check this repo already had, and it CANNOT see the
   // defect that was reported: the Close button was showing the panel's text
   // through itself. `button.ghost` sets `background: transparent`, so the button
-  // is the topmost thing at its own centre — `elementFromPoint` returns it and
+  // is the topmost thing at its own center — `elementFromPoint` returns it and
   // the assertion passes — while whatever you had scrolled to paints underneath
   // and reads straight through.
   //
@@ -4544,7 +4544,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     }
     await settled(tpage, 90);
     // A CLOSED DIALOG HAS NO COMPUTED STYLE WORTH READING. Say so as its own
-    // failure rather than letting it masquerade as a finding about colour.
+    // failure rather than letting it masquerade as a finding about color.
     if (!(await tpage.locator(`#${surface}[open]`).count())) {
       seeThrough.push(`${surface} — the walk could not open it, so nothing was measured`);
       continue;
@@ -4621,7 +4621,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     //
     // Everything above measures where the way out IS — clear of the scroller,
     // on screen once everything is scrolled, not transparent. None of it asks
-    // whether it DOES anything. `sheet-group-colour` shipped with a Close wired
+    // whether it DOES anything. `sheet-group-color` shipped with a Close wired
     // to nothing: the wiring came from a hand-typed list of five sheet ids and
     // there were six sheets by then. Perfectly formed, perfectly placed,
     // perfectly legible, inert — and reported from a device as the window not
@@ -4902,7 +4902,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // titles, a person, notes and a sealed journal entry.
   // Swept against what the READER can see — every card title on the surfaces
   // behind this panel — rather than against a state hook, because that is the
-  // same set of words they would recognise as theirs in a file they sent.
+  // same set of words they would recognize as theirs in a file they sent.
   const leaked = await tpage.evaluate((text) => {
     const titles = [...document.querySelectorAll('#cards .card-title')]
       .map(el => el.textContent.trim())
@@ -5716,7 +5716,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // AND THE FACTS ARE BESIDE IT, as list items rather than more of that
   // sentence. The flag is the one to assert: it used to be DROPPED and named in
   // a list of losses, and since 2.34.0 it arrives as heat — so a walk still
-  // asserting "flagged" appears anywhere would pass on either behaviour.
+  // asserting "flagged" appears anywhere would pass on either behavior.
   const facts = await tpage.locator('#other-facts li').allTextContents();
   is(facts.length > 0, true, `the facts render as their own lines (${facts.length})`);
   is(facts.some(f => /flagged and comes in hot/.test(f)), true,
@@ -5851,7 +5851,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // while a thousand of them sit there. What must not move is the number the
   // reader is shown, which counts what they put down. `data-yours`, not
   // `data-waiting` — reading the wrong one of the two is how the first version
-  // of this assertion went red against correct behaviour.
+  // of this assertion went red against correct behavior.
   is(await tpage.locator('#triage-gauge').getAttribute('data-yours').catch(() => null), yoursBeforeLoose,
     `and the count of what you put down is untouched by it (${yoursBeforeLoose} before and after)`);
   // THE SUBSTANTIVE HALF: after an import the queue holds MORE than the count
@@ -6625,7 +6625,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(new RegExp(`Finished: ${(beforeDone || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`).test(settledWhat || ''),
     true, `it names what was finished ("${settledWhat}")`);
   // NO NEW DEMAND. The title, the reason and the Done button are all withheld —
-  // not greyed, because a demand that is present but disabled is still a demand
+  // not grayed, because a demand that is present but disabled is still a demand
   // on the screen.
   is(await tpage.locator('#nextup-title').textContent(), '',
     'nothing has slid into the space just vacated');
@@ -7901,7 +7901,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // navigation assertions are true and are guaranteed by the commit's own
   // repaint and by the queue rather than by the code path they appear to test.
   // They are kept because they would catch a gross regression and cost nothing,
-  // and they are labelled so nobody reads them as proof of the return path.
+  // and they are labeled so nobody reads them as proof of the return path.
   await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route[data-route="add-context"]').first().click();
   await tpage.waitForSelector('#triage-context-new');

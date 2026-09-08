@@ -1,7 +1,7 @@
 // Sealing what goes to the relay (sync stage 2, ADR-0037).
 //
 // **The relay must never be able to read anything.** That is not a feature of the
-// server's good behaviour — it is a property of what reaches it. So everything
+// server's good behavior — it is a property of what reaches it. So everything
 // that leaves a device is sealed here first, and the relay stores opaque bytes it
 // could not interpret if it wanted to.
 //

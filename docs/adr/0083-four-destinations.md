@@ -7,12 +7,12 @@
 Help, Settings, Your data and How it works stop being folding groups inside the
 ⓘ and become **their own screens**, reached from a **More** control in the app's
 own header. The ⓘ keeps only what the app IS: the intro, what changed, the
-diagnostic, the way to the calendar, the licence.
+diagnostic, the way to the calendar, the license.
 
 - **More** lists the destinations and nothing else. It is a list of places, so
   it is short enough to read in one look.
 
-  **SEVEN since 3.5.1**, when colour left Settings and became its own door. The
+  **SEVEN since 3.5.1**, when color left Settings and became its own door. The
   count in this line has now been four, six and seven; what is load-bearing is
   the sentence above it, not the number.
 

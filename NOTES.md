@@ -25,7 +25,7 @@ decisions live here in summary and in [`docs/adr/`](docs/adr/) in full.
 
 ## Thesis
 
-Most planners are built for someone whose problem is *organising* what they
+Most planners are built for someone whose problem is *organizing* what they
 already remember. This one is built for someone whose problem is that a thing
 leaves their head and does not come back — where the relief of writing it down is
 real and immediate, and the returning is the part that never happens.
@@ -164,12 +164,12 @@ requires breaking one, that is a Doctrine §1 moment: flag it, don't slip it in.
 ## What VERSION 1 means — settled 2026-07-29
 
 **The rule for the first slot, settled 2026-07-29.** Version 1 is reached when
-every initial capability is in place — all of the specified behaviour, not a
+every initial capability is in place — all of the specified behavior, not a
 subset that feels close. Until then this is not a planner app, and the number is
 not claimed. Naming it is the owner's act and happens only once it is ready.
 
 **Binding, and it settles the first slot.** The VERSION slot is not reached by a
-big release, a large diff, or a session's judgement that things feel complete. It
+big release, a large diff, or a session's judgment that things feel complete. It
 is reached when **every item in the v1 Must list below exists** — and the owner says so.
 
 Two consequences a session must not get wrong:
@@ -228,7 +228,7 @@ Moving an item into v1 now is a scope change and needs the owner's word.
 > specified — the owner's ruling is recorded below under *What VERSION 1 means*. Sessions
 > do not propose `1.0.0`, and this line is not a proposal.
 >
-> What is left before that judgement is the owner's to make, not code: the on-device pass
+> What is left before that judgment is the owner's to make, not code: the on-device pass
 > (Doctrine §7). **V-14 is no longer among them — it was answered YES on device
 > on 2026-08-09** and is closed.
 
@@ -490,7 +490,7 @@ was a real defect neither of them named: `capture-context.ts` hardcoded
 **AND A THIRD IS WITHDRAWN, MEASURED.** The report called the date control
 after a new container unreachable by finger, on `window.scrollBy` doing nothing
 and `documentElement.scrollHeight` equalling the viewport. Both are this app's
-DESIGNED behaviour: `html` and `body` are `overflow: hidden` on purpose and the
+DESIGNED behavior: `html` and `body` are `overflow: hidden` on purpose and the
 real scroller is `.runway` — `smoke.mjs` already insists on `#runway.scrollTop`
 for exactly this reason, in its own words, because `window.scrollY` is 0 at
 every position here.
@@ -498,10 +498,10 @@ every position here.
 Driven again through the app's own route (walkthrough to the end, three things
 captured, the triage stance entered by its hub door, filed into a new place):
 as the receipt lands the button is at y=1142 against a 1024 viewport with
-`elementFromPoint` returning nothing at its centre, which is what was reported.
+`elementFromPoint` returning nothing at its center, which is what was reported.
 But `#runway` reads `scrollHeight 1071` against `clientHeight 642`, so it
 scrolls; scrolled to its end the button sits at y=713 with itself at its own
-centre, and a real touch tap lands. **It was below the fold in a scrolling
+center, and a real touch tap lands. **It was below the fold in a scrolling
 region, which is ordinary.** Not a defect.
 
 **What the withdrawal leaves behind is worth more than the finding was.**
@@ -547,7 +547,7 @@ against, so the asymmetry the protocol specifies was not applied to any of the
 seven. Read this entry before designing the third. Two more stood here for about
 an hour on 2026-09-01 — the
 ⓘ/*Elsewhere* door split and the promote-spanning notes window, both from the
-cold read-back — labelled "product decisions, the owner's". The ruling that came
+cold read-back — labeled "product decisions, the owner's". The ruling that came
 back: neither needed the owner, and routing them upward was fake carefulness —
 the record could answer both (hub LESSONS §96's shape, deference direction).
 Both closed the same day in 3.20.3 — the walkthrough now names both doors
@@ -555,8 +555,8 @@ truthfully and the ⓘ panel carries a door through to the hub; the notes open
 everything since this device last looked, capped, with the true count said.
 
 - **The situation sheet asks who TWICE, and nothing there can name somebody
-  new.** `#with-who` is a single-valued `<select>` labelled *Who is here*;
-  `#situation-who` is a row of `aria-pressed` toggles labelled *Who is in it?*
+  new.** `#with-who` is a single-valued `<select>` labeled *Who is here*;
+  `#situation-who` is a row of `aria-pressed` toggles labeled *Who is in it?*
   that takes as many as you like. They sit one directly above the other and are
   filled from the same `allPeople`. The single-valued one comes FIRST, so it
   teaches the reader the answer is one person — which is exactly how it was
@@ -580,7 +580,7 @@ everything since this device last looked, capped, with the true count said.
   and renders a **Bring it back on…** button. Measured at 768x1024: the button's
   box is `y=1024, height=44`, the viewport is 1024 tall, `scrollHeight` is also
   1024, `html` and `body` are both `overflow: hidden`, and `window.scrollBy(0,
-  600)` leaves `scrollY` at 0. `elementFromPoint` at its centre returns nothing,
+  600)` leaves `scrollY` at 0. `elementFromPoint` at its center returns nothing,
   because the point is outside the viewport. A driver still reaches it, since a
   synthetic dispatch does not care where the pixel is; a finger cannot reach it
   at all. The visible half of the announcement is additionally a 1x1 clipped
@@ -631,6 +631,19 @@ everything since this device last looked, capped, with the true count said.
   queue, so the first pass reads as making no progress — on the screen whose
   whole job is to feel finishable.
 
+- **`brand:check` passes with a declared colour token changed under it.** Found
+  by re-aiming its own audit plant, which had been editing `public/app.css` for
+  a `--line: #hex` that has never been in that file — 0 occurrences there
+  against 24 in `public/palettes.css`, on every commit the audit has run. So the
+  plant made no edit, the gate saw an unchanged tree, and `gates:audit` reported
+  *brand:check is not doing its job* about a gate it had never given anything to
+  catch. A misaimed plant is worse than a missing one: it accuses a working
+  gate, and nothing surfaced it because `gates:audit` is not a Spine step. With
+  the plant pointed at the right file the gate genuinely does not catch the
+  change, so the finding is real and is now visible rather than masked. What
+  `brand:check` actually reads, and whether the palette is `palette:check`'s job
+  instead, is the next question.
+
 - **Three spoken confirmations still read a date out as digits.** Setting a due
   date, a start or an answer-owed announces *Due 2026-09-09.* into the live
   region. 3.23.4 fixed the written lines, which take an ISO instant and could
@@ -648,7 +661,7 @@ everything since this device last looked, capped, with the true count said.
   third fix. Beside it, seen on the way past: `ITERATION` printed next to the
   version number; `comes back 2026-09-09` in a thing's own header while two
   other screens say *tomorrow* for the same date; an `mm/dd/yyyy` mask in an app
-  that spells *Colours*; `sorted as filed` and `sorted as someday`, internal
+  that spells *Colors*; `sorted as filed` and `sorted as someday`, internal
   kind names that no button ever showed anybody; *Written this night.* under
   every item in the sort card; *no surface offers it on its own*, where
   *surface* is a builder's word; and `1  come back with something they are part
@@ -699,7 +712,7 @@ count here is maintained by hand and nothing would catch it going stale.
     6.38:1 on the icon's paper field in light mode and 1.38:1 in dark, so any
     mark carrying the dark-mode amber has to supply a dark ground — which is
     the enclosure. **A replacement that must not enclose has to change the
-    COLOUR, not only the geometry.** Every open composition attempted in that
+    COLOR, not only the geometry.** Every open composition attempted in that
     amber failed on contrast before it was ever judged on taste.
   - **HIRING IS OFF THE TABLE, by the owner's word, 2026-09-03 — never offer it
     again.** The checklist's own closing line names going to somebody who does
@@ -731,7 +744,7 @@ count here is maintained by hand and nothing would catch it going stale.
     findings are in the checklist; the readings still to be judged on a device
     are *wave* and *water level*, which are close by and not on the list.
   - **A tenth round, 2026-09-03, refined the ninth's survivor** across sixteen
-    variants of one current, generated from a single centreline. The diagonal
+    variants of one current, generated from a single centerline. The diagonal
     the brief asked for turns out to be what kills the wave reading — horizontal
     controls drawn alongside read as water and nothing else — and it fills a
     circular crop properly. A straight control went back to pencil-and-bandage,
@@ -773,7 +786,7 @@ count here is maintained by hand and nothing would catch it going stale.
   a missed return — someone is hurt — and the return engine structurally cannot
   reach it. The evidence is [`docs/nd-collisions.md`](docs/nd-collisions.md)
   entry 32; what follows is what that entry settles and what it leaves to be
-  answered here. **Entry 33 is this same failure at organisational scale** — a
+  answered here. **Entry 33 is this same failure at organizational scale** — a
   role changing hands with the whole of what was agreed in one head — and it
   carries the one Strong remedy anybody has measured, which is a structured
   verbal handover with a read-back and not a document.
@@ -841,7 +854,7 @@ count here is maintained by hand and nothing would catch it going stale.
     deferral is the lesson rather than the build.** This entry got the model
     exactly right — a role crosses areas, this tree is single-parent, therefore a
     cross-cutting link and never a container — and ADR-0096 is that paragraph
-    implemented. **The gate it set was a session's judgement about whether the
+    implemented. **The gate it set was a session's judgment about whether the
     owner had made enough containers yet to justify it, which is not a session's
     call to make about somebody else's planner.** Third instance in one audit,
     after Q-10 and Q-11 (hub LESSONS §96, §97).
@@ -868,7 +881,7 @@ count here is maintained by hand and nothing would catch it going stale.
     is temporal).
   - **If trust:** the right items are surfacing and nothing makes that visible.
     The fix is a law-4 analogue of the coverage gauge: a visible
-    proof of judgement, the way the gauge is a visible proof of integrity.
+    proof of judgment, the way the gauge is a visible proof of integrity.
   - **CLOSED 2026-08-17 (2.7.0, ADR-0097) — by research, not by asking the owner.**
     The remaining half was a ranking decision, and `docs/nd-collisions.md` entry
     5 had already routed it and gated the routing on this very question. With
@@ -973,12 +986,12 @@ count here is maintained by hand and nothing would catch it going stale.
   - Answer: **Closed with Q-06.** The tile now reads *"Plan your night against your real treeline, not a flat 0°"*, taken from the app's own README rather than invented.
   - Status: **Closed.** Closed with Q-06 — the hub tile now states what the app is for.
 - **Q-01**
-  - Question: Licence — brief said AGPL, Doctrine §8 says PolyForm Noncommercial
+  - Question: License — brief said AGPL, Doctrine §8 says PolyForm Noncommercial
   - Answer: **PolyForm NC 1.0.0.** Confirmed 2026-07-27 as doctrinally correct. [ADR-0017](docs/adr/0017-licensing.md) is Accepted.
   - Status: **Closed.** PolyForm Noncommercial 1.0.0, [ADR-0017](docs/adr/0017-licensing.md).
 - **Q-03**
   - Question: Work-vault policy line, given the GFE context
-  - Answer: **No GFE context — the app is not for it.** The vault split is a convenience for separating content; what goes in it is the user's judgement, as with any personal app. The owner 2026-07-27.
+  - Answer: **No GFE context — the app is not for it.** The vault split is a convenience for separating content; what goes in it is the user's judgment, as with any personal app. The owner 2026-07-27.
   - Status: **Closed.** There is no GFE context and the app is not for it, so the question did not apply.
 - **Q-05**
   - Question: Terminology skin default for the work vault
@@ -1015,7 +1028,7 @@ count here is maintained by hand and nothing would catch it going stale.
   picker. Export/import via Files carries the whole sync and durability story
   ([ADR-0004](docs/adr/0004-ios-path.md)), which is why it is built in Phase 0.
 - **The app is Quietkeep** ([ADR-0024](docs/adr/0024-name-quietkeep.md)), and the repo is
-  `njefferson/Quietkeep` as of 2026-07-28. The licence's Required Notice URL moved with the
+  `njefferson/Quietkeep` as of 2026-07-28. The license's Required Notice URL moved with the
   slug in the same commit, which is the condition [ADR-0017](docs/adr/0017-licensing.md)
   set. `Horizons` survives only as *domain* vocabulary — *higher horizons* (law 4) and the
   *horizon-integrity engine* — and `changelog:check` asserts it was not lost to a rename.
@@ -1215,7 +1228,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.4**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.5**, which production does
   not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
   tree plus this release. 3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition
@@ -1227,7 +1240,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   aside, because its fact counts how many things are in front of you and that
   count is the pile in miniature on the day somebody asked for one thing. The
   release beneath it is the
-  proof of judgement (ADR-0125), law 4's analogue of the coverage gauge. Law 1
+  proof of judgment (ADR-0125), law 4's analogue of the coverage gauge. Law 1
   has had a visible proof that nothing is LOST since the gauge moved to the
   landing surface; nothing said the same about what is being SHOWN, so the only
   way to check the offer was to read the whole store — the reviewing this app
@@ -1356,7 +1369,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   **DOCTRINE IS CREDITED AS AN INFLUENCE AND KEPT OUT OF THE WORDS.** It assumes
   capable people under load and out of contact, so it externalises what is
   expensive to hold — the same conclusion reached institutionally and decades
-  earlier. Influence on the thinking is not licence over the vocabulary; the
+  earlier. Influence on the thinking is not license over the vocabulary; the
   voice rule stands unchanged.
 - **Superseded, and kept for the record: 3.19.5.** The
   curb-cut grade was too harsh and is corrected.
@@ -1414,7 +1427,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   degrades between neurotypes" is cited everywhere from an N = 72 diffusion-chain
   study. A pre-registered replication across three sites at N = 311 found **no
   difference** in transfer between single- and mixed-neurotype chains (Crompton
-  et al., 2025, *Nature Human Behaviour* 9(7), 1488–1500). **And the rapport half
+  et al., 2025, *Nature Human Behavior* 9(7), 1488–1500). **And the rapport half
   did not survive in the form it is usually restated either** — the 2025 paper's
   own words are that *non-autistic* chains indicated higher rapport, which is not
   the claim that rapport is higher within same-neurotype pairs. Only the
@@ -1484,14 +1497,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   a failure — §4 is not gated — so this would have shipped, and a screen reader
   offering one name for three controls is the defect the gate does catch when it
   is a single character wearing an aria-label.
-  **AND THE TWO BOXES WERE PAINTED BY THE BROWSER.** The colour inventory refused
+  **AND THE TWO BOXES WERE PAINTED BY THE BROWSER.** The color inventory refused
   them: black on white, owned by no role. There are two established treatments
   here and the choice between them is real — `#detail-situation` and
   `#journal-text` are declared UA-owned on purpose, the app styling their box and
   never their ink. These go the other way with `#detail-note`, because what is
   typed in them is RENDERED BACK by the app on the arrangements list in its own
   ink, and a box that looks like the platform whose contents come back looking
-  like the product is the inconsistency `.colour-ua-owned`'s own header warns of.
+  like the product is the inconsistency `.color-ua-owned`'s own header warns of.
   **AND THE SMOKE WALK FLAKED IN CI, ONCE, ON THIS EXACT COMMIT.** It crashed
   after 26 seconds waiting 12s for `.card` after opening the held fold — and the
   same SHA, re-run with nothing changed, passed that step in 4m13s. Recorded
@@ -1519,7 +1532,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   complete projection with nowhere to render, which is hub LESSONS 182's shape
   and the same defect the two releases before this were spent fixing.
   **THREE PLANTS, EACH ON ITS OWN ASSERTION:** reading a field's presence rather
-  than its value (a cleared field then renders a labelled row with nothing after
+  than its value (a cleared field then renders a labeled row with nothing after
   it), dropping the string check (a `false` from some other unmark prints as
   text), and letting a written field enrol something as an arrangement (the list
   fills with things nobody said run without them).
@@ -1777,7 +1790,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   question the batch was always asking.
   **THE KEY IS THE IMPORTING COMMIT'S OWN TIMESTAMP.** An import lands in ONE
   commit, so every event in it already shares an `at` — unique per run, and also
-  the date the set gets labelled with. Nothing is minted, no id invented, and no
+  the date the set gets labeled with. Nothing is minted, no id invented, and no
   event noun added to a closed list. Named by date and size and never by a
   source: the format is sniffed from the CONTENT and the filename is never
   stored, so a source name would be a guess presented as a fact.
@@ -1846,7 +1859,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   are 1,171 behind, because you once brought a file in, is the opposite of law 8
   — and it is not even true: an arrival is not something you owe today.*
   **THE FIRST VERSION OF THE COUNT READ THE WRONG NUMBER** and the walk caught it
-  by going red against correct behaviour: three rows imported, queue up by
+  by going red against correct behavior: three rows imported, queue up by
   exactly three. `data-yours` is a second seam beside `data-waiting` now, because
   they are two different facts and a walk reading one to check the other is the
   same defect one level up.
@@ -1960,8 +1973,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   the one already on screen; it is not a second box and there must not be one
   (one draft, one commit, one Dump). **The comment above it claimed this route
   existed so you would not have to leave the job first, while the code four
-  files away left it** — a claim about behaviour, written in the file that does
-  not have the behaviour, which is the shape that survives review because both
+  files away left it** — a claim about behavior, written in the file that does
+  not have the behavior, which is the shape that survives review because both
   halves read correctly on their own. The label says "Leave this and put
   something down" now; the wiring is untouched.
   **AND THE SECOND HALF OF THE TRUST FINDING IS ANSWERED BY FINDABILITY RATHER
@@ -2129,12 +2142,12 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   fields, what you already have is a row of taps, commas make separate labels,
   and a label typed wrong comes out where it was typed.
   **THE POPUP TOOK THE CARET OUT OF THE FIELD MID-WORD, REPEATEDLY**, on the
-  device this app is used on, which ended a labelling session rather than
+  device this app is used on, which ended a labeling session rather than
   slowing one down. It was a native `<datalist>` on three fields, and it was the
   only control on any surface in this app that `tools/a11y.mjs` structurally
   could not measure — the browser draws it, over the keyboard, and nothing here
-  can read its colours, its targets or its ring. What replaced it is a row of
-  `.linklike` buttons that reuse a measured colour pair and joined the gate in
+  can read its colors, its targets or its ring. What replaced it is a row of
+  `.linklike` buttons that reuse a measured color pair and joined the gate in
   the same commit, as two driven states rather than one, because the same
   buttons wear different WORDS in the two modes and words are what SC 2.5.3
   reads.
@@ -2178,7 +2191,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   release notes, in place-language, carrying the control's own name. It was right
   to: updating the manifest alone is bookkeeping, and the person whose hands have
   to relearn the screen is the one owed the sentence.
-  **EIGHTEEN OF 112 AUDITED STATES HAD NO FOCUS-RING PASS.** Not a judgement that
+  **EIGHTEEN OF 112 AUDITED STATES HAD NO FOCUS-RING PASS.** Not a judgment that
   their rings did not matter — `auditFocusRings` took a hand-written selector
   list, so a state was covered only if somebody wrote one, and nobody had decided
   anything. The list WAS the gap, and the release notes had described it as "the
@@ -2336,7 +2349,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   every later section down with it, reporting one failure where there were three.
   A gate that hides the other gates when it fires is LESSONS 139 with the sign
   flipped, so the press is guarded.
-  **AND THE COLOUR THE GATE MEASURED WAS NOT THE COLOUR ON SCREEN.** The
+  **AND THE COLOR THE GATE MEASURED WAS NOT THE COLOR ON SCREEN.** The
   paragraph carries `--ink-soft`; the button inside it carries `--accent`. The
   a11y registry named only `#detail-place`, so it would have measured a token no
   longer rendered there and reported green — hub LESSONS 142's shape. Registered
@@ -2346,8 +2359,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `04562b5`, Deploy success on that exact SHA with both editions published — the
   Cloudflare step ran 5s and the Sync step 6s, read from the job's steps rather
   than from the run's conclusion, because a guard's skip branch also concludes
-  success. The way out of the Colours sheet was wired to nothing, and tapping a
-  colour is now the whole decision.
+  success. The way out of the Colors sheet was wired to nothing, and tapping a
+  color is now the whole decision.
   **THE CLOSE BUTTON DID NOTHING AT ALL.** Reported from a device as the window
   not closing, and that is exactly what it was: `about.ts` drove `wireSheetClose`
   from a HAND-TYPED LIST OF FIVE SHEET IDS, and 3.5.1 added a sixth destination
@@ -2362,7 +2375,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   it. The smoke walk presses every way out now and asserts the surface actually
   leaves; planted by restoring the hand-typed list, and it named the exact
   surface and the exact button.
-  **Tapping a set of colours is the whole decision now.** The *Set the colours*
+  **Tapping a set of colors is the whole decision now.** The *Set the colors*
   button is gone. It was indefensible once the pictures arrived: tapping already
   repainted the app, so the confirm changed nothing visible, and a confirm with
   no visible effect reads as a control that does not work. The alternative —
@@ -2371,8 +2384,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   **And leaving a mode or text size without pressing Set puts them back.** All
   three view preferences shared one shape: preview on change, persist on the
   press, so leaving without confirming kept the preview on screen while the store
-  remembered something else. Only the colour one was reported because only the
-  colour one is impossible to miss. Registered on the native `close` event, so
+  remembered something else. Only the color one was reported because only the
+  color one is impossible to miss. Registered on the native `close` event, so
   Escape and the backdrop revert the same as the button.
   **Still not right, and it is the guards rather than the app:** `tour-fresh`
   hashes five whole files, so a change to a sheet no photograph shows demanded a
@@ -2380,7 +2393,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   escape — `.branch-guard`'s `escape=` covers the branch rule only — so there is
   no way to say "I know, proceed" even when certain. A guard with no override is
   a wall, and walls get disabled wholesale.
-- **Superseded, and kept for the record: 3.5.1.** Colour is
+- **Superseded, and kept for the record: 3.5.1.** Color is
   its own door rather than a block inside Settings, and the pictures are full
   width because of it.
   **The move is what buys the pictures their size.** Two-up inside Settings, each
@@ -2405,7 +2418,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   two-tap form with a `|` — and `openSurface` hands the door straight to
   `querySelector`, where that is not a valid selector. None of the six siblings
   has a door attribute at all; they are reached by the `more-go` fallback.
-  And the colours audit was placed beside its sibling in the panel, which shut
+  And the colors audit was placed beside its sibling in the panel, which shut
   Settings under the states still driving it: `openSurface` closes every dialog
   first (ADR-0083, one surface at a time), and everything between the settings
   audit and the ⓘ is a CONTINUATION that never reopens the sheet. Three registry
@@ -2423,16 +2436,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   body, every door clears its target — a defect in the RECORD, which stated an
   absolute nobody had measured. The ADR carries both numbers now.
   **Still not right:** the splash an installed app shows before it opens still
-  uses the original colours whichever set is chosen. It comes from the manifest
+  uses the original colors whichever set is chosen. It comes from the manifest
   captured when the shortcut is saved and nothing the app does later can change
   it.
 - **Superseded, and kept for the record: 3.5.0.** You can see
-  the colour sets instead of reading their names, and four of the five have been
+  the color sets instead of reading their names, and four of the five have been
   redrawn because they were the same set four times. ADR-0111 for the mechanism.
   **The preview is a picture, not live CSS**, and that is what makes it cheap. A
   tile painted with real custom properties renders a FOREIGN palette inside the
-  current one, which breaks the assumption the colour gate rests on — exactly one
-  palette active, every computed colour mapping to one role — and creates a
+  current one, which breaks the assumption the color gate rests on — exactly one
+  palette active, every computed color mapping to one role — and creates a
   boundary pair per pairing of families per mode, fifty of them, none of which the
   thirteen-pair inventory knows about. A PNG has none of that. It is opaque.
   **Each tile is the same view twice, day left and night right.** A diagonal cut
@@ -2447,7 +2460,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   glare*. They came from the hub council verified as LEGIBLE and nothing had ever
   checked them against each other for being DISTINCT. Rewritten along axes that
   do not overlap: cool and crisp, warm kraft with a deep teal, no hue at all, and
-  dimmed with a night that is grey rather than black. Quietkeep untouched. Three
+  dimmed with a night that is gray rather than black. Quietkeep untouched. Three
   border ratios failed the first attempt and were fixed before anything else.
   **The sample was thin too, and that was a separate defect.** A heading, one card
   and one button used four of seven roles and was mostly page background. It is
@@ -2458,17 +2471,17 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   reveal a difference of one RGB point.
   **The words lived in two files and only one moved.** `docs/palettes.json` and
   `src/palette.ts` each carry a name and a sentence per family, so three families
-  spent an hour describing colours that no longer existed. `palettes:check` holds
+  spent an hour describing colors that no longer existed. `palettes:check` holds
   them together in both directions now, planted with that exact drift. A family
   that paints one thing and describes another is worse than one with no
-  description, because the words are what §4 leans on when it refuses colour as
+  description, because the words are what §4 leans on when it refuses color as
   the sole carrier of meaning.
   **The tile is the control, and the target gate is why.** Five native radios are
   13x13 and the gate measures the INPUT's box — correctly, because that is what a
   finger lands on; wrapping a 13px control in a big label only changes what a
   mouse forgives. Scaling the native radio to 44px was tried and looked it: five
   thumbnail-sized circles in the browser's own accent, shouting over the pictures
-  they were labelling. The input covers the tile instead, and the mark is drawn —
+  they were labeling. The input covers the tile instead, and the mark is drawn —
   an empty ring that fills, with the name going bold beside it, so nothing says
   "this is the one you have" in hue alone on the one screen that is entirely hue.
   **Three budgets moved and each raise says what bought it:** +4 controls (the
@@ -2476,11 +2489,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   standing-prose total 11,660 to 12,050. Smaller tiles were tried first and 80px
   wide shows a light half and a dark half and nothing else.
   **Still not right:** the tiles are two-up, so each half renders about 75px on a
-  phone, which is small for differences this fine. Colour is going to its own
+  phone, which is small for differences this fine. Color is going to its own
   door rather than growing Settings again — that is the next piece of work, and
   it is the answer this file predicted when the budget was raised.
 - **Superseded, and kept for the record: 3.4.3.** The buttons
-  say what is behind them, and the colour picker has a heading.
+  say what is behind them, and the color picker has a heading.
   **`More` named a quantity where it needed to name a destination.** More of
   what? The only way to find out was to press it. All six things behind it are
   the APP rather than your work, so it is `Everything else` — not this page, and
@@ -2490,9 +2503,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   to the ear while meaning your other work rather than the app. It is
   `Choose where to be`, which takes the verb-first shape of the doors it lands
   among and names its destination.
-  **The colour picker had no heading at all**, in a panel where every other block
+  **The color picker had no heading at all**, in a panel where every other block
   has one, and told the reader its five sets were "held to the same contrast
-  floors" — a phrase for whoever built it. The control said *Its colours are*,
+  floors" — a phrase for whoever built it. The control said *Its colors are*,
   with no antecedent for *its*.
   **The size gate caught the replacement copy being longer than what it
   replaced**, over three budgets at once, including a repetition of *only this
@@ -2544,10 +2557,10 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   is from the last fetch rather than printing it as current. Both branches
   planted. Hub LESSONS 143.
   **Still not right, and named rather than closed:** the splash an installed app
-  shows before it opens still uses the original colours. That is decided from the
+  shows before it opens still uses the original colors. That is decided from the
   manifest captured when the shortcut is saved, and nothing the app does later
   can change it — it needs a per-palette manifest chosen before installing, and
-  rests on iOS behaviour that must be measured on a device rather than assumed.
+  rests on iOS behavior that must be measured on a device rather than assumed.
 - **Superseded, and kept for the record: 3.4.1.** Promoted 2026-08-26 at
   `355e4c1`, Deploy and Spine both green on that exact SHA.
 - **https://staging.quietkeep.pages.dev** — the candidate, **3.4.1**, verified at
@@ -2613,8 +2626,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `public/palettes.css`; `palettes:check` fails on drift and is what CI runs.
   **Palette and mode stay independent axes** — `data-palette` beside
   `data-theme`, two decisions rather than ten.
-  **Named, never a swatch.** A coloured square alone asks the reader to tell
-  colours apart in order to work a colour control, which Doctrine §4 forbids.
+  **Named, never a swatch.** A colored square alone asks the reader to tell
+  colors apart in order to work a color control, which Doctrine §4 forbids.
   **The flash is real and cannot be fixed here.** PALETTES.md assumes an inline
   one-liner reads the palette before first paint. This app cannot: `localStorage`
   is banned outright, kv is IndexedDB and async, and the CSP forbids inline
@@ -2625,7 +2638,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   app's own rules.
   **`palettes.css` is precached.** A separate stylesheet is a separate thing for
   the service worker to hold, and an offline-first app that cached its rules and
-  not its colours would come back with none.
+  not its colors would come back with none.
   **CI found the consolidation's last consumer.** `brand.mjs` parsed the seven
   roles out of `public/app.css` and went red with twenty "token not found" —
   skipping the build and BOTH walks behind it. A THIRD place was reading the
@@ -2637,11 +2650,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   clear it, tightest 4.58:1.
   **And it went red because a hand-picked subset of gates was run instead of the
   Spine** — the exact thing `npm run spine` exists to prevent. Brand assets was
-  not on the list because there was no reason to think colour tokens moving would
+  not on the list because there was no reason to think color tokens moving would
   touch it, which is precisely why it needed running.
   **Verified green on `35937cb`** — full Spine and Deploy, that exact SHA, and
   all 39 Spine steps green locally before the push.
-- **Superseded, and kept for the record: 3.3.0.** Colour is
+- **Superseded, and kept for the record: 3.3.0.** Color is
   checked by arithmetic now, and a palette costs nothing to add. ADR-0110.
   **The measurement that started it.** The a11y walk made **1,660 contrast
   assertions** in its last run — for TWO palettes, about 830 each, roughly four
@@ -2649,38 +2662,38 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   re-measuring the same thing. It does not have to be: contrast is a property of a
   PAIR, and a palette swap changes token VALUES — never which token a selector
   resolves to, nor the size and weight that decide whether it needs 4.5:1 or 3:1.
-  **Structure once, values per palette.** `npm run colour:inventory` walks every
+  **Structure once, values per palette.** `npm run color:inventory` walks every
   state under a SENTINEL palette — each of the seven roles painted a unique probe
-  value, so every computed colour maps to exactly one role BY CONSTRUCTION rather
-  than by luck — and writes `docs/colour-inventory.json`. `npm run palette:check`
+  value, so every computed color maps to exactly one role BY CONSTRUCTION rather
+  than by luck — and writes `docs/color-inventory.json`. `npm run palette:check`
   reads it and does the arithmetic, no browser.
   **624 rows reduce to THIRTEEN distinct pairs.** A palette is thirteen
   computations. Both current palettes clear every one; the tightest is `warm` on
   `bg` at 6.38:1 in light and `ink-soft` on `surface` at 7.93:1 in dark.
   **It found a shipped bug.** `applyTheme` set `data-theme` and never
   `color-scheme`, so choosing *light* on a device set to dark turned the app cream
-  and left every dropdown, date box and textarea white-on-grey. Measured through
+  and left every dropdown, date box and textarea white-on-gray. Measured through
   the reader's own route: `--bg` became `#F4F1E9` while the select still rendered
   `rgb(255,255,255)` on `rgb(107,107,107)`. **The old gate could not have found
   it** — it renders each theme under a device set to match, so a choice
   DISAGREEING with the device is the one case it never renders.
   **And thirteen controls the palette cannot reach**, every `<select>`,
   `<textarea>` and `<input type=date>` in the app, painted by the user agent.
-  True before and invisible, because they were measured like any other colour and
-  passed. Declared in `.colour-ua-owned` with a reason each, held BOTH ways.
-  **Planted, both halves.** A palette with grey ink was caught on all thirteen
+  True before and invisible, because they were measured like any other color and
+  passed. Declared in `.color-ua-owned` with a reason each, held BOTH ways.
+  **Planted, both halves.** A palette with gray ink was caught on all thirteen
   pairs with the states each shows on; a palette missing three roles was refused
   before any arithmetic. The extraction's own detector caught its first installer
   too — the sentinel lost to `:root:not([data-theme="light"])` on specificity and
-  reported all 5,267 real colours as unowned.
+  reported all 5,267 real colors as unowned.
   **Freshness:** the inventory carries the same UI hash `.a11y-stamp` uses and
   `palette:check` refuses to answer if it does not match the tree — a gate
   checking palettes against a structure the app no longer has is worse than none,
-  because it reports green. `colour:inventory` is `.spine-exempt`: it writes a
+  because it reports green. `color:inventory` is `.spine-exempt`: it writes a
   tracked file, and CI regenerating what a gate checks repairs the drift instead
   of reporting it.
   **Still not right:** this removes repetition, not the need to walk the app. A
-  state the walk never visits has its colours unchecked, exactly as before.
+  state the walk never visits has its colors unchecked, exactly as before.
   **And the picker is still the old one.** This release makes a palette free to
   VERIFY; it does not yet make one selectable. The control offers device / light
   / dark, not a list read from `docs/palettes.json`. `data-theme` becoming
@@ -2810,7 +2823,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   reported defects and one long-missing choice.
   **The way out of a long screen.** `#sort` is an eighty-three-line dialog whose
   Close was the last thing in a box that scrolled as a whole, so leaving a batch
-  meant travelling past all of it. `#about` had the identical defect twice on a
+  meant traveling past all of it. `#about` had the identical defect twice on a
   device and every sheet once, and the fix — a flex column whose body is the only
   thing that moves — had never travelled to any dialog that was neither. Six
   surfaces carried it untouched, `#detail` among them at 587 lines of markup, the
@@ -2927,7 +2940,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   as empty, and CI's Spine and Deploy green on that SHA before the merge.
   **Verified live by content on both editions**: workers naming 3.23.1, the
   root document carrying the proof's line and its sheet, both bundles carrying
-  its words. Two releases: the proof of judgement (ADR-0125), law 4's analogue
+  its words. Two releases: the proof of judgment (ADR-0125), law 4's analogue
   of the coverage gauge — under the line that says nothing has gone quiet, a
   second saying everything is accounted for, opening onto where each thing is
   in `heldGroups`' own words, total over `heldWork`, able to say it does not
@@ -3076,11 +3089,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   deployed after it.
   **What this carries.** The shell arrives wearing the reader's palette and mode
   on the first painted pixel; the chrome names destinations instead of
-  quantities; the colour sets are pictures, with four of five redrawn because
-  they were the same set four times; and colour has its own door, which is what
+  quantities; the color sets are pictures, with four of five redrawn because
+  they were the same set four times; and color has its own door, which is what
   buys the pictures a size you can read.
   **Still not right, and named rather than closed:** the splash an installed app
-  shows before it opens still uses the original colours whichever set is chosen —
+  shows before it opens still uses the original colors whichever set is chosen —
   it comes from the manifest captured when the shortcut is saved, and nothing the
   app does later can change it.
 - **Superseded, and kept for the record: 3.4.1** — promoted at
@@ -3121,12 +3134,12 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   pushed. Three releases in one promote, and the last two are one idea.
   **What this carries.** Above 900px the job view shows the hub BESIDE the job
   instead of stacked above it, which is ADR-0108's second arrangement finally
-  built and needed nothing in `src/` to change. Colour is checked by ARITHMETIC
+  built and needed nothing in `src/` to change. Color is checked by ARITHMETIC
   rather than by rendering: structure measured once under a sentinel palette,
   values computed per palette, 624 rows reduced to thirteen distinct pairs — and
   it found a shipped fault on the way, `applyTheme` setting `data-theme` and
   never `color-scheme`, so a light choice on a dark device left every dropdown
-  and date box white-on-grey. Then five palette families with a picker, all ten
+  and date box white-on-gray. Then five palette families with a picker, all ten
   clearing all thirteen pairs in a quarter of a second.
   **Still not right, and named rather than closed:** inside a job the frame folds
   one text step earlier than before 3.1.1 on a phone at 125%; the replan card is
@@ -3216,7 +3229,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   LESSONS 122 landing from another session while this one was working, not the
   gate; `handoff-check.mjs` names it correctly and **is not in this repo's
   Spine**, because the version check it carries is bundled with an
-  acknowledgement checklist no CI run can answer. So the one gate that catches
+  acknowledgment checklist no CI run can answer. So the one gate that catches
   this is a gate somebody has to remember to run, which is the state the
   third-person and no-grid rules were in until 2.18.2 wired them.
   **A note recording a defect is not a fix for it.**
@@ -3242,7 +3255,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
 
 **AND SPINE HAS NEVER ONCE BEEN GREEN ON STAGING SINCE THE STEP WAS ADDED,
 WHICH NOBODY NOTICED.** Counted from the run list rather than estimated: **ten
-runs — seven concluded FAILURE, three were cancelled by a superseding push, none
+runs — seven concluded FAILURE, three were canceled by a superseding push, none
 succeeded.** Every one of those pushes was verified against the remote —
 correctly — and reported as landed.
 
@@ -3298,10 +3311,10 @@ a11y audit (2m58s) and the reading budget.
 **THE `Install chromium` STEP WAS NOT STALLING, AND THIS SECTION SAID TWICE THAT
 IT WAS.** Completed observations, off the timestamps: **24s, 1m57s, 4m45s — all
 successful.** It varies, and that is all the evidence supports. The one long
-reading, 10m35s on run 32296164308, ended because that run was **cancelled by a
+reading, 10m35s on run 32296164308, ended because that run was **canceled by a
 subsequent push** and not because the step gave up. Three pushes inside ten
-minutes cancelled three runs in a row; the truncated observations were then read
-as evidence of stalling, when they are evidence of cancelling. **The pushes were
+minutes canceled three runs in a row; the truncated observations were then read
+as evidence of stalling, when they are evidence of canceling. **The pushes were
 mine.** `timeout-minutes` stays as headroom over the slowest completed run — a
 gate that never answers is worse than one that fails — but it is a net, not a
 fence around a known fault.
@@ -3393,7 +3406,7 @@ arriving in miniature. The held list, the sort queue and the replan queue beneat
 it are the pile arriving whole, and no property makes three too many and a
 complete inventory acceptable.
 
-**After: five controls above, five on the card, two below — the footer's licence
+**After: five controls above, five on the card, two below — the footer's license
 link and the version. 0.72 screens, entire.**
 
 **WHAT SURVIVES IS FIVE THINGS AND THE LIST IS SHORT ON PURPOSE.** Capture and
@@ -3510,8 +3523,8 @@ and it was settled from material already in the repo rather than by taste.
 - **With the clock on, the app said it twice at once** — header and card, two
   phrasings, no coordination between them. That is ADR-0102's defect at line
   granularity instead of block.
-- **Its own defence needed a second half that never shipped.** The line was
-  prospective — a fit judgement before an attempt — and a fit judgement needs
+- **Its own defense needed a second half that never shipped.** The line was
+  prospective — a fit judgment before an attempt — and a fit judgment needs
   how long the thing takes. `rangeWords` renders in the detail sheet and nowhere
   else. V2 stage 5 shipped a pair that never met.
 
@@ -3559,7 +3572,7 @@ common way of putting something down. 2.10.0 counted thirty-one things asked
 before anything could happen and this was one of them.
 
 **The smoke block was repointed rather than deleted**, and that is the part
-worth copying. Every behaviour it asserted still exists via paste, so the block
+worth copying. Every behavior it asserted still exists via paste, so the block
 now drives a real paste and proves nothing was lost — plus one new assertion
 that the button is gone. **It also needed a REAL keyboard paste**: the handler
 returns early for a single line and lets the browser do the insertion, which a
@@ -3582,7 +3595,7 @@ LOCAL plant.*
 the whole value of the tool.** The first run blamed seven gates; every one was
 doing its job and being aimed at with the wrong lever:
 
-- `brand:check` measures declared colour PAIRS, not the wordmark and not the
+- `brand:check` measures declared color PAIRS, not the wordmark and not the
   icon file — rendering the assets is `npm run brand`, not `:check`.
 - `sample:check` builds its store from `src/big-sample.ts`, not `src/sample.ts`.
   Two plants edited a file it never reads and it kept correctly reporting
@@ -3790,7 +3803,7 @@ The welcome heading's box is a focus ring — `border: none`, `outline: 2px`,
 and must stay. And the offer heading's ring in an earlier picture came from a
 synthetic click in the probe, not from the app. **A tool that renders a state no
 person can reach is the same defect as a gate that measures the wrong thing**,
-and it twice nearly bought a fix to behaviour that was already right.
+and it twice nearly bought a fix to behavior that was already right.
 
 **2.10.2 — THE CARD STOPPED TELLING YOU ABOUT THE THING IN FRONT OF YOU.**
 Found by rotating the offer six times and reading what the card actually said,
@@ -3837,7 +3850,7 @@ card is a real question and it is not settled.
 ([ADR-0103](docs/adr/0103-the-card-states-no-moving-number.md)).** It was
 settleable the whole time from material already written down: the rule the card
 applies to the line beneath it, the reasoning that made the header clock opt-in,
-the duplicate that appears the moment the clock is on, and the fit judgement the
+the duplicate that appears the moment the clock is on, and the fit judgment the
 card never had the other half of. **Nothing new had to be learned and nobody had
 to be asked** — the four facts had simply never been put beside each other.
 
@@ -3898,7 +3911,7 @@ that nothing is loud. **That ring is not in the app.** Tapping the same control
 with a real touch event gives `:focus-visible: false` and `outline: 0px`;
 reaching it by keyboard gives the 3px ring, which is exactly right. A tool built
 to show the truth about a screen was rendering a state no person can reach, and
-it very nearly bought a "fix" to correct behaviour. Real input events only, and
+it very nearly bought a "fix" to correct behavior. Real input events only, and
 the reason is written in its header.
 
 **Three checks were asserting a route that no longer exists**, and all three
@@ -4096,7 +4109,7 @@ ride inside `.runway`.
 measurement said the offer could not reach the top by moving blocks — it needed
 capture out of the scroll. Two ways to do that were already ruled out by
 measurements in this repo: `position: fixed` was the floating Contents button
-that overlapped ten controls and took the centre of three, and `position: sticky`
+that overlapped ten controls and took the center of three, and `position: sticky`
 was the (i) panel's way out that **did not hold on the reference iPad, found
 twice, on device**. What replaced sticky there is what this uses — a flex column
 whose bar is a sibling of the scroller — and every sheet has shipped that shape
@@ -4354,7 +4367,7 @@ the walk. Counts are words. It says out loud that it is not a target, and the
 walk asserts that sentence is present. The unnamed remainder is stated
 separately, because on any real store it is the biggest number.
 
-**The deferral is the lesson.** The gate Q-13 set was a session's judgement about
+**The deferral is the lesson.** The gate Q-13 set was a session's judgment about
 whether the owner had made enough projects yet to justify it. That is not a
 session's call. Third instance in one audit, after Q-10 and Q-11.
 
@@ -4389,7 +4402,7 @@ so a two-deep tree already says *"under A calmer house"* and appending *serves*
 would be one fact twice in two vocabularies. On the held card it is new at any
 depth — that list walked one hop and never said altitude at all.
 
-**No new control, no new class, no new colour pair** — it reuses `.card-place`,
+**No new control, no new class, no new color pair** — it reuses `.card-place`,
 already in the contrast registry.
 
 **What to look at:** file something under a project under a goal, then read its
@@ -4439,7 +4452,7 @@ is *Something on you* and not *Pebble* (that word already names the WEIGHT).
 It is asserted to be the ONLY wordless kind, so a kind added without words fails
 rather than silently joining it.
 
-**No new control, no new class, no new colour pair.** The words ride in
+**No new control, no new class, no new color pair.** The words ride in
 `.card-place` and `.detail-state`, both already in the contrast registry — so
 this is measured from the first run rather than needing an entry, which is how
 `.card-where` and the detail placeholders each cost a release.
@@ -4472,7 +4485,7 @@ a phone with a real store.
 
 **A floating door was built first and taken out.** Probed at 820x1180 and
 390x844 across 13 scroll positions: it overlapped 10 controls and took the
-CENTRE of 3, every one a card's **Done**. Reserving space with padding clears
+CENTER of 3, every one a card's **Done**. Reserving space with padding clears
 only the end of the document — mid-scroll, content passes under a fixed element
 by definition. The correct fix is a real scroll container, and it is deliberately
 not taken: that cannot be verified on the device this app is used on.
@@ -4651,7 +4664,7 @@ not.
 **The walk already tested the way out and could not see this.** It scrolls each
 sheet to the end and asks whether the Close is on screen and whether anything is
 on top of it — a hit test. A transparent button IS the topmost thing at its own
-centre, so `elementFromPoint` returns it and the check passes. *Something is over
+center, so `elementFromPoint` returns it and the check passes. *Something is over
 it* and *you can see through it* are different questions and only the first was
 ever asked. It measures rectangles now, on all six surfaces, and asserts the
 button is not transparent even though the overlap is gone.
@@ -4750,8 +4763,8 @@ silent second failure: `cache.put` refuses a redirected response, so the shell h
 stopped being freshened on that path too.
 
 **Why no gate caught it: the local server could not redirect.** It answered every
-path 200 or 404, so the one edge behaviour that triggers this was the one
-behaviour no walk ever had. Not an engine difference — a hole in the rig.
+path 200 or 404, so the one edge behavior that triggers this was the one
+behavior no walk ever had. Not an engine difference — a hole in the rig.
 `serve.mjs` redirects now and the §7h walk drives one, planted red first.
 
 The second is **V-21, answered, and the answer is the bad one.** A Shortcut's
@@ -4803,7 +4816,7 @@ Two things came out of building it that are worth more than the feature:
 Found by REVIEWING the finished thing rather than by reading the plan back. The
 panel had 28 sections and none of them covered weight, capacity, the situation
 line, the settle, or duration ranges; "Just one thing" got two passing mentions.
-Those are the newest and most distinctive behaviours in the app, and they are
+Those are the newest and most distinctive behaviors in the app, and they are
 the ones a newcomer is most likely to read as a fault.
 
 **The settle is the one that mattered.** You finish something and nothing
@@ -4878,7 +4891,7 @@ let ~85 call sites take the first fact and silently assume the second. Making
 the pair required means the COMPILER enumerates the sites — 123 of them — rather
 than a list somebody writes and forgets, which is the same lesson three separate
 defects taught this run. Done in two passes: one mechanical and
-behaviour-preserving, with the whole suite passing untouched as the proof it
+behavior-preserving, with the whole suite passing untouched as the proof it
 hides nothing, then one deliberate. `atMidnight(` at a call site is a visible
 "not yet threaded" marker that grep can count; 52 remain and the number only
 falls.
@@ -4964,7 +4977,7 @@ being asked, and waits. The next offer arrives on `#nextup-resume` and not
 before, because a surface that fills its own silence has decided the moment
 belongs to it.
 
-**Withheld, not greyed.** The title, reason, place, situation, first-step line
+**Withheld, not grayed.** The title, reason, place, situation, first-step line
 and every acting control go while settled; `current` is cleared with them so a
 stray keypress cannot act on an item nobody can see. A demand that is present but
 disabled is still a demand on the screen.
@@ -4995,12 +5008,12 @@ there takes the item away at the moment somebody had finally started.
 
 `loadWords` still said **"Fewer things, while…"**. That stopped being true in
 1.34.0, when capacity changed from shortening the offer to reordering it — copy
-outliving the behaviour it described, which is the plainest kind of lie a surface
+outliving the behavior it described, which is the plainest kind of lie a surface
 can tell. It now says "Easier things first… Just as many." The co-occurrence
 form is unchanged and is why "while" survives.
 
 And the WALK inherited the settle: one Done early on left the surface settled for
-every block after it, and eight later blocks failed against correct behaviour.
+every block after it, and eight later blocks failed against correct behavior.
 The walk now asks for the next thing the way a person does, and asserts the
 settle happened rather than working around it.
 
@@ -5024,7 +5037,7 @@ same card leaves it alone.
 Wrong on two counts, and the second is the serious one. Length is not what
 capacity should change; and **narrowing on a low day is a PACING mechanism**,
 correct for post-exertional conditions and iatrogenic for depression, where
-behavioural activation says offer anyway. The same declaration, two correct and
+behavioral activation says offer anyway. The same declaration, two correct and
 opposite responses — the sharpest conflict in the synthesis.
 
 **Changing WHICH dissolves it.** The same number of offers arrive and the
@@ -5718,7 +5731,7 @@ to the owner that the record could already answer.
   fold on a phone — which is also where it did the most damage.
 
   **The gate lesson is the release.** The a11y pass measures contrast, names and
-  target size; the smoke walk drives behaviour; `docs-check` reads markdown.
+  target size; the smoke walk drives behavior; `docs-check` reads markdown.
   Every one of them measures a PROPERTY of the output, and none of them looks at
   whether the page says something nobody wrote on purpose. `npm run smoke` now
   reads `innerText` on the landing surface, in the (i) panel and in the footer.
@@ -5745,7 +5758,7 @@ to the owner that the record could already answer.
 
   Also fixed: the version stamp presses the diagnostic it is named for and waits
   for it (building it is async, so a synchronous check would have silently
-  restored the old behaviour); the (i) panel shows that it scrolls; and the
+  restored the old behavior); the (i) panel shows that it scrolls; and the
   diagnostic stopped saying hundreds of things had no clock four lines after
   counting their clocks.
 
@@ -5779,7 +5792,7 @@ to the owner that the record could already answer.
   is heavy" is its first writer.
 
   **Two things the gates caught that review had not.** The new input shipped
-  straight into the UA placeholder grey — 4.08:1 light, 3.78:1 dark — which is
+  straight into the UA placeholder gray — 4.08:1 light, 3.78:1 dark — which is
   the third time this app has hit that exact trap, and `app.css` now says so on
   the line that fixes it. And the smoke block left the load entry open, which
   the later load section then closed on itself by clicking the summary to open
@@ -5897,7 +5910,7 @@ to the owner that the record could already answer.
   Doctrine §7d.1 landed in the hub — release notes drift into development diary,
   and a rule at the top of a file is read once. Two of this app's shipped notes
   had done it: one told the reader what the OWNER had said about the app feeling
-  unfinished, one apologised to whoever reported a fault twice. Neither says what
+  unfinished, one apologized to whoever reported a fault twice. Neither says what
   a reader can now see or do. Rewritten from `src/ui/changelog.ts`, the single
   source the (i) panel renders from. Seven other first/second-person matches were
   checked and deliberately kept — UI control names like "Clear what I am holding",
@@ -5951,7 +5964,7 @@ to the owner that the record could already answer.
   themselves from their own scan, on the reasoning that a pattern is not a
   disclosure. True of the patterns, false of every other line: their header
   prose went unscanned, and this repo's test fixtures were the sentences the
-  gate exists to exclude, reproduced verbatim in a PUBLIC repo and labelled as
+  gate exists to exclude, reproduced verbatim in a PUBLIC repo and labeled as
   authentic. The gate had been reporting green over them for a day — green
   meant NOT LOOKED AT, and a session reported that green to the owner as
   verification. What changed: no file is exempt; only a sentinel-marked region
@@ -6021,7 +6034,7 @@ to the owner that the record could already answer.
   · **It had already happened.** In recording design conversation faithfully,
   a session had written sentences into this public file that attached
   personal facts to the owner rather than to the product or its users. They
-  were removed the hour the rule was stated (ce6448f), and a grey-zone quote
+  were removed the hour the rule was stated (ce6448f), and a gray-zone quote
   was rephrased to keep its design content without its personal frame. What
   the removal cannot reach — git history is append-only — was put to the
   owner directly with the available options; that decision is the owner's, not a session's.
@@ -6074,14 +6087,14 @@ to the owner that the record could already answer.
   ships the dating control. `placeReturnDays` reads only human clocks: the
   gate's cure is pinned by test as NOT a return date, so the receipt can never
   promise a return no surface will deliver.
-  · **No new colour pair ships** — every new span reuses a registered text
+  · **No new color pair ships** — every new span reuses a registered text
   class; modifier classes are layout-only (B-40). No new events, no fold
   fields, no vocabulary change; `events:check`/`emitters:check` unchanged.
   · **Proved by planting:** letting a trashed parent confer a location, and
   letting the gate cure count as a return date, each turn exactly one test
   red. 971 tests pass.
   · **The stage-1 question is in the staged block above**; the owner's report gates
-  stage 2 (the judgement line and grounds panel).
+  stage 2 (the judgment line and grounds panel).
 
 - **2026-08-04 — THE V2 PLAN IS APPROVED, and the deep pass that produced it
   found a defect in 1.19.0 that outranks everything else in it.**
@@ -6139,7 +6152,7 @@ to the owner that the record could already answer.
 
 - **2026-08-04 — AZIMUTH CHECK, at the owner's request. Three findings, recorded
   because they outrank anything currently on the roadmap.** The owner asked whether this
-  app is what it needs to be, or is fulfilling thesis statements. The owner's own
+  app is what it needs to be, or is fulfillling thesis statements. The owner's own
   diagnostic answers a good deal of it.
   · **1. ELEVEN OF FOURTEEN NODE KINDS ARE EMPTY.** After a 1,173-item import and
   real use: action 1405, project 44, upkeep 1, resume-card 1, and **zero** of
@@ -6163,19 +6176,19 @@ to the owner that the record could already answer.
   What is genuinely unbuilt is the **projection into surfacing**: Review is a
   separate read-only panel, and nothing it computes feeds `nextUp` or any
   runway surface. Containers hold things; they still do not inform what a
-  reader is shown. The distinctive claim stands as the least-realised one, for
+  reader is shown. The distinctive claim stands as the least-realized one, for
   the ranking half only.
   · **3. THE PROOF ASYMMETRY, which is the sharpest way to say all of it.** Law 2
   gives the reader a visible proof that nothing is LOST — the gauge, on screen,
   tappable, "everything returns · 0 silent". **There is no equivalent proof that
   what the reader is being shown is RIGHT.** The app can demonstrate its integrity and
-  cannot demonstrate its judgement. The single highest-value thing to build is
+  cannot demonstrate its judgment. The single highest-value thing to build is
   the law-4 analogue of the coverage gauge — but only after Q-11 says whether the
   problem is ranking or trust.
   · **And the paradigm reading, which is why this matters beyond a feature list.**
-  The dominant capture-and-organise paradigm, and everything downstream of it,
+  The dominant capture-and-organize paradigm, and everything downstream of it,
   assumes the bottleneck is capture and
-  organisation, because for the cognition those were designed around, retrieval
+  organization, because for the cognition those were designed around, retrieval
   and initiation are close to free. Quietkeep has built that half better than most
   commercial products — the write gate, the append-only log, the coverage proof,
   the decay primitive. **It is also the half that already exists elsewhere.** The
@@ -6184,7 +6197,7 @@ to the owner that the record could already answer.
   instantly, and what broke was *where did it go* and *is this the right thing*.
   · **Law 10 (AI never blocks) has no implementation at all.** No AI module
   exists. That is fine as a standing constraint on future work, and it should be
-  labelled a constraint rather than counted as a law the app fulfils.
+  labeled a constraint rather than counted as a law the app fulfillls.
 
 - **2026-08-04 — `main` is at `1.19.0` (`4b01ba6`), promoted on the owner's word to promote
   to main, carrying 1.18.4 with it.** Production can now answer WHERE. Promoted
@@ -6331,12 +6344,12 @@ to the owner that the record could already answer.
   phone assertion, and `.doctrine-sync` adopted at hub `d593e21`.
   · **A number worth keeping, on how much of this discipline is mechanical.**
   The hub's LESSONS classify their own enforcement, so it can be counted: **14
-  GATE (28%), 32 CHECKLIST (64%), 4 JUDGEMENT (8%)**. Two thirds is still a
+  GATE (28%), 32 CHECKLIST (64%), 4 JUDGMENT (8%)**. Two thirds is still a
   session remembering, which is what fails late in a long session — and today
   proved it both ways. The §7h.3 defect and the lesson-number collisions were
   caught by gates; the diagnostic goose chase, the backup nagging and an
   over-strict reading of the staging rule were caught by **The owner**, and all three
-  were CHECKLIST or JUDGEMENT class. Doctrine §14 says the owner is never the test
+  were CHECKLIST or JUDGMENT class. Doctrine §14 says the owner is never the test
   bench; today the owner was, three times. **The lever is converting CHECKLIST into
   GATE**, and that ratio is the measure of it.
 
@@ -6468,7 +6481,7 @@ to the owner that the record could already answer.
   go. They are not that. **The store is overwhelmingly an OmniFocus import**,
   which arrived in one motion, so a let-go count measured against an import
   says nothing about habits — it describes a wall that was imported, not built
-  inside this app, and reading it as accumulation invents a behaviour from an
+  inside this app, and reading it as accumulation invents a behavior from an
   import artifact.
   · **What can still be said, with the import accounted for.** Two node kinds
   out of fourteen are in use, and nothing is on the Menu or in the Not Now
@@ -6925,7 +6938,7 @@ to the owner that the record could already answer.
   · **A correction made in the commit that found it.** The memo's first draft
   carried a NaN guard for malformed instants with a confident paragraph beside
   it. `formatToParts` **throws** on an invalid date — the branch was unreachable
-  and the paragraph described behaviour the platform does not have. Replaced by
+  and the paragraph described behavior the platform does not have. Replaced by
   the truth and a test pinning it.
   · **Item 42 is NOT closed.** The measurement that counts is still the iPad;
   this hardware is not that device. What changed is that the read path has a gate
@@ -6988,7 +7001,7 @@ to the owner that the record could already answer.
   · ADR-0068, B-36. **The Should—v1.5 list is empty after this**, and pebbles is
   struck from it at last.
   · **Spine 210 green on `1a24b4e`** — all 22 steps. Worth naming precisely: the
-  code commit's own run (209 on `8f64495`) was **cancelled**, not failed —
+  code commit's own run (209 on `8f64495`) was **canceled**, not failed —
   `spine.yml` sets `cancel-in-progress: true`, so the docs commit that landed a
   minute later superseded it. The green run is on the head that carries every
   line of the release, which is what V-10 asks for. Not promoted.
@@ -7112,7 +7125,7 @@ to the owner that the record could already answer.
   build-plan item 322 records it as waiting on dogfooding, not on an opinion.
   **What is genuinely the owner's is only the physical checks** — V-14, V-16/V-17,
   V-00 step 2, V-20, and item 42's measurement. Those need physical verification, not
-  judgement, and that is a much shorter list.
+  judgment, and that is a much shorter list.
   · **No new nouns, no gate change, no vocabulary change.** `pebble` was in
   `NODE_KINDS` and in `DEMAND_FREE_KINDS`, so the write gate had been refusing
   to clock one for a year; the four events were declared and typed, and
@@ -7739,7 +7752,7 @@ to the owner that the record could already answer.
   photographed on device, all confirmed against source and fixed the same
   hour.
   · The walkthrough's last step said *"Next opens it…"* while the button on
-  that step is relabelled **"Get started"** (tour.ts renames it on the final
+  that step is relabeled **"Get started"** (tour.ts renames it on the final
   step; the copy was written against the old name) — it now names the real
   button and says what it opens.
   · The badge explainer had been wedged into the middle of "Reminders that
@@ -7762,7 +7775,7 @@ to the owner that the record could already answer.
   sits in italics at the same registered `--ink-soft` pair: all
   the words are needed, but it was not done smartly. Posture changed,
   contrast did not.
-  No behaviour changes; changelog 1.7.1 (ITERATION) + SW cache together.
+  No behavior changes; changelog 1.7.1 (ITERATION) + SW cache together.
 
 - **2026-08-01 (after the promote)** — **1.7.0 "Duplicate handling and the
   lens"** — the owner's direct instruction in the promote message; the watch-list's
@@ -8006,7 +8019,7 @@ to the owner that the record could already answer.
   panel)**. Spine run 88 watched green on that exact commit before the fast-forward.
   · **0.21.1 is a device fix. It was reported TWICE**, and the second report is the interesting
   one. The first got a `position: sticky` header, which is correct, which every engine in CI
-  honours, and which does not hold on the iPad. **I reproduced the intended behaviour
+  honours, and which does not hold on the iPad. **I reproduced the intended behavior
   perfectly at three viewports** — that is precisely why the first fix was not a fix. When a
   mechanism verifies clean everywhere you can look and the report persists, the answer is to
   **remove the dependency, not to keep testing the mechanism**.
@@ -8030,7 +8043,7 @@ to the owner that the record could already answer.
   flow) landed after the owner's instruction, so it is not what the owner asked for and it waits for the owner's
   word like everything else (Doctrine §7). The app is in active use today, and dropping an unasked
   capability mid-use is precisely what the staging gate exists to prevent.
-  · Run 80 shows `cancelled` and that is not a failure: the 0.19.0 push was superseded by the
+  · Run 80 shows `canceled` and that is not a failure: the 0.19.0 push was superseded by the
   Q-10 commit seconds later, and run 81 covers both.
   · **Q-10 closed** — recommending against building vaults; a lens, not a partition. This
   containment (0.13.0) already separates work from home if the owner wants it today.
@@ -8362,7 +8375,7 @@ to the owner that the record could already answer.
   written and passed for eighteen hours a day.
   · **The deploy's `cancel-in-progress` is now false on `main`.** Latest-wins is
   right for a preview and wrong for production: a superseded deploy leaves the
-  previous release being served while the run's conclusion reads `cancelled` rather
+  previous release being served while the run's conclusion reads `canceled` rather
   than `failure`, so nothing anywhere is red. A sibling app hit exactly this on a
   promote and it was harmless only by luck.
 

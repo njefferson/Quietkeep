@@ -1,14 +1,14 @@
-// A PICTURE OF EACH SET OF COLOURS, SO THEY CAN BE COMPARED SIDE BY SIDE.
+// A PICTURE OF EACH SET OF COLORS, SO THEY CAN BE COMPARED SIDE BY SIDE.
 //
 // The picker named five families and said what each was for, which satisfies
-// Doctrine §4 — the name is the control and colour is never the sole carrier of
+// Doctrine §4 — the name is the control and color is never the sole carrier of
 // meaning — and still leaves you choosing a look you cannot see. Naming a thing
 // and showing it are not alternatives.
 //
 // WHY A PICTURE AND NOT LIVE CSS. A tile painted with real custom properties
 // renders a FOREIGN palette inside the current one, and that breaks the
-// assumption the whole colour gate rests on: exactly one palette is active, so
-// every computed colour maps to one role (ADR-0110). It also creates a boundary
+// assumption the whole color gate rests on: exactly one palette is active, so
+// every computed color maps to one role (ADR-0110). It also creates a boundary
 // pair per pairing of families per mode — fifty of them — none of which the
 // thirteen-pair inventory knows about. A PNG has no custom properties and no
 // roles. It is opaque. The only question it raises is whether you can see where
@@ -17,7 +17,7 @@
 //
 // It is a PREVIEW, not a gate. `palette:check` already proves every family
 // clears the floors in both modes, by arithmetic, in a quarter of a second. A
-// photograph of colours that are already proven does not need proving again,
+// photograph of colors that are already proven does not need proving again,
 // and the tiles live inside the settings sheet the accessibility walk already
 // visits, so there is no new surface either.
 //
@@ -27,7 +27,7 @@
 // It was a diagonal cut first, over ONE copy of the sample, and that is the
 // version that looks clever and compares nothing: the heading landed in day, the
 // button landed in night, and no element ever appeared in both. You could see
-// two colours; you could not see the same thing twice. Split down the middle
+// two colors; you could not see the same thing twice. Split down the middle
 // with a full copy each side, every element has a left and a right — the button
 // is in both, the card is in both — which is what makes it a comparison rather
 // than a swatch.
@@ -66,7 +66,7 @@ const IF_STALE = process.argv.includes('--if-stale');
 const set = JSON.parse(readFileSync(SRC, 'utf8'));
 const families = Object.entries(set.families ?? {});
 
-// WHAT MAKES THESE STALE. The colours themselves, and the sample they are shown
+// WHAT MAKES THESE STALE. The colors themselves, and the sample they are shown
 // on. Not the app: these pictures are of a fixture, so an unrelated change to
 // index.html must NOT demand a re-render — which is the whole reason the
 // fixture exists rather than driving the real screen.
@@ -85,7 +85,7 @@ if (CHECK) {
   const have = recorded();
   const want = stampOf();
   if (have !== want) {
-    console.error('\n  FAIL  public/palette-shots is not a picture of the colours in docs/palettes.json.');
+    console.error('\n  FAIL  public/palette-shots is not a picture of the colors in docs/palettes.json.');
     console.error(`        recorded ${have ?? '(none)'} · this tree ${want}`);
     console.error('        Run:  npm run palette:shots -- --if-stale\n');
     process.exit(1);
@@ -108,7 +108,7 @@ if (IF_STALE && recorded() === stampOf()) {
 /** The sample. Deliberately small and deliberately the app's own shapes: a
  *  heading, a line of prose, a card with a quiet second line, and a filled
  *  button. Enough to see how a family treats text, a raised surface, a muted
- *  tone and the one colour that carries emphasis. */
+ *  tone and the one color that carries emphasis. */
 const sample = (roles) => {
   const v = Object.entries(roles).map(([k, val]) => `--${k}:${val}`).join(';');
   return `<div class="half" style="${v}">
@@ -136,7 +136,7 @@ const sample = (roles) => {
 // The first sample was a heading, one card and one button, and it could not
 // have told two close palettes apart — most of its area was page background and
 // it used four of the seven roles. Two families that differ mainly in the
-// treatment of a raised surface, or in the colour of something you can press,
+// treatment of a raised surface, or in the color of something you can press,
 // would have looked identical in it whether or not they were.
 //
 // This one puts every role on screen with enough area to read: two cards for
@@ -153,7 +153,7 @@ const page$ = (f) => `<!doctype html><html><head><meta charset="utf-8"><style>
     font: 11px/1.4 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
   /* HALF EACH, AND A HARD EDGE BETWEEN THEM. No fade and no diagonal: the two
      sides are the same view, and anything blended across the seam would be a
-     third colour belonging to neither. */
+     third color belonging to neither. */
   .half { flex: 1 1 50%; min-width: 0; background: var(--bg); color: var(--ink); }
   .pane { padding: 10px 11px; display: flex; flex-direction: column; gap: 7px; }
   .h { font-weight: 600; font-size: 11px; }

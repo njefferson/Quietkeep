@@ -17,7 +17,7 @@ containment statically — `#nextup-plain-off` is not inside `<section id="nextu
 
 ### The offer card is hidden whenever nothing is asking, and the exit was in it
 
-That is correct behaviour and long-standing: an empty morning says so rather than
+That is correct behavior and long-standing: an empty morning says so rather than
 showing an empty card. The mode is a module and **survives a reload by design**,
 because a state you must re-enter every time the app reloads is one more thing to
 operate on the day you can least afford it.

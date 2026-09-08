@@ -54,7 +54,7 @@ rhythm, because a quiet area still has work in it and these two do not.
 ## What this does not do
 
 No count beside a role's name anywhere, no duration, no "how long since", no
-ordering by staleness, no grade, no colour. The words are `everything on it is
+ordering by staleness, no grade, no color. The words are `everything on it is
 finished` or `nothing on it is moving` and they stop there — `stalled`'s two
 branches exactly, and `waitingWords`' register.
 

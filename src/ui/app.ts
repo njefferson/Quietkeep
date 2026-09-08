@@ -35,7 +35,7 @@ import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
 import { datedDays, datedDayWords, datedWords, datedKindWords } from '../dated.ts';
-import { judgementProof, assuranceFact, assuranceWords, placeCountWords, gapWords } from '../assurance.ts';
+import { judgmentProof, assuranceFact, assuranceWords, placeCountWords, gapWords } from '../assurance.ts';
 import { calendarCount } from '../ics.ts';
 import { servesWords } from '../serves.ts';
 import {
@@ -471,10 +471,10 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     const lensedOnly = lensIds ? group.items.filter(n => lensIds.has(n.id)) : group.items;
     // AND WHERE YOU ARE (2.2.0). Applied with the lens and before the cap, for
     // the same reason: a cap over an unfiltered set would lie about how many it
-    // held back. Unlabelled things fit anywhere, so they always survive this.
+    // held back. Unlabeled things fit anywhere, so they always survive this.
     // AND HOW LONG YOU HAVE (2.19.0). Beside the place filter, before the cap,
     // for the same reason. Unestimated things fit every answer, so they survive
-    // this exactly as unlabelled things survive the one above.
+    // this exactly as unlabeled things survive the one above.
     const lensed = lensedOnly
       .filter(n => fitsHere(st, n, whereLive))
       .filter(n => fitsWithin(n, howLongNow));
@@ -519,7 +519,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // interpreted, which is what makes /capture?text= safe from a hostile link
       // (ADR-0008).
       // `|| '(untitled)'` like every other surface — the held list was the one
-      // place a blank title rendered as an unlabelled, unidentifiable card.
+      // place a blank title rendered as an unlabeled, unidentifiable card.
       title.textContent = node.title || '(untitled)';
 
       // WHERE IT CAN BE DONE (2.2.0, ADR-0092), on the card. A place line
@@ -538,7 +538,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       const when = document.createElement('span');
       when.className = 'card-when';
       // Every item states its own status in words — the text channel of B-01, so
-      // nothing here depends on seeing a colour. A finished thing says "done"
+      // nothing here depends on seeing a color. A finished thing says "done"
       // rather than reporting the cure clock it happens to still carry.
       when.textContent = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
 
@@ -570,7 +570,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // and could not show the right things by any definition of right that is
       // not "most time-pressured".
       //
-      // `.card-place` REUSED rather than a new class. It carries no colour of
+      // `.card-place` REUSED rather than a new class. It carries no color of
       // its own, so the contrast registry's existing row covers this from the
       // first run — which is what `.card-where` and the detail placeholders each
       // cost a release for learning the other way round.
@@ -586,7 +586,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
       // broken: the tree says where a thing lives, a context says where it can
       // be done, and a role says whose it is. Absent when there is none, which
       // is the honest majority — an identity is never required and never
-      // inferred. `.card-place` again, so no new colour pair enters the gate.
+      // inferred. `.card-place` again, so no new color pair enters the gate.
       const whose = roleNames(st, node);
       if (whose.length > 0) {
         const w = document.createElement('span');
@@ -1096,7 +1096,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   // run-on line the destination read as a typo on the end of a statement, and
   // nothing about the row said button: three fragments, two registers, wrapping
   // mid-phrase on a phone. Still ONE control — the whole row is the target, and
-  // halving a 44px target to make a point the colour makes would be a worse
+  // halving a 44px target to make a point the color makes would be a worse
   // trade — but the facts sit on their own line in quiet ink and the door sits
   // under them in the accent the app's other doors wear, with its capital
   // letter, exactly as the sheet spells it.
@@ -1120,7 +1120,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
     }
   }
 
-  // AND THE PROOF OF JUDGEMENT UNDER IT (3.23.0, ADR-0125). Law 1's control is
+  // AND THE PROOF OF JUDGMENT UNDER IT (3.23.0, ADR-0125). Law 1's control is
   // above; this is law 4's, painted on the same pass so the two can never
   // describe one store differently. Hidden until something is held, by the rule
   // every other door here follows: a proof about an empty store has nothing in
@@ -1128,7 +1128,7 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
   {
     const claim = document.querySelector<HTMLButtonElement>('#assurance');
     if (claim) {
-      const proof = judgementProof(session.state(), nowIso, session.zone);
+      const proof = judgmentProof(session.state(), nowIso, session.zone);
       claim.hidden = proof.total === 0;
       if (proof.total > 0) {
         const fact = document.createElement('span');
@@ -1371,7 +1371,7 @@ export async function main(edition?: Edition): Promise<void> {
   // that leaves focus behind is the defect where the next Tab throws you back
   // up the page.
   //
-  // No smooth behaviour: this is a jump, and an animated one both costs time
+  // No smooth behavior: this is a jump, and an animated one both costs time
   // and moves a lot of the screen at once for a reader who may be here because
   // there is already too much moving.
   //
@@ -1653,7 +1653,7 @@ export async function main(edition?: Edition): Promise<void> {
   //
   // SEEDED from the single-valued filter, and only while the reader has not
   // touched it. Somebody who never opens this control gets exactly 3.15.0's
-  // behaviour; the moment they toggle anything, this is the answer and the
+  // behavior; the moment they toggle anything, this is the answer and the
   // filter stops feeding it — otherwise turning the last person OFF would put
   // them straight back.
   let whoInIt: string[] | null = null;
@@ -1945,7 +1945,7 @@ export async function main(edition?: Edition): Promise<void> {
   document.querySelector<HTMLButtonElement>('#dated-open')
     ?.addEventListener('click', () => { openSheet('sheet-dated'); });
 
-  // WHERE EVERYTHING IS (3.23.0, ADR-0125) — the proof of judgement, opened.
+  // WHERE EVERYTHING IS (3.23.0, ADR-0125) — the proof of judgment, opened.
   // Painted on open like every sheet here, so what it claims is read off the
   // log at the moment somebody asks rather than at mount. The places are
   // `heldGroups`' own rows; nothing here re-derives them, and nothing here
@@ -1954,7 +1954,7 @@ export async function main(edition?: Edition): Promise<void> {
   const paintAssurance = (): void => {
     const st = session.state();
     const nowIso = new Date(now()).toISOString();
-    const proof = judgementProof(st, nowIso, session.zone);
+    const proof = judgmentProof(st, nowIso, session.zone);
     const words = document.querySelector<HTMLElement>('#assurance-words');
     if (words) words.textContent = assuranceWords(proof);
     const list = document.querySelector<HTMLUListElement>('#assurance-places');
@@ -2046,7 +2046,7 @@ export async function main(edition?: Edition): Promise<void> {
   // TWO DOORS, both in flow. The header's, beside More, where the app's other
   // navigation is; and one at the end of the held list, beside Back to the top,
   // where somebody who has read to the bottom actually is. Neither is fixed —
-  // a floating control was measured taking the centre of three Done buttons,
+  // a floating control was measured taking the center of three Done buttons,
   // and `app.css` carries the numbers and the reason the scroll-container fix
   // was not taken.
   for (const sel of ['#contents-open', '#contents-open-end']) {
@@ -2464,7 +2464,7 @@ export async function main(edition?: Edition): Promise<void> {
   // it is one event the other way if it turns out to have been a place after all.
   //
   // The filter stands down in the same breath. `allContexts` drops a released
-  // node, so anything reached only by this one becomes unlabelled again and
+  // node, so anything reached only by this one becomes unlabeled again and
   // goes back to fitting every answer — which is the whole point: a mis-typed
   // label was HIDING those things.
   // THE WAY BACK AND THE WAY TO PUT SOMETHING DOWN (3.0.0, ADR-0108).

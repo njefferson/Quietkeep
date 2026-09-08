@@ -100,7 +100,7 @@ test('read-perf: a malformed instant throws exactly as it did before the memo', 
   // THROWS on an invalid date. So the memo's first draft carried a NaN guard for
   // a case that cannot reach it — dead code with a confident comment on it.
   //
-  // What matters for this release is that the behaviour is UNCHANGED: it threw
+  // What matters for this release is that the behavior is UNCHANGED: it threw
   // before, it throws now, and nothing nonsense is ever cached because the throw
   // happens before the cache is touched. Callers guard with `isValidIso`, which
   // is why that has always been the rule.

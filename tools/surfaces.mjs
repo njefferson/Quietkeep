@@ -199,7 +199,7 @@ const dangling = selectors
   + (dangling.length ? ` — ${[...new Set(dangling)].join(', ')}` : ''));
 
 // ── AND EVERY AUDITED STATE GETS A FOCUS-RING PASS ───────────────────────────
-// 18 of 112 audited states had none. Not a judgement that their rings did not
+// 18 of 112 audited states had none. Not a judgment that their rings did not
 // matter — `auditFocusRings` took a hand-written selector list, so a state was
 // covered only if somebody remembered to write one, and nobody had decided
 // anything. The list WAS the gap.

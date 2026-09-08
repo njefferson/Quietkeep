@@ -45,7 +45,7 @@ Five of nine steps of the previous plan named things as missing that were
 already built (hub LESSONS 120). Each line here was verified in this session.
 
 - **The place axis** — `fitsHere` (`src/contexts.ts:61`), a device kv preference,
-  a post-filter in `src/ui/work.ts:610`. An unlabelled node fits every answer.
+  a post-filter in `src/ui/work.ts:610`. An unlabeled node fits every answer.
 - **The duration axis** — entry 24's first V2-candidate, in full: `fitsWithin`
   (`src/duration.ts:149`), `HOW_LONG_KEY` beside `where.now`, composed with
   `fitsHere` in the same post-filter. No estimate fits any window.
@@ -76,7 +76,7 @@ never ask again about anything already answered.
 - **The trigger is the hard part and the entry does not specify it.** The
   written condition — the first time an offer would differ by place — cannot
   fire on a store with no places, because `fitsHere` returns true for everything
-  unlabelled, so the offer never differs. The trigger must therefore be
+  unlabeled, so the offer never differs. The trigger must therefore be
   something else, and choosing it is this phase's real design work rather than
   its implementation.
 - **The comparison this rests on has not been tested, for this population or
@@ -108,7 +108,7 @@ and not being able to. The route that does exist, on a thing's own sheet, is
 always available and hides nothing.
 
 Manufacturing a moment would mean a standing prompt on the work surface asking
-for a role, which is **a first-run organising flow in everything but name** —
+for a role, which is **a first-run organizing flow in everything but name** —
 refused by entry 23's own proposal, by name, along with the setup wizard and the
 template chooser.
 
@@ -183,7 +183,7 @@ up, so a place on a project reaches none of the work inside it.
 On the stress fixture that asymmetry is the difference between 42 statements and
 840. It is consistent with entry 23's aim — taxonomy as an outcome rather than a
 prerequisite — and it is not caught by any of that entry's refusals, because the
-person still states the place explicitly; nothing is inferred from behaviour.
+person still states the place explicitly; nothing is inferred from behavior.
 
 But it is a structural change to what the tree means, and ADR-0013 has a
 position on the tree that has to be read before this is designed rather than
@@ -194,11 +194,11 @@ six routed phases on the strength of being obviously useful.
 
 From entry 23's proposal, by name:
 
-- Any setup wizard, template chooser, or first-run organising flow. This is
+- Any setup wizard, template chooser, or first-run organizing flow. This is
   entry 8's and entry 18's refusal restated at the door.
 - Any completion meter or percentage for how much structure exists. A
   percentage is a bar, and the role readout already refused a bar.
-- **Inferring a context, role or container from behaviour rather than asking.**
+- **Inferring a context, role or container from behavior rather than asking.**
   The entry's grade is explicit that this evidence is enough to refuse an
   inference and never enough to build one.
 
@@ -215,9 +215,9 @@ From entry 24's proposal, by name:
   axis and is not separately specified.
 
 And one refusal this plan adds, from what the code shows rather than from an
-entry: **exclusive places.** Making a place hide everything not labelled with it
+entry: **exclusive places.** Making a place hide everything not labeled with it
 reconstructs the failure entry 23 describes — a filter that cannot be trusted
-because an unfiled thing has disappeared from it. The unlabelled-fits-everywhere
+because an unfiled thing has disappeared from it. The unlabeled-fits-everywhere
 default is what makes the filter safe on a store with almost no structure, and
 it is load-bearing rather than incidental.
 
@@ -291,7 +291,7 @@ Unchanged from `plan-situated.md`, plus what this run cost:
   — one test this run passed against the defect it was written to catch, because
   its fixture made the right and wrong answers identical.
 - **Per phase, the full Spine, read from the run.** A push is not a release, and
-  a cancelled run is not a failed one.
+  a canceled run is not a failed one.
 
 ## Verification
 

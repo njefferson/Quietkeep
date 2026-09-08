@@ -107,7 +107,7 @@ const stepsNow = (): readonly Step[] => [
       // except by reading the page source. The i panel carries a door through
       // now, and this names both rather than promising one.
       'The round button marked i, at the top beside the name, holds what this app is: how to add it to your Home Screen, how to keep your writing safe, what changed lately, and this walkthrough again whenever you want it.',
-      '*Elsewhere in the app*, on the main screen, is the door to the rest — Settings, Colours, Help, Your data, and everything this app can do. The i panel has that door too.',
+      '*Elsewhere in the app*, on the main screen, is the door to the rest — Settings, Colors, Help, Your data, and everything this app can do. The i panel has that door too.',
       '*Keep my writing safe* opens the i panel now, because that is the one thing worth doing before anything else.',
       // Added in 1.14.0. NOT written for the returning reader specifically —
       // the empty screen behind this dialog now offers them the way back, and a

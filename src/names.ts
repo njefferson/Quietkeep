@@ -13,10 +13,10 @@
 // ## Why splitting rather than a smaller placeholder
 //
 // The other consistent resolution was to make the example singular and leave
-// the behaviour alone. It was refused because the entry was not a
+// the behavior alone. It was refused because the entry was not a
 // misunderstanding: three places were wanted and three places were typed, and
 // naming them one at a time is three round trips through a field, a button and
-// a repaint. Entering several at once is what labelling work actually looks
+// a repaint. Entering several at once is what labeling work actually looks
 // like, and the app already appeared to support it.
 //
 // ## Why it lives here and not in `contexts.ts`

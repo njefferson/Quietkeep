@@ -72,7 +72,7 @@ answers a question you asked — it shows nothing on a blank query, it volunteer
 nothing, and it cannot be browsed. So a put-down thing is unreachable by
 wandering and one query away by name.
 
-The result is appended below what you are holding and labelled, never mixed in.
+The result is appended below what you are holding and labeled, never mixed in.
 The ordinary summary keeps saying "Nothing you are holding matches that", which
 stays exactly true; the put-down line says how many matched **this query** and
 never how many exist.

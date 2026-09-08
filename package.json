@@ -19,7 +19,7 @@
     "changelog": "node --experimental-strip-types tools/changelog.mjs",
     "changelog:check": "node --experimental-strip-types tools/changelog.mjs --check",
     "collisions:check": "node tools/collisions.mjs",
-    "colour:inventory": "node tools/a11y.mjs --inventory",
+    "color:inventory": "node tools/a11y.mjs --inventory",
     "controls:check": "node tools/controls.mjs",
     "editions:check": "node tools/editions.mjs --check",
     "emitters:check": "node --experimental-strip-types tools/emitters.mjs",

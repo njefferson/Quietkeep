@@ -21,7 +21,7 @@ Two supporting facts made this a defect rather than a preference:
   (established, §2): procrastination is mood repair, so anything that raises
   aversion raises delay. This is the same argument that forbids "overdue" — a
   shrinking deadline on an already-aversive task is a machine for producing the
-  behaviour it measures.
+  behavior it measures.
 - **The timer contradicted a rule this repo states in absolute terms.**
   `src/requests.ts`: *"a record of the times you did not do your own work is the
   ledger this app exists to NOT keep — the do-now offer's 'Not now' writes

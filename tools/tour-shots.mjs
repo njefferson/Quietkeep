@@ -73,7 +73,7 @@ const IF_STALE = process.argv.includes('--if-stale');
 // had refused nothing since.
 //
 // So the argument list is closed. A flag this file does not implement stops it
-// rather than quietly selecting the default behaviour.
+// rather than quietly selecting the default behavior.
 const KNOWN = new Set(['--check', '--staged', '--if-stale']);
 for (const arg of process.argv.slice(2)) {
   if (arg.startsWith('--') && !KNOWN.has(arg)) {

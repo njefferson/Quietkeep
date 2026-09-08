@@ -5,7 +5,7 @@
 //   2. the storage question, with the action to answer it (V-00)
 //   3. patch notes, per Doctrine §5 and §14
 // plus the links every app in this family owes — the shared accessibility
-// statement and the licence.
+// statement and the license.
 //
 // It opens ITSELF the first time, because a new user has no way to know that
 // storage needs asking for. After that it never opens uninvited; the (i) is
@@ -236,7 +236,7 @@ export async function mountAbout(
   {
     // DERIVED FROM THE DOORS, NEVER HAND-LISTED (3.5.2).
     //
-    // This was five ids typed out. A sixth destination — Colours — was added in
+    // This was five ids typed out. A sixth destination — Colors — was added in
     // 3.5.1 and was not typed in, so `wireSheetClose` never ran for it and its
     // Close button did nothing at all. Reported from a device as the window not
     // closing, which is exactly what it was.
@@ -1709,7 +1709,7 @@ export async function mountAbout(
   //
   // All three view preferences share one shape — preview on change, persist on
   // the press — so all three could strand a preview the store never heard
-  // about. Only the colour one was reported, because only the colour one is
+  // about. Only the color one was reported, because only the color one is
   // impossible to miss: the whole app changes hue. The mode and the text size
   // do exactly the same thing and are quieter about it, which makes them worse
   // rather than better.
@@ -1732,14 +1732,14 @@ export async function mountAbout(
   // the press, kv and never an event. The third control in this panel built to
   // this pattern, which is the point: a reader who has met one has met them all.
   // A RADIO GROUP RATHER THAN A SELECT SINCE 3.5.0, because each option now
-  // carries a picture of itself. The BEHAVIOUR is deliberately the same as the
+  // carries a picture of itself. The BEHAVIOR is deliberately the same as the
   // two controls above it — preview on change, persist on the press — so the
   // shape a reader learned once still holds; only the control changed.
   const palGroup = document.querySelector<HTMLFieldSetElement>('#ui-palette');
   const palNote = document.querySelector<HTMLElement>('#ui-palette-note');
   if (palGroup && palNote) {
     const palRadios = Array.from(palGroup.querySelectorAll<HTMLInputElement>('input[name="ui-palette"]'));
-    // Whatever is stored, not whatever is first in the markup. An unrecognised
+    // Whatever is stored, not whatever is first in the markup. An unrecognized
     // value normalises to the default, and the default is a real option here.
     const chosenNow = (): string =>
       normalisePalette(palRadios.find((r) => r.checked)?.value);
@@ -1749,7 +1749,7 @@ export async function mountAbout(
     //
     // It had one, and the button was indefensible the moment the pictures
     // arrived: tapping a tile already repainted the whole app, so pressing
-    // *Set the colours* afterwards changed nothing you could see. A confirm
+    // *Set the colors* afterwards changed nothing you could see. A confirm
     // with no visible effect reads as a control that does not work, and it was
     // reported as exactly that. The alternative — stop previewing until the
     // press — would have thrown away the reason the tiles exist, which is
@@ -1763,7 +1763,7 @@ export async function mountAbout(
       applyPalette(chosen);
       setPalette(chosen);
       // The name carries the meaning (Doctrine §4), so it keeps up with the
-      // colours rather than lagging behind them.
+      // colors rather than lagging behind them.
       palNote.textContent = paletteNote(chosen);
       void session.store.setKv(PALETTE_KEY, chosen)
         .catch(() => { /* a view preference: it applies now either way */ });
@@ -2543,7 +2543,7 @@ export async function mountAbout(
     // BUILDING IT IS ASYNCHRONOUS — it reads storage estimates, the cache
     // names and the worker state. So `hidden` is still true on the next line,
     // and a synchronous check here would have quietly reverted this fix to the
-    // behaviour it replaces: report generating somewhere behind, focus parked
+    // behavior it replaces: report generating somewhere behind, focus parked
     // on the button that started it.
     const obs = new MutationObserver(() => {
       if (out.hidden !== false) return;

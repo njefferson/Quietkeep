@@ -4,7 +4,7 @@
 // cross multiple areas.** That single sentence settles the data model, because
 // this tree is single-parent — so a thing that crosses areas structurally CANNOT
 // be a container, and a role is a cross-cutting LINK. Q-13 said exactly that on
-// 2026-08-04, named the shape, and then deferred building it behind a judgement
+// 2026-08-04, named the shape, and then deferred building it behind a judgment
 // about whether enough containers existed in the store yet. Thirteen days.
 //
 // ## Three axes now, and they answer different questions
@@ -16,7 +16,7 @@
 // The last two are the same machinery pointed in different directions, and that
 // is deliberate rather than lazy: two features with one shape are one thing to
 // learn, and the fold, the merge disposition, the gate exclusion and the card
-// line all took their behaviour from the contexts that came first.
+// line all took their behavior from the contexts that came first.
 //
 // ## Why this is NOT a filter, and contexts are
 //
@@ -169,10 +169,10 @@ export const lineViewWords = (v: LineView): string => {
  *
  * THE PLOT, NOT THE VERDICT (law 7). It returns counts and says nothing about
  * whether any of them is right — no target, no proportion of a whole, no
- * "balanced", no colour, and deliberately no ordering by size. Sorted by name,
+ * "balanced", no color, and deliberately no ordering by size. Sorted by name,
  * like everything else somebody reads and picks from, because sorting by count
  * would rank the reader's own identities against each other and that is a
- * judgement the app does not get to make.
+ * judgment the app does not get to make.
  *
  * `held` counts things that are still being carried. A finished thing is not
  * live work and counting it would turn this into a record of output, which is

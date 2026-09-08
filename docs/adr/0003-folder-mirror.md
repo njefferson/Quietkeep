@@ -58,7 +58,7 @@ OPFS with no disk picker.
   to "not yet available", never to "empty".
 - A shard that is present but unreadable is **never** treated as zero events.
   *A success response carrying nothing is not an answer — it is a question.*
-- The feature is invisible on Safari and Firefox. No greyed-out button, no
+- The feature is invisible on Safari and Firefox. No grayed-out button, no
   "upgrade your browser" — it simply is not there. **On the reference platform this
   means it is never mentioned**, including in help text and onboarding.
 - **No feature may depend on the mirror being present.** It cannot be the answer to

@@ -439,7 +439,7 @@ export const makeContainerEvents = (
  * `priorParent` is carried because the vocabulary asks for it and because a log
  * that says only where a thing went cannot answer where it came from — and
  * "where did this used to live" is a question people actually ask after a
- * reorganisation they half remember.
+ * reorganization they half remember.
  */
 export const parentEvents = (
   ctx: StampContext, node: string, parent: string, priorParent?: string | null,
@@ -686,7 +686,7 @@ export const saveSituationEvents = (
     { name: clean, context, minutes, ...(who.length > 0 ? { people: who } : {}) })];
 };
 
-/** "I do not recognise that situation any more." Scoped to one name, never a
+/** "I do not recognize that situation any more." Scoped to one name, never a
  *  clear-all — `removeStakeholderEvents`' rule. */
 export const forgetSituationEvents = (
   ctx: StampContext, name: string,

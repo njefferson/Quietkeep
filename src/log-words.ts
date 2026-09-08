@@ -227,7 +227,7 @@ export function eventWords(
     case 'snapshot.written': return 'The app wrote a snapshot of everything, for fast starts.';
     // SAYS ONLY WHAT THIS EVENT RECORDS. It used to add "— a copy was exported
     // first", which is law 9's promise and was not built: no migration
-    // machinery exists, so the sentence was a claim about a behaviour nobody had
+    // machinery exists, so the sentence was a claim about a behavior nobody had
     // written, sitting unreachable behind an unemitted kind. The vocabulary
     // recorded it as a claim; it is removed rather than left to become true by
     // accident on the day the kind is first written.

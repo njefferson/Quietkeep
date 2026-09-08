@@ -60,7 +60,7 @@ the surface ships.
 ### Duration, never a verdict
 
 *"With Sam for three weeks"* is a fact about a date. There is no "chased three
-times", no colour that means "they have had this a while", no threshold at which
+times", no color that means "they have had this a while", no threshold at which
 anything changes appearance. **This app keeps score on nobody's behalf, least of
 all on someone else's** — law 5 applied to a third party, which is the one place
 it would be easiest to let slip.

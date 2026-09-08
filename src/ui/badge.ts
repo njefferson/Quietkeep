@@ -109,7 +109,7 @@ export function badgeWords(on: boolean): string {
 }
 
 /** The label on the control itself, which must say what pressing it DOES rather
- *  than what the current state is — a button labelled with its state is the
+ *  than what the current state is — a button labeled with its state is the
  *  oldest ambiguity in interface design. */
 export const badgeToggleLabel = (on: boolean): string =>
   on ? 'Stop showing a number on the icon' : 'Show a number on the icon';

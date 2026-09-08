@@ -47,7 +47,7 @@ from an imported store, not from a day's work.
 
 The reason was already in the codebase. **On a fresh import there are on the
 order of a thousand actions and zero contexts, zero roles, zero areas, zero
-goals, zero people.** An unlabelled node fits everywhere, and that default is
+goals, zero people.** An unlabeled node fits everywhere, and that default is
 load-bearing and correct (`src/contexts.ts:15-25`) — so with no contexts
 defined, `fitsHere` admits everything and the place filter does nothing. The
 horizon layer has nothing in it. The person lens has nobody. The offer is drawn
@@ -57,7 +57,7 @@ describes: a long list raises the activation threshold.
 **The machinery is built and has nothing to work with**, and the gap between
 those two has never been crossed because crossing it is precisely the work the
 app refuses to demand up front — correctly, since a setup wizard is a demand
-(entry 8) and an afternoon of labelling is planning-as-procrastination (entry
+(entry 8) and an afternoon of labeling is planning-as-procrastination (entry
 18). The consequence has been an app that cannot be entered.
 
 ## What is already built and not wired up
@@ -146,7 +146,7 @@ No app change and no version bump.
 
 The deliverable: a store arrived at by import, or by capturing one task, is a
 store the rest of this plan can act on — with no wizard and no afternoon of
-labelling.
+labeling.
 
 - **Situation is asked for at the moment it would change the answer, never up
   front.** The first time the offer would differ by place, the app asks where
@@ -157,7 +157,7 @@ labelling.
 - **An import is an arrival, not a day's work.** Nothing imported may read as a
   demand made today. `src/taskpaper.ts:328` already holds the precedent for
   dates — a thousand-odd past due dates deliberately not converted into a
-  thousand fresh obligations — and the same judgement extends to the offer.
+  thousand fresh obligations — and the same judgment extends to the offer.
 - **Find out what actually stops entry before building.** Drive a real import
   through the app, render it, and walk the fourteen situations against that
   store rather than against the sample. A rendering-and-reading job, not a gate.
@@ -395,7 +395,7 @@ situations are the acceptance test — walked end to end, not asserted.
   `situation.forgotten`, folding to `State.situations`, a state-level map like
   `modules` rather than a node. An EVENT and not a device preference, unlike
   the two inputs it recalls: where you are is not a fact about your work, but a
-  situation you recognise about how you work is nearer a context or a role and
+  situation you recognize about how you work is nearer a context or a role and
   should survive a device. Three routes now set the pair and `setSituation` is
   the one writer.
   **Nothing records how often a situation is used** — no count, no last-used, no

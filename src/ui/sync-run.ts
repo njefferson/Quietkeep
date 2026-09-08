@@ -83,7 +83,7 @@ export async function runExchange(session: Session, now: () => string, repaint?:
   let landed = 0;
   let recv = 0;
   let sent = 0;
-  let fulfilled = 0;
+  let fulfillled = 0;
   let last: ExchangeResult | undefined;
 
   // ONE sync, MANY rounds until it goes quiet. A single exchange drains the
@@ -119,20 +119,20 @@ export async function runExchange(session: Session, now: () => string, repaint?:
     last = r;
     recv += r.received;
     sent += r.sent;
-    fulfilled += r.fulfilled;
+    fulfillled += r.fulfillled;
     // Stop cleanly on anything that is not plain success — unreachable, full,
     // refused all mean "offer the rest next time", not "hammer the relay now".
     if (r.outcome !== 'ok') break;
     // Converged from this side: a round that moved nothing in either direction
     // and answered no request is the fixed point.
-    if (r.received === 0 && r.sent === 0 && r.fulfilled === 0) break;
+    if (r.received === 0 && r.sent === 0 && r.fulfillled === 0) break;
   }
 
   const result: ExchangeResult | undefined = last && {
     ...last,
     received: recv,
     sent,
-    fulfilled,
+    fulfillled,
     // The words describe the WHOLE sync. `unopened` and `requested` are carried
     // from the last round because each round re-counts the same standing ones,
     // so their final value — not a sum — is the true current picture.

@@ -81,7 +81,7 @@ worst possible trade.
 
 ## Consequences
 
-- No behaviour change, no new nouns, no surface change. Nothing on any screen is
+- No behavior change, no new nouns, no surface change. Nothing on any screen is
   different; it is the same screens, sooner.
 - **Item 42 is not closed by this.** The measurement that counts is still on
   a real iPad — this hardware is not that device, and the ratio is more portable
@@ -91,7 +91,7 @@ worst possible trade.
   draft carried a NaN guard for malformed instants, with a confident paragraph
   explaining it. `formatToParts` **throws** on an invalid date rather than
   yielding NaN parts, so the branch was unreachable and the paragraph described
-  behaviour the platform does not have. Both are replaced by the truth and a test
+  behavior the platform does not have. Both are replaced by the truth and a test
   that pins it: it threw before, it throws now.
 - The remaining cost is honest and unhidden: `heldGroups` is still the most
   expensive projection. Nothing here restructures it, because the next thing to

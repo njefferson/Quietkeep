@@ -26,7 +26,7 @@
 > Either way a replacement is briefed on *stays in view*, not on *held safely* —
 > which retires vessels, cradles, boxes and stacks as a family.
 >
-> **The enclosure is ENTAILED BY THE COLOUR, and there is no bug under it.**
+> **The enclosure is ENTAILED BY THE COLOR, and there is no bug under it.**
 > `--warm` is `#7A4E00` in light mode and `#F5C978` in dark. On the icon's paper
 > field `#F4F1E9` those measure 6.38:1 and 1.38:1, so `#F5C978` cannot describe a
 > shape on paper and any mark carrying it must supply a dark ground — which is the
@@ -34,20 +34,20 @@
 > that amber failed on contrast before it was judged on taste.
 >
 > **This paragraph previously said the icon was using the dark-mode value on a
-> light ground — "a colour error" — and that was FALSE.** Measured on the rendered
+> light ground — "a color error" — and that was FALSE.** Measured on the rendered
 > artwork: 82% of the amber's border is the navy `#33425F` and the remaining 18%
 > are antialiasing blends between the two; **it touches the paper field nowhere**,
 > and sits on navy at 6.48:1. The mark is internally correct. The earlier figure
 > that suggested otherwise came from a probe counting blend pixels as *not navy* —
 > a tolerance artefact read as a finding, and committed to this record on the day
 > it was hunting exactly that kind of defect. **There is no token to fix**, so a
-> replacement that must not enclose has to change the COLOUR, not the geometry.
+> replacement that must not enclose has to change the COLOR, not the geometry.
 >
 > A replacement is OPEN, not decided. Six directions have been tried and every
 > one collided with a well-known glyph — see
 > [`docs/brand-collisions.md`](../brand-collisions.md), which is the checklist to
 > work from and is the durable part of that attempt. The reasoning in this record
-> about geometry versus illustration, about three flat colours, and about
+> about geometry versus illustration, about three flat colors, and about
 > measuring rather than eyeballing all still stands and binds any replacement.
 
 ## Decision
@@ -56,7 +56,7 @@ Quietkeep's identity is **a warm opening within a sheltering form** — a doorwa
 lit from inside.
 
 - **The icon is [`public/brand/icon.svg`](../../public/brand/icon.svg)**, hand-drawn
-  geometry, three flat colours, no gradient, no shadow, no transparency. Every PNG the app
+  geometry, three flat colors, no gradient, no shadow, no transparency. Every PNG the app
   ships is rendered from it by [`tools/brand.mjs`](../../tools/brand.mjs).
 - **The social-preview background is a generated image**, composited with the wordmark and
   tagline set as **real text**, never generated glyphs.
@@ -111,7 +111,7 @@ as a picture. *It holds the rest, so you can rest.*
 
 - **The renderer is a gate, not a script.** `tools/brand.mjs` runs in CI and exits non-zero
   on any failure. It was **made to fail once before being trusted** (Doctrine §6): dropping
-  the shelter toward the field colour produced `1.41:1` and exit 1.
+  the shelter toward the field color produced `1.41:1` and exit 1.
 - **It measures the plate, not the glyphs.** The first version of the text-contrast check
   sampled the finished image and reported `1.00:1` — it was reading the type against itself.
   It now renders the composite with the text hidden and measures against that. An instrument
@@ -120,9 +120,9 @@ as a picture. *It holds the rest, so you can rest.*
   recorded with its reason in `package.json`. See the hub's LESSONS §8.
 - **iOS gets an opaque icon**, because iOS composites transparency onto black.
 - **The maskable icon's safe zone is asserted**, not assumed: the artwork's furthest painted
-  point is ~199.8 from centre, inside the 204.8 radius Android crops to.
-- **No red, no amber in the identity.** `--light` is the one warm colour and it means *lit*,
-  never *late*. B-01's no-red-walls rule is a palette rule too — a colour that means
+  point is ~199.8 from center, inside the 204.8 radius Android crops to.
+- **No red, no amber in the identity.** `--light` is the one warm color and it means *lit*,
+  never *late*. B-01's no-red-walls rule is a palette rule too — a color that means
   "attention" in the brand will eventually mean "you failed" in the UI.
 - **The field is light and the wall is dark, and that inversion was forced by arithmetic.**
   A requirement: something less dark. Paling the whole mark is impossible: the three-step

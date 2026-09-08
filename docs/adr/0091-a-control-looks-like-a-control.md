@@ -19,7 +19,7 @@ and the jump to the list. The other two were card titles, which sit inside a
 card that draws the box (ADR-0032's containment rule, working correctly).
 
 So the app had **two visual languages**, and put every way of getting somewhere
-in the one that reads as a paragraph of soft grey prose. There is one honest
+in the one that reads as a paragraph of soft gray prose. There is one honest
 answer to how you were supposed to know: you could not.
 
 **The jump made it worse rather than better.** `.jump` was built on `.gauge`'s

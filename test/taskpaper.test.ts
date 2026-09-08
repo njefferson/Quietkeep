@@ -832,7 +832,7 @@ test('the arrival line never reassures, because reassurance implies a fault', ()
   const w = importWords(importSummary(lines, []));
   assert.ok(!/don.t worry|no need to|it.s fine|take your time|whenever you.re ready/i.test(w),
     `"${w}" comforts, and an amnesty that sounds like absolution implies there was something to forgive`);
-  assert.ok(!/you can file|sort them|organise|tidy|clean up|get to it/i.test(w),
+  assert.ok(!/you can file|sort them|organize|tidy|clean up|get to it/i.test(w),
     'and it never promises the reader will file it later, which is the debt restated politely');
 });
 

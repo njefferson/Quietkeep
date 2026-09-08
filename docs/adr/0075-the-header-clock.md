@@ -100,7 +100,7 @@ on a surface that says what it does before it does it.
 
 - One new pure module, `src/clock.ts`, and one rendering module. No new event
   kind, no schema change, no migration.
-- No new colour pair enters the contrast gate: the hands are `--ink`, the rim is
+- No new color pair enters the contrast gate: the hands are `--ink`, the rim is
   `--line` (a graphical object at 3:1), the words are `--ink-soft`. All three
   pairs were already held. The rendered result is measured all the same —
   `clock opt-in` and `clock on` are audited states in both themes.

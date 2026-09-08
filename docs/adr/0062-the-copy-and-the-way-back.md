@@ -59,7 +59,7 @@ than the silence it replaces. One noun serves three acts: `deliverCopy`
 calendar file as somebody's backup would tell them they were covered on the day
 they were not.
 
-So a copy is recognised by its scope, `WHOLE_COPY_SCOPES` lives beside the
+So a copy is recognized by its scope, `WHOLE_COPY_SCOPES` lives beside the
 reader, and **`deliverCopy` refuses any scope outside it**. A hand-written list
 the writers are not held to is the carry list with a delay fuse that 1.9.2 was
 written about; this one cannot fall behind, because adding a whole-copy scope

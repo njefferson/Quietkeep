@@ -378,7 +378,7 @@ export function parentTitleOf(n: NodeState, state: State): string | null {
 
 /** How many of a place's contents a return card names before it stops naming
  *  them. Law 8 bounds what a return may show: coming back to a place after a
- *  fortnight must not be met with a wall, and three is enough to recognise what
+ *  fortnight must not be met with a wall, and three is enough to recognize what
  *  is in there without the card becoming the list. */
 export const CONTENTS_CAP = 3;
 

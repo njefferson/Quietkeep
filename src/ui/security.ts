@@ -63,7 +63,7 @@ const CANNOT_REACH: Passage = {
   heading: 'What leaves this device',
   paragraphs: [
     'Nothing. This version of Quietkeep has no way to send your writing anywhere — not to us, not to anyone. There is no telemetry, no analytics, no error reporting, and no sync.',
-    'That is not a promise about our good behaviour. Your browser is told, in a rule it enforces itself, that this app may not contact anything on the internet at all. Even if the app tried, the browser would refuse it. The rule is checked automatically every time a new version is built, so it cannot quietly disappear.',
+    'That is not a promise about our good behavior. Your browser is told, in a rule it enforces itself, that this app may not contact anything on the internet at all. Even if the app tried, the browser would refuse it. The rule is checked automatically every time a new version is built, so it cannot quietly disappear.',
     'A file only leaves when you choose to export one, and it goes where you send it.',
   ],
 };

@@ -21,7 +21,7 @@ it.
 
 ### A tracked project puts no work in front of you
 
-This is the load-bearing behaviour and it is enforced in `nextup.ts`, not merely
+This is the load-bearing behavior and it is enforced in `nextup.ts`, not merely
 described. Work under a project someone else is executing is **excluded from
 Next up**, at any depth.
 
@@ -35,13 +35,13 @@ The work stays on the held list. It is still real; it is just not yours to do.
 
 ### Nothing on the portfolio is graded
 
-No "at risk", no "slipping", no amber, no colour that means anything about how
+No "at risk", no "slipping", no amber, no color that means anything about how
 someone else is getting on. `trackWords` joins facts with middots: who is running
 it, when an answer is owed, how many things are outstanding, when anything last
 moved.
 
 A health word is this app grading a third party on evidence it does not have,
-and a hue that means "they have had this a while" is worse — it is that judgement
+and a hue that means "they have had this a while" is worse — it is that judgment
 made unarguable. Law 5 says no scores; the place it would be easiest to let that
 slip is the surface about somebody else's work, so the test asserts the absence
 of ten specific words.

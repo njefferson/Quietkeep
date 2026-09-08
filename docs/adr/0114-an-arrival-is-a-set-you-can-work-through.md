@@ -44,7 +44,7 @@ folded.
   true of it — dated rows and projects included.
 - **The key is the importing commit's own timestamp.** An import lands in one
   commit, so every event in it already shares an `at`; that string is unique per
-  run and is also the date the set is labelled with. Nothing is minted and no id
+  run and is also the date the set is labeled with. Nothing is minted and no id
   is invented.
 - **The sort picker offers one door per arrival**, generated per key exactly as
   `under:<container>` and `menu:<category>` already are, so no list here can go

@@ -10,7 +10,7 @@
 //
 // Not a toggle. A toggle has two positions and the honest set is three: light,
 // dark, and *follow the thing you already told your device*. Shipping only two
-// would take away the behaviour every reader has today and call it a feature.
+// would take away the behavior every reader has today and call it a feature.
 // It is the default, and it is named in words rather than implied by an
 // unset switch.
 //
@@ -66,7 +66,7 @@ export const setTheme = (v: unknown): void => { theme = normaliseTheme(v); };
  * every selector in the file to think about.
  *
  * THE `theme-color` META TOO. Two of them ship, one per `prefers-color-scheme`,
- * and they are what colours the status bar around an installed app. Left alone,
+ * and they are what colors the status bar around an installed app. Left alone,
  * a reader who chose light on a dark device gets a light app in a dark frame —
  * the seam this control exists to remove, one band further out.
  */
@@ -80,7 +80,7 @@ export function applyTheme(v: Theme, doc: Document = document): void {
   // The stylesheet says `color-scheme: light dark`, so a `<select>`, an `<input>`
   // and a `<textarea>` are painted by the browser according to the DEVICE, not
   // according to this choice. Choosing light on a device set to dark therefore
-  // turned the app cream and left every form control white-on-grey — a hole in
+  // turned the app cream and left every form control white-on-gray — a hole in
   // the page, on exactly the setting this control exists to provide.
   //
   // Measured, on a dark device with light chosen: `--bg` became `#F4F1E9` and the
@@ -89,7 +89,7 @@ export function applyTheme(v: Theme, doc: Document = document): void {
   // The old contrast gate could not have found it. It measures each theme under a
   // device set to match, so the one case that matters here — a choice DISAGREEING
   // with the device — is the one case it never renders. It surfaced instead as
-  // four selectors rendering colours no role owns, while extracting the colour
+  // four selectors rendering colors no role owns, while extracting the color
   // inventory (ADR-0110).
   root.style.colorScheme = v === 'device' ? '' : v;
 

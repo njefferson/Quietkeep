@@ -216,7 +216,7 @@ test('CLEARING IS A WRITE, and it reads as nothing rather than as the word false
   assert.ok(Object.hasOwn(n.fields, STANDS_FIELD),
     'but the log keeps the record — taking a thing back is a decision, not an erasure');
   // PLANT: reading presence instead of the value returns the empty string here,
-  // and every surface renders a labelled row with nothing after it — which is
+  // and every surface renders a labeled row with nothing after it — which is
   // the chooser-with-nothing-in-it shape this repo refuses everywhere.
 });
 

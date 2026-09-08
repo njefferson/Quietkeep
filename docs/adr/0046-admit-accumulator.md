@@ -38,7 +38,7 @@ is a gated batch by law — the recorded rule that bulk is "a real, gated batch
 of the same events a single act would write" makes the gate's cost the ceiling
 on every wholesale feature. Chunking cannot fix it: the N·S term dominates.
 
-## The deliberate behavioural divergences (all of them)
+## The deliberate behavioral divergences (all of them)
 
 Two, and only two. Everything else is required to match the oracle
 event-for-event.

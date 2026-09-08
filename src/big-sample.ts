@@ -253,7 +253,7 @@ export const MOVE_STEPS = [
   'Ring the council about the council tax', 'Pack the kitchen last',
   'Label the boxes by room', 'Find the loft insurance documents',
   'Take the garden pots to the new place', 'Book the cleaner for the last day',
-  'Change the address on the driving licence', 'Tell the vet the new address',
+  'Change the address on the driving license', 'Tell the vet the new address',
   'Sort out the broadband for the new place', 'Empty the shed',
   'Take the old sofa to the tip', 'Check the meter readings match the bill',
   'Ask the neighbours to take a parcel', 'Put the plants somewhere safe',
@@ -276,7 +276,7 @@ export const STANDALONE = [
   'Send Priya the photos from the weekend', 'Descale the kettle',
   'Renew the library books', 'Move the winter coats up to the loft',
   'Get a spare key cut', 'Top up the windscreen washer',
-  'Sew the button back on the grey shirt', 'Clean out the fridge shelves',
+  'Sew the button back on the gray shirt', 'Clean out the fridge shelves',
   'Take the glass to the bottle bank', 'Back up the photos off the phone',
   'Sharpen the kitchen knives', 'Book the car in for its MOT',
   'Return the library DVD', 'Wash the car mats',
@@ -435,7 +435,7 @@ export async function bigSampleEvents(
   const areas = AREAS.map(t => node('area', t));
   for (const a of areas) clock(a, 'review', int(3, 40));
 
-  const goal = node('goal', 'Have the flat in a state I am not apologising for');
+  const goal = node('goal', 'Have the flat in a state I am not apologizing for');
   const outcome = node('outcome', 'The back of the house is watertight', goal);
   clock(outcome, 'due', 120);
 
@@ -490,7 +490,7 @@ export async function bigSampleEvents(
       : node('action', pick(STANDALONE));
     // WHERE IT CAN BE DONE (2.2.0, ADR-0092). Most things get one; some get two,
     // because a thing can be doable at home AND out; and a good number get none,
-    // which is the honest majority — an unlabelled thing is doable anywhere and
+    // which is the honest majority — an unlabeled thing is doable anywhere and
     // is never filtered away. Deterministic like everything else here.
     const cRoll = rand();
     if (cRoll < 0.55) {

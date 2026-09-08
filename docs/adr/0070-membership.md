@@ -93,7 +93,7 @@ smoke assertions (run, watched red, restored).
   point — the three shipped instances each cost a release.
 - The table is honest about being a snapshot of rulings, not a proof of taste:
   it pins what was decided and forces the next decision to be written down. It
-  cannot say whether a ruling is *good* — that is the owner's on-device judgement,
+  cannot say whether a ruling is *good* — that is the owner's on-device judgment,
   which no instrument here replaces.
 
 ## What would overturn this

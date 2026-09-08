@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.5 — ITERATION
+
+*2026-09-08*
+
+- **The app spells the American way now, everywhere.** *Colours* was *Colors*’ spelling and *Recognise this one?* was *Recognize this one?*, on screens you meet in the first minute, and about forty other words behind them — in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.
+- **Still to sort:** the situation screen asks who twice — the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new. And three spoken confirmations still read a date out as digits when you set one.
+
 ## 3.23.4 — ITERATION
 
 *2026-09-08*
@@ -88,7 +95,7 @@ triplet and what it did for you.
 *2026-09-01*
 
 - **The room can be read by thing as well as by person.** With one thing every person shares, the by-person room repeats it under each name — truly, since each is its own conversation — but repetitively when the room is large. *By thing* collapses the same room to each thing once, wearing the names of everyone on it. The names are the only label a set of people ever gets; nothing invents a group name. *By person* stays the default every open returns to.
-- **People can carry places, and the choosers respect them.** Open a person and the places box now reads *Their places* — name one, and they are offered first when you are there. Someone with no stated places is offered everywhere, exactly as an unlabelled thing fits every place. Someone stated only elsewhere waits behind one press — *Everyone (2 more)* — never gone, never guessed: the only thing that moves anybody is a place you put on their own page.
+- **People can carry places, and the choosers respect them.** Open a person and the places box now reads *Their places* — name one, and they are offered first when you are there. Someone with no stated places is offered everywhere, exactly as an unlabeled thing fits every place. Someone stated only elsewhere waits behind one press — *Everyone (2 more)* — never gone, never guessed: the only thing that moves anybody is a place you put on their own page.
 - **What’s the situation? asks from the front page too.** It always felt like the setup step, and it lived one screen deep. The same question now stands on the opening screen; the original stays where it was, beside the lines that show what it changed.
 - **Two controls are one step later in the reading order than they were.** *What’s the situation?* now stands on the opening screen too, so on the working screens the copy there is now one control below where it was; and the *Menu* door is now a step further along than it was, because the places box arrived above the fold in the release beneath this one. Nothing moved on screen by feel; the count is about reading order.
 - **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
@@ -107,7 +114,7 @@ triplet and what it did for you.
 
 *2026-09-01*
 
-- **The walkthrough now tells the truth about the two doors.** It said everything else lives under the *i* — which stopped being true as the app grew, and a careful stranger following that pointer never found Settings, Colours, Help or Your data at all. It now names both: the *i* for what this app is and keeping your writing safe, *Elsewhere in the app* for the rest. And the *i* panel carries an *Elsewhere in the app* door of its own, so neither door dead-ends.
+- **The walkthrough now tells the truth about the two doors.** It said everything else lives under the *i* — which stopped being true as the app grew, and a careful stranger following that pointer never found Settings, Colors, Help or Your data at all. It now names both: the *i* for what this app is and keeping your writing safe, *Elsewhere in the app* for the rest. And the *i* panel carries an *Elsewhere in the app* door of its own, so neither door dead-ends.
 - **The notes open everything since you last looked.** These notes used to open on the newest entry alone — right most days, and wrong exactly when two releases land together, which is how a big change ended up folded out of sight below a small one. This device now remembers the last version these notes showed you, and opens every entry newer than that, saying how many there are. After a long time away it opens the six newest and says the true count.
 - **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
 
@@ -118,13 +125,13 @@ triplet and what it did for you.
 - **A thing somebody owes you now arrives as one.** Bringing in a line tagged `@owes(Sam)` opened the waiting in the record and forgot to make it visible: the item landed as ordinary work, so *What they owe you* never showed it. It arrives as a waiting-for now — on the owed lists from its first moment, counted from the day it landed, exactly as if you had named Sam by hand on a waiting item.
 - **The ring that shows where you landed truly appears on every sheet now.** The last release said “every sheet” and drew it only on headings of one styling — the item sheet itself, the About panel, and the walkthrough on any second viewing were missed. A colder pair of eyes than the ones that wrote it caught all three within the hour. Every sheet heading draws it now, and the walk checks the item sheet by name.
 - **“What does this hold up?” no longer offers people or places.** The picker for saying one thing feeds another listed everything alive — including people and places, which cannot be done first. It offers only work now, matching its sibling question, *Does something have to happen first?*, which always knew.
-- **Still to sort, unchanged:** the situation screen asks who twice. **And newly noticed:** the walkthrough points at the ⓘ for everything, but ⓘ opens onto keeping your data safe — the fuller doors (Settings, Colours, Help, Your data) are behind *Elsewhere in the app* on the main page. Until that is rethought, know both doors exist.
+- **Still to sort, unchanged:** the situation screen asks who twice. **And newly noticed:** the walkthrough points at the ⓘ for everything, but ⓘ opens onto keeping your data safe — the fuller doors (Settings, Colors, Help, Your data) are behind *Elsewhere in the app* on the main page. Until that is rethought, know both doors exist.
 
 ## 3.20.1 — ITERATION
 
 *2026-09-01*
 
-- **The line that opens *What comes back, and when* now looks like a way in.** It was one run-on line — two facts and a destination joined by dots, wrapping wherever the phone felt like it — and it read as a statement with a typo on the end, not as something to press. The facts sit on their own line now, in quiet ink; the way in sits under them in the colour every other way-in wears, saying exactly what the sheet it opens is called, with a small arrow after the words. Still one control, and the whole row is still the target.
+- **The line that opens *What comes back, and when* now looks like a way in.** It was one run-on line — two facts and a destination joined by dots, wrapping wherever the phone felt like it — and it read as a statement with a typo on the end, not as something to press. The facts sit on their own line now, in quiet ink; the way in sits under them in the color every other way-in wears, saying exactly what the sheet it opens is called, with a small arrow after the words. Still one control, and the whole row is still the target.
 - **The heading a sheet opens on draws its own ring now.** Every sheet hands your place to its title when it opens, and the ring around it was whatever the browser chose to draw — which on the device meant a tight box with a broken corner. The app draws that ring itself now, the same on every sheet and every browser, with room around the words — and the walk measures it, so it cannot quietly fall back to the browser’s whim.
 - **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
 
@@ -199,7 +206,7 @@ triplet and what it did for you.
 *2026-08-31*
 
 - **The two new boxes say what their button keeps.** Both said *Keep that*, and so did the one above them — three controls answering to one name, which is no help at all if you are hearing the screen rather than seeing it. They are **Keep where it stands** and **Keep the condition** now.
-- **And they take the app’s colours rather than the browser’s.** What you type in them is read back to you on the *Running without you* list in the app’s own ink, so a box that looked like your operating system and words that came back looking like the app was two answers to one question.
+- **And they take the app’s colors rather than the browser’s.** What you type in them is read back to you on the *Running without you* list in the app’s own ink, so a box that looked like your operating system and words that came back looking like the app was two answers to one question.
 
 ## 3.18.0 — CAPABILITY
 
@@ -238,7 +245,7 @@ triplet and what it did for you.
 - **It is somewhere you look, not a filter.** Nothing is hidden from any other screen while it is open and closing it changes nothing. Standing on a line works the same way, and for the same reason: a filter leaves you with two lists and something to remember.
 - **Somebody with nothing outstanding stays in the room and says so.** Walking in knowing that is worth as much as walking in with a list.
 - **A thing that involves two people in the room shows under both**, because both of them are expecting it — and the count at the top still says one thing, not two.
-- **Nothing in it grades anybody.** No number beside a name in a roster, no ordering the people by how much you owe each of them, no colour. The people are in name order whoever is carrying more.
+- **Nothing in it grades anybody.** No number beside a name in a roster, no ordering the people by how much you owe each of them, no color. The people are in name order whoever is carrying more.
 - **And *On this page* now comes before *Elsewhere in the app*.** Reported. You cannot be elsewhere until there is a here, and the far door was reached first by anyone tabbing forward.
 - **Still not right:** the room can only show you what you have already written down about people and work. The things that actually take the most tracking — a post you cannot advertise yet, a temporary promotion running out — have nowhere to live in this app at all, and no screen fixes that.
 
@@ -261,7 +268,7 @@ triplet and what it did for you.
 - **Which is the thing you could only find by going and looking.** Last release you could open a line and see it was empty. You had to think to open it, and the day you think to check is the day you were already going to.
 - **A line you have just named is not on it.** Nothing is running on it because you made it a minute ago. Something has to have been on it and finished, or be sitting there not moving, before this has anything to say — naming six identities on a fresh store must not hand you six problems.
 - **It counts what is under things too, not just what is tagged.** Put an identity on a project and leave the actions inside it untagged, which is the ordinary way to do it, and the line is not quiet — the work under it is what counts.
-- **It says what is true and stops.** *Everything on it is finished*, or *nothing on it is moving*. No number, no how-long-since, no ordering by how stale, no colour. Whether that is a season off or a thing you have quietly stopped doing is yours to know.
+- **It says what is true and stops.** *Everything on it is finished*, or *nothing on it is moving*. No number, no how-long-since, no ordering by how stale, no color. Whether that is a season off or a thing you have quietly stopped doing is yours to know.
 - **Still not right:** this surface shows three at a time and structural breaks come first, so on a full store a quiet line can sit behind them for a while.
 
 ## 3.13.0 — CAPABILITY
@@ -327,7 +334,7 @@ triplet and what it did for you.
 
 - **Three buttons now say where they go.** A door that names a destination is one you can use without pressing it to find out, and these three named a mood, a leftover pile and a promise instead.
 - **The line under your held things ended in *see each*.** Behind it is the list of everything you are holding with the date each one comes back — which is the answer to *can I stop carrying this myself*, and *see each* was not going to get anybody there. It says **what comes back, and when**, which is the heading you land on. It says that in both states now; when something has gone quiet it used to say *see each* too.
-- **The button that said *Everything else* now says *Elsewhere in the app*.** *Else* was doing the wrong job: it read as *the leftovers*, on a button sitting first on the screen, before anything it could be left over from. Behind it are your data, settings, colours, help, the reference, what the app can do and what it is — seven rooms, none of them leftovers. They are the app rather than your work, and now the button says so.
+- **The button that said *Everything else* now says *Elsewhere in the app*.** *Else* was doing the wrong job: it read as *the leftovers*, on a button sitting first on the screen, before anything it could be left over from. Behind it are your data, settings, colors, help, the reference, what the app can do and what it is — seven rooms, none of them leftovers. They are the app rather than your work, and now the button says so.
 - **Inside a job, the way to the first room said *Choose what to do*.** There is one thing behind it, with a reason and a way to refuse it — which is the whole point and is not a choice. It says **See what is next**, like the rooms beside it: *Sort what you put down*, *Do one thing*, *Tend what recurs*.
 - **And the + inside a job now says what it costs you.** It said *Put something down*, which is what the capture box says, so it looked like a second box beside the one already on screen. It is not: it leaves whatever you are in and takes you back to the box at the top. It says **Leave this and put something down**, so you can decide whether the thought is worth your place.
 - **Nothing moved and nothing was added.** Every one of these is the same control in the same place with better words on it.
@@ -376,7 +383,7 @@ triplet and what it did for you.
 *2026-08-28*
 
 - **The suggestion list that kept taking the cursor out of the box is gone.** Typing a place, a role or a name used to bring up the browser’s own list of what you already had. On a tablet that list takes the cursor with it mid-word, so you type two letters, tap back into the box, and type two more. It has been taken off all three boxes.
-- **What you already have is a row of taps under the box instead.** Adding a place you have used before is now one tap and no typing, which is what you are usually doing. The box is for names that are new. Nothing about that row is the browser’s — it takes the colours you chose, it is the right size for a finger, and it can be checked, which the old one could not be.
+- **What you already have is a row of taps under the box instead.** Adding a place you have used before is now one tap and no typing, which is what you are usually doing. The box is for names that are new. Nothing about that row is the browser’s — it takes the colors you chose, it is the right size for a finger, and it can be checked, which the old one could not be.
 - **Commas make separate places.** The box has suggested *at home, out, on the phone* since places were added and then took the whole line as ONE place, so following the example gave you a place named after the example. Type three and you get three. The same on *Who is this for?*
 - **And a place you did not mean to make can be taken out where you made it.** Saying a label is not a place has worked for a while, but the only route to it was on the situation screen, after choosing that label as where you are — so a place typed by mistake had no visible way out at all. *Something here is not a place* now sits under the row. It stops being offered and stops narrowing anything you can see; nothing you wrote is deleted, and the record still says it was there.
 - **“A few things you could pick up” has moved down onto the list it is about.** It sat directly under the offered item’s own buttons, three lines above the list, and read as a note about that item. It is now on top of the list, and it ends in a colon rather than a full stop — a sentence that stops is about what came before it.
@@ -398,7 +405,7 @@ triplet and what it did for you.
 - **Every path through Quietkeep — a new page, linked at the bottom of the screen beside *How it works*.** Every way in, every way through and every way out, drawn as the steps you take rather than as the app is built underneath. Thirty-four of them, and the shape of each drawing tells you how much there is to it: some are one move.
 - **It is not a tutorial you have to finish.** It is a reference to dip into when you want to know how something works, or what a screen will do before you press it. Each path also says what it will never do, which is usually the useful half.
 - **Nothing on it was written twice.** The sorting choices, what each kind of thing is called, the name of every screen — all read straight out of the app. If a button is renamed and this page still says the old word, that now fails before it can ship.
-- **It carries no webfont and makes no network request.** The whole page is words and boxes on the colours you already chose, so it works offline like the rest of the app and costs nothing to open.
+- **It carries no webfont and makes no network request.** The whole page is words and boxes on the colors you already chose, so it works offline like the rest of the app and costs nothing to open.
 - **What is still not right:** the three older pages behind the same kind of link — *How it works*, *Planning for Humans* and the plan — have never had an accessibility check of any kind. This new one does. The others are a real gap and they are named as one rather than quietly left.
 
 ## 3.6.2 — ITERATION
@@ -428,38 +435,38 @@ triplet and what it did for you.
 - **“How it hangs together” says what each row is.** Every line in it was a bare title with an indent — a project, an area and a task all drew identically. A project now says project, an area says area. Plain tasks stay unmarked, which is how they read everywhere else.
 - **That word was already yours.** The app says *Project* when you make one and again when you file something under one, and then the one screen whose whole job is listing them never said it again.
 - **What is still not right:** there is no screen called *Projects*. *How it hangs together*, behind *What you are holding*, is where they all are, and it is named after the shape rather than the thing. Whether that name changes is a decision, not an oversight.
-- **Also still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours whichever set you pick. That is decided when you save the app to your home screen.
+- **Also still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colors whichever set you pick. That is decided when you save the app to your home screen.
 
 ## 3.5.2 — ITERATION
 
 *2026-08-26*
 
-- **Close works on the Colours screen.** It did nothing at all. The button was there, the right size, in the right place, and connected to nothing — so the only way out was the back gesture. Reported from a device, and it was exactly as described.
-- **Why it happened, since it is the kind of thing that repeats:** the list of screens that get a working Close was typed by hand. Colours was the sixth and the list had five. It is worked out from the screens themselves now, so a new one cannot arrive without its way out.
-- **Tapping a set of colours is now the whole decision.** There was a *Set the colours* button under the pictures and it has gone. Tapping already repainted the app, so pressing it afterwards changed nothing you could see — a confirm button with no visible effect, which reads as a control that does not work. Tap the one you want; it is kept. Close just closes.
+- **Close works on the Colors screen.** It did nothing at all. The button was there, the right size, in the right place, and connected to nothing — so the only way out was the back gesture. Reported from a device, and it was exactly as described.
+- **Why it happened, since it is the kind of thing that repeats:** the list of screens that get a working Close was typed by hand. Colors was the sixth and the list had five. It is worked out from the screens themselves now, so a new one cannot arrive without its way out.
+- **Tapping a set of colors is now the whole decision.** There was a *Set the colors* button under the pictures and it has gone. Tapping already repainted the app, so pressing it afterwards changed nothing you could see — a confirm button with no visible effect, which reads as a control that does not work. Tap the one you want; it is kept. Close just closes.
 - **And leaving a mode or a text size without pressing Set now puts it back.** Those two still have a Set button, because they sit among the other settings where one is expected. Changing them used to preview immediately and save nothing until you confirmed, so leaving without confirming kept the preview on screen while the app remembered something else. Whichever way you leave, what you see is what is saved.
 
 ## 3.5.1 — ITERATION
 
 *2026-08-26*
 
-- **Colours has its own place now.** It was a block near the bottom of *Settings*; it is its own door behind *Everything else*, next to *Settings* rather than inside it. Nothing about it changed except where it lives and how big it is.
+- **Colors has its own place now.** It was a block near the bottom of *Settings*; it is its own door behind *Everything else*, next to *Settings* rather than inside it. Nothing about it changed except where it lives and how big it is.
 - **Which is what makes the pictures worth having.** Two to a row inside Settings, each half of each picture came out about 75 pixels wide on a phone — you could see that one side was light and the other dark, and not much else. One to a row here, and a half is about 155. The whole argument for a picture is that you can see it.
 - **Settings got shorter by about a fifth**, which is the other half of the same move. It had been the longest thing behind that button.
-- **Light or dark stayed in Settings**, on purpose. How bright the app is and which set of colours it uses are two separate choices, and putting them both here would have made this door mean "anything to do with how it looks", which is what Settings already means.
-- **What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours whichever set you pick. That is decided when you save the app to your home screen and nothing the app does afterwards can change it.
+- **Light or dark stayed in Settings**, on purpose. How bright the app is and which set of colors it uses are two separate choices, and putting them both here would have made this door mean "anything to do with how it looks", which is what Settings already means.
+- **What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colors whichever set you pick. That is decided when you save the app to your home screen and nothing the app does afterwards can change it.
 
 ## 3.5.0 — CAPABILITY
 
 *2026-08-26*
 
-- **You can see the colour sets now, instead of reading their names.** Five pictures, side by side, one per set — the same little sample of the app painted in each. Pick by looking.
+- **You can see the color sets now, instead of reading their names.** Five pictures, side by side, one per set — the same little sample of the app painted in each. Pick by looking.
 - **Each picture is the same view twice: day on the left, night on the right.** Every set comes in light and dark, and ten pictures would be a wall — so one picture carries both, and every part of it appears on both sides. The button is in both, the card is in both, so you are comparing like with like rather than looking at two different things.
-- **The pictures are made from the same file the app gets its colours from**, so a set cannot look like one thing in the chooser and paint another once you pick it. They are only redrawn when the colours actually change.
-- **Which one is chosen is still shown by a button, not by a coloured outline.** The whole point of this screen is colour, so colour is the one thing that must not also be carrying "this is the one you have".
+- **The pictures are made from the same file the app gets its colors from**, so a set cannot look like one thing in the chooser and paint another once you pick it. They are only redrawn when the colors actually change.
+- **Which one is chosen is still shown by a button, not by a colored outline.** The whole point of this screen is color, so color is the one thing that must not also be carrying "this is the one you have".
 - **Four of the five have been redrawn, because they were the same set four times.** Building the pictures showed it at once: in dark, four of them were within a few points of each other and two were identical to the eye, while their descriptions claimed real differences — *exact-neutral*, *cool*, *lowest glare* — that you could not see. They had each been checked for being readable and never checked against each other for being different.
-- **So they are now genuinely different things.** *Instrument* is cool and crisp. *Paper* is a warm kraft page with white cards and a deep teal for anything you can press. *Mono* has no hue at all. *Soft* is dimmed, with a night that is grey rather than black. *Quietkeep* is untouched. All five still clear the same contrast floors — that was checked after every change, and it takes a quarter of a second.
-- **What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colours, whichever set you pick. That is decided when you save the app to your home screen and nothing it does afterwards can change it.
+- **So they are now genuinely different things.** *Instrument* is cool and crisp. *Paper* is a warm kraft page with white cards and a deep teal for anything you can press. *Mono* has no hue at all. *Soft* is dimmed, with a night that is gray rather than black. *Quietkeep* is untouched. All five still clear the same contrast floors — that was checked after every change, and it takes a quarter of a second.
+- **What is still not right:** the little splash your phone or tablet shows before an installed app opens still uses the original colors, whichever set you pick. That is decided when you save the app to your home screen and nothing it does afterwards can change it.
 
 ## 3.4.3 — ITERATION
 
@@ -468,18 +475,18 @@ triplet and what it did for you.
 - **The button that said *More* now says *Everything else*.** More of what? The only way to find out was to press it. What is behind it has not changed — settings, your data, help, how it works, what this app is, and the things you can do like printing today or sending to your calendar. Now the button says so.
 - **And *Contents* now says *On this page*.** Those two sit next to each other and are exactly complementary: one is what is here, the other is what is not. They now sound like the pair they are.
 - **Inside a job, the way out now says *Choose where to be*.** It said *Everywhere else*, which was fine on its own and impossible next to *Everything else* — a letter apart to the ear, and one means your other work while the other means the app itself. It takes you to *Where do you want to be?*, so now it says that.
-- **The colours section has a heading, and says what it actually means.** It had no heading at all, and told you the five sets were *held to the same contrast floors*, which is a phrase for whoever built it. What it means is: every one is checked to the same standard for being readable, so which you pick is a matter of taste and not of one being easier to read.
+- **The colors section has a heading, and says what it actually means.** It had no heading at all, and told you the five sets were *held to the same contrast floors*, which is a phrase for whoever built it. What it means is: every one is checked to the same standard for being readable, so which you pick is a matter of taste and not of one being easier to read.
 - **Nothing moved and nothing was added.** Same buttons, same places, same order, same things behind them. Only the words.
 
 ## 3.4.2 — ITERATION
 
 *2026-08-26*
 
-- **The app arrives already wearing the colours you chose.** If you had picked something other than the original, opening the app showed you a moment of the original first, then settled. It does not any more — the colours are right on the very first thing drawn.
+- **The app arrives already wearing the colors you chose.** If you had picked something other than the original, opening the app showed you a moment of the original first, then settled. It does not any more — the colors are right on the very first thing drawn.
 - **And the same for light or dark, which was the bigger one.** If your device is set to dark and you asked for light, you were getting a beat of night before the day you asked for. That is gone too. It was the same cause and the same one-line answer.
 - **Why it took until now, honestly:** the answer written down last release was that this could not be fixed without keeping your choice somewhere this app refuses to keep things. That was wrong — true of one place, not of all of them. The part of the app that lets it work offline can read your settings, and it is what hands the page over, so it now hands over a page that already knows. Nothing new is stored anywhere.
-- **Considered and not done:** covering the screen for a moment while it looks your choice up. That swaps a colour settling for a blank screen — worse on a light device, not better — makes everyone wait on a cold start, and adds a way for the app to sit blank if anything goes wrong reading. The way it works now is earlier than any of that could be.
-- **What is still not right:** the little splash the phone or tablet shows in the half-second before an installed app opens still uses the original colours. That one is decided when you save the app to your home screen, and nothing the app does afterwards can change it. It is a separate piece of work and it has not been done.
+- **Considered and not done:** covering the screen for a moment while it looks your choice up. That swaps a color settling for a blank screen — worse on a light device, not better — makes everyone wait on a cold start, and adds a way for the app to sit blank if anything goes wrong reading. The way it works now is earlier than any of that could be.
+- **What is still not right:** the little splash the phone or tablet shows in the half-second before an installed app opens still uses the original colors. That one is decided when you save the app to your home screen, and nothing the app does afterwards can change it. It is a separate piece of work and it has not been done.
 
 ## 3.4.1 — ITERATION
 
@@ -488,29 +495,29 @@ triplet and what it did for you.
 - **The ring that shows where you are was being cut off.** Tap into the box you type in and a ring is drawn round it, so you can see that is where your typing will go. Five pixels of that ring were missing on every side — clearest on the left, where the box runs closest to the edge. It was happening to nearly every control in the app, not only that one, and it had been since the beginning.
 - **Why, in one sentence:** a box that scrolls has to cut off whatever falls outside it, and the ring is drawn just *outside* the control it belongs to. The three boxes that scroll now leave it six pixels to be drawn in. Nothing on screen has moved.
 - **And the same thing at the bottom of the panels.** Ten controls across the settings, the item detail, the record and the rest lost the bottom of their ring when you moved down to them with a keyboard, because the panel scrolled them exactly flush with its own edge. They stop a little short of it now.
-- **The automated check could not see this at all, which is the more useful half.** It asked whether a ring was *set*, and one was — three pixels wide, in every colour set, on every screen it visits. Whether those pixels reached the screen was a question nothing was asking. It now builds the ring’s own outline and checks it against every box that could cut it, on every control it already tests, at no extra cost.
+- **The automated check could not see this at all, which is the more useful half.** It asked whether a ring was *set*, and one was — three pixels wide, in every color set, on every screen it visits. Whether those pixels reached the screen was a question nothing was asking. It now builds the ring’s own outline and checks it against every box that could cut it, on every control it already tests, at no extra cost.
 - **What is still not right:** this checks the screens the automated walk visits. A screen it cannot reach has its rings unchecked, exactly as before.
 
 ## 3.4.0 — CAPABILITY
 
 *2026-08-25*
 
-- **Five sets of colours to choose from, not two.** *Quietkeep* (the one you have), *Instrument*, *Paper*, *Mono* and *Soft*. Each comes in light and dark, and light-or-dark stays a separate choice — so it is two decisions, not ten: which colours, and how bright.
-- **They are named, never a row of coloured squares.** A swatch on its own asks you to tell colours apart to use the control, which is the one thing this app will not do. The name says which it is and the note under it says what it is for.
-- **Every one clears the same contrast floors as the original.** Not a promise — all ten are checked against the thirteen colour pairs this app actually puts on screen, and the check takes a quarter of a second. That is what last release was for.
+- **Five sets of colors to choose from, not two.** *Quietkeep* (the one you have), *Instrument*, *Paper*, *Mono* and *Soft*. Each comes in light and dark, and light-or-dark stays a separate choice — so it is two decisions, not ten: which colors, and how bright.
+- **They are named, never a row of colored squares.** A swatch on its own asks you to tell colors apart to use the control, which is the one thing this app will not do. The name says which it is and the note under it says what it is for.
+- **Every one clears the same contrast floors as the original.** Not a promise — all ten are checked against the thirteen color pairs this app actually puts on screen, and the check takes a quarter of a second. That is what last release was for.
 - **Where they come from:** four of them were worked out for this family of apps by a design council and verified independently, and were sitting in the shared notes unused. *Instrument* is the one that council recommended; *Soft* is the lowest glare; *Mono* has no hue at all.
-- **One place decides the colours now.** They used to be written in four places in the stylesheet; five sets would have made that twenty blocks that must never disagree. There is one file, and the stylesheet is generated from it.
+- **One place decides the colors now.** They used to be written in four places in the stylesheet; five sets would have made that twenty blocks that must never disagree. There is one file, and the stylesheet is generated from it.
 - **What is still not right:** if you pick something other than the one you start with, you will see a moment of the original when the app first opens, before it can read your choice back. It will be in the right brightness — light or dark is answered before anything is drawn — so what you see is a hue settling, not day turning into night. It cannot be fixed without storing the choice somewhere this app deliberately does not store things.
 
 ## 3.3.0 — CAPABILITY
 
 *2026-08-25*
 
-- **A real fault, and you would have seen it:** if your device is set to dark and you chose *light* in the app, the app went light and every dropdown, date box and text area stayed dark — white on grey, a hole in the page, on exactly the setting that control exists to provide. Fixed. They follow your choice now, not the device.
-- **Colour checking got about a hundred times cheaper, and stricter.** The automated check used to render the whole app in every colour set and measure roughly 830 pairs each time — four minutes of browser per set. It now measures the app ONCE to learn which colour pairs it actually puts on screen, and checks each colour set against that by arithmetic. It turns out the whole app is thirteen distinct pairs.
-- **So more colour sets can be added without slowing anything down.** A new one is a list of seven colours; it is checked in about a millisecond and it either clears the contrast floors or it does not ship. That is the same standard as before, arrived at without rendering anything.
-- **And it found something invisible.** Thirteen controls in this app — every dropdown, the date picker, the text areas — are painted by your browser rather than by the app, so no colour set can change them. That was true before and nothing could see it, because they were being measured like any other colour and passing. They are written down now, each with a reason, and the check refuses any new one that turns up undeclared.
-- **What is still not right:** this makes checking a colour set cheap; it does not make the app check itself in places the automated walk never visits. A screen the walk does not reach has its colours unchecked, exactly as before.
+- **A real fault, and you would have seen it:** if your device is set to dark and you chose *light* in the app, the app went light and every dropdown, date box and text area stayed dark — white on gray, a hole in the page, on exactly the setting that control exists to provide. Fixed. They follow your choice now, not the device.
+- **Color checking got about a hundred times cheaper, and stricter.** The automated check used to render the whole app in every color set and measure roughly 830 pairs each time — four minutes of browser per set. It now measures the app ONCE to learn which color pairs it actually puts on screen, and checks each color set against that by arithmetic. It turns out the whole app is thirteen distinct pairs.
+- **So more color sets can be added without slowing anything down.** A new one is a list of seven colors; it is checked in about a millisecond and it either clears the contrast floors or it does not ship. That is the same standard as before, arrived at without rendering anything.
+- **And it found something invisible.** Thirteen controls in this app — every dropdown, the date picker, the text areas — are painted by your browser rather than by the app, so no color set can change them. That was true before and nothing could see it, because they were being measured like any other color and passing. They are written down now, each with a reason, and the check refuses any new one that turns up undeclared.
+- **What is still not right:** this makes checking a color set cheap; it does not make the app check itself in places the automated walk never visits. A screen the walk does not reach has its colors unchecked, exactly as before.
 
 ## 3.2.0 — CAPABILITY
 
@@ -520,7 +527,7 @@ triplet and what it did for you.
 - **It uses the room that was there.** The page has been capped at the same width since the shell was built, so from 768 pixels upward every screen showed the same phone-shaped column: 132 pixels of nothing each side on a tablet in landscape, 272 at desktop width. The number 900 is measured rather than chosen — the list of places asks for 276 pixels, the job needs at least 560, and with the spacing that is 896.
 - **Nothing about the job itself changed.** Same screens, same controls, same order, same words. What changed is where the two boxes sit. *Everywhere else* is still there too — the list being visible does not mean the way back should vanish, and a control that moves because the screen got bigger is a control you have to find again.
 - **One job beside the list, not several.** Two panes is the idea proved and measured; more than one job at once is a later question and is written down as one rather than left looking forgotten.
-- **What is still not right:** the automated accessibility check measures one screen size and now a wide one, but the wide pass covers the arrangement — whether anything runs past the edge, whether two controls touch, what the checker makes of it — rather than re-measuring every screen at that width. Colours are not re-checked there on purpose, because the arrangement moves boxes and does not change what is in them.
+- **What is still not right:** the automated accessibility check measures one screen size and now a wide one, but the wide pass covers the arrangement — whether anything runs past the edge, whether two controls touch, what the checker makes of it — rather than re-measuring every screen at that width. Colors are not re-checked there on purpose, because the arrangement moves boxes and does not change what is in them.
 
 ## 3.1.3 — ITERATION
 
@@ -554,11 +561,11 @@ triplet and what it did for you.
 
 *2026-08-25*
 
-- **Leaving “Sort things out” no longer means scrolling the whole batch.** Close was the last thing in a list that could run to hundreds, so getting out meant travelling past all of it. The title now stays at the top and the way out at the bottom; only the middle moves.
+- **Leaving “Sort things out” no longer means scrolling the whole batch.** Close was the last thing in a list that could run to hundreds, so getting out meant traveling past all of it. The title now stays at the top and the way out at the bottom; only the middle moves.
 - **And the same on five more screens** — the item panel, *More*, the replan card, the stopping-for-now note and the walkthrough. Every screen now keeps its way out under your thumb, and a new one cannot ship without.
 - **The record reads newest first, and you say how much.** It showed fifty at a time, oldest first, with no way to ask for anything else — so the thing that had just happened sat at the bottom and every visit began by pressing *Show more*. Choose 50, 250, 1,000 or everything; both choices are remembered on this device.
 - **Oldest first is still there**, in the same menu. Reading forwards is how a correction lands under the thing it corrected.
-- **Sync no longer stops partway when you re-pair a device.** Pairing, erasing, pairing again and syncing left the exchange refusing most of what arrived and halting halfway — the two devices ended up part-synced, with a message saying it had stopped. Nothing was ever lost; the store refused the repeats rather than writing them. Fixed: the same thing arriving several times in one delivery is now recognised as one thing.
+- **Sync no longer stops partway when you re-pair a device.** Pairing, erasing, pairing again and syncing left the exchange refusing most of what arrived and halting halfway — the two devices ended up part-synced, with a message saying it had stopped. Nothing was ever lost; the store refused the repeats rather than writing them. Fixed: the same thing arriving several times in one delivery is now recognized as one thing.
 - **You can choose light or dark.** It is in the (i) panel, under *Light or dark*, next to the text size. Changing the dropdown previews it and nothing is remembered until you press the button. Only this app, only on this device — your phone’s own setting is left alone.
 - **Three answers, not a switch.** Light, dark, or whatever your device is set to. The last one is how it has always behaved and it stays the default, so if you liked it following your device at sunset, do nothing.
 - **What is still not right:** three screens — the walkthrough, the replan card and the stopping-for-now note — have the right shape but are not yet measured on a real screen, because the automated walk has no way to open them. It names them rather than leaving them out quietly.
@@ -623,7 +630,7 @@ triplet and what it did for you.
 - **What a file will do to your work is now a list you can read, not a paragraph you have to get through.** Choosing an export used to answer with one block of a hundred and twenty words — what arrives, what changes on the way and what does not come at all, all run together, at the moment you have the least patience for it.
 - **It is one fact per line now, in three groups**: what comes with your work, what changed on the way in, and what stays behind. The line saying nothing is filed comes last, because it is the standing fact rather than something about your file.
 - **Each loss is stated once.** A repeating thing was reported twice — once as a rhythm to rebuild, and again six lines later in a bare list of what will not come. Two ways of saying one thing reads as two things.
-- **The screen is measured now.** Nothing had ever rendered this list, so its colours and spacing had never been checked in either theme; the accessibility walk chooses a file of its own and reads what comes back.
+- **The screen is measured now.** Nothing had ever rendered this list, so its colors and spacing had never been checked in either theme; the accessibility walk chooses a file of its own and reads what comes back.
 
 ## 2.35.0 — CAPABILITY
 
@@ -656,8 +663,8 @@ triplet and what it did for you.
 
 *2026-08-23*
 
-- **The file picker no longer looks like a progress bar that has stopped.** With a file chosen it was a rounded bordered box holding a button, a grey block and the filename — and the grey block, which is the browser’s own thumbnail of your file, read as a half-filled track. On the screen you use to bring in a thousand things, that is the worst thing it could have looked like.
-- **The box was ours; the grey block is not.** The browser draws that and it cannot be styled. Removing our border leaves nothing for it to look like the end of, and the row reads as what it is: a button, then what you picked.
+- **The file picker no longer looks like a progress bar that has stopped.** With a file chosen it was a rounded bordered box holding a button, a gray block and the filename — and the gray block, which is the browser’s own thumbnail of your file, read as a half-filled track. On the screen you use to bring in a thousand things, that is the worst thing it could have looked like.
+- **The box was ours; the gray block is not.** The browser draws that and it cannot be styled. Removing our border leaves nothing for it to look like the end of, and the row reads as what it is: a button, then what you picked.
 
 ## 2.33.1 — ITERATION
 
@@ -671,18 +678,18 @@ triplet and what it did for you.
 *2026-08-23*
 
 - **The tags you wrote now come across as places.** They were dropped at the door. If you came from OmniFocus that is your whole context system — places, locations, people — and a store that had one arrived carrying a single context, with one sentence in the summary naming what had just been thrown away.
-- **Which is why nothing that narrows what you are offered seemed to do anything.** Anything unlabelled fits every answer, deliberately, so a store with no places is never shown an empty screen. That protection was working perfectly on a store that had places.
+- **Which is why nothing that narrows what you are offered seemed to do anything.** Anything unlabeled fits every answer, deliberately, so a store with no places is never shown an empty screen. That protection was working perfectly on a store that had places.
 - **A tag on a project comes too, and reaches everything inside it.** One label on a container is worth more than the same label on each of its children.
 - **How long something takes comes across as well**, from an estimate you had already written down. Flags still do not — this app has no priority field, and the summary says so rather than dropping it quietly.
 - **And there is somewhere to see what you have.** *Where the attention is* now lists **The places you have** and how much each one reaches. Until now a place existed only inside the control that filters by it, so there was nowhere to ask what you had named.
-- **Nothing here is guessed.** No setup screen, no template, no percentage of how organised you are, and nothing inferred from what you do — only words you typed, in the system you typed them in.
+- **Nothing here is guessed.** No setup screen, no template, no percentage of how organized you are, and nothing inferred from what you do — only words you typed, in the system you typed them in.
 
 ## 2.32.0 — CAPABILITY
 
 *2026-08-23*
 
 - **The invented set now looks like a real store, not a tidy one.** It was built to contain one of every kind, and to manage that three quarters of it sat inside a project and over half carried a place. A store read from a real device is the other way round — 1,432 things, 1,255 of them with no project, no place, nobody named and no estimate. The set is about fifteen hundred things now and most of them are unsorted.
-- **That matters because it is what everything gets judged against.** Anything that helps you narrow what you are offered works beautifully on a set where everything is labelled, and does almost nothing on a store where nothing is. A set tidier than reality does not fail — it agrees with you.
+- **That matters because it is what everything gets judged against.** Anything that helps you narrow what you are offered works beautifully on a set where everything is labeled, and does almost nothing on a store where nothing is. A set tidier than reality does not fail — it agrees with you.
 - **The manual now covers *Things you can do*.** Sending an item to your calendar, replaying the walkthrough, printing today, telling someone where things are and its four formats, bringing work in from elsewhere, and both sets of invented work — including which one touches your store and which one only writes a file.
 - **And** *Every one of them* — the fold that opens the complete list — **is described at last.** The manual said *What you are holding* was the complete list without saying how to see it.
 
@@ -724,7 +731,7 @@ triplet and what it did for you.
 *2026-08-23*
 
 - **The manual now covers the report the app writes about itself.** It never mentioned it at all — not what it is, not the two ways to reach it, not that it contains counts and nothing you wrote. *How it works* has a *When something is wrong* section now.
-- **Including what *What the situation can narrow* is telling you.** Those numbers explain something that otherwise looks broken: if almost nothing carries a place, answering *where are you* changes almost nothing, because anything unlabelled turns up wherever you are. That is the design, and now the manual says so as well as the report.
+- **Including what *What the situation can narrow* is telling you.** Those numbers explain something that otherwise looks broken: if almost nothing carries a place, answering *where are you* changes almost nothing, because anything unlabeled turns up wherever you are. That is the design, and now the manual says so as well as the report.
 - **And a pointer from where the question actually comes up** — the situation section of the manual now says where to look when an answer seems to do nothing.
 - **Nothing in the app changed.** This release is documentation of what already shipped.
 
@@ -733,7 +740,7 @@ triplet and what it did for you.
 *2026-08-23*
 
 - **The report now says whether the situation questions can narrow anything.** Under *What the situation can narrow*: how many things are reached by a place — their own or one they inherit — how many name somebody, and how many carry a time estimate.
-- **Because a full store can have nothing for those questions to bite on.** Anything unlabelled fits every answer, deliberately, so a store with one place answers *where are you* with almost everything. That is the design working. Until now nothing said so, and answering a question and seeing no change looked identical to a broken feature.
+- **Because a full store can have nothing for those questions to bite on.** Anything unlabeled fits every answer, deliberately, so a store with one place answers *where are you* with almost everything. That is the design working. Until now nothing said so, and answering a question and seeing no change looked identical to a broken feature.
 - **It says where the leverage is.** A place on a project reaches everything inside it, so the report counts what sits inside something, and how many containers already carry a place. Those are the few answers that cover the most.
 - **A low number is never listed as a fault.** Filing is optional in this app, always. These are facts about a store, they sit with the other counts, and nothing about them appears under *What is wrong*.
 - **Still nothing you wrote.** Counts and states only — no place names, no people’s names, nothing else. The report is swept for every one of them on the way out.
@@ -755,7 +762,7 @@ triplet and what it did for you.
 - **The app asks where you are, once, at the moment it would matter.** Open *What’s the situation?* before you have named anywhere and it now asks, instead of showing you a chooser with nothing in it. Name one and it is applied straight away — you do not have to go and find it again.
 - **It asks once and then never again.** The question is replaced by the ordinary chooser the moment a place exists, so there is nothing to dismiss and nothing that comes back.
 - **Saying no costs nothing.** Close the sheet, or do not type. Nothing needs a place, and anything without one turns up wherever you are — which the sheet says out loud rather than leaving you to find out.
-- **What is deliberately NOT here.** No setup screen, no template to pick, and nothing asking you to get organised before you can use the app. The research this came from refuses all three by name, and it refuses guessing a place from what you do even more firmly.
+- **What is deliberately NOT here.** No setup screen, no template to pick, and nothing asking you to get organized before you can use the app. The research this came from refuses all three by name, and it refuses guessing a place from what you do even more firmly.
 - **And nothing similar was added for roles or projects**, though the plan had it. The place question works because you opened a screen to answer it and half the answer was missing. There is no equivalent moment for a role, and inventing one would be a setup prompt wearing a question mark.
 
 ## 2.27.0 — CAPABILITY
@@ -763,7 +770,7 @@ triplet and what it did for you.
 *2026-08-23*
 
 - **A place you put on a project now reaches everything inside it.** Before this, saying where something could be done meant saying it on every single item — which on a planner brought in from somewhere else is hundreds of statements, and nobody was ever going to make them. One statement on the project does it now, and it reaches down through however many levels are between.
-- **Nothing you already set has changed.** A thing keeps its own places as well as the ones it inherits, so a place put on an item is never cancelled by one further up.
+- **Nothing you already set has changed.** A thing keeps its own places as well as the ones it inherits, so a place put on an item is never canceled by one further up.
 - **And a thing with no place anywhere above it still shows everywhere**, exactly as before. Saying where you are cannot empty the screen.
 - **The place field says this now**, because it used to say something that stopped being true: a thing with no place of its own goes where it lives.
 - **What is still true and still not fixed.** An item’s own panel lists only the places you set on it, not the ones it inherits — so if something surprises you by showing up, the reason is on whatever it sits inside rather than on the thing itself.
@@ -783,8 +790,8 @@ triplet and what it did for you.
 
 - **Bringing a planner in no longer reads as a backlog you have already fallen behind on.** The summary now says that nothing is filed, and that filing was never asked for — because it was not. Everything arrives as work, in the words you wrote it in, and it is usable before you have sorted any of it.
 - **You can say you have a long stretch, and the app stops pretending that is a filter.** Four hours was not on the list at all. It is now, and choosing it does not narrow anything — it says so, and points at the Menu instead. A free afternoon is rarely short of time; it is short of the thing you actually want to do, and the Menu is the one list where nothing is asking.
-- **What is deliberately NOT here.** Nothing sorts your import for you, nothing guesses which things belong where, and there is no progress bar for how organised you are. The research this came from refuses all three by name.
-- **What is still true and still not fixed.** A place you put on a project still does not reach the things inside it, so labelling in bulk is not possible yet.
+- **What is deliberately NOT here.** Nothing sorts your import for you, nothing guesses which things belong where, and there is no progress bar for how organized you are. The research this came from refuses all three by name.
+- **What is still true and still not fixed.** A place you put on a project still does not reach the things inside it, so labeling in bulk is not possible yet.
 
 ## 2.24.1 — ITERATION
 
@@ -934,7 +941,7 @@ triplet and what it did for you.
 
 - **The sample now has an upkeep that has actually come round.** It had one before, and it was deliberately not due yet — which meant the *Upkeep* strip stayed hidden, and if you loaded the sample to see what the app does, that was one thing it never showed you. There are two now: one comfortable, one ready, because the point of a rhythm is that it is not a deadline and you cannot see that from a single example.
 - **What this actually fixed is invisible to you and worth saying anyway.** Because nothing could reach that strip, none of the accessibility checks had ever measured it — not its contrast, not what a screen reader calls its chips, in either theme, for the whole life of the app. It passes now, and a new check refuses to let any part of the screen go unmeasured like that again.
-- **Nothing about the app itself changed.** The same strip, the same words, the same behaviour.
+- **Nothing about the app itself changed.** The same strip, the same words, the same behavior.
 
 ## 2.14.2 — ITERATION
 
@@ -1055,7 +1062,7 @@ triplet and what it did for you.
 *2026-08-19*
 
 - **The report no longer tells you to back up an empty planner.** On a store with nothing in it, the first thing under *what is wrong* was “No copy has ever left this device — everything here exists in one place, and clearing website data would take it.” There is no everything, and nothing to take. A chore invented out of nothing is exactly what this app is not supposed to do, and it was doing it on the one screen whose whole job is to say only what is true.
-- **And the storage line now says what it is actually counting.** It read *Used by Quietkeep: 1.3 MB* next to a log of zero events, which looks like either a lie or a bug. It was neither: the browser counts the app’s own downloaded code and anything you have put in as one number and does not separate them. On an empty planner that figure is almost entirely the app. It says so now, and it is labelled *Used at this address*.
+- **And the storage line now says what it is actually counting.** It read *Used by Quietkeep: 1.3 MB* next to a log of zero events, which looks like either a lie or a bug. It was neither: the browser counts the app’s own downloaded code and anything you have put in as one number and does not separate them. On an empty planner that figure is almost entirely the app. It says so now, and it is labeled *Used at this address*.
 - **Still true and still worth acting on:** the browser has not agreed to keep your planner. That warning stays on an empty store, because it is the thing to sort out **before** you rely on it rather than after.
 
 ## 2.9.3 — ITERATION
@@ -1146,7 +1153,7 @@ triplet and what it did for you.
 - **And a readout: Where the attention is.** A line above your list, once you have named a role, showing what each one is carrying right now. It says the number of things and nothing else — no bar, no share of a whole, no target, nothing about whether any of it is even. A bar is a machine for implying you are behind. What it is for is the question that has been in the notes for weeks: whether you are putting enough into each. The app plots; you read it.
 - **It also states what belongs to no role at all**, which on any real set is most of it. Leaving that out would make the named ones look like the whole of your life.
 - **Nothing is required and nothing is guessed.** The app never infers a role from a title, a folder or your history. Most things belong to none, and that is the ordinary case rather than an unfinished one.
-- **This was settled on 4 August and not built for thirteen days.** The shape was written down correctly that day — a role crosses areas, so it can never be a container, it has to be a link — and then the build was held back pending a judgement about whether you had made enough projects yet to justify it. That judgement was not anyone’s to make but yours.
+- **This was settled on 4 August and not built for thirteen days.** The shape was written down correctly that day — a role crosses areas, so it can never be a container, it has to be a link — and then the build was held back pending a judgment about whether you had made enough projects yet to justify it. That judgment was not anyone’s to make but yours.
 
 ## 2.5.0 — CAPABILITY
 
@@ -1163,7 +1170,7 @@ triplet and what it did for you.
 
 - **Things now say what they are.** A project says **Project**, a goal says **Goal**, an area says **Area** — on its row in your list and at the top of its own sheet. Also **Waiting for**, **Upkeep**, **A worry**, **Something on you**, **A wish**, **Where you left off**, **A place**, **Person**, **A named period**, **Journal entry**.
 - **Nothing in the app had ever said this.** Fourteen different kinds of thing, and not one word for any of them anywhere you could see. A project holding things said "7 under it" — a number, with no name on it — and a project holding nothing, a goal, an area and an outcome said nothing whatsoever. So a goal and a stray to-do were drawn exactly the same, which is why the screen read as one long to-do list: that is what it looked like.
-- **Ordinary to-dos are not labelled, on purpose.** Writing "Action" on several hundred rows would add a word to every line and tell you nothing. The ones that get named are the ones you could not otherwise tell apart from a to-do.
+- **Ordinary to-dos are not labeled, on purpose.** Writing "Action" on several hundred rows would add a word to every line and tell you nothing. The ones that get named are the ones you could not otherwise tell apart from a to-do.
 - **Your sheets say it too.** The line under a thing’s title told you it was on the Menu, or done, or when it comes back — everything about it except what it actually is, which is the thing that decides how to read the rest.
 - **Still owed: the tree and search results do not say it yet.** They have room for it and it should go there; this release covers your list and the sheets, which is where it was reported.
 
@@ -1192,7 +1199,7 @@ triplet and what it did for you.
 
 *2026-08-12*
 
-- **Every way of getting somewhere now looks like a button.** Five lines on the main screen were controls that rendered as plain grey sentences: the claim above your list, "How it hangs together", the Menu line, "Sort things out", and the jump to your list. Measured on the work surface: 50 controls, 45 with a border or a fill, and the 5 without were every route off the page. They now carry the same border as More, Done and Not this.
+- **Every way of getting somewhere now looks like a button.** Five lines on the main screen were controls that rendered as plain gray sentences: the claim above your list, "How it hangs together", the Menu line, "Sort things out", and the jump to your list. Measured on the work surface: 50 controls, 45 with a border or a fill, and the 5 without were every route off the page. They now carry the same border as More, Done and Not this.
 - **And there is a way back.** There was none — nothing anywhere in the app returned you to the top. A jump that sent you five screens down was a one-way trip. **Back to the top** now sits at the end of your list.
 
 ## 2.0.9 — ITERATION
@@ -1867,7 +1874,7 @@ triplet and what it did for you.
 *2026-08-02*
 
 - **The journal.** Somewhere to write that is not a list and asks nothing of you. It is in the ⓘ panel under Your data, and it starts by asking you to choose a passphrase.
-- **Your entries are scrambled with that passphrase, and Quietkeep cannot read them.** Not while the journal is closed, not in a backup, not in anything it syncs through. That is not a promise about good behaviour — the words genuinely are not there to be read.
+- **Your entries are scrambled with that passphrase, and Quietkeep cannot read them.** Not while the journal is closed, not in a backup, not in anything it syncs through. That is not a promise about good behavior — the words genuinely are not there to be read.
 - **Which means a forgotten passphrase cannot be recovered, by you or by anyone.** It says so plainly before you set one, because that is the moment it matters rather than something to find out later. Everything else you keep here is untouched by it.
 - **Nothing you write is ever counted, searched, or brought back at you.** A journal entry appears on no list, is offered as no next thing, and has no date. It is not work, and the app treats it as though it is not.
 - Closing the journal, or simply reloading, shuts it again. There is no setting to leave it open.
@@ -2229,7 +2236,7 @@ triplet and what it did for you.
 - If dates went by while you were away, you can move them all to the Menu in one go. **Nothing is deleted and nothing is marked done** — everything is still there and you can bring any of it back whenever you want.
 - What that actually removes is not the work. It is the twenty separate decisions standing between you and being able to start, which is the real cost of coming back.
 - You can decline and take them one at a time instead. Saying no is not recorded as anything.
-- Nothing here says you are behind, and nothing apologises on your behalf. Being away is not something that happened to your list — it is something you did, and it was allowed.
+- Nothing here says you are behind, and nothing apologizes on your behalf. Being away is not something that happened to your list — it is something you did, and it was allowed.
 
 ## 0.17.1 — ITERATION
 
@@ -2257,7 +2264,7 @@ triplet and what it did for you.
 
 - Some work you do; some work you **carry**. Open anything you have made bigger than one step and say "someone else is doing this", and it moves to a new "Carrying" — who is running it, when you owe an answer, and what is outstanding.
 - **Quietkeep stops offering you their work.** Nothing under something you are only carrying will be handed to you as your next step. It stays on your list, because it is still real — it just stops being your job.
-- Nothing is graded. No "at risk", no amber, no colour that means anything about how someone else is getting on. It states who and when and lets you decide, because it does not have the evidence to do anything else.
+- Nothing is graded. No "at risk", no amber, no color that means anything about how someone else is getting on. It states who and when and lets you decide, because it does not have the evidence to do anything else.
 - You can now say when you owe somebody an answer, and that date behaves like any other — when it goes by it asks you what to do about it rather than sitting there.
 - And there is now a report. What has changed since the last time you told anyone — finished, come back, now with someone else — plus what is still outstanding and what is coming up.
 - Copy it, save it as Markdown, save it as a spreadsheet, or print it. Nothing is sent anywhere; it is written for you to hand over yourself.

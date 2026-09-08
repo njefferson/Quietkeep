@@ -185,7 +185,7 @@ test('the key is stored as the file carries it, so a round trip is lossless', as
 // its work to somebody else's relay, sealed with somebody else's key — which that
 // somebody can read. The browser refuses the connection because the Sync
 // edition's CSP names exactly one host, but that refusal is SILENT and the whole
-// defence rested on one generated header.
+// defense rested on one generated header.
 
 test('a pairing file naming another handover point is refused by name', async () => {
   const store = kv();
@@ -313,7 +313,7 @@ test('a device with no pairing has no key to show', async () => {
 // import is where the real danger lives — a key you were handed by somebody else
 // lets them read everything you sync, and the app cannot tell an honest key from
 // a hostile one because a wholly attacker-chosen key is cryptographically valid.
-// The only defence is the person, so the words have to arm the person.
+// The only defense is the person, so the words have to arm the person.
 
 test('the import caution names the danger and the check that defends against it', async () => {
   // Two clauses carry the weight: a key from anyone else is a way in, and the

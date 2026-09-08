@@ -75,7 +75,7 @@ projection.**
 
 Any second account — attributed transcript, party field on `decision.logged`,
 any surface showing two versions of anything. Any reconciliation queue. Any
-ageing, pressure, colour, or ordering by duration on a holding pointer, in
+ageing, pressure, color, or ordering by duration on a holding pointer, in
 either direction. Any per-person tally, ever. Any in-app message, share, or
 notification to the other person — this is memory support, never a channel.
 

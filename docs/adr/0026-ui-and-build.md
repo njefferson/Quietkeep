@@ -29,7 +29,7 @@ framework would be more code than the thing it renders.
 **This is not a permanent vow.** If a surface arrives that genuinely needs
 managed state, that is a new decision with a new record. What is permanent is the
 requirement it would have to meet: it may not degrade dialog, focus, or text-size
-behaviour, and `ACCESSIBILITY.md` is the test.
+behavior, and `ACCESSIBILITY.md` is the test.
 
 ## Why a build step at all, in a family that avoids them
 

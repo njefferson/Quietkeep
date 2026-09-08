@@ -52,7 +52,7 @@ if (marks.length < 20) {
 let noEvidence = 0;
 let noRouting = 0;
 // Tracked separately from `noRouting` so the summary line cannot print `ok`
-// beside its own FAIL — a missing mark and an unrecognised mark are both
+// beside its own FAIL — a missing mark and an unrecognized mark are both
 // reasons the claim "every entry says how it routes" is false.
 let badRoute = 0;
 let badStrength = 0;

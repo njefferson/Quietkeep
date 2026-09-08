@@ -41,7 +41,7 @@
 
        - FIXED was built once, as a floating Contents button, and probed at two
          screen sizes across thirteen scroll positions: it overlapped ten
-         controls and took the CENTRE of three, every one of them a card's Done.
+         controls and took the CENTER of three, every one of them a card's Done.
          Mid-scroll, content passes under a fixed element by definition, and
          padding at the document's end does not help.
        - STICKY was the way out of the (i) panel, and it did NOT hold on the
@@ -148,7 +148,7 @@
        put a thought down without going back for it.
        NOT FLOATING. ADR-0100 measured a floating control at two screen sizes
        across thirteen scroll positions: it overlapped ten controls and took the
-       centre of three card Done buttons. This is an ordinary button in an
+       center of three card Done buttons. This is an ordinary button in an
        ordinary row, beside the way out, and it cannot cover anything.
        The glyph is decorative and the NAME is a sentence (hub LESSONS §29):
        "+" is not a phrase anybody can say to a voice control.
@@ -159,7 +159,7 @@
        it is not a second box, it is the way out wearing a plus. The comment
        here used to say this route existed so you would not have to leave the
        job first, while the code four files away left it — a claim about
-       behaviour, in the file that does not have the behaviour.
+       behavior, in the file that does not have the behavior.
        There is no second capture path and there should not be (one draft, one
        commit, one Dump). So the honest fix is the label, not the wiring: this
        says it leaves, and somebody mid-task can decide whether the thought is
@@ -211,7 +211,7 @@
      before they can put a thought down.
 
      ITS OWN WRAPPER, because `.bar` used to do the spacing and the pair has to
-     keep travelling together when it wraps — the note at `.stance-bar` records
+     keep traveling together when it wraps — the note at `.stance-bar` records
      what a nested flex row costs without `min-width: 0`. -->
 <div class="page-nav">
   <!-- "ELSEWHERE IN THE APP", NOT "EVERYTHING ELSE" (3.9.2). Reported:
@@ -219,7 +219,7 @@
        FIRST, before anything it could be left over from. The word "else" is
        fine when it modifies WHERE and wrong when it modifies WHAT, because then
        it says the contents are the remainder. Behind it are seven rooms nobody
-       would call leftovers: your data, settings, colours, help, the reference,
+       would call leftovers: your data, settings, colors, help, the reference,
        what the app can do, and what it is. So it is locative now, and it names
        THE APP — which is 3.4.3's own reasoning for retiring `More`, finally
        said out loud on the control instead of only in the notes.
@@ -414,7 +414,7 @@
   <!-- Coming back (product law 8: rest is legitimate). The greeting is BOUNDED
        BY SCHEMA — Next-up, at most three triage items, the gauge, and an amnesty
        offer. There is no shape it can take that shows the backlog, and it says
-       how long you were away without apologising on your behalf. -->
+       how long you were away without apologizing on your behalf. -->
   <section id="reentry" data-always class="reentry" aria-labelledby="reentry-heading" hidden>
     <h2 id="reentry-heading" class="section" tabindex="-1">Welcome back</h2>
     <p id="reentry-words" class="reentry-words"></p>
@@ -498,7 +498,7 @@
          else. Reported from a device in exactly those words. -->
     <button id="nextup-title" class="nextup-title" type="button"></button>
     <p id="nextup-why" class="nextup-why"></p>
-    <!-- WHERE it sits (V2 stage 1). Reuses .nextup-why's measured colour pair —
+    <!-- WHERE it sits (V2 stage 1). Reuses .nextup-why's measured color pair —
          .nextup-place adds layout only, so the contrast registry's existing row
          covers it and no unmeasured pair ships (LESSONS 28 kept the honest way:
          same ink, same paper, one more line). -->
@@ -765,7 +765,7 @@
          number stated once is gone by then. That is the whole reason this is
          painted on every repaint.
          REUSES `.triage-gauge` so the contrast pair is the registered one and
-         no new colour enters the app. -->
+         no new color enters the app. -->
     <p id="triage-here" class="triage-gauge" hidden></p>
     <!-- tabindex=-1 so focus can land here after a card is replaced: activating a
          route removes the button, and focus must not fall to <body> (WCAG 2.4.3). -->
@@ -937,8 +937,8 @@
          declaration, and the two halves side by side where somebody asking
          either one is already standing.
 
-         Its own count line, and each list labelled by its own, because two
-         unlabelled lists in one section are one list to a screen reader.
+         Its own count line, and each list labeled by its own, because two
+         unlabeled lists in one section are one list to a screen reader.
 
          What it must NEVER carry is a duration. The list above says "With Sam
          for three weeks" about what somebody owes you; the same words pointed
@@ -1018,7 +1018,7 @@
        Counts of live work per named role, sorted BY NAME and never by size,
        because ordering somebody's own identities by how much each carries is
        a ranking of their life and the app does not get to make it. No target,
-       no proportion of a whole, no bar, no colour, nothing "balanced" — a bar
+       no proportion of a whole, no bar, no color, nothing "balanced" — a bar
        is a machine for implying you are behind (law 5).
 
        BEHIND A CONTROL, like the Menu and the claim: a readout that greets you
@@ -1071,7 +1071,7 @@
        This heading existed and nothing else did: no section around it, no id,
        no way to focus it. So the list that is most of the page's height could
        not be a destination — every other block on this surface is a <section>
-       with a labelled, focusable heading, and the one somebody actually lives
+       with a labeled, focusable heading, and the one somebody actually lives
        in was a loose <h2> in the middle of <main>. It reads to a screen reader
        as a heading with no region, and to the contents sheet as nothing at all.
        Wrapping it costs no layout: a <section> is a block box exactly like the
@@ -1201,7 +1201,7 @@
 
        AND IT IS NOT A FLOATING BUTTON, which is what it was for one build. Probed
        at 820x1180 and 390x844 over thirteen sample things, a fixed control in the
-       bottom corner overlapped ten controls and took the CENTRE of three, every
+       bottom corner overlapped ten controls and took the CENTER of three, every
        one a card's Done. Reserving space with padding fixes only the END of the
        document; mid-scroll, content goes under a fixed element by definition. So
        the failure was not "it is sometimes in the way" — you press Done and the
@@ -1235,7 +1235,7 @@
        a flex column now: this is the only thing that moves, and the title above
        it and the Close below it cannot scroll away because they are not inside
        it. The children are NOT re-indented — the diff for that on a surface
-       this size buries the one line that changed behaviour. -->
+       this size buries the one line that changed behavior. -->
   <div class="sheet-body">
   <div id="sort-picker">
     <p class="detail-hint">Pick a batch. One card at a time, oldest first
@@ -1385,7 +1385,7 @@
        a flex column now: this is the only thing that moves, and the title above
        it and the Close below it cannot scroll away because they are not inside
        it. The children are NOT re-indented — the diff for that on a surface
-       this size buries the one line that changed behaviour. -->
+       this size buries the one line that changed behavior. -->
   <div class="sheet-body">
   <p id="detail-state" class="detail-state"></p>
 
@@ -1454,8 +1454,8 @@
        different axis: where it can be DONE, and a thing can be doable in more
        than one place, so it is a list of links and never a second parent.
        Nothing is required. A thing with no context is doable anywhere, which is
-       why an unlabelled thing is never filtered away by "where you are" — the
-       filter narrows to what fits, and everything unlabelled always fits. -->
+       why an unlabeled thing is never filtered away by "where you are" — the
+       filter narrows to what fits, and everything unlabeled always fits. -->
   <div class="detail-group">
     <label class="detail-label" for="detail-context">Where can this be done?</label>
     <div class="detail-row">
@@ -1469,7 +1469,7 @@
          which stopped being true the moment a place on a project began reaching
          the work inside it: a thing with none of its own can now be reached by
          one it inherits. Leaving the old sentence would have made the sheet
-         quietly wrong about the app's behaviour, which is worse than saying
+         quietly wrong about the app's behavior, which is worse than saying
          less. -->
     <p id="detail-context-hint" class="detail-hint">
       As many as fit, commas between them, and none is required. With no place of
@@ -1539,7 +1539,7 @@
   </div>
 
   <!-- The estimate — logged from v1 because it can never be backfilled; the
-       learning that reads it comes later. Optional, one number, no judgement. -->
+       learning that reads it comes later. Optional, one number, no judgment. -->
   <div class="detail-group" id="detail-estimate-group">
     <label class="detail-label" for="detail-estimate">About how long?</label>
     <div class="detail-row">
@@ -1685,7 +1685,7 @@
          cannot be advertised until a date, a promotion filled temporarily, or a
          position out to advert now. Those have a state, and one the app cannot
          know: a phrase somebody writes, never a list the app defines, which
-         would be the app modelling their organisation.
+         would be the app modelling their organization.
          The SECOND box is the one that earns the feature. A change in the world
          has no cue to walk past, so the only way to reach it is to keep
          checking — and checking costs continuously, against whatever else is
@@ -1853,7 +1853,7 @@
        tree is single-parent, so a thing crossing areas structurally cannot be a
        container, and a role is a cross-cutting LINK. Q-13 said so on
        2026-08-04, named the shape, and the build was then deferred for thirteen
-       days behind a judgement about whether enough containers existed yet.
+       days behind a judgment about whether enough containers existed yet.
        The same machinery as the places above, pointed at a different question:
        that one asks WHERE work can be done, this one asks WHO it is for.
        Nothing is required, nothing is inferred, and the honest majority of what
@@ -2136,7 +2136,7 @@
        the bottom of a phone.
 
        No gate saw it. The a11y pass measures contrast, names and target size;
-       the smoke walk drives behaviour; neither has any opinion about text
+       the smoke walk drives behavior; neither has any opinion about text
        nobody meant to publish. `npm run smoke` now asserts the rendered page
        carries no comment syntax at all.
 
@@ -2182,7 +2182,7 @@
   <div class="more-list">
     <button type="button" class="more-go" data-go="group-actions">Things you can do</button>
     <button type="button" class="more-go" data-go="group-extras">Settings</button>
-    <button type="button" class="more-go" data-go="group-colour">Colours</button>
+    <button type="button" class="more-go" data-go="group-color">Colors</button>
     <button type="button" class="more-go" data-go="group-data">Your data</button>
     <button type="button" class="more-go" data-go="group-help">Help</button>
     <button type="button" class="more-go" data-go="group-why">How it works</button>
@@ -2836,7 +2836,7 @@
        switches at sunset and this is what you are reading at sunset.
        THREE ANSWERS, NOT A TOGGLE. A toggle has two positions and the honest
        set is three — light, dark, and follow the thing you already told your
-       device. Shipping two would remove the behaviour every reader has today.
+       device. Shipping two would remove the behavior every reader has today.
        A DEVICE PREFERENCE, not an event, exactly like the text size above. -->
   <h3 class="about-section">Light or dark</h3>
   <p class="about-p">
@@ -2913,7 +2913,7 @@
   <button id="sheet-group-extras-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
-<!-- COLOUR IS ITS OWN DESTINATION (3.5.1, ADR-0093 applied once more).
+<!-- COLOR IS ITS OWN DESTINATION (3.5.1, ADR-0093 applied once more).
      It was a block inside Settings, and by 3.5.0 it was a heading, a sentence,
      five pictures, a control and a note — a room being kept in somebody else's
      drawer. It took Settings over its budget TWICE and the note beside the
@@ -2924,23 +2924,23 @@
      fine — and the whole argument for a picture is that you can see it. One
      column here, and a half is about 170px.
      MODE STAYED BEHIND. *Light or dark* is a separate axis (PALETTES.md §6) and
-     is not a set of colours; moving it too would have made this door mean
+     is not a set of colors; moving it too would have made this door mean
      "anything to do with looking", which is Settings. -->
-<dialog id="sheet-group-colour" aria-labelledby="sheet-group-colour-title">
-  <h2 id="sheet-group-colour-title" class="section">Colours</h2>
+<dialog id="sheet-group-color" aria-labelledby="sheet-group-color-title">
+  <h2 id="sheet-group-color-title" class="section">Colors</h2>
   <div class="sheet-body">
   <!-- THE SECOND AXIS (3.4.0, ADR-0110). Mode says how bright; a palette says
-       which colours, and the two are independent — hub PALETTES.md §6, which is
+       which colors, and the two are independent — hub PALETTES.md §6, which is
        why *Light or dark* stayed in Settings when this left it.
-       NAMED, NOT A ROW OF SWATCHES. A coloured square alone is colour as the
+       NAMED, NOT A ROW OF SWATCHES. A colored square alone is color as the
        sole carrier of meaning, which Doctrine §4 forbids outright; the name is
-       the control and the colour is what it does.
+       the control and the color is what it does.
        ALL FIVE PASS THE SAME FLOORS. That is not a claim in this comment — it is
        `npm run palette:check`, which holds every family in both modes against
        the thirteen pairs this UI actually renders, in a quarter of a second. -->
-  <!-- NO SECTION HEADING. `Which colours` sat here while this was one block
+  <!-- NO SECTION HEADING. `Which colors` sat here while this was one block
        among a dozen in Settings, and it was the right fix then — every other
-       block had one and this had none. The sheet is only colour now, so the
+       block had one and this had none. The sheet is only color now, so the
        same words became the title and a second copy of them is a heading
        repeating the heading above it. -->
   <p class="about-p">
@@ -2949,11 +2949,11 @@
   </p>
   <!-- PICTURES, BECAUSE NAMING A THING AND SHOWING IT ARE NOT ALTERNATIVES.
        This was a `<select>` of five names, which satisfies Doctrine §4 — the
-       name is the control, colour is never the sole carrier — and still asks
+       name is the control, color is never the sole carrier — and still asks
        you to choose a look you cannot see.
        THE RADIO IS REAL AND VISIBLE. Selection rides on the control's own
-       checked state, not on a coloured outline round the chosen tile, so what
-       says "this is the one" is never colour. The picture is `alt=""`: it
+       checked state, not on a colored outline round the chosen tile, so what
+       says "this is the one" is never color. The picture is `alt=""`: it
        carries no information the name does not, and describing a palette in
        words is what the name and the note already do.
        THE PICTURES ARE GENERATED, `npm run palette:shots`, from the same
@@ -2961,7 +2961,7 @@
        like one thing and paint another. Each is one family shown TWICE, day on
        the left and night on the right, because a family is two palettes and ten
        tiles is a wall. The same view both sides, so the button is in both and
-       the card is in both: a cut through ONE copy shows two colours and compares
+       the card is in both: a cut through ONE copy shows two colors and compares
        nothing, which is the version this replaced. -->
   <fieldset id="ui-palette" class="palette-pick">
     <legend class="detail-inline">This app uses</legend>
@@ -2993,7 +2993,7 @@
   </fieldset>
   <p id="ui-palette-note" class="storage-note" role="status" aria-live="polite"></p>
   </div>
-  <button id="sheet-group-colour-close" data-way-out type="button" class="ghost">Close</button>
+  <button id="sheet-group-color-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>
 
 <!-- `data-door` ON EACH SHEET OPENED FROM THE WORKSPACE (2.0.7). The walks need
@@ -3166,7 +3166,7 @@
          thirteen other things — people, topics, a waiting state, a priority.
 
          AND A MIS-TYPED ONE HIDES WORK, which is why this is not tidiness. Once
-         a thing is reached by ANY place it stops being unlabelled, so `fitsHere`
+         a thing is reached by ANY place it stops being unlabeled, so `fitsHere`
          no longer lets it through every answer: something tagged only "Health"
          vanishes the moment you say you are at Home. Measured on that export —
          five items reachable by nothing but a non-place label.
@@ -3195,7 +3195,7 @@
          THE MOMENT, which the entry does not specify and which had to be
          chosen. Its written condition — the first time an offer would differ by
          place — cannot fire on a store with no places, because `fitsHere`
-         returns true for everything unlabelled and so the offer never differs.
+         returns true for everything unlabeled and so the offer never differs.
          The moment used instead is this one: somebody opened this sheet to
          answer what their situation is, and the control for half the answer was
          not there. That is the instant the answer would change, they arrived
@@ -3253,7 +3253,7 @@
       <select id="with-who" aria-describedby="with-note"></select>
     </div>
 
-    <!-- A SITUATION YOU RECOGNISE (2.21.0). Name what you have just set and it
+    <!-- A SITUATION YOU RECOGNIZE (2.21.0). Name what you have just set and it
          comes back in one tap — which is what makes a Tuesday standup or a free
          weekend recurring WITHOUT the app ever mentioning it again. Saving one
          is a shortcut, never a schedule: nothing here reminds, detects, counts
@@ -3261,7 +3261,7 @@
 
          Named by you, so it is an event rather than a device preference — see
          `situation.saved`. Where you are is not a fact about your work; a
-         situation you recognise about how you work is nearer a context or a
+         situation you recognize about how you work is nearer a context or a
          role, and it should survive a new device. -->
     <!-- WHO IS IN IT (3.16.0, ADR-0119). 3.15.0 made a situation able to CARRY
          people and this is the control that puts more than one in — the picker
@@ -3273,7 +3273,7 @@
          Hidden until somebody has been named, like every other chooser here: a
          picker with nothing in it teaches the reader the feature is broken.
          SEEDED from whoever the single-valued filter above already holds, so
-         the reader who only ever wanted the old behaviour gets it without
+         the reader who only ever wanted the old behavior gets it without
          touching this, and adding a second person is one tap rather than two. -->
     <div id="situation-who-row" class="lens-row" hidden>
       <p class="detail-label" id="situation-who-label">Who is in it?</p>
@@ -3284,7 +3284,7 @@
         Naming more than one makes it a meeting you can open.
       </p>
     </div>
-    <p class="detail-label" id="situation-save-label">Recognise this one?</p>
+    <p class="detail-label" id="situation-save-label">Recognize this one?</p>
     <div class="detail-row" role="group" aria-labelledby="situation-save-label">
       <label class="visually-hidden" for="situation-name">A name for it</label>
       <input id="situation-name" type="text" autocomplete="off" spellcheck="false"
@@ -3413,7 +3413,7 @@
      the ONE place a day is said: rows carry which date is talking and who it
      is with, never a second statement of when — a row that restated its day
      could contradict its own heading, which is ADR-0032's class. -->
-<!-- WHERE EVERYTHING IS (3.23.0, ADR-0125) — the proof of judgement, opened.
+<!-- WHERE EVERYTHING IS (3.23.0, ADR-0125) — the proof of judgment, opened.
      The places ARE the held list's own groups in its own words, drawn from
      `heldGroups` rather than restated, so this sheet and that list can never
      describe one item differently. The gap at the foot is the half that makes
@@ -3742,7 +3742,7 @@
   <p id="sibling" class="about-p" hidden></p>
   <p class="about-p">
     <a href="https://noahjefferson.pages.dev/accessibility">Accessibility statement</a> ·
-    <a href="https://github.com/njefferson/Quietkeep">Source and licence</a>
+    <a href="https://github.com/njefferson/Quietkeep">Source and license</a>
   </p>
 
   </div>

@@ -122,7 +122,7 @@ export async function acceptPairing(
   //
   // The browser already refuses the connection, because the Sync edition's CSP
   // names exactly one host. But that is a SILENT refusal that surfaces as "sync
-  // mysteriously does nothing", and it means the whole defence rests on one
+  // mysteriously does nothing", and it means the whole defense rests on one
   // generated header. Checking here turns it into a sentence, and means the
   // guarantee no longer has a single point of failure.
   if (allowedHost !== undefined && p.host !== allowedHost) {

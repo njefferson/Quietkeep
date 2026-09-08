@@ -39,7 +39,7 @@ things than a general-purpose business one from 2001.
   partly to avoid a collision and partly so no term reads as borrowed.
 - Trigger lists are written from scratch, for this audience. They ship as plain
   JSON community content ([ADR-0009](0009-strategy-modules.md)) and each declares
-  its own licence.
+  its own license.
 - Community-contributed lists are **checked for copied content before merging**.
   A contributor pasting a published list is the likely failure mode, and it
   becomes this repo's problem the moment it is merged.
@@ -50,5 +50,5 @@ things than a general-purpose business one from 2001.
 
 ## What would overturn it
 
-Nothing realistic. An explicit licence from the mark holder, which is not being
+Nothing realistic. An explicit license from the mark holder, which is not being
 sought.

@@ -26,7 +26,7 @@ containers get made at all at two-tap cost — was set as the gate.
 
 **Thirteen days.** The reasoning is not stupid — the eleven-empty-nouns mistake
 is real and is recorded in this repo. But the gate it set was *a session's
-judgement about whether the owner had made enough projects yet*, and that is not
+judgment about whether the owner had made enough projects yet*, and that is not
 a session's call to make about somebody else's planner. It is the same close as
 Q-10's (hub LESSONS §96) and Q-11's, and it is the third instance in one audit.
 
@@ -39,7 +39,7 @@ Q-10's (hub LESSONS §96) and Q-11's, and it is the third instance in one audit.
 The last two are one mechanism pointed in two directions, and that is deliberate
 rather than lazy: two features with one shape are one thing to learn, and the
 fold, the merge disposition, the gate exclusion and the card line all inherit
-their behaviour from the contexts that came first.
+their behavior from the contexts that came first.
 
 ## Why a role is NOT a filter, and a context is
 
@@ -117,5 +117,5 @@ pretending to be knowledge.
 
 The readout being read as a scorecard anyway. Every structural precaution is
 taken — no bar, no order by size, no target, the disclaimer in the copy — and if
-somebody still reads a row of numbers as a judgement on how they are living, the
+somebody still reads a row of numbers as a judgment on how they are living, the
 answer is to remove the counts and keep the names, not to soften the wording.

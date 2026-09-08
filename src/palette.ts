@@ -1,7 +1,7 @@
-// WHICH COLOUR SET THIS APP WEARS (3.4.0, ADR-0110).
+// WHICH COLOR SET THIS APP WEARS (3.4.0, ADR-0110).
 //
 // The second axis. Mode (light / dark / follow the device) says how bright; a
-// palette says which colours. Hub PALETTES.md §6 rules they are independent, and
+// palette says which colors. Hub PALETTES.md §6 rules they are independent, and
 // that if several palettes pass they SHIP AS OPTIONS rather than one being
 // chosen for everybody — which also settles arguments that have no right answer,
 // like warm against neutral, by shipping both.
@@ -12,21 +12,21 @@
 // measured structure rather than a browser rendering every screen again.
 //
 // NAMED, NEVER A SWATCH ALONE. PALETTES.md again, and Doctrine §4 under it: a
-// row of coloured squares is colour as the sole carrier of meaning.
+// row of colored squares is color as the sole carrier of meaning.
 //
 // A DEVICE PREFERENCE, NEVER AN EVENT — the rule `SCALE_KEY` and the theme
-// already follow. Which colours somebody likes is not a fact about their work.
+// already follow. Which colors somebody likes is not a fact about their work.
 
 export const PALETTE_KEY = 'ui.palette';
 
 export const DEFAULT_PALETTE = 'quietkeep';
 
 export const PALETTES: readonly { value: string; words: string; why: string }[] = [
-  { value: 'quietkeep', words: 'Quietkeep', why: 'the original — warm paper by day, deep blue-grey by night' },
+  { value: 'quietkeep', words: 'Quietkeep', why: 'the original — warm paper by day, deep blue-gray by night' },
   { value: 'instrument', words: 'Instrument', why: 'cool and crisp — a steel-blue day, a near-black night' },
   { value: 'paper', words: 'Paper', why: 'a warm kraft page with white cards, and a deep teal for anything you can press' },
-  { value: 'mono', words: 'Mono', why: 'no hue at all — neutral grey by day, neutral charcoal by night' },
-  { value: 'soft', words: 'Soft', why: 'the lowest glare — a dimmed page and a night that is grey rather than black' },
+  { value: 'mono', words: 'Mono', why: 'no hue at all — neutral gray by day, neutral charcoal by night' },
+  { value: 'soft', words: 'Soft', why: 'the lowest glare — a dimmed page and a night that is gray rather than black' },
 ];
 
 export function normalisePalette(v: unknown): string {

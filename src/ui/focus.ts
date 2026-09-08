@@ -88,7 +88,7 @@ export function mountFocus(
    * `surfacing` is TRUE only in the moment after a session ends — held here, in
    * memory, and never as an event. It is a property of this sitting, not of your
    * history: persisting it would mean the chip greeting you on a cold start
-   * tomorrow morning, which is precisely the arriving-unbidden behaviour the
+   * tomorrow morning, which is precisely the arriving-unbidden behavior the
    * whole design refuses. It is cleared by the next thing you do.
    */
   let surfacing = false;
@@ -106,7 +106,7 @@ export function mountFocus(
   }
 
   /** The session close (1.6.0 — item 40, ADR-0052): the second rider on the
-   *  ramp. A win in words, the gauge in WORDS (never a colour, B-02), and —
+   *  ramp. A win in words, the gauge in WORDS (never a color, B-02), and —
    *  when a thread from an EARLIER sitting is still waiting — the one day-end
    *  question (item 26). Peak-end; no duration, no score, no streak. */
   function paintClose(): void {

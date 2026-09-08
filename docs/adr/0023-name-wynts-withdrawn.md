@@ -71,4 +71,4 @@ the same one.
 
 ## What would overturn it
 
-Nothing. Withdrawn on the owner's judgement, and the objection is correct.
+Nothing. Withdrawn on the owner's judgment, and the objection is correct.

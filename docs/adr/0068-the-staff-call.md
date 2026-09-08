@@ -113,7 +113,7 @@ reader.
 ## What would overturn this
 
 - **Anchors turning into things to maintain.** If naming a period ever produces
-  a nudge, a schedule, a count or a colour, the design has failed regardless of
+  a nudge, a schedule, a count or a color, the design has failed regardless of
   whether the delta cut works.
 - **The delta cut being wrong across devices.** The watermark is the claim; if a
   real two-device run drops history the anchor path is no better than the

@@ -23,7 +23,7 @@
 // ## What this is
 //
 // One number: the hour at which today becomes tomorrow, in the person's own
-// local time. Nought is midnight and is exactly today's behaviour, so the
+// local time. Nought is midnight and is exactly today's behavior, so the
 // default costs nothing and changes nothing. Three means the day ends at 3am,
 // so 00:30 and 02:00 are still *last night* — which is what they are.
 //

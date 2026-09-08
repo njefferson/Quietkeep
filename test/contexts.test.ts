@@ -59,7 +59,7 @@ test('UNLABELLED FITS ANYWHERE — the filter is never a cliff', () => {
   assert.equal(fitsHere(s, c, null), true);
 });
 
-test('a labelled thing fits its own places and not the others', () => {
+test('a labeled thing fits its own places and not the others', () => {
   const s = world();
   assert.equal(fitsHere(s, s.nodes.get('a')!, 'home'), true);
   assert.equal(fitsHere(s, s.nodes.get('a')!, 'work'), false);
@@ -82,7 +82,7 @@ test('a trashed context stops appearing without any migration', () => {
   ]);
   assert.deepEqual(contextNames(s, s.nodes.get('a')!), []);
   assert.equal(allContexts(s).length, 0);
-  // and the thing is now unlabelled, so it fits anywhere rather than vanishing
+  // and the thing is now unlabeled, so it fits anywhere rather than vanishing
   assert.equal(fitsHere(s, s.nodes.get('a')!, 'anything'), true);
 });
 
@@ -134,7 +134,7 @@ test('it reaches through more than one level', () => {
 
 test('a thing keeps its own places as well as the ones it inherits', () => {
   // Additive, never overriding. An override rule would mean a place set on an
-  // item silently cancelled the one it inherits, which is a rule nobody can see
+  // item silently canceled the one it inherits, which is a rule nobody can see
   // working.
   const s = fold([
     ev('context.created', 'WORK', { name: 'At work' }),
@@ -229,7 +229,7 @@ test('a put-down label leaves the chooser, and takes its filtering with it', () 
     ev('context.attached', 'x', { node: 'x', context: 'topic' }),
   ]);
   assert.equal(fitsHere(before, before.nodes.get('x')!, 'home'), false,
-    'labelled with a non-place, it does not fit where you actually are');
+    'labeled with a non-place, it does not fit where you actually are');
 
   const after = fold([
     ev('context.created', 'topic', { name: 'Email' }),

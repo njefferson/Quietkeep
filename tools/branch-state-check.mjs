@@ -177,7 +177,7 @@ const treeTriplet = tripletIn(
 //
 // SHORT TIMEOUT, AND OFFLINE IS SAID OUT LOUD. A commit guard may not hang on
 // a network, so the fetch gets five seconds. When it does not land, the answer
-// below is still given — it is usually right — but labelled as coming from the
+// below is still given — it is usually right — but labeled as coming from the
 // last fetch rather than printed as current. The one thing this may never do is
 // what it did before: present a possibly-stale reading in the words of a fresh
 // one.

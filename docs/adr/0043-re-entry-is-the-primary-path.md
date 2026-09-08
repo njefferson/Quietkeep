@@ -71,7 +71,7 @@ No cap is applied to the amnesty. The cap governs what a surface may **show**;
 this is something the user explicitly asked for, and doing three of the twenty
 they asked about would be the app deciding it knew better.
 
-### The words state a fact and never apologise on your behalf
+### The words state a fact and never apologize on your behalf
 
 *"You were away a fortnight. Everything you put down is still here."* No "welcome
 back, you have 47 things", which is a bill. No exclamation mark. The test asserts

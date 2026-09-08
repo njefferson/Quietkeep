@@ -131,6 +131,6 @@ test('identity is the event id, so a cure is not mistaken for its cause', async 
   const out = await takeInEvents(store, [cause, cure], NOW);
 
   assert.equal(out.taken, 1, 'the cure landed');
-  assert.equal(out.skipped, 1, 'and the cause was recognised as already held');
+  assert.equal(out.skipped, 1, 'and the cause was recognized as already held');
   assert.ok((await store.all()).some(e => e.id === cure.id));
 });

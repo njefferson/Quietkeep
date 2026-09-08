@@ -33,7 +33,7 @@ copyleft clause, say, accepting commercial use as its price. That would be a
 legitimate choice and it is the owner's to make.
 
 **Choosing PolyForm now costs nothing if it is wrong.** The repo has no external
-contributors and no release, so the licence can change on one word. After a
+contributors and no release, so the license can change on one word. After a
 public release with contributors it cannot, which is why the default is the
 Doctrine's answer rather than the brief's.
 
@@ -47,11 +47,11 @@ Doctrine's answer rather than the brief's.
   > unchanged; only the address is. Recorded rather than rewritten in place, per the
   > append-only rule.
 - The **Scope** block states explicitly that **the user's data is not covered by
-  the licence, because it is not ours**. The licence governs the software; it
+  the license, because it is not ours**. The license governs the software; it
   makes no claim on the log, the snapshots, or the exports.
-- Community content keeps whatever licence its contributor gives it, declared in
+- Community content keeps whatever license its contributor gives it, declared in
   the file. `template.loaded` records it.
-- **PolyForm NC is not an OSI-approved open-source licence.** It must never be
+- **PolyForm NC is not an OSI-approved open-source license.** It must never be
   described as "open source" — that would be a false label (Doctrine §5). "Source
   available, noncommercial" is accurate.
 - Noncommercial-use terms permit use by government institutions, educational

@@ -38,7 +38,7 @@ and a DST changeover adds no pressure.
   - Why it sits there: It said it would come back
 
 "Whose clock arrived" means **any** demanding clock (`park` excluded), not a
-favourite one. Reading `due ?? start ?? suspense ?? review` was a precedence by
+favorite one. Reading `due ?? start ?? suspense ?? review` was a precedence by
 *kind* wearing the name "soonest": an item gate-clocked for review today and then
 given a due date next month showed only its `due`, read as not-arrived, and
 **vanished from the work surface entirely** while the gauge still read 0 silent.

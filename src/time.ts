@@ -16,7 +16,7 @@
 // The zone is NEVER stored in the log. A clock's `at` is an absolute instant, so
 // it is zone-independent once computed; the zone matters only when computing
 // "the end of the day I am in" (write time) and when saying "today" (read time).
-// That is also the behaviour a traveller wants: after a flight, "today" means
+// That is also the behavior a traveller wants: after a flight, "today" means
 // today where you are, without rewriting a single stored event.
 
 /** Intl.DateTimeFormat construction is expensive and these are hot in render;
@@ -117,7 +117,7 @@ export function localParts(iso: string, tz: string): LocalParts {
   // `formatToParts` THROWS on one (`RangeError: Invalid time value`) rather than
   // yielding NaN parts, so this line is never reached with a bad instant. The
   // first draft of this memo carried a NaN guard and a paragraph explaining it —
-  // both describing behaviour the platform does not have. Callers guard with
+  // both describing behavior the platform does not have. Callers guard with
   // `isValidIso` before they get here, which is why that has always been the
   // rule rather than a suggestion.
   //
@@ -254,7 +254,7 @@ export function endOfLocalDay(iso: string, day: DayShape, plusDays = 0): string 
   // and asking for it lands in the gap an hour away from the true end of the
   // day. Naming 23:59:59 instead asks for a time that does exist, which is what
   // this function always did — so at a midnight boundary this is not merely
-  // equivalent to the old behaviour, it is character for character the same
+  // equivalent to the old behavior, it is character for character the same
   // request.
   const lastSecond = (day.boundary + 23) % 24;
   const rollsOnward = day.boundary !== 0;

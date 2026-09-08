@@ -46,7 +46,7 @@ export const TIMER_CHOICES: readonly number[] = [2, 5, 10, 20, 30];
  *  stay the one nobody has to think about. */
 export const DEFAULT_TIMER_MINUTES = 2;
 
-/** The chosen length, or the cheap default. An unrecognised stored value reads
+/** The chosen length, or the cheap default. An unrecognized stored value reads
  *  as the default — refused, never guessed, the `parseSlot` rule. */
 export function timerMinutesOf(state: State): number {
   const m = state.timerMinutes;

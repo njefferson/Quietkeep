@@ -40,7 +40,7 @@ arbitrary code next to the most private data the user has.
 - Every module declares what it adds to which surface, so the core does not need
   to know about any specific module.
 - Community JSON is **validated on load and never trusted**. It has no access to
-  the log. `template.loaded` records its source and its licence.
+  the log. `template.loaded` records its source and its license.
 - **Vocabulary skins ship off by default** (Q-05, answered 2026-07-27). Neutral
   vocabulary is what a new install sees; workplace aliases like Suspense↔Deadline and
   OPR↔Owner are opt-in, per vault. A skin is a module like any other, and it arrives

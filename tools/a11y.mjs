@@ -182,7 +182,7 @@ const launchOpts = { args: ['--no-sandbox'] };
 const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium';
 if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
 
-/* --- THE COLOUR INVENTORY (3.3.0, ADR-0110) ---------------------------------
+/* --- THE COLOR INVENTORY (3.3.0, ADR-0110) ---------------------------------
  *
  * WHY THIS EXISTS. This walk made 1,660 contrast assertions in its last run, for
  * TWO palettes — about 830 each, four minutes of browser each. A third palette
@@ -194,17 +194,17 @@ if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
  * and weight it renders at. So the browser is needed for the structural half
  * only, and that half is the same for every palette.
  *
- * `--inventory` runs this walk under a SENTINEL PALETTE: each colour role is
- * painted a unique probe value, so every computed colour maps to exactly one
+ * `--inventory` runs this walk under a SENTINEL PALETTE: each color role is
+ * painted a unique probe value, so every computed color maps to exactly one
  * role BY CONSTRUCTION rather than by luck. What comes out is (state, selector,
  * fg role, bg role, size, weight) — the structure — which `palette-gate.mjs`
  * then reads and checks by arithmetic, for any number of palettes, in
  * milliseconds and with no browser at all.
  *
- * AND IT FINDS SOMETHING NOTHING ELSE COULD. A colour hard-coded in the
+ * AND IT FINDS SOMETHING NOTHING ELSE COULD. A color hard-coded in the
  * stylesheet is contrast-checked like any other today, so it passes — and then
  * survives every palette swap unchanged and looks wrong in all but one. Under
- * the sentinel palette it is a colour that is not a sentinel, which is a hard
+ * the sentinel palette it is a color that is not a sentinel, which is a hard
  * failure here. Measured before this was built: the rendered app had none.
  *
  * IT IS THE SAME WALK. Not a second driver and not a second list of states — the
@@ -212,7 +212,7 @@ if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
  * here, because a copy of any of the three is the defect this repo has paid for
  * more than once. */
 const INVENTORY_MODE = process.argv.includes('--inventory');
-/** The seven colour roles, and a probe value each that nothing would hard-code. */
+/** The seven color roles, and a probe value each that nothing would hard-code. */
 /* Multi-line, ending `\n];`, because that is the shape `surfaces.mjs` reads an
  * uppercase const array in — its lazy `[\s\S]*?\n\];` ran past a one-line
  * version and swallowed the comments after it, then reported two of their
@@ -225,14 +225,14 @@ const SENTINEL = new Map(ROLES.map((r, i) => [`${11 + i * 17},${29 + i * 3},${(i
 /* `!important`, and it is the right tool exactly once. The dark palette is set
  * under `:root:not([data-theme="light"])`, which outranks a plain `:root` — so
  * the first version of this probe was quietly overridden and sampled the REAL
- * colours, then reported all 5,267 of them as colours no role owned. The
+ * colors, then reported all 5,267 of them as colors no role owned. The
  * detection was working; it had caught its own installer. A probe is not product
  * CSS and has no cascade to be polite to. */
 const sentinelCss = ROLES.map((r, i) =>
   `--${r}: rgb(${11 + i * 17}, ${29 + i * 3}, ${(i + 1) * 31}) !important;`).join(' ');
-/** Selectors whose colours the USER AGENT paints — declared, with a reason. */
+/** Selectors whose colors the USER AGENT paints — declared, with a reason. */
 const UA_OWNED = new Map(
-  (existsSync('.colour-ua-owned') ? readFileSync('.colour-ua-owned', 'utf8') : '')
+  (existsSync('.color-ua-owned') ? readFileSync('.color-ua-owned', 'utf8') : '')
     .split('\n')
     .map((l) => l.trim())
     .filter((l) => l && l.includes('|') && !l.startsWith('# '))
@@ -243,7 +243,7 @@ const UA_OWNED = new Map(
 );
 /** Which of them actually turned up, so a stale declaration cannot survive. */
 const uaSeen = new Set();
-/** Every selector found rendering a colour no role owns, deduplicated. */
+/** Every selector found rendering a color no role owns, deduplicated. */
 const unowned = new Map();
 /** Rows collected while the walk drives. Written once, at the end. */
 const inventory = [];
@@ -310,7 +310,7 @@ async function auditCardContainment(page, state, theme) {
   else pass(`${label}: yes`);
 }
 /* In `--inventory` the sentinel palette makes every ordinary assertion
- * meaningless — the colours are probes, not the product's. So this run reports
+ * meaningless — the colors are probes, not the product's. So this run reports
  * nothing but what the extraction itself finds, and `inventoryFail` is the one
  * thing that can still make it exit non-zero. An extraction that quietly printed
  * 1,660 failures would train everybody to ignore its output. */
@@ -396,15 +396,15 @@ const EXTRAS_SHEET = [
   '#timer-length-set',
 ];
 
-// COLOUR IS ITS OWN SURFACE FROM 3.5.1, so it is its own entry here — in the
+// COLOR IS ITS OWN SURFACE FROM 3.5.1, so it is its own entry here — in the
 // same commit that created it, because a surface the walk does not know about
 // ships unmeasured and looks exactly like one that passed (hub LESSONS 28).
 //
 // The picture is `alt=""` and carries no text, so what is measured is the name
 // beside it and the mark before that: the ring the tile's own `::before` draws,
 // which is what says "this is the one you have" without saying it in hue.
-const COLOUR_SHEET = [
-  ...SHEET_CHROME('sheet-group-colour'),
+const COLOR_SHEET = [
+  ...SHEET_CHROME('sheet-group-color'),
   // No `.about-section` — this sheet has no section headings, because its title
   // IS the one it would carry. A selector that matches nothing is an assertion
   // that cannot fail.
@@ -515,7 +515,7 @@ const REGISTRY = {
   // rather than an entry in the first, where it would match nothing visible.
   'your data, return visit': [...DATA_SHEET, '#copy-note'],
   'settings': EXTRAS_SHEET,
-  'colours': COLOUR_SHEET,
+  'colors': COLOR_SHEET,
   'things you can do': ACTIONS_SHEET,
   // Clearing out is inside Settings and only exists once a mode is chosen, so it
   // is driven rather than assumed — it is the one surface standing between a
@@ -582,7 +582,7 @@ const REGISTRY = {
   // and the sampler reads an element's `color`, so this measures the dial only
   // because the strokes are `currentColor` — see the note in app.css. `.clock-rim`
   // is NOT here: it is --line, a graphical object at 3:1 (WCAG 1.4.11), and this
-  // sampler would judge it against 4.5:1 and fail a correct colour. It is held
+  // sampler would judge it against 4.5:1 and fail a correct color. It is held
   // by the `line/bg` pair in tools/brand.mjs instead.
   'clock on': ['.clock-face', '.clock-words'],
   // The update strip's stuck state (1.20.2). #update-reload is deliberately
@@ -626,7 +626,7 @@ const REGISTRY = {
   // A native `<datalist>` used to sit on all three of the detail sheet's naming
   // fields, and it was the only control anywhere in this app that this file
   // structurally could not measure: the browser draws that popup itself, over
-  // the keyboard, and nothing here can read its colours, its target sizes or
+  // the keyboard, and nothing here can read its colors, its target sizes or
   // its focus ring. It also took the caret out of the field mid-word on the
   // device this app is used on, which is what actually ended a session.
   //
@@ -759,9 +759,9 @@ const REGISTRY = {
   'clarify': ['.triage-gauge', '.triage-prompt', '.triage-card',
     '.route', '.route-label', '.route-hint',
     // When it was written (1.23.0). Reuses .sort-where's measured pair, so no
-    // unmeasured colour ships — but it is registered rather than assumed,
+    // unmeasured color ships — but it is registered rather than assumed,
     // because it is the quietest text on the surface and the first thing a
-    // recolour would take below the floor.
+    // recolor would take below the floor.
     '#triage-where'],
   // WHERE it goes (1.19.0). A new surface joins this list in the SAME commit it
   // is built, or it ships unmeasured — hub LESSONS §28, which cost a release
@@ -830,7 +830,7 @@ const REGISTRY = {
     '#nextup-bite-open', '#nextup-heavy'],
   // The invitation has been ASKED FOR — a state that did not exist before 2.10.1,
   // registered in the same commit that created it (hub LESSONS §28). The field
-  // stands open only from here, so this is the only state its colours are on
+  // stands open only from here, so this is the only state its colors are on
   // screen to be measured in.
   'first step asked for': ['#nextup-bite-input', { sel: '#nextup-bite-input', pseudo: '::placeholder' },
     '#nextup-bite-form button[type=submit]', '#nextup-bite-hint', '.nextup-title'],
@@ -992,7 +992,7 @@ const REGISTRY = {
   // indentation, and the branch remainder is a real button. Its own sheet since
   // 2.0.5, so `#tree-open` left for the same reason `#gauge` did.
   // `.tree-kind` IS REGISTERED SO THE GATE CAN SEE ITS BLOCK LANDED (3.6.0).
-  // The word is `--ink-soft` inside a row whose own colour is `--ink`; if the
+  // The word is `--ink-soft` inside a row whose own color is `--ink`; if the
   // stylesheet block had never applied — a `replace()` that matched no anchor,
   // hub LESSONS 158 — the span would inherit `--ink` and every check in this
   // suite would still pass, because unstyled markup is exactly what contrast,
@@ -1039,7 +1039,7 @@ const REGISTRY = {
     // when the item has been timed, so an entry would match nothing on this
     // state and the gate would fail exactly as it did when it was first put in
     // the always-measured list. It carries `.detail-hint`, which IS measured
-    // above, so its colours are held by that selector — what an entry would add
+    // above, so its colors are held by that selector — what an entry would add
     // is the appearance of coverage rather than coverage itself.
     // The dependency picker. A <select> and a number box are the two smallest
     // targets on the densest surface in the app.
@@ -1138,20 +1138,20 @@ const REGISTRY = {
   // `.detail-place-open` IS LISTED SEPARATELY from `#detail-place` (3.6.0) and
   // the separation is the whole point. The line became a button, and the button
   // carries `--accent` while the paragraph around it carries `--ink-soft`. A
-  // registry naming only the paragraph measures a colour that is no longer on
+  // registry naming only the paragraph measures a color that is no longer on
   // screen and reports it green — the same shape as the visual gate that read a
   // computed style off the wrong element (hub LESSONS 142).
   'detail sheet, inside something': ['#detail-place', '.detail-place-open', '#detail-title',
     '.detail-label', '#detail-parent', '#detail-parent-set', '#detail-close'],
   // Dates that have gone by. This surface must read as calm, so its contrast is
-  // carried entirely by the ordinary text tokens — there is no alert colour to
+  // carried entirely by the ordinary text tokens — there is no alert color to
   // check, and that absence is the point (law 3, ADR-0034).
   // Today on paper. The control lives in the panel; the card itself is never on
   // screen, so what is audited here is the button and the honesty line beside it.
   'today on paper': ['#today-print', '.about-section', '.about-p'],
   // The bother flow. The choice hints are the lowest-contrast text and they are
   // load-bearing: they say what each answer will DO, and a forced choice with
-  // unlabelled consequences is a guess. All three choices are styled identically
+  // unlabeled consequences is a guess. All three choices are styled identically
   // on purpose — "not mine to carry" is not a lesser option and must not look
   // like one.
   'bother': ['#bother-prompt', '.bother-card', '.bother-choice',
@@ -1177,7 +1177,7 @@ const REGISTRY = {
   'load door state': ['#sheet-load-entry-count'],
   'load carried': ['#pebble-list li', '#pebble-list li button', '#nextup-load'],
   // The Menu (law 6). The money line is the lowest-contrast text and it is the
-  // whole of what a save-for says. There is NO bar and no colour keyed to the
+  // whole of what a save-for says. There is NO bar and no color keyed to the
   // numbers anywhere on this surface, and that absence is the measurement.
   // `#menu-open` left in 2.0.7 for the reason `#gauge` left 'coverage open': the
   // Menu is a sheet now and its control is on the inert surface underneath.
@@ -1194,19 +1194,19 @@ const REGISTRY = {
   'upkeep ready': ['#upkeep-heading', '.chip', '.chip-title', '.chip-why'],
   // Coming back (law 8). The reassurance is the CONTENT, so it gets full ink;
   // the counts beneath it are the lesser fact and sit in the quiet token. There
-  // is nothing here keyed to how long you were away — no colour, no threshold —
+  // is nothing here keyed to how long you were away — no color, no threshold —
   // because a lapse is not a severity.
   'reentry': ['#reentry-heading', '.reentry-words', '.reentry-waiting',
     '.reentry-amnesty-words', '#reentry-amnesty-go', '#reentry-dismiss'],
   // The comms sweep on the focus-exit ramp. Its line is an OFFER, stated in
   // `--ink` rather than a quieter token — it is the content of the surface, not
-  // an aside — and there is no badge, no count and no colour anywhere on it.
+  // an aside — and there is no badge, no count and no color anywhere on it.
   'comms ramp': ['#comms-heading', '.comms-words', '#comms-done', '#comms-later'],
   // Its opt-in, in the panel. Off until asked for.
   'comms opt-in': ['#comms-start', '.about-p', '.about-section'],
   // The track portfolio. The facts line is the lowest-contrast text and it is the
   // whole content of the row — who, when an answer is owed, what is outstanding.
-  // There is no colour here that means "at risk" and there will not be one: a hue
+  // There is no color here that means "at risk" and there will not be one: a hue
   // aimed at someone else's work is this app grading them (B-01, law 5).
   'portfolio': ['#portfolio-heading', '.portfolio-count', '.portfolio-open',
     '.portfolio-title', '.portfolio-why'],
@@ -1224,7 +1224,7 @@ const REGISTRY = {
   // The person lens. How long something has been with someone is the
   // lowest-contrast text here and it is load-bearing — it is the fact you use to
   // decide whether to mention it. Same ink tokens as everything else: there is
-  // no colour that means "they have had this a while", and there will not be.
+  // no color that means "they have had this a while", and there will not be.
   'people': ['#people-heading', '.people-count', '.people-open',
     '.people-title', '.people-why'],
   // THE OTHER DIRECTION (2.20.0). Its own entry, keyed on IDS, because the two
@@ -1265,7 +1265,7 @@ const REGISTRY = {
     '.detail-hint', '#focus-sheet-stop', '#focus-sheet-cancel'],
   // Review, exceptions only. Its rows are the app telling you something is
   // structurally wrong, so they must be as calm as everything else — same ink
-  // tokens, no alert colour to check, and that absence is the point.
+  // tokens, no alert color to check, and that absence is the point.
   'review': ['#review-heading', '.review-count', '.review-open',
     '.review-title', '.review-why'],
   'replan': ['#replan-heading', '.replan-count', '.replan-open',
@@ -1290,7 +1290,7 @@ const REGISTRY = {
   // gone by, so the walk has to make a second one — see the driving code, which
   // sets it through the app's own detail sheet rather than seeding the store.
   //
-  // `.replan-bulk-go` carries no colour of its own: it joins `.replan-choice`'s
+  // `.replan-bulk-go` carries no color of its own: it joins `.replan-choice`'s
   // rule, and its hint joins `.replan-choice-hint`'s, so every pair here is one
   // the registry already measures. Listed anyway, because what is asserted is
   // the RENDERED pair on the element a reader actually meets, and "it shares a
@@ -1452,10 +1452,10 @@ function record(stateName, rows) {
       const key = (c) => (c ? c.join(',') : null);
       const fgRole = SENTINEL.get(key(smp.fg));
       const bgRole = SENTINEL.get(key(smp.bg));
-      // A COLOUR THE TOKENS DO NOT OWN. It renders, it is opaque, and no role
+      // A COLOR THE TOKENS DO NOT OWN. It renders, it is opaque, and no role
       // produced it — so no palette can change it, and it would look wrong in
       // every palette but the one it was picked for. Invisible to the old gate,
-      // which measured it like any other colour and passed it.
+      // which measured it like any other color and passed it.
       if (!fgRole || !bgRole) {
         const why = UA_OWNED.get(r.sel);
         if (why) {
@@ -1473,9 +1473,9 @@ function record(stateName, rows) {
         if (!unowned.has(r.sel)) {
           unowned.set(r.sel, `${stateName}: fg ${key(smp.fg)}, bg ${key(smp.bg)}`);
           inventoryFail(
-            `"${r.sel}${r.pseudo ?? ''}" renders a colour no role owns `
+            `"${r.sel}${r.pseudo ?? ''}" renders a color no role owns `
             + `(${stateName}: fg ${key(smp.fg)}, bg ${key(smp.bg)}). `
-            + 'Give it a role, or declare it in .colour-ua-owned with a reason.');
+            + 'Give it a role, or declare it in .color-ua-owned with a reason.');
         }
         continue;
       }
@@ -1503,7 +1503,7 @@ async function auditContrast(page, stateName, theme, registryKey = stateName) {
     let worst = null;
     let bad = false;
     for (const smp of r.samples) {
-      if (!smp.fg || !smp.bg) { bad = true; fail(`${theme}/${stateName}: could not resolve colours for "${label}"`); break; }
+      if (!smp.fg || !smp.bg) { bad = true; fail(`${theme}/${stateName}: could not resolve colors for "${label}"`); break; }
       const large = smp.size >= 24 || (smp.size >= 18.66 && smp.weight >= 600);
       const need = large ? 3 : 4.5;
       const got = ratio(smp.fg, smp.bg);
@@ -1574,7 +1574,7 @@ async function auditNames(page, stateName, theme) {
     // Text nodes joined with a SPACE. `textContent` concatenates across element
     // boundaries, so a card's title and its status ran together as
     // "a held thoughtnot sorted yet" — which then reported a duplicate under a
-    // name no reader would recognise, and made every message wrong.
+    // name no reader would recognize, and made every message wrong.
     const textOf = (el) => {
       const parts = [];
       const walk = (n) => {
@@ -1950,7 +1950,7 @@ async function auditTargets(page, stateName, theme) {
  *
  *  WHY THIS EXISTS. `auditFocusRings` took a hand-written list, so a state was
  *  covered only if somebody remembered to write one — and 18 of the 112 audited
- *  states had no ring pass at all. Not a judgement that their rings did not
+ *  states had no ring pass at all. Not a judgment that their rings did not
  *  matter; nobody had decided anything. The list was the gap.
  *
  *  Scoped to the topmost open dialog when there is one, because that is the
@@ -2124,7 +2124,7 @@ async function auditFocusRings(page, stateName, theme, selectors) {
         match,
         visible: cs.outlineStyle,
         width: parseFloat(cs.outlineWidth),
-        colour: parseC(cs.outlineColor),
+        color: parseC(cs.outlineColor),
         bg: bgOf(el.parentElement ?? el),
         focusVisible: el.matches(':focus-visible'),
         clip,
@@ -2135,7 +2135,7 @@ async function auditFocusRings(page, stateName, theme, selectors) {
     const srgb2 = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
     const lum2 = ([r, g, b]) => 0.2126 * srgb2(r) + 0.7152 * srgb2(g) + 0.0722 * srgb2(b);
     const rat = (a, b) => { const [x, y] = [lum2(a), lum2(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
-    const contrast = hit.colour && hit.bg ? rat(hit.colour, hit.bg) : 0;
+    const contrast = hit.color && hit.bg ? rat(hit.color, hit.bg) : 0;
     const ok = hit.visible !== 'none' && hit.width >= 2 && contrast >= 3;
     (ok ? pass : fail)(
       `${theme.padEnd(5)} ${stateName.padEnd(22)} focus ring ${hit.match.padEnd(20)} ${hit.visible} ${hit.width}px @ ${contrast.toFixed(2)}:1 (needs solid ≥2px ≥3:1)`,
@@ -2437,12 +2437,12 @@ try {
     //
     // Not a weakened check: if the intro genuinely never shows, the wait times
     // out and the three registry entries fail exactly as they did here.
-    // COLOURS (3.5.1), AND IT SITS HERE RATHER THAN BESIDE SETTINGS FOR A
+    // COLORS (3.5.1), AND IT SITS HERE RATHER THAN BESIDE SETTINGS FOR A
     // REASON THAT COST A RUN. Everything between the settings audit above and
     // this point drives controls INSIDE the settings sheet — the text size is
     // chosen, set, and put back — and none of it reopens that sheet, because it
     // is a continuation. `openSurface` closes every open dialog first (ADR-0083:
-    // one surface at a time), so a colours audit placed next to its sibling in
+    // one surface at a time), so a colors audit placed next to its sibling in
     // the panel shut Settings under the states that were still using it, and
     // three registry entries reported "matches nothing visible" about controls
     // that were simply on a screen no longer open.
@@ -2452,14 +2452,14 @@ try {
     // than trusting: the radios were 13x13 natives when they first shipped —
     // under the floor in every state that showed them — and the fix was to make
     // the INPUT the size of the tile, which only a measurement can confirm.
-    await openSurface(page, 'sheet-group-colour');
-    await auditContrast(page, 'colours', theme);
-    await auditAxe(page, 'colours', theme);
-    await auditNames(page, 'colours', theme);
-    await auditSeparationAndTargets(page, 'colours', theme);
-    await auditFocusRings(page, 'colours', theme,
+    await openSurface(page, 'sheet-group-color');
+    await auditContrast(page, 'colors', theme);
+    await auditAxe(page, 'colors', theme);
+    await auditNames(page, 'colors', theme);
+    await auditSeparationAndTargets(page, 'colors', theme);
+    await auditFocusRings(page, 'colors', theme,
       // The tiles ARE the control now — there is no confirm button to focus.
-      ['#sheet-group-colour-close']);
+      ['#sheet-group-color-close']);
 
     await openSurface(page, 'about');
     await page.waitForFunction(
@@ -2518,7 +2518,7 @@ try {
     // and a modal sheet makes it inert. NO CANCEL TO PRESS — `#purge-cancel`
     // lives inside the confirmation block, which is exactly what is withheld
     // here, so reaching for it timed out on the first run. A cleanup written
-    // against the old behaviour is the same drift the state itself was about.
+    // against the old behavior is the same drift the state itself was about.
     await page.evaluate(() => {
       for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
     });
@@ -3054,7 +3054,7 @@ try {
     // screen at once, which is the honest worst case rather than the tidy one.
     //
     // The ten: the ⓘ, More, the capture field and its button, the proof line,
-    // the update strip's two, the way out, and the footer's licence link and
+    // the update strip's two, the way out, and the footer's license link and
     // version. The twenty-one words: the wordmark (1), the capture receipt (7),
     // the update strip (5) and the footer (8).
     //
@@ -4425,7 +4425,7 @@ try {
     await whoBtn.click();
     await page.waitForTimeout(150);
     (await whoBtn.getAttribute('aria-pressed') === 'true' ? pass : fail)(
-      `${theme}/who is in it: toggling says so in aria-pressed, not only in colour`);
+      `${theme}/who is in it: toggling says so in aria-pressed, not only in color`);
     // SAVED BEFORE THE AUDITS, so the row's `See what is in the room` is on
     // screen for them. It cannot be measured with the room itself: opening the
     // room closes this sheet, so the door is gone by then.
@@ -4458,7 +4458,7 @@ try {
     // thing the roles readout does opening a node. Asserted rather than assumed:
     // the first version of this walk clicked the situation sheet's Close after
     // the room and timed out on a button that was no longer there, which is the
-    // behaviour telling the test what it is.
+    // behavior telling the test what it is.
     const behind = await page.evaluate(() =>
       document.querySelector('#sheet-situation')?.hasAttribute('open') ?? null);
     (behind === false ? pass : fail)(
@@ -4677,7 +4677,7 @@ try {
     // State 3g: containment and Review (law 4). A container with nothing under
     // it is the app's quietest failure — it reads as an ordinary row everywhere
     // else — so the surface that finally says so must be as calm as the rest of
-    // the app. There is no alert colour here to measure, and that absence is the
+    // the app. There is no alert color here to measure, and that absence is the
     // measurement.
     // A SECOND item, because containment needs two things: one to hold, one to
     // be held. The walk had exactly one card, so `.nth(1)` waited thirty seconds
@@ -4860,7 +4860,7 @@ try {
     await auditFocusRings(page, 'detail sheet, a container with a rhythm', theme, ['#detail-repeat-stop']);
 
     // The situation field (1.29.0). Filled first, deliberately: the box is empty
-    // in the ordinary case and an empty textarea has colours but no words, so a
+    // in the ordinary case and an empty textarea has colors but no words, so a
     // state audited empty measures a rectangle. What has to be legible is what
     // somebody wrote — which is also the thing the surface exists to show back.
     // The weight, with one chosen — two of its controls only exist then.
@@ -6050,19 +6050,19 @@ console.log('');
 // --- THE EXTRACTION'S OWN ENDING (3.3.0) -------------------------------------
 //
 // An extraction is not a gate run and must never be mistaken for one: it walks
-// under probe colours, so it proves nothing about the product's own. It writes
+// under probe colors, so it proves nothing about the product's own. It writes
 // the inventory and stops — NO `.a11y-stamp`, which is the receipt saying this
 // markup was measured, and would be a lie written by a run that measured
 // sentinels.
 if (INVENTORY_MODE) {
   // BOTH DIRECTIONS. A declaration whose selector has since been given a role —
   // or removed — is an exemption outliving the thing it exempts, which is how a
-  // list like this rots into a licence.
+  // list like this rots into a license.
   for (const [sel, why] of UA_OWNED) {
     if (!uaSeen.has(sel)) {
       inventoryFail(
-        `.colour-ua-owned declares "${sel}" (${why}) and nothing rendered a `
-        + 'colour the roles do not own for it. Give the declaration up.');
+        `.color-ua-owned declares "${sel}" (${why}) and nothing rendered a `
+        + 'color the roles do not own for it. Give the declaration up.');
     }
   }
   if (unowned.size) {
@@ -6071,15 +6071,15 @@ if (INVENTORY_MODE) {
     // eight runs. This was learned the expensive way twice in one evening —
     // the first two runs of this tool were read through a ten-line tail, so the
     // list looked like four both times and was not.
-    console.error(`\n  ${unowned.size} selector(s) render a colour no role owns:\n`);
+    console.error(`\n  ${unowned.size} selector(s) render a color no role owns:\n`);
     for (const [sel, where] of [...unowned].sort()) console.error(`    ${sel}  —  ${where}`);
-    console.error('\n  Give each one a role, or declare it in .colour-ua-owned:\n');
+    console.error('\n  Give each one a role, or declare it in .color-ua-owned:\n');
     for (const [sel] of [...unowned].sort()) console.error(`${sel} | WHY`);
     console.error('');
   }
   if (failures.length) {
     console.error(`\n${failures.length} problem(s) found while extracting. The inventory was NOT written.`);
-    console.error('A colour no role owns cannot be checked by arithmetic, so an');
+    console.error('A color no role owns cannot be checked by arithmetic, so an');
     console.error('inventory with one missing is worse than none.\n');
     process.exit(1);
   }
@@ -6098,7 +6098,7 @@ if (INVENTORY_MODE) {
   // green. `palette-gate.mjs` refuses a stale inventory for the same reason
   // `a11y-fresh` refuses a stale receipt.
   const { uiHash } = await import('./a11y-stamp.mjs');
-  writeFileSync('docs/colour-inventory.json', `${JSON.stringify({
+  writeFileSync('docs/color-inventory.json', `${JSON.stringify({
     note: 'Generated by `npm run a11y -- --inventory`. Structure only: which role '
       + 'pairs the UI renders and what floor each needs. Palette-independent by '
       + 'construction — see ADR-0110. Do not hand-edit.',
@@ -6110,8 +6110,8 @@ if (INVENTORY_MODE) {
   }, null, 2)}\n`);
   console.log(`  ${inventory.length} role pairs across ${[...new Set(inventory.map((r) => r.state))].length} states`);
   console.log(`  roles in use: ${roles.join(', ')}`);
-  console.log('  written to docs/colour-inventory.json');
-  console.log('\nEvery colour the app renders came from a role. Arithmetic can take it from here.');
+  console.log('  written to docs/color-inventory.json');
+  console.log('\nEvery color the app renders came from a role. Arithmetic can take it from here.');
   process.exit(0);
 }
 // AND SAY WHAT IT FOUND WHERE SOMETHING CAN READ IT (3.1.2).

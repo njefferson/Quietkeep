@@ -84,12 +84,12 @@ the card has moved on is discarded by comparing the node id — attaching one
 item's history to another item's title is worse than saying nothing.
 
 Nothing on the path to a first capture waits on a store read (ADR-0001), and a
-store that is slow or broken costs a line of grey text rather than the item
+store that is slow or broken costs a line of gray text rather than the item
 somebody was deciding about. A planted synchronous binding was watched fail.
 
 ## Consequences
 
-- No new colour pair. `#nextup-approach` reuses `.nextup-why`, which the
+- No new color pair. `#nextup-approach` reuses `.nextup-why`, which the
   contrast registry already measures, following `#nextup-place`'s precedent
   exactly; `#triage-where` reuses `.sort-where` and is registered in the
   `clarify` state in the same commit (hub LESSONS §28).

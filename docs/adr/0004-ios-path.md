@@ -53,7 +53,7 @@ wrong copy.
   is one of two can afford friction; a path that is the only one cannot. Exporting must
   be quick, obvious, and hard to forget — and if it is forgotten, the app should say so
   plainly rather than let the user assume they are covered.
-- **This rests on unconfirmed platform behaviour — see [V-00](../verifications.md).**
+- **This rests on unconfirmed platform behavior — see [V-00](../verifications.md).**
   If storage persistence cannot be relied on on iPadOS, this path is not a convenience,
   it is the *durability story*, and the app must say so rather than implying the local
   store is safe. That row was downgraded as harmless when there were other platforms;

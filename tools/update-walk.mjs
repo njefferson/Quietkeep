@@ -5,7 +5,7 @@
 // WHY THIS EXISTS SEPARATELY FROM THE UNIT TESTS. `test/update.test.ts` asserts
 // two things: that `public/sw.js` contains no `skipWaiting()` inside `install`,
 // and that `updateIsReady` decides correctly given plain objects. Both are worth
-// having and NEITHER proves the behaviour. Reading source is not running it, and
+// having and NEITHER proves the behavior. Reading source is not running it, and
 // a hand-made registration object is a thing this repo wrote — it will agree
 // with whatever this repo believes.
 //
@@ -86,7 +86,7 @@ try {
     'and the cache it built carries the running release');
 
   // Watch for a takeover we did not ask for. This flag IS claim 2, and it is
-  // the assertion the shipped-for-eighteen-releases behaviour would fail.
+  // the assertion the shipped-for-eighteen-releases behavior would fail.
   await page.evaluate(() => {
     globalThis.__swTookOver = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => { globalThis.__swTookOver = true; });
@@ -220,7 +220,7 @@ try {
   //
   // WHY ELEVEN GREEN GATES MISSED A BREAKAGE EVERY ENGINE AGREES ON: this
   // server answered every path 200 or 404. It had no way to redirect, so the
-  // one edge behaviour that triggers this was the one behaviour no local run
+  // one edge behavior that triggers this was the one behavior no local run
   // had. It was never an engine difference — it was a hole in the rig, which is
   // the more embarrassing answer and the more useful one.
   //

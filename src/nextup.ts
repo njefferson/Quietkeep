@@ -275,7 +275,7 @@ function isCandidate(n: NodeState, nowIso: string, day: DayShape): boolean {
  * Has ANY demanding clock come round? `park` is deliberately excluded: a parked
  * thing is being held away from you on purpose.
  *
- * This asks about every clock, not a favourite one. The first version read
+ * This asks about every clock, not a favorite one. The first version read
  * `due ?? start ?? suspense ?? review` — a precedence by KIND, not by time —
  * while claiming to be "the soonest clock". So an item created today (gate-
  * clocked for review today) that was then given a due date next month showed

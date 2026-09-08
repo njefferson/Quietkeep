@@ -23,7 +23,7 @@
 
 import { readFileSync, existsSync } from 'node:fs';
 
-const INVENTORY = 'docs/colour-inventory.json';
+const INVENTORY = 'docs/color-inventory.json';
 const PALETTES = 'docs/palettes.json';
 
 /* WCAG 2.x, run rather than estimated — the same maths the hub's
@@ -65,11 +65,11 @@ const set = JSON.parse(readFileSync(PALETTES, 'utf8'));
 const { uiHash } = await import('./a11y-stamp.mjs');
 const now = uiHash();
 if (!inv.ui) {
-  console.log('  FAIL  docs/colour-inventory.json carries no UI stamp — re-extract it.\n');
+  console.log('  FAIL  docs/color-inventory.json carries no UI stamp — re-extract it.\n');
   process.exit(1);
 }
 if (inv.ui !== now) {
-  console.log('  FAIL  the colour inventory was taken from different markup than this.');
+  console.log('  FAIL  the color inventory was taken from different markup than this.');
   console.log(`        inventory ${inv.ui}`);
   console.log(`        this tree ${now}`);
   console.log('\n  Every answer below would be about an app that no longer exists.');
@@ -119,7 +119,7 @@ if (set.default && !set.families?.[set.default]) {
 for (const [id, roleMap] of entries) {
   const roles = roleMap;
   // A PALETTE MISSING A ROLE IS A HOLE, not a smaller palette. Refused before
-  // any arithmetic, because `undefined` would otherwise fail as a bad colour and
+  // any arithmetic, because `undefined` would otherwise fail as a bad color and
   // read as a contrast problem.
   const missing = used.filter((r) => !roles[r]);
   if (missing.length) {
@@ -128,7 +128,7 @@ for (const [id, roleMap] of entries) {
   }
   const bad = used.filter((r) => !rgb(roles[r]));
   if (bad.length) {
-    fail(`${id}: ${bad.map((r) => `${r}="${roles[r]}"`).join(', ')} is not a 6-digit hex colour`);
+    fail(`${id}: ${bad.map((r) => `${r}="${roles[r]}"`).join(', ')} is not a 6-digit hex color`);
     continue;
   }
   let worst = null;

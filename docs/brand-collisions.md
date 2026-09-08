@@ -11,7 +11,7 @@ ask "does this resemble another brand" miss all of these.
 
 ## An argument that the current mark depicts the failure mode
 
-**This is an inference, not a measurement — labelled as such because the section
+**This is an inference, not a measurement — labeled as such because the section
 below it once dressed one up as the other.** The research is established; the
 reading of the mark against it is mine, and it is arguable.
 
@@ -36,7 +36,7 @@ So the brief for any replacement is not *held safely* — vessels, cradles, boxe
 and stacks are all the wrong family. It is **stays in view**, or **comes back
 into view**.
 
-## The colour ENTAILS the enclosure — and this section once said it was a bug
+## The color ENTAILS the enclosure — and this section once said it was a bug
 
 `--warm` has two values: `#7A4E00` in light mode, `#F5C978` in dark. Against the
 icon's paper field `#F4F1E9`:
@@ -48,7 +48,7 @@ icon's paper field `#F4F1E9`:
 So `#F5C978` **cannot describe a shape on paper**, and any mark using it has to
 supply a dark ground. That is why every open, non-enclosing composition tried
 against it failed on contrast: the enclosure is not a stylistic preference, it is
-*entailed by the colour*.
+*entailed by the color*.
 
 **THIS SECTION PREVIOUSLY CLAIMED THE ICON WAS USING THE WRONG TOKEN — "the
 dark-mode warm on a light-mode ground" — AND THAT WAS FALSE.** Measured on the
@@ -60,10 +60,10 @@ blend pixels as *not navy* — a tolerance artefact read as a finding.
 
 **There is no token to fix.** What is true is the constraint above: choose
 `#F5C978` and you have committed to a dark ground somewhere in the mark. A
-replacement that must not enclose has to change the colour, not the geometry.
+replacement that must not enclose has to change the color, not the geometry.
 
 **AND THE MIRROR OF IT, MEASURED 2026-09-03 AND NOT PREVIOUSLY WRITTEN DOWN.**
-The obvious way to change the colour is `#7A4E00`, which clears 6.38:1 on paper
+The obvious way to change the color is `#7A4E00`, which clears 6.38:1 on paper
 and is the only warm that can describe a shape there. Against the navy it is
 **1.40:1** — the same unusable figure as `#F5C978` on paper, pointing the other
 way. So the two warms are **mutually exclusive in placement**: `#F5C978` may
@@ -102,7 +102,7 @@ same reason.
 - Horizontal bar with a marker on it — progress bar or slider, and a bar is a
   machine for implying you are behind
 - Landform with a form above it — sunrise, landscape
-- Form breaking a flat top edge, centred — briefcase or bag handle
+- Form breaking a flat top edge, centered — briefcase or bag handle
 - Form breaking a flat edge, off to one side — folder tab
 - Ring with a diagonal stroke off the lower right — magnifying glass, search
 - Any closing curve or coil — @ sign, loading spinner, and it spirals
@@ -127,14 +127,14 @@ same reason.
 **READ EVERY ENTRY BY ITS MEANING, NOT BY ITS SHAPE WORDS.** Added 2026-09-03,
 after a filtering round encoded this list literally and let two badge
 compositions through because the entry said *square* and the candidates were
-circles. The list is a catalogue of what a reader will RECOGNISE; the shape
+circles. The list is a catalogue of what a reader will RECOGNIZE; the shape
 words are examples of how each one has turned up so far, never the definition.
 
 ## What this list is telling you
 
-**Two or three soft blobs in two colours is a saturated space.** Nearly every
+**Two or three soft blobs in two colors is a saturated space.** Nearly every
 arrangement is already a well-known glyph, and the well-known glyph wins — a
-reader is not looking for your metaphor, they are recognising a shape in a grid
+reader is not looking for your metaphor, they are recognizing a shape in a grid
 of forty icons at 48px.
 
 Directions tried and exhausted: enclosure, stacking, cradles, horizons, cuts and
@@ -176,7 +176,7 @@ intended. Three things it established:
   and not the second.
 
 **A TENTH ROUND, 2026-09-03, refining the ninth's survivor rather than drawing
-anew.** Sixteen variants of one current, generated from a single centreline so
+anew.** Sixteen variants of one current, generated from a single centerline so
 the gold is a true slice of the river and the axis is a parameter. Four
 findings, three of them measured against controls drawn for the purpose:
 
@@ -185,7 +185,7 @@ findings, three of them measured against controls drawn for the purpose:
   lower-left-to-upper-right axis does not, and it fills a circular crop
   properly instead of floating between two empty caps. If the current runs
   across, it is weather; if it runs corner to corner, it is a river.
-- **A straight band is a stroke, however it is coloured.** The control with the
+- **A straight band is a stroke, however it is colored.** The control with the
   meander removed went straight back to pencil-and-bandage. The meander is not
   decoration; it is the whole difference between a current and a line.
 - **More than one inflection reads as a zigzag or a staircase at 32px**, and a
@@ -200,16 +200,16 @@ the gold legal measures 11–18 source pixels on a normally-proportioned river �
 **0.69 to 1.13 pixels at 32**. Only a broad river with a deliberately generous
 rim (26 source px) clears 1.5px at 32. So an inset accent is legal at 512 and
 approximate at favicon size, and any candidate relying on a thin margin between
-two colours should be measured at 32 before it is believed.
+two colors should be measured at 32 before it is believed.
 
 **A METHOD WARNING, because this trap has now cost twice.** The round's first
-pass rejected five candidates for painting a colour outside the palette, at
+pass rejected five candidates for painting a color outside the palette, at
 0.17–0.27% of pixels. Every one was a disc: a curve antialiases much further
-along the line between two palette colours than a flat edge does, and a naive
-nearest-colour tolerance counts those blends as a fourth colour. That is the
+along the line between two palette colors than a flat edge does, and a naive
+nearest-color tolerance counts those blends as a fourth color. That is the
 same artefact that once put a false "56% on navy" finding into ADR-0025.
 **Classify a pixel as a blend when it lies near the segment between any two
-palette colours, and only then ask whether it is off-palette.**
+palette colors, and only then ask whether it is off-palette.**
 
 **AND THE SAFE-CIRCLE RULE IS ABOUT WHAT A CROP WOULD LOSE, not about which
 pixels are painted.** The ninth round's filter counted every non-field pixel
@@ -229,9 +229,9 @@ asking whether they look nice.**
 
 ## Constraints any candidate must still meet
 
-- Three flat colours, no gradient, no shadow, no transparency (ADR-0025)
+- Three flat colors, no gradient, no shadow, no transparency (ADR-0025)
 - Legible and unmistakable at 48px and 32px
-- Artwork inside the centre 80% circle, for maskable and circular crops
+- Artwork inside the center 80% circle, for maskable and circular crops
 - The navy must carry the silhouette. Amber on the paper field is 1.38:1 and
   cannot be relied on to describe a shape; amber on navy is 6.48:1. The mark
   should survive with the amber removed — if it collapses, the amber was doing

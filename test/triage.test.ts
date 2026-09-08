@@ -83,7 +83,7 @@ test('if the capture clock is also stripped, it is clock.cleared’s cure that h
   // step, whose cure re-covers it BEFORE clarify.routed is even reached. This is
   // the honest account of the floor: every silent-RISK event carries its own
   // cure, so no single event can introduce silence. The clarify.routed cure is
-  // redundant defence-in-depth that the real write paths never invoke.
+  // redundant defense-in-depth that the real write paths never invoke.
   let s = capture(emptyState(), 'N', 'a thing');
   const c = ctx();
   const mk = (kind: string, payload: unknown): AppEvent => ({

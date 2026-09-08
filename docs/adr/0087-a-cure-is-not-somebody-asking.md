@@ -24,7 +24,7 @@ routed worry, an untrash, a reclaim.
 
 ## The defect, measured rather than argued
 
-`isAppClock` recognised `gate:node.created` and `gate:bother.received`. The other
+`isAppClock` recognized `gate:node.created` and `gate:bother.received`. The other
 twenty-six cures were read as somebody asking for something. Folded through the
 real gate:
 
@@ -46,7 +46,7 @@ cures, and both are how a decision takes effect.
 
 So the question is not *did the gate write it* but *did the event it cured express
 an intent about when*. That cannot be computed from the source string; it is a
-judgement about each kind, made once and written down.
+judgment about each kind, made once and written down.
 
 ## Why the totality test is the load-bearing part
 
@@ -71,7 +71,7 @@ is now a build failure.
   1.42.0's proof are untouched. Checked, not assumed.
 - **No existing test failed when the predicate changed.** Under the rule this
   repo took from it, that is the finding rather than the reassurance: the change
-  was not inert, so nothing had been holding the behaviour — which is exactly why
+  was not inert, so nothing had been holding the behavior — which is exactly why
   twenty-six kinds sat misclassified long enough to reach production.
 
 ## What would overturn it
@@ -79,5 +79,5 @@ is now a build failure.
 - **If a kind is classified wrongly in the quiet direction**, something a person
   asked for stops coming back — the worst failure this app has. That is why the
   two historically-broken cases are pinned by name in the test, and why the
-  default for an unrecognised source is still *somebody's*, which errs towards
+  default for an unrecognized source is still *somebody's*, which errs towards
   showing work rather than quieting it.

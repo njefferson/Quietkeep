@@ -92,7 +92,7 @@ if (!csp) {
 
 // Belt and braces, and it catches the case the CSP cannot: a header that is not
 // the CSP at all. `Report-To`/`report-uri` point at a collector, which is
-// telemetry by another name however it is labelled.
+// telemetry by another name however it is labeled.
 for (const bad of ['report-uri', 'report-to', 'Report-To', 'Reporting-Endpoints']) {
   if (policyLines.includes(bad)) {
     fail(`"${bad}" sends reports off-device — that is telemetry, which this app does not do`);

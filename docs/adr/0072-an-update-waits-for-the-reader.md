@@ -34,7 +34,7 @@ never 'apply the update' — it is 'there is a newer version than the one you ar
 looking at, and here is a moment to take a copy before you go to it'", and the
 button read `Reload now` for that reason. The words were honest about a model
 that was itself wrong. Fixing the worker without moving the model would have left
-a control whose label described the old behaviour.
+a control whose label described the old behavior.
 
 ## Decision
 

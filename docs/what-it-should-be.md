@@ -186,7 +186,7 @@ words, obeyed thereafter, and never revisited unprompted.
 **Everything it says is a fact about the world. Nothing is a fact about the
 person.** No inference from logs, no profile, no trend, no rate, no ratio, no
 streak, no count of a window of past events. The person's own declaration is the
-higher-validity instrument; what a tool infers from behaviour is precisely the
+higher-validity instrument; what a tool infers from behavior is precisely the
 measure that does not track what matters.
 
 **No counting anywhere the person arrives.** A number that only rises as things

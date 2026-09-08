@@ -123,7 +123,7 @@ export function loadNow(state: State): Load {
  * **And narrowing on a low day is a PACING mechanism**, which two of the served
  * populations need opposite things from. For post-exertional conditions,
  * offering less is correct and offering the usual amount is harmful. For
- * depression, behavioural activation says offer anyway, and withdrawing the
+ * depression, behavioral activation says offer anyway, and withdrawing the
  * offer is the harm. The same declaration, two correct and opposite responses —
  * the sharpest of the conflicts in the synthesis.
  *
@@ -134,7 +134,7 @@ export function loadNow(state: State): Load {
  * own terms: the app that does not ask cannot ask wrong.
  *
  * So the cap is now CONSTANT. Kept as a function rather than deleted, because
- * the call site is where somebody would reach to reintroduce the old behaviour,
+ * the call site is where somebody would reach to reintroduce the old behavior,
  * and this is where the argument against it belongs.
  */
 export const offerCapFor = (_load: Load, cap: number): number => cap;
@@ -171,7 +171,7 @@ export function loadWords(load: Load): string {
   if (!load.heavy) return '';
   // "FEWER THINGS" WAS TRUE UNTIL 1.34.0 AND IS NOT NOW. Capacity changed from
   // shortening the offer to reordering it, and this sentence went on claiming a
-  // narrowing that no longer happens — copy outliving the behaviour it
+  // narrowing that no longer happens — copy outliving the behavior it
   // described, which is the plainest kind of lie a surface can tell.
   //
   // The co-occurrence rule is unchanged and is why "while" survives: two facts
@@ -191,7 +191,7 @@ export const CAPACITY_WORDS: Readonly<Record<Capacity, string>> = {
 };
 
 /** How a magnitude reads on screen. The vocabulary's own three words, which are
- *  concrete and carry no judgement — a boulder is not a failure. */
+ *  concrete and carry no judgment — a boulder is not a failure. */
 export const MAGNITUDE_WORDS: Readonly<Record<Magnitude, string>> = {
   pebble: 'a pebble',
   rock: 'a rock',

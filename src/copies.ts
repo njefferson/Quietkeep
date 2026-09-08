@@ -27,7 +27,7 @@
 //   - the calendar `.ics` — appointments, not data.
 //
 // Counting a calendar file as your backup would tell somebody they were covered
-// on the day they were not. So a copy is recognised by its scope, and the set of
+// on the day they were not. So a copy is recognized by its scope, and the set of
 // whole-copy scopes lives HERE, beside the reader — with `deliverCopy` refusing
 // any scope outside it. A hand-written list that the writer does not have to
 // honour is a bug with a delay fuse (the 1.9.2 lesson); this one cannot fall

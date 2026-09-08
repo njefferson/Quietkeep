@@ -9,7 +9,7 @@ highest-altitude live horizon above it — as one descriptive line: *"serves A
 calmer house"*.
 
 `src/serves.ts` is the one definition. It is never a control, never a
-destination, and carries no count, proportion or colour.
+destination, and carries no count, proportion or color.
 
 ## Why
 
@@ -51,7 +51,7 @@ rather than by asking.
 **And one build serves both readings.** The trust reading asks for grounds to
 believe an offer, the way the coverage gauge is grounds to believe law 1. When
 the card says *"serves A calmer house"*, the reasoning is on screen and can be
-disagreed with — and a judgement you can check is the only kind anybody comes to
+disagreed with — and a judgment you can check is the only kind anybody comes to
 trust.
 
 ## How it decides
@@ -74,7 +74,7 @@ than naming something that was thrown away, and says nothing when none remains.
 - **Never a destination** (law 4, ADR-0013). It names the horizon; it is not a
   door and does not offer to take you there.
 - **Scores nothing** (law 5, law 7). No count of what a goal holds, no
-  proportion, no *"3 of 8"*, no colour.
+  proportion, no *"3 of 8"*, no color.
 - **Infers nothing about the reader** (law 7). The horizon is a container the
   reader made and a parent the reader set. That rule is why this is not a
   "what matters to you" score derived from logs — the same rule that killed
@@ -96,8 +96,8 @@ than naming something that was thrown away, and says nothing when none remains.
   where the two-hop walk stops below the horizon.
 - **On the held card it is new at any depth.** That list walked exactly one hop
   and never said altitude at all.
-- **No new class, no new colour pair.** It reuses `.card-place`, which carries no
-  colour of its own and is already in the contrast registry — covered from the
+- **No new class, no new color pair.** It reuses `.card-place`, which carries no
+  color of its own and is already in the contrast registry — covered from the
   first run, which is what `.card-where` and the detail placeholders each cost a
   release for learning the other way round.
 - **No new control**, so the controls budget is untouched.

@@ -149,7 +149,7 @@ export function mountTriage(
    * from state, synchronously, exactly as it always has; this fills in
    * afterwards or not at all. Nothing on the path to a first capture waits on a
    * store read (ADR-0001), and a store that is slow or broken costs a line of
-   * grey text rather than the item somebody was deciding about.
+   * gray text rather than the item somebody was deciding about.
    *
    * The `showing` guard is the other half: a lookup resolving after the card
    * has moved on would attach one item's history to another item's title, which
@@ -348,7 +348,7 @@ export function mountTriage(
     const minutes = timerMinutesOf(session.state());
     // `data-seconds` on the timer's own region stays a deliberate test seam —
     // a gate cannot wait twenty real minutes to check what happens at the end.
-    // Nothing in the app writes it, so shipped behaviour is always the choice.
+    // Nothing in the app writes it, so shipped behavior is always the choice.
     const DURATION = Number(DONOW.dataset.seconds) || minutes * 60;
     let ended = false;
     let timeout: number | undefined;
@@ -636,7 +636,7 @@ export function mountTriage(
    * "Not this one" — the way past a card, on both passes.
    *
    * It commits nothing and announces the move rather than the decision: there
-   * was no decision. The words matter as much as the behaviour here, because
+   * was no decision. The words matter as much as the behavior here, because
    * this control exists for the moment somebody cannot answer the question, and
    * a label that implied they had answered it would be the surface putting a
    * verdict in their mouth.

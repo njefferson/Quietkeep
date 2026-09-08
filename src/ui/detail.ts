@@ -47,7 +47,7 @@ import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
 // "home, office, text" is THREE places (3.8.0) — see `src/names.ts` for why the
-// placeholder was kept and the behaviour changed rather than the other way round.
+// placeholder was kept and the behavior changed rather than the other way round.
 import { splitNames, andWords } from '../names.ts';
 import { allRoles, rolesOf, lineView, lineViewWords } from '../roles.ts';
 import { servesNode } from '../serves.ts';
@@ -595,7 +595,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (changed) setRest(false);
     TITLE.textContent = n.title || '(untitled)';
 
-    // What is true about it now, in words — never a colour, never a badge.
+    // What is true about it now, in words — never a color, never a badge.
     const p = pressureOf(n, new Date(now()).toISOString(), dayOf(session));
     const bits: string[] = [];
     // WHAT IT IS, FIRST (2.4.0, ADR-0094). This line said everything true about
@@ -1865,7 +1865,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   btn('#detail-role-set')?.addEventListener('click', () => {
     const input = q<HTMLInputElement>('#detail-role');
     if (!input || !current) return;
-    // Commas separate them, on this axis too — one shape, one behaviour.
+    // Commas separate them, on this axis too — one shape, one behavior.
     const names = splitNames(input.value);
     if (names.length === 0) { say('A name first — or leave it, and it belongs to no one in particular.'); return; }
     input.value = '';

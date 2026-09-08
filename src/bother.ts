@@ -37,7 +37,7 @@ export const OWNERSHIPS: readonly Ownership[] = [
 ];
 
 /** What each choice says, and what it will do. The hint is not decoration: a
- *  forced choice with unlabelled consequences is a guess, and this is the one
+ *  forced choice with unlabeled consequences is a guess, and this is the one
  *  question the whole flow turns on. */
 export const OWNERSHIP_WORDS: Record<Ownership, { label: string; hint: string }> = {
   'mine-to-solve': {

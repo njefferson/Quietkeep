@@ -33,7 +33,7 @@ Mixing them means every export, every screen share, and every glance at the app 
 a meeting leaks across a boundary that matters.
 
 **It is a convenience boundary, not a policy one** (Q-03, answered 2026-07-27). The
-app does not police what goes into a vault — that is the user's judgement, as with any
+app does not police what goes into a vault — that is the user's judgment, as with any
 personal app. What the split guarantees is that the boundary *holds* once drawn:
 separate exports, refused cross-references, distinct person records.
 

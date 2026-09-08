@@ -57,9 +57,9 @@ since 0.15.0. A context is the same thing with a different relation.
   ADR-0054's binding on the lens, and it binds identically here: a thing filtered
   out still has its clock, still counts in the claim, and still comes back.
   Anything else is an archive with a friendlier name, which law 3 forbids.
-- **Unlabelled fits everywhere, and that is load-bearing.** Most of what anybody
+- **Unlabeled fits everywhere, and that is load-bearing.** Most of what anybody
   writes down is not tied to a room. It is also what stops the filter being a
-  cliff: choosing a place on a store where nothing is labelled hides nothing, so
+  cliff: choosing a place on a store where nothing is labeled hides nothing, so
   the feature cannot make the app look empty on the day it is first tried. The
   opposite rule would punish you for not having filed everything, which is the
   shape this app exists to avoid.
@@ -93,7 +93,7 @@ since 0.15.0. A context is the same thing with a different relation.
 
 ## What would overturn it
 
-- **Evidence that one axis is enough** — that things get labelled once and never
+- **Evidence that one axis is enough** — that things get labeled once and never
   used, or that the filter is set and never changed. Then the honest answer is
   to remove it rather than to add a second way to reach it.
 - **A context turning out to want a clock.** It cannot have one by construction,

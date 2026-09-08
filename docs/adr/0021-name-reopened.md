@@ -51,7 +51,7 @@ Neither found any of the three companies. A single properly-scoped query —
 > empty result for a name that is heavily occupied.
 
 This compounded a second failure: the `pages.dev` check was handed to the owner as a manual step
-without being attempted first, one message after that behaviour had been corrected.
+without being attempted first, one message after that behavior had been corrected.
 It could not in fact have been loaded from a session — the gateway blocks it, now proven in
 [V-05](../verifications.md) — but *searching* for the occupant was always possible and was
 never tried.

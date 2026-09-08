@@ -43,7 +43,7 @@ context to ration by**, so it is paid continuously or dropped. Writing it down
 offloads the *watching*, which is a larger saving than offloading a task.
 
 **Free text, never an enumeration.** The app cannot know the reader's
-organisation and law 7 keeps it out of adjudicating one. Cleaned by `cleanNote`
+organization and law 7 keeps it out of adjudicating one. Cleaned by `cleanNote`
 and not a cleaner of its own — ADR-0047's rule that two cleaners is how one file
 comes to import differently from how it types.
 
@@ -76,7 +76,7 @@ run without you is worthless if it hides everything currently fine.
 Carried from entry 30's routing proposal, and each is load-bearing:
 
 - **No state list or lifecycle the app defines** — that is the app modelling
-  somebody's organisation.
+  somebody's organization.
 - **No progress reading across states** — a bar over words somebody typed is
   arithmetic pretending to be knowledge.
 - **No inference that a condition has been met.** The app never watches the

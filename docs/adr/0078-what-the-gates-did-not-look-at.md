@@ -17,10 +17,10 @@ halves. So engineering prose about SC 2.5.3 — and a bare closing arrow — pai
 under the Accessibility link on every screen of the app.
 
 Every gate was green throughout. The a11y pass measures contrast, accessible
-names and target size; the smoke walk drives behaviour; `docs-check` reads
+names and target size; the smoke walk drives behavior; `docs-check` reads
 markdown. **Nothing asserted that the page contains only text somebody meant to
 publish.** A leaked comment is not a contrast failure, not a naming failure, not
-a behaviour failure, and not a document. It is invisible to all of them.
+a behavior failure, and not a document. It is invisible to all of them.
 
 It survived because the footer is below the fold on a phone, which is also
 where it does the most damage: the last thing under the app's own accessibility
@@ -65,9 +65,9 @@ rule true rather than merely strict.
 
 **The version stamp presses the button it names.** It opened the panel, unfolded
 the group, scrolled to `#diagnostic-show` and focused it — and stopped. A control
-labelled "open the diagnostic report" opened a menu instead. It now presses it,
+labeled "open the diagnostic report" opened a menu instead. It now presses it,
 waits for the report (building it is asynchronous, so a synchronous check would
-have quietly restored the old behaviour), and puts focus on the report itself.
+have quietly restored the old behavior), and puts focus on the report itself.
 
 **The (i) panel shows that it scrolls.** A shading cue, not a control — the panel
 already has two ways out and does not need a third thing to press. Pure CSS,
@@ -85,7 +85,7 @@ artefact designed to be handed to somebody else when something is wrong.
 ## The transferable rule
 
 **A gate that measures a property of the output is not a gate on the output.**
-Contrast, names, target size and behaviour are all properties. None of them
+Contrast, names, target size and behavior are all properties. None of them
 notices that the page says something nobody wrote on purpose, or that a control
 is absurdly the wrong size rather than slightly the wrong size. Both new checks
 are cheap, and both are the first of their kind in this repo after a year of
@@ -120,5 +120,5 @@ the walk's patience.
   assertion pinned to the old sentence and went red on the fix — hub LESSONS
   §59's exact shape — so it now holds the rule (the pair of numbers) rather than
   the draft, and gained the contradiction check the defect was about.
-- The scroll cue uses gradients only, so forced-colours modes drop it harmlessly
+- The scroll cue uses gradients only, so forced-colors modes drop it harmlessly
   and there is nothing for `prefers-reduced-motion` to suppress.

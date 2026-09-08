@@ -106,7 +106,7 @@ nothing and always will. Weight exists because somebody said so.
 
 ## Consequences
 
-- No new colour pair. The named step is `--ink` on the page background, the pair
+- No new color pair. The named step is `--ink` on the page background, the pair
   the card's own title already uses; the hint reuses `.detail-hint`. Both new
   states join the a11y registry in the same commit (hub LESSONS §28), including
   a driven state for a step being named, which is where the §4 name check earns

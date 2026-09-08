@@ -1,4 +1,4 @@
-// THE PROOF OF JUDGEMENT — law 4's analogue of the coverage gauge (3.23.0).
+// THE PROOF OF JUDGMENT — law 4's analogue of the coverage gauge (3.23.0).
 //
 // `coverageProof` (`src/gate.ts`) answers law 1: nothing is LOST, here are the
 // named reasons, and here is what the app cannot guarantee. Its docblock says
@@ -7,9 +7,9 @@
 // addressed is precisely not being able to trust an assurance from the inside.*
 //
 // Nothing said the same thing about law 4. The app could demonstrate its
-// INTEGRITY and could not demonstrate its JUDGEMENT, so the only way to check
+// INTEGRITY and could not demonstrate its JUDGMENT, so the only way to check
 // whether the right thing was in front of you was to read the whole store —
-// and re-reading a store to feel safe is the behaviour this app exists to
+// and re-reading a store to feel safe is the behavior this app exists to
 // remove, not one it should require. `NOTES.md` names that asymmetry and calls
 // this the highest-value thing to build; it was gated on Q-11 saying whether
 // the problem was ranking or trust, and Q-11 closed on the ranking half on
@@ -35,14 +35,14 @@ import { heldWork } from './gate.ts';
 import { heldGroups, type HeldGroupKey } from './held.ts';
 import { reviewExceptions, type ReviewException } from './review.ts';
 
-export interface JudgementPlace {
+export interface JudgmentPlace {
   key: HeldGroupKey;
   /** The held list's own words, never a second phrasing. */
   title: string;
   count: number;
 }
 
-export interface JudgementProof {
+export interface JudgmentProof {
   /** True when every held thing sits in exactly one named place. The one thing
    *  a reader is actually asking, and — like `coverageProof.holds` — it must be
    *  able to be false, or it is not a proof. */
@@ -50,7 +50,7 @@ export interface JudgementProof {
   /** Everything held, from the gate's own set. */
   total: number;
   /** Where each of them is, biggest-first order left to `heldGroups`. */
-  places: JudgementPlace[];
+  places: JudgmentPlace[];
   /** What the work surface is drawing from right now — ready, and the passed
    *  dates that raise a card. The subset the claim is ABOUT: it says the rest
    *  is somewhere named, not that the rest is hidden. */
@@ -63,9 +63,9 @@ export interface JudgementProof {
   neverSurfacedTotal: number;
 }
 
-export function judgementProof(state: State, nowIso: string, zone: string): JudgementProof {
+export function judgmentProof(state: State, nowIso: string, zone: string): JudgmentProof {
   const groups = heldGroups(state, nowIso, zone);
-  const places: JudgementPlace[] = groups.map(g => ({
+  const places: JudgmentPlace[] = groups.map(g => ({
     key: g.key, title: g.title, count: g.items.length,
   }));
   const total = heldWork(state).length;
@@ -88,7 +88,7 @@ export function judgementProof(state: State, nowIso: string, zone: string): Judg
 
 /** The one line that ends the scan. It states the claim and its size, and it
  *  never says anything is fine — the reader decides that. */
-export function assuranceWords(p: JudgementProof): string {
+export function assuranceWords(p: JudgmentProof): string {
   if (p.total === 0) {
     return 'Nothing here yet. When you put something down, this says where it went.';
   }
@@ -112,7 +112,7 @@ export function assuranceWords(p: JudgementProof): string {
  * control that needs two lines of prose is a control nobody glances at, which
  * is the failure this whole surface exists to fix.
  */
-export function assuranceFact(p: JudgementProof): string {
+export function assuranceFact(p: JudgmentProof): string {
   if (!p.holds) return 'some of this is not accounted for';
   const now = p.onWorkSurface === 0
     ? 'nothing asking now'
@@ -126,7 +126,7 @@ export function assuranceFact(p: JudgementProof): string {
  *  (what it is, what it sits in, what it holds). Two live exports of one name
  *  in one import list is a collision the compiler catches and a reader does
  *  not, so the narrower thing takes the longer name. */
-export function placeCountWords(place: JudgementPlace): string {
+export function placeCountWords(place: JudgmentPlace): string {
   return `${place.title} — ${place.count === 1 ? '1 thing' : `${place.count} things`}`;
 }
 
@@ -144,4 +144,4 @@ export function gapWords(n: number): string | null {
 }
 
 /** The nodes behind the gap, for the surface that opens it. */
-export const gapNodes = (p: JudgementProof): NodeState[] => p.neverSurfaced.map(e => e.node);
+export const gapNodes = (p: JudgmentProof): NodeState[] => p.neverSurfaced.map(e => e.node);

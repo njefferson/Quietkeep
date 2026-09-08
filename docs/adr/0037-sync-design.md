@@ -98,7 +98,7 @@ Not a toggle. A toggle is one mis-tap.
   reach it and neither can a screen-reader user's stray activation.
 - **The key is shown once**, with "write this down" and the plain statement that
   **there is no recovery**. Losing it makes the synced copy permanently
-  unreadable — which is correct behaviour and is said as such, not apologised for.
+  unreadable — which is correct behavior and is said as such, not apologized for.
 - **A permanent visible indicator** while it is on: that it is on, what was last
   sent, and when. Never a silent background state.
 - **One tap off**, and a separate **erase everything on the relay**. The
@@ -147,7 +147,7 @@ new record and not an enhancement.
      Required only if push is ever added, but recorded now so it is not
      discovered late.
   3. **Whether this is a VERSION** (Doctrine §7, first slot). It changes what the
-     app *is* for anyone who opts in. That judgement is the owner's and is not inferred
+     app *is* for anyone who opts in. That judgment is the owner's and is not inferred
      from diff size.
 - The relay is the only server this project has ever had. It ships with the
   Worker source in this repo, so what it does is readable by the person trusting

@@ -28,7 +28,7 @@ out by measurements this repo had paid for, and I went and read them.**
 
 - **`position: fixed`** was built once, as a floating Contents button, and
   probed at two screen sizes across thirteen scroll positions: **it overlapped
-  ten controls and took the centre of three, every one a card's Done.** Padding
+  ten controls and took the center of three, every one a card's Done.** Padding
   at the document's end does not help, because mid-scroll content passes under
   a fixed element by definition.
 - **`position: sticky`** was the (i) panel's way out, and it **did not hold on

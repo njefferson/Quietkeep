@@ -8,7 +8,7 @@ Captured items are triaged in two passes, both computed from the log, neither
 storing a queue:
 
 1. **Heat** — an optional, lighter-weight first pass. One card at a time,
-   `hot` / `cold`, recorded as `heat.set`. It routes nothing; it only colours the
+   `hot` / `cold`, recorded as `heat.set`. It routes nothing; it only colors the
    clarify pass that follows. Skipping it costs nothing but a little of clarify's
    context.
 2. **Clarify** — one card at a time, a **forced choice of six routes**. Each route
@@ -70,7 +70,7 @@ the node exactly as clarify found it — under its capture clock, never silent, 
 needing no cure at all. The gate's per-event cures (`capture.recorded`,
 `node.created`, `clock.cleared`, …) are what guarantee that no *single* event can
 introduce silence; the `clarify.routed` cure among them is redundant
-defence-in-depth the real write paths never invoke, kept so the invariant "every
+defense-in-depth the real write paths never invoke, kept so the invariant "every
 silent-risk event carries a cure" stays total. The tests assert the true
 mechanism: a bare route needs **no** cure (the capture clock holds), and when the
 capture clock is also stripped it is `clock.cleared`'s cure — named explicitly —
@@ -91,7 +91,7 @@ later" that silently rebuilds the pile) is what actually drains an inbox.
 > and asks one question. What changed is how you arrive: this surface used to put
 > itself on screen, so the forced choice was also the price of opening the app.
 > It is now reached only through its own door. "Forced choice drains an inbox" is
-> a claim about the sorting, not a licence to start it for somebody.
+> a claim about the sorting, not a license to start it for somebody.
 
 **The do-now timer is an affordance, not a gate.** Routing to do-now clocks and
 routes the node *first*; the 2-minute countdown is a nudge for the small thing in

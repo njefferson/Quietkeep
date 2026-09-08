@@ -83,7 +83,7 @@ test('weight narrows the OFFER, and nothing else', () => {
   // pinned weight narrowing the offer to a shorter list.
   //
   // Narrowing on a low day is a PACING mechanism — correct for post-exertional
-  // conditions, iatrogenic for depression, where behavioural activation says
+  // conditions, iatrogenic for depression, where behavioral activation says
   // offer anyway. Capacity now changes WHICH things are offered and never HOW
   // MANY, which serves both and needs no preference from anybody. This test
   // still guards everything it always did about what must NOT move; only the
@@ -156,7 +156,7 @@ test('saying "low" is believed on its own, with no pebbles at all', () => {
     'it means reaching for the lighter thing first');
 });
 
-test('an unrecognised capacity is REFUSED, never guessed', () => {
+test('an unrecognized capacity is REFUSED, never guessed', () => {
   const s = write(emptyState(), [ev('capacity.declared', null, { level: 'exhausted' })]);
   assert.equal(s.capacity, null,
     'the app does not decide how you are from something it did not understand');

@@ -68,7 +68,7 @@ export const DEPENDS_FIELD = 'arrangement-depends';
  * date, or a position out to advert right now. Those have a STATE, and it is
  * one the app cannot know — so it is a phrase somebody writes and never an
  * enumeration the app defines, which would be the app modelling their
- * organisation (law 7).
+ * organization (law 7).
  */
 export const STANDS_FIELD = 'arrangement-stands';
 

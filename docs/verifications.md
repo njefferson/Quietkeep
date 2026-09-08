@@ -2,7 +2,7 @@
 
 The standing answer to *"did we ever actually check that?"*
 
-Doctrine §6: a claim without evidence is a guess, and it gets labelled as one.
+Doctrine §6: a claim without evidence is a guess, and it gets labeled as one.
 **VERIFIED** and **NEEDS THE OWNER'S HANDS** are kept apart on purpose. A row does not
 move to VERIFIED because it seems likely — only because something proved it, and
 the proof is named in the row.
@@ -19,7 +19,7 @@ a dated resolution beneath it.
 - **`NEEDS THE OWNER'S HANDS`** — Cannot be checked from a session by any means. Requires real hardware or a real account.
 - **`NOT RUN`** — Deliberately deferred, with the reason and the trigger for running it.
 - **`WITHDRAWN`** — No longer relevant — scope changed. The row stays so the consideration is on record.
-- **`WORKING`** — An observed behaviour is now correct; recorded when the cause is understood well enough to name but the row is about a fixed symptom, not a standing invariant.
+- **`WORKING`** — An observed behavior is now correct; recorded when the cause is understood well enough to name but the row is about a fixed symptom, not a standing invariant.
 - **`PROVEN`** — A one-off fact was demonstrated (e.g. a network limit), with the demonstration named.
 
 A row may carry a compound status line (e.g. `STEP 1 ANSWERED · step 2 pending`)
@@ -28,7 +28,7 @@ named explicitly rather than averaged into one label.
 
 ---
 
-## V-00 · iPadOS storage behaviour — **the reference platform**
+## V-00 · iPadOS storage behavior — **the reference platform**
 **Status: STEP 1 ANSWERED on device, 2026-07-28** · step 2 waits for tomorrow
 
 ### Measured on a real iPad, from the deployed app
@@ -78,7 +78,7 @@ one of them has been measured.
 
 > **Promoted 2026-07-27.** This was V-07, filed as a nice-to-know whose failure "costs
 > nothing". That is no longer true. The owner's decision that this is a **personal-iPad app**
-> makes iPadOS the *only* platform in scope, so these two behaviours now govern the
+> makes iPadOS the *only* platform in scope, so these two behaviors now govern the
 > single environment the app is built for. The original row is preserved below as V-07;
 > this is the one that matters.
 
@@ -342,7 +342,7 @@ claim is literal; the planner's was figurative.
 
 **Kept visible rather than rewritten.** A wrong `VERIFIED` row is worse than an open one,
 because it stops anyone looking again — Doctrine §6. The lesson is the one already in the
-family record: *a claim without a test is a guess, and it must be labelled as one.*
+family record: *a claim without a test is a guess, and it must be labeled as one.*
 
 **Resolved by the rename.** The planner is now Perennial; there is no collision left.
 The astro app's *own* naming inconsistency is open separately as **Q-06**.
@@ -386,8 +386,8 @@ considered and closed instead of raising it again as an oversight.
 > unverified technical guess is not a safeguard, and treating it as one would be exactly
 > the false-confidence failure Doctrine §5 names.
 
-## V-07 · Current-iOS storage behaviour — *superseded framing*
-**Status: SUPERSEDED by [V-00](#v-00--ipados-storage-behaviour--the-reference-platform)** · 2026-07-27
+## V-07 · Current-iOS storage behavior — *superseded framing*
+**Status: SUPERSEDED by [V-00](#v-00--ipados-storage-behavior--the-reference-platform)** · 2026-07-27
 
 Original row, preserved because the reasoning it contained was wrong in a way worth
 keeping visible:
@@ -578,7 +578,7 @@ days in the reader's zone.
 **Proven, made to fail first (§6):** eight zone tests pinned to non-UTC zones
 (Denver, Kiritimati at UTC+14, Chatham at UTC+12:45), plus a route-level test that
 a do-now routed at 20:30 Denver returns *that evening*. Reverting `endOfLocalDay`
-to the old end-of-UTC-day behaviour fails five of them, including the route test.
+to the old end-of-UTC-day behavior fails five of them, including the route test.
 
 The original finding is kept below, because a record that explains what was wrong
 is worth more than one that only says it is fine now.
@@ -603,7 +603,7 @@ gate and cross-cutting (every clock in the app derives its "day" this way), so t
 correct fix is a single timezone-aware primitive threaded through the gate and the
 intents — a deliberate change with its own tests, not a one-line patch buried in a
 triage commit. It had **no bearing on law 1**: the node is clocked either way,
-never silent — only the *label's day* was wrong. That judgement held: the fix
+never silent — only the *label's day* was wrong. That judgment held: the fix
 landed as the first step of Phase 3, with its own suite, one release later.
 
 > **A correction, and it matters more than the finding.** This row previously read that the
@@ -720,7 +720,7 @@ dressed as a confirmation."* That is now an observation rather than a worry.
 - Whether a Shortcut can be made to land in the installed app at all — via a
   different action, a scoped URL, or a Home Screen shortcut rather than *Open URL*.
   Nothing in this row is evidence either way.
-- Whether the behaviour differs on iPhone versus iPad, or by iOS version. One
+- Whether the behavior differs on iPhone versus iPad, or by iOS version. One
   device, one run of one Shortcut, on iPadOS, on 2026-08-10.
 - Whether the two symptoms shared a cause. The service-worker redirect defect is
   fixed and would have produced its own failure regardless of which app opened.
@@ -731,7 +731,7 @@ gate were built on top of an assumption instead. What the record actually says:
 
 - **iOS has no link capturing. An `https://` link opens in Safari, always** — whether
   or not it falls inside an installed web app's manifest `scope`. This is the
-  platform behaviour, not a Shortcuts quirk, and it is the documented difference from
+  platform behavior, not a Shortcuts quirk, and it is the documented difference from
   Android, where an in-scope URL opens the installed PWA by default. The observation
   above is the platform working as designed.
 - **Push notifications are the one long-standing exception** (iOS 16.4+): a
@@ -742,7 +742,7 @@ gate were built on top of an assumption instead. What the record actually says:
   reported, widely used from Shortcuts, **and absent from Apple's documentation** —
   which is a real risk to weigh, not a footnote. `webapp://host/path` opens the web
   app that was added to the Home Screen for that URL, rather than Safari.
-- **And it discards the path and query.** The reported behaviour is that only `/`
+- **And it discards the path and query.** The reported behavior is that only `/`
   renders: the app is launched at its start URL whatever was asked for. Sources
   disagree on which iOS versions carry it (16.4+ in one account, discovered in the
   iOS 26 betas in another), and that is left unresolved here rather than guessed.
@@ -766,7 +766,7 @@ to `webapp://quietkeep-sync.pages.dev`, from an unlisted page on the hub, produc
 
     Safari cannot open the page because the address is invalid.
 
-Safari does not recognise the scheme at all — not "opens the wrong thing", not
+Safari does not recognize the scheme at all — not "opens the wrong thing", not
 "drops the query". There is nothing there. So the community reports do not hold on
 this device and this iOS version, whatever they hold elsewhere, and **the one
 mechanism that could have fixed the destination does not exist here.**
@@ -901,7 +901,7 @@ and the app's copy is worded from that definition, which needs no measurement.
 
 **What is NOT settled, and is why this row exists.** Whether iOS's
 Settings → Safari → *Clear History and Website Data* actually reaches a Home
-Screen web app's IndexedDB for the same origin. [V-00](#v-00--ipados-storage-behaviour--the-reference-platform)
+Screen web app's IndexedDB for the same origin. [V-00](#v-00--ipados-storage-behavior--the-reference-platform)
 measured the persistence grant, ~38 GB of quota and a force-quit survival on
 a real iPad; it never went near this path, and this repo does not put a platform
 fact on screen it has not run.
@@ -943,7 +943,7 @@ adding the binding broke neither reading nor cross-origin use.
 
 Cloudflare's rate-limiting binding is declared under `[[unsafe.bindings]]`, and
 that is the *only* control bounding a stranger's ability to spend the daily KV
-write quota. So the defence rests on an interface its vendor reserves the right
+write quota. So the defense rests on an interface its vendor reserves the right
 to change. Two consequences worth holding:
 
 - **A future wrangler could reject or ignore this stanza.** Rejecting is the safe
@@ -1177,7 +1177,7 @@ upstream of that claim:
 
 Until step 3 is observed, **T1 is built but unproven**, and nothing should describe
 Quietkeep as reminding anyone. The changelog wording for 0.8.0 says the calendar
-reminds you, which is a claim about the calendar's behaviour rather than the app's
+reminds you, which is a claim about the calendar's behavior rather than the app's
 — if step 3 fails, that copy is wrong and goes first.
 
 **The shipped copy was audited against this and one sentence failed it.** The

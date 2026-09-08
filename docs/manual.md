@@ -139,7 +139,7 @@ pressed. There is nowhere to go.
 
 ### Name a meeting, and open the room
 
-The same sheet has **Recognise this one?** at the bottom. Give what you have set
+The same sheet has **Recognize this one?** at the bottom. Give what you have set
 a name and it comes back in one tap — the Tuesday standup, a free weekend, a
 call with one person. **Who is in it?** above it names the people; more than one
 makes it a meeting.
@@ -167,7 +167,7 @@ If you answer one and almost nothing changes, that is worth knowing rather than
 guessing at: the report described below counts how much of what you are holding
 any of these three questions can actually reach.
 
-**Recognise this one?** names what you have just set so it returns in one tap.
+**Recognize this one?** names what you have just set so it returns in one tap.
 That is for the meeting you have every Tuesday, or the shape of a free weekend.
 
 ### Find something
@@ -350,8 +350,8 @@ One section is worth knowing about even when nothing is wrong. **What the
 situation can narrow** says how much of what you are holding is reached by a
 place, names somebody, or carries a time estimate — and how many projects and
 other containers already carry a place. Those numbers explain something that
-otherwise looks broken: if almost nothing is labelled, answering *where are you*
-changes almost nothing, because anything unlabelled turns up wherever you are.
+otherwise looks broken: if almost nothing is labeled, answering *where are you*
+changes almost nothing, because anything unlabeled turns up wherever you are.
 That is the design and not a fault, and the section says so. It also points at
 where a little filing goes furthest, since a place on a container reaches
 everything inside it.
@@ -431,9 +431,9 @@ The named ones:
   of *What you are holding*.
 - **Elsewhere in the app** — the way to everything below.
 - **How it works** · **Help** · **Your data** · **Things you can do** ·
-  **Settings** · **Colours** — the destinations behind *Elsewhere in the app*.
+  **Settings** · **Colors** — the destinations behind *Elsewhere in the app*.
 - **Quietkeep** — the ⓘ: what this is, what it is not, how to install it, what
-  changed, and the licence.
+  changed, and the license.
 - **If something is wrong** — inside the ⓘ: the report the app writes about
   itself, which contains counts and states and nothing you wrote.
 - **Stopping for now** — ending a timer without ending the thing.
@@ -446,13 +446,13 @@ Stated because a promise is only worth what it refuses.
 
 - **No streaks, no scores, no completion percentage.** Nothing accumulates and
   nothing can be broken.
-- **No red.** Nothing on any screen escalates in colour to make you act.
+- **No red.** Nothing on any screen escalates in color to make you act.
 - **No counting what you did not do.** No misses, no late tally, no per-person
   record of how long you kept somebody waiting.
 - **No guessing.** The app never infers a place, a person or a project from
-  your behaviour. It asks, once, or it does without.
+  your behavior. It asks, once, or it does without.
 - **No setup.** There is no wizard, no template to choose, and no screen asking
-  you to get organised before you can use it.
+  you to get organized before you can use it.
 - **Nothing leaves the device** unless you export it yourself.
 
 ---

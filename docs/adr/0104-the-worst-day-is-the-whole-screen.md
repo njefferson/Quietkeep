@@ -18,7 +18,7 @@ what makes everything being out of sight safe. `More` and the ⓘ, because a scr
 with no way to anywhere is a trap. The update strip, because a reader stuck on a
 stale build has to be able to learn it (Doctrine §7h). The focus session, when
 one is running, because that is the one thing rather than the pile. The wordmark
-and the footer stay: a surface has to say what it is, and the licence and the
+and the footer stay: a surface has to say what it is, and the license and the
 accessibility statement are an obligation.
 
 **The mechanism is a stylesheet rule generated from `PLAIN_CHROME_HIDDEN`**, not

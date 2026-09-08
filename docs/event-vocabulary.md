@@ -132,7 +132,7 @@ inspect and either complete or refuse. See [ADR-0011](adr/0011-no-silent-nodes-g
     the part of it the importer could not do anything with. The value is the
     importing commit's own timestamp: an import lands in ONE commit, so every
     event in it already shares an `at`, and that string is both unique per run
-    and the date the set is labelled with. Nothing is minted. The built-in
+    and the date the set is labeled with. Nothing is minted. The built-in
     sample set uses the fixed key `sample` instead, because it did not arrive on
     a day anybody remembers — and naming it is the point: unnamed, it leaves
     loose rows that read as somebody's own forgotten work months later, with no
@@ -256,7 +256,7 @@ merely *lapsed* — that is a different case entirely, and it is `replan.raised`
     is forty ordinary captures rather than one compound thing.
   - `sample` is the demonstration set (`src/sample.ts`), added 2026-07-30. Named
     rather than folded into `quick`, because a capture claiming it came from a
-    keystroke when it came from a button labelled "sample work" is a small lie in
+    keystroke when it came from a button labeled "sample work" is a small lie in
     the one place the app keeps its history. Additive only: every log already
     written stays readable.
   - Silent risk: **yes — gated** (an unclarified item gets an aggressive same-day clock at write time, not later)
@@ -521,7 +521,7 @@ is a valid, unremarkable value, never nagged about.
   - Payload: `recurrence` — `weekly:mon` … `weekly:sun`; `''` clears. `node: null`.
   - Silent risk: no
   - Folds to `State.requestSlot` (state-level LWW, the `focus` shape). An
-    unrecognised recurrence reads as no slot — refused at read time, never
+    unrecognized recurrence reads as no slot — refused at read time, never
     guessed. Null slot = the feature is invisible; setting a day IS the opt-in.
 - **`comms.sweep.scheduled`**
   - Payload: `at`
@@ -564,7 +564,7 @@ is a valid, unremarkable value, never nagged about.
   - Silent risk: no
   - **Emitted since 1.15.0**, from the load entry, and read by `src/load.ts`.
     Four words and no number: a level you can say out loud is a description,
-    where a number would be a score about yourself (law 5). An unrecognised
+    where a number would be a score about yourself (law 5). An unrecognized
     level is REFUSED at the fold rather than guessed — the app has no opinion
     about your capacity except the one you handed it.
 - **`wip.limit.set`**
@@ -623,7 +623,7 @@ is a valid, unremarkable value, never nagged about.
   - **An event and not a device preference**, unlike `where.now` and
     `how.long`. Those are preferences because where you are is not a fact about
     your work and a stored trail of it is what law 7 keeps the app out of. A
-    situation you NAMED is something you recognise about how you work — nearer
+    situation you NAMED is something you recognize about how you work — nearer
     a context or a role — and it should survive a new device.
 - **`situation.forgotten`**
   - Payload: `name`
@@ -702,7 +702,7 @@ is a valid, unremarkable value, never nagged about.
   - **Unemitted — reserved.** No terminology skinning is built, and none is
     scheduled; the app has one vocabulary and it is the one in this document.
 - **`template.loaded`**
-  - Payload: `template, source, licence`
+  - Payload: `template, source, license`
   - Silent risk: no
   - **Unemitted — reserved for the offline template library**, which is the
     bottom rung of ADR-0015's ladder and unbuilt like the rest of it.

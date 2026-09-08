@@ -93,8 +93,8 @@ across four other surfaces. Stated here rather than left to be found.
 
 No count beside anybody's name in a roster, no ordering of the people by how
 much is on them — that is `roleLoads`' own refusal, and ranking the people in a
-room by how much you owe each of them is a worse version of the same judgement.
-No readiness, no "you are behind on three", no colour, no export of the room to
+room by how much you owe each of them is a worse version of the same judgment.
+No readiness, no "you are behind on three", no color, no export of the room to
 anybody in it. Entry 19's refusal of networked or simulated accountability
 stands: this is memory support, never a channel.
 

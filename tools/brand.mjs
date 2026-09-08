@@ -27,7 +27,7 @@ const SANDBOX_CHROMIUM = process.env.CHROMIUM_PATH || '/opt/pw-browsers/chromium
 const launchOpts = { args: ['--no-sandbox'] };
 if (existsSync(SANDBOX_CHROMIUM)) launchOpts.executablePath = SANDBOX_CHROMIUM;
 
-// ---------------------------------------------------------------- colour maths
+// ---------------------------------------------------------------- color maths
 
 const srgbToLin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
 const lum = ([r, g, b]) => 0.2126 * srgbToLin(r) + 0.7152 * srgbToLin(g) + 0.0722 * srgbToLin(b);
@@ -180,7 +180,7 @@ async function checkIcons(browser) {
       continue;
     }
     // Three sample points, in icon-relative coordinates: the field corner, the
-    // shelter's left band, and the lit opening's centre.
+    // shelter's left band, and the lit opening's center.
     const u = (f) => f * size;
     const field = img.at(u(0.04), u(0.04));
     const shelter = img.at(u(0.28), u(0.5));
@@ -199,7 +199,7 @@ async function checkIcons(browser) {
     if (Math.abs(g(shelter) - g(field)) < 20) fail(`${file}: shelter and field collapse in grayscale`);
   }
 
-  // Maskable safe zone: nothing painted outside the centre 80% circle.
+  // Maskable safe zone: nothing painted outside the center 80% circle.
   const m = await inspect(browser, 'icon-maskable-512.png');
   if (m.width) {
     const c = m.width / 2, r = m.width * 0.4;
@@ -212,7 +212,7 @@ async function checkIcons(browser) {
       if (ratio(m.at(x, y), field) > 1.1) outside++;
     }
     (outside === 0 ? pass : fail)(
-      `maskable safe zone: ${outside === 0 ? 'artwork inside the centre 80% circle' : `${outside} sample points painted outside it`}`,
+      `maskable safe zone: ${outside === 0 ? 'artwork inside the center 80% circle' : `${outside} sample points painted outside it`}`,
     );
   }
 }
@@ -236,7 +236,7 @@ async function checkSocial(browser) {
   if (!b64) return;
   const plate = await inspectB64(browser, await shot(browser, socialHtml(b64, false), SOCIAL.width, SOCIAL.height));
 
-  // Two zones, because the two type colours are different: the wordmark's band
+  // Two zones, because the two type colors are different: the wordmark's band
   // and the tagline's, both across the full width the text can occupy.
   const zones = [
     { name: `wordmark  ${TYPE_STRONG}`, fg: TYPE_STRONG, x0: 600, x1: 1210, y0: 190, y1: 290, min: 4.5 },
@@ -257,7 +257,7 @@ async function checkSocial(browser) {
   }
 }
 
-// --------------------------------------------------- the app's own colours
+// --------------------------------------------------- the app's own colors
 
 // B-11. Read out of the stylesheet rather than duplicated here, so the gate
 // cannot drift from what actually ships — a second copy of a palette is a
@@ -276,12 +276,12 @@ const UI_PAIRS = [
   ['line', 'surface', 3], ['line', 'bg', 3],
 ];
 
-function checkAppColours() {
-  console.log('\nApp colours (B-11)');
+function checkAppColors() {
+  console.log('\nApp colors (B-11)');
   // FROM THE SOURCE, NOT FROM THE STYLESHEET (3.4.0, ADR-0110).
   //
   // This parsed `:root` out of public/app.css, which stopped declaring the seven
-  // colour roles when they were consolidated into docs/palettes.json — and this
+  // color roles when they were consolidated into docs/palettes.json — and this
   // check went red with twenty "token not found", which is the consolidation
   // finding its last consumer. A THIRD place was reading the values; the whole
   // point of one source is that everything reads it.
@@ -289,7 +289,7 @@ function checkAppColours() {
   // AND IT NOW COVERS EVERY FAMILY, not just the default. The pairs below are a
   // hand-written list, which would normally be the defect this repo keeps
   // paying for — except that `line` is a BORDER, a graphical object under WCAG
-  // 1.4.11, and the colour inventory reads `color` and `background` only. So
+  // 1.4.11, and the color inventory reads `color` and `background` only. So
   // this list carries the one thing arithmetic-over-the-inventory cannot see,
   // and that division of labour is written down in ADR-0110 rather than left to
   // be rediscovered.
@@ -324,7 +324,7 @@ try {
   }
   await checkIcons(browser);
   await checkSocial(browser);
-  checkAppColours();
+  checkAppColors();
 } finally {
   // Close explicitly. LESSONS §8: a script that leaves the browser open looks
   // like a protocol hang, and Node block-buffers stdout to a pipe so you see

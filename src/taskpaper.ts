@@ -310,7 +310,7 @@ export function parseTaskPaper(text: string): { lines: TaskLine[]; unreadable: s
       // A 1,432-item import arrived carrying ONE context because of this line.
       //
       // Carrying it is not the inference `docs/nd-collisions.md` entry 23
-      // refuses — that refusal is about deducing a place from BEHAVIOUR. This is
+      // refuses — that refusal is about deducing a place from BEHAVIOR. This is
       // the person's own word, typed by them, in the system they typed it in,
       // which is exactly what entry 24 says a context node is for.
       //
@@ -391,7 +391,7 @@ export function taskPaperEvents(
   /**
    * WHICH ARRIVAL THIS IS (3.11.0). One import is one commit, so every event in
    * it already shares `ctx.at` — that string is unique per run and is also the
-   * date the set gets labelled with, so nothing is minted and no id invented.
+   * date the set gets labeled with, so nothing is minted and no id invented.
    *
    * It goes on EVERY node this importer creates, which is deliberately wider
    * than `arrived` below: that marks only a row with nothing to go on, so a

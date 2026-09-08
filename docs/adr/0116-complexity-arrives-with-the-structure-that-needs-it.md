@@ -8,7 +8,7 @@ alternative that keeps getting proposed.
 
 This app is built for a range that runs from somebody who wants a box to put
 things in and one thing to do, up to somebody running lines of effort, staffing
-constraints and standing meetings across an organisation. Both are the audience.
+constraints and standing meetings across an organization. Both are the audience.
 
 Two failures sit either side of that range. Build for the first and the second
 finds the tool has been dumbed down and the thing they need is missing. Build for
@@ -43,7 +43,7 @@ summons the surfaces.
 - It is a setting somebody maintains, can set wrong, and must remember — the
   standing second artefact this product refuses everywhere else.
 - It creates two apps to keep consistent, and the simpler one rots first.
-- **It grades people.** The moment a control is labelled *advanced*, everybody
+- **It grades people.** The moment a control is labeled *advanced*, everybody
   who has not turned it on knows what that makes them. The failure it is meant to
   prevent is the failure it causes.
 

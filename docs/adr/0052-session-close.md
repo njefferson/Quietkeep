@@ -6,7 +6,7 @@
 
 When a focus session ends, a **close strip** appears (build-plan item 40): the
 win in words ("Done: ⟨title⟩." — or, for a stop, "⟨title⟩ is left where you
-can pick it back up."), and the coverage gauge stated in WORDS, never colour
+can pick it back up."), and the coverage gauge stated in WORDS, never color
 (B-02): "Everything you hold is covered — N things, none silent." It rides
 the **same in-memory `surfacing` ramp as the comms chip** — the second rider
 on a proven mechanism: never persisted, never an event, cleared by the next
@@ -38,7 +38,7 @@ the close is asking at the moment the answer is cheapest.
 - **Never more than one question.** A list of lapsed threads is a backlog
   wearing a farewell's name (law 8).
 - **Never persisted.** A close strip that survives a reload greets a cold
-  start with yesterday's summary — the arriving-unbidden behaviour the ramp
+  start with yesterday's summary — the arriving-unbidden behavior the ramp
   design refuses.
 
 ## What would overturn it

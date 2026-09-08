@@ -53,7 +53,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 // controls is a different and larger job than cutting prose; this stops the
 // number growing while nobody is looking, which is the failure that happened.
 const BUDGET = {
-  // 3300 -> 3340 on 2026-08-17 (ADR-0096). Roles add one labelled field to the
+  // 3300 -> 3340 on 2026-08-17 (ADR-0096). Roles add one labeled field to the
   // detail sheet with its hint, and one readout sheet whose whole content is a
   // sentence saying it is NOT a score. That sentence is the thing that makes the
   // readout legal under law 7, so cutting it to fit a word budget would cut the
@@ -170,8 +170,8 @@ const BUDGET = {
   // 3650 -> 3700 on 2026-08-25 (3.4.0). Thirty-three words: five palette names,
   // the label, the button and one sentence saying they are all held to the same
   // floors. The names ARE the control — PALETTES.md and Doctrine §4 both refuse a
-  // row of swatches, because a coloured square alone asks the reader to tell
-  // colours apart in order to work a colour control.
+  // row of swatches, because a colored square alone asks the reader to tell
+  // colors apart in order to work a color control.
   // 3700 -> 3705 on 2026-08-28 (3.8.0). Five words: "commas between them" in the
   // place hint and again in the role hint.
   //
@@ -179,7 +179,7 @@ const BUDGET = {
   // field's placeholder has read `at home, out, on the phone` since 2.2.0, and
   // the whole string went in as ONE label — so a real store carries a place
   // named after the instruction the app gave, and the reader who followed the
-  // example got a place they could not find the way to remove. The behaviour is
+  // example got a place they could not find the way to remove. The behavior is
   // fixed; these five words are the hint saying out loud what the placeholder
   // has always implied, because a placeholder vanishes the moment you type and
   // is the wrong place for the only statement of a rule.
@@ -236,7 +236,7 @@ const BUDGET = {
   // and the rows are built from the store rather than written here — a store
   // with forty findings behind the total adds not one word to this file.
   // 3749 -> 3815 on 2026-08-31 (3.18.0). Sixty-six words, and they are the
-  // release: two labelled boxes on the arrangement group with a hint each, and
+  // release: two labeled boxes on the arrangement group with a hint each, and
   // the `Running without you` sheet's heading and Close. The hints carry most of
   // it and they are load-bearing rather than decoration — one says the app does
   // not know your world and offers no list to pick from, the other says nothing
@@ -288,10 +288,10 @@ const BUDGET = {
   // a shared number. That is the flaw in having one ceiling for six rooms, and it
   // is recorded rather than fixed here: fixing it means a per-surface budget, and
   // a budget nobody has measured against is worse than a shared one everybody has.
-  // What bought it: the colour picker became five pictures (see `allSurfacesPx`).
+  // What bought it: the color picker became five pictures (see `allSurfacesPx`).
   // 3400 -> 3000 on 2026-08-26 (3.5.1), BACK DOWN, which is the half of a
-  // ratchet that never happens on its own. That raise was bought by the colour
-  // tiles crowding Settings; colour is its own door now, Settings measures 2,656
+  // ratchet that never happens on its own. That raise was bought by the color
+  // tiles crowding Settings; color is its own door now, Settings measures 2,656
   // and the tiles measure 1,226, and neither is near 3,000. Leaving the number
   // at 3,400 would have banked 744px of headroom nothing paid for — a budget
   // that keeps the space a move just freed has stopped being a budget.
@@ -320,7 +320,7 @@ const BUDGET = {
   // sentence, in Settings, which is 2,650px of a 3,000px budget and unmoved by
   // this. Same note as the raise below it: this measures SCROLL, so a control
   // counts as prose, and the ratchet is still too high.
-  // 11660 -> 12050 on 2026-08-26 (3.5.0). THE COLOUR PICKER BECAME PICTURES.
+  // 11660 -> 12050 on 2026-08-26 (3.5.0). THE COLOR PICKER BECAME PICTURES.
   // Five tiles, one per family, each cut on a diagonal so day and night are one
   // image. That is 371px of SCROLL and close to none of what this budget is
   // actually protecting against, which is reading burden: five pictures are
@@ -334,12 +334,12 @@ const BUDGET = {
   // were paid rather than the feature hollowed out.
   // AND THE THING TO WATCH. Settings is now the largest destination by a
   // distance. If it needs another raise, the answer is probably not a bigger
-  // number: colour has a heading, five pictures and its own explanation, and
+  // number: color has a heading, five pictures and its own explanation, and
   // that is a door rather than a block in somebody else's panel.
   // 11650 -> 11660 on 2026-08-26 (3.4.3). FOUR PIXELS, and the smallest raise
   // this file has ever taken, so it is worth saying exactly what bought them:
-  // the colour picker had NO HEADING. Every other block in Settings has one, and
-  // the section a reader lands on for "which colours" opened straight into a
+  // the color picker had NO HEADING. Every other block in Settings has one, and
+  // the section a reader lands on for "which colors" opened straight into a
   // sentence. That is a heading's worth of pixels for a real defect.
   // The PROSE around it went DOWN, not up, and deliberately: this raise paid for
   // the heading alone. The replacement copy was longer than what it replaced and
@@ -352,7 +352,7 @@ const BUDGET = {
   // total even as it lowers every surface in it: the new sheet carries its own
   // title and its own way out, and the tiles it was built for are now full width
   // rather than two-up, which is the entire point of moving them. Settings fell
-  // 3,299 -> 2,656 and Colours arrived at 1,226, so the total moved +583.
+  // 3,299 -> 2,656 and Colors arrived at 1,226, so the total moved +583.
   // This is the trade the two numbers exist to price separately. Travel is what
   // the per-surface budget protects and it improved; sprawl is what this one
   // refuses and it got worse, deliberately, by one door.
@@ -495,7 +495,7 @@ const BUDGET = {
   // The three: a Contents door in the header beside More, a second at the end of
   // the held list beside Back to the top, and the Close on the sheet they open.
   // The rows inside are not a fourth — they are one per live block, they replace
-  // travelling past that block, and they exist only while the block does.
+  // traveling past that block, and they exist only while the block does.
   //
   // IT IS THREE AND NOT TWO because the door is not fixed, and that cost a
   // control. A floating one measured taking the tap from three Done buttons
@@ -612,7 +612,7 @@ const BUDGET = {
   // and stayed red through 2.34.1 and 2.35.0 — three releases pushed to staging
   // and promoted to production with a Spine step failing — because the step's
   // one FAIL line sits four hundred lines up a log that ends with twenty green
-  // ones. Every step after it carries `if: ${!cancelled()}` on purpose, so the
+  // ones. Every step after it carries `if: ${!canceled()}` on purpose, so the
   // run does not stop at the first failure; the cost of that is a red job whose
   // tail reads exactly like a green one. Cloudflare deploys on push and does
   // not consult the Spine, so all three shipped, and "pushed and verified
@@ -655,13 +655,13 @@ const BUDGET = {
   // not move — it is still "which of five" — and the note directly above says
   // this budget cannot tell that difference, which is the sixth time.
   // The radio is VISIBLE and real, deliberately: selection had to be carried by
-  // the control's own state and not by a coloured ring round the chosen tile,
-  // which would be colour as the sole carrier (Doctrine §4) and would put a
+  // the control's own state and not by a colored ring round the chosen tile,
+  // which would be color as the sole carrier (Doctrine §4) and would put a
   // fourteenth pair on screen that the inventory knows nothing about.
   // 257 -> 259 on 2026-08-26 (3.5.1). A door costs exactly two: the button that
   // opens it and the way back out. Nothing else was added — the five tiles and
   // their control moved, they did not multiply.
-  // 259 -> 258 on 2026-08-26 (3.5.2), DOWN, because *Set the colours* was
+  // 259 -> 258 on 2026-08-26 (3.5.2), DOWN, because *Set the colors* was
   // removed: tapping a tile already repainted the app, so the confirm changed
   // nothing visible and read as a control that did not work. A ceiling left
   // above what the app actually has is a ceiling that stops counting.
@@ -687,7 +687,7 @@ const BUDGET = {
   // room's two lenses. Three controls, each one of the pass's asks.
   // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.
   // The door is the demand itself — dated work visible inside the app.
-  // 273 -> 275 on 2026-09-03 (3.23.0): the proof of judgement's line on the
+  // 273 -> 275 on 2026-09-03 (3.23.0): the proof of judgment's line on the
   // landing surface and its sheet's Close. Two controls, and the first of them
   // is the release: law 1 has had a visible proof since 2.8.1 and law 4 has
   // never had one, so checking the offer meant reading the whole store. A
@@ -742,8 +742,8 @@ try {
     ['Settings', 'sheet-group-extras', '#sheet-group-extras .sheet-body'],
     // The seventh, 3.5.1. A destination that is not in this list is not measured
     // and its prose does not count toward the total — so the move that took the
-    // colour picker out of Settings would have looked like 700px of saving.
-    ['Colours', 'sheet-group-colour', '#sheet-group-colour .sheet-body'],
+    // color picker out of Settings would have looked like 700px of saving.
+    ['Colors', 'sheet-group-color', '#sheet-group-color .sheet-body'],
   ];
   let total = 0;
   for (const [name, id, scroller] of SURFACES) {
