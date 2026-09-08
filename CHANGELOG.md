@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.2 — ITERATION
+
+*2026-09-08*
+
+- **A date you set before sorting a thing no longer points at a screen it cannot reach.** *The days ahead* shows what you have sorted — the same selection your calendar gets — so a date kept on something still waiting to be sorted is held, and simply is not on that screen yet. The hint beside the date box said it would be, with nothing about when. It now says *once sorted*, and the manual names all three the screen leaves out: not sorted yet, on the Menu, and done.
+- **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
+
 ## 3.23.1 — ITERATION
 
 *2026-09-03*

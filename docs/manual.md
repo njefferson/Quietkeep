@@ -220,8 +220,12 @@ that reading all of them stops being the only way to be sure.
 
 ### See the days ahead
 
-**The days ahead**, on the front page, is every dated thing you hold, day by
-day — today first, then each day something is waiting on. Each row says which
+**The days ahead**, on the front page, is every dated thing you have sorted,
+day by day — today first, then each day something is waiting on. A date you set
+before sorting the thing is kept and does not appear here yet; nor does one on
+something you have finished, or put on the Menu, which is the same rule the
+calendar goes by. The door itself only appears once something it can show
+carries a date. Each row says which
 date is talking: *due*, *starts*, *comes back*, or *answer owed* — and an
 answer owed names who is waiting, when you have said so. The list reads the
 store every time it opens, so when a date moves, the day it sits under moves

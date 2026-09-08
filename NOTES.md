@@ -1140,9 +1140,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.1**, and it is now what
-  production carries too: promoted 2026-09-03, so the two hosts are one tree
-  until the next change lands here. It is
+- **https://staging.quietkeep.pages.dev** — **3.23.2**, which production does
+  not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
+  tree plus this release. 3.23.2 is the first fix from the first cold view —
+  the date box on a thing's page promised *The days ahead* with no condition
+  on it, and a date kept before the thing is sorted cannot appear there,
+  because the door reads the calendar's own selection and that drops
+  unsorted, Menu and done. The copy moved; the exclusion did not. Beneath it,
+  3.23.1 is
   3.23.0 plus the walk's own finding: on the reduced screen the new line steps
   aside, because its fact counts how many things are in front of you and that
   count is the pile in miniature on the day somebody asked for one thing. The

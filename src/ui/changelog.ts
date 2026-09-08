@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.2',
+    kind: 'ITERATION',
+    date: '2026-09-08',
+    notes: [
+      '**A date you set before sorting a thing no longer points at a screen it cannot reach.** *The days ahead* shows what you have sorted \u2014 the same selection your calendar gets \u2014 so a date kept on something still waiting to be sorted is held, and simply is not on that screen yet. The hint beside the date box said it would be, with nothing about when. It now says *once sorted*, and the manual names all three the screen leaves out: not sorted yet, on the Menu, and done.',
+      '**Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons \u2014 press as many as apply. Nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.23.1',
     kind: 'ITERATION',
     date: '2026-09-03',
