@@ -1025,13 +1025,19 @@ export function mountWork(
    * with no failure mode is not checkable, and an app that can only ever say
    * "fine" is asking for the exact faith the reader does not have.
    */
+  // EACH ONE FOLLOWS A BARE NUMBER, so each one has to read after any number.
+  // These were written as plural verbs — "6 have a day they come back to you"
+  // is fine and "1 have a day they come back to you" is not, and a reader with
+  // one thing under a reason sees only the broken one. Rather than a second
+  // table of singulars to keep in step, every phrase is now number-agnostic:
+  // it modifies the count instead of agreeing with it.
   const REASON_WORDS: Record<string, string> = {
-    clock: 'have a day they come back to you',
-    menu: 'are on the Menu — no clock, because you said so',
-    parent: 'come back with something they are part of',
-    after: 'are waiting on something that will be shown to you first',
-    'demand-free': 'are not work, and have a place of their own',
-    decided: 'you have already put down or let go',
+    clock: 'with a day they come back to you',
+    menu: 'on the Menu — no clock, because you said so',
+    parent: 'coming back with something they are part of',
+    after: 'waiting on something that will be shown to you first',
+    'demand-free': 'not work, and with a place of their own',
+    decided: 'already put down or let go',
   };
 
   function buildProof(): void {

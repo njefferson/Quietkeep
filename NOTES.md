@@ -472,12 +472,30 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Five outstanding.** Three of the seven below were closed the day they were
-found: the days-ahead promise in 3.23.2, and in 3.23.3 the asterisks printing
-in the patch notes, the route word no control ever showed, and a finished thing
-announcing its return. Their entries are struck at the foot of this section
-rather than deleted, because an entry that vanishes reads as one that was never
-there.
+**Four outstanding, and two of the seven were never defects.** Closed the day
+they were found: the days-ahead promise (3.23.2); the asterisks printing in the
+patch notes, the route word no control ever showed, and a finished thing
+announcing its return (3.23.3); and in 3.23.4 the raw date on a thing's own
+page, the reason lines that only read correctly above one, the workshop word
+*surface* on a reader-facing line, and *written this night*.
+
+**TWO WITHDRAWN ON EXAMINATION, which is the cold read working rather than
+failing.** The `mm/dd/yyyy` mask is rendered by the BROWSER from its own locale
+— the app sets nothing and there was nothing to fix. And "the app spells
+British" was the wrong frame for a voice decision. What those two turned into
+was a real defect neither of them named: `capture-context.ts` hardcoded
+`Intl.DateTimeFormat('en-GB', …)` twice, while `held.ts` had always passed
+`undefined` and taken the device's own — one app, two answers, fixed in 3.23.4.
+
+**A THIRD IS PROBABLY WITHDRAWN AND IS NOT YET MEASURED.** The report called
+the date control after a new container unreachable by finger, on
+`window.scrollBy` doing nothing and `documentElement.scrollHeight` equalling
+the viewport. Both are this app's DESIGNED behaviour — `html` and `body` are
+`overflow: hidden` on purpose and the real scroller is `.runway`, which
+`smoke.mjs` already insists on for exactly this reason. The measurement was
+taken against the wrong element. It stands below until somebody reads
+`#runway.scrollTop` in that state; the gate in its entry is worth building
+either way.
 
 **Eight when they were written.** Seven of them arrived together on 2026-09-08, from the
 SECOND cold read this repo has had: a fresh reader given the served app and
@@ -593,6 +611,14 @@ everything since this device last looked, capped, with the true count said.
   down properly through *What is this?*. Two passes are being counted as one
   queue, so the first pass reads as making no progress — on the screen whose
   whole job is to feel finishable.
+
+- **Three spoken confirmations still read a date out as digits.** Setting a due
+  date, a start or an answer-owed announces *Due 2026-09-09.* into the live
+  region. 3.23.4 fixed the written lines, which take an ISO instant and could
+  use `clockDayWords`; these three hold a day KEY from the date input, and
+  turning a key into words needs a helper that does not exist yet. Named rather
+  than half-done: inventing a second date vocabulary to close three strings is
+  how the first one got two.
 
 - **Emphasis prints as asterisks in What's new, and six other strings read as
   machinery.** The ⓘ panel shows `*Just one thing*`, `*nothing here has gone
@@ -1170,7 +1196,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.3**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.4**, which production does
   not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
   tree plus this release. 3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition

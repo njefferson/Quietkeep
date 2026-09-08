@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.4',
+    kind: 'ITERATION',
+    date: '2026-09-08',
+    notes: [
+      '**A thing\u2019s own page says the day the way every other screen says it.** Open something dated and the line under its name read *comes back 2026-09-09*, while the card you came from and the sheet that counts everything both said *tomorrow* about that same day. One date, three screens, two vocabularies \u2014 and the machine-shaped one was on the page you open to understand a single thing. It now says *today*, *tomorrow*, *in 3 days* or a short date, from the same place the other screens get their words. A declined request says its day the way the Not Now ledger already did.',
+      '**Dates follow your device, not a country.** Two places wrote a weekday and a date to a fixed British setting \u2014 so *Written Tuesday evening* and *Written on 14 Jul* ignored what your device is set to, while the rest of the app was already asking it. They ask now too.',
+      '**Written tonight, not \u201cwritten this night\u201d.** The cue under a thing you are sorting says roughly when you wrote it. *This morning*, *this afternoon* and *this evening* are all things people say; the fourth one was not.',
+      '**The lines under the coverage claim read properly when there is one of something.** Each one follows a bare count, and they were written as though the count were always more than one \u2014 so a single thing gave you *1 come back with something they are part of*. They are worded to sit after any number now.',
+      '**One line stops using a word from the workshop.** The count of things worth a look said they were offered by no *surface*, which is what this app is called from the inside and not a word anybody outside it uses.',
+      '**Still to sort:** the situation screen asks who twice \u2014 the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new. And three spoken confirmations still read a date out as digits when you set one.',
+    ],
+  },
+  {
     triplet: '3.23.3',
     kind: 'ITERATION',
     date: '2026-09-08',

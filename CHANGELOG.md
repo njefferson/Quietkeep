@@ -14,6 +14,17 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.4 — ITERATION
+
+*2026-09-08*
+
+- **A thing’s own page says the day the way every other screen says it.** Open something dated and the line under its name read *comes back 2026-09-09*, while the card you came from and the sheet that counts everything both said *tomorrow* about that same day. One date, three screens, two vocabularies — and the machine-shaped one was on the page you open to understand a single thing. It now says *today*, *tomorrow*, *in 3 days* or a short date, from the same place the other screens get their words. A declined request says its day the way the Not Now ledger already did.
+- **Dates follow your device, not a country.** Two places wrote a weekday and a date to a fixed British setting — so *Written Tuesday evening* and *Written on 14 Jul* ignored what your device is set to, while the rest of the app was already asking it. They ask now too.
+- **Written tonight, not “written this night”.** The cue under a thing you are sorting says roughly when you wrote it. *This morning*, *this afternoon* and *this evening* are all things people say; the fourth one was not.
+- **The lines under the coverage claim read properly when there is one of something.** Each one follows a bare count, and they were written as though the count were always more than one — so a single thing gave you *1 come back with something they are part of*. They are worded to sit after any number now.
+- **One line stops using a word from the workshop.** The count of things worth a look said they were offered by no *surface*, which is what this app is called from the inside and not a word anybody outside it uses.
+- **Still to sort:** the situation screen asks who twice — the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new. And three spoken confirmations still read a date out as digits when you set one.
+
 ## 3.23.3 — ITERATION
 
 *2026-09-08*

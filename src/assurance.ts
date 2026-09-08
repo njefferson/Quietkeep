@@ -134,9 +134,13 @@ export function placeCountWords(place: JudgementPlace): string {
  *  information, which every capped surface here already refuses. */
 export function gapWords(n: number): string | null {
   if (n <= 0) return null;
+  // "SURFACE" IS A WORD FROM THE BUILD, not from the app. It is this repo's
+  // name for a screen and it reads as one everywhere in the source, which is
+  // exactly why it walked out onto a reader-facing line without anybody
+  // hearing it.
   return n === 1
-    ? '1 thing worth a look that no surface offers on its own.'
-    : `${n} things worth a look that no surface offers on its own.`;
+    ? '1 thing worth a look that nothing else here brings to you.'
+    : `${n} things worth a look that nothing else here brings to you.`;
 }
 
 /** The nodes behind the gap, for the surface that opens it. */

@@ -20,7 +20,8 @@ import type { StampContext } from './session.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
-import { everyDaysWords, localDayKey, atMidnight} from '../time.ts';
+import { everyDaysWords, localDayKey, atMidnight, recordDayWords } from '../time.ts';
+import { clockDayWords } from '../held.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
 import {
   isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo,
@@ -453,7 +454,10 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (declinedBox) declinedBox.hidden = !declined;
     const words = q<HTMLElement>('#detail-declined-words');
     if (words && standing) {
-      const day = localDayKey(standing.at, dayOf(session));
+      // THE SAME FACT, THE SAME WORDS. `requests.ts` renders this ledger entry
+      // with `recordDayWords` — "3 Aug" — and this one printed the key, so the
+      // Not Now ledger and a thing's own page described one decline two ways.
+      const day = recordDayWords(standing.at, session.zone, new Date(now()).toISOString());
       const who = standing.person ? (st.nodes.get(standing.person)?.title || null) : null;
       words.textContent = who
         ? `Declined ${day} — ${who} asked. It sits in the Not Now ledger.`
@@ -649,9 +653,17 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // An upkeep is the case where both ARE true: it is done AND it comes back,
     // which is what a cadence means, so the interval is what separates them
     // rather than the word `done`.
+    // IN THE APP'S OWN WORDS FOR A DAY. This printed the raw key, so a thing's
+    // own page said `comes back 2026-09-09` while the held card and the
+    // coverage sheet both said *tomorrow* about that same date — three screens,
+    // one date, two vocabularies, and the machine-shaped one on the page a
+    // reader opens to understand a single thing.
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
     const willReturn = !n.lastDone || Boolean(n.intervalDays);
-    if (clock && willReturn) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
+    if (clock && willReturn) {
+      bits.push(`comes back ${clockDayWords(
+        clock.at, new Date(now()).toISOString(), session.zone, dayOf(session))}`);
+    }
     // A PERSON'S PLACES, IN A PERSON'S WORDS (3.21.0, ADR-0123). The places
     // group has always rendered on every kind, so places could be put on a
     // person before anything read them — the affiliation the choosers now

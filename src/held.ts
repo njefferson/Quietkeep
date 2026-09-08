@@ -173,6 +173,26 @@ function dateWords(at: string, zone: string, days: number): string {
 }
 
 /**
+ * THE DAY A CLOCK NAMES, in the words the rest of the app already uses for one.
+ *
+ * Extracted rather than written: the vocabulary below was the tail of
+ * `heldStatus` and nowhere else, so a second surface wanting "tomorrow" had to
+ * either call the whole-node status — which answers a different question — or
+ * print the raw key. The detail sheet did the second, and a thing's own page
+ * said `comes back 2026-09-09` while the held card and the coverage sheet said
+ * *tomorrow* about the same date. `heldStatus` now calls this, so there is one
+ * definition and the two cannot drift.
+ */
+export function clockDayWords(at: string, nowIso: string, zone: string, day: DayShape): string {
+  const days = calendarDaysBetween(nowIso, at, day);
+  if (days === 0) return 'today';
+  if (days === 1) return 'tomorrow';
+  // `<=`, matching the group boundary exactly.
+  if (days > 1 && days <= SOON_DAYS) return `in ${days} days`;
+  return dateWords(at, zone, days);
+}
+
+/**
  * Exactly one group per node in `heldWork` — the grouping is TOTAL over that
  * set, so the sum of the groups equals `coverageGauge(state).total` and equals
  * the coverage list's rows. The number, the claim it invites you to open, and
@@ -315,12 +335,11 @@ export function heldStatus(n: NodeState, nowIso: string, zone: string, day: DayS
     if (!harder) return `not before ${days === 1 ? 'tomorrow' : dateWords(at, zone, days)}`;
   }
   if (days < 0) return 'ready now';
-  if (days === 0) return 'today';
-  if (days === 1) return 'tomorrow';
-  // `<=`, matching the group boundary exactly. They disagreed by one, so the last
-  // day of "Coming up" printed a date instead of "in 7 days".
-  if (days <= SOON_DAYS) return `in ${days} days`;
-  return dateWords(at, zone, days);
+  // The rest is the day itself, and `clockDayWords` is where it lives now — one
+  // definition, so the detail sheet and this cannot describe one date two ways.
+  // (The boundary is `<=`, matching the group exactly: they disagreed by one
+  // once, and the last day of "Coming up" printed a date instead of "in 7 days".)
+  return clockDayWords(at, nowIso, zone, day);
 }
 
 /**
