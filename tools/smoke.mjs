@@ -2682,8 +2682,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const dueSet = afterDate.filter(e => e.kind === 'clock.set' && e.payload?.clockKind === 'due');
   is(dueSet.length, 1, 'a real date was recorded');
   is(dueSet[0]?.payload?.source, 'detail:due', 'and it says where it came from');
-  is((await tpage.locator('#detail-state').textContent())?.includes('2026-12-24'), true,
-    'the sheet reflects the date it just set');
+  // IN THE APP'S WORDS, NOT THE KEY IT WAS TYPED WITH (3.23.4). This asserted
+  // the state line contained '2026-12-24', which passed only while that line
+  // printed the raw key — the very thing a cold read found wrong, since the
+  // held card and the coverage sheet both said "tomorrow" about a date this
+  // page rendered as digits. The line now speaks like the rest of the app, so
+  // the assertion asks for the day rather than for the storage format, and
+  // tolerates either order because the month/day order comes from the reader's
+  // locale rather than from us.
+  const stateWords = (await tpage.locator('#detail-state').textContent()) ?? '';
+  is(/(Dec\w*\s*24|24\s*Dec)/.test(stateWords), true,
+    `the sheet reflects the date it just set, in words ("${stateWords.slice(0, 70)}")`);
 
   // A repeat — the path into the decay primitive, which had no caller at all.
   await tpage.fill('#detail-every', '10');
