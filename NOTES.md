@@ -472,7 +472,13 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**One outstanding.** Two more stood here for about an hour on 2026-09-01 — the
+**Eight outstanding.** Seven of them arrived together on 2026-09-08, from the
+first cold view this repo has ever had: a fresh reader given the served app and
+nothing else, asked to report confusion, anything reading as code, anything
+broken, and anything expected and not seen. Every gate was green at the time and
+none of them can see any of it, because they measure conformance and none of
+them asks whether a person understood the screen. Two more stood here for about
+an hour on 2026-09-01 — the
 ⓘ/*Elsewhere* door split and the promote-spanning notes window, both from the
 cold read-back — labelled "product decisions, the owner's". The ruling that came
 back: neither needed the owner, and routing them upward was fake carefulness —
@@ -499,6 +505,79 @@ everything since this device last looked, capped, with the true count said.
   releases is how long that took to demonstrate. Meanwhile this section read
   *nothing outstanding*, which was a false receipt of exactly the kind every
   other list here has a gate against.
+
+- **The date control offered after a project is made renders below a fold that
+  cannot scroll.** Make a container from inside the sort flow — put things down,
+  *Sort what you put down*, answer the first question, *Put it under something*,
+  name it, *Make it* — and the app announces *When should X come back to you?*
+  and renders a **Bring it back on…** button. Measured at 768x1024: the button's
+  box is `y=1024, height=44`, the viewport is 1024 tall, `scrollHeight` is also
+  1024, `html` and `body` are both `overflow: hidden`, and `window.scrollBy(0,
+  600)` leaves `scrollY` at 0. `elementFromPoint` at its centre returns nothing,
+  because the point is outside the viewport. A driver still reaches it, since a
+  synthetic dispatch does not care where the pixel is; a finger cannot reach it
+  at all. The visible half of the announcement is additionally a 1x1 clipped
+  screen-reader-only element, so a sighted reader sees only the button. It
+  happens only while the sort queue still has items, because the nine-button
+  *What is this?* grid above is what pushes it over the edge — so it is
+  intermittent, which is worse. **This is the skip-link shape again** (hub
+  LESSONS §95): present in the source, answering *have we handled this* for
+  everybody after, and unreachable by the hand that is actually used.
+
+- **The days ahead never appears, and two surfaces promise it without
+  condition.** `#dated-open` is in the document and `isVisible()` is false
+  across a whole session that had dated things in it. The door is hidden unless
+  `calendarCount(...) > 0` (`src/ui/app.ts`), which runs the export's own
+  selection, and that selection drops three whole groups —
+  `NOT_IN_CALENDAR = {done, menu, unsorted}` (`src/ics.ts`). The exclusion is
+  deliberate and its reasoning is sound. What is wrong is that nothing says so:
+  the item editor reads *A dated thing shows in The days ahead*, and *Things you
+  can do* reads *The days ahead, on the front page, shows the same list inside
+  the app, live*. Neither names a group that is left out. Either the copy
+  acquires the condition or the door does; today a reader dates a thing, is told
+  where it will appear, and finds nothing there. Which of the two is at fault
+  needs one driven run that pins each item's group at the moment the door is
+  read.
+
+- **A finished thing still says it comes back.** Open a thing, give it a date,
+  press **Done**. Its own header then reads `done · sorted as filed · comes back
+  2026-10-15`, and the same thing appears simultaneously under *Done* in *Where
+  everything is* and as a future return in *What comes back, and when*. Nothing
+  in the app resolves the two for the reader.
+
+- **Someday promises no clock and sets one.** The **Someday** answer's own
+  sub-line is *onto the Menu, no clock*. A thing routed there came back reading
+  `on the Menu · sorted as someday · comes back` with today's date, and the
+  coverage sheet listed it as returning today. A control that states an absence
+  and then produces the thing it disclaimed is worse than one that says nothing.
+
+- **Where everything is counts folders and finished work as things being
+  held.** Five things typed in, one finished, two containers created by pressing
+  *Put it under something*: the sheet's headline read *7 things held, every one
+  accounted for*. A container is not a thing somebody is holding and neither is
+  something already done. The sheet's own breakdown is internally consistent —
+  it is the word *held* that is doing something it should not.
+
+- **The sort queue's counter does not move for its first pass.** *5 here to work
+  through* stayed at 5 across all five answers to *Hot or cold?*, then counted
+  down properly through *What is this?*. Two passes are being counted as one
+  queue, so the first pass reads as making no progress — on the screen whose
+  whole job is to feel finishable.
+
+- **Emphasis prints as asterisks in What's new, and six other strings read as
+  machinery.** The ⓘ panel shows `*Just one thing*`, `*nothing here has gone
+  quiet*` and `*Who is in it?*` with the marks visible, while bold lead-ins in
+  the same block render correctly — so one emphasis form is being converted and
+  another is not. 3.22.1 was a whole release spent on an adjacent escaping
+  defect in this exact panel, which is the argument for a gate rather than a
+  third fix. Beside it, seen on the way past: `ITERATION` printed next to the
+  version number; `comes back 2026-09-09` in a thing's own header while two
+  other screens say *tomorrow* for the same date; an `mm/dd/yyyy` mask in an app
+  that spells *Colours*; `sorted as filed` and `sorted as someday`, internal
+  kind names that no button ever showed anybody; *Written this night.* under
+  every item in the sort card; *no surface offers it on its own*, where
+  *surface* is a builder's word; and `1  come back with something they are part
+  of`, which does not agree with its own number.
 
 The line about an empty section is kept below, because a section that has been
 emptied and a section nobody has written in look identical.
