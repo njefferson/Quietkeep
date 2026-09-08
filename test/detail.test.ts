@@ -14,6 +14,7 @@ import { fold, emptyState, type State } from '../src/fold.ts';
 import { pressureOf } from '../src/pressure.ts';
 import { upkeepChips, nextUpQueue } from '../src/nextup.ts';
 import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
+import { clockDayWords } from '../src/held.ts';
 import {
   endOfDayKey, setDueEvents, clearDueEvents, makeRepeatEvents, stopRepeatEvents,
   undoneEvents, untrashEvents, promoteFromMenuEvents, promoteNodeFromMenuEvents, toMenuEvents,
@@ -70,6 +71,33 @@ test('the date key resolves correctly in zones a naive UTC probe would get wrong
     ['Pacific/Midway', '2026-08-13'],          // UTC-11, the other extreme
   ] as [string, string][]) {
     assert.equal(localDayKey(endOfDayKey(key, tz), atMidnight(tz)), key, `${tz} lands on ${key}`);
+  }
+});
+
+// THE SPOKEN CONFIRMATION AND THE STORED CLOCK MUST NAME ONE DAY (3.23.6).
+//
+// Setting a date announces it into the live region, and that announcement used
+// to read the input's key out as digits. It now runs the key through the SAME
+// `endOfDayKey` the emitter uses and then through `clockDayWords` — but the two
+// resolve the day differently: `endOfDayKey` probes at `atMidnight(zone)` while
+// the words are handed the reader's REAL boundary. An end-of-day instant sits
+// just before a late boundary, so this is the case where they could disagree
+// and quietly say "today" about tomorrow's clock.
+test('a picked day is spoken as the day it was stored, even at a late day boundary', () => {
+  const key = '2026-08-13';
+  const at = endOfDayKey(key, TZ);
+  for (const boundary of [0, 3]) {
+    const day = { zone: TZ, boundary };
+    // Standing on the key's own day, at noon, so "today" is the honest answer.
+    const noon = endOfDayKey('2026-08-12', TZ);   // 23:59:59 on the 12th
+    assert.equal(
+      clockDayWords(at, noon, TZ, day), 'tomorrow',
+      `boundary ${boundary}: the day after the reader's day reads as tomorrow`,
+    );
+    assert.equal(
+      clockDayWords(at, at, TZ, day), 'today',
+      `boundary ${boundary}: the instant it was stored for reads as today`,
+    );
   }
 });
 

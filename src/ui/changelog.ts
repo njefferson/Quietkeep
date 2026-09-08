@@ -29,6 +29,19 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.6',
+    kind: 'ITERATION',
+    date: '2026-09-08',
+    notes: [
+      '**Something on the Menu stops saying it comes back.** *Someday* takes every date off a thing \u2014 that part was always true \u2014 but the app keeps a quiet marker of its own from the moment you wrote it down, and two screens were reading that marker out as *comes back today* about something you had just put down indefinitely. A thing on the Menu now says it is on the Menu, on its own page and in the list of what returns, which is what it has always said in the held list.',
+      '**And the button no longer promises an absence.** *Someday* said *onto the Menu, no clock*. It now says *onto the Menu \u2014 nothing owed, no date to meet*, which is what is actually true of it, and the same words the *Not now* button already used.',
+      '**Setting a date says the day back to you, not the digits.** Pick a day and press Set and the confirmation read *Due 2026-09-09*. It says *Due tomorrow* now \u2014 and the same for a start date and an answer owed. The words come from the same place the date itself is stored, so what you hear and what is kept cannot name different days.',
+      '**Sorting counts the pass you are in.** *Hot or cold?* is the first of two questions, and the count above it did not move while you answered it \u2014 five things, five answers, the same number all the way through \u2014 because it was counting the second question all along. It now counts whichever one is in front of you.',
+      '**Where everything is says *here*, not *held*.** With nothing in it that line already said *Nothing here yet*, and with things in it the same line said *7 things held*. It is one place either way. The number has not changed and neither has what it checks \u2014 including that it can still tell you it does not add up.',
+      '**Still to sort:** the situation screen asks who twice \u2014 the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new.',
+    ],
+  },
+  {
     triplet: '3.23.5',
     kind: 'ITERATION',
     date: '2026-09-08',

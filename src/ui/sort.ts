@@ -45,7 +45,7 @@ const ROUTES: { route: ClarifyRoute; label: string; hint: string }[] = [
   { route: 'do-now', label: 'Do now', hint: 'this one is for today' },
   { route: 'next-action', label: 'Next action', hint: 'a real next step, comes back tomorrow' },
   { route: 'waiting-for', label: 'Waiting for', hint: 'someone else owes you this' },
-  { route: 'someday', label: 'Someday', hint: 'onto the Menu, no clock' },
+  { route: 'someday', label: 'Someday', hint: 'onto the Menu \u2014 nothing owed, no date to meet' },
   { route: 'reference', label: 'Reference', hint: 'keep it, don’t act on it' },
   { route: 'trash', label: 'Trash', hint: 'not a thing after all' },
 ];

@@ -1124,8 +1124,15 @@ export function mountWork(
       b.type = 'button';
       b.append(el('span', 'coverage-title', n.title || '(untitled)'));
       const clock = rowClock(n);
+      // THE MENU ARM WAS UNREACHABLE. A thing routed to Someday keeps the
+      // `review` clock the gate wrote at capture — demand clocks are cleared,
+      // that one never was a demand — so `clock` is truthy for every Menu item
+      // and this row said `returns today` about something the reader had just
+      // put down indefinitely. The `on the Menu` branch existed and could not
+      // be reached. Asking `onMenu` first is the precedence `heldGroups` has
+      // always used.
       b.append(el('span', 'coverage-when',
-        clock ? `returns ${returns(clock.at)}` : n.onMenu ? 'on the Menu' : 'held'));
+        n.onMenu ? 'on the Menu' : clock ? `returns ${returns(clock.at)}` : 'held'));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(n.id);
         if (!fresh) return;

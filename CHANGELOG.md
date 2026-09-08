@@ -14,6 +14,17 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.6 — ITERATION
+
+*2026-09-08*
+
+- **Something on the Menu stops saying it comes back.** *Someday* takes every date off a thing — that part was always true — but the app keeps a quiet marker of its own from the moment you wrote it down, and two screens were reading that marker out as *comes back today* about something you had just put down indefinitely. A thing on the Menu now says it is on the Menu, on its own page and in the list of what returns, which is what it has always said in the held list.
+- **And the button no longer promises an absence.** *Someday* said *onto the Menu, no clock*. It now says *onto the Menu — nothing owed, no date to meet*, which is what is actually true of it, and the same words the *Not now* button already used.
+- **Setting a date says the day back to you, not the digits.** Pick a day and press Set and the confirmation read *Due 2026-09-09*. It says *Due tomorrow* now — and the same for a start date and an answer owed. The words come from the same place the date itself is stored, so what you hear and what is kept cannot name different days.
+- **Sorting counts the pass you are in.** *Hot or cold?* is the first of two questions, and the count above it did not move while you answered it — five things, five answers, the same number all the way through — because it was counting the second question all along. It now counts whichever one is in front of you.
+- **Where everything is says *here*, not *held*.** With nothing in it that line already said *Nothing here yet*, and with things in it the same line said *7 things held*. It is one place either way. The number has not changed and neither has what it checks — including that it can still tell you it does not add up.
+- **Still to sort:** the situation screen asks who twice — the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new.
+
 ## 3.23.5 — ITERATION
 
 *2026-09-08*

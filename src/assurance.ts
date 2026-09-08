@@ -98,11 +98,19 @@ export function assuranceWords(p: JudgmentProof): string {
     return 'Some of what you hold is not accounted for below. That is this app’s '
       + 'fault rather than yours, and the report under the ⓘ will say so.';
   }
+  // THE SAME WORD THE ZERO CASE USES. Four lines above, an empty store says
+  // "Nothing HERE yet"; this said "N things HELD" — one function, two nouns for
+  // one set. And the two are not interchangeable to a reader: this total is the
+  // gate's own set, so it counts a container the app made when you filed
+  // something and it counts work you have finished, and *held* says both of
+  // those are on you. *Here* says where they are, which is all this sheet has
+  // ever claimed. The arithmetic is untouched: `holds` stays able to be false,
+  // because a proof that cannot fail is not one.
   const things = p.total === 1 ? '1 thing' : `${p.total} things`;
   const now = p.onWorkSurface === 0
     ? 'Nothing is asking right now'
     : p.onWorkSurface === 1 ? '1 of them is in front of you' : `${p.onWorkSurface} of them are in front of you`;
-  return `${things} held, every one accounted for. ${now}, and the rest are where this says they are.`;
+  return `${things} here, every one accounted for. ${now}, and the rest are where this says they are.`;
 }
 
 /**

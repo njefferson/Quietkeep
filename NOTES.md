@@ -472,7 +472,23 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Three outstanding, and three of the seven were not defects.** Closed the day
+**One outstanding, and three of the seven were not defects.** 3.23.6 closed the
+last four: a thing on the Menu no longer says it comes back (the clock is the
+gate's own capture cure, which `demandClocksOf` deliberately never clears — so
+the data was right and two readouts described it wrongly, both by falling
+through `?? n.clocks.review` without asking `onMenu` first, which is the
+precedence `heldGroups` has always had); the *Someday* hint stopped promising
+*no clock* and took the words `replan-intents.ts` had already retired it for;
+the three spoken date confirmations run the key through the same `endOfDayKey`
+the emitter uses and then through `clockDayWords`; the sort counter follows the
+pass on screen rather than the queue behind both; and the assurance line says
+*here*, the word its own zero case already used.
+
+**What remains is the one this section opened with** — the situation sheet
+asking who twice, which is a product decision about which control should exist
+rather than a defect with one right answer.
+
+**Three of the seven were not defects.** Closed the day
 they were found: the days-ahead promise (3.23.2); the asterisks printing in the
 patch notes, the route word no control ever showed, and a finished thing
 announcing its return (3.23.3); and in 3.23.4 the raw date on a thing's own
@@ -1228,7 +1244,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.5**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.6**, which production does
   not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
   tree plus this release. 3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition

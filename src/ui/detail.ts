@@ -40,7 +40,7 @@ import {
 } from './detail-intents.ts';
 import { normalize } from '../search.ts';
 import { doneEvents } from './work.ts';
-import { declareFeedsEvents, releaseFeedsEvents } from './detail-intents.ts';
+import { declareFeedsEvents, releaseFeedsEvents, endOfDayKey } from './detail-intents.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
 import { biteEvents } from './work-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
@@ -658,8 +658,19 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // coverage sheet both said *tomorrow* about that same date — three screens,
     // one date, two vocabularies, and the machine-shaped one on the page a
     // reader opens to understand a single thing.
+    //
+    // AND THE MENU IS ASKED FIRST. Routing to Someday clears every DEMAND clock
+    // — due, start, suspense, park — and deliberately leaves the `review` clock
+    // the gate wrote when the thing was captured, because a review clock is the
+    // app's own resurfacing marker and was never a demand (triage-intents.ts's
+    // DEMAND_KINDS says so, and gate.ts's law-6 belts pass it correctly). This
+    // line then fell through `?? n.clocks.review` and read that bookkeeping
+    // clock out as `comes back today`, one bit after `on the Menu`, to a reader
+    // who had just been told the Menu has no clock. `heldGroups` has always had
+    // the right precedence — it buckets `onMenu` BEFORE it looks at any clock —
+    // so this is that order, here.
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
-    const willReturn = !n.lastDone || Boolean(n.intervalDays);
+    const willReturn = !n.onMenu && (!n.lastDone || Boolean(n.intervalDays));
     if (clock && willReturn) {
       bits.push(`comes back ${clockDayWords(
         clock.at, new Date(now()).toISOString(), session.zone, dayOf(session))}`);
@@ -1460,11 +1471,29 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     setRest(moreBtn.getAttribute('aria-expanded') !== 'true');
   });
 
+
+  /**
+   * A DAY YOU JUST PICKED, SPOKEN THE WAY THE APP SAYS DAYS.
+   *
+   * These three confirmations read the date input's own key straight out —
+   * "Due 2026-09-09." — into the live region, so the one moment the app speaks
+   * a date aloud was the one place it spoke storage format. The words existed
+   * (`clockDayWords`) and took an instant, and the key had no route to one.
+   *
+   * It does now, and it is the SAME route the emitter takes: `endOfDayKey` is
+   * exactly what `setDueEvents`, `setStartEvents` and `setSuspenseEvents` run
+   * the key through before storing it, so what is said and what is kept cannot
+   * describe one day two ways.
+   */
+  const dayPicked = (key: string): string => clockDayWords(
+    endOfDayKey(key, session.zone),
+    new Date(now()).toISOString(), session.zone, dayOf(session));
+
   btn('#detail-date-set')?.addEventListener('click', () => {
     const key = DATE.value;
     // A date input yields '' when empty or invalid; nothing is a legal answer.
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a date first.'); return; }
-    void run(ctx => setDueEvents(ctx, current!.id, key), `Due ${key}.`);
+    void run(ctx => setDueEvents(ctx, current!.id, key), `Due ${dayPicked(key)}.`);
   });
   btn('#detail-date-clear')?.addEventListener('click', () => {
     void run(ctx => clearDueEvents(ctx, current!.id), 'Date removed — it comes back to you today.');
@@ -1473,7 +1502,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     const key = startInput?.value ?? '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a day first.'); return; }
     void run(ctx => setStartEvents(ctx, current!.id, key),
-      `Out of the way until ${key} — it comes back on its own.`);
+      `Out of the way until ${dayPicked(key)} — it comes back on its own.`);
   });
   btn('#detail-start-clear')?.addEventListener('click', () => {
     void run(ctx => clearStartEvents(ctx, current!.id),
@@ -1894,7 +1923,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   btn('#detail-suspense-set')?.addEventListener('click', () => {
     const key = q<HTMLInputElement>('#detail-suspense')?.value ?? '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a date first.'); return; }
-    void run(ctx => setSuspenseEvents(ctx, current!.id, key), `Answer owed by ${key}.`);
+    void run(ctx => setSuspenseEvents(ctx, current!.id, key), `Answer owed by ${dayPicked(key)}.`);
   });
 
   btn('#detail-save-set')?.addEventListener('click', () => {
