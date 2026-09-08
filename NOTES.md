@@ -472,7 +472,7 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Four outstanding, and two of the seven were never defects.** Closed the day
+**Three outstanding, and three of the seven were not defects.** Closed the day
 they were found: the days-ahead promise (3.23.2); the asterisks printing in the
 patch notes, the route word no control ever showed, and a finished thing
 announcing its return (3.23.3); and in 3.23.4 the raw date on a thing's own
@@ -487,15 +487,34 @@ was a real defect neither of them named: `capture-context.ts` hardcoded
 `Intl.DateTimeFormat('en-GB', …)` twice, while `held.ts` had always passed
 `undefined` and taken the device's own — one app, two answers, fixed in 3.23.4.
 
-**A THIRD IS PROBABLY WITHDRAWN AND IS NOT YET MEASURED.** The report called
-the date control after a new container unreachable by finger, on
-`window.scrollBy` doing nothing and `documentElement.scrollHeight` equalling
-the viewport. Both are this app's DESIGNED behaviour — `html` and `body` are
-`overflow: hidden` on purpose and the real scroller is `.runway`, which
-`smoke.mjs` already insists on for exactly this reason. The measurement was
-taken against the wrong element. It stands below until somebody reads
-`#runway.scrollTop` in that state; the gate in its entry is worth building
-either way.
+**AND A THIRD IS WITHDRAWN, MEASURED.** The report called the date control
+after a new container unreachable by finger, on `window.scrollBy` doing nothing
+and `documentElement.scrollHeight` equalling the viewport. Both are this app's
+DESIGNED behaviour: `html` and `body` are `overflow: hidden` on purpose and the
+real scroller is `.runway` — `smoke.mjs` already insists on `#runway.scrollTop`
+for exactly this reason, in its own words, because `window.scrollY` is 0 at
+every position here.
+
+Driven again through the app's own route (walkthrough to the end, three things
+captured, the triage stance entered by its hub door, filed into a new place):
+as the receipt lands the button is at y=1142 against a 1024 viewport with
+`elementFromPoint` returning nothing at its centre, which is what was reported.
+But `#runway` reads `scrollHeight 1071` against `clientHeight 642`, so it
+scrolls; scrolled to its end the button sits at y=713 with itself at its own
+centre, and a real touch tap lands. **It was below the fold in a scrolling
+region, which is ordinary.** Not a defect.
+
+**What the withdrawal leaves behind is worth more than the finding was.**
+Nothing in the walk asks whether a control can be brought onto the screen at
+all — `auditTargets` reads width and height, `auditSeparation` deliberately
+refuses to clip to the visible region, and `touch-check.mjs` is horizontal only
+and says so. The walk drives this exact state ('filed receipt') and would pass
+it either way. The assertion worth having is not "inside the viewport" — that
+would fail this correct screen, which is the shape of gate this repo keeps
+learning to refuse — but **"inside the viewport, or inside an ancestor that can
+scroll it there"**. That distinguishes this from the skip link that was
+unreachable by finger for 142 releases (hub LESSONS §95), which no amount of
+scrolling would have brought back.
 
 **Eight when they were written.** Seven of them arrived together on 2026-09-08, from the
 SECOND cold read this repo has had: a fresh reader given the served app and
