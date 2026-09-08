@@ -16,32 +16,32 @@ if [ -n "$QUIETKEEP_DEFER" ]; then
   echo "  so this changes when the work happens and never whether." >&2
   echo "" >&2
 else
-if [ ! -x "tools/hooks/a11y-fresh.sh" ]; then
+if [ ! -x "./tools/hooks/a11y-fresh.sh" ]; then
   echo "" >&2
   echo "  REFUSED — .branch-guard declares also=tools/hooks/a11y-fresh.sh and it is missing or not executable." >&2
   echo "  A declared check that silently stops running is worse than no check." >&2
   echo "" >&2
   exit 1
 fi
-"tools/hooks/a11y-fresh.sh" || exit 1
+"./tools/hooks/a11y-fresh.sh" || exit 1
 
-if [ ! -x "tools/hooks/branch-state.sh" ]; then
+if [ ! -x "./tools/hooks/branch-state.sh" ]; then
   echo "" >&2
   echo "  REFUSED — .branch-guard declares also=tools/hooks/branch-state.sh and it is missing or not executable." >&2
   echo "  A declared check that silently stops running is worse than no check." >&2
   echo "" >&2
   exit 1
 fi
-"tools/hooks/branch-state.sh" || exit 1
+"./tools/hooks/branch-state.sh" || exit 1
 
-if [ ! -x "tools/hub-pin-check.mjs" ]; then
+if [ ! -x "./tools/hub-pin-check.mjs" ]; then
   echo "" >&2
   echo "  REFUSED — .branch-guard declares also=tools/hub-pin-check.mjs and it is missing or not executable." >&2
   echo "  A declared check that silently stops running is worse than no check." >&2
   echo "" >&2
   exit 1
 fi
-"tools/hub-pin-check.mjs" || exit 1
+"./tools/hub-pin-check.mjs" || exit 1
 
 fi
 

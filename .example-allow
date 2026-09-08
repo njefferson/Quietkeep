@@ -1,0 +1,42 @@
+# Every seeded example on a surface, declared with where it came from
+# (Doctrine §5; hub example-check.mjs). Both directions are checked, so a
+# scrub cannot silently un-cover a file.
+#
+# Matching is by PREFIX, and the first declaration that matches wins — so
+# `narrow the list` covers its ellipsis variant too, and a second line for
+# the variant would never be reached and would fail as undeclared.
+#
+# TWO KINDS ARE IN USE HERE, and the split is the point. `product-copy` is
+# the interface telling you what to do — an instruction, a hint, or the app's
+# own vocabulary of places. It is not a scenario at all, and calling it
+# `invented` would be a provenance claim about something that has no
+# provenance to claim. `invented` is reserved for the strings that stand in
+# for a thing somebody might actually be holding, which are the only ones the
+# rule is really about: those are archetypes, written for the page.
+#
+# The seed prints every row as `invented` by default. That default is the
+# same shape as the inherited byline this rule came from — true of nothing,
+# arriving with a template — so it was not taken as given.
+
+public/index.html | product-copy | Put it down here
+public/index.html | product-copy | One thing per line
+public/index.html | product-copy | Start smaller — what is the first bit?
+public/index.html | product-copy | Something else came up
+public/index.html | product-copy | Find something you’re holding
+public/index.html | product-copy | or type a word&hellip;
+public/index.html | product-copy | narrow the places&hellip;
+public/index.html | product-copy | five words is plenty
+public/index.html | product-copy | narrow the list
+public/index.html | product-copy | a part of your life this belongs to
+public/index.html | product-copy | a name
+public/index.html | product-copy | at home, out, on the phone
+public/index.html | product-copy | at work, at home, out
+
+public/index.html | invented | ring the garage
+public/index.html | invented | the staff call
+public/index.html | invented | Thursdays (optional)
+public/index.html | invented | the Tuesday standup
+public/index.html | invented | the thing with the roof
+
+src/ui/clarify.ts | product-copy | Name a new project, area or goal
+src/ui/clarify.ts | product-copy | at home, out, on the phone
