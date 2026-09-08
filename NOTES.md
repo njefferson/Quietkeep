@@ -532,6 +532,19 @@ scroll it there"**. That distinguishes this from the skip link that was
 unreachable by finger for 142 releases (hub LESSONS §95), which no amount of
 scrolling would have brought back.
 
+**AND IT IS BUILT.** `auditReach` in `tools/a11y.mjs`, wired into
+`auditSeparationAndTargets` so every audited state gets it. It reuses the
+scroller walk `auditSeparation` already had, derives its controls from the DOM
+the way `auditTargets` does rather than from REGISTRY (which is the contrast
+set), and is **vertical only** — `touch-check.mjs` owns the horizontal case, and
+an element parked off-canvas there is the focus-reveal idiom, which is a
+keyboard route §95 says to keep rather than delete. Planted against the shipped
+predicate before it was trusted: a clean screen returns nothing, and a visible
+44px button inside a non-scrolling container at `top:-400px` comes back as
+*#stranded-control at -400px, scroller html (1024px of 1024px)*. Then the whole
+walk — 246 reach assertions across both themes and every state, zero failures,
+the filed receipt included.
+
 **Eight when they were written.** Seven of them arrived together on 2026-09-08, from the
 SECOND cold read this repo has had: a fresh reader given the served app and
 nothing else, asked to report confusion, anything reading as code, anything
