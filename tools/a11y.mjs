@@ -1865,7 +1865,86 @@ async function auditSeparationAndTargets(page, stateName, theme) {
   await ensureStanceForState(page, stateName);
   await auditSeparation(page, stateName, theme);
   await auditTargets(page, stateName, theme);
+  await auditReach(page, stateName, theme);
   await photograph(page, stateName, theme);
+}
+
+/**
+ * CAN A FINGER GET TO IT AT ALL — the question none of the others asked.
+ *
+ * `auditTargets` asks whether a control is big enough. `auditSeparation` asks
+ * whether two of them collide. Neither asks whether the thing is on the screen,
+ * or can be brought there, and a control nobody can reach is worse than a
+ * missing one: its presence in the source answers "have we handled this" for
+ * everyone who comes after. That is hub LESSONS §95 — a skip link unreachable
+ * by finger for 142 releases with contrast, rings, targets and axe green the
+ * whole way.
+ *
+ * IT IS NOT "INSIDE THE VIEWPORT", and getting that wrong is the entire risk.
+ * A cold read of this app reported the date control offered after a new
+ * container as unreachable, measured at y=1142 against a 1024-tall viewport
+ * with `window.scrollBy` doing nothing. Every one of those numbers was real and
+ * the conclusion was wrong: `html` and `body` are `overflow: hidden` here on
+ * purpose and `.runway` is the scroller, so the control was below the fold in a
+ * region that scrolls — which is ordinary. A gate asserting "inside the
+ * viewport" would have failed that correct screen, and a gate that fires on
+ * correct work is the one people learn to route around.
+ *
+ * So: inside its scroller's visible box, OR somewhere its scroller can scroll
+ * it to. The skip link fails that and the date control passes it.
+ *
+ * VERTICAL ONLY, deliberately. `tools/touch-check.mjs` owns the horizontal
+ * case and says so in its own comment — an element parked off-canvas by CSS is
+ * the focus-reveal idiom, which is a KEYBOARD route this family has been told
+ * to keep rather than delete. Asking about it here would flag it twice and
+ * argue for removing it once.
+ */
+async function auditReach(page, stateName, theme) {
+  const stranded = await page.evaluate(() => {
+    const vis = el => el.checkVisibility({ contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true });
+    const name = el => el.id ? `#${el.id}` : (typeof el.className === 'string' && el.className.trim()
+      ? '.' + el.className.trim().split(/\s+/)[0] : el.tagName.toLowerCase());
+    // The same walk `auditSeparation` uses, for the same reason.
+    const scrollerOf = (el) => {
+      for (let n = el.parentElement; n; n = n.parentElement) {
+        const cs = getComputedStyle(n);
+        if (/auto|scroll/.test(cs.overflowY)) return n;
+      }
+      return document.documentElement;
+    };
+    const out = [];
+    // Derived from the DOM, never a list — `auditTargets` says why.
+    for (const el of document.querySelectorAll(
+      'button, input, select, textarea, summary, a[href], [role=button], [tabindex]:not([tabindex="-1"])')) {
+      if (!vis(el)) continue;
+      const r = el.getBoundingClientRect();
+      if (r.height < 1) continue;
+      const sc = scrollerOf(el);
+      const isDoc = sc === document.documentElement;
+      // The document's own scroller is the VIEWPORT, not the element's box —
+      // `<html>` here is 100dvh with overflow hidden, so its rect would say the
+      // whole page is visible.
+      const viewTop = isDoc ? 0 : sc.getBoundingClientRect().top;
+      const viewBottom = isDoc ? window.innerHeight : sc.getBoundingClientRect().bottom;
+      const scrollTop = isDoc ? (document.scrollingElement?.scrollTop ?? 0) : sc.scrollTop;
+      const scrollH = isDoc ? (document.scrollingElement?.scrollHeight ?? window.innerHeight) : sc.scrollHeight;
+      const clientH = isDoc ? window.innerHeight : sc.clientHeight;
+      const onScreenNow = r.bottom > viewTop && r.top < viewBottom;
+      // Where it sits in the scroller's CONTENT space — the coordinates a
+      // scrollTop actually moves through.
+      const contentTop = r.top - viewTop + scrollTop;
+      const contentBottom = r.bottom - viewTop + scrollTop;
+      const canScrollTo = scrollH > clientH && contentTop >= 0 && contentBottom <= scrollH + 1;
+      if (onScreenNow || canScrollTo) continue;
+      out.push(`${name(el)} at ${Math.round(r.top)}px, scroller ${name(sc)} `
+        + `(${Math.round(clientH)}px of ${Math.round(scrollH)}px)`);
+    }
+    return out;
+  });
+  (stranded.length === 0 ? pass : fail)(
+    `${theme}/${stateName}: every control is on screen or can be scrolled to`
+    + (stranded.length ? ` — ${stranded.join('; ')}` : ''),
+  );
 }
 
 async function auditTargets(page, stateName, theme) {
