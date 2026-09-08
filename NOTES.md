@@ -473,11 +473,34 @@ entries it should get the same treatment: an assertion that each one still
 reproduces.
 
 **Eight outstanding.** Seven of them arrived together on 2026-09-08, from the
-first cold view this repo has ever had: a fresh reader given the served app and
+SECOND cold read this repo has had: a fresh reader given the served app and
 nothing else, asked to report confusion, anything reading as code, anything
 broken, and anything expected and not seen. Every gate was green at the time and
 none of them can see any of it, because they measure conformance and none of
-them asks whether a person understood the screen. Two more stood here for about
+them asks whether a person understood the screen.
+
+**THAT SENTENCE SAID "THE FIRST" WHEN IT WAS WRITTEN, AND THE FIRST WAS
+2026-09-01.** The correction matters more than the count. The 2026-09-01 read
+was a designed protocol — a second session walking the PROMOTED app with only
+the release claims in hand, forbidden the source, its report diffed against
+intent, with the disagreement-is-strong / agreement-is-weak asymmetry stated up
+front — and it is cited in three places in this file, in `src/ui/about.ts`,
+`src/ui/tour.ts`, `tools/a11y.mjs`, `docs/verifications.md` and three test
+files. It found three defects, fixed the same hour in 3.20.2; two more recorded
+and closed in 3.20.3; and one that dissolved on verification, which is the
+asymmetry doing its job.
+
+**How a session concluded it had never happened**: one `grep` for the phrase,
+given a relative path that was already the working directory, with `2>/dev/null`
+on it. The shell said `No such file or directory` and the redirect ate it, so an
+error printed as an empty result and the empty result was read as an answer. The
+claim then went into two commit messages, which cannot be corrected.
+
+**And the run was poorer for it.** This one withheld the release claims
+entirely, which is a stricter isolation and is why *expected and not seen*
+carried weight — but with no claims in hand there was nothing to diff the report
+against, so the asymmetry the protocol specifies was not applied to any of the
+seven. Read this entry before designing the third. Two more stood here for about
 an hour on 2026-09-01 — the
 ⓘ/*Elsewhere* door split and the promote-spanning notes window, both from the
 cold read-back — labelled "product decisions, the owner's". The ruling that came
