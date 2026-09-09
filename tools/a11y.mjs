@@ -321,8 +321,33 @@ const fail = (m) => {
 const pass = (m) => { if (!INVENTORY_MODE) console.log(`  ok    ${m}`); };
 const inventoryFail = (m) => { failures.push(m); console.error(`  FAIL  ${m}`); };
 
-// Entries: 'sel' or {sel, pseudo}. Every VISIBLE match is audited; the worst
-// ratio is what gets judged. A selector matching nothing visible FAILS.
+/**
+ * A REGISTRY ENTRY THAT IS NOT ON EVERY STATE, and the two ledgers that keep
+ * that from becoming a hole (3.23.11).
+ *
+ * "A selector matching nothing visible FAILS" is the rule below and it is the
+ * right one: an entry that quietly stops matching is unmeasured ink, which is
+ * §28's whole subject. But it makes one honest thing unregisterable — a live
+ * region that is EMPTY until the reader does something. `#triage-live` carries
+ * the sorting screens' confirmations and is blank on every state the walk stands
+ * in before an action; registering it plainly would fail five surfaces for
+ * being correct, and NOT registering it ships its ink unmeasured, which is the
+ * thing this gate exists to refuse.
+ *
+ * So an entry may declare `whenShown` — a reason it can legitimately be absent.
+ * Per state, absence is a NOTE. Across the WHOLE RUN, it must have been seen at
+ * least once, in some state, in some theme, or the run fails at the bottom.
+ * That second half is what stops this from being an escape hatch: a selector
+ * that has stopped matching everywhere still goes red, which is the failure the
+ * plain rule was written for. The per-state tolerance only forgives the states
+ * where absence is the correct rendering.
+ */
+const conditional = new Map();   // sel -> the declared reason
+const conditionalSeen = new Set();
+
+// Entries: 'sel' or {sel, pseudo} or {sel, whenShown}. Every VISIBLE match is
+// audited; the worst ratio is what gets judged. A selector matching nothing
+// visible FAILS, unless it declared `whenShown` — see above.
 // THE REGISTRY FOLLOWS THE SURFACES (1.40.0).
 //
 // DIALOG_COMMON was one list because the panel was one dialog. Help, Settings,
@@ -730,7 +755,8 @@ const REGISTRY = {
   // The last-action undo the triage route raises. `.triage-undo-btn` is the
   // `.linklike` accent-on-background pair the app's links use; the "where" line
   // is the quiet token naming the destination.
-  'route undo': ['.triage-undo-where', '.triage-undo-btn'],
+  'route undo': ['.triage-undo-where', '.triage-undo-btn',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   // The filed receipt, with its unanswered question and the way to answer it
   // (V2 stage 3). Its own state because the control appears ONLY on the no-date
   // branch — folding it into 'route undo' would demand it be visible after an
@@ -755,24 +781,28 @@ const REGISTRY = {
   // deliberate — "nothing is recorded" is the whole reassurance — and it is
   // therefore the lowest-contrast text on that surface.
   'heat pass': ['.triage-gauge', '.triage-prompt', '.triage-card', '.route',
-    '.route-label', '.route-hint'],
+    '.route-label', '.route-hint',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   'clarify': ['.triage-gauge', '.triage-prompt', '.triage-card',
     '.route', '.route-label', '.route-hint',
     // When it was written (1.23.0). Reuses .sort-where's measured pair, so no
     // unmeasured color ships — but it is registered rather than assumed,
     // because it is the quietest text on the surface and the first thing a
     // recolor would take below the floor.
-    '#triage-where'],
+    '#triage-where',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   // WHERE it goes (1.19.0). A new surface joins this list in the SAME commit it
   // is built, or it ships unmeasured — hub LESSONS §28, which cost a release
   // elsewhere. The place picker carries a text field, so it is also the state
   // that exercises the contrast registry's input handling.
   'place picker': ['.triage-gauge', '.triage-prompt', '.triage-card',
-    '.route', '.route-label', '.route-hint'],
+    '.route', '.route-label', '.route-hint',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   // WHERE IT CAN BE DONE (3.13.0). The place picker's shape on the other axis,
   // registered in the same commit that built it or it ships unmeasured.
   'context picker': ['.triage-gauge', '.triage-prompt', '.triage-card',
-    '.route', '.route-label', '.route-hint'],
+    '.route', '.route-label', '.route-hint',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   // What a just-routed "Do now" offers. The timer is an offering, not a gate,
   // so this state exists before any stopwatch is running — and it carries the
   // Done the flow previously had no way to express at all.
@@ -1226,7 +1256,12 @@ const REGISTRY = {
   // decide whether to mention it. Same ink tokens as everything else: there is
   // no color that means "they have had this a while", and there will not be.
   'people': ['#people-heading', '.people-count', '.people-open',
-    '.people-title', '.people-why'],
+    '.people-title', '.people-why',
+    // WHERE A NAME COMES FROM (3.23.11), registered in the same commit that
+    // built it — hub LESSONS §28, which has cost a release here before. It is
+    // the quietest text on this surface and always present, so a plain entry
+    // rather than a `whenShown` one.
+    '#people-where'],
   // THE OTHER DIRECTION (2.20.0). Its own entry, keyed on IDS, because the two
   // lists in this section share every class — and a shared class is not
   // coverage. `tools/surfaces.mjs` records the draft that counted `.section`
@@ -1353,8 +1388,9 @@ function sampler(entries) {
   return entries.map((entry) => {
     const sel = typeof entry === 'string' ? entry : entry.sel;
     const pseudo = typeof entry === 'string' ? undefined : entry.pseudo;
+    const whenShown = typeof entry === 'string' ? undefined : entry.whenShown;
     const els = [...document.querySelectorAll(sel)].filter((el) => el.getClientRects().length > 0);
-    if (els.length === 0) return { sel, pseudo, missing: true };
+    if (els.length === 0) return { sel, pseudo, whenShown, missing: true };
     const samples = els.map((el) => {
       const cs = getComputedStyle(el, pseudo);
       const fg = parse(cs.color);
@@ -1365,7 +1401,7 @@ function sampler(entries) {
         weight: parseInt(cs.fontWeight, 10) || 400,
       };
     });
-    return { sel, pseudo, missing: false, samples, count: els.length };
+    return { sel, pseudo, whenShown, missing: false, samples, count: els.length };
   });
 }
 
@@ -1443,10 +1479,16 @@ const ensureStanceForState = (pg, registryKey) =>
  */
 function record(stateName, rows) {
   for (const r of rows) {
+    if (r.whenShown) conditional.set(r.sel, r.whenShown);
     if (r.missing) {
-      inventoryFail(`${stateName}: registry entry "${r.sel}${r.pseudo ?? ''}" matches nothing visible`);
+      // Same tolerance as the live pass, and the same whole-run requirement
+      // below: a conditional entry seen in NO state still fails the extraction.
+      if (!r.whenShown) {
+        inventoryFail(`${stateName}: registry entry "${r.sel}${r.pseudo ?? ''}" matches nothing visible`);
+      }
       continue;
     }
+    if (r.whenShown) conditionalSeen.add(r.sel);
     const seen = new Set();
     for (const smp of r.samples) {
       const key = (c) => (c ? c.join(',') : null);
@@ -1499,7 +1541,16 @@ async function auditContrast(page, stateName, theme, registryKey = stateName) {
   if (INVENTORY_MODE) { record(stateName, rows); return; }
   for (const r of rows) {
     const label = `${r.sel}${r.pseudo ?? ''}`;
-    if (r.missing) { fail(`${theme}/${stateName}: registry entry "${label}" matches nothing visible — the gate no longer sees it`); continue; }
+    if (r.whenShown) conditional.set(r.sel, r.whenShown);
+    if (r.missing) {
+      if (r.whenShown) {
+        console.log(`  note  ${theme}/${stateName}: "${label}" is not on this state — ${r.whenShown}`);
+        continue;
+      }
+      fail(`${theme}/${stateName}: registry entry "${label}" matches nothing visible — the gate no longer sees it`);
+      continue;
+    }
+    if (r.whenShown) conditionalSeen.add(r.sel);
     let worst = null;
     let bad = false;
     for (const smp of r.samples) {
@@ -6190,7 +6241,23 @@ if (INVENTORY_MODE) {
   console.log(`  ${inventory.length} role pairs across ${[...new Set(inventory.map((r) => r.state))].length} states`);
   console.log(`  roles in use: ${roles.join(', ')}`);
   console.log('  written to docs/color-inventory.json');
+// AND EVERY CONDITIONAL ENTRY HAD TO TURN UP SOMEWHERE (3.23.11). Per state a
+// declared absence is a note; across the whole run it is a failure, because a
+// selector that matches nothing in any state or either theme has stopped
+// matching — which is exactly what the plain rule refuses, and the reason
+// `whenShown` is not an escape hatch.
+for (const [sel, why] of conditional) {
+  if (conditionalSeen.has(sel)) {
+    console.log(`  ok    "${sel}" was measured where it appears (${why})`);
+  } else {
+    const m = `registry entry "${sel}" declared conditional (${why}) and was `
+      + 'seen on NO state in either theme — it matches nothing any more';
+    failures.push(m); console.error(`  FAIL  ${m}`);
+  }
+}
+
   console.log('\nEvery color the app renders came from a role. Arithmetic can take it from here.');
+  if (failures.length) { console.error(`${failures.length} check(s) failed.`); process.exit(1); }
   process.exit(0);
 }
 // AND SAY WHAT IT FOUND WHERE SOMETHING CAN READ IT (3.1.2).
@@ -6208,6 +6275,21 @@ if (INVENTORY_MODE) {
 // EMPTIED ON A CLEAN RUN, never left stale — a receipt for a failure that has
 // been fixed is worse than none, which is the argument `.a11y-stamp` above
 // already makes about the other direction.
+// AND EVERY CONDITIONAL ENTRY HAD TO TURN UP SOMEWHERE (3.23.11). Per state a
+// declared absence is a note; across the whole run it is a failure, because a
+// selector that matches nothing in any state or either theme has stopped
+// matching — which is exactly what the plain rule refuses, and the reason
+// `whenShown` is not an escape hatch.
+for (const [sel, why] of conditional) {
+  if (conditionalSeen.has(sel)) {
+    console.log(`  ok    "${sel}" was measured where it appears (${why})`);
+  } else {
+    const m = `registry entry "${sel}" declared conditional (${why}) and was `
+      + 'seen on NO state in either theme — it matches nothing any more';
+    failures.push(m); console.error(`  FAIL  ${m}`);
+  }
+}
+
 if (failures.length) writeFileSync('.a11y-failures', `${failures.join('\n')}\n`);
 else if (existsSync('.a11y-failures')) writeFileSync('.a11y-failures', '');
 if (failures.length) {

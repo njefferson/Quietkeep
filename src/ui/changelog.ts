@@ -29,6 +29,25 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.12',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**Opening something from the People screen lands on the naming control.** A row there can say *Nobody named yet*, and tapping it opened a page with no name field on it \u2014 *Who is this with?* sat nine sections down, behind *More about this*. The sheet arrives with that half open and the control on screen. Nothing moved and nothing was added: the trip goes where it was always going.',
+      '**Which is the third time this has been the fix.** Opening a person, and opening a goal or area, both already ask for the folded half to be open, for the same stated reason \u2014 a screen whose point is folded away is a screen you landed on for nothing. The People screen was the one nobody had noticed doing it.',
+    ],
+  },
+  {
+    triplet: '3.23.11',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**The sorting screens confirm what you did where you can SEE it.** Every confirmation there \u2014 what a route did, and why *Make it* with an empty box did nothing \u2014 was spoken to a screen reader and shown to nobody. It appears under the route buttons now, where the thing that produced it was pressed. That was the last one: a thing\u2019s own page got the same fix three releases ago.',
+      '**And the People screen says where a name comes from.** The front page says one thing is with someone else, this screen says *Nobody named yet*, and both are true \u2014 sorting deliberately never asks who, so something can be with somebody you have not named. Nothing said the two lines agreed, or where the name goes. One line under the lists now says both.',
+      '**Still to sort:** naming somebody is still only possible from *More about this* on a thing. The line above tells you where it is; it does not make the trip shorter.',
+    ],
+  },
+  {
     triplet: '3.23.10',
     kind: 'ITERATION',
     date: '2026-09-09',

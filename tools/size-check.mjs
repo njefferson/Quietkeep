@@ -288,7 +288,20 @@ const BUDGET = {
   // is not an action, and the action was the thing nobody could find (+4, and
   // it replaced a longer sentence rather than adding to it). Both are hints
   // beside the control they explain, so 1.39.1's accumulation rule holds.
-  words: 3996,
+  // 3996 -> 4028 on 2026-09-09 (3.23.11). Thirty-two words, one sentence, and
+  // it is the place a cold reader GAVE UP. The front page said one thing is
+  // with someone else; the People screen said "Nobody named yet"; tapping
+  // through opened a page with no name field on it. Every one of those screens
+  // was telling the truth — sorting deliberately never asks who, so a thing can
+  // be with somebody unnamed — and nothing anywhere said the two lines were
+  // compatible or where the name goes. Said ONCE, under the lists, rather than
+  // on the rows: law 5 keeps a row to a name and a date, and an instruction
+  // repeated on every row is the nag this app refuses.
+  // 4028 -> 4023 on 2026-09-09 (3.23.12). Five back: the hint no longer has to
+  // recite the route, because opening a row from that screen now lands on the
+  // control. A budget raise bought by copy that has since been replaced by
+  // behaviour goes back down — the same trade recorded at 3,400 -> 3,000.
+  words: 4023,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

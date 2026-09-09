@@ -3919,6 +3919,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const unnamed = await tpage.locator('.people-why').first().textContent();
   is(unnamed, 'Nobody named yet.', `and it says so rather than inventing a name ("${unnamed}")`);
 
+  // AND TAPPING THAT ROW LANDS ON THE CONTROL THAT ANSWERS IT (3.23.12).
+  //
+  // This is the exact state a cold reader gave up in: the row says nobody has
+  // been named, and until now opening it showed a sheet with no name field on
+  // it \xe2\x80\x94 the control is nine sections down behind *More about this*. Every
+  // screen was telling the truth and the walk between them did not work.
+  //
+  // Asserted rather than assumed, because the reveal is one optional argument
+  // away from being silently dropped, and nothing else in the app would notice.
+  await tpage.locator('.people-open').first().click();
+  await tpage.waitForSelector('#detail[open]');
+  await settled(tpage, 200);
+  is(await tpage.locator('#detail-rest').isVisible(), true,
+    'opening from a People row unfolds "More about this" rather than landing shut');
+  is(await tpage.locator('#detail-person').isVisible(), true,
+    'and "Who is this with?" is on screen, which is what the trip was for');
+  await tpage.click('#detail-close');
+  await settled(tpage, 200);
+
   // THE PERSON LENS GETS ITS SURFACE (1.12.0). `personView` has been written,
   // exported and unit-tested since the person work landed, with NO caller
   // anywhere — a projection with nowhere to render, the same shape

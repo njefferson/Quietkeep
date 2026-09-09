@@ -219,6 +219,34 @@ const unringed = [...audited].filter((st) => !ringed.has(st)).sort();
   'every audited state also gets a focus-ring pass'
   + (unringed.length ? ` — ${unringed.length} without one: ${unringed.join(', ')}` : ''));
 
+/**
+ * AND EVERY `id` IN THE SHELL IS UNIQUE (3.23.12).
+ *
+ * A group was given `id="detail-person-group"` and that id was already taken,
+ * twenty lines up, by a different section of the same sheet. The markup still
+ * parsed, the app still ran, the typechecker had nothing to say, and every
+ * static gate stayed green — the first thing to notice was a browser walk
+ * CRASHING on a strict-mode violation, because a selector that resolves to two
+ * elements is a selector that means two things.
+ *
+ * It belongs here rather than in a gate of its own: this file already reads the
+ * shell's markup to ask what the walk knows about, and "one id, one element" is
+ * the assumption underneath every id-keyed selector in the REGISTRY above.
+ * Duplicated ids are also an accessibility defect in their own right — a `for`,
+ * an `aria-labelledby` or an `aria-controls` pointing at a repeated id resolves
+ * to the first one, silently, whichever the author meant.
+ */
+{
+  const seen = new Map();
+  for (const m of markup.matchAll(/\sid="([^"]+)"/g)) {
+    seen.set(m[1], (seen.get(m[1]) ?? 0) + 1);
+  }
+  const dupes = [...seen].filter(([, n]) => n > 1).map(([id, n]) => `${id} (${n})`);
+  (dupes.length === 0 ? ok : fail)(
+    `every id in the shell is unique (${seen.size} ids)`
+    + (dupes.length ? ` — repeated: ${dupes.join(', ')}` : ''));
+}
+
 console.log(failed
   ? '\nA surface exists that nothing measures. That is not a green walk, it is a\nwalk that was never told.\n'
   : '\nThe markup and the walk account for each other.\n');
