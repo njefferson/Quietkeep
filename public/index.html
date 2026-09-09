@@ -783,7 +783,19 @@
          arrives, so the card never waits on a store read. -->
     <p id="triage-where" class="sort-where" hidden></p>
     <div id="triage-actions" class="triage-actions"></div>
-    <p id="triage-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <!-- THE SORTING SCREENS' RECEIPT, SEEN AND HEARD (3.23.11). This was
+         `visually-hidden`, the same defect `#detail-live` carried until 3.23.8:
+         every confirmation the sorting flow gives — what a route did, why
+         *Make it* with an empty box did nothing — was announced to a screen
+         reader and shown to nobody. It is the last one; the third cold read
+         found the first, and this one was found while fixing it.
+         IT SITS UNDER THE ROUTE BUTTONS, inside the section but after
+         `#triage-actions`, so a confirmation appears where the thing that
+         produced it was pressed. `:empty` keeps it out of the layout for the
+         whole time it has nothing to say, which is most of the flow — and that
+         emptiness is why it needs a `whenShown` entry in the contrast registry
+         rather than a plain one. -->
+    <p id="triage-live" role="status" aria-live="polite" class="triage-receipt"></p>
   </section>
 
   <!-- The do-now offer and its timer live OUTSIDE the triage section, not merely
@@ -947,6 +959,21 @@
          projection behind it has no `days` field to render. -->
     <p id="people-promised-count" class="people-count"></p>
     <ul id="people-promised" class="people-list" aria-labelledby="people-promised-count"></ul>
+    <!-- WHERE A NAME COMES FROM, SAID ONCE (3.23.11). The third cold read gave
+         up here, and every screen it read was telling the truth: the front page
+         said one thing is with someone else, this screen said *Nobody named
+         yet*, and both are correct — a thing can be with somebody you have not
+         named, which is deliberate, because asking who at the moment of sorting
+         would make a one-tap route a three-tap one (the note beside
+         `#detail-person` says so). What nothing said is that the two lines are
+         compatible, or where the name goes.
+         SAID HERE AND NOT ON THE ROWS. Law 5 keeps a row to a name and a date;
+         instructions repeated on every row would be the nag this app refuses.
+         One line under the lists, which is also the only place somebody who has
+         just read *Nobody named yet* is standing. -->
+    <p id="people-where" class="detail-hint">Sorting never asks who, so a thing
+      can be with somebody you have not named. The name goes on the thing: open
+      it, then <em>More about this</em> &rarr; <em>Who is this with?</em></p>
   </section>
 
   <!-- Review, as EXCEPTIONS ONLY (v1 Must). Never a list of your work — only

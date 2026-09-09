@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.11',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**The sorting screens confirm what you did where you can SEE it.** Every confirmation there \u2014 what a route did, and why *Make it* with an empty box did nothing \u2014 was spoken to a screen reader and shown to nobody. It appears under the route buttons now, where the thing that produced it was pressed. That was the last one: a thing\u2019s own page got the same fix three releases ago.',
+      '**And the People screen says where a name comes from.** The front page says one thing is with someone else, this screen says *Nobody named yet*, and both are true \u2014 sorting deliberately never asks who, so something can be with somebody you have not named. Nothing said the two lines agreed, or where the name goes. One line under the lists now says both.',
+      '**Still to sort:** naming somebody is still only possible from *More about this* on a thing. The line above tells you where it is; it does not make the trip shorter.',
+    ],
+  },
+  {
     triplet: '3.23.10',
     kind: 'ITERATION',
     date: '2026-09-09',
