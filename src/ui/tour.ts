@@ -196,6 +196,13 @@ export function showTour(session: Session, onFinish?: () => void): void {
     // describing a different one.
     const last = i === STEPS.length - 1;
     next.textContent = last ? 'Keep my writing safe' : 'Next';
+    // AND THE OTHER WAY OUT STOPS SAYING *Skip* AT THE END (3.23.10). On the
+    // last screen there is nothing left to skip — the reader has read all six —
+    // and the button's real job there is to decline the storage panel that
+    // `finish(false)` opens. *Skip* named the walkthrough; this names what
+    // pressing it actually does. The selector is what every walk holds onto, so
+    // the words are free to be right (3.9.1's own lesson, on the other button).
+    skip.textContent = last ? 'Leave that for later' : 'Skip';
     // A HOOK THAT IS NOT THE WORDING (3.9.1). Both browser walks stepped to the
     // end by watching for the literal string "Get started", and the a11y walk's
     // own comment defended it: "a step count is content; Get started is the

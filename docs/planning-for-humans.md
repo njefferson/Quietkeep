@@ -443,7 +443,7 @@ the reason a second definition of "what matters today" was refused in
 
 **Bellotti et al., CHI 2004 — "What a to-do."** Studied how knowledge workers
 actually manage tasks, and found the opposite of what task software assumes:
-people are **not** bad at prioritising. Participants were *"remarkably proficient
+people are **not** bad at prioritizing. Participants were *"remarkably proficient
 at keeping track of tasks, with everything that mattered getting done in time
 through painstaking use of a variety of resources."* The finding that matters is
 what follows from that — since people still complain, **the problem being reported
@@ -559,7 +559,7 @@ splits cleanly in two when the evidence is actually looked for.
 - **The general principle is a heuristic, and it has a denominator problem.**
   The same handful of cases are cited every time — curb cuts, captions, voice
   control, kitchen tools — and **nobody counts the accessibility features that
-  did not generalise**, because there is no reason anyone would. That is
+  did not generalize**, because there is no reason anyone would. That is
   survivorship, and it means the instances cannot support the rule they are
   used to prove. No empirical review was found in either direction. There is a
   named scholarly argument that justifying accessibility by its incidental
@@ -583,16 +583,16 @@ it is owed before any public release copy is written. Publishing these as
 established differentiators before that check would be exactly the false-confidence
 failure Doctrine §5 names.
 
-1. **A decay-based Upkeep lane** — recurring things modelled by comfort window and
+1. **A decay-based Upkeep lane** — recurring things modeled by comfort window and
    rising pressure rather than by due dates or streaks.
-2. **Unified suspend–capture–resume bound to a modelled focus state** — the focus
+2. **Unified suspend–capture–resume bound to a modeled focus state** — the focus
    anchor, the paired resume card, and the interrupt gesture as one mechanism
    rather than three features.
 3. **Bother triage that terminates in clock-guaranteed routes** — worry handling
    with no exit that leaves the worry unheld.
 4. **A horizon-integrity engine** — the no-silent-nodes invariant enforced at the
    write boundary and *proved* by a visible gauge.
-5. **A pebble load ledger** — non-task load modelled explicitly and allowed to
+5. **A pebble load ledger** — non-task load modeled explicitly and allowed to
    reduce what the app asks of you.
 
 ---

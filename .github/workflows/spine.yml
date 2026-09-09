@@ -230,6 +230,16 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run help:check
 
+      # 3.23.5 changed about forty words by hand and left nothing holding them.
+      # Four survived, one of them the release note announcing the change, which
+      # read back to front because the sweep converted its own example. Reads
+      # only what a person reads — HTML text and the attributes that are spoken,
+      # TS string literals, prose minus code — because the same words appear
+      # sixty-three times as `aria-labelledby`, which is the spec's spelling.
+      - name: The app spells one way in everything a reader reads
+        if: ${{ !cancelled() }}
+        run: npm run spelling:check
+
       # The hosted flowcharts page is SPLIT out of docs/paths.html, because the
       # source has to be self-contained for the Artifact and the shipped page
       # cannot be: the CSP is `style-src 'self'` and refuses an inline <style>.

@@ -2371,6 +2371,24 @@ export async function mountAbout(
         caches = (names ?? []).filter(k => k.startsWith('quietkeep'));
         cache = caches[0] ?? null;
       } catch { /* no Cache API, or a browser refusing it — 'not answering' */ }
+      // WHAT THE WORKER ACTUALLY MANAGED TO STORE (3.23.10). `caches.keys()`
+      // answers "is there a cache", which is not the same question as "is
+      // anything in it" — and until the worker stopped using `addAll` those two
+      // could differ by everything, because `addAll` rejects as a unit and left
+      // an EMPTY cache behind a name that looked right. The worker writes its
+      // own account; this reads it.
+      let precache: { want: number; missed: string[] } | null = null;
+      try {
+        const store = cache ? await globalThis.caches?.open(cache) : null;
+        const res = await store?.match('./__precache');
+        if (res) {
+          const raw = await res.json() as { want?: number; missed?: string[] };
+          precache = {
+            want: typeof raw.want === 'number' ? raw.want : 0,
+            missed: Array.isArray(raw.missed) ? raw.missed.map(String) : [],
+          };
+        }
+      } catch { /* an older worker wrote no report, which is itself an answer */ }
       // §7h.4. TWO caches is the signature of a half-finished update, and
       // reporting only the first hides exactly that — the state this whole
       // release exists to make visible. Controlled/waiting come with it: a
@@ -2393,6 +2411,7 @@ export async function mountAbout(
         edition: editionOf(globalThis.location?.hostname ?? ''),
         cache,
         caches,
+        precache,
         controlled,
         waiting,
         origin: swOrigin,

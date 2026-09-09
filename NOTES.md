@@ -611,6 +611,40 @@ a disagreement:
   *More about this* and scrolling past nine unrelated sections. Every screen is
   individually truthful and the route between them is not walkable.
 
+**SIX OF THOSE SEVEN ARE CLOSED IN 3.23.9, AND ONE IS WITHDRAWN.** The
+situation sheet's intro names the condition on its choosers, the roster says the
+action rather than the source, `#detail-every` carries a placeholder instead of
+a value, the walkthrough's last screen leaves through *Leave that for later*,
+the flowcharts' eyebrow says what the number is provenance FOR and the retired
+word is gone from them, and `Make it` with an empty box says why nothing
+happened.
+
+**Withdrawn on examination: "behind the ⓘ" pointing at words that are not
+there.** They are there. `The Not Now ledger` and `Things you let go` are both
+`about-section` headings inside the ⓘ panel, at `index.html:2492` and `:2473`,
+and each also names its own opening button. The report was reading from the
+item sheet, which says *It sits in the Not Now ledger* without saying where the
+ledger is — a milder thing, and the app does say it, one screen over. Third
+withdrawal across three cold reads, and the reason to keep counting them is that
+a protocol whose findings are all correct is a protocol nobody is checking.
+
+**And the place picker's field was not reproduced either.** It has a 1px
+`--rail` border and a placeholder reading *Name a new project, area or goal*.
+What was real in that item was the second half — the silent no-op — and only
+that was changed.
+
+**ONE NEW ONE, FOUND WHILE FIXING THESE, AND IT IS THE SAME DEFECT AGAIN.**
+`#triage-live` is `role="status"` and `visually-hidden`, exactly as
+`#detail-live` was: the sorting screens confirm what you did to a screen reader
+and to nobody else. It is not fixed in 3.23.9 and the reason is worth writing
+down rather than deferring silently — un-hiding it means registering it in the
+contrast REGISTRY for six sorting surfaces in the same commit (hub LESSONS §28),
+and on every one of those states it is EMPTY, so `:empty { display: none }`
+would give the contrast pass zero nodes for a registered selector. That is a
+real design question about the registry, not a line of CSS, and guessing at it
+inside a release about something else is how the a11y stamp gets spent twice.
+Named in 3.23.9's own *still to sort*.
+
 **What the report also carried, and what was done with it.** Seventeen
 unprompted observations arrived; the seven above are those that survived being
 checked against the source. The rest were restatements of the seven claim
@@ -1436,7 +1470,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.8**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.9**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.7, so the two hosts are one
   tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
   three of its four are regressions from the session that shipped 3.23.2

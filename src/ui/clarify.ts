@@ -811,7 +811,16 @@ export function mountTriage(
     make.append(el('span', 'route-label', 'Make it'), el('span', 'route-hint', 'a new one, and put this in it'));
     make.addEventListener('click', () => {
       const title = input.value.trim();
-      if (!title) { input.focus(); return; }
+      // IT SAYS WHY NOTHING HAPPENED (3.23.10). This focused the field and
+      // returned, so pressing *Make it* with nothing typed was a no-op that
+      // explained itself only to somebody watching the caret. The date controls
+      // on a thing's own page already answer this case in words ("Pick a date
+      // first."); this is the same case on this surface.
+      if (!title) {
+        LIVE.textContent = 'Type a name for the new project, area or goal first.';
+        input.focus();
+        return;
+      }
       fileInto(c => fileUnderNewEvents(c, nodeId, title, clocksOf(session.state().nodes.get(nodeId))), title, null);
     });
     form.append(label, input, make);

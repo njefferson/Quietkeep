@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-3.23.8';
+const CACHE = 'quietkeep-3.23.9';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -187,13 +187,50 @@ const dressShell = async (res, look) => {
 // Waiting produces the opposite: the reader keeps a CONSISTENT old app until
 // they choose to move. An old app that works is a smaller problem than a mixed
 // one that does not.
+/** Where `precache` leaves its own account of what it managed to store. Not in
+ *  SHELL, so nothing ever serves it; the ⓘ panel's report reads it. */
+const PRECACHE_REPORT = './__precache';
+
+/**
+ * ONE AT A TIME, BECAUSE `addAll` IS ALL-OR-NOTHING (3.23.10).
+ *
+ * This was `cache.addAll(SHELL)` under a catch that deliberately does not block
+ * install — and the comment was right about install and wrong about everything
+ * else, because `addAll` REJECTS AS A UNIT. One asset failing did not leave the
+ * cache short by one; it left the cache EMPTY. The catch then said so to nobody.
+ *
+ * What that costs is not offline capability in the abstract. The navigation
+ * branch below maps `manual.html` and `paths.html` to their own cached bodies —
+ * so with nothing cached, a reader who taps either one loses the two-second
+ * race, finds no body to fall back on, and lands on the browser's error page.
+ * Found by a cold reader walking production; the trigger there was an
+ * intercepting proxy, and the defect is that NOTHING SAID SO either way.
+ *
+ * An app that caches itself cannot notice it has gone stale — that is §7h, and
+ * this is the same blindness one layer down: an app that caches itself cannot
+ * notice it never cached itself. So the failures are counted and written where
+ * the ⓘ panel's report can read them, and a partial precache is a partial
+ * precache rather than an all-or-nothing gamble.
+ */
+const precache = async () => {
+  const cache = await caches.open(CACHE);
+  const missed = [];
+  for (const url of SHELL) {
+    // Sequential rather than Promise.all: a flaky connection under twenty
+    // parallel requests is how one of these fails in the first place.
+    try { await cache.add(url); } catch { missed.push(url); }
+  }
+  try {
+    await cache.put(PRECACHE_REPORT, new Response(
+      JSON.stringify({ want: SHELL.length, missed }),
+      { headers: { 'Content-Type': 'application/json' } }));
+  } catch { /* the report is diagnostics; failing to write it changes nothing */ }
+};
+
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE).then((c) => c.addAll(SHELL)).catch(() => {
-      // A failed precache must not block install. The app still works online,
-      // and capture — the one thing that must never break — needs no network.
-    }),
-  );
+  // A failed precache must not block install. The app still works online, and
+  // capture — the one thing that must never break — needs no network.
+  event.waitUntil(precache().catch(() => {}));
 });
 
 // ...and the READER'S DECISION is the only thing that releases it (§7h.1).

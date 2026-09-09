@@ -1650,7 +1650,12 @@
     <span class="detail-label" id="detail-repeat-label">Make it repeat</span>
     <div class="detail-row" role="group" aria-labelledby="detail-repeat-label">
       <label class="detail-inline" for="detail-every">every</label>
-      <input id="detail-every" type="number" min="1" max="3650" value="7"
+      <!-- A SUGGESTION, NOT A VALUE (3.23.10). This carried value="7", so
+           tapping in and typing 30 gave 730 and "repeats every 730 days" —
+           plausible, silent, and wrong. A placeholder shows the same suggestion
+           and types over cleanly. `render` still fills it from the node when
+           the thing already repeats. -->
+      <input id="detail-every" type="number" min="1" max="3650" placeholder="7"
              inputmode="numeric" aria-describedby="detail-repeat-hint">
       <label class="detail-inline" for="detail-slack">days, relaxed for</label>
       <input id="detail-slack" type="number" min="1" max="3650" value="2"
@@ -2578,7 +2583,7 @@
 
   <h3 class="about-section">Clearing things out</h3>
   <p class="about-p">
-    Two different things, and not the same favour. Save a copy first &mdash; it is the only way back.
+    Two different things, and not the same favor. Save a copy first &mdash; it is the only way back.
   </p>
   <p id="purge-summary" class="about-p" role="status" aria-live="polite"></p>
   <div class="about-actions">
@@ -3142,7 +3147,8 @@
     <p id="situation-words" class="detail-hint">Where you are, how long you have,
       and who is in front of you. Each narrows what the app offers you and what
       the list shows &mdash; nothing is taken away, and everything still comes
-      back.</p>
+      back. Each chooser appears once you have named a place or a person, so a
+      new planner shows only the clock.</p>
 
     <!-- WHERE YOU ARE (2.2.0, ADR-0092). The tree says where a thing LIVES;
          this says where it can be DONE, and they are different questions. A
@@ -3308,8 +3314,8 @@
       <p id="situation-who-hint" class="detail-hint">
         Tap a name to put them in the room; tap again to take them out.
         Naming more than one makes it a meeting you can open. It does not narrow
-        what you are offered; it is part of the situation you save. Names come
-        from your things.
+        what you are offered; it is part of the situation you save. To add
+        somebody, put their name on a thing.
       </p>
     </div>
     <p class="detail-label" id="situation-save-label">Recognize this one?</p>

@@ -89,6 +89,17 @@ export interface DeviceReading {
    *  signature of a half-finished update, and a report naming one cache cannot
    *  show it (§7h.4). */
   caches: string[];
+  /**
+   * WHAT THE WORKER MANAGED TO STORE, from its own account (3.23.10).
+   *
+   * `caches` above answers "is there a cache", and that is not the same
+   * question as "is anything in it". Until 3.23.10 the worker precached with
+   * `addAll`, which rejects as a UNIT — so one asset failing left an EMPTY
+   * cache behind a name that read as healthy, and every later navigation to a
+   * page other than the app shell landed on a browser error page. Null when the
+   * worker predates the report, which is itself an answer.
+   */
+  precache: { want: number; missed: string[] } | null;
   /** Is a service worker controlling this page at all? A page with no
    *  controller is serving straight from the network, which changes what every
    *  other line here means. */
@@ -236,6 +247,12 @@ export function findings(state: State, log: readonly AppEvent[], r: DeviceReadin
     out.push(`This device holds ${r.caches.length} copies of the app (${r.caches.join(', ')}). `
       + 'One of them is left over from an update that did not finish clearing up. It is '
       + 'harmless, and it is the fingerprint worth reporting.');
+  }
+  if (r.precache && r.precache.missed.length > 0) {
+    out.push(`${r.precache.missed.length} of the ${r.precache.want} files this app keeps for `
+      + 'offline use did not download when it was installed '
+      + `(${r.precache.missed.join(', ')}). Everything works while you are online. Offline, `
+      + 'those pages will not open. Reloading the app twice while connected fixes it.');
   }
 
   return out;
@@ -425,6 +442,12 @@ export function diagnosticReport(
   if (r.caches.length > 1) {
     L.push(`  Caches held: ${r.caches.length} — ${r.caches.join(', ')}`);
     L.push('    (more than one means an update is part-finished on this device)');
+  }
+  L.push(`  Files kept for offline use: ${r.precache
+    ? `${r.precache.want - r.precache.missed.length} of ${r.precache.want}`
+    : 'not answering — a worker older than 3.23.10 keeps no account'}`);
+  if (r.precache && r.precache.missed.length > 0) {
+    L.push(`    missing: ${r.precache.missed.join(', ')}`);
   }
   L.push(`  A worker is serving this page: ${r.controlled ? 'yes' : 'no — straight from the network'}`);
   L.push(`  A newer version is waiting to be installed: ${r.waiting ? 'yes' : 'no'}`);

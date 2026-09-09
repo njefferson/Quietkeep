@@ -279,7 +279,16 @@ const BUDGET = {
   // two things a reader could not find out by looking: that it narrows nothing,
   // and where a name comes from (+22). The intro's duplicate of that sentence
   // was cut rather than raising this further.
-  words: 3972,
+  // 3972 -> 3996 on 2026-09-09 (3.23.9). Twenty-four words, both of them
+  // answers a cold reader needed and did not get. The situation sheet offers
+  // three choosers and every one is hidden until something has been named, so
+  // on a new planner it shows only the clock — the intro promised all three and
+  // the reader met one, which reads as broken rather than as empty (+17). And
+  // the roster said where names come FROM without saying what to DO; a source
+  // is not an action, and the action was the thing nobody could find (+4, and
+  // it replaced a longer sentence rather than adding to it). Both are hints
+  // beside the control they explain, so 1.39.1's accumulation rule holds.
+  words: 3996,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
