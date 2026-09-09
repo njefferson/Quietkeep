@@ -70,6 +70,33 @@ export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * module that renders nothing now asks for the walk too. A guard whose input set
  * is narrower than the thing it guards reports green through the gap, and this
  * file's own comment says so about the previous version of this list.
+ *
+ * NOT YET DONE, AND MEASURED: HASH THE OUTPUT, NOT THE INPUTS.
+ *
+ * The paragraph above reaches for the bundle's INPUT set while saying, in the
+ * same breath, that `public/app.js` "IS what the walk serves". The output was
+ * there the whole time. Hashing `public/app.js` alongside the two static files
+ * would be strictly MORE accurate — it is the artefact the walk actually loads —
+ * and strictly cheaper, because esbuild strips comments, so a comment-only edit
+ * to any module produces a byte-identical bundle and would not ask for anything.
+ *
+ * What that costs today, measured on 2026-09-09: a revert in `src/ui/app.ts`
+ * that restored identical DOM and left only comments changed invalidated this
+ * stamp and `docs/color-inventory.json`, and buying them back took a 45-minute
+ * accessibility walk and a 12-minute colour extraction on this machine. Neither
+ * could have found anything: the served bytes were unchanged.
+ *
+ * This is the shape `.branch-guard` already refuses for `tour-fresh` — "a guard
+ * whose trigger is wider than its output spends somebody's time to protect
+ * nothing, and it is the guard people learn to route around". The difference is
+ * that `tour-fresh` was removed and this one must not be; it should be narrowed
+ * onto the artefact instead.
+ *
+ * NOT DONE HERE BECAUSE OF WHEN IT WAS FOUND, not because it is doubtful.
+ * Changing how the stamp is computed invalidates every stamp in the tree and
+ * asks for the walk it is trying to save, and it was found with a promote
+ * waiting. `bundle-fresh.mjs` already refuses a stale `public/app.js`, so the
+ * one hazard — hashing an out-of-date bundle — is guarded before this is read.
  */
 export const uiSources = () => {
   const out = [];
