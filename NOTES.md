@@ -472,7 +472,123 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Nothing outstanding, and three of the seven were not defects.** 3.23.6 closed the
+### The THIRD cold read — 2026-09-09, against production, and what it found
+
+**Outstanding. Seven claims did not hold and seven more things came back that
+no claim mentioned.** This was the designed protocol rather than the stricter
+isolation the second read used: a fresh session walking the PROMOTED app
+(3.23.7) with the release notes for 3.23.2 through 3.23.7 in hand and the source
+forbidden, its report diffed against what those notes claim, with the asymmetry
+stated up front — disagreement is strong evidence, agreement is weak, and a
+thing no claim mentions is worth as much as a disagreement. The entry above says
+to read it before designing the third; it was read, and the claims were supplied
+for exactly the reason it gives.
+
+**Every one below was then checked against the source rather than taken at face
+value**, which is the lesson of the first read's two withdrawals and the second's
+one. Nothing here is recorded on the report's word alone.
+
+**THREE OF THEM ARE REGRESSIONS FROM THE SESSION THAT SHIPPED THE CLAIMS**, and
+that is the finding about the process rather than the app: a release note is
+written from the diff, and a diff cannot show the surface the fix did not reach.
+
+- **`src/gate.ts` `whyCovered` asks the clock before the Menu.** A thing on the
+  Menu keeps the gate's own `review` cure, so it is counted under *with a day
+  they come back to you* while its own row says *on the Menu* — measured as
+  `6` over seven rows of which two say otherwise. This is the IDENTICAL
+  precedence defect 3.23.6 fixed in `heldStatus` and in `detail.ts`, in a third
+  place nobody looked. **What hid it is a comment**: "The reasons ARE
+  `isSilent`'s clauses, in its order, so this cannot disagree with the gate that
+  enforces them." Order is irrelevant to `isSilent`, which is a disjunction and
+  returns the same boolean whatever order its clauses run in; order is the whole
+  answer here, because this function picks which reason to NAME. A correct
+  sentence about one function, inherited by another where it is false.
+
+- **`src/ui/triage-intents.ts` `fileReceiptWords` still says `Filed under`.**
+  3.23.3 retired that word — "Nothing has ever shown you a button called Filed" —
+  on a thing's own page, and left it on the confirmation the reader sees one
+  second EARLIER, in the same flow, in the same release.
+
+- **`src/time.ts` `recordDayWords` and `src/ui/detail.ts` still hardcode
+  `'en-GB'`.** 3.23.4 claims dates follow the device, not a country, and fixed
+  two of the three sites. In an `en-US` browser the app writes `Sep 7, 2028` on
+  one surface and `8 Sept` on the Not Now ledger and the decline confirmation.
+  **The one that survived has a doc comment declaring the behavior** — "en-GB
+  day-month order, the house style of the record surfaces" — so the sweep read a
+  justification where the other two had none, and stopped.
+
+**TWO ARE OLDER, AND NO GATE IN THIS REPO CAN SEE EITHER.**
+
+- **The three date confirmations are announced and never shown.** 3.23.6
+  promises "Setting a date says the day back to you, not the digits". The words
+  are right, `clockDayWords` is right, and they are written to `#detail-live`,
+  which is `role="status"` and `class="visually-hidden"`. A screen reader hears
+  it; a sighted reader gets nothing, and the cold reader could not find the
+  confirmation at all. **Every accessibility gate PASSES a correctly-announced
+  live region** — that is what they are for — so the surface most likely to be
+  measured is the one where invisibility is indistinguishable from correctness.
+
+- **There is no spelling gate.** 3.23.5 changed about forty words by hand across
+  four surfaces and left nothing holding them, which is the shape this repo
+  refuses everywhere else. Four survivors found, and the first is the worst
+  possible one: `src/ui/changelog.ts` and `CHANGELOG.md` carry the 3.23.5 note
+  itself reading BACKWARDS — the sweep converted its own before-and-after
+  example and left a stray possessive, so the release announcing the change
+  states it inverted. Also `neighbours` twice and `honoured` once in older
+  in-app notes, and `prioritising` in the shipped `public/why.html` and its
+  `docs/planning-for-humans.md` source.
+
+**AND ONE STRUCTURAL, from a navigation that failed.**
+
+- **`public/sw.js` swallows an atomic precache failure.** `install` runs
+  `cache.addAll(SHELL)` with a `.catch` that deliberately does not block
+  install — but `addAll` is ALL-OR-NOTHING, so one asset failing leaves the
+  cache completely EMPTY rather than short by one, and the catch says so to
+  nobody. Every later navigation to `manual.html` or `paths.html` then loses the
+  two-second race, finds no cached body, and lands the reader on a browser
+  error page. The cold reader hit exactly this, behind an intercepting proxy;
+  **the proxy is the likely trigger and this is NOT a claim that it reproduces
+  without one.** The defect recorded is the silence, not the failure: an
+  offline-first app can end up holding nothing, and the §7f diagnostic reads
+  `caches.keys` and never asks whether the cache has anything IN it. That is
+  §7h's defect one layer down — an app that cannot notice it has gone stale, in
+  the version where it never arrived.
+
+**SEVEN MORE THAT NO CLAIM MENTIONED**, which the protocol weighs as heavily as
+a disagreement:
+
+- **On an EMPTY store neither who-control exists**, while the walkthrough still
+  promises "who is in front of you". Both are hidden until somebody is named,
+  which is right and is written down — a picker with nothing in it teaches the
+  reader the feature is broken. The copy is what is wrong.
+- **`#situation-who-hint` says "Names come from your things."** — a source, not
+  an action, naming no control. 3.23.7's note promises the sentence a reader
+  needs: put a name ON something and the person appears here.
+- **`#detail-every` is pre-filled `value="7"`.** Typing `30` into it appends,
+  giving *repeats every 730 days*, silently and plausibly.
+- **The walkthrough's last screen exits through a button reading *Skip*.** It is
+  the only way out, and the reader has just finished the thing.
+- **`public/paths.html` is stamped `Quietkeep · 3.6.1`** against an app at
+  3.23.7, and still says "Nothing is filed away" — the word 3.23.3 retired. The
+  stamp is provenance and defensible; the retired word is not, and
+  `help-check.mjs` covers that page for routes, kinds and the tree label but
+  cannot see a route word inside a sentence.
+- **`#triage-place-new` is a borderless text field that reads as a heading**,
+  and *Make it* with nothing typed is a silent no-op.
+- **The People screen is where the reader gave up.** The front page says one
+  thing is with someone else; the People screen says *Nobody named yet*; tapping
+  through opens the item page, which has no name field. Naming somebody requires
+  *More about this* and scrolling past nine unrelated sections. Every screen is
+  individually truthful and the route between them is not walkable.
+
+**What the report also carried, and what was done with it.** Seventeen
+unprompted observations arrived; the seven above are those that survived being
+checked against the source. The rest were restatements of the seven claim
+failures from a second surface, or descriptions of behavior that is correct and
+written down. The count is recorded honestly rather than carried forward: this
+list is what reproduces.
+
+**THE SECOND READ'S SEVEN ARE ALL CLOSED, and three of them were not defects.** 3.23.6 closed the
 last four: a thing on the Menu no longer says it comes back (the clock is the
 gate's own capture cure, which `demandClocksOf` deliberately never clears — so
 the data was right and two readouts described it wrongly, both by falling
