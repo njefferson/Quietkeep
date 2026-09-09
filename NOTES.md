@@ -1246,7 +1246,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.1**, promoted 2026-09-03 at `3ce634e` — tree
+- **PRODUCTION CARRIES 3.23.7**, promoted 2026-09-09 at `958ad30` — six
+  releases at once, 3.23.2 through 3.23.7, all of them the 2026-09-08 cold view
+  and what it turned up. Tree asserted identical to the walked staging head
+  `7269e3a` — the same tree object out of `merge-tree`, not a diff that looked
+  empty — with Spine AND Deploy read green on that SHA by head SHA rather than
+  by the newest row, before the merge existed. Both editions read back by
+  content afterwards: production and the sync edition each serving 3.23.7, and
+  each serving `manual.html`, `paths.html` and `why.html` as themselves rather
+  than falling back to the app shell.
+
+  **Worth knowing for the next one: `main` and `staging` have DIVERGED and a
+  promote here is a MERGE, not a fast-forward.** Ninety commits sit on `main`
+  that `staging` does not have, which reads alarming and is only the merge
+  topology of fifteen promotes — `git diff --name-only staging...main` is empty,
+  so production carries no content of its own. Assuming a fast-forward and
+  reaching for a force push is the way to lose that history.
+- **Superseded: 3.23.1**, promoted 2026-09-03 at `3ce634e` — tree
   asserted identical to the walked staging head `ba01903`, CI green on that SHA
   first, both editions read back by content (workers naming 3.23.1, the proof's
   line and sheet in the root document, its words in both bundles).
@@ -2980,22 +2996,29 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.1** — promoted at
-  `3ce634e` on 2026-09-03, the merged tree asserted byte-identical to `ba01903`,
-  the staging head that was walked — the same tree OBJECT, not a diff that read
-  as empty, and CI's Spine and Deploy green on that SHA before the merge.
-  **Verified live by content on both editions**: workers naming 3.23.1, the
-  root document carrying the proof's line and its sheet, both bundles carrying
-  its words. Two releases: the proof of judgment (ADR-0125), law 4's analogue
-  of the coverage gauge — under the line that says nothing has gone quiet, a
-  second saying everything is accounted for, opening onto where each thing is
-  in `heldGroups`' own words, total over `heldWork`, able to say it does not
-  add up, and naming the review exceptions that reach no other surface — then
-  the walk's own finding, that the new line steps aside on the reduced screen
-  because its fact counts what is in front of you.
-  **The merge was made twice.** The first attempt passed its message on stdin,
-  which `git merge` does not read, so nothing merged — and the tree-identity
-  assert caught the non-merge rather than a person noticing. Redone from a file.
+- **https://quietkeep.pages.dev** — production, **3.23.7** — promoted at
+  `958ad30` on 2026-09-09, the merged tree asserted byte-identical to `7269e3a`,
+  the staging head that was walked — the same tree OBJECT out of `merge-tree`,
+  not a diff that read as empty — and CI's Spine and Deploy both green on that
+  SHA, found by head SHA rather than by the newest row, before the merge
+  existed. **Verified live by content on both editions**: production and the
+  sync edition each serving 3.23.7, and each serving `manual.html`,
+  `paths.html` and `why.html` as themselves rather than falling back to the app
+  shell — which is the 1.7.2 defect this read exists to catch.
+  **Six releases**, all of them the 2026-09-08 cold view: a date kept before
+  sorting no longer points at a screen it cannot reach; the ⓘ notes print
+  control names rather than asterisks and a route stops using an event word; a
+  thing's page says the day the way every other screen says it and two
+  formatters stop being pinned to a locale nobody here uses; the app spells
+  American throughout; something on the Menu stops saying it comes back and
+  Someday stops promising an absence the store does not have; and the situation
+  sheet finally asks two questions and says which is which.
+  **THE MERGE WAS MADE TWICE, AGAIN, THE SAME WAY.** The entry below records
+  the previous promote losing its first attempt to `git merge -F -`, which does
+  not read stdin — and this promote did it again, from a session that had that
+  sentence in its own file. Caught the same way both times: the assert that the
+  commit moved, not a person noticing. A note in a log is not a guard, which is
+  the argument every hook in this repo already makes.
 - Superseded: production was **3.22.2** — promoted at
   `dbf2171` on 2026-09-01, the merged tree asserted byte-identical to `d6eaee5`,
   the staging head that was walked — the same tree OBJECT, not a diff that read
