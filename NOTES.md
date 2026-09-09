@@ -472,6 +472,93 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### The FOURTH cold read — 2026-09-09, and it was asked whether the app can be UNDERSTOOD
+
+**Outstanding.** A different question from the first three: not "does it do what
+the notes claim" but **can a person work out what this is and use it**. So it was
+given NO release claims and no source — the stricter isolation the second read
+used, which was the wrong choice when the question was conformance and is the
+right one here, because a claim in hand is a spoiler for comprehension.
+
+**IT UNDERSTOOD THE APP IN SIXTY SECONDS, BEFORE PRESSING ANYTHING.** Its
+first-minute answer named custody rather than tasks, off the capture box, the
+Hold-it button and what showed through the walkthrough. It then derived the
+audience from the copy alone — people for whom the interface is part of the load
+— and went looking for streaks, priority, red, *overdue* and a score, including
+by moving the clock forty days. All genuinely absent. The refusals hold.
+
+**IT COULD NOT USE IT, AND IT NAMED THE MINUTE IT WOULD HAVE STOPPED.** Ninety
+seconds into sorting, on *Hot or cold?*. **Hot is the only control in that flow
+with no explanatory line under it.** So it reached for the escape hatch — *Just
+sort it · skip this question · nothing is recorded* — expecting fewer decisions,
+and got the NINE-option grid. Two buttons side by side, identical treatment,
+identical reassurance, and the one that promises to skip is the one that
+escalates.
+
+**AND THE COUNTER STILL CHANGES MEANING MID-FLOW.** *N here to work through*
+counted 7, 6, 5, 4, 3, 2 and then read 9 on the next tap, because the app had
+switched from the heat pass to the routing pass and both print the same
+sentence. **3.23.6 fixed this and it is still wrong**: that release made the
+counter follow the pass on screen, which is necessary and not sufficient — what
+was never fixed is that the two passes are indistinguishable to a reader, so a
+number that falls and then rises is the only thing telling them a second
+question has started.
+
+**Ten things captured, and every screen said nothing was there.** After ten
+captures the home screen still read *nothing here has gone quiet · nothing ready
+yet* and *everything accounted for · nothing asking now* — both true, both
+reading as EMPTY. There is no count of unsorted work on the screen where the
+work goes in. The Sort screen knows (*10 here to work through*) and the
+coverage panel knows (*10 things here*); the capture screen, which is the one a
+reader is standing on, does not. **The reader concluded the app had eaten them.**
+
+**And *Just one thing* lands on a screen with no thing on it.** Turn it on,
+reload, and the home screen says *1 ready now* and shows nothing — the route to
+the item (*See what is next*) is one of the things the mode removed. The way out
+is present, so it is recoverable; a reduced mode whose landing screen is empty
+is still the wrong failure for the reader most likely to turn it on.
+
+**THE PATCH NOTES READ AS A DEVELOPER'S DIARY, AND THE EXAMPLE IT QUOTED IS
+3.23.12's — WRITTEN THE SAME DAY.** Asked what looked like it had leaked from
+the inside, it picked the ⓘ panel and quoted *"Which is the third time this has
+been the fix"* and *"The People screen was the one nobody had noticed doing
+it"*. That is engineering reflection published to a first-time reader, in the
+panel the walkthrough sends them to, written by the session that was also
+writing the voice rules. Also flagged: **ITERATION** in small caps is an
+internal taxonomy word, and *279 earlier releases* is a number about the project
+rather than about them.
+
+**Its own list, kept as found.** *Room available: 154,812 MB* (that is 151GB and
+nobody reads six-figure megabytes); *Used at this address*, which is developer
+framing for *on this device*; a bare em dash as a value under *Asked for*;
+**Read** shown as a fact about a birthday present because it is the first option
+of a field nobody chose; doubled status strings (*Waiting for · sorted as
+waiting for*); three names for one screen (*Sort what you put down*, *Sort what
+you have put down*, and the manual's *Sort things out*); and *Back to the top ↓*
+pointing down.
+
+**THE MANUAL IS WRONG ABOUT THE SCREEN AND THE GATES CANNOT SEE IT.** It says
+*eight plain choices* over a screen that has NINE — *Say where it can be done*
+is missing — and **Hot or cold? appears in none of the three help surfaces**:
+not the manual, not the nine-topic Help dialog, not the six-screen walkthrough.
+`help-check` passes because it holds each surface to the SETS it declares, and
+the heat pass is not one of them. The first question the app asks a new reader
+is documented nowhere.
+
+**What it liked, recorded because it is evidence too.** The why-line on the
+offer (*you said this one was for today, and that it was hot*) — its words: the
+best single feature, because it quotes the reader's own decisions back rather
+than asserting an algorithm. *What comes back, and when* answered every question
+it had accumulated, and sits behind a status box labelled *nothing here has gone
+quiet*, which it called the least inviting label it could have. And the
+volunteered iPad Shortcut bug in the ⓘ, which it said it had never seen an app
+admit.
+
+**Environment, stated by it and worth keeping:** Chromium could not complete a
+TLS handshake through this session's proxy to any host, so it stood up a local
+reverse proxy and drove a real browser against that. One finding was voided by
+its own hand — the capture shortcut address printed its proxy's hostname.
+
 ### The THIRD cold read — 2026-09-09, against production, and what it found
 
 **Outstanding. Seven claims did not hold and seven more things came back that
