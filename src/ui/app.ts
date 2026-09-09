@@ -537,38 +537,36 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
         open.append(w);
       }
 
+      const when = document.createElement('span');
+      when.className = 'card-when';
       // Every item states its own status in words — the text channel of B-01, so
       // nothing here depends on seeing a color. A finished thing says "done"
       // rather than reporting the cure clock it happens to still carry.
       //
-      // EXCEPT WHERE THE HEADING JUST SAID IT (3.23.14). `heldStatus` and
-      // `heldGroups` share one vocabulary on purpose — three phrasings for one
-      // state is three things to learn — and the cost of that decision is that
-      // four of the seven groups have every row repeating their heading back at
-      // them: "Not sorted yet" over a column of rows each ending "not sorted
-      // yet", and the same for Needs a new plan, On the Menu and Done. A cold
-      // reader read the second copy as a second fact and went looking for the
-      // difference.
+      // AND IT IS SAID ON THE ROW EVEN WHEN THE HEADING JUST SAID IT — tried the
+      // other way in 3.23.14 and measured wrong within the hour. The fourth cold
+      // read reported the echo, correctly: four of the seven groups have every
+      // row repeating their heading back at them, because `heldStatus` and
+      // `heldGroups` share one vocabulary on purpose (three phrasings for one
+      // state is three things to learn). Dropping the row's copy where it
+      // matched its heading looked like the obvious answer.
       //
-      // THE TEXT CHANNEL IS NOT LOST, which is the only thing that could make
-      // this the wrong trade. The heading is text three lines up, and the list
-      // itself carries `aria-label="<group title>"`, so the state reaches a
-      // screen reader as the name of the region the row is inside. What goes is
-      // the repetition, not the words.
+      // THE WALK REFUSED IT, on two assertions written years apart and neither
+      // of them about repetition: "its status reads exactly done" and "the list
+      // still holds it and says what it needs" both read the ROW for the state,
+      // and both got an empty string. That is not a fixture detail. A heading
+      // is one line for a group of any length, so on a real store the row and
+      // the words that explain it are separated by everything above it — and a
+      // row whose state is only readable by scrolling up to find its heading is
+      // the out-of-sight failure this app is named against, arriving as a
+      // tidiness fix. The second copy is the one doing the work.
       //
-      // COMPARED, NOT LISTED. Nothing here knows WHICH groups collide; it asks
-      // whether these two strings are the same sentence. Add a group whose
-      // heading happens to match its status and this handles it unasked, and
-      // change either vocabulary and it stops firing on its own.
-      const status = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
-      const echoesHeading = status.toLowerCase() === group.title.toLowerCase();
-      open.append(title);
-      if (!echoesHeading) {
-        const when = document.createElement('span');
-        when.className = 'card-when';
-        when.textContent = status;
-        open.append(when);
-      }
+      // What was genuinely doubled was `detail.ts`'s state line, where two
+      // clauses of ONE sentence said one fact twice ("Waiting for · sorted as
+      // waiting for"). That is fixed there. This is not the same shape.
+      when.textContent = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
+
+      open.append(title, when);
 
       // Where it sits, when that is a fact worth stating: "in Boy Scouts", or
       // "7 under it" for a container. This is what tells an already-filed import

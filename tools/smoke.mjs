@@ -848,27 +848,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await page.waitForSelector('.card');
   is(await page.locator('.card-title').first().textContent(), 'Ring the dentist',
     'it came back after a full reload');
-  // A ROW SAYS ITS STATE, OR ITS HEADING DOES — and never both (3.23.14).
-  // This asked `.card-when` on the first card, which was the strongest thing it
-  // could ask while every row carried one. Now that a row under a heading that
-  // already says its status drops the repeat, the invariant to hold is the pair:
-  // some row states its status in words, and NO row repeats the heading above
-  // it. Asking only the first card would have gone quietly vacuous the day the
-  // fixture's first row landed in a colliding group.
+  // EVERY row, not the first one. This asked `.card-when` on `.first()`, which
+  // is the weakest form of a check whose whole subject is "every item states its
+  // own status": one row carrying words says nothing about the rest.
+  //
+  // AND IT IS EVERY ROW ON PURPOSE (3.23.14). A cold read reported the echo
+  // between a row's status and the heading above it, and dropping the row's
+  // copy where the two matched was tried and reverted the same hour — this walk
+  // is what refused it, on two assertions elsewhere that read the ROW for the
+  // state and got nothing. `src/ui/app.ts` carries the reasoning. This
+  // assertion is the guard on that decision: it goes red if a row is ever again
+  // left with its state readable only by scrolling up to a heading.
   const whens = await page.locator('.card-when').allTextContents();
-  is(whens.length > 0 && whens.every(w => w.trim().length > 0), true,
-    `cards state their own status in words (${whens.length} of them, e.g. "${whens[0] ?? ''}")`);
-  const echoed = await page.evaluate(() => {
-    const bad = [];
-    for (const ul of document.querySelectorAll('.cards-group')) {
-      const head = (ul.getAttribute('aria-label') || '').toLowerCase();
-      for (const w of ul.querySelectorAll('.card-when')) {
-        if ((w.textContent || '').trim().toLowerCase() === head) bad.push(head);
-      }
-    }
-    return bad;
-  });
-  is(echoed.length, 0, `no row repeats the heading it sits under (${echoed.join(', ') || 'none'})`);
+  const cardCount = await page.locator('.card').count();
+  is(whens.length === cardCount && whens.every(w => w.trim().length > 0), true,
+    `every card states its own status in words (${whens.length} of ${cardCount}, e.g. "${whens[0] ?? ''}")`);
 
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
@@ -6424,11 +6418,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // surface is what the walk is for.
     await intoJob(tpage, 'held');
     await revealAll(tpage);
-    const grp = await tpage.evaluate((t) => {
+    // WAITED FOR, NOT SAMPLED (3.23.14). This read the group the instant the
+    // list came up and failed intermittently — once in four runs — reporting
+    // "Not sorted yet", which is the group the card was in BEFORE the route it
+    // is asserting about. Nothing was wrong with the app: the read had simply
+    // arrived ahead of the re-render, and a sampled assertion about a rendered
+    // fact is a coin toss with the odds hidden.
+    //
+    // The poll is bounded and asserts the same thing it always did — a card that
+    // genuinely never leaves the inbox still fails, one second later. What goes
+    // is the race, not the check. Calling this a flake and re-running would have
+    // left the next person to find it again.
+    const readGroup = () => tpage.evaluate((t) => {
       const card = [...document.querySelectorAll('#cards .card')].find(
         (c) => (c.querySelector('.card-title')?.textContent || '').trim() === t);
       return card ? (card.closest('ul')?.getAttribute('aria-label') ?? null) : null;
     }, title);
+    let grp = await readGroup();
+    for (let i = 0; i < 20 && grp !== null && /not sorted yet/i.test(grp); i += 1) {
+      await settled(tpage, 50);
+      grp = await readGroup();
+    }
     is(grp !== null && !/not sorted yet/i.test(grp), true,
       `and the list agrees — “${title}” sits under ${JSON.stringify(grp)}`);
   };

@@ -26,6 +26,7 @@
 //   node tools/help-check.mjs
 
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -222,6 +223,60 @@ for (const file of HELP) {
       `${file} does not say "${phrase}" — ${why}`);
   }
 }
+
+// ── THE FLOWCHARTS NAME CONTROLS THAT EXIST ─────────────────────────────────
+// The SETS above are closed lists the app defines in one place, and a control
+// outside all of them — a button on one sheet, a label on one group — is named
+// by the flowcharts and held by nothing. `docs/paths.html` marks every control
+// it names with `<b>`, which is what makes this checkable without a second list:
+// the page already declares which of its words are the app's.
+//
+// It found two on its first run, both from renames nobody carried across. The
+// upkeep path said the control is "This one repeats"; the app's label has been
+// "Make it repeat". The replan path said "all of them at once"; the line reads
+// "All ⟨n⟩ at once". Neither is in any SET, so nothing here could see them.
+//
+// WHAT IS EXCLUDED, AND WHY IT IS BY POSITION RATHER THAN BY A LIST.
+//   · `<b>` inside `p.never` is the page's own label "What it never does", and
+//     inside a heading or the contents it is a section name. Neither is a
+//     control, and both are the page talking about itself.
+//   · A name containing ⟨…⟩ is a template with a hole in it — "Part of ⟨name⟩",
+//     "All ⟨n⟩ at once" — and the app fills the hole at runtime, so no verbatim
+//     match exists to look for. The literal text around it is not worth a
+//     substring check that would pass on almost anything.
+// An exclusion by POSITION cannot go stale the way a list of allowed strings
+// does: add a new `.never` paragraph and it is covered without an edit here.
+//
+// AND THE APP'S COPY IS READ WITH COMMENTS AND THE RELEASE NOTES STRIPPED. The
+// notes legitimately keep every retired name — that is what they are for — so
+// searching them would make this gate pass on precisely the words it exists to
+// find, and a comment naming an old control would do the same. This repo has
+// paid for that twice already (hub LESSONS 125).
+const paths = read('docs', 'paths.html');
+const pathsBody = stripHtmlComments(paths)
+  .replace(/<p class="never">[\s\S]*?<\/p>/g, ' ')
+  .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/g, ' ')
+  .replace(/<div class="toc-set">[\s\S]*?<\/div>/g, ' ');
+const named = [...new Set([...pathsBody.matchAll(/<b>([^<]+)<\/b>/g)].map((m) => m[1].trim()))]
+  .filter((n) => !/[⟨⟩]/.test(n));
+
+const appCopy = norm(
+  execFileSync('git', ['ls-files', 'src', 'public/index.html'], { cwd: ROOT, encoding: 'utf8' })
+    .split('\n')
+    .filter((f) => f && f !== 'src/ui/changelog.ts' && /\.(ts|html)$/.test(f))
+    .map((f) => {
+      const raw = read(...f.split('/'));
+      return f.endsWith('.html') ? stripHtmlComments(raw) : stripJsComments(raw);
+    })
+    .join('\n'));
+
+const gone = named.filter((n) => !appCopy.includes(norm(n)));
+(named.length > 0 ? ok : fail)(
+  `the flowcharts name ${named.length} of the app's controls` +
+  (named.length ? '' : ' — FOUND NONE, so the check below is vacuous'));
+(gone.length === 0 ? ok : fail)(
+  'every control the flowcharts name is a control the app has' +
+  (gone.length ? ` — NOT IN THE APP'S COPY: ${gone.join(', ')}` : ''));
 
 // ── AND EVERY PAGE THE APP LINKS TO SURVIVES BEING OFFLINE ───────────────────
 // The worker maps a navigation to its OWN cached body via SHELL, so a hosted
