@@ -718,6 +718,46 @@ changing — the JOBS endpoint is where progress actually shows.
 The re-dispatch is the right fallback (hub LESSONS 161) and it ran on the same
 head SHA, so the verification stands; it just did not need doing.
 
+**THE LAST TWO FINDINGS ARE CLOSED IN 3.23.11, AND ONE OF THEM COST THE
+CONTRAST GATE A NEW IDEA.** `#triage-live` was `visually-hidden` — the sorting
+screens' confirmations announced and shown to nobody, the same defect
+`#detail-live` carried until 3.23.8. It is visible under the route buttons now.
+
+**Registering it was the obstacle, and the entry above said so.** "A registry
+entry matching nothing visible FAILS" is the right rule and it made a live
+region unregisterable: it is legitimately EMPTY on every state the walk stands
+in before an action, so a plain entry would fail five surfaces for rendering
+correctly, and no entry at all ships its ink unmeasured — which is the §28 hole
+the rule exists to close.
+
+**So an entry may declare `whenShown`.** Per state a declared absence is a NOTE;
+across the WHOLE RUN the selector must have been seen at least once, in some
+state, in some theme, or the run fails at the bottom. **The second half is the
+whole design** — without it this is an escape hatch, and a selector that has
+stopped matching everywhere would go quiet, which is exactly the failure the
+plain rule was written for. The per-state tolerance forgives only the states
+where absence is the correct rendering.
+
+**Measured, then PLANTED.** Live: six state/theme combinations at 7.31:1 in
+light and 7.93:1 in dark against a 4.5 floor, four states noting a legitimate
+absence, and the whole-run line confirming it was seen. Planted: the five
+entries re-aimed at `#triage-live-plant`, which matches nothing anywhere — one
+failure, naming the selector and its declared reason, exit 1. A fourteen-minute
+walk spent to prove a new mechanism fails when it should, which is the standing
+practice here and the reason `gate-audit.mjs` exists for everything cheap enough
+to sit in it.
+
+**And the People screen, which is where the cold reader gave up.** The front
+page said one thing is with someone else, the screen said *Nobody named yet*,
+and tapping through opened a page with no name field on it. **Every one of those
+screens was telling the truth.** Sorting deliberately never asks who — the note
+beside `#detail-person` says asking there would turn a one-tap route into a
+three-tap one — so a thing genuinely can be with somebody unnamed. What nothing
+anywhere said is that the two lines are compatible, or where the name goes. One
+line under the lists says both, registered in the contrast gate in the same
+commit (§28), and the word budget went 3996 to 4028 with the reason beside it.
+The trip itself is unchanged and 3.23.11's own *still to sort* says so.
+
 **What the report also carried, and what was done with it.** Seventeen
 unprompted observations arrived; the seven above are those that survived being
 checked against the source. The rest were restatements of the seven claim
