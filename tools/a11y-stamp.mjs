@@ -83,7 +83,7 @@ export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
  * What that costs today, measured on 2026-09-09: a revert in `src/ui/app.ts`
  * that restored identical DOM and left only comments changed invalidated this
  * stamp and `docs/color-inventory.json`, and buying them back took a 45-minute
- * accessibility walk and a 12-minute colour extraction on this machine. Neither
+ * accessibility walk and a 12-minute color extraction on this machine. Neither
  * could have found anything: the served bytes were unchanged.
  *
  * This is the shape `.branch-guard` already refuses for `tour-fresh` — "a guard
