@@ -240,6 +240,18 @@ const GATES = [
     plant: () => edit('CHANGELOG.md', (s) => s.replace('## 2.12.0', '## 2.12.0 (edited by hand)')),
   },
   {
+    name: 'spelling:check',
+    catches: 'a British spelling in text a reader reads',
+    // A TEXT NODE ON A CONTROL, not a comment and not an identifier. The gate
+    // reads only what a person reads — so a plant in a comment would prove
+    // nothing about it, and one in an attribute NAME would prove the opposite
+    // of what is wanted: `aria-labelledby` appears sixty-three times in this
+    // file and is the spelling the HTML spec gives it.
+    plant: () => edit('public/index.html', (s) =>
+      s.replace('<h2 id="sheet-group-color-title" class="section">Colors</h2>',
+        '<h2 id="sheet-group-color-title" class="section">Colours</h2>')),
+  },
+  {
     name: 'tour:check',
     catches: 'the walkthrough\'s photographs being of a previous version',
     plant: () => edit('public/app.css', (s) => `${s}\n/* plant */\n.gate-audit-plant { color: red; }\n`),

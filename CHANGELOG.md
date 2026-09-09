@@ -14,6 +14,34 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.10 — ITERATION
+
+*2026-09-09*
+
+- **The confirmation on a thing’s page sits beside *Close* now, not above it.** Yesterday it became visible for the first time — it had been spoken to a screen reader and shown to nobody — and on its own line it took a strip out of the one part of that sheet that scrolls. The cost was small and real: four controls, when you reached them by keyboard, had the outline that shows where you are cut off by two pixels at the edge of the scrolling area. It shares the row with the way out instead, so nothing was taken from the sheet, and it is still there to be read.
+- **Still to sort, unchanged:** the sorting screens confirm what you did in a line only a screen reader gets. And naming a person is still only possible from *More about this* on a thing, a long way from the People screen that says nobody is named yet.
+
+## 3.23.9 — ITERATION
+
+*2026-09-09*
+
+- **The spelling is held to by a check now, not by remembering.** 3.23.5 changed about forty words by hand and left nothing behind it, so a few came back — including, in the note announcing that change, the two example words printed the wrong way round. Twenty-two survivors found and fixed, in these notes, on the *Why this exists* page and in the sample planner. The check reads only what you read.
+- **The app can now tell you if it failed to save itself for offline use.** It kept its files in one all-or-nothing go: if a single file did not arrive, none of them did, the cache was left empty behind a name that looked healthy, and nothing said so — then *the manual* and *how it fits together* would not open. It stores them one at a time now, and the report behind the ⓘ says how many are there.
+- **A number you are about to type is no longer sitting in the box.** *Make it repeat — every 7 days* arrived with the 7 already in it, so tapping in and typing 30 gave you 730. It is a faint suggestion now and types over cleanly.
+- **Three screens say the thing you needed and did not.** The situation screen explains why it may look nearly empty — each chooser appears once you have named a place or a person. The row of names says how to add one: put a name on a thing. And pressing *Make it* with the box empty says why nothing happened, instead of only moving the cursor.
+- **Two small ones.** The walkthrough’s last screen stops offering to *Skip* what you have just read — what that button does there is leave the writing-safety step for later. And the flowcharts say which version they were drawn from rather than carrying a number that reads like the app’s own.
+- **Still to sort:** the sorting screens confirm what you did in a line only a screen reader gets — the same thing a thing’s own page had until yesterday. And naming a person is still only possible from *More about this* on a thing, a long way from the People screen that says nobody is named yet.
+
+## 3.23.8 — ITERATION
+
+*2026-09-09*
+
+- **Setting a date now says the day back to you where you can SEE it.** The last release said this had been fixed. The words were right and they were spoken only to a screen reader — nothing appeared on screen, so if you were reading rather than listening, pressing Set still looked like nothing happening. Every confirmation this screen gives now appears just above *Close*, where it cannot scroll away from the button that produced it.
+- **Something on the Menu is counted as being on the Menu.** The line that accounts for everything you are holding said *6 with a day they come back to you* over rows of which two said *on the Menu*. Nothing was lost and nothing was double-counted — the number was right and the reason beside it was wrong, because the app keeps a quiet marker of its own on everything and that marker was being read as a date. It says the reason you would say now.
+- **Putting something under a place says the word on the button you pressed.** *Put it under this* handed back a receipt reading *Filed under ⟨place⟩*. Two releases ago a thing’s own page stopped saying *filed*, for the reason that nothing has ever shown you a button called Filed; the receipt you meet one second earlier kept saying it.
+- **And the last date that ignored your device now asks it.** The Not Now ledger and a declined request wrote their day in a fixed British form while the rest of the app was already asking what your device is set to — so one screen said *Sep 7* and another said *8 Sept* about days a week apart.
+- **Still to sort:** a handful of British spellings survive in these notes and on the *Why this exists* page, and the note announcing that change reads back to front. The walkthrough’s last screen still leaves through a button marked *Skip*. The flowcharts still carry a word this app stopped using.
+
 ## 3.23.7 — ITERATION
 
 *2026-09-09*
@@ -37,7 +65,7 @@ triplet and what it did for you.
 
 *2026-09-08*
 
-- **The app spells the American way now, everywhere.** *Colours* was *Colors*’ spelling and *Recognise this one?* was *Recognize this one?*, on screens you meet in the first minute, and about forty other words behind them — in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.
+- **The app spells the American way now, everywhere.** *Colors* was *Colours* and *Recognize this one?* was *Recognise this one?*, on screens you meet in the first minute, and about forty other words behind them — in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.
 - **Still to sort:** the situation screen asks who twice — the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new. And three spoken confirmations still read a date out as digits when you set one.
 
 ## 3.23.4 — ITERATION
@@ -105,8 +133,8 @@ triplet and what it did for you.
 
 - **The days ahead: your dated things, day by day, inside the app.** A new door on the front page opens every dated thing you hold, under the day it is waiting on — today first, never a day in the past. Each row says which date is talking — *due*, *starts*, *comes back*, or *answer owed* — and an answer owed names who is waiting, when you have said so. It reads the store every time it opens, so when a date moves, the day it sits under moves with it. Tap a thing to open it.
 - **It is the same list *Send to my calendar* sends — always.** The screen and the calendar file are drawn from one selection, so they cannot name different mornings. The calendar copy is for being reminded while the app is closed; this is the half that is never stale. A date that already went by sits under today marked *needs a new plan*, in the replan surface’s own words.
-- **The door appears once something carries a date**, like its neighbours, and the date box on a thing’s page now names both routes: the days ahead on the front page, and your own calendar.
-- **Two controls are one step later in the reading order than they were.** The new door stands with its neighbours on the front page, so the *What’s the situation?* copy on the working screens is now one control later than it was, and the *Menu* door is now one further along than it was. Nothing moved on screen by feel; the count is about reading order.
+- **The door appears once something carries a date**, like its neighbors, and the date box on a thing’s page now names both routes: the days ahead on the front page, and your own calendar.
+- **Two controls are one step later in the reading order than they were.** The new door stands with its neighbors on the front page, so the *What’s the situation?* copy on the working screens is now one control later than it was, and the *Menu* door is now one further along than it was. Nothing moved on screen by feel; the count is about reading order.
 - **Still to sort, unchanged:** the situation screen asks who twice. The names under *Who is in it?* are buttons — press as many as apply. Nothing there adds somebody new.
 
 ## 3.21.0 — CAPABILITY
@@ -449,7 +477,7 @@ triplet and what it did for you.
 *2026-08-27*
 
 - **You can get to the thing something is filed under.** A screen has always said *Part of ⟨name⟩* at the top, and that was a sentence — it told you the name and gave you no way to go there. It is a button now. Tapping it opens that thing’s own screen.
-- **Reported from a device in those words:** something was made into a place by filing a task under it, and then there was no way to see the place. That was accurate. Every list on that screen travelled downward — the things underneath were already doors — and nothing at all travelled up.
+- **Reported from a device in those words:** something was made into a place by filing a task under it, and then there was no way to see the place. That was accurate. Every list on that screen traveled downward — the things underneath were already doors — and nothing at all traveled up.
 - **So the chain walks both ways now**, one step at a time, in whichever direction you are asking. Going up is not something you have to do to plan a day, and nothing asks you to.
 - **“How it hangs together” says what each row is.** Every line in it was a bare title with an indent — a project, an area and a task all drew identically. A project now says project, an area says area. Plain tasks stay unmarked, which is how they read everywhere else.
 - **That word was already yours.** The app says *Project* when you make one and again when you file something under one, and then the one screen whose whole job is listing them never said it again.
@@ -1041,7 +1069,7 @@ triplet and what it did for you.
 
 *2026-08-19*
 
-- **Clearing out no longer invents a chore over an empty planner.** With nothing in it, the panel still said *“This clears 0 things — everything you are keeping here, people, weights and private entries included”*, warned that you had not saved a copy, made **Save a copy first** the loudest thing on the screen, and asked you to type the word **clear** out in full — to authorise doing nothing. The line directly above it had always said *“There is nothing here to clear.”* Now the rest of the panel has been told: it says it does nothing, asks for no word, and nothing on it leads.
+- **Clearing out no longer invents a chore over an empty planner.** With nothing in it, the panel still said *“This clears 0 things — everything you are keeping here, people, weights and private entries included”*, warned that you had not saved a copy, made **Save a copy first** the loudest thing on the screen, and asked you to type the word **clear** out in full — to authorize doing nothing. The line directly above it had always said *“There is nothing here to clear.”* Now the rest of the panel has been told: it says it does nothing, asks for no word, and nothing on it leads.
 - **Starting again over a HISTORY still warns you, and that is deliberate** — that one erases the record, so a planner holding nothing may still have something worth keeping. The warning only goes when there is genuinely nothing to lose.
 - **“Not kept yet — press Set.” now sits under the Set button.** It was rendering below the whole note field — four controls away from the button it names, under a section whose only button says *Keep the note*. The markup had never closed the date group before the note began.
 - **And a stuck update stops telling you to do something instead.** When a device will not let the new version take over, the card explains that closing the app completely and opening it again is what works — and it hid *Install it now*, which left **Save a copy** as the loudest button, directly under a sentence saying nothing you have written is affected. It was loud because something else was removed, not because anyone decided it should be. Nothing on that card leads now; the thing that works is in the words.
@@ -1711,7 +1739,7 @@ triplet and what it did for you.
 *2026-08-05*
 
 - **Some things are supposed to happen without you — and nothing tells you when one of them quietly stops.** A delivery that reorders itself, a service on a schedule, a renewal: the work was done once, when you set it up. If it lapses, there is no reminder and no error. The first sign is running out. Anything that repeats can now be marked as running itself, and instead of asking whether you did it, it asks when you last confirmed it is still arranged.
-- **Where it depends on somebody else, it says so.** Some of these you cannot check from here — an approval, an authorisation, a supplier who will not write to tell you they have stopped. Marking that changes the words, because "check this" is no use when checking means asking someone.
+- **Where it depends on somebody else, it says so.** Some of these you cannot check from here — an approval, an authorization, a supplier who will not write to tell you they have stopped. Marking that changes the words, because "check this" is no use when checking means asking someone.
 - It never invents a schedule. Something with no rhythm of its own stays quiet rather than being given one.
 - *Still missing, and unchanged from the last release:* a place you make on the spot has no return date until you set one, and there is still no control on the receipt to set it.
 
@@ -1796,7 +1824,7 @@ triplet and what it did for you.
 - **The seam audit’s findings, fixed.** Six independent passes over the places where two parts of the app must agree found thirty-one; the top fourteen were each put to adversarial verification and every one survived. All fourteen are fixed here, each pinned by its own test.
 - **A worry is no longer offered as work.** It showed up on the work surface with a Done button before its own flow asked “whose is this?”, and a declined one sat under “Ready now” for ever. A worry stays in its flow now; a declined one rests under Later, as designed.
 - **Your calendar gets no nags.** A declined thing exported as an all-day event with a morning alarm — the exact nag the Not Now ledger removes, rebuilt in the diary you trust. Declines and worries no longer export, and the stated count matches the file.
-- **Private things stay private, and lists agree.** The status report itemised journal entries as “New — (untitled)”; the printed card offered lapsed items the screen shows only as decisions; the duplicate picker offered journal entries and named periods as things to fold work into, which hid the work from every list. All closed.
+- **Private things stay private, and lists agree.** The status report itemized journal entries as “New — (untitled)”; the printed card offered lapsed items the screen shows only as decisions; the duplicate picker offered journal entries and named periods as things to fold work into, which hid the work from every list. All closed.
 - **“Keep it after all” on a settled weight works** — it used to say “Kept.” and keep nothing — and one deeper repair underneath: a settle was the one write that could leak into live state even when its batch was refused. The import panel’s words now name both of its doors truthfully. Seventeen smaller findings are recorded and queued; none loses data.
 
 ## 1.17.2 — ITERATION
@@ -1842,7 +1870,7 @@ triplet and what it did for you.
 
 *2026-08-02*
 
-- **“Held” now means the same thing everywhere it is said.** Tap the line that reads “N held” and you get that claim itemised. The number and the list had drifted apart, and the list was the half that was wrong.
+- **“Held” now means the same thing everywhere it is said.** Tap the line that reads “N held” and you get that claim itemized. The number and the list had drifted apart, and the list was the half that was wrong.
 - **Your journal entries were being listed there, one row each, as “(untitled) — held”.** A journal entry has no title on purpose — that is what keeps it private — so every entry you had written showed up as a blank row in the middle of your work. Nothing readable was ever shown, and the entries themselves were never at risk. They simply had no business being on that list, and they are off it.
 - Weights were in there too, listed among the things being covered. A weight is not work, which is the whole point of being able to say one.
 - **The number will be smaller next time you open it**, by however many journal entries and weights you are carrying. Nothing has been let go and nothing is hidden — it is the same claim, told accurately.
@@ -2190,7 +2218,7 @@ triplet and what it did for you.
 *2026-07-30*
 
 - **You can clear things out, two different ways.** *Clear what I’m holding* empties your surfaces and keeps every record of what happened, so a copy you export afterwards still has all of it. *Start again from empty* replaces the lot, history included, and cannot be undone from inside the app. The panel says which is which before you choose.
-- **Neither can be done by accident.** Each asks you to type a short word first — a different word for each, so a word typed for one can never authorise the other — and switching between them clears what you typed.
+- **Neither can be done by accident.** Each asks you to type a short word first — a different word for each, so a word typed for one can never authorize the other — and switching between them clears what you typed.
 - **It recommends saving a copy, with the button right there,** and the sentence above the go-ahead says plainly whether you have saved one.
 - It tells you the real count of what is about to go, never a rounded one.
 
@@ -2227,7 +2255,7 @@ triplet and what it did for you.
 - You can now put down something that is on your mind but **is not a task** — "the thing with the roof" — without first inventing a next step for it. Being made to write a worry as a task is how you end up with steps you will never do, on a list you are supposed to trust.
 - **The first question is whose it is, not what you are going to do about it.** Asking for a next action first is what makes people make one up.
 - Three answers: mine to do something about, mine to keep an eye on, or **not mine to carry**.
-- "Not mine to carry" is a real answer and it is honoured completely. It is let go, it is not parked, and **it does not come back "just to check"**. An app that quietly re-raises what you released is one that did not believe you.
+- "Not mine to carry" is a real answer and it is honored completely. It is let go, it is not parked, and **it does not come back "just to check"**. An app that quietly re-raises what you released is one that did not believe you.
 - "Mine to do something about" sends it to your inbox, and only then are you asked what the actual next step is.
 - "Mine to keep an eye on" parks it and brings it back in a week. Nothing to do in the meantime, and nothing carried in your head either.
 - One at a time. It says how many are there and shows you exactly one — a list of worries is a worse thing to look at than any single worry on it.

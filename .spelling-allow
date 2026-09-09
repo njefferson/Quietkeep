@@ -1,0 +1,23 @@
+# WORDS THAT STAY, EACH WITH ITS REASON — `tools/spelling-check.mjs`.
+#
+# One per line: `path :: word :: why`. Checked BOTH directions: a declaration
+# that no longer matches anything FAILS, so a scrub cannot leave this file
+# quietly covering words that are gone. Every line prints on every run.
+#
+# A word is declarable when it is a quotation, a proper name, or a spelling the
+# text's whole job is to NAME. It is never declarable to avoid doing the work.
+#
+# The help has a second, structural route for this and it is the better one:
+# `<span data-was>` marks a control's former name per mention, and text inside
+# one is exempt without any declaration. Use that in `docs/manual.md` and the
+# flowcharts; this file is for the places that idiom does not reach.
+
+# The 3.23.5 release note IS the before and after. Naming only the new spelling
+# would leave a note saying two words changed without saying from what — and
+# 3.23.5's own first attempt at avoiding that printed the pair BACKWARDS, with a
+# stray possessive, so the release announcing the change stated it inverted.
+# Fixed in 3.23.9 and declared here rather than paraphrased away.
+src/ui/changelog.ts :: colours :: the 3.23.5 note names the spelling it replaced
+src/ui/changelog.ts :: recognise :: the 3.23.5 note names the spelling it replaced
+CHANGELOG.md :: colours :: generated from src/ui/changelog.ts by `npm run changelog`
+CHANGELOG.md :: recognise :: generated from src/ui/changelog.ts by `npm run changelog`

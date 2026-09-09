@@ -31,6 +31,10 @@ public/index.html | product-copy | a part of your life this belongs to
 public/index.html | product-copy | a name
 public/index.html | product-copy | at home, out, on the phone
 public/index.html | product-copy | at work, at home, out
+# The repeat interval's own suggestion (3.23.9). Not a scenario — it is the
+# app's default cadence shown as a placeholder rather than sitting in the box
+# as a value, which is what made typing 30 into it give 730.
+public/index.html | product-copy | 7
 
 public/index.html | invented | ring the garage
 public/index.html | invented | the staff call

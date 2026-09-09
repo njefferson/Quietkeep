@@ -416,7 +416,9 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
         text.textContent = d.text;
         const when = document.createElement('span');
         when.className = 'detail-when';
-        const day = new Intl.DateTimeFormat('en-GB', {
+        // THE READER'S LOCALE (3.23.8), like `recordDayWords` and
+        // `capture-context.ts`. The third and last hardcoded 'en-GB'.
+        const day = new Intl.DateTimeFormat(undefined, {
           timeZone: session.zone, day: 'numeric', month: 'short',
         }).format(new Date(d.at));
         // Attributed when it was decided about something folded in — the
@@ -476,10 +478,24 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
   }
 
-  /** Say it where it can be seen AND where it can be heard. A failure reported
-   *  only to a visually-hidden region is a failure a sighted user never learns
-   *  about (F-08). */
-  const say = (msg: string): void => { LIVE.textContent = msg; STATE.textContent = msg; };
+  /**
+   * Say it where it can be seen AND where it can be heard. A failure reported
+   * only to a visually-hidden region is a failure a sighted user never learns
+   * about (F-08).
+   *
+   * ONE PLACE NOW, BECAUSE THE MIRROR NEVER WORKED (3.23.8). F-08's remedy was
+   * to write the message into `STATE` as well — but `STATE` is the fact line,
+   * and `render` rewrites it from `bits` on every paint. `run` renders straight
+   * after a write, so a failure mirrored there survived microseconds. Only the
+   * validation messages that return BEFORE `run` ever stayed on screen, which
+   * is why it looked fixed.
+   *
+   * `#detail-live` is visible instead, pinned above Close where nothing scrolls
+   * it away and nothing repaints it. That covers what F-08 asked for and the
+   * half nobody had noticed was missing: the SUCCESS path, which wrote to the
+   * hidden region alone and told a sighted reader nothing at all.
+   */
+  const say = (msg: string): void => { LIVE.textContent = msg; };
 
   /** Commit, then re-read the node from fresh state — never from the stale copy
    *  the sheet was opened with, which would render yesterday's answer. */

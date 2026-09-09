@@ -472,7 +472,260 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**Nothing outstanding, and three of the seven were not defects.** 3.23.6 closed the
+### The THIRD cold read — 2026-09-09, against production, and what it found
+
+**Outstanding. Seven claims did not hold and seven more things came back that
+no claim mentioned.** This was the designed protocol rather than the stricter
+isolation the second read used: a fresh session walking the PROMOTED app
+(3.23.7) with the release notes for 3.23.2 through 3.23.7 in hand and the source
+forbidden, its report diffed against what those notes claim, with the asymmetry
+stated up front — disagreement is strong evidence, agreement is weak, and a
+thing no claim mentions is worth as much as a disagreement. The entry above says
+to read it before designing the third; it was read, and the claims were supplied
+for exactly the reason it gives.
+
+**Every one below was then checked against the source rather than taken at face
+value**, which is the lesson of the first read's two withdrawals and the second's
+one. Nothing here is recorded on the report's word alone.
+
+**THREE OF THEM ARE REGRESSIONS FROM THE SESSION THAT SHIPPED THE CLAIMS**, and
+that is the finding about the process rather than the app: a release note is
+written from the diff, and a diff cannot show the surface the fix did not reach.
+
+- **`src/gate.ts` `whyCovered` asks the clock before the Menu.** A thing on the
+  Menu keeps the gate's own `review` cure, so it is counted under *with a day
+  they come back to you* while its own row says *on the Menu* — measured as
+  `6` over seven rows of which two say otherwise. This is the IDENTICAL
+  precedence defect 3.23.6 fixed in `heldStatus` and in `detail.ts`, in a third
+  place nobody looked. **What hid it is a comment**: "The reasons ARE
+  `isSilent`'s clauses, in its order, so this cannot disagree with the gate that
+  enforces them." Order is irrelevant to `isSilent`, which is a disjunction and
+  returns the same boolean whatever order its clauses run in; order is the whole
+  answer here, because this function picks which reason to NAME. A correct
+  sentence about one function, inherited by another where it is false.
+
+- **`src/ui/triage-intents.ts` `fileReceiptWords` still says `Filed under`.**
+  3.23.3 retired that word — "Nothing has ever shown you a button called Filed" —
+  on a thing's own page, and left it on the confirmation the reader sees one
+  second EARLIER, in the same flow, in the same release.
+
+- **`src/time.ts` `recordDayWords` and `src/ui/detail.ts` still hardcode
+  `'en-GB'`.** 3.23.4 claims dates follow the device, not a country, and fixed
+  two of the three sites. In an `en-US` browser the app writes `Sep 7, 2028` on
+  one surface and `8 Sept` on the Not Now ledger and the decline confirmation.
+  **The one that survived has a doc comment declaring the behavior** — "en-GB
+  day-month order, the house style of the record surfaces" — so the sweep read a
+  justification where the other two had none, and stopped.
+
+**TWO ARE OLDER, AND NO GATE IN THIS REPO CAN SEE EITHER.**
+
+- **The three date confirmations are announced and never shown.** 3.23.6
+  promises "Setting a date says the day back to you, not the digits". The words
+  are right, `clockDayWords` is right, and they are written to `#detail-live`,
+  which is `role="status"` and `class="visually-hidden"`. A screen reader hears
+  it; a sighted reader gets nothing, and the cold reader could not find the
+  confirmation at all. **Every accessibility gate PASSES a correctly-announced
+  live region** — that is what they are for — so the surface most likely to be
+  measured is the one where invisibility is indistinguishable from correctness.
+
+- **There is no spelling gate.** 3.23.5 changed about forty words by hand across
+  four surfaces and left nothing holding them, which is the shape this repo
+  refuses everywhere else. Four survivors found, and the first is the worst
+  possible one: `src/ui/changelog.ts` and `CHANGELOG.md` carry the 3.23.5 note
+  itself reading BACKWARDS — the sweep converted its own before-and-after
+  example and left a stray possessive, so the release announcing the change
+  states it inverted. Also `neighbours` twice and `honoured` once in older
+  in-app notes, and `prioritising` in the shipped `public/why.html` and its
+  `docs/planning-for-humans.md` source.
+
+**AND ONE STRUCTURAL, from a navigation that failed.**
+
+- **`public/sw.js` swallows an atomic precache failure.** `install` runs
+  `cache.addAll(SHELL)` with a `.catch` that deliberately does not block
+  install — but `addAll` is ALL-OR-NOTHING, so one asset failing leaves the
+  cache completely EMPTY rather than short by one, and the catch says so to
+  nobody. Every later navigation to `manual.html` or `paths.html` then loses the
+  two-second race, finds no cached body, and lands the reader on a browser
+  error page. The cold reader hit exactly this, behind an intercepting proxy;
+  **the proxy is the likely trigger and this is NOT a claim that it reproduces
+  without one.** The defect recorded is the silence, not the failure: an
+  offline-first app can end up holding nothing, and the §7f diagnostic reads
+  `caches.keys` and never asks whether the cache has anything IN it. That is
+  §7h's defect one layer down — an app that cannot notice it has gone stale, in
+  the version where it never arrived.
+
+**FOUR OF THE ABOVE ARE CLOSED IN 3.23.8** — the three regressions and the
+invisible confirmation. `whyCovered` asks the Menu before the clock and the
+comment that hid it is rewritten to say where it stops matching `isSilent` and
+why; `fileReceiptWords` says *Put under*, the words on the button; both
+remaining `'en-GB'` literals are gone and `recordDayWords`'s doc comment no
+longer declares the defect. `#detail-live` is visible, pinned above *Close*
+outside the only part of the sheet that scrolls, wearing `.detail-state` so no
+new colour pair enters the contrast gate.
+
+**And `say()` lost its mirror, which was never doing anything.** F-08's remedy
+was to write a failure into the fact line as well as the live region — but
+`render` rewrites the fact line from `bits` on every paint and `run` paints
+immediately after a write, so a failure mirrored there survived microseconds.
+Only the validation messages that return BEFORE `run` ever stayed on screen,
+which is why it looked fixed for eight releases. One visible region replaces it,
+and it covers the half nobody had noticed was missing: the SUCCESS path never
+wrote anywhere a sighted reader could see at all.
+
+**Two assertions had to change, and both could only pass while a defect
+existed.** `test/requests.test.ts` matched `/declined \d+ \w+/` — day-then-month,
+which is the en-GB order the code was hardcoded to, so the test was pinning the
+country. It asks for a month in words in either order now, and refuses a numeric
+mask, which is what law 5 actually wants. And `test/coverage-proof.test.ts`'s
+fixture routed a node to `someday` without adding the Menu row, so the menu
+clause was never exercised — `clarify.routed`'s own menu branch is unreachable
+defence-in-depth and says so in its comment. The new test asserts the node is on
+the Menu AND still carries a clock before asserting which reason is printed, so
+it cannot quietly stop measuring anything. Planted: with the old precedence put
+back it goes red, and green again when restored.
+
+**SEVEN MORE THAT NO CLAIM MENTIONED**, which the protocol weighs as heavily as
+a disagreement:
+
+- **On an EMPTY store neither who-control exists**, while the walkthrough still
+  promises "who is in front of you". Both are hidden until somebody is named,
+  which is right and is written down — a picker with nothing in it teaches the
+  reader the feature is broken. The copy is what is wrong.
+- **`#situation-who-hint` says "Names come from your things."** — a source, not
+  an action, naming no control. 3.23.7's note promises the sentence a reader
+  needs: put a name ON something and the person appears here.
+- **`#detail-every` is pre-filled `value="7"`.** Typing `30` into it appends,
+  giving *repeats every 730 days*, silently and plausibly.
+- **The walkthrough's last screen exits through a button reading *Skip*.** It is
+  the only way out, and the reader has just finished the thing.
+- **`public/paths.html` is stamped `Quietkeep · 3.6.1`** against an app at
+  3.23.7, and still says "Nothing is filed away" — the word 3.23.3 retired. The
+  stamp is provenance and defensible; the retired word is not, and
+  `help-check.mjs` covers that page for routes, kinds and the tree label but
+  cannot see a route word inside a sentence.
+- **`#triage-place-new` is a borderless text field that reads as a heading**,
+  and *Make it* with nothing typed is a silent no-op.
+- **The People screen is where the reader gave up.** The front page says one
+  thing is with someone else; the People screen says *Nobody named yet*; tapping
+  through opens the item page, which has no name field. Naming somebody requires
+  *More about this* and scrolling past nine unrelated sections. Every screen is
+  individually truthful and the route between them is not walkable.
+
+**SIX OF THOSE SEVEN ARE CLOSED IN 3.23.9, AND ONE IS WITHDRAWN.** The
+situation sheet's intro names the condition on its choosers, the roster says the
+action rather than the source, `#detail-every` carries a placeholder instead of
+a value, the walkthrough's last screen leaves through *Leave that for later*,
+the flowcharts' eyebrow says what the number is provenance FOR and the retired
+word is gone from them, and `Make it` with an empty box says why nothing
+happened.
+
+**Withdrawn on examination: "behind the ⓘ" pointing at words that are not
+there.** They are there. `The Not Now ledger` and `Things you let go` are both
+`about-section` headings inside the ⓘ panel, at `index.html:2492` and `:2473`,
+and each also names its own opening button. The report was reading from the
+item sheet, which says *It sits in the Not Now ledger* without saying where the
+ledger is — a milder thing, and the app does say it, one screen over. Third
+withdrawal across three cold reads, and the reason to keep counting them is that
+a protocol whose findings are all correct is a protocol nobody is checking.
+
+**And the place picker's field was not reproduced either.** It has a 1px
+`--rail` border and a placeholder reading *Name a new project, area or goal*.
+What was real in that item was the second half — the silent no-op — and only
+that was changed.
+
+**ONE NEW ONE, FOUND WHILE FIXING THESE, AND IT IS THE SAME DEFECT AGAIN.**
+`#triage-live` is `role="status"` and `visually-hidden`, exactly as
+`#detail-live` was: the sorting screens confirm what you did to a screen reader
+and to nobody else. It is not fixed in 3.23.9 and the reason is worth writing
+down rather than deferring silently — un-hiding it means registering it in the
+contrast REGISTRY for six sorting surfaces in the same commit (hub LESSONS §28),
+and on every one of those states it is EMPTY, so `:empty { display: none }`
+would give the contrast pass zero nodes for a registered selector. That is a
+real design question about the registry, not a line of CSS, and guessing at it
+inside a release about something else is how the a11y stamp gets spent twice.
+Named in 3.23.9's own *still to sort*.
+
+**AND MAKING THE RECEIPT VISIBLE COST FOUR FOCUS RINGS, WHICH THE WALK CAUGHT
+AND 3.23.10 FIXED.** Given its own line above *Close*, `#detail-live` took about
+32px out of `.sheet-body` — the only thing in that dialog that scrolls — and
+`#detail-note`'s outline came back **CLIPPED 2px vertically** on two detail
+states, in both themes. A field's ring is 2px at 3px offset (3.20.4), so it needs
+5px of room; the browser calls an element *fully visible*, and therefore declines
+to scroll it, **without counting its outline**, so anything between 0 and 5px of
+room clips.
+
+**`scroll-padding-block` is the wrong lever and it was tried first.** Raising it
+from 0.5rem to 0.75rem changed nothing, for the reason above: scroll padding
+applies WHEN the browser scrolls, and it had already decided not to. Put back to
+0.5rem with that written beside it, because the next person to see a clipped ring
+will reach for that number.
+
+The fix was to stop shortening the box: the receipt shares the actions row the
+way out already occupies, so the scroller's height is what it was before the
+receipt existed. **A newly visible element is a layout change** — worth saying
+plainly, because it did not read like one while it was being made. Hub LESSONS
+§253 carries both halves.
+
+**AND THE SPINE ITSELF CARRIED THE SECOND COPY IT EXISTS TO PREVENT.** CI went
+red on 3.23.10 at a hub gate the local Spine had never run: `example-check`,
+which refused `placeholder="7"` on the repeat field as an undeclared example —
+correctly; a placeholder is published copy and this one is now declared as
+`product-copy`, since it is the app's own default cadence rather than anybody's
+scenario.
+
+**The local Spine could not have caught it, because its hub-gate list was typed
+into `tools/spine.mjs` by hand.** The hub gates arrive as one `uses:` call with
+no steps to read, so the tool synthesised them back — from a literal array of
+five plus three conditionals. `example-check` and `svg-check` were added to
+`hub-gates.yml`, ran in CI from the day the pin moved, and were never added
+here. The Spine's ONE promise is that everything CI runs is run here, and it was
+broken by its own source, in the exact shape it was written to stop.
+
+**It reads the hub's own workflow now**, off the sibling checkout, evaluating
+each step's `if: inputs.x` against the caller's `with:` over the workflow's
+declared defaults. Ten gates, matching CI's ten. It reads the LOCAL hub, which
+can be ahead of the pin — a superset rather than a gap, and `hub-pin-check.mjs`
+is what holds the pin honest.
+
+**The bug inside the fix is worth more than the fix.** The reader is Python
+inside a JS template literal, so every regex is escape-processed on the way in.
+Written as `[\w.-]` it reaches Python as `[w.-]` — a character class matching a
+literal *w*, a dot and a dash. Still a valid regex. Still compiles. Matches
+nothing, silently, and the tool reported 45 steps instead of 55 with no error at
+all. **A regex that survives one round of escaping as a DIFFERENT valid regex is
+the worst kind of typo**: there is no crash to notice, and the count it produces
+looks like an answer. Caught only by counting the steps before and after.
+
+**A HEALTHY CI RUN WAS CANCELLED ON A MISREAD OF THE CLOCK (2026-09-09).** The
+Spine run for 3.23.10 was thirteen minutes old — its normal length — and was
+cancelled as wedged. Nothing was lost but the minutes and a re-dispatch, and the
+misreading is worth more than the mistake:
+
+**A sleep that is moved to the background is not a wait.** Each long `sleep` was
+backgrounded by the harness almost immediately and returned in seconds, and each
+one was followed straight away by another poll of the run. Twelve polls felt like
+an hour and were about four minutes. **The number of times something was checked
+is not a duration** — which is the same error, exactly, as the session that
+turned nineteen releases into four months of calendar time (hub LESSONS 75).
+`date -u` costs nothing and settles it; the poll count never can.
+
+**And `updated_at` does not advance while a run is in progress.** It was read as
+proof the run had stopped moving. It is not: the field sat frozen at the run's
+first second on both a healthy run and a cancelled one, from two different
+endpoints. A field that does not change is not evidence of a thing that is not
+changing — the JOBS endpoint is where progress actually shows.
+
+The re-dispatch is the right fallback (hub LESSONS 161) and it ran on the same
+head SHA, so the verification stands; it just did not need doing.
+
+**What the report also carried, and what was done with it.** Seventeen
+unprompted observations arrived; the seven above are those that survived being
+checked against the source. The rest were restatements of the seven claim
+failures from a second surface, or descriptions of behavior that is correct and
+written down. The count is recorded honestly rather than carried forward: this
+list is what reproduces.
+
+**THE SECOND READ'S SEVEN ARE ALL CLOSED, and three of them were not defects.** 3.23.6 closed the
 last four: a thing on the Menu no longer says it comes back (the clock is the
 gate's own capture cure, which `demandClocksOf` deliberately never clears — so
 the data was right and two readouts described it wrongly, both by falling
@@ -1154,6 +1407,14 @@ count here is maintained by hand and nothing would catch it going stale.
   `tools/deployed-check.mjs` treats an unreachable host as a SKIP with the reason
   printed. A gate that goes red because of how a container was configured teaches
   people to ignore red.
+  **AND A SINGLE READ RIGHT AFTER A PUSH IS NOT AN ANSWER (2026-09-09).** Three
+  reads of staging inside two minutes, immediately after the 3.23.10 deploy
+  reported success, returned 3.23.9, then 3.23.10, then 3.23.10 — the edge was
+  mid-rollout and different requests reached different versions. That is
+  ordinary for a CDN and it is worth writing down because of what the first read
+  looks like: an authoritative FAIL saying the deploy did not land, at exactly
+  the moment somebody would believe it. Read it twice, and if the two disagree
+  the answer is *still rolling out*, never *it failed*.
   **TWO TRAPS, both of which bit before the tool worked.** Node's built-in
   `fetch` does not read `HTTPS_PROXY` unless `NODE_USE_ENV_PROXY=1` is set
   BEFORE startup — setting it in-process is too late — and without it every
@@ -1246,7 +1507,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.1**, promoted 2026-09-03 at `3ce634e` — tree
+- **PRODUCTION CARRIES 3.23.7**, promoted 2026-09-09 at `958ad30` — six
+  releases at once, 3.23.2 through 3.23.7, all of them the 2026-09-08 cold view
+  and what it turned up. Tree asserted identical to the walked staging head
+  `7269e3a` — the same tree object out of `merge-tree`, not a diff that looked
+  empty — with Spine AND Deploy read green on that SHA by head SHA rather than
+  by the newest row, before the merge existed. Both editions read back by
+  content afterwards: production and the sync edition each serving 3.23.7, and
+  each serving `manual.html`, `paths.html` and `why.html` as themselves rather
+  than falling back to the app shell.
+
+  **Worth knowing for the next one: `main` and `staging` have DIVERGED and a
+  promote here is a MERGE, not a fast-forward.** Ninety commits sit on `main`
+  that `staging` does not have, which reads alarming and is only the merge
+  topology of fifteen promotes — `git diff --name-only staging...main` is empty,
+  so production carries no content of its own. Assuming a fast-forward and
+  reaching for a force push is the way to lose that history.
+- **Superseded: 3.23.1**, promoted 2026-09-03 at `3ce634e` — tree
   asserted identical to the walked staging head `ba01903`, CI green on that SHA
   first, both editions read back by content (workers naming 3.23.1, the proof's
   line and sheet in the root document, its words in both bundles).
@@ -1274,9 +1551,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.7**, which production does
-  not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
-  tree plus this release. 3.23.2 is the first fix from the first cold view —
+- **https://staging.quietkeep.pages.dev** — **3.23.10**, which production does
+  not carry: promoted last on 2026-09-09 at 3.23.7, so the two hosts are one
+  tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
+  three of its four are regressions from the session that shipped 3.23.2
+  through 3.23.7: the Menu-before-clock precedence in the one place 3.23.6 did
+  not reach, the route word 3.23.3 left standing on the receipt one second
+  before the page it fixed, and the last hardcoded `en-GB`, which survived
+  3.23.4's sweep because it had a doc comment declaring it. The fourth is
+  older and no gate can see it — the date confirmation 3.23.6 promises was
+  written into a `visually-hidden` live region, so it was announced correctly
+  and shown to nobody, which every accessibility gate passes by design.
+  3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition
   on it, and a date kept before the thing is sorted cannot appear there,
   because the door reads the calendar's own selection and that drops
@@ -2980,22 +3266,29 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.1** — promoted at
-  `3ce634e` on 2026-09-03, the merged tree asserted byte-identical to `ba01903`,
-  the staging head that was walked — the same tree OBJECT, not a diff that read
-  as empty, and CI's Spine and Deploy green on that SHA before the merge.
-  **Verified live by content on both editions**: workers naming 3.23.1, the
-  root document carrying the proof's line and its sheet, both bundles carrying
-  its words. Two releases: the proof of judgment (ADR-0125), law 4's analogue
-  of the coverage gauge — under the line that says nothing has gone quiet, a
-  second saying everything is accounted for, opening onto where each thing is
-  in `heldGroups`' own words, total over `heldWork`, able to say it does not
-  add up, and naming the review exceptions that reach no other surface — then
-  the walk's own finding, that the new line steps aside on the reduced screen
-  because its fact counts what is in front of you.
-  **The merge was made twice.** The first attempt passed its message on stdin,
-  which `git merge` does not read, so nothing merged — and the tree-identity
-  assert caught the non-merge rather than a person noticing. Redone from a file.
+- **https://quietkeep.pages.dev** — production, **3.23.7** — promoted at
+  `958ad30` on 2026-09-09, the merged tree asserted byte-identical to `7269e3a`,
+  the staging head that was walked — the same tree OBJECT out of `merge-tree`,
+  not a diff that read as empty — and CI's Spine and Deploy both green on that
+  SHA, found by head SHA rather than by the newest row, before the merge
+  existed. **Verified live by content on both editions**: production and the
+  sync edition each serving 3.23.7, and each serving `manual.html`,
+  `paths.html` and `why.html` as themselves rather than falling back to the app
+  shell — which is the 1.7.2 defect this read exists to catch.
+  **Six releases**, all of them the 2026-09-08 cold view: a date kept before
+  sorting no longer points at a screen it cannot reach; the ⓘ notes print
+  control names rather than asterisks and a route stops using an event word; a
+  thing's page says the day the way every other screen says it and two
+  formatters stop being pinned to a locale nobody here uses; the app spells
+  American throughout; something on the Menu stops saying it comes back and
+  Someday stops promising an absence the store does not have; and the situation
+  sheet finally asks two questions and says which is which.
+  **THE MERGE WAS MADE TWICE, AGAIN, THE SAME WAY.** The entry below records
+  the previous promote losing its first attempt to `git merge -F -`, which does
+  not read stdin — and this promote did it again, from a session that had that
+  sentence in its own file. Caught the same way both times: the assert that the
+  commit moved, not a person noticing. A note in a log is not a guard, which is
+  the argument every hook in this repo already makes.
 - Superseded: production was **3.22.2** — promoted at
   `dbf2171` on 2026-09-01, the merged tree asserted byte-identical to `d6eaee5`,
   the staging head that was walked — the same tree OBJECT, not a diff that read

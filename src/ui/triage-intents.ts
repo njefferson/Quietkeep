@@ -405,10 +405,17 @@ export function placeReturnDays(
  * said yet. Factual both ways; neither branch may ever grow a reproach
  * ("still", "you haven't") — the no-date branch is information for the one
  * person who can date the place, not a nag (V2 decision 3 owns its fate).
+ *
+ * IN THE READER'S WORDS, AND FOR NINE RELEASES IT WAS NOT (3.23.8). 3.23.3
+ * retired *filed* on a thing's own page — "Nothing has ever shown you a button
+ * called Filed" — and left it standing HERE, on the confirmation the reader
+ * meets one second earlier, in the same flow, in the same release. A diff
+ * cannot show the surface a fix did not reach. The control says *Put it under
+ * this*, so the receipt says *Put under*.
  */
 export function fileReceiptWords(name: string, returnDays: number | null): string {
-  if (returnDays === null) return `Filed under ${name} — no return date yet.`;
-  if (returnDays <= 0) return `Filed under ${name} — it comes round today.`;
-  if (returnDays === 1) return `Filed under ${name} — it comes round tomorrow.`;
-  return `Filed under ${name} — it comes round in ${returnDays} days.`;
+  if (returnDays === null) return `Put under ${name} — no return date yet.`;
+  if (returnDays <= 0) return `Put under ${name} — it comes round today.`;
+  if (returnDays === 1) return `Put under ${name} — it comes round tomorrow.`;
+  return `Put under ${name} — it comes round in ${returnDays} days.`;
 }

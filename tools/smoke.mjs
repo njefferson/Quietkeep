@@ -2725,8 +2725,19 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   is(intervalsAfterBad, 1, 'a nonsense interval is refused rather than written');
-  is((await tpage.locator('#detail-state').textContent())?.includes('whole days'), true,
+  // SHOWN, AND THE ELEMENT IS ASSERTED VISIBLE (3.23.8). This read
+  // `#detail-state` — the fact line — because `say()` used to mirror the message
+  // there as well as into the live region. That mirror never worked: `render`
+  // rewrites the fact line from `bits` on every paint and `run` paints straight
+  // after a write, so what this check caught was a value that survived
+  // microseconds. It passed because a validation refusal returns BEFORE `run`.
+  // The receipt is `#detail-live` now, and it is visible — so this can assert
+  // the half the old check could not: that "shown" means on screen. A
+  // visually-hidden element still answers textContent.
+  is((await tpage.locator('#detail-live').textContent())?.includes('whole days'), true,
     'and the reason is shown, not just announced');
+  is(await tpage.locator('#detail-live').isVisible(), true,
+    'and shown means on screen — a hidden element answers textContent too');
 
   await tpage.click('#detail-close');
   is(await tpage.locator('#detail').isVisible(), false, 'the sheet closes');

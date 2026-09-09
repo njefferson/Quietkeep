@@ -265,9 +265,24 @@ export const trashedNodes = (state: State): NodeState[] =>
  * which is the only kind that helps: the condition being addressed is precisely
  * not being able to trust an assurance from the inside.
  *
- * The reasons ARE `isSilent`'s clauses, in its order, so this cannot disagree
- * with the gate that enforces them. If a clause is added there and not here, the
- * proof under-reports and `test/coverage-proof.test.ts` fails.
+ * The reasons ARE `isSilent`'s clauses. If a clause is added there and not here,
+ * the proof under-reports and `test/coverage-proof.test.ts` fails.
+ *
+ * BUT NOT IN ITS ORDER, AND THIS SAID THEY WERE (3.23.8). `isSilent` is a
+ * disjunction: it returns the same boolean whatever order its clauses run in,
+ * so nothing there depends on the order and the sentence was true of it. Here
+ * the order IS the answer, because this picks which reason to NAME — and a
+ * correct sentence about one function was inherited by another where it is
+ * false, which is what kept anyone from looking.
+ *
+ * MENU BEFORE CLOCK, for the reason 3.23.6 gave twice already. Routing to
+ * Someday clears every DEMAND clock and deliberately leaves the gate's own
+ * `review` cure, so a thing on the Menu still has a clock in `node.clocks` and
+ * asking about it first named that as the reason. The reader then read
+ * "6 with a day they come back to you" over seven rows of which two said *on
+ * the Menu* — the identical precedence defect `heldStatus` and `detail.ts` were
+ * fixed for, in the third place nobody looked. The reason a reader would give
+ * is the reason to print.
  */
 export type CoverReason = 'decided' | 'clock' | 'menu' | 'demand-free' | 'parent' | 'after';
 
@@ -281,8 +296,8 @@ export const whyCovered = (
     const target = survivorOf(state, node);
     return target ? whyCovered(target, state, visited) : null;
   }
-  if (Object.keys(node.clocks).length > 0) return 'clock';
   if (node.onMenu !== null) return 'menu';
+  if (Object.keys(node.clocks).length > 0) return 'clock';
   if (isDemandFree(node.kind)) return 'demand-free';
   if (node.parent) {
     const seen = new Set<NodeId>();

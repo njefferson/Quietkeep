@@ -38,7 +38,11 @@ const write = (prior: State, offered: AppEvent[]): State =>
  *  has nothing to say and the report must say THAT rather than nothing. */
 const wellDevice = (over: Partial<DeviceReading> = {}): DeviceReading => ({
   triplet: '1.18.1', edition: 'default', cache: 'quietkeep-1.18.1',
-  caches: ['quietkeep-1.18.1'], controlled: true, waiting: false,
+  caches: ['quietkeep-1.18.1'],
+  // A COMPLETE PRECACHE, because this fixture is the healthy device (3.23.10).
+  // The partial case is a finding and gets its own test below.
+  precache: { want: 12, missed: [] },
+  controlled: true, waiting: false,
   origin: 'https://quietkeep.pages.dev',
   device: 'd0', zone: TZ, installed: true,
   storageSupported: true, persisted: true, quotaMb: 1024, usageMb: 2.4,
@@ -240,6 +244,31 @@ test('diag-findings: each absence carries its reason, never a bare "missing"', (
   assert.match(text, /not checked — the journal is locked or unset/);
   assert.equal(findings(empty, [], wellDevice({ unreadableEntries: null })).some(x => /would not open/.test(x)), false,
     'an unchecked journal raises no finding');
+});
+
+test('diag-findings: a part-finished precache is a finding, and a complete one is not', () => {
+  const empty = emptyState();
+  // THE STATE `caches.keys()` CANNOT SEE (3.23.10). A cache exists, is named
+  // for the running build, and holds almost nothing — which is what `addAll`
+  // left behind when one asset failed, since it rejects as a unit.
+  const partial = findings(empty, [], wellDevice({
+    precache: { want: 12, missed: ['./manual.html', './paths.html'] },
+  }));
+  assert.ok(partial.some(x => /did not download/.test(x)),
+    'a part-finished precache says what did not arrive');
+  assert.ok(partial.some(x => /manual\.html/.test(x)),
+    'and names the files, because "some files" is not reportable');
+  assert.ok(partial.some(x => /Offline, those pages will not open/.test(x)),
+    'and says the symptom, which is the half a reader would otherwise report as a bug');
+
+  assert.equal(findings(empty, [], wellDevice()).some(x => /did not download/.test(x)), false,
+    'a complete precache raises nothing');
+  // An older worker keeps no account. That is not zero missing files, and must
+  // not read as either an alarm or an all-clear.
+  assert.equal(findings(empty, [], wellDevice({ precache: null })).some(x => /did not download/.test(x)), false,
+    'no account is not a finding');
+  assert.match(diagnosticReport(empty, [], wellDevice({ precache: null }), NOW),
+    /keeps no account/);
 });
 
 test('diag-findings: no copy, and work since a copy, are different sentences', () => {
