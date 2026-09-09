@@ -99,7 +99,7 @@ about; the value stays empty, because the weight is not the task's title, it is
 what is heavy about it. Pre-filling would put words in somebody's mouth on the
 one surface built for their own.
 
-**REFUSE any detection, permanently.** The catalogue is explicit that an
+**REFUSE any detection, permanently.** The catalog is explicit that an
 inferred wall is the ledger this app exists not to keep. Nothing here reads how
 long an item has been held or how often it has been skipped — "Not this" records
 nothing and always will. Weight exists because somebody said so.

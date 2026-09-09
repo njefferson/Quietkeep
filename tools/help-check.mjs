@@ -71,7 +71,7 @@ const kindWords = stripJsComments(read('src', 'kind-words.ts'));
 const kinds = [...kindWords.matchAll(/^\s*(?:project|outcome|area|goal):\s*'([^']+)'/gm)].map((m) => m[1]);
 
 const shell = stripHtmlComments(read('public', 'index.html'));
-// RAW, not normalised. `norm` lowercases for comparison; storing its output
+// RAW, not normalized. `norm` lowercases for comparison; storing its output
 // would make every message this gate prints name the controls in words nobody
 // sees. A gate is read when it fails, which is the worst moment to be wrong
 // about what a thing is called.
@@ -139,7 +139,7 @@ const COVERS = [
 const RETIRED = [
   ['How it hangs together', 'renamed in 3.6.1 to the current tree label'],
   // 3.23.7. The situation sheet asked "who" twice — a single-valued filter
-  // labelled `Who is here` sitting 25 lines above a multi-select labelled
+  // labeled `Who is here` sitting 25 lines above a multi-select labeled
   // `Who is in it?`, teaching the reader the answer is one person before the
   // second one appeared. Both controls are right and ADR-0118 says so; only
   // the labels never carried the distinction ADR-0119 states in words.

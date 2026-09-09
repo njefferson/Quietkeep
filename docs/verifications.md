@@ -267,10 +267,10 @@ being run last, or not at all.
 knockout in classes 9 and 42 if wanted. Blocked from a session — proven in V-05, not
 assumed. Until those run this row stays **PARTIAL**, not VERIFIED.
 
-**Known and accepted:** nothing is named Wynts, but the phonetic neighbourhood is busy —
+**Known and accepted:** nothing is named Wynts, but the phonetic neighborhood is busy —
 **WYNT** (community-hub app, Google Play) is one letter away, plus Wynta, Wynter, Wynk,
 Wynd Technologies. Low trademark risk for a free noncommercial planner; the real cost is
-a half-remembered name landing on a neighbour. Recorded in ADR-0022.
+a half-remembered name landing on a neighbor. Recorded in ADR-0022.
 
 ### The method, which is the part that transfers
 
@@ -568,7 +568,7 @@ read once at the UI edge (`deviceZone()`) and threaded through `openSession` →
 `StampContext` → the gate (`gateOptionsFor(zone)`) and the route intents. The zone
 is **not** stored in the log: a clock's `at` is an absolute instant, so it is
 zone-independent once computed, and "today" resolving against the *reader's*
-zone is exactly what a traveller wants — without rewriting a single stored event.
+zone is exactly what a traveler wants — without rewriting a single stored event.
 
 The display path carried the same class of bug and was fixed with it: `friendly()`
 divided elapsed milliseconds by 86_400_000, which says "today" at 23:00 about a
@@ -1088,7 +1088,7 @@ bare key, with the key in the **fragment**:
 The target device scans it with the **built-in Camera app**, which every iOS user
 already knows and which needs no permission from us, and iOS opens the link. A
 fragment is never transmitted to a server by any browser, so the key stays on the
-device even though it travelled inside a URL. Then only the ENCODER ships, there is
+device even though it traveled inside a URL. Then only the ENCODER ships, there is
 no camera code, no `getUserMedia`, and no decoder.
 
 **What only the owner can settle, and it is the real risk:** whether iOS opens that link

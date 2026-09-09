@@ -18,7 +18,7 @@
 Under its natural reading — WINTS — *Wynts* is a near-homophone of **wince**.
 
 That is disqualifying against this app's own voice rules, which are not decorative:
-adult, calm, **shame-free**, never a rebuke, no diagnosis-flavoured copy. A planner
+adult, calm, **shame-free**, never a rebuke, no diagnosis-flavored copy. A planner
 for people who have been made to feel bad by every previous tool cannot be named
 after a flinch. It is the same class of objection that killed *Diopter* — a name
 that implies something is wrong with the user — arriving through sound instead of

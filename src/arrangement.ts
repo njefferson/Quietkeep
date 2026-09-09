@@ -35,7 +35,7 @@
 //
 // The arrangements that fail hardest are the ones waiting on somebody else who
 // will not tell you they have stopped — an approval nobody chased, a lapsed
-// authorisation, a card that expired at a company that does not write. Marking
+// authorization, a card that expired at a company that does not write. Marking
 // that is not a category for its own sake: it changes what confirming MEANS,
 // because you cannot confirm it from here. The words say so rather than
 // pretending a glance is enough.
@@ -67,7 +67,7 @@ export const DEPENDS_FIELD = 'arrangement-depends';
  * cannot be advertised until October, a promotion filled temporarily until a
  * date, or a position out to advert right now. Those have a STATE, and it is
  * one the app cannot know — so it is a phrase somebody writes and never an
- * enumeration the app defines, which would be the app modelling their
+ * enumeration the app defines, which would be the app modeling their
  * organization (law 7).
  */
 export const STANDS_FIELD = 'arrangement-stands';
@@ -215,7 +215,7 @@ export function arrangementCards(
     cards.push({
       node: n, pressure, days, depends,
       words: arrangementWords(days, depends),
-      // CARRIED, NOT SUMMARISED. The card states what the reader wrote and adds
+      // CARRIED, NOT Summarized. The card states what the reader wrote and adds
       // nothing to it: no length limit applied here, no truncation, and above
       // all no reading of the words. The app never decides that a condition has
       // been met — it has no way to know and must not imply it has.

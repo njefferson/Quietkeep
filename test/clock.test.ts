@@ -171,7 +171,7 @@ test('THE COUNT IS A BADGE, so it obeys what a badge may never be about', () => 
     ev('node.created', 'w', { nodeKind: 'bother', title: 'a worry' }),
     ev('clock.set', 'w', { clockKind: 'park', at: NOW, source: 't' }),
     ev('node.created', 'd', { nodeKind: 'action', title: 'something asked of you' }),
-    ev('request.declined', 'd', { person: 'someone', what: 'a favour', reason: '' }),
+    ev('request.declined', 'd', { person: 'someone', what: 'a favor', reason: '' }),
     ev('clock.set', 'd', { clockKind: 'park', at: NOW, source: 't' }),
   ], fold([])));
   assert.equal(datedTodayCount(s, NOW, atMidnight(TZ)), 1, 'the worry and the decline are not today');

@@ -170,7 +170,7 @@ export const releasedNodes = (state: State): NodeState[] =>
  * not have it, so the two drifted the moment a kind was excluded from the todo
  * list: 1.13.0 excluded journal entries and 1.15.0 excluded pebbles, and both
  * times the gauge kept counting them. The visible half was worse than a number
- * that did not match — opening the gauge ITEMISED every private journal entry,
+ * that did not match — opening the gauge Itemized every private journal entry,
  * which has no title by design, as a row reading "(untitled) — held". ADR-0061
  * excluded them from the todo list precisely so that row would not exist; the
  * coverage list was missed, and it is the more prominent surface because the

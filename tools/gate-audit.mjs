@@ -249,7 +249,7 @@ const GATES = [
     // file and is the spelling the HTML spec gives it.
     plant: () => edit('public/index.html', (s) =>
       s.replace('<h2 id="sheet-group-color-title" class="section">Colors</h2>',
-        '<h2 id="sheet-group-color-title" class="section">Colours</h2>')),
+        '<h2 id="sheet-group-color-title" class="section">Colors</h2>')),
   },
   {
     name: 'tour:check',

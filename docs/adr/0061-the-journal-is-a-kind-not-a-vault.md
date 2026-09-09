@@ -55,7 +55,7 @@ consumer is not.
 - **Encryption ships in the same release as the journal, or the journal does not
   ship.** Retrofitted encryption leaves plaintext in an append-only log forever;
   the only moment encryption can be complete is the first moment. This release
-  honours it.
+  honors it.
 - **A forgotten passphrase means the journal is gone**, said plainly before the
   passphrase is set. The text lives in `PASSPHRASE_WARNING` in `src/journal.ts`,
   beside the derivation it describes, so the sentence and the mechanism cannot
@@ -101,7 +101,7 @@ against an attacker who must already hold the device's storage.
 
 The **iteration count is stored with the salt**, not hard-coded, so a later
 release can raise it and still open what an earlier one sealed. A count *below*
-the floor is refused rather than honoured: a record carrying `iterations: 1`
+the floor is refused rather than honored: a record carrying `iterations: 1`
 would make the key cheap while everything still appeared to work.
 
 The salt is in the log in the clear, on purpose — it must reach a second device,

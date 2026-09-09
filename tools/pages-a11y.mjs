@@ -22,7 +22,7 @@
 // a convenience: `plan.html` is `noindex`, linked from nowhere, and its own
 // header says it is "a working page for one reader, not a surface ... if it ever
 // gains a route from the app it becomes a surface and joins that list in the same
-// commit". Deriving from the links honours that decision automatically, where a
+// commit". Deriving from the links honors that decision automatically, where a
 // hand-written exception would have to be remembered.
 //
 //   node tools/pages-a11y.mjs           walks the pages whose stamp is stale
@@ -145,7 +145,7 @@ for (const { file } of due) {
     // Every link a finger takes is at least 24px (WCAG 2.5.8) — MINUS the
     // exception the success criterion itself states.
     //
-    // THE FIRST VERSION DID NOT HONOUR IT and flagged four links across two
+    // THE FIRST VERSION DID NOT Honor IT and flagged four links across two
     // pages, every one of them a citation inside a sentence: "…rather than by a
     // sweep (ADR-0011)." Making those 24px tall means padding a word in the
     // middle of a paragraph, which damages the reading to satisfy a rule that

@@ -164,7 +164,7 @@ export interface NextUpItem {
    * This is the whole point of the field. An implementation intention works by
    * the cue being present at the moment of performance; a plan stored and never
    * shown again is a noun in a database. So it rides with the item to every
-   * surface that offers it, in the words it was written in — never summarised,
+   * surface that offers it, in the words it was written in — never summarized,
    * never rephrased, never checked.
    */
   situation: string | null;
@@ -318,7 +318,7 @@ const arrivedClock = (n: NodeState, nowIso: string, day: DayShape): boolean =>
  * WHAT ELSE IS IN THERE — the thesis's open half, and the last one it had.
  *
  * `docs/nd-collisions.md` entry 3 is this app's thesis and the best-evidenced
- * entry in the catalogue: cue-dependent prospective memory failure. A thing that
+ * entry in the catalog: cue-dependent prospective memory failure. A thing that
  * leaves the visual field leaves existence; **visible is the only kind of
  * remembered; filed means gone.** Its routing proposal has read *V2-candidate,
  * and it is already named as owed* since it was written: when a place's review

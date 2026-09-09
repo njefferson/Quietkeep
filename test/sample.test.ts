@@ -207,7 +207,7 @@ test('what it says before loading is honest about it being indistinguishable aft
 
 test('nothing in the content is trigger-list material or a personality', () => {
   // The published trigger lists are copyrighted, and this app's voice is civilian
-  // and adult — never childlike, never diagnosis-flavoured.
+  // and adult — never childlike, never diagnosis-flavored.
   const { events } = built();
   const text = JSON.stringify(events).toLowerCase();
   for (const bad of [

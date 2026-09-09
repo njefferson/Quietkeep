@@ -1,7 +1,7 @@
 // Membership: which kinds belong where, written down (1.17.2, ADR-0070).
 //
 // Three of the last four shipped defects were the same defect: a kind on a
-// surface it did not belong on. Journal entries itemised in the coverage list
+// surface it did not belong on. Journal entries itemized in the coverage list
 // (1.15.1). Every person ever named sitting in the todo list (1.17.0). The
 // detail sheet offering date controls on demand-free kinds that the gate then
 // refused (1.17.2 — and the comment beside the code named the rule while the
@@ -80,7 +80,7 @@ const SURFACES: Record<string, SurfaceRule> = {
     rows: st => heldGroups(st, NOW, TZ).flatMap(g => g.items),
   },
   'coverage list / gauge total (heldWork)': {
-    why: 'The gauge\'s number itemised. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again.',
+    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again.',
     allowed: [...WORK, 'aspiration'],
     expect: ['action', 'project', 'upkeep', 'aspiration'],
     rows: st => heldWork(st),

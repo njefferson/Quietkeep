@@ -4,7 +4,7 @@
 // is what you actually work from. Between 1.13.0 and 1.15.1 those were THREE
 // different sets, because the exclusions were hand-written inside `heldGroups`
 // and the gauge did not have them — so a journal entry, which has no title by
-// design, was itemised in the coverage list as "(untitled) — held".
+// design, was itemized in the coverage list as "(untitled) — held".
 //
 // These tests pin the equality, and they pin the thing that must NOT follow
 // from it: `silent` still runs over every node, because a proof that skips a
@@ -47,24 +47,24 @@ function mixed(): State {
 test('held-means: the gauge, the list it itemises, and the todo list are ONE set', () => {
   const s = mixed();
   const gauge = coverageGauge(s);
-  const itemised = heldWork(s);                                   // the coverage list's rows
+  const itemized = heldWork(s);                                   // the coverage list's rows
   const grouped = heldGroups(s, NOW, TZ).flatMap(g => g.items);   // the todo list's rows
 
-  assert.equal(gauge.total, itemised.length,
+  assert.equal(gauge.total, itemized.length,
     'the number and the list it invites you to open are one claim');
   assert.equal(gauge.total, grouped.length,
     'and the list you work from is the same claim again');
   assert.deepEqual(
     [...grouped.map(x => x.id)].sort(),
-    [...itemised.map(x => x.id)].sort(),
+    [...itemized.map(x => x.id)].sort(),
     'the same nodes, not merely the same count',
   );
-  assert.deepEqual(itemised.map(x => x.id), ['W'], 'and it is the work');
+  assert.deepEqual(itemized.map(x => x.id), ['W'], 'and it is the work');
 });
 
 test('held-means: a journal entry appears in none of the three', () => {
   const s = mixed();
-  assert.ok(!heldWork(s).some(x => x.id === 'J'), 'not itemised by the coverage list');
+  assert.ok(!heldWork(s).some(x => x.id === 'J'), 'not itemized by the coverage list');
   assert.ok(!heldGroups(s, NOW, TZ).flatMap(g => g.items).some(x => x.id === 'J'),
     'and not a row in the todo list');
   // The defect this release exists for: it has no title, so it rendered as

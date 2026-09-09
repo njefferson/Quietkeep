@@ -16,7 +16,7 @@
 // The zone is NEVER stored in the log. A clock's `at` is an absolute instant, so
 // it is zone-independent once computed; the zone matters only when computing
 // "the end of the day I am in" (write time) and when saying "today" (read time).
-// That is also the behavior a traveller wants: after a flight, "today" means
+// That is also the behavior a traveler wants: after a flight, "today" means
 // today where you are, without rewriting a single stored event.
 
 /** Intl.DateTimeFormat construction is expensive and these are hot in render;
@@ -46,7 +46,7 @@ export interface LocalParts {
  * centuries away — a typed "0099-08-04" became a date 27 years in the past and
  * raised an instant replan card about a day nobody chose (audit). Every date
  * built from PARTS in this codebase goes through here; out-of-range parts
- * (day 32, month 13) normalise by rolling over, exactly as `Date.UTC` does.
+ * (day 32, month 13) normalize by rolling over, exactly as `Date.UTC` does.
  */
 export const utcMs = (
   year: number, month: number, day: number, hour = 0, minute = 0, second = 0,

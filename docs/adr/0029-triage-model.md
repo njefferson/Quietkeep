@@ -96,7 +96,7 @@ later" that silently rebuilds the pile) is what actually drains an inbox.
 **The do-now timer is an affordance, not a gate.** Routing to do-now clocks and
 routes the node *first*; the 2-minute countdown is a nudge for the small thing in
 front of you, recorded separately as `do-now.timed` when it completes or is
-stopped. It never blocks, never nags, and honours reduced-motion (it is text, not
+stopped. It never blocks, never nags, and honors reduced-motion (it is text, not
 animation). It lives in **its own region, outside the card carousel** — the audit
 found the first version attached it under the *next* card and let a subsequent
 refresh kill the interval without recording the outcome. `finish()` is idempotent
@@ -120,7 +120,7 @@ route like Trash. `a11y.mjs` activates a route and asserts focus does not land o
   the line; heat records without routing; the boss nudge orders the queue;
   `heat`/`route`/`sourceTags` survive a snapshot round-trip; a person/bother/anchor
   never enters the inbox; a pre-Phase-2 snapshot upgrades without throwing and its
-  captures still appear; `sourceTags` honours copy-on-write and does not alias the
+  captures still appear; `sourceTags` honors copy-on-write and does not alias the
   log payload. Each proof was made to fail first (§6): disabling `clock.cleared`'s
   cure silences the node; dropping the `captured` guard lets a person pollute the
   inbox; a missing `captured ?? true` backfill drops legacy captures — each test

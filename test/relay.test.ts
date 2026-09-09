@@ -467,7 +467,7 @@ test('with no limiter configured the relay still works, and says so by behavior'
 //
 // Replacing a key mints a new mailbox; this empties the OLD one, so a device that
 // still holds the old key cannot collect the last weeks of backlog waiting there.
-// It is authorised by knowing the id, like every route — safe because a delete
+// It is authorized by knowing the id, like every route — safe because a delete
 // can only ever force a re-upload, never lose work: every device keeps its log.
 
 const del = (d: Deps, id: string, ip = '203.0.113.5') =>
@@ -491,7 +491,7 @@ test('DELETE empties a mailbox, and a later GET finds it gone', async () => {
   assert.deepEqual((await list.json() as { chunks: string[] }).chunks, [], 'the mailbox reads empty');
 });
 
-test('DELETE touches only the named mailbox, never a neighbour', async () => {
+test('DELETE touches only the named mailbox, never a neighbor', async () => {
   // The isolation that matters for revocation: emptying one household's mailbox
   // must not reach into another's, even on the same relay.
   const { store, map } = fakeStore();

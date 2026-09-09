@@ -111,7 +111,7 @@ const settled = async (pg, ms) => {
   //
   // So: if the store is ALREADY quiet when we arrive, this sleep was never
   // waiting on a write, and shortening it is a guess about something the app has
-  // told us nothing about. Honour it in full. If a write IS in flight, wait for
+  // told us nothing about. Honor it in full. If a write IS in flight, wait for
   // it to land and for one paint, which is both faster and actually correct.
   //
   // Self-selecting, so no call site needs judging one at a time — and the
@@ -2270,7 +2270,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const doneTitle = await tpage.locator('#nextup-title').textContent();
-  // The gauge is where the honest total lives now, so the anti-theatre half of
+  // The gauge is where the honest total lives now, so the anti-theater half of
   // this check reads it there rather than off the offer. READY NOW, not held:
   // a completed thing is still held (law 1 does not exempt finished work, and
   // the gate re-clocks it), so "held" is exactly the number that must not move.
@@ -3614,10 +3614,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   // Before it is a container there is nothing in this app to put anything under,
-  // and the picker says exactly that rather than inviting a choice it cannot honour.
+  // and the picker says exactly that rather than inviting a choice it cannot honor.
   const emptyPicker = await tpage.locator('#detail-parent option').allTextContents();
   // A LITERAL 1 — the placeholder and nothing else. Comparing the length to
-  // itself is the self-referential theatre an audit already found twice here.
+  // itself is the self-referential theater an audit already found twice here.
   is(emptyPicker.length, 1, `the picker offers no parents yet (${emptyPicker.join(', ')})`);
   is(await tpage.locator('#detail-parent').isDisabled(), true,
     'and it is disabled rather than offering an empty choice');
@@ -4322,7 +4322,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // media. The button worked and the result was unusable.
   // --- The way out of the panel (found on device, twice) -------------------
   // The header was `position: sticky` inside the dialog's own scroll container.
-  // Correct, honoured by every engine in CI, and it did not hold on the iPad:
+  // Correct, honored by every engine in CI, and it did not hold on the iPad:
   // the bar scrolled away with the content and both ways out ended up at the
   // extremes of a panel thousands of pixels tall.
   //
@@ -4686,21 +4686,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openSurface(tpage, 'sheet-group-actions').catch(() => {});
   await tpage.locator('#tour-replay').click().catch(() => {});
   await tpage.waitForSelector('#tour[open]', { timeout: 2500 }).catch(() => {});
-  const emphasised = [];
+  const emphasized = [];
   for (let tourStep = 0; tourStep < 6; tourStep += 1) {
     const s = await tpage.evaluate(() => ({
       text: document.querySelector('#tour-body')?.textContent ?? '',
       ems: [...document.querySelectorAll('#tour-body em')].map(e => e.textContent),
     }));
-    if (s.ems.length) emphasised.push(...s.ems);
+    if (s.ems.length) emphasized.push(...s.ems);
     // No asterisk may ever reach the reader — that is the failure the patch
     // notes already hit once, printing its own markers on screen.
     is(s.text.includes('*'), false, `walkthrough step ${tourStep + 1} shows no raw marker to the reader`);
     await tpage.locator('#tour-next').click().catch(() => {});
     await settled(tpage, 60);
   }
-  is(emphasised.length >= 4, true,
-    `the walkthrough sets its control names apart from the prose (${emphasised.join(', ')})`);
+  is(emphasized.length >= 4, true,
+    `the walkthrough sets its control names apart from the prose (${emphasized.join(', ')})`);
   await tpage.keyboard.press('Escape').catch(() => {});
   await settled(tpage, 120);
 
@@ -5058,7 +5058,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(hints.every(h => h.trim().length > 0), true,
     `each says what it will do (${hints.join(' | ')})`);
 
-  // THE ONE THAT MATTERS. "Not mine to carry" is honoured AND kept (1.8.0,
+  // THE ONE THAT MATTERS. "Not mine to carry" is honored AND kept (1.8.0,
   // ADR-0056): the vocabulary said "lands on the Not Now ledger with a park"
   // from the start, and the first build trashed it instead. The relief still
   // holds — a park never demands, nothing chases you — and the decision is
@@ -7673,7 +7673,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#purge-go').isDisabled(), false, 'the right word unlocks it');
   await tpage.click('#purge-pick-erase');
   is(await tpage.locator('#purge-word').inputValue(), '',
-    'switching mode emptied the box — no authorisation carried across');
+    'switching mode emptied the box — no authorization carried across');
   is(await tpage.locator('#purge-go').isDisabled(), true, 'and the button locked again');
   // The consequence line is rewritten after a store read, so it is WAITED for
   // rather than sampled — sampling it made this red while the app was correct.
@@ -7864,7 +7864,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // than on the log: an event proves the write happened and says nothing about
   // whether anybody ever sees the place again, and that gap IS the defect.
   console.log('\nFiling — a place you date actually comes back');
-  // ITS OWN ITEM, so this block neither eats a card its neighbours route by name
+  // ITS OWN ITEM, so this block neither eats a card its neighbors route by name
   // nor perturbs the six-routes accounting above it. Three earlier blocks in
   // this file learned that the hard way; a section that brings its own subject
   // cannot litter.

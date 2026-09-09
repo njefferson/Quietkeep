@@ -28,7 +28,7 @@ three facts that matter, all verified against source:
   list precisely so that row would not exist; the coverage list was missed, and
   it is the *more* prominent of the two surfaces, because the gauge invites you
   to open it. Since 1.15.0 active pebbles were listed there too — a weight
-  itemised among things being covered, which is ADR-0014's "becoming a task" in
+  itemized among things being covered, which is ADR-0014's "becoming a task" in
   another costume.
 
 The mechanism is the 1.9.2 lesson repeating: `heldGroups` carried a hand-written

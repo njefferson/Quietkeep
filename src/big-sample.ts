@@ -161,7 +161,7 @@ function rng(seed: number): () => number {
 //
 // Civilian errands and ordinary work, original, in the app's own voice. No
 // trigger-list material (those lists are copyrighted), nothing that reads as a
-// personality, and nothing diagnosis-flavoured.
+// personality, and nothing diagnosis-flavored.
 
 const AREAS = [
   'Household paperwork', 'The garden', 'Money', 'The car', 'Family',
@@ -647,7 +647,7 @@ export async function bigSampleEvents(
   // its whole point is that the work survives it, and a fixture that only ever
   // promised things would leave that unproven on any real store.
   //
-  // No ageing anywhere near these, deliberately. `waiting.opened` above carries
+  // No aging anywhere near these, deliberately. `waiting.opened` above carries
   // a `since` because how long somebody has owed YOU something is a fact about
   // a date; the same field pointed this way would be a record of how long you
   // have been failing, which is the ledger `src/requests.ts` refuses.
@@ -669,7 +669,7 @@ export async function bigSampleEvents(
   //
   // Both directions, because the vocabulary is a pair on purpose — and one
   // taken back, because the release is the half nothing else exercises. No
-  // ageing anywhere: a pointer is a fact about where the rest of a thing sits,
+  // aging anywhere: a pointer is a fact about where the rest of a thing sits,
   // not a score about anybody.
   const handedOver = node('action', 'Pick up the paperwork for the transfer');
   stamp('person.linked', handedOver, { node: handedOver, person: people[3]!, relation: 'rest-with-them' });

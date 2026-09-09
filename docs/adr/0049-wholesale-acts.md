@@ -25,7 +25,7 @@ range family and per item from the gate's own predicates: never offer what
 the gate must refuse (ADR-0038).
 
 **Chunked commits** — the app's first. ~500 events per `session.commit`, the
-session's promise queue serialising them; **every chunk re-checks each item
+session's promise queue serializing them; **every chunk re-checks each item
 against live state** (the 1.3.1 fresh-check CRITICAL, at range scale) and
 skips-and-counts anything that moved on. A failed chunk leaves the known-good
 prefix landed and a stated partial receipt.
@@ -50,7 +50,7 @@ they came off at all.
   backup — an adult who has read an accurate sentence may proceed. Bulk
   Let-them-go AUTO-exports first. These are consistent through the migration
   precedent (auto-export before any migration): the typed word ("let go" —
-  its own word, because one word must not authorise two different acts) gates
+  its own word, because one word must not authorize two different acts) gates
   the DECISION; the copy is not friction but plumbing, delivered before the
   first trashed event — and if the copy cannot be delivered, nothing is
   trashed. The ordering is machine-checked by the smoke walk, the first

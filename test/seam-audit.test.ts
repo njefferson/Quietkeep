@@ -227,7 +227,7 @@ test('seam-f1: nothing that is not work enters the status report', () => {
   // THE ONE THIS TEST WAS BLIND TO, and the reason the deny-list became a total
   // record. `bother` was in NOT_ACTIONABLE and NO_REPLAN_CARD and was NOT in
   // NOT_REPORTABLE, so a worry — the flow whose whole pitch is that you may put
-  // a private thing down AS a worry rather than as a task — was itemised under
+  // a private thing down AS a worry rather than as a task — was itemized under
   // "New", by name, verbatim, in the one artefact built to be handed to somebody
   // else. The four kinds the 1.17.3 audit found were enumerated; the question
   // was never asked over the vocabulary.

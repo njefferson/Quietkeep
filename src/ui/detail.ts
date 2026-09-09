@@ -1060,7 +1060,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
 
       // WHERE IT SITS, AND A WAY TO GET THERE (3.6.0). Every list on this sheet
       // travels DOWN — a child row opens the child's sheet — and nothing
-      // travelled up. The place line named the parent in prose, so somebody who
+      // traveled up. The place line named the parent in prose, so somebody who
       // had just made a container by filing something under it was told the
       // container's name and handed no route to it. Reported on device in those
       // terms: the thing was made, and there was no way to see it.

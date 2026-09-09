@@ -26,14 +26,14 @@ unreachable.
 at 4.8). A light store of fourteen things still puts it 1.5 and 2.5 screens down.
 
 **What the sections cost is not choice overload.** Entry 16 of the collision
-catalogue marks that **Contested** — the classic finding replicates poorly — and
+catalog marks that **Contested** — the classic finding replicates poorly — and
 ADR-0060 already established the right variable: *"the distinction is not how
 many things are shown — it is whether choosing requires a comparison."* The
 sections are unalike by construction, so they are chosen between by preference.
 A cap on their number would be the error ADR-0060 avoided once already.
 
 **What they do cost is focality, and it corrects entry 3.** Entry 3 is the
-catalogue's best-evidenced entry, cites Einstein & McDaniel, and reads *"visible
+catalog's best-evidenced entry, cites Einstein & McDaniel, and reads *"visible
 is the only kind of remembered."* The same authors' multiprocess framework says
 visibility is not sufficiency: a **focal** cue — one overlapping what the reader
 is already processing — triggers spontaneous retrieval with no monitoring, while

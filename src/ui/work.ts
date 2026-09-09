@@ -1077,12 +1077,12 @@ export function mountWork(
     coverageProofEl.replaceChildren(...parts);
   }
 
-  /** The gauge's claim, itemised and checkable. Reads `heldWork` — the same
+  /** The gauge's claim, itemized and checkable. Reads `heldWork` — the same
    *  definition the gauge counts — so opening the claim can never contradict it.
    *
    *  It read `heldNodes` until 1.15.1, which is one word wider and was the wrong
    *  set: every private journal entry has no title by design, so each one
-   *  itemised here as "(untitled) — held". */
+   *  itemized here as "(untitled) — held". */
   /** WHICH CLOCK THIS ROW IS ABOUT, named once (3.19.3).
    *
    *  The row renders one clock and the list now SORTS by one, and if those were

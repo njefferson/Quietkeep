@@ -20,7 +20,7 @@
 // where it was tracked, and the tracked line is the one a person scans.
 //
 // So this checks SHAPE, the way `collisions.mjs` does for the research
-// catalogue, and for the same reason: it cannot know whether a status is TRUE,
+// catalog, and for the same reason: it cannot know whether a status is TRUE,
 // and a gate that pretended to would be the false receipt the file already was.
 // What it can do is make the claim explicit and refuse a block that contradicts
 // itself, so a person reading the list can see what they are trusting.

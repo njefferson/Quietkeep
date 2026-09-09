@@ -68,7 +68,7 @@ reads as deleted.
 
 ### B-04 · Sizing
 No fixed size may ignore the space available (Doctrine §4, LESSONS.md §6). Type is
-sized in `rem` so the user's *text-size* preference is honoured, not only page
+sized in `rem` so the user's *text-size* preference is honored, not only page
 zoom, and content that cannot fit scrolls inside its own container rather than
 the page. Both are **enforced today**: `tools/a11y.mjs` asserts zero page
 overflow (and zero dialog overflow) at 320px with 200% text, in both themes.
@@ -81,9 +81,9 @@ not claim otherwise. The 320px/240px place-card failure in a sibling app is why
 the viewport check is a gate and not an intention.
 
 ### B-05 · Motion
-Reduced-motion is honoured throughout: `app.css` carries a global
+Reduced-motion is honored throughout: `app.css` carries a global
 `prefers-reduced-motion: reduce` block that collapses every animation and
-transition, so the honouring is one rule rather than a habit. No animation is
+transition, so the honoring is one rule rather than a habit. No animation is
 load-bearing for meaning.
 
 **Corrected 2026-08-01 (1.9.1).** This row used to say "the pressure gradient,
@@ -326,7 +326,7 @@ words.
 
 ### B-21 · The way out of the (i) panel (0.21.1) — reported twice
 **found on device, twice.** The panel's header was `position: sticky` inside the
-dialog's own scroll container. That is correct, every engine in CI honours it,
+dialog's own scroll container. That is correct, every engine in CI honors it,
 and it did **not** hold on the iPad: the header scrolled away with the content,
 so both ways out sat at the extremes of a panel thousands of pixels long.
 

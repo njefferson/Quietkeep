@@ -30,7 +30,7 @@
 // on the day they were not. So a copy is recognized by its scope, and the set of
 // whole-copy scopes lives HERE, beside the reader — with `deliverCopy` refusing
 // any scope outside it. A hand-written list that the writer does not have to
-// honour is a bug with a delay fuse (the 1.9.2 lesson); this one cannot fall
+// honor is a bug with a delay fuse (the 1.9.2 lesson); this one cannot fall
 // behind, because adding a scope without adding it here fails at the call site.
 //
 // ## The deliver-then-record ordering, and the off-by-one it would cause

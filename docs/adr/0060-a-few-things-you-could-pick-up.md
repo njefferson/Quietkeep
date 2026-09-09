@@ -4,7 +4,7 @@
 
 ## Context
 
-The direction asked for: the app queues towards offering what a person wants to
+The direction asked for: the app queues toward offering what a person wants to
 choose to do, rather than listing things waiting to be done — more a menu than a
 task list.
 
@@ -81,7 +81,7 @@ second time is the one that reads as a backlog.
   ranking and every test over it stand.
 - The list beneath the head is no longer a queue tail. It holds the rest of the
   offer: one more piece of work of a different kind, then the wish.
-- **The smoke walk's anti-theatre check moved to the gauge.** It used to prove a
+- **The smoke walk's anti-theater check moved to the gauge.** It used to prove a
   completion by watching the offer's count fall; with no count it reads
   `ready now` from the gauge instead — and deliberately not `held`, because a
   completed thing is still held (law 1 does not exempt finished work) and that

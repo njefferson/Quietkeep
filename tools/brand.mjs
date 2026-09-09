@@ -291,7 +291,7 @@ function checkAppColors() {
   // paying for — except that `line` is a BORDER, a graphical object under WCAG
   // 1.4.11, and the color inventory reads `color` and `background` only. So
   // this list carries the one thing arithmetic-over-the-inventory cannot see,
-  // and that division of labour is written down in ADR-0110 rather than left to
+  // and that division of labor is written down in ADR-0110 rather than left to
   // be rediscovered.
   const src = join(ROOT, 'docs', 'palettes.json');
   if (!existsSync(src)) { fail('docs/palettes.json is missing'); return; }

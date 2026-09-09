@@ -8,7 +8,7 @@
 // control that shows it again). It is a modal like the ⓘ panel is — Quietkeep's
 // own surface pattern — and it is fully keyboard-operable, moves focus to each
 // step's heading, announces the step in a live region, and animates nothing, so
-// reduced-motion is honoured by having no motion to reduce.
+// reduced-motion is honored by having no motion to reduce.
 //
 // It ends by handing off to the real first action: opening the ⓘ panel so the
 // person can keep their data (the V-00 storage nudge the auto-open used to do),

@@ -109,7 +109,7 @@ export const RELEASES: readonly Release[] = [
     kind: 'ITERATION',
     date: '2026-09-08',
     notes: [
-      '**The app spells the American way now, everywhere.** *Colors* was *Colours* and *Recognize this one?* was *Recognise this one?*, on screens you meet in the first minute, and about forty other words behind them \u2014 in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.',
+      '**The app spells the American way now, everywhere.** *Colors* and *Recognize this one?* each changed a letter, on screens you meet in the first minute, and about forty other words behind them \u2014 in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.',
       '**Still to sort:** the situation screen asks who twice \u2014 the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new. And three spoken confirmations still read a date out as digits when you set one.',
     ],
   },
@@ -1286,7 +1286,7 @@ export const RELEASES: readonly Release[] = [
     date: '2026-08-19',
     notes: [
       '**The line saying how much of today is left has come off the offer card.** It read *“About 2h 30m left today”*, and it was on the card from the moment you opened the app until the day ran out. The last release said it was unsettled; this one settles it.',
-      '**The card already refused to do exactly this, one line further down.** The line naming the fixed thing today gives you its name and never how long until it — because a number counting down towards something you are already avoiding makes it harder to start, not easier. The remainder of the day was the same kind of number, three lines above it.',
+      '**The card already refused to do exactly this, one line further down.** The line naming the fixed thing today gives you its name and never how long until it — because a number counting down toward something you are already avoiding makes it harder to start, not easier. The remainder of the day was the same kind of number, three lines above it.',
       '**The clock in the header still says it, and the clock is off until you ask for it.** It was built as something you switch on, because a day is not a countdown and one should not arrive on your screen uninvited. If you had switched it on, the app was telling you the same thing twice at once, in two different phrasings.',
       '**It was there to help you judge whether something fits in what is left — and the card never told you how long anything takes.** How long a thing has taken you before is on the thing itself, when you open it. A remainder with nothing to measure it against is just a clock running down.',
       '**If you want the running remainder, it is one switch:** *More → Settings → A clock in the header*. Nothing else on the card changed.',

@@ -2217,7 +2217,7 @@ export async function mountAbout(
       mode = null;
       purgeConfirm.hidden = true;
       // Cleared on every exit, not only on cancel. A word left in the box is an
-      // authorisation left lying next to a button.
+      // authorization left lying next to a button.
       purgeWordInput.value = '';
       purgeGo.disabled = true;
     };
@@ -2239,8 +2239,8 @@ export async function mountAbout(
       purgeConsequence.textContent = purgeWords(m, count, savedACopy, await isPaired());
       // NO CEREMONY OVER A NO-OP (2.10.3, found by photographing this sheet on
       // an empty store). The confirmation is a safeguard, and a safeguard around
-      // an act that changes nothing is theatre: it asked somebody to type the
-      // word `clear` in full, over a planner with nothing in it, to authorise
+      // an act that changes nothing is theater: it asked somebody to type the
+      // word `clear` in full, over a planner with nothing in it, to authorize
       // doing nothing. The sentence above already says so.
       //
       // Same distinction the words make and for the same reason: `start again`

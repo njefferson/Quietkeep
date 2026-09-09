@@ -180,7 +180,7 @@ what was suggested.
 government-furnished equipment, and **nothing in it is a control for classified,
 controlled, or otherwise restricted information.**
 
-It has no accreditation, no security categorisation, and no assurance process behind
+It has no accreditation, no security categorization, and no assurance process behind
 it. It was built by one person for their own use and shared because it might help
 someone else.
 

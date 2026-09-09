@@ -95,7 +95,7 @@ about this device).
 - The landing surface, on the same sample, is expected to fall from 4,247px to
   roughly 1,900px — under two and a half screens. The number is asserted after
   the change rather than predicted here.
-- The visible repetition goes with it. The specialised views — the offer, the
+- The visible repetition goes with it. The specialized views — the offer, the
   replan card, the with-someone card — stay exactly where they are, and the
   inventory that repeats them is folded until asked for. Opening it shows them
   again, which is correct: that is the complete list, and you asked.

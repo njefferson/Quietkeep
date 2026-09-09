@@ -38,7 +38,7 @@ export interface KvWritable {
 }
 
 /**
- * Forget the pairing: the key, the host it dialled, and the mark recording what
+ * Forget the pairing: the key, the host it dialed, and the mark recording what
  * had already been exchanged.
  *
  * **The mark must go with the key.** A mark left behind would tell a later

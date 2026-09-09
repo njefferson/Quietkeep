@@ -142,7 +142,7 @@ nobody can reproduce is not a finding.
 ## What would overturn this
 
 - **The sweep going quiet for a long time.** A breadth check that never fires is
-  either proof or theatre, and the way to tell is to plant a fault in a
+  either proof or theater, and the way to tell is to plant a fault in a
   projection and watch it name that projection. It was proved that way here
   (`ledgerRowWords` rendering "null asked · declined 3 Aug"), and it should be
   proved that way again rather than trusted.

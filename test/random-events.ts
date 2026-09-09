@@ -93,7 +93,7 @@ export function randomEvent(rnd: () => number, s: State, fresh: () => string): A
   const pick = (): string => ids[Math.floor(rnd() * ids.length)]!;
   // The 1.3.x-era shapes keep their RELATIVE weights and their original
   // thresholds; one draw decides whether this event comes from that era at all
-  // (70%) or from the post-1.3 nouns below (30%). Re-normalising into 0..1
+  // (70%) or from the post-1.3 nouns below (30%). Re-normalizing into 0..1
   // rather than scaling the thresholds keeps every original branch reachable —
   // scaling the ROLL instead made the whole post-1.3 block dead code, which the
   // coverage belt in `oracle-nouns:` caught immediately. That is the test
@@ -135,7 +135,7 @@ export function randomEvent(rnd: () => number, s: State, fresh: () => string): A
   }
   // The only silent-risk kind whose cure is NOT a clock.set — the gate answers
   // it with park.set{reason:'not-now-ledger'}, and it had never been generated.
-  if (post < 0.26) return ev('request.declined', pick(), { person: rnd() < 0.5 ? 'PER' : null, what: 'a favour', reason: 'detail' });
+  if (post < 0.26) return ev('request.declined', pick(), { person: rnd() < 0.5 ? 'PER' : null, what: 'a favor', reason: 'detail' });
   if (post < 0.36) return ev('park.set', pick(), { returnAt: '2026-08-09T12:00:00.000Z', reason: 'not-now-ledger' });
   if (post < 0.45) return ev('suspense.set', pick(), { at: '2026-08-09T12:00:00.000Z' });
   if (post < 0.54) return ev('menu.item.promoted', pick(), { toKind: 'action' });

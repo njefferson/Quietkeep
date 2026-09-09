@@ -32,7 +32,7 @@
 //
 // The two modes take DIFFERENT words, and that is load-bearing: with one shared
 // word, typing it for the reversible mode and then switching mode would carry the
-// authorisation across to the irreversible one. Somebody would lose their history
+// authorization across to the irreversible one. Somebody would lose their history
 // to a control they had already satisfied for something else.
 //
 // PURE. `now` and the stamping context are injected; nothing here touches a store.
@@ -56,7 +56,7 @@ export const PURGE_LABEL: Record<PurgeMode, string> = {
  * The word each mode requires. Different on purpose.
  *
  * With one shared word, typing it for the reversible mode and then switching to
- * the irreversible one would carry the authorisation across — somebody would lose
+ * the irreversible one would carry the authorization across — somebody would lose
  * their history to a control they had already satisfied for something else.
  */
 export const CONFIRM_WORD: Record<PurgeMode, string> = {

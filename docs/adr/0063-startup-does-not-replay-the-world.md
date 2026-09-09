@@ -40,7 +40,7 @@ the newest one**, and records that it did.
 `writeSnapshot` re-reads the log and folds it. Calling *that* at startup would
 pay exactly the cost the snapshot exists to avoid. So `snapshotFrom(store,
 state, at)` takes a state that has already been folded — the session has just
-folded it — and serialising it is a clone and nothing more.
+folded it — and serializing it is a clone and nothing more.
 
 The mark and the event count both come from the **same state object, read
 synchronously**, so the snapshot is internally consistent even if a commit lands
@@ -102,7 +102,7 @@ start, never a wrong state**, and it is what makes this change small.
 - The snapshots table now holds one row per cut on a real device, where before
   it held one only after an import.
 - **A freshly imported store is already covered**, because `importSeedingFresh`
-  stores the snapshot that travelled inside the file. That is correct and it is
+  stores the snapshot that traveled inside the file. That is correct and it is
   worth stating, because it briefly made the headless walk's proof vacuous: the
   walk imports a backup, so a reload afterwards correctly does nothing, and the
   check would have passed with the caller deleted. It now empties the snapshots
@@ -132,7 +132,7 @@ start, never a wrong state**, and it is what makes this change small.
 
 - **A measurement showing deserialise dominates.** If rebuilding from the
   photograph costs more than folding the tail it saved, the snapshot is the
-  wrong shape and the answer is a smaller serialised form — not a bigger
+  wrong shape and the answer is a smaller serialized form — not a bigger
   threshold.
 - **Evidence that the arithmetic guard rejects real snapshots routinely.** That
   would mean the fast path never earns itself and this release is dead weight;

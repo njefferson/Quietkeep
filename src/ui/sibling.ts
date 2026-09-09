@@ -8,7 +8,7 @@
 // Because a written-down URL would be a fourth unverified constant, and this
 // repo has already been bitten once today: `RELAY_HOST` briefly held a guess at
 // a workers.dev subdomain, passed every gate, and would have shipped an app
-// dialling a hostname that does not resolve.
+// dialing a hostname that does not resolve.
 //
 // The two editions are deployed as two Cloudflare Pages projects whose names
 // differ by one suffix, so their hostnames differ by the same suffix at every

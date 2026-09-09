@@ -148,7 +148,7 @@ requires breaking one, that is a Doctrine §1 moment: flag it, don't slip it in.
 6. **Demand-free types exist.** Menu items and pebbles cannot carry clocks.
    Acting on one is a deliberate promotion, never an obligation that accrued.
 7. **The app plots; the human interprets.** No sentiment scoring, no cause
-   attribution, no diagnosis-flavoured copy. Journal analytics render
+   attribution, no diagnosis-flavored copy. Journal analytics render
    co-occurrence only.
 8. **Rest is legitimate.** Re-entry after absence is the *primary designed
    path*. The greeting after a lapse is bounded — Next-up + ≤3 triage + gauge +
@@ -341,7 +341,7 @@ per-device watermark the export mark uses)** · ~~pebbles~~ **(done, 1.15.0 —
 ADR-0065; this line said otherwise until 1.17.0, the same drift 1.9.1 corrected
 elsewhere)** · ~~journal~~ **(done, 1.13.0 — ADR-0061: a
 NodeKind with an encrypted payload rather than a vault, on the owner's decision.
-ADR-0005's encryption-ships-together binding honoured — PBKDF2-SHA-256 at
+ADR-0005's encryption-ships-together binding honored — PBKDF2-SHA-256 at
 600,000 rounds, and the fold never touches ciphertext)** · ~~printable today-card~~ **(done, 0.21.0 — and it fixed the print path shipped in 0.16.0, which had no stylesheet behind it at all)** · ~~request slots
 + Not Now ledger~~ **(done, 1.8.0 — ADR-0056)**.
 
@@ -561,7 +561,7 @@ why; `fileReceiptWords` says *Put under*, the words on the button; both
 remaining `'en-GB'` literals are gone and `recordDayWords`'s doc comment no
 longer declares the defect. `#detail-live` is visible, pinned above *Close*
 outside the only part of the sheet that scrolls, wearing `.detail-state` so no
-new colour pair enters the contrast gate.
+new color pair enters the contrast gate.
 
 **And `say()` lost its mirror, which was never doing anything.** F-08's remedy
 was to write a failure into the fact line as well as the live region — but
@@ -579,7 +579,7 @@ country. It asks for a month in words in either order now, and refuses a numeric
 mask, which is what law 5 actually wants. And `test/coverage-proof.test.ts`'s
 fixture routed a node to `someday` without adding the Menu row, so the menu
 clause was never exercised — `clarify.routed`'s own menu branch is unreachable
-defence-in-depth and says so in its comment. The new test asserts the node is on
+defense-in-depth and says so in its comment. The new test asserts the node is on
 the Menu AND still carries a clock before asserting which reason is printed, so
 it cannot quietly stop measuring anything. Planted: with the old precedence put
 back it goes red, and green again when restored.
@@ -696,9 +696,9 @@ all. **A regex that survives one round of escaping as a DIFFERENT valid regex is
 the worst kind of typo**: there is no crash to notice, and the count it produces
 looks like an answer. Caught only by counting the steps before and after.
 
-**A HEALTHY CI RUN WAS CANCELLED ON A MISREAD OF THE CLOCK (2026-09-09).** The
+**A HEALTHY CI RUN WAS Canceled ON A MISREAD OF THE CLOCK (2026-09-09).** The
 Spine run for 3.23.10 was thirteen minutes old — its normal length — and was
-cancelled as wedged. Nothing was lost but the minutes and a re-dispatch, and the
+canceled as wedged. Nothing was lost but the minutes and a re-dispatch, and the
 misreading is worth more than the mistake:
 
 **A sleep that is moved to the background is not a wait.** Each long `sleep` was
@@ -711,7 +711,7 @@ turned nineteen releases into four months of calendar time (hub LESSONS 75).
 
 **And `updated_at` does not advance while a run is in progress.** It was read as
 proof the run had stopped moving. It is not: the field sat frozen at the run's
-first second on both a healthy run and a cancelled one, from two different
+first second on both a healthy run and a canceled one, from two different
 endpoints. A field that does not change is not evidence of a thing that is not
 changing — the JOBS endpoint is where progress actually shows.
 
@@ -970,7 +970,7 @@ everything since this device last looked, capped, with the true count said.
   queue, so the first pass reads as making no progress — on the screen whose
   whole job is to feel finishable.
 
-- **`brand:check` passes with a declared colour token changed under it.** Found
+- **`brand:check` passes with a declared color token changed under it.** Found
   by re-aiming its own audit plant, which had been editing `public/app.css` for
   a `--line: #hex` that has never been in that file — 0 occurrences there
   against 24 in `public/palettes.css`, on every commit the audit has run. So the
@@ -1181,7 +1181,7 @@ count here is maintained by hand and nothing would catch it going stale.
   - **BUILT 2026-09-01 as 3.20.0 ([ADR-0122](docs/adr/0122-who-holds-the-rest.md)), the same day the owner answered.** The answer was the direction of the build: a PAIR of relations rather than one — `rest-with-them` (*they hold the rest of this*) and `rest-with-me` (*I hold the rest of this*) — because this question's own either-direction bullet rules a one-way noun out. The release-path sub-question closed with it: `holding.released`, the third subtraction, scoped one person and one relation, because a directory that cannot be corrected goes on asserting who holds what after it has stopped being true. The import carries the pointer in (`@holds(Name)`), beside the two existing directions (`@owes`, with the sheet's own waiting window; `@promised`), through the same write path as a keystroke, deduped against the store the way the sheet dedupes. Entry 32's SINCE WRITTEN records the build and restates every refusal untouched.
   - Status: **Closed.** Answered 2026-09-01 by the owner directing the build; shipped the same day as 3.20.0. What stays is not a question but the named WATCH: nobody has measured a private directory of who-holds-what as a repair, the one adjacent result is a caution about imposing structure on a system that already works, and the on-device pass is where this one gets watched — one relation pair and one noun, removable whole.
 - **Q-13 · Roles are IDENTITIES that cross multiple areas — how are they
-  modelled?** Settled 2026-08-04, answering the roles-vs-areas question
+  modeled?** Settled 2026-08-04, answering the roles-vs-areas question
   directly: **a role is an identity, and it crosses multiple areas.** That settles
   V2 decision 9 in the direction the vocabulary genuinely grows — **and rules
   out the cheap answer**: this data model's tree is single-parent, so a thing
@@ -1302,7 +1302,7 @@ count here is maintained by hand and nothing would catch it going stale.
   - **"Allowed to disappear" shipped in 1.32.0** as `node.released` / `node.reclaimed` — an exit that is neither done nor deleted, reversible, leaving no browsable pile and no count. That was built precisely because law 1 otherwise guarantees perpetual return, and the only reset people actually reach for is deleting the app.
   - **Roles and lines-of-effort have a settled SHAPE and are deliberately deferred** — see Q-13. A role crosses areas, and this tree is single-parent, so it is a cross-cutting link and never a container. The deferral is the same one, on the same grounds.
   - **What was genuinely unbuilt was the projection, not the levels** — and it is built now, which this line said otherwise about for seven months of releases. The review exceptions (stalled, orphan, quiet area, unfed goal) are computed in `src/review.ts`; a runway card **does** print what it serves, since 2.5.0 and `src/serves.ts`. The claim that it does not was still standing here on 2026-08-30 and in `horizon-models.md` at the same time, which is the one-file-two-answers shape the hub's CLAUDE.md names. **What is unbuilt now is narrower and named in ADR-0115's own record:** the exceptions walk the TREE only, so a cross-cutting line with nothing moving on it is still invisible.
-  - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theatre and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
+  - **And it is deferred on purpose.** It renders nothing until a real store contains a goal or an area. `docs/horizon-models.md` already names "promote-buttons for empty altitude nouns" as alignment theater and refuses it; building the projection now would be the eleven-empty-nouns mistake for a third time. **The gate on it is evidence, not appetite:** whether containers get made at all once making one costs two taps.
 
   - Status: **Closed.** Answered 2026-08-09 — every altitude asked about already existed. What is genuinely unbuilt is the projection, deferred on purpose until a real store holds a goal or an area.
 - **Q-10**
@@ -1571,7 +1571,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   somebody would believe it.
 
   **And the run that verified the head was DISPATCHED, not the push's own.** The
-  push-triggered Spine was cancelled at thirteen minutes as wedged, by a session
+  push-triggered Spine was canceled at thirteen minutes as wedged, by a session
   that had read elapsed time off its own poll count rather than off `date`; it
   was thirteen minutes into a fourteen-minute job. The re-dispatch ran on the
   same head SHA and came back green, so the verification stands — hub LESSONS
@@ -1680,7 +1680,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   the waiting-on name beside them; a passed date sits under today wearing the
   replan surface's own words; review clocks stay out for the export's recorded
   reason; no past day is ever rendered and nothing grades anybody. The door
-  stands on the hub beside its neighbours, hidden until something carries a
+  stands on the hub beside its neighbors, hidden until something carries a
   date; the sheet paints on every open, which under one-surface-at-a-time is
   what live means. Replaces an invented refusal — no record ever decided
   against an in-app dated view, and ADR-0124 says so.
@@ -1783,12 +1783,12 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   and industry sources rather than peer-reviewed, consistent across several.
   **THE SPLIT IS THE FINDING.** The instances are real; the RULE has a
   denominator problem — the same few cases are cited every time and nobody
-  counts the accessibility features that never generalised, because no one has
+  counts the accessibility features that never generalized, because no one has
   reason to. Survivorship. So the instance may be stated and the rule may not.
   **AND THE PROCESS POINT IS THE REASON THIS IS WRITTEN DOWN:** grading a claim
   off one search is the same defect as trusting a citation without opening it,
   and it went the other way — too harsh rather than too generous. Both are
-  wrong, and only one of them feels like rigour.
+  wrong, and only one of them feels like rigor.
 - **Superseded, and kept for the record: 3.19.4.** The
   *Why* page cites the outcome evidence for its own founding claim, and the
   study that failed to reproduce it.
@@ -2640,7 +2640,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   cut rather than accommodated, landing at **3699 words against a 3700 budget** —
   one word of headroom, which is worth knowing before adding a sentence anywhere.
   **AND THEN THE OLDER PAGES WERE MEASURED TOO**, the same day. The
-  walk generalised from one page to every hosted page the app LINKS to, derived
+  walk generalized from one page to every hosted page the app LINKS to, derived
   from `index.html` rather than listed, each stamped on its own content so
   changing one walks one. `manual.html` and `why.html` had shipped since 2.29.0
   unmeasured; both pass. `plan.html` is excluded BY THE RULE rather than by an
@@ -2650,7 +2650,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   WRONG.** All four were citations inside sentences — *"…rather than by a sweep
   (ADR-0011)."* — and WCAG 2.5.8 states an *Inline* exception for exactly that.
   Padding a word mid-paragraph to satisfy a rule that does not apply would have
-  damaged two pages to please a gate. The exception is honoured structurally now:
+  damaged two pages to please a gate. The exception is honored structurally now:
   `display: inline` plus a parent holding text that is not the link. **A gate
   that fires on honest writing is worse than a miss**, because it also trains
   somebody to change good pages — and the same run proved it is not vacuous: a
@@ -3048,7 +3048,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   now and covers all ten palettes rather than two. Its hand-written pair list
   stays on purpose: `line` is a border, a graphical object at 3:1, and the
   inventory reads `color` and `background` only — so that list carries the one
-  floor arithmetic cannot see, and the division of labour is in ADR-0110. All ten
+  floor arithmetic cannot see, and the division of labor is in ADR-0110. All ten
   clear it, tightest 4.58:1.
   **And it went red because a hand-picked subset of gates was run instead of the
   Spine** — the exact thing `npm run spine` exists to prevent. Brand assets was
@@ -3227,7 +3227,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   Close was the last thing in a box that scrolled as a whole, so leaving a batch
   meant traveling past all of it. `#about` had the identical defect twice on a
   device and every sheet once, and the fix — a flex column whose body is the only
-  thing that moves — had never travelled to any dialog that was neither. Six
+  thing that moves — had never traveled to any dialog that was neither. Six
   surfaces carried it untouched, `#detail` among them at 587 lines of markup, the
   longest in the app. **The check written to prevent exactly this could not see
   any of them**: it discovered its subjects by looking for `.sheet-body`, which
@@ -3357,7 +3357,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   worth: three reads inside two minutes returned 3.23.9, then 3.23.10, then
   3.23.10, an edge mid-rollout presenting as an authoritative failure.
   **The Spine that verified the head was a DISPATCH.** The push's own run was
-  cancelled at thirteen minutes as wedged, by a session reading elapsed time off
+  canceled at thirteen minutes as wedged, by a session reading elapsed time off
   its poll count rather than off `date`; it was thirteen minutes into a
   fourteen-minute job. The re-dispatch ran on the same head SHA and came back
   green, which is hub LESSONS §161's fallback used for the wrong reason and
@@ -3673,7 +3673,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   commit whose two URL bullets above name anything else — the shape
   `changelog.mjs --check` already uses to hold one triplet to three files. It is
   declared with `also=` in `.branch-guard`, so it runs on every commit including
-  a promote, and it is milliseconds rather than the minutes its two neighbours
+  a promote, and it is milliseconds rather than the minutes its two neighbors
   would cost, so it does the work instead of refusing and naming a command.
   **The SHAs beside each version are NOT gated**, deliberately: a commit cannot
   name its own hash, and gating production's would leave this block unfixable
@@ -3878,7 +3878,7 @@ the mode did strip was the one nothing was checking.
 **2.13.0 — WHEN A PLACE COMES ROUND, YOU CAN SEE WHAT ELSE IS IN IT.** The
 thesis's open half, and the last routing proposal in `docs/nd-collisions.md`
 still reading *V2-candidate*. Entry 3 is the best-evidenced entry in the
-catalogue — cue-dependent prospective memory failure — and its claim is that a
+catalog — cue-dependent prospective memory failure — and its claim is that a
 thing which leaves the visual field leaves existence. **Filed means gone.**
 
 Law 4's push-down was built and stopped one step short: when a horizon came
@@ -4194,7 +4194,7 @@ disk. 188 files. The traversal was never the missing part.
 in the store it said *"This clears 0 things — everything you are keeping here,
 people, weights and private entries included"*, warned no copy had been saved,
 made **Save a copy first** the loudest control, and demanded the word `clear` be
-typed out to authorise doing nothing. `purgeSummary` one line above had always
+typed out to authorize doing nothing. `purgeSummary` one line above had always
 said *"There is nothing here to clear."* — the confirmation under it had simply
 never been told. **The same defect as 2.9.4**, on the other surface nobody had
 looked at. `start-again` is deliberately NOT folded in: it erases the log, so a
@@ -4586,7 +4586,7 @@ whether **naming a worry at two taps** is one tap too far (2.8.1 — the stated
 overturn condition for ADR-0099, and the entries go back to the runway if it is).
 
 **A CI record correction that should not be repeated as green:** `92504fc`
-(2.8.0 on staging) had Deploy success, but its **Spine run was CANCELLED** by
+(2.8.0 on staging) had Deploy success, but its **Spine run was Canceled** by
 the push of `8971f50` a few hours later. Nothing shipped unverified — `8971f50`'s
 Spine covers the same tree plus 2.8.1, and `928c53a`'s covers it again on main —
 but 92504fc itself must not be cited as "Deploy and Spine green". Concurrency
@@ -4623,7 +4623,7 @@ a scroll. That is a shell change, it is not in this release, and there is now a
 number to decide it with rather than an argument.
 
 **What it costs:** naming a worry is one tap further than it was. Activation cost
-at the point of performance is the best-evidenced entry in the catalogue and this
+at the point of performance is the best-evidenced entry in the catalog and this
 adds some; *out of sight* is answered by the proof line moving up and by the load
 door reporting its own state on the row that reaches it. Both halves are recorded
 in `docs/nd-collisions.md` — entry 3 gains the proof-line move, entry 6 gains the
@@ -4683,7 +4683,7 @@ nothing says it is there.
 demand, and entry 8 calls this the best-defended collision in the product.
 Four words became eight; the word budget had room.
 
-**THE CATALOGUE'S ROUTED BACKLOG IS NOW EXHAUSTED.** Twenty-two entries: every
+**THE Catalog'S ROUTED BACKLOG IS NOW EXHAUSTED.** Twenty-two entries: every
 one is SHIPPED or REFUSED except entry 3's contents-on-return card, which waits
 on real filing use and is therefore the owner's to answer by using it, not a
 session's to guess. Six marks were corrected today for claiming more or less than
@@ -4711,12 +4711,12 @@ added was never measured. Fixed by DRIVING a date of today through the sheet (a
 due clock is stored at the END of the day, so today is still ahead) and making
 the else branch FAIL. Hub LESSONS §100.
 
-**CATALOGUE RECONCILED in the same commit**, because four entries were claiming
+**Catalog RECONCILED in the same commit**, because four entries were claiming
 more or less than the code:
 
 - **Entry 15** — the voice gate over notification copy: **shipped**
   (`tools/notify-voice.mjs`), still marked V2-candidate.
-- **Entry 18** — its constraint on the law-4 projection: **honoured** by 2.5.0,
+- **Entry 18** — its constraint on the law-4 projection: **honored** by 2.5.0,
   which arrives as computed signal and explicitly never as a destination.
 - **Entry 2** — routing mark **reversed to refuse**. The proposal was a pebble
   whose `affects` names an item, with the app plotting the co-occurrence. That
@@ -4750,7 +4750,7 @@ lineage 2.5.0 had just built. It was drafted, and it was going to be put to the
 owner as a policy question. Entry 5 forbids it in terms: activation follows
 interest, novelty, challenge, urgency and passion, **not importance**, and the
 Eisenhower top row is *"a dead letter for this nervous system"*. It did not need
-the owner's ruling. It needed the catalogue read.
+the owner's ruling. It needed the catalog read.
 
 Three more refusals bind it, each with its evidence grade: entry 12 (moderate) —
 no manufactured novelty, so the frozen offer is not fixed by randomising, and a
@@ -4759,7 +4759,7 @@ cannot cross tiers and a test pins that a dated cold thing beats a hot waiting
 one; entry 16 (contested) — the cap of two stands, so the offer is not widened.
 
 **Vocabulary, never a rank** — entry 5's own binding, because INCUP is
-community-grade. Honoured three ways: a two-state fact the reader stated, a
+community-grade. Honored three ways: a two-state fact the reader stated, a
 tie-break inside one tier, and the card says it out loud, because an interest
 read that silently reorders the offer IS a hidden rank.
 
@@ -5032,7 +5032,7 @@ offer is 980px tall there. That second number is stated in the release notes
 rather than rounded away: it is a way past four more screens, not past all of
 them.
 
-**What the research found, and one correction to the catalogue.** The cost of
+**What the research found, and one correction to the catalog.** The cost of
 the section stack is not choice overload — entry 16 marks that Contested, and
 ADR-0060 already established the right variable ("not how many things are shown
 — whether choosing requires a comparison"). It is FOCALITY. Entry 3 rates itself
@@ -5176,7 +5176,7 @@ reporting a race, and both times the race was in the app, not in the walk.
 **And one correction about the instrument.** The Spine job for 1.40.2 was
 reported by the GitHub API as `in_progress` for thirty minutes after it had
 already failed. It was read as a hang and watched as one. The status field is not
-evidence; the log is. Cancelling the run is what made the log readable and the
+evidence; the log is. Canceling the run is what made the log readable and the
 failure visible.
 
 **1.40.2 — the capture link could not open, and it opens the wrong app.** Two
@@ -5805,7 +5805,7 @@ point was broken in half with its second half stranded below as a paragraph —
 because it only compared the generated page against itself.
 
 **A private worry could be handed to somebody else.** A worry raised inside a
-reporting period was itemised by name, verbatim, in the status report. The kind
+reporting period was itemized by name, verbatim, in the status report. The kind
 list it should have been on was an enumeration of four nouns found by an earlier
 audit; it is now a total record over the vocabulary, so a new kind cannot compile
 until somebody decides whether it may leave the device.
@@ -6057,7 +6057,7 @@ to the owner that the record could already answer.
 - **2026-08-06 — 1.27.0 (CAPABILITY): a returning place says what it is
   holding.** The other half of "the place comes back, and its contents come back
   with it" — 1.26.0 made a place able to return, and it arrived saying "7 under
-  it". The collision catalogue's top-ranked proposal (entry 3) is that filed
+  it". The collision catalog's top-ranked proposal (entry 3) is that filed
   means gone because a filed thing has no cue; a count is not a cue and a name
   is.
 
@@ -6104,7 +6104,7 @@ to the owner that the record could already answer.
   back on…", an SC 2.5.3 failure the a11y gate caught on its first run.
 
   **The smoke block moved three times before it stopped littering** — it ate a
-  card its neighbours routed by name, then perturbed the six-routes accounting,
+  card its neighbors routed by name, then perturbed the six-routes accounting,
   then assumed an empty inbox that only exists near the start of the walk. It
   sits last now, brings its own item, and cleans up with the app's own Undo.
 
@@ -6199,7 +6199,7 @@ to the owner that the record could already answer.
   SHA with the Doctrine §9b privacy step confirmed RAN rather than skipped.
 
 - **2026-08-05 — 1.24.0 (CAPABILITY): the two things you can do when you cannot
-  start.** The catalogue's first two entries, shipped together because they are
+  start.** The catalog's first two entries, shipped together because they are
   one moment from two directions — the thing is too big, or it is too heavy.
   Both acts sit on the offer, because the moment they help is the moment leaving
   the surface to do them is more than anybody can spend
@@ -6231,7 +6231,7 @@ to the owner that the record could already answer.
 
 - **2026-08-05 — 1.23.0 (CAPABILITY): assembled context reaches the two cards
   where the decision is made.** ADR-0012 named the idea and delivered half of
-  it. The collision catalogue asks for the other half twice — entry 17, because
+  it. The collision catalog asks for the other half twice — entry 17, because
   the meaning of a captured fragment drops within hours and arrives at triage as
   a stranger's note; entry 4, because the future carries no weight until it is
   now. The same move answers both: state the fact nobody can reconstruct, on the
@@ -6561,7 +6561,7 @@ to the owner that the record could already answer.
   durable parts land in this repo as the stages ship. Rotation-by-arithmetic
   was designed, adversarially killed (a second temporal primitive — law 5),
   and is recorded as rejected rather than resurfacing next quarter.
-  · **The collision catalogue is committed** —
+  · **The collision catalog is committed** —
   [`docs/nd-collisions.md`](docs/nd-collisions.md), 23 entries, each with the
   named research, what conventional systems do wrong, what this app already
   does (cited to its own ADRs), and a build/later/refuse routing. It was asked
@@ -7342,7 +7342,7 @@ to the owner that the record could already answer.
   · **The estimate had sat in the roadmap for months and nobody could check it**:
   "~18–20 full-state projection passes per commit (~220 ms today, 1.56 s at
   10k)", with the work deferred to item 42's on-device measurement. Correctly —
-  this repo does not optimise against a guess. **1.16.0 built the instrument**,
+  this repo does not optimize against a guess. **1.16.0 built the instrument**,
   and timing it made the estimate a fact: **one refresh cost ~100 ms at 566
   things**, and the cost was not spread evenly — nine projections cost 4–16 ms
   each and the other eight under 0.3 ms. Every expensive one walks nodes asking
@@ -7358,7 +7358,7 @@ to the owner that the record could already answer.
   · The cached object is **frozen** — a memo hands one object to every caller,
   and the three-place rule in `fold.ts` exists because this repo has already paid
   for aliasing once. The key is **(zone, instant)**, pinned by a test: keyed on
-  the instant alone it would hand a traveller the wrong day, which is worse than
+  the instant alone it would hand a traveler the wrong day, which is worse than
   being slow.
   · **Two gates, failing for different reasons.** A structural one that cannot
   flake (identity — the same instant resolves to the same object), which is what
@@ -7491,7 +7491,7 @@ to the owner that the record could already answer.
 - **2026-08-02 (continued on the owner's word)** — **1.15.1 "What *held* means"** — the item
   ADR-0065 left open, which reading the code turned from a question into a
   shipped defect.
-  · **The coverage list was itemising journal entries as "(untitled) — held".**
+  · **The coverage list was itemizing journal entries as "(untitled) — held".**
   A journal entry has no title by design (ADR-0061), and `buildCoverage`
   renders `title || '(untitled)'` — so opening the gauge listed every private
   entry as a blank row. ADR-0061 excluded them from the todo list to prevent
@@ -7660,7 +7660,7 @@ to the owner that the record could already answer.
   exactly that mistake about exactly the document that answers it. The new gate
   did its job and demanded a sentence; the sentence I wrote was wrong.
   · **My supporting argument was also wrong.** "Next up cannot ask for less than
-  one thing" is true of Next up and does not generalise: `COMPOSED_CAP` is 5,
+  one thing" is true of Next up and does not generalize: `COMPOSED_CAP` is 5,
   `OFFER_CAP` is 2, `REVIEW_CAP` is 3, and the timeline annotation needs no cap
   at all.
 
@@ -7771,7 +7771,7 @@ to the owner that the record could already answer.
   overturn clause reads "Nothing about the vault split". ADR-0061 supersedes that
   clause; 0005 keeps a `Superseded by` header and is otherwise left exactly as
   written, per the ADR rules. Its other three bindings survive untouched and the
-  release honours all of them.
+  release honors all of them.
   · **Q-10's objection never reached the journal**, and this is the part I had
   wrong for most of the session. Its argument — two apps, remember to check both,
   Next up forced to pick a side — is about work versus home, where both sides
@@ -7793,7 +7793,7 @@ to the owner that the record could already answer.
   audit. The held list is the todo list, which is a different question.
   · **PBKDF2-SHA-256 at 600,000 rounds**, the count stored with the salt so a
   later raise can still open older entries, and a count below the floor refused
-  rather than honoured. Argon2id would have meant a WASM dependency; ADR-0005
+  rather than honored. Argon2id would have meant a WASM dependency; ADR-0005
   delegated this choice to the build, which I had been wrongly holding as
   the owner's.
   · **Unlocking proves the key against a real entry** before reporting success.
@@ -7848,7 +7848,7 @@ to the owner that the record could already answer.
   head before the promote; Deploy 183 green on `main` at the same sha after it.
 
 - **2026-08-02 (promoted on the owner's word)** — **1.11.0 "A few things you
-  could pick up"** — the menu shape required: queue towards offering what
+  could pick up"** — the menu shape required: queue toward offering what
   a person wants to choose to do, rather than a list of things waiting to be
   done.
   · **The way through was in the thesis's own wording.** §4's choice-overload
@@ -7866,7 +7866,7 @@ to the owner that the record could already answer.
   the landing surface — the nearest thing this app has to the backlog headline
   law 8 names outright — while the coverage gauge three lines up already states
   the honest totals.
-  · **The smoke walk's anti-theatre check moved to the gauge**, and deliberately
+  · **The smoke walk's anti-theater check moved to the gauge**, and deliberately
   to `ready now` rather than `held`: a completed thing is still held, because law
   1 does not exempt finished work, so `held` is exactly the number that must not
   move when something is done.
@@ -8300,7 +8300,7 @@ to the owner that the record could already answer.
   to (the consent-sentence rule). Deliberately unfolded.
   · **The machinery**: `planBulk`/`runBulk`/`undoBulk` (src/ui/bulk-intents)
   — byte-parity with the single intents (property-tested), the app's first
-  chunked commits (~500 events each on the session's serialising queue), a
+  chunked commits (~500 events each on the session's serializing queue), a
   per-chunk fresh check that skips-and-counts what moved on, and undo from
   facts captured at act time (the exact prior parent, the prior category).
   · **Two conflicts ruled on in ADR-0049**: receipts (counts of the APP's
@@ -8449,7 +8449,7 @@ to the owner that the record could already answer.
   panel)**. Spine run 88 watched green on that exact commit before the fast-forward.
   · **0.21.1 is a device fix. It was reported TWICE**, and the second report is the interesting
   one. The first got a `position: sticky` header, which is correct, which every engine in CI
-  honours, and which does not hold on the iPad. **I reproduced the intended behavior
+  honors, and which does not hold on the iPad. **I reproduced the intended behavior
   perfectly at three viewports** — that is precisely why the first fix was not a fix. When a
   mechanism verifies clean everywhere you can look and the report persists, the answer is to
   **remove the dependency, not to keep testing the mechanism**.
@@ -8574,7 +8574,7 @@ to the owner that the record could already answer.
   cross and turned the dark module light — invisible to every count-based check,
   because reserving a module twice is idempotent and the codeword total never moved.
   · My penalty test was also meaningless at first: it compared an all-dark grid against
-  an all-light one, which are equally penalised. Uniform is not a neutral baseline; the
+  an all-light one, which are equally penalized. Uniform is not a neutral baseline; the
   rules are now measured as deltas from a checkerboard.
   · Unwired, like `seal.ts`, `relay.ts` and `sync.ts`. The reason there is no QR on
   screen is that the screen it belongs to is Quietkeep Sync, a separate deployment
@@ -8755,7 +8755,7 @@ to the owner that the record could already answer.
   somebody out of their own data. Case and stray spaces are forgiven; the check is on
   intent.
   · **The two words differ, and that is load-bearing.** With one shared word, typing
-  it for the reversible mode and then switching would carry the authorisation across
+  it for the reversible mode and then switching would carry the authorization across
   to the irreversible one. The UI half of the same protection: switching mode clears
   the field, asserted in smoke.
   · The backup is recommended with the button beside it, and the sentence above the
@@ -8876,7 +8876,7 @@ to the owner that the record could already answer.
   Storage:Edit and Workers Scripts:Edit — and the relay workflow deploys, prints
   its URL, that URL goes in `src/relay-host.ts`, and the Sync edition builds and
   ships. `tools/editions.mjs` builds NO sync edition while that host is unset, so
-  nothing can go out dialling a host that does not exist.
+  nothing can go out dialing a host that does not exist.
   · The sync design itself is recorded and stages 1-3b built. ADR-0037 names the
   three things that still need the owner's word: the doctrine wording (a sync id is
   account-shaped, and "no accounts, no server" stays true only of the default
@@ -8886,10 +8886,10 @@ to the owner that the record could already answer.
   · Sync at the visibility boundaries, not in the background: leaving the app
   uploads, opening it pulls. True background execution buys only "current before
   you open it", and costs push, an install, an entitlement and V-03.
-  · The exposure is written out in full in ADR-0037 rather than summarised — what
+  · The exposure is written out in full in ADR-0037 rather than summarized — what
   a relay can never see, and what it unavoidably can: **when you use the app, how
   often, and from where.** For this audience that is the shape of your day, and it
-  is stated at that weight rather than minimised.
+  is stated at that weight rather than minimized.
 
 - **2026-07-29** — **Two devices (0.11.0 CAPABILITY,
   [ADR-0035](docs/adr/0035-multi-device-shard-union.md)).** The requirement: multi-device sync is
@@ -9054,7 +9054,7 @@ to the owner that the record could already answer.
   gates green, because the smoke check compares the file against the surface's own
   promised count and both moved together. Now an exclusion, so a new group
   defaults to included.
-  · **Four gate checks were theatre.** The cap asserted against the constant the
+  · **Four gate checks were theater.** The cap asserted against the constant the
   code uses (self-referential — raising it to five stayed green); the "order is
   total" test was `f(s) === f(s)`, true of any pure function; `card.fed` compared a
   constant with itself; and `replanWords` / `contextWords` / `countWords` had **no
@@ -9195,7 +9195,7 @@ to the owner that the record could already answer.
   fired, in words. **"Not this" records nothing**: no event, no field, no persistence, and
   the smoke walk counts the IndexedDB log before and after a skip to prove it rather than
   assert it. Behind the head sits a capped five; Upkeep chips carry the recurring things;
-  and the coverage gauge became a **button** whose number opens into the itemised list that
+  and the coverage gauge became a **button** whose number opens into the itemized list that
   backs the claim. The decay primitive ([ADR-0010](docs/adr/0010-decay-primitive.md)) is
   now real code: `(elapsed − interval) / comfort_window`, continuous, unbounded, computed
   at read time and stored nowhere — `null` rather than `0` where there is no cadence, and

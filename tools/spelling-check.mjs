@@ -18,18 +18,26 @@
 // `quote-check.mjs` both carry that lesson, and `copy-count.mjs` in a sibling
 // found the same thing by measurement (hub LESSONS §204).
 //
-// READER-FACING TEXT ONLY, and this is most of the work. A scan of the whole
-// tree for these words returns 63 hits on `aria-labelledby` — which is the
-// attribute name in the HTML spec and cannot be respelled — plus
-// `normaliseTheme`, `serialiseState`, `sanitisation`, `--artefact` and
-// `totally`. None of those is a word anybody reads. So:
+// PROSE EVERYWHERE, IDENTIFIERS NOWHERE, and that line is the whole design.
+//
+// It shipped reading only what a READER of the app sees, on the grounds that
+// nobody else reads the rest. That reason was rejected: a spelling nobody will
+// see is still the wrong spelling, and this repo's docs, ADRs and tool comments
+// are prose somebody reads every time they work here. So the population is
+// every tracked `.md`, every `.html`, and the STRINGS AND COMMENTS of every
+// `.ts` and `.mjs`.
+//
+// What stays out is IDENTIFIERS, and that is a line rather than an oversight.
+// A scan of the whole tree returns 63 hits on `aria-labelledby`, which is the
+// attribute name in the HTML spec and cannot be respelled, plus
+// `normaliseTheme`, `serialiseState`, `sanitization` and a CLI flag called
+// `--artefact`. Renaming those is a refactor with real risk and no reader on
+// the other end of it; respelling the prose beside them is neither.
 //
 //   HTML   text nodes, and the values of the attributes a person actually
 //          reads (aria-label, placeholder, title, alt, and a button's value).
 //          Never an attribute NAME.
-//   TS     string literals only. Identifiers and comments are not read by
-//          anybody using the app, and both are where the code's own vocabulary
-//          lives.
+//   TS/MJS string literals AND comments. Never an identifier.
 //   MD     prose, minus fenced blocks and inline code spans.
 //
 // `<span data-was>` is exempt by construction, not by declaration: the help is
@@ -53,9 +61,9 @@ const listMode = process.argv.includes('--list');
 /**
  * BRITISH -> AMERICAN, one entry per word, inflections spelled out.
  *
- * Deliberately absent, each for a reason: `grey` (standard in American English
- * too, and the palette files use it), `learnt`/`spelt`/`dreamt`/`burnt`
- * (accepted American variants), `towards` (likewise), `artefact` (a flag name
+ * Deliberately absent, each for a reason: `gray` (standard in American English
+ * too, and the palette files use it), `learned`/`spelled`/`dreamed`/`burned`
+ * (accepted American variants), `toward` (likewise), `artefact` (a flag name
  * in the hub's `branch-guard`, and never reader-facing here), and every -ise
  * word whose American spelling also ends in s.
  */
@@ -159,7 +167,19 @@ const WORDS = new Map(Object.entries({
   manoeuvre: 'maneuver', manoeuvres: 'maneuvers', catalogue: 'catalog',
   dialogue: 'dialog', enrolment: 'enrollment', fulfilment: 'fulfillment',
   instalment: 'installment', skilful: 'skillful', wilful: 'willful',
-  judgement: 'judgment', ageing: 'aging', axe: 'ax', grey: 'gray',
+  judgement: 'judgment', ageing: 'aging',
+  // ADDED WHEN THE TASTE EXCLUSIONS WERE RULED OUT. These were left off the
+  // first list as "accepted American variants" — a judgment about how British
+  // a word has to be before it counts, which is not this gate's to make.
+  grey: 'gray', greyed: 'grayed', greyish: 'grayish',
+  learnt: 'learned', spelt: 'spelled', dreamt: 'dreamed', burnt: 'burned',
+  towards: 'toward', leapt: 'leaped', knelt: 'kneeled', smelt: 'smelled',
+  // `axe` IS DELIBERATELY ABSENT and it is the false positive worth fearing:
+  // it names the accessibility engine this repo runs in two walks and mentions
+  // in sixteen files, so "ax" would be a rename of a tool rather than a
+  // spelling fix. A word list cannot tell a spelling from a proper noun on its
+  // own — somebody has to read what the hits were before trusting the count.
+  // END OF THE WORD MAP.
 }));
 
 const tracked = execFileSync('git', ['-C', repo, 'ls-files'], { encoding: 'utf8' })
@@ -167,9 +187,11 @@ const tracked = execFileSync('git', ['-C', repo, 'ls-files'], { encoding: 'utf8'
 
 /** The population, by how its reader-facing text is found. */
 const POPULATION = [
-  { kind: 'html', match: (f) => /^public\/[^/]+\.html$/.test(f) || f === 'docs/paths.html' },
-  { kind: 'ts', match: (f) => /^src\/.+\.ts$/.test(f) },
-  { kind: 'md', match: (f) => f === 'CHANGELOG.md' || f === 'docs/manual.md' },
+  { kind: 'html', match: (f) => /\.html$/.test(f) },
+  { kind: 'ts', match: (f) => /\.(ts|mjs)$/.test(f) },
+  // LICENSE.md is not ours to respell: it carries PolyForm's own notice
+  // wording, where the license's spelling of "license" is the license's.
+  { kind: 'md', match: (f) => /\.md$/.test(f) && f !== 'LICENSE.md' },
 ];
 
 /** `<span data-was>…</span>` — the help's sanctioned way to say an old name. */
@@ -201,13 +223,15 @@ function readableHtml(src) {
   return [`${s}\n${spoken.join('\n')}`, wasCount];
 }
 
-/** String literals only — never an identifier, never a comment. */
+/** Strings and comments — never an identifier. */
 function readableTs(src) {
-  const s = src
+  const out = [];
+  for (const m of src.matchAll(/\/\*[\s\S]*?\*\//g)) out.push(m[0]);
+  for (const m of src.matchAll(/(?:^|[^:'"`\\])\/\/([^\n]*)/g)) out.push(m[1]);
+  const bare = src
     .replace(/\/\*[\s\S]*?\*\//g, ' ')
     .replace(/(^|[^:])\/\/[^\n]*/g, '$1 ');
-  const out = [];
-  for (const m of s.matchAll(/'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"|`((?:\\.|[^`\\])*)`/g)) {
+  for (const m of bare.matchAll(/'((?:\\.|[^'\\])*)'|"((?:\\.|[^"\\])*)"|`((?:\\.|[^`\\])*)`/g)) {
     out.push(m[1] ?? m[2] ?? m[3] ?? '');
   }
   return [out.join('\n'), 0];

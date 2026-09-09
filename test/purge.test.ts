@@ -10,7 +10,7 @@
 //
 // **The two confirmation words cannot substitute for each other.** With one shared
 // word, satisfying the guard for the reversible mode and then switching would
-// carry the authorisation across to the irreversible one — somebody loses their
+// carry the authorization across to the irreversible one — somebody loses their
 // history to a control they had already passed for something else.
 //
 // **The count is the real count.** It is the most persuasive thing on the screen at
@@ -95,13 +95,13 @@ test('clearing twice is not an error and does not double-trash', () => {
 
 // --- THE OTHER ONE: the guard cannot be satisfied by accident ----------------
 
-test('THE OTHER ONE: the two modes take different words, so authorisation cannot cross', () => {
+test('THE OTHER ONE: the two modes take different words, so authorization cannot cross', () => {
   // With one shared word, typing it for the reversible mode and then switching
-  // would carry the authorisation to the irreversible one. Somebody loses their
+  // would carry the authorization to the irreversible one. Somebody loses their
   // history to a control they had already passed for something else.
   assert.notEqual(CONFIRM_WORD['clear'], CONFIRM_WORD['start-again']);
   assert.equal(confirmMatches('start-again', CONFIRM_WORD['clear']), false,
-    "the reversible mode's word must not authorise the destructive one");
+    "the reversible mode's word must not authorize the destructive one");
   assert.equal(confirmMatches('clear', CONFIRM_WORD['start-again']), false);
 });
 

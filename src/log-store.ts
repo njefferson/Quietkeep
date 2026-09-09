@@ -11,7 +11,7 @@ import { compareEvents } from './fold.ts';
 export interface Snapshot {
   /** State is rebuilt from events after this point. */
   upToSeqByDevice: Record<DeviceId, number>;
-  /** Serialised state. The snapshot is an OPTIMISATION — restore must work
+  /** Serialized state. The snapshot is an OPTIMISATION — restore must work
    *  from the log alone, and there is a test that proves it (ADR-0006). */
   state: unknown;
   at: string;

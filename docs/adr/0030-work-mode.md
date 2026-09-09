@@ -65,7 +65,7 @@ the total is stated in words. Upkeep chips are separate, and the display
 threshold is a *parameter of the projection*, not a stored value.
 
 **5 · The coverage gauge is a button.** Its number is a claim; tapping it opens
-the itemised list — every held item and when it returns — that backs the claim.
+the itemized list — every held item and when it returns — that backs the claim.
 Both read **one** definition (`heldNodes`): the gauge previously counted trashed
 and merged nodes the list omitted, so it said "3 held" over a list of 2. A claim
 the user is invited to open must check out, or it is worse than no claim.
@@ -142,4 +142,4 @@ enough to matter — in which case the fix is a **new tier or a changed order**,
 argued explicitly, never a blended score. And if "Not this" ever needs to
 influence what is shown next, that is a change to product law territory and
 The owner's call, not a session's: the honest version would be an in-memory
-de-prioritisation for the current session only, still writing nothing.
+de-prioritization for the current session only, still writing nothing.

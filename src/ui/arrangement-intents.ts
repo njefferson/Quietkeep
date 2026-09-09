@@ -43,7 +43,7 @@ export const markArrangementEvents = (ctx: StampContext, node: string): AppEvent
 export const unmarkArrangementEvents = (ctx: StampContext, node: string): AppEvent[] =>
   [base(ctx, 'node.field.set', node, { field: ARRANGEMENT_FIELD, value: false })];
 
-/** Confirming means asking somebody else — an approval, an authorisation, a
+/** Confirming means asking somebody else — an approval, an authorization, a
  *  supplier who will not write to say they have stopped. Orthogonal to the
  *  marker, because plenty of arrangements run on a machine you own. */
 export const setDependsEvents = (ctx: StampContext, node: string): AppEvent[] =>

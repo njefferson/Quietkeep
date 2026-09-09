@@ -41,7 +41,7 @@ the entire difference is what is being asked.
 
 **A second, orthogonal field — `arrangement-depends`** — marks the arrangements
 whose continuation depends on somebody else: an approval nobody chased, a lapsed
-authorisation, a supplier who will not write to say they have stopped. This is
+authorization, a supplier who will not write to say they have stopped. This is
 not a category for its own sake. It changes what confirming *means*, because it
 cannot be done from here, and the words say so.
 

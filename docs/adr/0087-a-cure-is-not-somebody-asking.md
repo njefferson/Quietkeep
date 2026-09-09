@@ -79,5 +79,5 @@ is now a build failure.
 - **If a kind is classified wrongly in the quiet direction**, something a person
   asked for stops coming back — the worst failure this app has. That is why the
   two historically-broken cases are pinned by name in the test, and why the
-  default for an unrecognized source is still *somebody's*, which errs towards
+  default for an unrecognized source is still *somebody's*, which errs toward
   showing work rather than quieting it.

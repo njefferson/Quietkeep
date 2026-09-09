@@ -613,7 +613,7 @@ test('the waiting an @owes opens is the one the sheet opens', () => {
   assert.equal(opened.length, 1, 'one @owes, one window');
   const p = (opened[0] as unknown as { payload: { person: string; forWhat: string; since: string } }).payload;
   assert.equal(p.forWhat, 'Collect the network diagram');
-  assert.equal(p.since, NOW, 'ageing starts at the import, not at a guessed past');
+  assert.equal(p.since, NOW, 'aging starts at the import, not at a guessed past');
   const diagram = heldNodes(state).find(n => n.title === 'Collect the network diagram')!;
   assert.equal(diagram.waitingOn, p.person);
   assert.equal(diagram.waitingSince, NOW);
@@ -808,13 +808,13 @@ test('a repeat-free file says nothing about rhythms', () => {
 
 // ——— THE ARRIVAL IS A FACT, NOT A DEBT (2.25.0, entry 23) ———
 //
-// The catalogue's measured case is a 1,173-item import leaving eleven of
+// The catalog's measured case is a 1,173-item import leaving eleven of
 // fourteen node kinds at zero: the app arrives able to filter by place, person
 // and container, and none of it can do anything because nobody has been asked
 // for a word. What the summary never said is that this is not a backlog the
 // reader has already failed to clear.
 //
-// Modelled on the amnesty (ADR-0043) and held to its one hard constraint: an
+// Modeled on the amnesty (ADR-0043) and held to its one hard constraint: an
 // amnesty that sounds like absolution implies there was something to forgive.
 
 test('the summary says nothing is filed, and says why, so the pile is not a debt', () => {

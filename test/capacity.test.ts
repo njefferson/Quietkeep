@@ -91,7 +91,7 @@ test('nothing nobody weighed is treated as either extreme', () => {
   // A missing declaration is not a claim. Reading it as light would hide real
   // work on a low day; reading it as heavy would bury it on a good one. Both
   // would be the app inventing an opinion it was never given.
-  // BETWEEN the two, and asserted against BOTH neighbours. Comparing it only
+  // BETWEEN the two, and asserted against BOTH neighbors. Comparing it only
   // with `heavy` cannot tell `ordinary` from `light` — a plant reading an
   // unweighed item as light passed that version of this test, which is a test
   // that did not test the thing it was named for.

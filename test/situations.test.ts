@@ -239,7 +239,7 @@ test('people survive a snapshot, and a cut taken before they existed reads empty
     'additive-only: a cut from before this reads as nobody named, never as undefined');
 });
 
-test('the serialised record does not alias the folded state', () => {
+test('the serialized record does not alias the folded state', () => {
   const s = apply(withPeople(), saveSituationEvents(ctx, 'Weekly sync', 'OFF', 60, ['P1', 'P2']));
   const rec = serialiseState(s);
   const row = (rec as unknown as { situations: { name: string; people: string[] }[] })

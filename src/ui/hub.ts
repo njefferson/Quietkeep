@@ -71,7 +71,7 @@ export function paintHub(hasWork: boolean, doc: Document = document): void {
 
   const live = liveIds(doc);
 
-  // A JOB ASKED FOR BEFORE IT EXISTS, honoured ONCE (3.0.0). Pressing "Work on
+  // A JOB ASKED FOR BEFORE IT EXISTS, honored ONCE (3.0.0). Pressing "Work on
   // this" starts a focus session, and `#focus` only becomes live once it has
   // started — so an `enter('focus')` at the moment of pressing resolves to the
   // hub and is thrown away. `pending` survives exactly one paint's worth of that

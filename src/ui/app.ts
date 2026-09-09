@@ -602,7 +602,7 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
       // it". 1.26.0 made a place able to return; a place that arrives saying
       // only "7 under it" gives a number and sends you looking to find out
       // whether it is the number you cared about. Entry 3 of the collision
-      // catalogue is cue-dependent prospective memory — filed means gone, and a
+      // catalog is cue-dependent prospective memory — filed means gone, and a
       // count is not a cue, a NAME is.
       //
       // ONLY IN `ready`, and that is the whole restraint. Every container in the
@@ -1048,7 +1048,7 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
   const { silent, total } = coverageGauge(session.state());
   const readyNow = groups.find(g => g.key === 'ready')?.items.length ?? 0;
   // The gauge is a button: its number is a claim, and the claim opens into the
-  // itemised list that backs it (build-plan item 21).
+  // itemized list that backs it (build-plan item 21).
   //
   // `ready` is stated here because **the icon badge shows that same number**, and
   // until now no surface in the app said it anywhere. a reader came back to a red 1 on
@@ -1215,14 +1215,14 @@ export async function main(edition?: Edition): Promise<void> {
 
   // Kept as its own binding because assigning it to the input DESTROYS the thing
   // the many-line restore below has to read: setting a text input's value strips
-  // carriage returns and line feeds (the HTML value-sanitisation rule), so
+  // carriage returns and line feeds (the HTML value-sanitization rule), so
   // `input.value` can never contain a newline no matter what was stored.
   const savedDraft = await session.draft();
   input.value = savedDraft;
 
   // Every surface is mounted through a mutable holder that starts as a no-op, so
   // one failing surface cannot take the others — or capture — down with it, and
-  // no callback can close over a binding that is not initialised yet.
+  // no callback can close over a binding that is not initialized yet.
   //
   // CONTAINMENT IS LOAD-BEARING HERE, not defensive habit. These surfaces read
   // every stored date, and they are built BEFORE the submit listener below is
@@ -2178,7 +2178,7 @@ export async function main(edition?: Edition): Promise<void> {
   // A multi-line paste into the ONE-LINE field.
   //
   // `<input type="text">` strips carriage returns and line feeds from anything
-  // set as its value — that is the HTML value-sanitisation rule, and it is why
+  // set as its value — that is the HTML value-sanitization rule, and it is why
   // pasting a written list here does not make many items and does not even make
   // one readable line: every join runs together. But the newlines are not gone,
   // they are only gone FROM THE ELEMENT. The clipboard still holds them, so this
@@ -2416,7 +2416,7 @@ export async function main(edition?: Edition): Promise<void> {
   }
   try {
     // Stored as a string like every other view preference. A stored value that
-    // is not one of the offered lengths is dropped rather than honoured: it
+    // is not one of the offered lengths is dropped rather than honored: it
     // would filter by a number no control can show or clear, which is a state
     // somebody could be stuck in with nothing on screen explaining why.
     const raw = Number(await session.store.getKv<string>(HOW_LONG_KEY));

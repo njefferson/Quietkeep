@@ -73,7 +73,7 @@ the gate is not conditional on who is being asked:
 - **Identify accurately, derived from the shipped version.** Not a hard-coded string
   that drifts. A stale User-Agent is barely better than an anonymous one — an operator
   looking at a spike could not tell which build caused it.
-- **Honour `Retry-After` exactly.** A 429 is an instruction, not an obstacle.
+- **Honor `Retry-After` exactly.** A 429 is an instruction, not an obstacle.
 - **Two attempts, not nine, and never a different host on failure.** Retrying elsewhere
   is not a retry, it is moving your load onto someone else.
 - **Circuit-break.** After N consecutive failures, stop the run rather than grinding
