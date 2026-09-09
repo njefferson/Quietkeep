@@ -1708,9 +1708,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.14**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.15**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.12, so the two hosts are one
-  tree plus two releases. 3.23.14 closes the fourth cold read — the *Just one
+  tree plus three releases. 3.23.15 exists because a fix was tried, measured
+  wrong and taken back out AFTER 3.23.14 was cut — the held list keeps saying
+  each row's own status under a heading that says the same thing, because the
+  smoke walk refused the alternative on two assertions that read the row for the
+  state. Shipped bytes moved after the triplet, which `release:check` caught in
+  CI and which would otherwise have left every installed reader on the old
+  bundle; 3.23.14's note about that change was removed in the same commit,
+  because it described something that never shipped. 3.23.14 closes the fourth cold read — the *Just one
   thing* dead end it found, the sorting screen's three names, and four places
   where the app printed one fact twice or printed a word nobody chose. Two of
   those left gates behind them: an opener is now held to its own door's name,

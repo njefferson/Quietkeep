@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.15 — ITERATION
+
+*2026-09-09*
+
+- **Every row on your list still says its own state, even under a heading that says the same thing.** The last release was going to stop that repetition — under *Not sorted yet*, every row also says *not sorted yet* — and it was tried and taken back out the same hour. A heading is one line above a group of any length, so on a real list the row and the words explaining it end up screens apart, and a row you have to scroll up to understand is exactly what this app is against. The repetition is the cheaper of the two.
+- **Still to sort:** the repetition is real and this is not the last word on it. What a row wants under *Not sorted yet* is probably when you put it down, rather than nothing and rather than the heading again.
+
 ## 3.23.14 — ITERATION
 
 *2026-09-09*
@@ -21,7 +28,6 @@ triplet and what it did for you.
 - **“Just one thing” shows you the one thing.** Turn the reduced screen on, close the app and come back, and it said *1 ready now* with nothing under it — the mode strips the page of doors, the app always comes back to the doors, and the one thing lives behind one of them. It goes straight to the thing now.
 - **The sorting screen has one name.** The door said *Sort what you put down*, the button inside it said *Sort what you have put down*, and the manual called it *Sort things out*, which is what the batch picker is called. Three names, one screen. It is *Sort what you put down* everywhere, and the batch picker is *Sort a batch* — which the manual had never described, because its name was being used for something else.
 - **A thing’s own page stops saying one fact twice.** Something you are waiting on read *Waiting for · sorted as waiting for*, and something on the Menu read *on the Menu · sorted as someday*. One fact, printed once now — and still printed in full when the two are genuinely different, such as a thing sorted to the Menu that you have since taken off it.
-- **And the list stops repeating its own headings.** Under *Not sorted yet*, every row also said *not sorted yet*; the same under *Needs a new plan*, *On the Menu* and *Done*. The heading says it. The rows say what the heading does not.
 - **Something you wanted no longer claims a word you never chose.** It read *something you wanted · Read*, and *Read* is only what the app files a wish under when you have not said. The Menu still groups them; the thing itself no longer asserts it.
 - **Places you already use say they are on offer.** On a thing with no place set, the question *Where can this be done?* was followed by an underlined *on the phone*, which reads as the answer. The list says what it is now, and what tapping one does.
 - **And a dash is not an answer.** Under *Your data*, *Asked for* printed a bare — in a column of words. It says the same thing the row above it says.
