@@ -103,12 +103,15 @@ test('held-means: "you have not decided about these yet" counts only work', () =
   assert.equal(undatedCount(s, NOW, TZ), 1, 'the plumber, and nothing else');
 });
 
-test('held-means: a spent resume card is not work, and this is where that lives now', () => {
-  // Moved out of `heldGroups` in 1.15.1. It has been true since the tier
-  // existed; it was true in one projection and false in the gauge.
+test('held-means: a resume card is not work, spent or not', () => {
+  // Moved out of `heldGroups` in 1.15.1 for the spent half. The other half landed
+  // in 3.23.16, and this test asserted it the old way: `total` was expected to be
+  // 1 for an unspent card, with the sentence "an unspent card is a thread to pick
+  // back up" — which is true, and is not the same claim as "it is one of the
+  // things you are holding". The gauge counts work. The app wrote this one.
   let s = write(emptyState(), [ev('node.created', 'R', { nodeKind: 'resume-card', title: 'where you left off' })]);
-  assert.equal(coverageGauge(s).total, 1, 'an unspent card is a thread to pick back up');
+  assert.equal(coverageGauge(s).total, 0, 'the app wrote this card; it is not work the reader is holding');
   s = write(s, [ev('resume.card.spent', 'R', {})]);
-  assert.equal(coverageGauge(s).total, 0, 'a spent one is residue');
+  assert.equal(coverageGauge(s).total, 0, 'and spending it changes nothing about that');
   assert.equal(heldGroups(s, NOW, TZ).flatMap(g => g.items).length, 0, 'and the two agree');
 });

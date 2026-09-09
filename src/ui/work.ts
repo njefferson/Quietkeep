@@ -15,7 +15,7 @@
 import type { Session } from './session.ts';
 import type { AppEvent, NodeKind } from '../events.ts';
 import type { NodeState } from '../fold.ts';
-import { coverageProof, heldWork } from '../gate.ts';
+import { coverageProof, heldWork, whyCovered } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
@@ -1045,6 +1045,11 @@ export function mountWork(
   // it modifies the count instead of agreeing with it.
   const REASON_WORDS: Record<string, string> = {
     clock: 'with a day they come back to you',
+    // FINISHED, AND NOT COMING BACK (3.23.16). These were counted under `clock`
+    // and listed as returning today, because the log is append-only and marking
+    // a thing done does not erase the day it carried. An upkeep between rounds
+    // stays under `clock`, where it belongs — it genuinely does come back.
+    done: 'finished, and not waiting to come back',
     menu: 'on the Menu — no clock, because you said so',
     parent: 'coming back with something they are part of',
     after: 'waiting on something that will be shown to you first',
@@ -1136,15 +1141,28 @@ export function mountWork(
       b.type = 'button';
       b.append(el('span', 'coverage-title', n.title || '(untitled)'));
       const clock = rowClock(n);
-      // THE MENU ARM WAS UNREACHABLE. A thing routed to Someday keeps the
-      // `review` clock the gate wrote at capture — demand clocks are cleared,
-      // that one never was a demand — so `clock` is truthy for every Menu item
-      // and this row said `returns today` about something the reader had just
-      // put down indefinitely. The `on the Menu` branch existed and could not
-      // be reached. Asking `onMenu` first is the precedence `heldGroups` has
-      // always used.
+      // THE ROW ASKS `whyCovered` NOW, AND THAT IS THE POINT (3.23.16).
+      //
+      // This was a ternary — `onMenu ? … : clock ? … : 'held'` — which is a
+      // SECOND statement of the precedence `whyCovered` exists to state, on the
+      // same surface, three lines from the counts that use the first one. So the
+      // two could be independently wrong about one row, and they were: a finished
+      // thing counted under "with a day they come back to you" up there and read
+      // "returns today" down here, and fixing either alone would have left the
+      // surface contradicting itself.
+      //
+      // The comment this replaces recorded the identical bug in the identical
+      // spot: the `on the Menu` arm was unreachable, because a Menu item keeps
+      // the gate's own `review` cure and `clock` is therefore truthy for every
+      // one of them. That was fixed by adding a branch — one more copy of the
+      // order — rather than by asking the function that owns it. There is one
+      // copy now, so the next state that has to win is added once.
+      const why = whyCovered(n, state);
       b.append(el('span', 'coverage-when',
-        n.onMenu ? 'on the Menu' : clock ? `returns ${returns(clock.at)}` : 'held'));
+        why === 'menu' ? 'on the Menu'
+          : why === 'done' ? 'finished'
+            : why === 'clock' && clock ? `returns ${returns(clock.at)}`
+              : 'held'));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(n.id);
         if (!fresh) return;

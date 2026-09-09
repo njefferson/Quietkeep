@@ -191,7 +191,12 @@ merely *lapsed* — that is a different case entirely, and it is `replan.raised`
   - Payload: `clockKind`
   - Silent risk: **yes — gated**
 - **`upkeep.interval.set`**
-  - Payload: `interval, comfortWindow`
+  - Payload: `intervalDays, comfortWindowDays` — **corrected 3.23.16.** This said
+    `interval, comfortWindow`, which is not what `events.ts` declares, not what
+    the fold reads and not what any emitter writes. A test written from this line
+    set neither field, and only its own non-empty guard stopped it passing while
+    proving nothing. `events:check` holds the noun list closed and does not read
+    payloads, so nothing else could see it.
   - Silent risk: no
 - **`done.marked`**
   - Payload: `at`

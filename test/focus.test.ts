@@ -303,21 +303,33 @@ test('an interrupt with no focus running is just a capture', () => {
   assert.deepEqual(resumeCards(s), []);
 });
 
-test('a spent card is not something you are holding', () => {
-  // It carries a cure clock like every node, so without an explicit exclusion it
-  // sat in "Ready now" for ever, reading "where you left off" about work that
-  // was already finished. Next up had excluded spent cards since the tier
-  // existed and the held list had not — two surfaces, one node, opposite claims
-  // (smoke).
+test('a resume card is not something you are holding — spent or not', () => {
+  // THIS ASSERTED THE OPPOSITE UNTIL 3.23.16, in its second line: "a live card IS
+  // on your list — it is how you find it". The first half stopped being the rule;
+  // the second half was never true, and that is why the rule changed.
+  //
+  // A resume card is the only node the app writes about ITSELF. `heldWork`
+  // excluded a SPENT one on the reasoning that it "simply is not work" — equally
+  // true of an unspent one, since what makes it not work is the authorship, not
+  // the spending. So an unspent card was counted in the gauge, listed in the
+  // coverage sheet as returning today, and drawn as the FIRST ROW OF THE TREE
+  // above everything the reader had written, with a Done button. A cold read
+  // found it there and said, correctly, that it had never written it.
+  //
+  // "It is how you find it" was answered by the wrong surface. `resumeCards` is
+  // how you find it, and search reads `heldNodes` so typing its words still
+  // reaches it. Both are asserted below, because removing a thing from a list is
+  // only safe if the route that actually matters is shown to survive.
   const s0 = st(mk('A', 'the chapter'));
   let s = apply(s0, startFocusEvents(ctx, s0, 'A'));
   s = apply(s, endFocusEvents(ctx, s, 'abandoned'));
   const card = resumeCards(s)[0]!.card.id;
   const listed = () => heldGroups(s, NOW, TZ).flatMap(g => g.items).map(n => n.id);
-  assert.equal(listed().includes(card), true, 'a live card IS on your list — it is how you find it');
+  assert.equal(listed().includes(card), false, 'a live card is not on the work list');
+  assert.equal(resumeCards(s).length, 1, 'and the route back to the thread is untouched');
 
   s = apply(s, resumeEvents(ctx, s, card, 'A'));
-  assert.equal(listed().includes(card), false, 'a spent one is not');
+  assert.equal(listed().includes(card), false, 'nor is a spent one');
   assert.equal(s.nodes.get(card)!.trashed, false,
     'and it is not deleted either — it happened, and the log says so');
 });

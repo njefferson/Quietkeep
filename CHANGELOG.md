@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.16 — ITERATION
+
+*2026-09-09*
+
+- **Things you have finished no longer appear as things that are coming back.** *What comes back, and when* is the page you open to check that nothing has been lost, and it was listing work you had marked done as *returns today* — counted, in the same breath, among the things with a day they come back to you. Two people could not both be right, and it was the wrong one. Something that comes round on a rhythm still says so, because that is what a rhythm is.
+- **And the app no longer counts its own bookmark as one of your things.** When you start working on something, Quietkeep saves your way back in. That marker was being counted with your work, listed as returning today, and drawn as the first card in your tree — above everything you had written, with a *Done* button on it. It is still there when you need it and you can still find it by typing; it is not one of your things any more.
+- **Fixed properly rather than in the one place it was noticed.** The list of what is coming and the count above it were each deciding, separately, what to say about the same thing — so they could disagree about one row, and did. There is one answer now, and both read it.
+
 ## 3.23.15 — ITERATION
 
 *2026-09-09*

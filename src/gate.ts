@@ -25,6 +25,7 @@ import { endOfLocalDay, isValidIso, atMidnight} from './time.ts';
 import { survivorOf } from './merged.ts';
 import { wouldCycle } from './dependencies.ts';
 import { wouldParentCycle } from './tree.ts';
+import { hasCadence } from './pressure.ts';
 
 export class GateRejection extends Error {
   // Explicit fields, not constructor parameter properties — Node's
@@ -187,12 +188,31 @@ export const releasedNodes = (state: State): NodeState[] =>
  */
 export const heldWork = (state: State): NodeState[] =>
   heldNodes(state).filter(n => {
-    // A SPENT resume card is the residue of a thread already picked back up —
-    // or let go. It carries a cure clock like everything else, so without this
-    // it sat in "Ready now" for ever, reading "where you left off" about work
-    // that was finished. It is not trashed and not hidden from an export: it
-    // happened, and the log says so. It simply is not work.
-    if (n.kind === 'resume-card' && n.resumeSpent) return false;
+    // A RESUME CARD IS NOT WORK — SPENT OR NOT (3.23.16), and this said `spent`.
+    //
+    // The original clause and its reasoning were right and were HALF APPLIED. It
+    // read: a spent card "is the residue of a thread already picked back up — or
+    // let go … it simply is not work". Every word of that is true of an unspent
+    // one too. What makes it not work is not being finished; it is that THE APP
+    // WROTE IT. `delta.ts` has said so in as many words since it existed — "the
+    // app's own artifact about where you left off, not work".
+    //
+    // What the half-fix shipped: `focus-intents.ts` writes a `node.created` with
+    // the title "where you left off" the moment somebody starts a sitting, and
+    // until it is spent that node was counted in the gauge's total, listed in the
+    // coverage sheet as returning today, and drawn as the FIRST CARD IN THE TREE,
+    // above everything the reader had written, with a Done button on it. A cold
+    // read found it there and in search and said, correctly, *I never wrote it*.
+    // Same category error as a context, a role and a person, with the aggravation
+    // that this one is the app's own bookkeeping.
+    //
+    // THE ROUTE BACK IS UNAFFECTED, which is the thing to check before removing
+    // it from anything. `offer.ts` and `focus.ts` read `heldNodes`, not this, so
+    // the resume offer and the way back into an interrupted thread are untouched;
+    // `search.ts` reads `heldNodes` too and says in its own comment that the
+    // difference from `heldWork` is deliberate, so the card stays findable. What
+    // it leaves is the work list, the work count and the coverage rows.
+    if (n.kind === 'resume-card') return false;
     // NOR IS A CONTEXT (2.2.0, ADR-0092). "At home" is WHERE work can be done,
     // and putting it in the todo list would make the label a task — the same
     // category error the person and journal exclusions below and above exist
@@ -284,7 +304,7 @@ export const trashedNodes = (state: State): NodeState[] =>
  * fixed for, in the third place nobody looked. The reason a reader would give
  * is the reason to print.
  */
-export type CoverReason = 'decided' | 'clock' | 'menu' | 'demand-free' | 'parent' | 'after';
+export type CoverReason = 'decided' | 'done' | 'clock' | 'menu' | 'demand-free' | 'parent' | 'after';
 
 /** Which clause covers this node, or null if NOTHING does — which is the answer
  *  the whole surface exists to be able to give. */
@@ -297,6 +317,28 @@ export const whyCovered = (
     return target ? whyCovered(target, state, visited) : null;
   }
   if (node.onMenu !== null) return 'menu';
+  // DONE BEFORE CLOCK, and it is the FOURTH round of this one function's single
+  // mistake (3.23.16). The comment above records two — Menu before clock, twice
+  // — and the shape is identical every time: a state that should win is invisible
+  // here because the thing still carries a clock in `node.clocks`, and this asks
+  // about the clock first.
+  //
+  // The log is append-only, so finishing a thing does not erase the day it was
+  // carrying. So a finished action fell to `clock` and the coverage list — the
+  // one surface in this app whose entire job is to be checkable from outside —
+  // printed it under "with a day they come back to you", with a row reading
+  // "returns today", about work the reader had marked done and which the same
+  // store's search correctly called done. A cold read found two of them and
+  // confirmed they survive a reload, so it is not a stale render.
+  //
+  // AND UNLESS IT COMES BACK BY ITSELF, in which case `clock` is the true answer
+  // and must stay: an upkeep between rounds IS finished and IS returning, which
+  // is what a cadence means. `heldStatus` has drawn this exact line since it
+  // existed — "a finished thing says done rather than reporting the cure clock it
+  // happens to still carry", unless `isReadyAgain`. It needs a clock to ask;
+  // `hasCadence` is the same question asked of the fields, and `pressureOf`
+  // returns null for everything it rejects, so the two cannot part company.
+  if (node.lastDone && !hasCadence(node)) return 'done';
   if (Object.keys(node.clocks).length > 0) return 'clock';
   if (isDemandFree(node.kind)) return 'demand-free';
   if (node.parent) {

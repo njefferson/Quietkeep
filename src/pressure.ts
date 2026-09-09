@@ -47,6 +47,23 @@ import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
  * mother do not share a tolerance, so the same lateness in days is not the same
  * pressure. That is exactly what dividing by the item's own window expresses.
  */
+/**
+ * Does this thing come back ON ITS OWN — that is, does it carry the primitive?
+ *
+ * THE SAME GUARD `pressureOf` OPENS WITH, hoisted so it can be asked WITHOUT A
+ * CLOCK. `whyCovered` names which clause covers a node and has no `nowIso` and
+ * no `DayShape`, so it could not ask "is this finished for good, or is it an
+ * upkeep between rounds?" — the question that decides whether a done thing is
+ * still coming back. Copying the two field tests into `gate.ts` would be the
+ * second definition of a cadence, which is the 1.9.2 lesson exactly.
+ *
+ * `pressureOf` returns null for anything this returns false for, so the two
+ * cannot disagree by construction: it IS that function's first two lines.
+ */
+export const hasCadence = (n: NodeState): boolean =>
+  Number.isFinite(n.intervalDays) && Number.isFinite(n.comfortWindowDays)
+  && n.intervalDays! > 0 && n.comfortWindowDays! > 0;
+
 export function pressureOf(n: NodeState, nowIso: string, day: DayShape): number | null {
   // `Number.isFinite`, not `<= 0`: NaN passes every comparison (`NaN <= 0` is
   // false), so a malformed payload used to sail through the guard and produce a
@@ -54,8 +71,9 @@ export function pressureOf(n: NodeState, nowIso: string, day: DayShape): number 
   // every branch of pressureWords to the LOUDEST phrase in the app. An item with
   // no valid cadence shouting "been a good while" is precisely the shame surface
   // ADR-0010 exists to refuse. Infinity is excluded for the same reason.
-  if (!Number.isFinite(n.intervalDays) || !Number.isFinite(n.comfortWindowDays)) return null;
-  if (n.intervalDays! <= 0 || n.comfortWindowDays! <= 0) return null;
+  // `hasCadence` above IS these two lines. Asked through it so the predicate and
+  // this function can never answer differently about the same node.
+  if (!hasCadence(n)) return null;
   // A stored date that is not a real instant must not throw out of a projection
   // and take the app down with it.
   if (n.lastDone != null && !isValidIso(n.lastDone)) return null;
