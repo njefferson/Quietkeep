@@ -39,6 +39,26 @@ function inline(text) {
   s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, t, url) => `<a href="${url}">${t}</a>`);
   s = s.replace(/\*\*(.+?)\*\*/g, (_, b) => `<strong>${b}</strong>`);
   s = s.replace(/(^|[^*])\*(?!\s)([^*]+?)\*(?!\*)/g, (_, pre, it) => `${pre}<em>${it}</em>`);
+  // THE ONE SANCTIONED INLINE TAG, RESTORED BY NAME (3.23.7).
+  //
+  // `<span data-was>` is this family's marked bridge for a control's old name —
+  // `help-check.mjs` defines it, per-mention and never a whole-file pass. The
+  // escape above turned it into visible angle brackets, so the shipped manual
+  // has been printing `<span data-was>(it said Everything else until
+  // 3.9.2)</span>` AT THE READER as text ever since the idiom arrived. The
+  // markup showing through is the exact defect escaping exists to prevent,
+  // wearing the escape. Nothing compared the two pages: `paths.html` is
+  // authored as HTML and renders its own `data-was` correctly, and
+  // `manual.mjs --check` holds the HTML to the markdown, so both sides agreed
+  // about a string neither could read.
+  //
+  // Restored by NAME rather than by loosening `esc` — exactly this opening tag,
+  // and a closing span only when one was opened, so a doc that means a literal
+  // `</span>` still gets one.
+  if (s.includes('&lt;span data-was&gt;')) {
+    s = s.replace(/&lt;span data-was&gt;/g, '<span data-was>')
+      .replace(/&lt;\/span&gt;/g, '</span>');
+  }
   // Any stray unbalanced ** left over reads as text, not a broken tag.
   return s.replace(/\*\*/g, '');
 }

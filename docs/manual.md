@@ -141,8 +141,11 @@ pressed. There is nowhere to go.
 
 The same sheet has **Recognize this one?** at the bottom. Give what you have set
 a name and it comes back in one tap — the Tuesday standup, a free weekend, a
-call with one person. **Who is in it?** above it names the people; more than one
-makes it a meeting.
+call with one person. **Who is in the room?** <span data-was>(it said *Who is in it?* until
+3.23.7)</span> above it names the people; more than one makes it a meeting. It
+is a different question from **Who is in front of you now** further up the same
+sheet: that one narrows what you are offered right now, and this one does not
+narrow anything &mdash; it belongs to the situation you save.
 
 A saved situation that names somebody gains **See what is in the room**. Open it
 and you get, for each person who will be there, what is still outstanding with
@@ -401,7 +404,7 @@ when there is a reason.
   three on the screen are not all of it.
 - **Running without you** — everything you have said runs on its own, when you
   last checked each was still true, and where any of it stands.
-- **What's the situation?** — where you are, how long you have, who is with you,
+- **What's the situation?** — where you are, how long you have, who is in front of you,
   and the situations you have named.
 - **In the room** — what a named meeting is about: what is outstanding with each
   person in it, and what that work sits under.

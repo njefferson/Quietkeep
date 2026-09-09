@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.7',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**The situation screen stops asking who twice.** It never was one question: the chooser near the top narrows what you are offered right this minute and holds one person, and the row of names further down is the room of a situation you save, which narrows nothing and can hold several. Nothing on screen said that, and the single one came first, so it taught you the answer was one person before you met the other. They now read *Who is in front of you now* and *Who is in the room?* \u2014 the app\u2019s own word for it, since opening a saved one is called being in the room.',
+      '**And the row of names says what it does not do.** It does not change what you are offered; it belongs to the situation you save. It also says where names come from, which is the thing nobody could find: put a name on something and the person appears here. This has been carried as *still to sort* in nine releases.',
+      '**A line in the manual stops showing its own markup.** The manual is allowed to say what a control used to be called, and the way it marks that as history was being printed to you as raw code rather than read as a note \u2014 on the page since the idiom arrived. It reads as a note now.',
+    ],
+  },
+  {
     triplet: '3.23.6',
     kind: 'ITERATION',
     date: '2026-09-08',

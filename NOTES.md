@@ -472,7 +472,7 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-**One outstanding, and three of the seven were not defects.** 3.23.6 closed the
+**Nothing outstanding, and three of the seven were not defects.** 3.23.6 closed the
 last four: a thing on the Menu no longer says it comes back (the clock is the
 gate's own capture cure, which `demandClocksOf` deliberately never clears — so
 the data was right and two readouts described it wrongly, both by falling
@@ -484,9 +484,11 @@ the emitter uses and then through `clockDayWords`; the sort counter follows the
 pass on screen rather than the queue behind both; and the assurance line says
 *here*, the word its own zero case already used.
 
-**What remains is the one this section opened with** — the situation sheet
-asking who twice, which is a product decision about which control should exist
-rather than a defect with one right answer.
+**AND THE ONE THIS SECTION OPENED WITH IS CLOSED TOO, IN 3.23.7** — the
+situation sheet asking who twice. It had been filed as a product decision about
+which control should exist. There was no decision to make: `docs/adr/0118`
+settles that BOTH should, and only the labels never said so. See the entry
+below, which is corrected rather than deleted.
 
 **Three of the seven were not defects.** Closed the day
 they were found: the days-ahead promise (3.23.2); the asterisks printing in the
@@ -593,6 +595,21 @@ everything since this device last looked, capped, with the true count said.
   are named on a thing, not here. Reported from the device 2026-08-31, measured,
   and deliberately not fixed in 3.19.1 because the fix is a product decision
   about which control should exist rather than a defect with one right answer.
+
+  **THAT LAST SENTENCE WAS WRONG, AND IT IS WHY THIS SAT FOR NINE RELEASES.**
+  There is no decision to make about which control should exist: both should,
+  and `docs/adr/0118` settles it in terms — `with.now` is a single-valued DEVICE
+  PREFERENCE that narrows the offer, the roster is a saved situation's people,
+  and "the picker for several arrives with the surface that reads several". They
+  write different things — a KV value against a `situation.saved` event — and
+  are read by different consumers: the offer filter against the meeting room.
+  `docs/adr/0119` even states the distinction in words, *who is in front of me
+  now, rather than what is this meeting about*, and `index.html`'s own comment
+  restates it thirty lines from the controls. **Only the two labels never said
+  it.** Closed in 3.23.7: each now asks the question it answers, the roster says
+  it narrows nothing, and it names where a person gets named — which was the
+  other half nobody could find. Filing it as the owner's decision is what meant
+  nobody read the ADR that had already made it.
   **CARRIED IN SIX CONSECUTIVE RELEASES' PATCH NOTES AND ABSENT FROM HERE UNTIL
   2026-09-01.** 3.19.1 through 3.19.6 each ended with a *still to sort* naming
   it, which is the right thing to tell a reader and the wrong place to keep a
@@ -1257,7 +1274,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.6**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.7**, which production does
   not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
   tree plus this release. 3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition

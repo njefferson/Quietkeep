@@ -3126,8 +3126,9 @@
   <h2 id="sheet-situation-title" class="section">What&rsquo;s the situation?</h2>
   <div class="sheet-body" tabindex="0">
     <p id="situation-words" class="detail-hint">Where you are, how long you have,
-      and who is with you. Each narrows what the app offers you and what the
-      list shows &mdash; nothing is taken away, and everything still comes back.</p>
+      and who is in front of you. Each narrows what the app offers you and what
+      the list shows &mdash; nothing is taken away, and everything still comes
+      back.</p>
 
     <!-- WHERE YOU ARE (2.2.0, ADR-0092). The tree says where a thing LIVES;
          this says where it can be DONE, and they are different questions. A
@@ -3249,7 +3250,18 @@
          depend on it: a set of named situational destinations is entry 16's
          twenty options producing zero actions. -->
     <div id="with-row" class="lens-row" hidden>
-      <label class="detail-inline" for="with-who">Who is here</label>
+      <!-- "WHO IS HERE" AND "WHO IS IN IT?" READ AS ONE QUESTION ASKED TWICE
+           (3.23.7). They are not the same question and never were: this one is
+           a single-valued device preference that narrows what you are offered
+           right now, and the one below is the roster of a situation you save,
+           which narrows nothing and opens a room. ADR-0119 states the
+           distinction in words — "who is in front of me now, rather than what
+           is this meeting about" — and its own comment thirty lines down
+           restates it; only the labels never said it. Reported from the device
+           2026-08-31, carried in six releases' patch notes, and left as "a
+           product decision about which control should exist" until somebody
+           read the code and found an ADR settling that both do. -->
+      <label class="detail-inline" for="with-who">Who is in front of you now</label>
       <select id="with-who" aria-describedby="with-note"></select>
     </div>
 
@@ -3276,12 +3288,14 @@
          the reader who only ever wanted the old behavior gets it without
          touching this, and adding a second person is one tap rather than two. -->
     <div id="situation-who-row" class="lens-row" hidden>
-      <p class="detail-label" id="situation-who-label">Who is in it?</p>
+      <p class="detail-label" id="situation-who-label">Who is in the room?</p>
       <div id="situation-who" class="situation-who" role="group"
            aria-labelledby="situation-who-label"></div>
       <p id="situation-who-hint" class="detail-hint">
         Tap a name to put them in the room; tap again to take them out.
-        Naming more than one makes it a meeting you can open.
+        Naming more than one makes it a meeting you can open. It does not narrow
+        what you are offered; it is part of the situation you save. Names come
+        from your things.
       </p>
     </div>
     <p class="detail-label" id="situation-save-label">Recognize this one?</p>

@@ -268,7 +268,18 @@ const BUDGET = {
   // first route to a dated thing, and the ⓘ calendar caveat saying the same
   // list lives inside the app. The demand the release answers was seeing
   // dated work in the app; these words are where the seeing starts.
-  words: 3946,
+  // 3946 -> 3972 on 2026-09-09 (3.23.7). Twenty-six words, all of them spent
+  // saying that two controls are two questions. The situation sheet asked
+  // "who" twice — a single-valued filter labelled `Who is here` twenty-five
+  // lines above a multi-select labelled `Who is in it?` — and it was carried
+  // as "still to sort" in nine consecutive releases' patch notes while being
+  // filed as a product decision nobody could make. Both controls are correct
+  // and ADR-0118 settles that; only the labels never carried the distinction
+  // ADR-0119 states in words. The labels now do (+4), and the roster says the
+  // two things a reader could not find out by looking: that it narrows nothing,
+  // and where a name comes from (+22). The intro's duplicate of that sentence
+  // was cut rather than raising this further.
+  words: 3972,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
