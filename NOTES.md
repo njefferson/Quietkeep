@@ -1507,7 +1507,30 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.7**, promoted 2026-09-09 at `958ad30` — six
+- **PRODUCTION CARRIES 3.23.10**, promoted 2026-09-09 at `df53f32` — three
+  releases, 3.23.8 through 3.23.10, all of them the 2026-09-09 cold read and
+  what it turned up. Tree asserted identical to the walked staging head
+  `f3657a7` — the same tree object out of `merge-tree`, not a diff that looked
+  empty — with Spine AND Deploy read green on that SHA by head SHA rather than
+  by the newest row, before the merge existed. Both editions read back by
+  content afterwards, **twice**: production and the sync edition each serving
+  3.23.10, and each serving `manual.html`, `paths.html` and `why.html` as
+  themselves rather than falling back to the app shell.
+
+  **Twice, because one read is not an answer.** The 3.23.10 staging deploy had
+  reported success and three reads inside two minutes returned 3.23.9, then
+  3.23.10, then 3.23.10 — an edge mid-rollout, which presents as an
+  authoritative FAIL saying the deploy did not land, at exactly the moment
+  somebody would believe it.
+
+  **And the run that verified the head was DISPATCHED, not the push's own.** The
+  push-triggered Spine was cancelled at thirteen minutes as wedged, by a session
+  that had read elapsed time off its own poll count rather than off `date`; it
+  was thirteen minutes into a fourteen-minute job. The re-dispatch ran on the
+  same head SHA and came back green, so the verification stands — hub LESSONS
+  §161's fallback used for the wrong reason and still correct. Entry above.
+
+- **Superseded, and kept for the record: 3.23.7**, promoted 2026-09-09 at `958ad30` — six
   releases at once, 3.23.2 through 3.23.7, all of them the 2026-09-08 cold view
   and what it turned up. Tree asserted identical to the walked staging head
   `7269e3a` — the same tree object out of `merge-tree`, not a diff that looked
@@ -1551,9 +1574,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.10**, which production does
-  not carry: promoted last on 2026-09-09 at 3.23.7, so the two hosts are one
-  tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
+- **https://staging.quietkeep.pages.dev** — **3.23.10**, which production now
+  carries too: promoted 2026-09-09 at `df53f32`, so the two hosts are the same
+  tree. 3.23.8 is the first fix from the THIRD cold read, and
   three of its four are regressions from the session that shipped 3.23.2
   through 3.23.7: the Menu-before-clock precedence in the one place 3.23.6 did
   not reach, the route word 3.23.3 left standing on the receipt one second
@@ -3266,15 +3289,28 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.7** — promoted at
-  `958ad30` on 2026-09-09, the merged tree asserted byte-identical to `7269e3a`,
+- **https://quietkeep.pages.dev** — production, **3.23.10** — promoted at
+  `df53f32` on 2026-09-09, the merged tree asserted byte-identical to `f3657a7`,
   the staging head that was walked — the same tree OBJECT out of `merge-tree`,
   not a diff that read as empty — and CI's Spine and Deploy both green on that
   SHA, found by head SHA rather than by the newest row, before the merge
-  existed. **Verified live by content on both editions**: production and the
-  sync edition each serving 3.23.7, and each serving `manual.html`,
-  `paths.html` and `why.html` as themselves rather than falling back to the app
-  shell — which is the 1.7.2 defect this read exists to catch.
+  existed. **Verified live by content on both editions, and read TWICE**:
+  production and the sync edition each serving 3.23.10, and each serving
+  `manual.html`, `paths.html` and `why.html` as themselves rather than falling
+  back to the app shell — which is the 1.7.2 defect this read exists to catch.
+  Twice because the 3.23.10 staging deploy had already shown what one read is
+  worth: three reads inside two minutes returned 3.23.9, then 3.23.10, then
+  3.23.10, an edge mid-rollout presenting as an authoritative failure.
+  **The Spine that verified the head was a DISPATCH.** The push's own run was
+  cancelled at thirteen minutes as wedged, by a session reading elapsed time off
+  its poll count rather than off `date`; it was thirteen minutes into a
+  fourteen-minute job. The re-dispatch ran on the same head SHA and came back
+  green, which is hub LESSONS §161's fallback used for the wrong reason and
+  still correct.
+- **Superseded, and kept for the record: production at 3.23.7** — promoted at
+  `958ad30` on 2026-09-09, the merged tree asserted byte-identical to `7269e3a`,
+  the staging head that was walked, with CI's Spine and Deploy both green on
+  that SHA and both editions read back by content.
   **Six releases**, all of them the 2026-09-08 cold view: a date kept before
   sorting no longer points at a screen it cannot reach; the ⓘ notes print
   control names rather than asterisks and a route stops using an event word; a
