@@ -1547,7 +1547,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.10**, promoted 2026-09-09 at `df53f32` — three
+- **PRODUCTION CARRIES 3.23.12**, promoted 2026-09-09 at `152d425` — five
+  releases across two promotes today, 3.23.8 through 3.23.12, all of them the
+  third cold read. The second promote carried 3.23.11 and 3.23.12, the two
+  findings that had been put up as decisions and were not: the sorting screens'
+  receipt was invisible for the same reason a thing's own page had been, and
+  the People screen's route to naming somebody did not work. Same evidence
+  order as below, and production read back twice.
+- **Superseded, and kept for the record: 3.23.10**, promoted 2026-09-09 at `df53f32` — three
   releases, 3.23.8 through 3.23.10, all of them the 2026-09-09 cold read and
   what it turned up. Tree asserted identical to the walked staging head
   `f3657a7` — the same tree object out of `merge-tree`, not a diff that looked
@@ -1614,9 +1621,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.12**, which production does
-  not carry: promoted last on 2026-09-09 at 3.23.10, so the two hosts are one
-  tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
+- **https://staging.quietkeep.pages.dev** — **3.23.12**, which production now
+  carries too: promoted 2026-09-09 at `152d425`, so the two hosts are the same
+  tree. 3.23.8 is the first fix from the THIRD cold read, and
   three of its four are regressions from the session that shipped 3.23.2
   through 3.23.7: the Menu-before-clock precedence in the one place 3.23.6 did
   not reach, the route word 3.23.3 left standing on the receipt one second
@@ -3329,7 +3336,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.10** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.23.12** — promoted at
+  `152d425` on 2026-09-09: 3.23.11 and 3.23.12, the last of the third cold
+  read's findings and the two that had been carried as decisions when neither
+  was one. The merged tree asserted byte-identical to `6b63baf`, the staging
+  head, with Spine and Deploy both green on that SHA by head SHA and the whole
+  Spine green locally first — 55 steps. **Both editions read back by content,
+  twice**, each serving 3.23.12 and each serving `manual.html`, `paths.html`
+  and `why.html` as themselves.
+- **Superseded, and kept for the record: production at 3.23.10** — promoted at
   `df53f32` on 2026-09-09, the merged tree asserted byte-identical to `f3657a7`,
   the staging head that was walked — the same tree OBJECT out of `merge-tree`,
   not a diff that read as empty — and CI's Spine and Deploy both green on that
