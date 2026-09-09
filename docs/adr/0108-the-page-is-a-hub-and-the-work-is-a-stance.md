@@ -51,7 +51,7 @@ then had to make stand down at 175% text, because at that size the frame is 474p
 against a 422px cap.
 
 That is the shape of a model at its limit: each step is correct, each buys less
-than the last, and the thing being optimised is the wrong object. **The runway
+than the last, and the thing being optimized is the wrong object. **The runway
 today is 15 conditional sections in one scroller, beside 21 dialogs.** No
 ordering of 15 blocks produces a sense of place, because a document does not have
 places — it has a position, and a position is exactly what a reader loses.

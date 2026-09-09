@@ -135,7 +135,7 @@ test('the journal is on NO work surface, and in no search result', () => {
     ev('node.created', 'W', { nodeKind: 'action', title: 'real work' }, { seq: 1 }),
   ]);
   // A distinctive ciphertext. This was 'bb', and 1.15.0's `pebble` field made
-  // the substring check below match the word "pe-bb-le" in the serialised node —
+  // the substring check below match the word "pe-bb-le" in the serialized node —
   // a false positive on a real invariant, which is worse than no check at all.
   const CT = 'Q1lQSEVSVEVYVA';
   s = write(s, [ev('journal.entry.written', 'J', { v: 1, iv: 'aa', ct: CT }, { seq: 2 })]);

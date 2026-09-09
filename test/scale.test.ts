@@ -58,7 +58,7 @@ test('scaleWords falls back sensibly for a clamped or unlisted value', () => {
   assert.equal(scaleWords(0.9), 'smaller');
 });
 
-test('the live value is cached and normalised on the way in', () => {
+test('the live value is cached and normalized on the way in', () => {
   setScale(9);
   assert.equal(getScale(), SCALE_MAX, 'a wild value is clamped, not stored raw');
   setScale(1);

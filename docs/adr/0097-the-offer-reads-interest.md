@@ -59,7 +59,7 @@ That was drafted, and it was going to be put to the owner as a policy question.
 An importance rank is precisely the Eisenhower top row. Building it would have
 been the app asserting that a thing filed under a goal is more startable than a
 loose note, which is the mismatch this product exists to stop moralising about.
-**The question did not need the owner's ruling. It needed the catalogue read.**
+**The question did not need the owner's ruling. It needed the catalog read.**
 
 Three more refusals bind this release, each with its evidence grade:
 
@@ -80,7 +80,7 @@ Entry 5's own binding, because INCUP is **community-grade** evidence:
 
 > *"Treat it as vocabulary, never as a rank."*
 
-Three things honour it:
+Three things honor it:
 
 - **It is a two-state fact the reader stated**, not a computed score. Nothing
   accumulates, nothing is tallied, nothing decays.

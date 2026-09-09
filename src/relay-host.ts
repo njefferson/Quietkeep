@@ -21,7 +21,7 @@
  * This value briefly held a GUESS — `quietkeep-relay.noahjefferson.workers.dev`,
  * which is wrong: the account's subdomain has a hyphen. Every gate passed it.
  * The format check passed, the sync edition built, the CSP permitted the host,
- * and the app would have dialled a hostname that does not resolve — broken in
+ * and the app would have dialed a hostname that does not resolve — broken in
  * the one way that produces no error on any device. It was set back to `UNSET`
  * until a deploy log said otherwise, and that is the rule this constant lives
  * under: **an unverified URL here is worse than a missing one, because it

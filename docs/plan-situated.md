@@ -89,7 +89,7 @@ Measured, not assumed. Each claim carries its source.
 
 `docs/horizon-models.md:214-221` **already refuses** the obvious implementation
 by name — promote-buttons for empty altitude nouns, the full tree as a landing
-view, alignment theatre — and calls the empty nouns the bill for the last time
+view, alignment theater — and calls the empty nouns the bill for the last time
 it was ignored. ADR-0013 settles the alternative: **the clock goes on the
 artifact instead of the ritual on the person.** A horizon node carries a review
 clock on the one decay primitive and comes down when it is ready.
@@ -199,7 +199,7 @@ Answers: *is anyone waiting on me*, *what is between me and this person*.
   `waiting-for`.
 - **Hard constraint**: `src/requests.ts:9-12` rules that a record of the times
   you did not do your own work is the ledger this app exists not to keep. A
-  promise carries no shame, no ageing score and no count. It rides the decay
+  promise carries no shame, no aging score and no count. It rides the decay
   primitive like everything else.
 - The person screen, on `personView`, which already computes both directions.
 
@@ -373,7 +373,7 @@ situations are the acceptance test — walked end to end, not asserted.
   would have had to join every kind list, and phase 2 measured three of the four
   sites that write a node's kind as wrong.
   **The asymmetry is the whole design.** `PersonLine` carries `days` because
-  ageing somebody else's debt to you is a fact about a date; `PromiseLine`
+  aging somebody else's debt to you is a fact about a date; `PromiseLine`
   carries none, because the same words pointed at yourself are the ledger
   `src/requests.ts` says this app exists not to keep. Enforced by the SHAPE —
   there is no field to render — and asserted in the rendered words by both walks.
@@ -553,7 +553,7 @@ situations are the acceptance test — walked end to end, not asserted.
   were undeclared in `PLAIN_CHROME_HIDDEN`, so *Just one thing* rendered a
   filter. 2.23.2 is the fix; the a11y walk was then run LOCALLY on that markup
   and read green, both themes, zero failures. The head is `825aa12` and its
-  Spine is the one to read — the runs on `1627350` and `fe60e5f` were CANCELLED
+  Spine is the one to read — the runs on `1627350` and `fe60e5f` were Canceled
   by the pushes that followed them, which is not the same as failed — and an
   earlier version of this line said otherwise.
   The lesson is 126 in the hub: `plain:check` checked the offer card both ways
@@ -598,7 +598,7 @@ a clone FOUR times in one session, and once rewound the scratchpad too,
 destroying four research documents. **Agent output lands in the repo in the same
 turn it is produced.** A subagent can also be rigorous, verify twice, and still
 report a false finding because its filesystem moved under it — one did, claiming
-a catalogue entry did not exist.
+a catalog entry did not exist.
 
 **Renaming the speaker does not fix an attribution.** Swapping a pronoun for the
 role noun leaves the quotation standing. Three times, caught by gate every time.

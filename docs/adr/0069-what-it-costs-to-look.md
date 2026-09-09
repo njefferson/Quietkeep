@@ -13,7 +13,7 @@ roadmap said why it would stay that way:
 
 **Those numbers were extrapolated**, and build-plan item 42 defers read-path work
 to a measurement on the actual device — correctly, because this repo does not
-optimise against a guess.
+optimize against a guess.
 
 1.16.0 changed what is knowable. A 566-thing store with every kind in it is a
 fixture you can time, and timing it turned the estimate into a fact:
@@ -57,7 +57,7 @@ Two guards make it safe rather than merely fast:
   Nothing mutates `LocalParts` today; freezing means a future writer finds out at
   the write rather than through a date that is wrong somewhere else.
 - **The key is (zone, instant), not instant.** A cache keyed on the instant alone
-  would hand a traveller the wrong day, which is worse than being slow. Pinned by
+  would hand a traveler the wrong day, which is worse than being slow. Pinned by
   a test.
 
 **The bound is crude on purpose**: 20,000 entries, then clear. Growth is bounded

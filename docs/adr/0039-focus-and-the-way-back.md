@@ -57,7 +57,7 @@ one competing for the same thread.
 
 ### Focus is state-level, not a node field
 
-Two nodes can never both be "the thing being worked on". Modelling it per-node
+Two nodes can never both be "the thing being worked on". Modeling it per-node
 would make that expressible, and something would eventually express it. `State`
 carries `focus` and `focusStamp`, LWW over the same ordering as everything else,
 so two devices that both started a focus converge on the later one rather than on

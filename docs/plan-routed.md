@@ -6,7 +6,7 @@ production moved from 2.14.1 to 2.24.1.
 **Every item below is traceable to a numbered entry in
 [`docs/nd-collisions.md`](nd-collisions.md) and carries that entry's own evidence
 grade.** Where something is derived rather than routed, it says so in its own
-words and is ranked last. That ordering is the point: the catalogue is the
+words and is ranked last. That ordering is the point: the catalog is the
 authority, and an inference from the code is not the same object as a graded
 finding, however sensible it looks.
 
@@ -22,12 +22,12 @@ and it says the machinery is not the missing piece:
 > one of those depends on a word that only exists once somebody has said it.
 
 Measured, not projected: a real 1,173-item import left **eleven of fourteen node
-kinds at zero**, with every situational feature the catalogue routes toward
+kinds at zero**, with every situational feature the catalog routes toward
 switched off at once, on the day it mattered most that they were on. The stress
 fixture in this repo reproduces it — 840 actions, 42 projects, 518 passed dates,
 and zero contexts, roles, areas, goals or people.
 
-The two jaws, and both are in the catalogue:
+The two jaws, and both are in the catalog:
 
 - **Entry 23** — the industry treats a taxonomy as a prerequisite rather than an
   outcome, so the tool front-loads the heaviest cognitive work it will ever ask
@@ -124,7 +124,7 @@ phase 1's and should be copied rather than reinvented.
 
 ### Phase 3 — the arrival is a fact, not a debt
 
-**Entry 23, same proposal.** One line at import, modelled on the amnesty's own
+**Entry 23, same proposal.** One line at import, modeled on the amnesty's own
 words (ADR-0043): how many things arrived, and that nothing is filed yet because
 filing was never asked for.
 

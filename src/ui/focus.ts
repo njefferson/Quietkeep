@@ -163,7 +163,7 @@ export function mountFocus(
       HELD.hidden = !w;
     }
     // THE AMBIENT HORIZON (2.7.1, collisions entry 7). The next fixed thing
-    // today, by name — the one line the catalogue's routing proposal asked for
+    // today, by name — the one line the catalog's routing proposal asked for
     // ON THIS SURFACE, and which has only ever rendered on the work surface an
     // absorbed person has already left.
     //

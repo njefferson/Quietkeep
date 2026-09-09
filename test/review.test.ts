@@ -148,7 +148,7 @@ test('capped, and honest about the cap', () => {
   for (let i = 0; i < 7; i++) events.push(mk(`p${i}`, 'project'));
   const v = reviewExceptions(st(...events), NOW, TZ);
   // A LITERAL 3. Asserting against the constant the code uses is self-referential
-  // — the same theatre an audit found in the replan cap.
+  // — the same theater an audit found in the replan cap.
   assert.equal(v.shown.length, 3, 'at most three');
   assert.equal(REVIEW_CAP, 3, 'and the constant is that number');
   assert.equal(v.total, 7, 'and it says how many there really are');

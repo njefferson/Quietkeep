@@ -349,7 +349,17 @@ export async function mountAbout(
   const noteBlock = (r: typeof RELEASES[number]): HTMLElement[] => {
     const h = el('h3', 'note-head');
     h.append(el('span', 'note-triplet', r.triplet));
-    h.append(el('span', 'note-kind', r.kind.toLowerCase()));
+    // WHAT THE RELEASE MEANS FOR YOU, NOT WHAT THE PROJECT CALLS IT (3.23.13).
+    // This printed the triplet's own taxonomy — ITERATION, CAPABILITY, VERSION
+    // — which is a word from `Doctrine §7` and means nothing to a reader. A
+    // cold read named it as one of the three things on this panel that had
+    // leaked from the inside. The words say what to expect instead.
+    const KIND_WORDS: Record<string, string> = {
+      ITERATION: 'a refinement',
+      CAPABILITY: 'something new',
+      VERSION: 'a change to what this is',
+    };
+    h.append(el('span', 'note-kind', KIND_WORDS[r.kind] ?? r.kind.toLowerCase()));
     const ul = el('ul', 'note-list');
     ul.append(...r.notes.map(noteLine));
     return [h, ul];
@@ -383,9 +393,13 @@ export async function mountAbout(
       const d = document.createElement('details');
       d.className = 'note-older';
       const sum = document.createElement('summary');
+      // A NUMBER ABOUT THE PROJECT IS NOT A NUMBER ABOUT THE READER (3.23.13).
+      // This said "279 earlier releases", which is a fact about how long this
+      // has been going on and nothing a reader can do anything with. The
+      // summary names what is inside instead.
       sum.textContent = older.length === 1
         ? 'One earlier release'
-        : `${older.length} earlier releases`;
+        : 'Everything before that';
       d.append(sum, ...older.flatMap(noteBlock));
       rendered.push(d);
     }
@@ -408,16 +422,34 @@ export async function mountAbout(
 
     const rows: [string, string][] = [
       ['Keeping your data', r.persisted ? 'yes' : r.supported ? 'not yet' : 'cannot tell'],
-      ['Asked for', first ? new Date(first).toLocaleString() : r.persisted ? 'just now' : '—'],
+      // A DASH IS NOT AN ANSWER (3.23.14, cold read). This printed a bare em
+      // dash in a column of words — "yes", "not yet", "unknown", "cannot tell" —
+      // and it read as a field the app had failed to fill rather than as a state
+      // it was reporting. There IS a state, and the row above already has the
+      // words for it: there is no date because the browser has not granted
+      // keeping, so the two rows now say the same thing in the same way, which
+      // is the whole reason they sit next to each other.
+      ['Asked for', first ? new Date(first).toLocaleString()
+        : r.persisted ? 'just now' : r.supported ? 'not yet' : 'cannot tell'],
       // The durability fact that is actually under your control, sitting beside
       // the one that is not. `export.written` has been written since Phase 0 and
       // read by nothing until now (ADR-0062).
       ['Last copy', copyDayWords(copy, session.zone)],
-      ['Room available', r.quotaMb == null ? 'unknown' : `${r.quotaMb.toLocaleString()} MB`],
+      // NOBODY READS SIX-FIGURE MEGABYTES (3.23.13, cold read). This printed
+      // "154,812 MB", which is 151GB said in the unit the browser happens to
+      // hand back. The reader's question is "is there room", and the answer to
+      // that is a size they recognize.
+      ['Room available', r.quotaMb == null ? 'unknown'
+        : r.quotaMb >= 1024 ? `${(r.quotaMb / 1024).toFixed(r.quotaMb >= 10240 ? 0 : 1)} GB`
+          : `${r.quotaMb.toLocaleString()} MB`],
       // Per-ORIGIN, so it counts the app's own downloaded code too (2.9.4). The
       // old label said "Used by Quietkeep", which a reader takes as "used by my
       // things" — and on an empty store that is a megabyte of the app itself.
-      ['Used at this address', r.usageMb == null ? 'unknown' : `${r.usageMb} MB, app included`],
+      // "AT THIS ADDRESS" IS DEVELOPER FRAMING (3.23.13). It was chosen in
+      // 1.31.0 to say the number covers the whole origin rather than the log
+      // alone, which is right and is not how a reader says it. The label says
+      // where they are; the value already says what is counted.
+      ['Used on this device', r.usageMb == null ? 'unknown' : `${r.usageMb} MB, app included`],
       // `heldWork`, NOT `nodes.size` and NOT `heldNodes`. The gauge on the main
       // screen says "N held" and this row says "Things held" — the same words
       // about the same store, so they must be the same number or the app is
@@ -2217,7 +2249,7 @@ export async function mountAbout(
       mode = null;
       purgeConfirm.hidden = true;
       // Cleared on every exit, not only on cancel. A word left in the box is an
-      // authorisation left lying next to a button.
+      // authorization left lying next to a button.
       purgeWordInput.value = '';
       purgeGo.disabled = true;
     };
@@ -2239,8 +2271,8 @@ export async function mountAbout(
       purgeConsequence.textContent = purgeWords(m, count, savedACopy, await isPaired());
       // NO CEREMONY OVER A NO-OP (2.10.3, found by photographing this sheet on
       // an empty store). The confirmation is a safeguard, and a safeguard around
-      // an act that changes nothing is theatre: it asked somebody to type the
-      // word `clear` in full, over a planner with nothing in it, to authorise
+      // an act that changes nothing is theater: it asked somebody to type the
+      // word `clear` in full, over a planner with nothing in it, to authorize
       // doing nothing. The sentence above already says so.
       //
       // Same distinction the words make and for the same reason: `start again`

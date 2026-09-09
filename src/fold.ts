@@ -62,7 +62,7 @@ export interface Clock {
  *
  * A clock with no recorded source counts as somebody's, which is the safe default:
  * every log written before this field existed behaves exactly as it did, and it errs
- * towards showing work rather than quieting it.
+ * toward showing work rather than quieting it.
  */
 /**
  * THE NO-INTENT CURES, NAMED ONE BY ONE (2.0.1).
@@ -388,7 +388,7 @@ export interface State {
    *
    * State-level and not a node field, because "focused" is a property of the
    * SESSION rather than of the work — two nodes can never both be it, and
-   * modelling it per-node would make that expressible. LWW over the same
+   * modeling it per-node would make that expressible. LWW over the same
    * ordering as everything else, so two devices that both started a focus
    * converge on the later one rather than on whichever folded last.
    */

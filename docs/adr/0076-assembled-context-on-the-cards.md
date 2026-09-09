@@ -10,7 +10,7 @@ promised for the 14th, and there are four days left"* is the part that costs
 real effort to reconstruct, and it is exactly the part somebody with temporal
 myopia cannot do on demand.
 
-`docs/nd-collisions.md` — the collision catalogue — asks for the same thing
+`docs/nd-collisions.md` — the collision catalog — asks for the same thing
 twice, in two different places, for two different reasons:
 
 - **Entry 17, working-memory loss between capture and action.** The context that
@@ -110,7 +110,7 @@ somebody was deciding about. A planted synchronous binding was watched fail.
 
 ## What this release deliberately does not build
 
-The catalogue's fourth-ranked proposal — the pocket offer for waiting mode,
+The catalog's fourth-ranked proposal — the pocket offer for waiting mode,
 *"About an hour before Dentist"* — needs the gap between now and an appointment.
 ADR-0075 established that this app records days, not times of day. It is
 blocked, as is entry 7's *"Dentist at 3"* line on the focus surface. Whether the

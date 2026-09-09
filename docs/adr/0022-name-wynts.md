@@ -70,11 +70,11 @@ from a session — proven, not assumed ([V-05](../verifications.md)).
 
 ## Consequences and known costs
 
-- **The phonetic neighbourhood is busy.** Nothing is named Wynts, but one letter
+- **The phonetic neighborhood is busy.** Nothing is named Wynts, but one letter
   away sits **WYNT** (a community-hub app on Google Play), plus Wynta (iGaming
   SaaS), Wynter (B2B research), Wynk Music, Wynd Technologies. For a free
   noncommercial planner against a community-hub app the trademark risk is low;
-  the real cost is that someone half-remembering the name may land on a neighbour.
+  the real cost is that someone half-remembering the name may land on a neighbor.
   Accepted knowingly.
 - **Pronunciation is not self-evident** — *WINTS* or *WHYNTS*. A name people say
   aloud needs one answer, and a name whose pronunciation people guess at gets said

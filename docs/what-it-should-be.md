@@ -87,7 +87,7 @@ whether the thing comes back where they will meet it**, and a promise phrased in
 schema terms can be true while the reader's version of it is false.
 
 The clause that carries all the weight is **without you doing anything else to
-it**. If an item must be categorised, routed, dated or filed before the app will
+it**. If an item must be categorized, routed, dated or filed before the app will
 offer it, then the app does not hold it — it holds it *hostage*, and the ransom
 is a decision made at the worst possible moment.
 
@@ -141,7 +141,7 @@ The order, in full:
 
 An unrefined item sorts under the third rule, which is deterministic, needs no
 inference, and is explainable in one sentence. **No learned rank, no
-personalised score, no probabilistic ordering** — not a feature awaiting
+personalized score, no probabilistic ordering** — not a feature awaiting
 evidence but a harm, because it destroys the detectability of one's own actions,
 which is the only mechanism by which control over the system is learned.
 
@@ -237,7 +237,7 @@ into the app:
 **A captured thought is covered but not offerable.** It is clocked at the moment
 of writing — genuinely, in the same transaction — so it satisfies the enforced
 invariant and appears in the proof as covered. But the offer surface excludes
-anything not yet categorised. So it will come back **as more sorting**, never as
+anything not yet categorized. So it will come back **as more sorting**, never as
 work.
 
 For the reader that is the promise failing, and failing silently, with a green

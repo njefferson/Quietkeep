@@ -43,7 +43,7 @@ export interface TodayCard {
   withOthers: { title: string; whom: string | null; how: string | null }[];
   withOthersTotal: number;
   /** What YOU said you would do, capped (2.20.0). No `how` field, and the
-   *  omission is the design: `withOthers` carries a duration because ageing
+   *  omission is the design: `withOthers` carries a duration because aging
    *  somebody else's debt to you is a fact about a date, and the same words
    *  pointed this way are the ledger `src/requests.ts` refuses. `PromiseLine`
    *  has no `days` to carry, so there is nothing here to render. */

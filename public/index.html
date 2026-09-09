@@ -392,7 +392,7 @@
        cost 92px of a 844px screen while shut and offered nothing while shut.
 
        WHAT THIS TRADES, stated because it is a real cost and not a free win:
-       naming a worry goes from one tap to two. The catalogue's best-evidenced
+       naming a worry goes from one tap to two. The catalog's best-evidenced
        item is activation cost at the point of performance, and this adds some.
        Against it: every visible ask is an ask (entry 8), and the thing that was
        being pushed below the fold was the one thing the app is for. -->
@@ -726,7 +726,12 @@
          this surface offers to sort rather than asking about the thing you just
          typed. Deciding while dumping stops the dumping; ten captures in a row
          used to mean ten interruptions on the one path that must stay clear. -->
-    <button id="triage-open" type="button" class="ghost" data-stance-opener hidden>Sort what you have put down</button>
+    <!-- THE SAME NAME AS THE DOOR. It said "Sort what you have put down" while
+         `data-stance-name` above said "Sort what you put down" and the manual
+         called it "Sort things out" — three names for one screen, which a cold
+         reader met as three screens. `help-check.mjs` holds the opener to the
+         stance name now, both derived from this file. -->
+    <button id="triage-open" type="button" class="ghost" data-stance-opener hidden>Sort what you put down</button>
     <p id="triage-gauge" class="triage-gauge"></p>
     <!-- WHAT IS BEHIND THIS DOOR, for the hub (3.9.1). The hub reads
          `#<id>-count` to say what a job holds, and this section had none — so
@@ -874,7 +879,7 @@
     <!-- THE AMBIENT HORIZON (2.7.1, collisions entry 7).
          Hyperfocus collapses time perception and suppresses interoception, so
          the appointment does not so much get forgotten as stop existing. The
-         catalogue's routing proposal for it is one fact line ON THIS SURFACE —
+         catalog's routing proposal for it is one fact line ON THIS SURFACE —
          and the line was built in V2 stage 5 and put on the WORK surface, which
          is the one an absorbed person has already left. A feature that only
          exists where the reader is not is the shape hub LESSONS §95 records.
@@ -1078,7 +1083,7 @@
        an empty room teaches you the feature is broken. Inside is every dated
        thing, day by day — the live half of the calendar story, from the same
        selection the .ics export sends, which stays the notifying half
-       (ADR-0007). Words rendered, not written here, same as its neighbours. -->
+       (ADR-0007). Words rendered, not written here, same as its neighbors. -->
   <button id="dated-open" class="gauge" data-hub-part type="button" hidden></button>
 
   <!-- Find anything you are holding. Read-only: it opens what it finds and
@@ -1254,7 +1259,12 @@
 <dialog id="sort" aria-labelledby="sort-title"
         data-contents-door
         data-door="#contents-open | #contents-doors .contents-go[data-open='sort']">
-  <h2 id="sort-title" class="detail-title">Sort things out</h2>
+  <!-- ITS OWN NAME (3.23.14). This heading was "Sort things out", which is what
+       the manual called the TRIAGE screen — so the manual's two descriptions of
+       triage satisfied `manual-coverage.mjs`'s requirement that THIS dialog be
+       named, and it went its whole life undescribed. A name collision does not
+       merely confuse a reader; it can make a coverage gate green over a hole. -->
+  <h2 id="sort-title" class="detail-title">Sort a batch</h2>
   <!-- THE SCROLL CONTAINER (3.1.0). The way out used to be the last thing in a
        box that scrolled as a whole, so leaving meant scrolling past everything
        you had opened this to get through — reported from a device, and the same
@@ -1717,7 +1727,7 @@
          cannot be advertised until a date, a promotion filled temporarily, or a
          position out to advert now. Those have a state, and one the app cannot
          know: a phrase somebody writes, never a list the app defines, which
-         would be the app modelling their organization.
+         would be the app modeling their organization.
          The SECOND box is the one that earns the feature. A change in the world
          has no cue to walk past, so the only way to reach it is to keep
          checking — and checking costs continuously, against whatever else is
@@ -2130,7 +2140,7 @@
        indistinguishable to a conformance check.
        IT IS PINNED HERE ON PURPOSE — outside `.sheet-body`, which is the only
        thing that scrolls, so a confirmation cannot scroll away from the control
-       that produced it. `.detail-state` is reused for the colour rather than a
+       that produced it. `.detail-state` is reused for the color rather than a
        new class, so the contrast inventory is unchanged. -->
   <div class="about-actions">
     <!-- BESIDE THE WAY OUT, NOT ABOVE IT (3.23.10). As its own line above this
@@ -3079,7 +3089,7 @@
          in here" but "can I stop holding this myself". So the first thing behind
          the claim is how it knows — the small closed set of reasons a thing comes
          back, each with a count — and anything it cannot guarantee, named. The
-         itemised list stays underneath, for when the reasons are not enough. -->
+         itemized list stays underneath, for when the reasons are not enough. -->
     <div id="coverage-proof" class="coverage-proof"></div>
     <!-- HOW MANY, ONLY ONCE YOU HAVE ASKED. The gauge itself used to lead with
          "N held" — an aggregate, on the landing surface, that only ever rises.

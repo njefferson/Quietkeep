@@ -20,7 +20,7 @@ streaks, ever.**
 Every temporal thing in the app — an Upkeep interval, an area's review clock, an
 unclarified inbox item's same-day clock, a parked bother's return — is the same
 shape: *something was last touched at T, it is comfortable for a while, and after
-that it should come back with increasing insistence*. Modelling these separately
+that it should come back with increasing insistence*. Modeling these separately
 would produce four subtly different notions of "late" that drift apart, and four
 places to fix a bug.
 

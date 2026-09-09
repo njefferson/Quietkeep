@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// THE COLLISION CATALOGUE HAS TO STAY HONEST — V2 stage 7.
+// THE COLLISION Catalog HAS TO STAY HONEST — V2 stage 7.
 //
 // `docs/nd-collisions.md` was a false receipt in both directions: written once,
 // touched once more to scrub attributions, while five of its routing proposals
@@ -39,12 +39,12 @@ let failed = 0;
 const ok = (m) => console.log(`  ok    ${m}`);
 const fail = (m) => { console.log(`  FAIL  ${m}`); failed++; };
 
-console.log('\nThe collision catalogue stays honest (V2 stage 7)\n');
+console.log('\nThe collision catalog stays honest (V2 stage 7)\n');
 
 // Entries are `### N. Title`, and the body runs to the next one.
 const marks = [...doc.matchAll(/^### (\d+)\.\s*(.+)$/gm)];
 if (marks.length < 20) {
-  fail(`only ${marks.length} entries found — the catalogue has been gutted or its headings changed shape`);
+  fail(`only ${marks.length} entries found — the catalog has been gutted or its headings changed shape`);
 } else {
   ok(`${marks.length} entries`);
 }
@@ -78,7 +78,7 @@ for (let i = 0; i < marks.length; i++) {
   // This used to search the entire sentence, and the entire sentence is prose.
   // Entry 9's correction says the app has no way to compute "later today" — and
   // that phrase contains `later`, so the gate accepted a paragraph with no
-  // routing mark in it at all and reported the catalogue honest. It is the same
+  // routing mark in it at all and reported the catalog honest. It is the same
   // shape the EVIDENCE check above already avoids by requiring `**Grade`: a
   // substring test over prose is satisfiable by coincidence, and a check
   // satisfiable by coincidence reports coverage it does not have.
@@ -169,6 +169,6 @@ for (const m of top5.matchAll(/\(entry (\d+)\)\*\* — \*\*([^*]+)\*\*/g)) {
 if (!disagreed) ok('the TOP 5 list agrees with every entry it points at about what shipped, and in which release');
 
 console.log(failed
-  ? `\n${failed} failure(s). The catalogue is claiming more than it can back.\n`
+  ? `\n${failed} failure(s). The catalog is claiming more than it can back.\n`
   : '\nEvery entry states what it is built on and how it routes.\n');
 process.exit(failed ? 1 : 0);

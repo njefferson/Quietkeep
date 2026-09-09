@@ -81,7 +81,7 @@ Run the narrowest thing that answers the question (`--only=`, one grep, one
 cost before starting it**. *Continue* resumes the work in front of you; it is
 not authority to start a sweep of your own. Mechanical work — find-and-replace,
 classifying a list against a stated rule, running a gate and reporting its exit
-code — goes to a cheaper model in a subagent. Top tier is for judgement.
+code — goes to a cheaper model in a subagent. Top tier is for judgment.
 
 ## An approved plan is authority for all of it (Doctrine §11c)
 Finishing one phase of a multi-phase plan and going idle to be told to continue
@@ -90,7 +90,7 @@ piece in the same turn.** If you genuinely must stop, the FIRST line says so in
 those words — *stopping here, waiting on you for X* — because "I'll hold" at the
 end of a long report reads as "I am continuing", and the silence gets discovered
 by being asked what happened. It happened three times in one session, twice
-after the behaviour had been ruled out. This does not license a sweep of your
+after the behavior had been ruled out. This does not license a sweep of your
 own: §11b still binds, and the authority is the plan's remaining phases.
 
 **It is enforced by the harness now, because the paragraph did not hold.** It
@@ -146,7 +146,7 @@ that is the way past it, and it is the one that was wanted all along.
 - **Never use the GTD®/Getting Things Done® marks.** Trigger-list content must be
   original — the published lists are copyrighted.
 - **Voice:** adult, calm, shame-free, civilian. No military vocabulary in naming
-  or brand copy. Never childlike or mascot-cute. No diagnosis-flavoured copy, no
+  or brand copy. Never childlike or mascot-cute. No diagnosis-flavored copy, no
   sentiment scoring, no cause attribution.
 - **No spiral. Anywhere.** Not in the identity, not in a loading state, not in an
   illustration. **A spiral is loss of control and it is anxiety-laden** — it is the
@@ -275,7 +275,7 @@ page that ships.
 listed. `plan.html` is `noindex` and linked from nowhere, and its own header says
 it is "a working page for one reader, not a surface … if it ever gains a route
 from the app it becomes a surface and joins that list in the same commit".
-Deriving from the links honours that automatically; a hand-written exception
+Deriving from the links honors that automatically; a hand-written exception
 would have to be remembered.
 
 **`manual.html` and `why.html` had shipped since 2.29.0 unmeasured** — the app
@@ -286,7 +286,7 @@ flowcharts, links at 16–21px against the 24px floor — a real defect, fixed. 
 the two older pages, four links flagged that were **citations inside sentences**
 ("…rather than by a sweep (ADR-0011)."). WCAG 2.5.8 states an *Inline* exception
 for exactly that, and padding a word mid-paragraph to satisfy a rule that does
-not apply would have damaged the prose to please a gate. The check honours the
+not apply would have damaged the prose to please a gate. The check honors the
 exception structurally now: `display: inline` plus a parent holding text that is
 not the link. **A gate that fires on honest writing is worse than a miss** — it
 trains somebody to change good pages.

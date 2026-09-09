@@ -57,7 +57,7 @@ test('not answering the heat pass is not a penalty, and neither is saying cold',
   assert.deepEqual(ids, ['B', 'A', 'C']);
 });
 
-test('ties inside one heat still fall to creation order — nothing is randomised', () => {
+test('ties inside one heat still fall to creation order — nothing is randomized', () => {
   // Entry 12 refuses manufactured novelty: variety for its own sake rents
   // engagement from the mechanism that ends it. Determinism is also what makes
   // an offer refusable on grounds (V2 stage 7).

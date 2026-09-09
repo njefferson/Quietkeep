@@ -658,8 +658,14 @@ const REGISTRY = {
   // So it came off, and this is what replaced it — joining the gate in the SAME
   // COMMIT that builds it, which is hub LESSONS 28's rule and the reason a
   // surface here has never shipped unmeasured.
+  //
+  // AND THE LEAD-IN JOINS IT IN THE COMMIT THAT ADDS IT (3.23.14), which is the
+  // same rule one paragraph up. It is prose on a measured surface — `.detail-hint`
+  // ink, so no new contrast pair — and it is also the list's accessible name, so
+  // what it says is read by the name audits and not only by the contrast one.
   'detail sheet, the places you have': [
     '#detail-context-picks button', '#detail-context-fix button',
+    '#detail-context-picks .detail-picks-lead',
   ],
   // The SAME buttons wearing their REMOVAL words, and it is a separate state
   // rather than a fold of the one above because words are exactly what SC 2.5.3
@@ -668,6 +674,10 @@ const REGISTRY = {
   // says, and only one of them would have been measured.
   'detail sheet, correcting a place': [
     '#detail-context-picks button', '#detail-context-fix button',
+    // Its words change with the buttons' — "tap to add" becomes "tap one to say
+    // it is not a place" — so it is measured in both states for the same reason
+    // the buttons are.
+    '#detail-context-picks .detail-picks-lead',
   ],
   // The sheet open on a CONTAINER, with a rhythm set on it (2.17.0). Its own
   // state and not a fold of 'detail sheet', because these three controls carry
@@ -2299,7 +2309,7 @@ try {
       // (script-src 'self') correctly refuses — the CSP working is proven by
       // smoke.mjs, which runs UNDER the policy and fails on any violation.
       // Accessibility (contrast, rings, structure) is unaffected by CSP, so this
-      // context bypasses it to let the instrument run. Division of labour:
+      // context bypasses it to let the instrument run. Division of labor:
       // smoke owns the CSP; a11y owns accessibility.
       bypassCSP: true,
     });
@@ -2617,7 +2627,7 @@ try {
     // said "This clears 0 things — everything you are keeping here, people,
     // weights and private entries included", warned that no copy had been
     // saved, made "Save a copy first" the loudest control on the panel, and
-    // asked for the word `clear` to be typed out in full — to authorise doing
+    // asked for the word `clear` to be typed out in full — to authorize doing
     // nothing. `purgeSummary` one line above had always said "There is nothing
     // here to clear."; the confirmation under it had never been told.
     //
@@ -3449,7 +3459,7 @@ try {
       const origin = (!off && runway) ? runway.getBoundingClientRect().top : 0;
       // AND THE CLEARANCE IS READ, NOT ASSUMED. `.runway` sets `scroll-padding-top`
       // so a heading does not land flush against the frame's edge, and
-      // `scrollIntoView` honours it — so a jump that worked perfectly landed
+      // `scrollIntoView` honors it — so a jump that worked perfectly landed
       // exactly that far down and the check failed by exactly that much. The
       // tolerance is NOT widened to swallow it; the expected landing point comes
       // from the stylesheet, so changing the clearance moves the check with it
@@ -4313,7 +4323,7 @@ try {
     await page.click('#sheet-menu-close');    // closed again, so later states are clean
     await page.waitForSelector('#sheet-menu[open]', { state: 'detached' });
 
-    // State 3e2: coming back. Reached by ageing the whole log, which is the only
+    // State 3e2: coming back. Reached by aging the whole log, which is the only
     // honest way — `lastActivityAt` is a maximum, so one backdated event proves
     // nothing. The snapshot is its own store and has to go with it.
     await page.evaluate(async () => {
@@ -5296,7 +5306,7 @@ try {
 
     await page.click('#clock-on');
     // Waited on the STATE, not on the sentence (hub LESSONS §59). The
-    // neighbouring toggles wait for /^On\./ in their own note, which makes a
+    // neighboring toggles wait for /^On\./ in their own note, which makes a
     // reword of a status line hang a walk for a reason that is not a defect.
     // The pair of buttons swapping IS the thing that happened.
     await page.waitForSelector('#clock-off:not([hidden])');

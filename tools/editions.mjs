@@ -59,7 +59,7 @@ if (!existsSync(join(ROOT, 'public', 'app.js'))) {
 
   // The marker list is only worth anything if these strings really do appear
   // when the module IS present. Otherwise this gate passes forever by testing
-  // for words nothing ever emits — the shape that has produced theatre in this
+  // for words nothing ever emits — the shape that has produced theater in this
   // repo three times.
   // `maxBuffer` EXPLICITLY, because Node's default is 1MB and this bundle
   // crossed it on 2026-08-22 at 1,043,605 characters. What that produced was

@@ -36,7 +36,7 @@ needs a `VTIMEZONE` and reopens every timezone question this design closes by
 construction. Recorded here so the next reader is not misled by the round number.
 
 An absolute `TRIGGER` would be worse on both counts: it needs a zone, and it would
-be wrong the moment someone travelled. **The `VALARM` is the entire point of the
+be wrong the moment someone traveled. **The `VALARM` is the entire point of the
 feature** — an event without one is a diary entry, and a diary entry does not
 remind anybody. The tests assert one alarm per event, always.
 

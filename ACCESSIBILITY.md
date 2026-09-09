@@ -68,7 +68,7 @@ reads as deleted.
 
 ### B-04 · Sizing
 No fixed size may ignore the space available (Doctrine §4, LESSONS.md §6). Type is
-sized in `rem` so the user's *text-size* preference is honoured, not only page
+sized in `rem` so the user's *text-size* preference is honored, not only page
 zoom, and content that cannot fit scrolls inside its own container rather than
 the page. Both are **enforced today**: `tools/a11y.mjs` asserts zero page
 overflow (and zero dialog overflow) at 320px with 200% text, in both themes.
@@ -81,9 +81,9 @@ not claim otherwise. The 320px/240px place-card failure in a sibling app is why
 the viewport check is a gate and not an intention.
 
 ### B-05 · Motion
-Reduced-motion is honoured throughout: `app.css` carries a global
+Reduced-motion is honored throughout: `app.css` carries a global
 `prefers-reduced-motion: reduce` block that collapses every animation and
-transition, so the honouring is one rule rather than a habit. No animation is
+transition, so the honoring is one rule rather than a habit. No animation is
 load-bearing for meaning.
 
 **Corrected 2026-08-01 (1.9.1).** This row used to say "the pressure gradient,
@@ -326,7 +326,7 @@ words.
 
 ### B-21 · The way out of the (i) panel (0.21.1) — reported twice
 **found on device, twice.** The panel's header was `position: sticky` inside the
-dialog's own scroll container. That is correct, every engine in CI honours it,
+dialog's own scroll container. That is correct, every engine in CI honors it,
 and it did **not** hold on the iPad: the header scrolled away with the content,
 so both ways out sat at the extremes of a panel thousands of pixels long.
 
@@ -1165,6 +1165,11 @@ cannot see a thing reports the wrong diagnosis).
 V2 stage 1. The offer's head card, the rows behind it, and the upkeep chips
 gain a lineage line — "in Errands · under Home" — and the filing flow gains a
 visible receipt ("Filed under Errands — no return date yet.").
+**That receipt's wording is history, not the app.** Nothing has ever shown a
+button called Filed; 3.21.0 changed it to name the control that was pressed, and
+it reads "Put under Errands — no return date yet." now. The sentence above is
+left as it shipped, because this register is a record of what was measured and
+rewriting it would make the measurement describe copy that never went through it.
 
 - **No new color pair ships.** Every new span reuses a text class the
   contrast registry already measures on the same surface (`.nextup-why`,
@@ -1400,3 +1405,40 @@ nothing outside it clips it however the DOM nests. Watched red on 26 real
 findings, then 8, then 2, going green as each fix landed — and the horizontal
 branch planted separately by removing the runway's room and watching it name the
 control and the container.
+
+## 3.23.14 — a list of offers that read as an answer
+
+Found by a cold read, not by a gate, and no gate here could have found it. On a
+thing with no place set, the sheet asked **Where can this be done?** and the next
+thing under the question was an underlined *on the phone*. That is one of the
+places you already use, offered as a tap; it was read as the answer.
+
+Everything about it was conformant. The control has a 44px box, an accessible
+name equal to its visible text, a focus ring that is painted and not clipped,
+and ink measured against its paper in both themes and every color set. The
+defect is that the list had **no name of its own** — so what a reader had to go
+on was position, and position said *this is what the question is answering*.
+
+**What changed.** The list gets a lead-in that says what it is and what tapping
+one does, and the same sentence is set as the list's `aria-label`, so it reaches
+a screen reader as the name of the region the buttons are inside rather than as
+a run of unexplained place names after a question. It is written from the noun
+each list already passes in, so a third picks list gets one without anybody
+remembering to write it, and it changes with the buttons — *tap to add* becomes
+*tap one to say it is not a place* when the list is in its correcting state.
+
+**No new pair ships.** The lead-in carries `.detail-hint` verbatim for its ink
+and a modifier class that changes layout only, which is the trade B-40 records:
+same ink, same paper, so the contrast registry's existing row covers it by
+construction rather than by an entry somebody has to remember to add. It joins
+`tools/a11y.mjs` in both states in the commit that creates it (hub LESSONS §28)
+— in both, because its words change and words are what SC 2.5.3 and the name
+audits read.
+
+**The general shape, which is worth more than the fix.** A conformance gate asks
+whether a control can be perceived, named and operated. It cannot ask what a
+reader will take the control to MEAN, and an offer sitting where an answer would
+sit means the wrong thing while passing every check. That is the same class as
+the skip link that conformed and could not be reached by a finger (2.0.8 above):
+the question a gate cannot put is *who takes this route, and what do they think
+they are looking at*.

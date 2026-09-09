@@ -111,7 +111,7 @@ const settled = async (pg, ms) => {
   //
   // So: if the store is ALREADY quiet when we arrive, this sleep was never
   // waiting on a write, and shortening it is a guess about something the app has
-  // told us nothing about. Honour it in full. If a write IS in flight, wait for
+  // told us nothing about. Honor it in full. If a write IS in flight, wait for
   // it to land and for one paint, which is both faster and actually correct.
   //
   // Self-selecting, so no call site needs judging one at a time — and the
@@ -848,8 +848,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await page.waitForSelector('.card');
   is(await page.locator('.card-title').first().textContent(), 'Ring the dentist',
     'it came back after a full reload');
-  const when = await page.locator('.card-when').first().textContent();
-  is(typeof when === 'string' && when.length > 0, true, `every card states its own status in words ("${when}")`);
+  // EVERY row, not the first one. This asked `.card-when` on `.first()`, which
+  // is the weakest form of a check whose whole subject is "every item states its
+  // own status": one row carrying words says nothing about the rest.
+  //
+  // AND IT IS EVERY ROW ON PURPOSE (3.23.14). A cold read reported the echo
+  // between a row's status and the heading above it, and dropping the row's
+  // copy where the two matched was tried and reverted the same hour — this walk
+  // is what refused it, on two assertions elsewhere that read the ROW for the
+  // state and got nothing. `src/ui/app.ts` carries the reasoning. This
+  // assertion is the guard on that decision: it goes red if a row is ever again
+  // left with its state readable only by scrolling up to a heading.
+  const whens = await page.locator('.card-when').allTextContents();
+  const cardCount = await page.locator('.card').count();
+  is(whens.length === cardCount && whens.every(w => w.trim().length > 0), true,
+    `every card states its own status in words (${whens.length} of ${cardCount}, e.g. "${whens[0] ?? ''}")`);
 
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
@@ -2270,7 +2283,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const doneTitle = await tpage.locator('#nextup-title').textContent();
-  // The gauge is where the honest total lives now, so the anti-theatre half of
+  // The gauge is where the honest total lives now, so the anti-theater half of
   // this check reads it there rather than off the offer. READY NOW, not held:
   // a completed thing is still held (law 1 does not exempt finished work, and
   // the gate re-clocks it), so "held" is exactly the number that must not move.
@@ -3614,10 +3627,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.waitForSelector('#detail[open]');
   await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
   // Before it is a container there is nothing in this app to put anything under,
-  // and the picker says exactly that rather than inviting a choice it cannot honour.
+  // and the picker says exactly that rather than inviting a choice it cannot honor.
   const emptyPicker = await tpage.locator('#detail-parent option').allTextContents();
   // A LITERAL 1 — the placeholder and nothing else. Comparing the length to
-  // itself is the self-referential theatre an audit already found twice here.
+  // itself is the self-referential theater an audit already found twice here.
   is(emptyPicker.length, 1, `the picker offers no parents yet (${emptyPicker.join(', ')})`);
   is(await tpage.locator('#detail-parent').isDisabled(), true,
     'and it is disabled rather than offering an empty choice');
@@ -4322,7 +4335,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // media. The button worked and the result was unusable.
   // --- The way out of the panel (found on device, twice) -------------------
   // The header was `position: sticky` inside the dialog's own scroll container.
-  // Correct, honoured by every engine in CI, and it did not hold on the iPad:
+  // Correct, honored by every engine in CI, and it did not hold on the iPad:
   // the bar scrolled away with the content and both ways out ended up at the
   // extremes of a panel thousands of pixels tall.
   //
@@ -4686,21 +4699,21 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await openSurface(tpage, 'sheet-group-actions').catch(() => {});
   await tpage.locator('#tour-replay').click().catch(() => {});
   await tpage.waitForSelector('#tour[open]', { timeout: 2500 }).catch(() => {});
-  const emphasised = [];
+  const emphasized = [];
   for (let tourStep = 0; tourStep < 6; tourStep += 1) {
     const s = await tpage.evaluate(() => ({
       text: document.querySelector('#tour-body')?.textContent ?? '',
       ems: [...document.querySelectorAll('#tour-body em')].map(e => e.textContent),
     }));
-    if (s.ems.length) emphasised.push(...s.ems);
+    if (s.ems.length) emphasized.push(...s.ems);
     // No asterisk may ever reach the reader — that is the failure the patch
     // notes already hit once, printing its own markers on screen.
     is(s.text.includes('*'), false, `walkthrough step ${tourStep + 1} shows no raw marker to the reader`);
     await tpage.locator('#tour-next').click().catch(() => {});
     await settled(tpage, 60);
   }
-  is(emphasised.length >= 4, true,
-    `the walkthrough sets its control names apart from the prose (${emphasised.join(', ')})`);
+  is(emphasized.length >= 4, true,
+    `the walkthrough sets its control names apart from the prose (${emphasized.join(', ')})`);
   await tpage.keyboard.press('Escape').catch(() => {});
   await settled(tpage, 120);
 
@@ -5058,7 +5071,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(hints.every(h => h.trim().length > 0), true,
     `each says what it will do (${hints.join(' | ')})`);
 
-  // THE ONE THAT MATTERS. "Not mine to carry" is honoured AND kept (1.8.0,
+  // THE ONE THAT MATTERS. "Not mine to carry" is honored AND kept (1.8.0,
   // ADR-0056): the vocabulary said "lands on the Not Now ledger with a park"
   // from the start, and the first build trashed it instead. The relief still
   // holds — a park never demands, nothing chases you — and the decision is
@@ -6183,11 +6196,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const heatPrompt = await tpage.locator('#triage-prompt').textContent();
   if (onMine && /hot or cold/i.test(heatPrompt || '')) {
     await intoJob(tpage, 'triage');
-    await tpage.locator('#triage-actions .route', { hasText: 'Just sort it' }).first().click();
+    await tpage.locator('#triage-actions .route', { hasText: 'Choose where it goes' }).first().click();
     await settled(tpage, 200);
     const after = await tpage.locator('#triage-prompt').textContent();
     is(/hot or cold/i.test(after || ''), false,
-      `"Just sort it" leaves the heat pass and offers the routes ("${after}")`);
+      `"Choose where it goes" leaves the heat pass and offers the routes ("${after}")`);
     is(await tpage.locator('#triage-actions .route', { hasText: 'Next action' }).count() > 0, true,
       'and the real routes are there — the item was in the clarify queue the whole time');
     const card = await tpage.locator('#triage-card').textContent();
@@ -6405,11 +6418,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     // surface is what the walk is for.
     await intoJob(tpage, 'held');
     await revealAll(tpage);
-    const grp = await tpage.evaluate((t) => {
+    // WAITED FOR, NOT SAMPLED (3.23.14). This read the group the instant the
+    // list came up and failed intermittently — once in four runs — reporting
+    // "Not sorted yet", which is the group the card was in BEFORE the route it
+    // is asserting about. Nothing was wrong with the app: the read had simply
+    // arrived ahead of the re-render, and a sampled assertion about a rendered
+    // fact is a coin toss with the odds hidden.
+    //
+    // The poll is bounded and asserts the same thing it always did — a card that
+    // genuinely never leaves the inbox still fails, one second later. What goes
+    // is the race, not the check. Calling this a flake and re-running would have
+    // left the next person to find it again.
+    const readGroup = () => tpage.evaluate((t) => {
       const card = [...document.querySelectorAll('#cards .card')].find(
         (c) => (c.querySelector('.card-title')?.textContent || '').trim() === t);
       return card ? (card.closest('ul')?.getAttribute('aria-label') ?? null) : null;
     }, title);
+    let grp = await readGroup();
+    for (let i = 0; i < 20 && grp !== null && /not sorted yet/i.test(grp); i += 1) {
+      await settled(tpage, 50);
+      grp = await readGroup();
+    }
     is(grp !== null && !/not sorted yet/i.test(grp), true,
       `and the list agrees — “${title}” sits under ${JSON.stringify(grp)}`);
   };
@@ -6607,6 +6636,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#nextup-plain-bar').isHidden(), false,
     'still on after a full reload');
   is(await tpage.locator('#nextup-why').isHidden(), true, 'and still stripped');
+
+  // AND IT STILL SHOWS THE ONE THING (3.23.14).
+  //
+  // The two assertions above check that the MODE survived a reload. They do not
+  // check that anything did, and for four releases nothing did: the mode strips
+  // `#hub`, the app lands on the hub, and the offer lives inside a job \xe2\x80\x94 so
+  // coming back put the reader on a screen with a capture box, a gauge saying
+  // something was ready, and no route to it. A cold reader found it; every
+  // assertion here was green throughout, because the marker of the mode is kept
+  // on the landing surface and its CONTENT is not.
+  //
+  // The lesson is the assertion: a mode that survives a reload has to be asked
+  // what it is showing, not whether it is on.
+  await settled(tpage, 300);
+  is(await tpage.locator('#nextup').isVisible(), true,
+    'and it arrives at the one thing rather than on an empty landing screen');
+  is(((await tpage.locator('#nextup').textContent()) ?? '').trim().length > 0, true,
+    'with something actually in it');
 
   // AND NOTHING WAS TAKEN FROM THE STORE. The list is off the screen from
   // 2.14.0 and every card of it is still rendered, one attribute away — which is
@@ -7673,7 +7720,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#purge-go').isDisabled(), false, 'the right word unlocks it');
   await tpage.click('#purge-pick-erase');
   is(await tpage.locator('#purge-word').inputValue(), '',
-    'switching mode emptied the box — no authorisation carried across');
+    'switching mode emptied the box — no authorization carried across');
   is(await tpage.locator('#purge-go').isDisabled(), true, 'and the button locked again');
   // The consequence line is rewritten after a store read, so it is WAITED for
   // rather than sampled — sampling it made this red while the app was correct.
@@ -7864,7 +7911,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // than on the log: an event proves the write happened and says nothing about
   // whether anybody ever sees the place again, and that gap IS the defect.
   console.log('\nFiling — a place you date actually comes back');
-  // ITS OWN ITEM, so this block neither eats a card its neighbours route by name
+  // ITS OWN ITEM, so this block neither eats a card its neighbors route by name
   // nor perturbs the six-routes accounting above it. Three earlier blocks in
   // this file learned that the hard way; a section that brings its own subject
   // cannot litter.

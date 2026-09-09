@@ -47,7 +47,7 @@ test('duplicates collapse', () => {
   assert.deepEqual(heldRanges([ev('d1', 1), ev('d1', 1), ev('d1', 2)]), { d1: [[1, 2]] });
 });
 
-test('several devices, each summarised separately and in a stable order', () => {
+test('several devices, each summarized separately and in a stable order', () => {
   const h = heldRanges([ev('d2', 1), ev('d1', 1), ev('d1', 2)]);
   assert.deepEqual(Object.keys(h), ['d1', 'd2'], 'sorted, so two summaries compare directly');
 });

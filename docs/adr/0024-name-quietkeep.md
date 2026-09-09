@@ -22,7 +22,7 @@ promise it makes instead, in two ordinary words.
 
 **It is calm without being soft.** "Quiet" here is a property of the app, not an
 instruction to the user — this is not a name that tells anyone to settle down. Nothing in
-it is diagnosis-flavoured, nothing is a rebuke, nothing is childlike. It reads adult.
+it is diagnosis-flavored, nothing is a rebuke, nothing is childlike. It reads adult.
 
 **It is a compound, which is why it was available.** The graveyard's own conclusion after
 thirty-odd deaths: *single evocative words in class 9 are effectively exhausted; what
@@ -55,7 +55,7 @@ check and still had to be withdrawn.
   - Instrument: **a real device**
   - Result: **nothing near it on the App Store.** Blocked from a session and proven so ([V-05](../verifications.md)); handed over, and it came back answered.
 
-**Recorded rather than omitted — the nearest live neighbours:**
+**Recorded rather than omitted — the nearest live neighbors:**
 
 - **Quietstart: AI Day Planner** (Google Play) — same category, shared first syllable,
   different second half. Not a collision, but it is where a half-remembered name could

@@ -14,12 +14,41 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.15 — ITERATION
+
+*2026-09-09*
+
+- **Every row on your list still says its own state, even under a heading that says the same thing.** The last release was going to stop that repetition — under *Not sorted yet*, every row also says *not sorted yet* — and it was tried and taken back out the same hour. A heading is one line above a group of any length, so on a real list the row and the words explaining it end up screens apart, and a row you have to scroll up to understand is exactly what this app is against. The repetition is the cheaper of the two.
+- **Still to sort:** the repetition is real and this is not the last word on it. What a row wants under *Not sorted yet* is probably when you put it down, rather than nothing and rather than the heading again.
+
+## 3.23.14 — ITERATION
+
+*2026-09-09*
+
+- **“Just one thing” shows you the one thing.** Turn the reduced screen on, close the app and come back, and it said *1 ready now* with nothing under it — the mode strips the page of doors, the app always comes back to the doors, and the one thing lives behind one of them. It goes straight to the thing now.
+- **The sorting screen has one name.** The door said *Sort what you put down*, the button inside it said *Sort what you have put down*, and the manual called it *Sort things out*, which is what the batch picker is called. Three names, one screen. It is *Sort what you put down* everywhere, and the batch picker is *Sort a batch* — which the manual had never described, because its name was being used for something else.
+- **A thing’s own page stops saying one fact twice.** Something you are waiting on read *Waiting for · sorted as waiting for*, and something on the Menu read *on the Menu · sorted as someday*. One fact, printed once now — and still printed in full when the two are genuinely different, such as a thing sorted to the Menu that you have since taken off it.
+- **Something you wanted no longer claims a word you never chose.** It read *something you wanted · Read*, and *Read* is only what the app files a wish under when you have not said. The Menu still groups them; the thing itself no longer asserts it.
+- **Places you already use say they are on offer.** On a thing with no place set, the question *Where can this be done?* was followed by an underlined *on the phone*, which reads as the answer. The list says what it is now, and what tapping one does.
+- **And a dash is not an answer.** Under *Your data*, *Asked for* printed a bare — in a column of words. It says the same thing the row above it says.
+
+## 3.23.13 — ITERATION
+
+*2026-09-09*
+
+- **Sorting says what it is asking, and *Hot* says what it does.** *Hot or cold?* is a quick feel about the handful you just put down — hot ones get offered before cold ones, and that is the whole of it. *Hot* was the only button on that screen with nothing written under it, which made it the one you were supposed to already understand.
+- **And the button beside them says where it goes.** It read *Just sort it — skip this question*, and it does not skip anything: it takes you straight to the other question, the one with nine answers. It says *Choose where it goes* now, because that is where it goes.
+- **The count says which question it is counting.** Two questions, one sentence: the number fell as you answered the first and then jumped as the second began, with the words unchanged. It now says *N to say hot or cold about* while that is what is being asked, and *N here to work through* for the sorting itself.
+- **The front page stops reading as empty while it is holding things.** Put ten things down before sorting any of them and it said *nothing here has gone quiet · nothing ready yet* — both true, and together they read as *nothing is here*. It adds *some still to sort*. Not a number: a count of the pile is the thing this screen has always refused, and what was missing was only that the pile exists.
+- **These notes stop talking about themselves.** The panel printed the project’s own word for each release — ITERATION — and a count of how many there have been, and one note had a paragraph about how many times a thing had been fixed. None of that is about you or anything you can do.
+- **And three small ones.** *Room available* said six-figure megabytes where it means gigabytes; *Used at this address* is *Used on this device*; and *Back to the top* had a downward arrow on it.
+- **Still to sort:** *Just one thing* lands on a screen with nothing on it — it says one thing is ready and does not show you the one. *Show me everything again* is the way back.
+
 ## 3.23.12 — ITERATION
 
 *2026-09-09*
 
-- **Opening something from the People screen lands on the naming control.** A row there can say *Nobody named yet*, and tapping it opened a page with no name field on it — *Who is this with?* sat nine sections down, behind *More about this*. The sheet arrives with that half open and the control on screen. Nothing moved and nothing was added: the trip goes where it was always going.
-- **Which is the third time this has been the fix.** Opening a person, and opening a goal or area, both already ask for the folded half to be open, for the same stated reason — a screen whose point is folded away is a screen you landed on for nothing. The People screen was the one nobody had noticed doing it.
+- **Opening something from the People screen takes you straight to the naming control.** A row there can say *Nobody named yet*, and tapping it used to open a page with no name field in sight — the control was there, nine sections down and folded away. It is open and on screen when you arrive now. Nothing moved and nothing was added.
 
 ## 3.23.11 — ITERATION
 
@@ -80,7 +109,7 @@ triplet and what it did for you.
 
 *2026-09-08*
 
-- **The app spells the American way now, everywhere.** *Colors* was *Colours* and *Recognize this one?* was *Recognise this one?*, on screens you meet in the first minute, and about forty other words behind them — in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.
+- **The app spells the American way now, everywhere.** *Colors* and *Recognize this one?* each changed a letter, on screens you meet in the first minute, and about forty other words behind them — in the app, in the manual, in the flowcharts and in the notes you are reading. Nothing changed but the spelling: no control moved, nothing was renamed, and every screen says exactly what it said before.
 - **Still to sort:** the situation screen asks who twice — the names under *Who is in it?* are buttons, press as many as apply, and nothing there adds somebody new. And three spoken confirmations still read a date out as digits when you set one.
 
 ## 3.23.4 — ITERATION
@@ -1047,7 +1076,7 @@ triplet and what it did for you.
 *2026-08-19*
 
 - **The line saying how much of today is left has come off the offer card.** It read *“About 2h 30m left today”*, and it was on the card from the moment you opened the app until the day ran out. The last release said it was unsettled; this one settles it.
-- **The card already refused to do exactly this, one line further down.** The line naming the fixed thing today gives you its name and never how long until it — because a number counting down towards something you are already avoiding makes it harder to start, not easier. The remainder of the day was the same kind of number, three lines above it.
+- **The card already refused to do exactly this, one line further down.** The line naming the fixed thing today gives you its name and never how long until it — because a number counting down toward something you are already avoiding makes it harder to start, not easier. The remainder of the day was the same kind of number, three lines above it.
 - **The clock in the header still says it, and the clock is off until you ask for it.** It was built as something you switch on, because a day is not a countdown and one should not arrive on your screen uninvited. If you had switched it on, the app was telling you the same thing twice at once, in two different phrasings.
 - **It was there to help you judge whether something fits in what is left — and the card never told you how long anything takes.** How long a thing has taken you before is on the thing itself, when you open it. A remainder with nothing to measure it against is just a clock running down.
 - **If you want the running remainder, it is one switch:** *More → Settings → A clock in the header*. Nothing else on the card changed.

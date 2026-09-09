@@ -52,7 +52,7 @@ export type ChangeKind = 'finished' | 'arrived' | 'now-waiting' | 'let-go' | 'ne
  *
  * **A TOTAL RECORD, NOT A DENY-LIST, AND THAT IS THE WHOLE FIX.** This was
  * `NOT_REPORTABLE = new Set(['journal','pebble','person','anchor'])`, added by
- * the 1.17.3 seam audit after journal entries were itemised as "New —
+ * the 1.17.3 seam audit after journal entries were itemized as "New —
  * (untitled)" in the one document built to leave the device. That audit
  * enumerated the four kinds it had just found instead of asking the question
  * over the vocabulary — and its own comment then claimed these were "the same
@@ -60,7 +60,7 @@ export type ChangeKind = 'finished' | 'arrived' | 'now-waiting' | 'let-go' | 'ne
  *
  * `bother` was already in NOT_ACTIONABLE and NO_REPLAN_CARD and was NOT here.
  * So a worry — the flow whose entire pitch is that you may write a private thing
- * down AS a worry rather than as a task — was itemised under "New", by name,
+ * down AS a worry rather than as a task — was itemized under "New", by name,
  * verbatim, in the artefact handed to somebody else. Reproduced by running the
  * real intents.
  *

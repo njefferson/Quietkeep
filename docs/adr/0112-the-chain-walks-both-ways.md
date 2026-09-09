@@ -22,7 +22,7 @@ Meanwhile the same sheet lists what is *under* the node, and every one of those
 rows is a `<button>` that re-renders the sheet on the child. That door has been
 there since 1.6.0.
 
-So the sheet travelled downward and did not travel upward, and the line that
+So the sheet traveled downward and did not travel upward, and the line that
 named the destination was prose. The app named a place and offered no way to
 reach it — which is the same defect as 3.5.2's Close, where a control was
 present, correctly sized and correctly placed, and connected to nothing. Here

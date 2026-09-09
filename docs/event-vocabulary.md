@@ -735,7 +735,7 @@ agreed to survives a copy change (law 10).
     than one noun because a relation that could only say *they hold more than
     you* would encode a deficit into the vocabulary; the pointer carries no
     text, no version and no age, which is the whole reason it survives the
-    research catalogue's entry 32.
+    research catalog's entry 32.
 - **`promise.released`**
   - Payload: `person`
   - Silent risk: no — a person link carries no coverage, so taking one off

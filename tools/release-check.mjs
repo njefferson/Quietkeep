@@ -127,7 +127,7 @@ const bundleHash = (entryPrefix, outfile) => {
     + `--target=es2022 --outfile=${outfile} --log-level=error`,
     { cwd: ROOT, stdio: 'pipe' },
   );
-  // NORMALISE THE MODULE BANNERS FIRST. esbuild writes `// <path>` above each
+  // Normalize THE MODULE BANNERS FIRST. esbuild writes `// <path>` above each
   // module, so a tree built from a subdirectory differs from the same tree built
   // in place — in those comments and nothing else. Hashing without this compares
   // where the files were, not what they say, and reports every source change as

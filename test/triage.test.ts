@@ -166,7 +166,7 @@ test('a pre-Phase-2 snapshot upgrades without crashing, and its captures still a
   assert.equal(restored.nodes.get('A')!.captured, true, 'captured backfilled to true for a legacy node');
 });
 
-test('sourceTags honours copy-on-write — a derived mutation cannot rewrite history (audit)', () => {
+test('sourceTags honors copy-on-write — a derived mutation cannot rewrite history (audit)', () => {
   let s1 = capture(emptyState(), 'N', 'a thing', ['boss']);
   const s2 = write(s1, heatEvents(ctx(), 'N', 'hot'));   // touches N → clones it
   const a1 = s1.nodes.get('N')!.sourceTags;

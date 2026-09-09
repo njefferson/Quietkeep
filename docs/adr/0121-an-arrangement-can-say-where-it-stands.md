@@ -75,7 +75,7 @@ run without you is worthless if it hides everything currently fine.
 
 Carried from entry 30's routing proposal, and each is load-bearing:
 
-- **No state list or lifecycle the app defines** — that is the app modelling
+- **No state list or lifecycle the app defines** — that is the app modeling
   somebody's organization.
 - **No progress reading across states** — a bar over words somebody typed is
   arithmetic pretending to be knowledge.
@@ -97,7 +97,7 @@ would say the state is what they wanted and the condition was the theory — and
 the remedy would be dropping the second box rather than explaining it harder.
 
 Entry 31 is worth holding beside this one. Forgetting accounts for under a tenth
-of things that do not happen; reprioritisation is the largest single reason and
+of things that do not happen; reprioritization is the largest single reason and
 is adaptive. These fields are not a memory aid so much as the thing that lets a
 reconsideration be **informed**: work hung off a state should be reconsidered
 when the state changes, and without a stated state there is nothing for it to

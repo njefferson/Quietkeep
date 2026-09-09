@@ -59,6 +59,7 @@ import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCor
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents, reclaimEvents } from './detail-intents.ts';
 import { paintHub, leave, watchJobs, enter as enterStance } from './hub.ts';
+import { plainIsOn } from '../plain.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
   isLongStretch, longStretchWords,
@@ -541,6 +542,28 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
       // Every item states its own status in words — the text channel of B-01, so
       // nothing here depends on seeing a color. A finished thing says "done"
       // rather than reporting the cure clock it happens to still carry.
+      //
+      // AND IT IS SAID ON THE ROW EVEN WHEN THE HEADING JUST SAID IT — tried the
+      // other way in 3.23.14 and measured wrong within the hour. The fourth cold
+      // read reported the echo, correctly: four of the seven groups have every
+      // row repeating their heading back at them, because `heldStatus` and
+      // `heldGroups` share one vocabulary on purpose (three phrasings for one
+      // state is three things to learn). Dropping the row's copy where it
+      // matched its heading looked like the obvious answer.
+      //
+      // THE WALK REFUSED IT, on two assertions written years apart and neither
+      // of them about repetition: "its status reads exactly done" and "the list
+      // still holds it and says what it needs" both read the ROW for the state,
+      // and both got an empty string. That is not a fixture detail. A heading
+      // is one line for a group of any length, so on a real store the row and
+      // the words that explain it are separated by everything above it — and a
+      // row whose state is only readable by scrolling up to find its heading is
+      // the out-of-sight failure this app is named against, arriving as a
+      // tidiness fix. The second copy is the one doing the work.
+      //
+      // What was genuinely doubled was `detail.ts`'s state line, where two
+      // clauses of ONE sentence said one fact twice ("Waiting for · sorted as
+      // waiting for"). That is fixed there. This is not the same shape.
       when.textContent = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
 
       open.append(title, when);
@@ -602,7 +625,7 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
       // it". 1.26.0 made a place able to return; a place that arrives saying
       // only "7 under it" gives a number and sends you looking to find out
       // whether it is the number you cared about. Entry 3 of the collision
-      // catalogue is cue-dependent prospective memory — filed means gone, and a
+      // catalog is cue-dependent prospective memory — filed means gone, and a
       // count is not a cue, a NAME is.
       //
       // ONLY IN `ready`, and that is the whole restraint. Every container in the
@@ -1047,8 +1070,11 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
   // The gauge reads as text first and the number is the information (B-02).
   const { silent, total } = coverageGauge(session.state());
   const readyNow = groups.find(g => g.key === 'ready')?.items.length ?? 0;
+  // WHETHER ANYTHING IS WAITING TO BE SORTED, as a fact and never as a number
+  // (3.23.13). See the branch below for what it is for.
+  const anyUnsorted = (groups.find(g => g.key === 'unsorted')?.items.length ?? 0) > 0;
   // The gauge is a button: its number is a claim, and the claim opens into the
-  // itemised list that backs it (build-plan item 21).
+  // itemized list that backs it (build-plan item 21).
   //
   // `ready` is stated here because **the icon badge shows that same number**, and
   // until now no surface in the app said it anywhere. a reader came back to a red 1 on
@@ -1120,9 +1146,28 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
     } else {
       const fact = document.createElement('span');
       fact.className = 'gauge-fact';
+      // "NOTHING READY YET" READ AS "NOTHING HERE" (3.23.13, cold read).
+      //
+      // 3.9.1 already fixed half of this: "0 ready now" became "nothing ready
+      // yet", because a zero at the moment somebody is checking whether the app
+      // took their work reads as nothing having happened. The other half
+      // survived. A reader put TEN things down, got this line saying nothing
+      // has gone quiet and nothing is ready yet, and concluded the app had
+      // eaten them — both clauses true, the pair reading as empty.
+      //
+      // A STATE, NEVER A COUNT, and that is the whole care here. The comment on
+      // the capture confirmation refuses a number for a measured reason: a
+      // count is what turns a good day's dump into a visible backlog, and this
+      // is the surface most able to reintroduce one. "Some still to sort" says
+      // the things exist and does not say how many, which is what the doubt
+      // needed and not what the refusal forbids. The door to them is already on
+      // this page.
+      const ready = readyNow === 0
+        ? (anyUnsorted ? 'nothing ready yet — some still to sort' : 'nothing ready yet')
+        : `${readyNow} ready now`;
       fact.textContent = silent > 0
         ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet`
-        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`}`;
+        : `nothing here has gone quiet · ${ready}`;
       const door = document.createElement('span');
       door.className = 'gauge-door';
       door.textContent = 'What comes back, and when';
@@ -1215,14 +1260,14 @@ export async function main(edition?: Edition): Promise<void> {
 
   // Kept as its own binding because assigning it to the input DESTROYS the thing
   // the many-line restore below has to read: setting a text input's value strips
-  // carriage returns and line feeds (the HTML value-sanitisation rule), so
+  // carriage returns and line feeds (the HTML value-sanitization rule), so
   // `input.value` can never contain a newline no matter what was stored.
   const savedDraft = await session.draft();
   input.value = savedDraft;
 
   // Every surface is mounted through a mutable holder that starts as a no-op, so
   // one failing surface cannot take the others — or capture — down with it, and
-  // no callback can close over a binding that is not initialised yet.
+  // no callback can close over a binding that is not initialized yet.
   //
   // CONTAINMENT IS LOAD-BEARING HERE, not defensive habit. These surfaces read
   // every stored date, and they are built BEFORE the submit listener below is
@@ -2178,7 +2223,7 @@ export async function main(edition?: Edition): Promise<void> {
   // A multi-line paste into the ONE-LINE field.
   //
   // `<input type="text">` strips carriage returns and line feeds from anything
-  // set as its value — that is the HTML value-sanitisation rule, and it is why
+  // set as its value — that is the HTML value-sanitization rule, and it is why
   // pasting a written list here does not make many items and does not even make
   // one readable line: every join runs together. But the newlines are not gone,
   // they are only gone FROM THE ELEMENT. The clipboard still holds them, so this
@@ -2416,7 +2461,7 @@ export async function main(edition?: Edition): Promise<void> {
   }
   try {
     // Stored as a string like every other view preference. A stored value that
-    // is not one of the offered lengths is dropped rather than honoured: it
+    // is not one of the offered lengths is dropped rather than honored: it
     // would filter by a number no control can show or clear, which is a state
     // somebody could be stuck in with nothing on screen explaining why.
     const raw = Number(await session.store.getKv<string>(HOW_LONG_KEY));
@@ -2620,6 +2665,23 @@ export async function main(edition?: Edition): Promise<void> {
   // looks like.
   paintHub(heldWork(session.state()).length > 0);
   watchJobs();
+
+  // AND IN THE REDUCED MODE, ARRIVE AT THE THING (3.23.14).
+  //
+  // A cold reader turned *Just one thing* on, came back, and got a screen with
+  // NOTHING on it — a gauge saying something was ready, a capture box, and the
+  // way out. Everything worked as designed and the design had a hole in it:
+  // the mode strips `#hub`, because a list of places to go is what it is a
+  // rebuttal to; the app lands on the hub, because that is where everyone
+  // arrives; and the offer lives INSIDE a job. Strip the doors and land on the
+  // doors and the one thing is unreachable, from the screen whose whole promise
+  // is to hand it to you.
+  //
+  // So the mode arrives where it means to. This is not a general "remember the
+  // last screen" — that is a different question, and answering it here would be
+  // answering it for everybody on the strength of one mode's need. Somebody who
+  // has reduced the day to one thing has already said where they want to be.
+  if (plainIsOn(session.state())) enterStance('nextup');
 
   // The store is open, state is folded, and the surface reflects it. Marked on
   // the document so the headless walk waits for the app rather than for `load`,

@@ -28,7 +28,7 @@ export function serialiseState(s: State): unknown {
     lastReportMark: s.lastReportMark,
     lastActivityAt: s.lastActivityAt,
     modules: [...s.modules],
-    // `people` is copied out, not shared: a serialised record that aliased the
+    // `people` is copied out, not shared: a serialized record that aliased the
     // folded state's array would let a later write reach through the snapshot.
     situations: [...s.situations].map(([name, v]) => ({ name, ...v, people: [...v.people] })),
     requestSlot: s.requestSlot,
@@ -262,7 +262,7 @@ export const SNAPSHOT_LAG_LIMIT = 500;
  * This is the one the running app uses, and the distinction from
  * `writeSnapshot` below is the whole point: re-reading and re-folding the log to
  * photograph it would cost exactly the work the photograph exists to avoid. The
- * session has just folded this state; serialising it is a clone and nothing
+ * session has just folded this state; serializing it is a clone and nothing
  * more.
  *
  * The mark and the count both come from the SAME state object, read

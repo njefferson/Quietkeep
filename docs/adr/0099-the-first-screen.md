@@ -65,7 +65,7 @@ is the answer this release was run to get.
 
 ## What it trades, stated plainly
 
-**Naming a worry goes from one tap to two.** The catalogue's best-evidenced entry
+**Naming a worry goes from one tap to two.** The catalog's best-evidenced entry
 is activation cost at the point of performance, and this adds some to an act with
 very little tolerance for it. Against that: every visible ask is an ask (entry 8),
 and what those two shut doors were pushing below the fold was the one thing the

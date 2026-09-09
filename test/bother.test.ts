@@ -3,7 +3,7 @@
 // The load-bearing option is `not-mine-to-carry`. Almost no planner can express
 // it, so almost every planner quietly assumes everything you think about is
 // yours to do something about — and for this audience that assumption is most of
-// the load. The tests below are largely about the app honouring that answer
+// the load. The tests below are largely about the app honoring that answer
 // completely, because a release that is quietly taken back is worse than none.
 
 import { test } from 'node:test';
@@ -109,7 +109,7 @@ test('mine-to-track parks it and brings it back once', () => {
 
 // --- THE ONE THAT MATTERS ---------------------------------------------------
 
-test('THE ONE THAT MATTERS: not-mine-to-carry is honoured completely', () => {
+test('THE ONE THAT MATTERS: not-mine-to-carry is honored completely', () => {
   // The relief IS the feature. An app that quietly re-raises what you released
   // is an app that did not believe you, and a release taken back is worse than
   // one never offered.

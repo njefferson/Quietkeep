@@ -270,8 +270,8 @@ const BUDGET = {
   // dated work in the app; these words are where the seeing starts.
   // 3946 -> 3972 on 2026-09-09 (3.23.7). Twenty-six words, all of them spent
   // saying that two controls are two questions. The situation sheet asked
-  // "who" twice — a single-valued filter labelled `Who is here` twenty-five
-  // lines above a multi-select labelled `Who is in it?` — and it was carried
+  // "who" twice — a single-valued filter labeled `Who is here` twenty-five
+  // lines above a multi-select labeled `Who is in it?` — and it was carried
   // as "still to sort" in nine consecutive releases' patch notes while being
   // filed as a product decision nobody could make. Both controls are correct
   // and ADR-0118 settles that; only the labels never carried the distinction
@@ -300,7 +300,7 @@ const BUDGET = {
   // 4028 -> 4023 on 2026-09-09 (3.23.12). Five back: the hint no longer has to
   // recite the route, because opening a row from that screen now lands on the
   // control. A budget raise bought by copy that has since been replaced by
-  // behaviour goes back down — the same trade recorded at 3,400 -> 3,000.
+  // behavior goes back down — the same trade recorded at 3,400 -> 3,000.
   words: 4023,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a

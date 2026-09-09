@@ -80,7 +80,7 @@ test('read-perf: resolving an instant twice returns the SAME answer, not a secon
   const b = localParts(NOW, TZ);
   assert.equal(a, b, 'the memo is gone — every projection is paying full price again');
   // And a different zone is a different answer, so the key is not just the
-  // instant. A cache keyed on the instant alone would hand a traveller the
+  // instant. A cache keyed on the instant alone would hand a traveler the
   // wrong day, which is worse than being slow.
   assert.notEqual(localParts(NOW, 'Pacific/Kiritimati'), a);
   assert.notEqual(localDayKey(NOW, atMidnight('Pacific/Kiritimati')), localDayKey(NOW, atMidnight(TZ)));

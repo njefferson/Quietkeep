@@ -53,7 +53,7 @@ mkdirSync(OUT, { recursive: true });
 const AREAS = [
   ['Household', ['Fix the kitchen tap', 'Bleed the radiators', 'Replace the smoke alarm battery',
     'Descale the kettle', 'Clear the gutters', 'Service the boiler', 'Re-grout the bathroom']],
-  ['Car', ['Book the MOT', 'Change the oil', 'Replace the wiper blades', 'Check tyre pressures',
+  ['Car', ['Book the MOT', 'Change the oil', 'Replace the wiper blades', 'Check tire pressures',
     'Renew the insurance', 'Find the service history']],
   ['Admin', ['Renew the passport', 'File the tax return', 'Cancel the old subscription',
     'Update the address with the bank', 'Chase the refund', 'Scan the receipts']],

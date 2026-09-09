@@ -26,6 +26,7 @@
 //   node tools/help-check.mjs
 
 import { readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -71,7 +72,7 @@ const kindWords = stripJsComments(read('src', 'kind-words.ts'));
 const kinds = [...kindWords.matchAll(/^\s*(?:project|outcome|area|goal):\s*'([^']+)'/gm)].map((m) => m[1]);
 
 const shell = stripHtmlComments(read('public', 'index.html'));
-// RAW, not normalised. `norm` lowercases for comparison; storing its output
+// RAW, not normalized. `norm` lowercases for comparison; storing its output
 // would make every message this gate prints name the controls in words nobody
 // sees. A gate is read when it fails, which is the worst moment to be wrong
 // about what a thing is called.
@@ -85,6 +86,30 @@ const treeLabel = (shell.match(/id="tree-open"[^>]*>([^<]+)</) ?? [])[1];
 // control along, caught by hand both times.
 const moreDoor = (shell.match(/id="open-more"[^>]*>([^<]+)</) ?? [])[1];
 
+// A SCREEN'S OWN NAME (3.23.14). Every set above is a set of CONTROLS, and a
+// surface's name was not one of them — so the sorting screen carried three
+// names at once and every gate in the repo was green. The hub door said "Sort
+// what you put down", the opener inside the section said "Sort what you have
+// put down", and the manual called it "Sort things out", which is what the
+// batch DIALOG was called. A cold reader met three screens.
+//
+// AND THE COLLISION MADE A COVERAGE GATE LIE. `manual-coverage.mjs` requires
+// every surface with a heading to be named in the manual; the manual's two
+// descriptions of TRIAGE satisfied that requirement for the DIALOG, which then
+// went its whole life undescribed while the gate reported full coverage. That
+// is the more expensive half: a wrong name confuses one reader, a name shared
+// with another surface switches off a check over a real hole.
+const stanceNames = [...shell.matchAll(/data-stance-name="([^"]+)"/g)].map((m) => m[1]);
+
+// THE OPENER IS THE SAME SCREEN, so it says the same words. Both sides are read
+// out of the markup; nothing here is a list of what they ought to be. A section
+// without an opener owes nothing — most stances have none.
+const openerMismatch = [];
+for (const m of shell.matchAll(/<section\b[^>]*\sdata-stance-name="([^"]+)"[^>]*>([\s\S]*?)<\/section>/g)) {
+  const opener = /<button\b[^>]*\bdata-stance-opener\b[^>]*>([^<]+)</.exec(m[2]);
+  if (opener && norm(opener[1]) !== norm(m[1])) openerMismatch.push([m[1], opener[1].trim()]);
+}
+
 const SETS = {
   routes:       { what: 'the sort routes',        from: 'src/ui/clarify.ts CLARIFY ROUTES', values: routes },
   containers:   { what: 'the container words',    from: 'src/tree.ts CONTAINER_ORDER',      values: containerWords },
@@ -94,6 +119,16 @@ const SETS = {
   destinations: { what: 'the destination labels', from: 'public/index.html .more-go',       values: destinations },
   treeLabel:    { what: 'the tree label',         from: 'public/index.html #tree-open',     values: treeLabel ? [treeLabel] : [] },
   moreDoor:     { what: 'the way-to-everything door', from: 'public/index.html #open-more',  values: moreDoor ? [moreDoor] : [] },
+  // CLAIMED BY NOTHING, and that is itself a finding rather than a gap in this
+  // gate. Declaring the manual here was tried and went red on six of the ten:
+  // the manual names every screen by its HEADING ("Next up", "Needs a new
+  // plan") and no help surface anywhere names the words on the DOOR you press
+  // to arrive ("See what is next", "What slipped"). A reader navigating by what
+  // the buttons say cannot find those words in the help at all. Left read and
+  // printed until the copy answers it; the binding check on these is the
+  // opener/door agreement below, which needs no declaration because both sides
+  // come out of the same markup.
+  stanceNames:  { what: 'the screen names',       from: 'public/index.html data-stance-name', values: stanceNames },
 };
 
 // ── WHO COVERS WHAT ──────────────────────────────────────────────────────────
@@ -139,12 +174,14 @@ const COVERS = [
 const RETIRED = [
   ['How it hangs together', 'renamed in 3.6.1 to the current tree label'],
   // 3.23.7. The situation sheet asked "who" twice — a single-valued filter
-  // labelled `Who is here` sitting 25 lines above a multi-select labelled
+  // labeled `Who is here` sitting 25 lines above a multi-select labeled
   // `Who is in it?`, teaching the reader the answer is one person before the
   // second one appeared. Both controls are right and ADR-0118 says so; only
   // the labels never carried the distinction ADR-0119 states in words.
   ['Who is in it?', 'renamed in 3.23.7 to Who is in the room?'],
   ['Who is here', 'renamed in 3.23.7 to Who is in front of you now'],
+  ['Sort what you have put down', 'the opener said this while the door said "Sort what you put down"; one name since 3.23.14'],
+  ['Just sort it', 'renamed in 3.23.13 to Choose where it goes'],
 ];
 
 const HELP = [...new Set(COVERS.map((c) => c[0]))];
@@ -169,6 +206,12 @@ for (const [file, key, why] of COVERS) {
     (missing.length ? ` — MISSING: ${missing.join(', ')}` : ''));
 }
 
+(openerMismatch.length === 0 ? ok : fail)(
+  'every stance opener says its own screen\'s name' +
+  (openerMismatch.length
+    ? ` — ${openerMismatch.map(([n, o]) => `the door says "${n}", the opener says "${o}"`).join('; ')}`
+    : ''));
+
 for (const file of HELP) {
   const raw = read(...file.split('/'));
   const stripped = file.endsWith('.ts') ? stripJsComments(raw)
@@ -180,6 +223,60 @@ for (const file of HELP) {
       `${file} does not say "${phrase}" — ${why}`);
   }
 }
+
+// ── THE FLOWCHARTS NAME CONTROLS THAT EXIST ─────────────────────────────────
+// The SETS above are closed lists the app defines in one place, and a control
+// outside all of them — a button on one sheet, a label on one group — is named
+// by the flowcharts and held by nothing. `docs/paths.html` marks every control
+// it names with `<b>`, which is what makes this checkable without a second list:
+// the page already declares which of its words are the app's.
+//
+// It found two on its first run, both from renames nobody carried across. The
+// upkeep path said the control is "This one repeats"; the app's label has been
+// "Make it repeat". The replan path said "all of them at once"; the line reads
+// "All ⟨n⟩ at once". Neither is in any SET, so nothing here could see them.
+//
+// WHAT IS EXCLUDED, AND WHY IT IS BY POSITION RATHER THAN BY A LIST.
+//   · `<b>` inside `p.never` is the page's own label "What it never does", and
+//     inside a heading or the contents it is a section name. Neither is a
+//     control, and both are the page talking about itself.
+//   · A name containing ⟨…⟩ is a template with a hole in it — "Part of ⟨name⟩",
+//     "All ⟨n⟩ at once" — and the app fills the hole at runtime, so no verbatim
+//     match exists to look for. The literal text around it is not worth a
+//     substring check that would pass on almost anything.
+// An exclusion by POSITION cannot go stale the way a list of allowed strings
+// does: add a new `.never` paragraph and it is covered without an edit here.
+//
+// AND THE APP'S COPY IS READ WITH COMMENTS AND THE RELEASE NOTES STRIPPED. The
+// notes legitimately keep every retired name — that is what they are for — so
+// searching them would make this gate pass on precisely the words it exists to
+// find, and a comment naming an old control would do the same. This repo has
+// paid for that twice already (hub LESSONS 125).
+const paths = read('docs', 'paths.html');
+const pathsBody = stripHtmlComments(paths)
+  .replace(/<p class="never">[\s\S]*?<\/p>/g, ' ')
+  .replace(/<h[1-6][^>]*>[\s\S]*?<\/h[1-6]>/g, ' ')
+  .replace(/<div class="toc-set">[\s\S]*?<\/div>/g, ' ');
+const named = [...new Set([...pathsBody.matchAll(/<b>([^<]+)<\/b>/g)].map((m) => m[1].trim()))]
+  .filter((n) => !/[⟨⟩]/.test(n));
+
+const appCopy = norm(
+  execFileSync('git', ['ls-files', 'src', 'public/index.html'], { cwd: ROOT, encoding: 'utf8' })
+    .split('\n')
+    .filter((f) => f && f !== 'src/ui/changelog.ts' && /\.(ts|html)$/.test(f))
+    .map((f) => {
+      const raw = read(...f.split('/'));
+      return f.endsWith('.html') ? stripHtmlComments(raw) : stripJsComments(raw);
+    })
+    .join('\n'));
+
+const gone = named.filter((n) => !appCopy.includes(norm(n)));
+(named.length > 0 ? ok : fail)(
+  `the flowcharts name ${named.length} of the app's controls` +
+  (named.length ? '' : ' — FOUND NONE, so the check below is vacuous'));
+(gone.length === 0 ? ok : fail)(
+  'every control the flowcharts name is a control the app has' +
+  (gone.length ? ` — NOT IN THE APP'S COPY: ${gone.join(', ')}` : ''));
 
 // ── AND EVERY PAGE THE APP LINKS TO SURVIVES BEING OFFLINE ───────────────────
 // The worker maps a navigation to its OWN cached body via SHELL, so a hosted

@@ -362,7 +362,7 @@ test('nobody named is said plainly, never invented and never hidden', () => {
 
 // ——— WHO IS HERE, the third filter axis (2.26.0, entry 24) ———
 //
-// The catalogue grades this the best-evidenced of the three axes: a specific
+// The catalog grades this the best-evidenced of the three axes: a specific
 // person in front of somebody is the most distinctive focal event-based cue.
 // These hold it to `fitsHere`'s shape, including the part that looks like a
 // weakness and is load-bearing.

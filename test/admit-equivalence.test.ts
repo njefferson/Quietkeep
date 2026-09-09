@@ -9,7 +9,7 @@
 //
 // The generator is SEEDED (a plain LCG), so a failure prints its seed and
 // replays exactly. No Math.random: a property test that cannot be replayed is
-// a rumour, not a counterexample.
+// a rumor, not a counterexample.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

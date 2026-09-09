@@ -192,7 +192,7 @@ test('the penalty rules each fire on the shape they are about', () => {
   // 4 — so any increase is attributable to the shape being introduced.
   //
   // The first version of this compared an all-dark grid against an all-light one and
-  // asserted the dark scored worse. Both are maximally penalised (long runs, uniform
+  // asserted the dark scored worse. Both are maximally penalized (long runs, uniform
   // 2x2 blocks, and the same distance from half dark), so it compared two equally bad
   // things and told me nothing. Uniform is not a neutral baseline.
   const n = 21;
@@ -221,7 +221,7 @@ test('the penalty rules each fire on the shape they are about', () => {
   // Rule 4: distance from half dark.
   const skewed = board.map(r => [...r]);
   for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) skewed[y]![x] = true;
-  assert.ok(penalty(skewed) > base + 100, 'an all-dark grid is heavily penalised');
+  assert.ok(penalty(skewed) > base + 100, 'an all-dark grid is heavily penalized');
 });
 
 // --- the round trip, and its limits -----------------------------------------

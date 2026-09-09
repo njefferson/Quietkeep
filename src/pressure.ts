@@ -4,7 +4,7 @@
 //
 // Everything temporal in this app is the same shape: something was last touched
 // at T, it is comfortable for a while, and after that it comes back with
-// increasing insistence. Modelling an Upkeep interval, an area's review clock
+// increasing insistence. Modeling an Upkeep interval, an area's review clock
 // and a parked bother's return separately would produce four subtly different
 // notions of "late" that drift apart, and four places to fix a bug.
 //

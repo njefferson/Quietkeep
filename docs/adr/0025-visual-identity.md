@@ -17,7 +17,7 @@
 >
 > **And there is an argument that it is worse than a cell — an inference, not a
 > measurement.** `docs/nd-collisions.md` entry 3 — the thesis, and the
-> best-evidenced entry in the catalogue — is that *a thing that leaves the visual
+> best-evidenced entry in the catalog — is that *a thing that leaves the visual
 > field leaves existence; visible is the only kind of remembered; filed means
 > gone*. Read against that, a warm form shut inside a dark box is a picture of
 > something put away where it can no longer cue you. Against the reading: the

@@ -124,12 +124,25 @@ jobs:
       # after it compares the stamp against the tree the stamp was just made
       # from and can only pass. Same shape as running branch-guard with
       # `--install` in CI: the check repairs the thing it exists to find.
+      #
+      # AND IT RUNS PAST A FAILURE LIKE EVERY OTHER FILE-ONLY GATE (3.23.14).
+      # It did not, and the cost was not theoretical: this step went red on four
+      # consecutive pushes, and each time it took the TYPECHECK, THE WHOLE TEST
+      # SUITE, the chromium install, the build and all three browser walks down
+      # with it — twelve steps reported as `skipped`, which reads as deliberate.
+      # A stale receipt is a fact about a FILE, and it says nothing whatever
+      # about whether the app builds or the walks pass. The run is still red and
+      # nothing is being excused; what changes is that the red says which of the
+      # thirty gates actually failed.
       - name: The accessibility receipt is for the markup being committed
+        if: ${{ !cancelled() }}
         run: node tools/a11y-fresh.mjs
 
 
       - run: npm run typecheck
+        if: ${{ !cancelled() }}
       - run: npm run test:only
+        if: ${{ !cancelled() }}
 
       # The brand assets carry measured contrast ratios (ACCESSIBILITY.md B-10).
       # Checking them here means a change to icon.svg or the social preview cannot
@@ -152,10 +165,20 @@ jobs:
       # So ten minutes is headroom over the slowest completed run, not a fence
       # around a known fault. It exists for the same reason as the job timeout
       # above: a gate that never answers is worse than one that fails.
+      #
+      # IT CARRIES AN `id` AND RUNS PAST A FAILURE (3.23.14), and everything
+      # downstream of it asks for that id's OUTCOME rather than inheriting the
+      # job's. That is what lets the browser walks run when a file-only gate
+      # above them is red, while still refusing to run when the browser is
+      # genuinely not there — which is the distinction the paragraph below has
+      # always been about and could not express with step order alone.
       - name: Install chromium for the browser checks
+        id: chromium
+        if: ${{ !cancelled() }}
         timeout-minutes: 10
         run: npx --no-install playwright-core install --with-deps chromium
       - name: Brand assets
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' }}
         run: npm run brand:check
 
       # ONE RED STEP MUST NOT SILENCE THE INDEPENDENT ONES BELOW IT.
@@ -173,11 +196,33 @@ jobs:
       # so a cancelled run does not keep grinding through checks nobody is
       # waiting for.
       #
-      # NOT on the browser and build steps — `brand`, `smoke`, `update:walk`,
-      # `a11y`, `size`, `build:sync`, `touch` — those genuinely need the chromium
-      # install or `npm run build` to have happened, and running them anyway
-      # would report a missing prerequisite as a gate failure, which is the false
-      # accusation this repo has already paid for twice.
+      # THE BROWSER AND BUILD STEPS ASK A DIFFERENT QUESTION, and until 3.23.14
+      # they answered it with step ORDER, which cannot say what they meant.
+      # `brand`, `pages:a11y`, `smoke`, `update:walk`, `a11y`, `size`,
+      # `build:sync` and `touch` genuinely need the chromium install or
+      # `npm run build`, and running them without those reports a missing
+      # prerequisite as a gate failure — the false accusation this repo has
+      # already paid for twice. So they were left bare, which made them
+      # unreachable after ANY earlier failure, whatever it was about.
+      #
+      # THAT IS THE SAME BUG AS THE ONE THIS BLOCK FIXED, one level up. A stale
+      # `.a11y-stamp` — a fact about a file — went red on four consecutive
+      # pushes and each time took the typecheck, the entire test suite, the
+      # chromium install, the build and all three walks with it. Twelve steps
+      # marked `skipped`, which reads as deliberate; the run was red, so nobody
+      # asked which thirty gates had actually run. The local `npm run spine`
+      # keeps going past a failure and therefore ran all of them, so local and
+      # CI disagreed about what had been measured while agreeing on the verdict.
+      #
+      # The install and the build now carry `id`s and run past a failure, and
+      # each step below asks for THAT step's outcome:
+      #
+      #     if: ${{ !cancelled()
+      #             && steps.chromium.outcome == 'success'
+      #             && steps.build.outcome == 'success' }}
+      #
+      # which refuses exactly when the prerequisite is missing and at no other
+      # time. A red receipt no longer hides a broken walk.
 
       # Doctrine §7: the changelog's head triplet and the service-worker cache
       # name bump together. A rule someone has to remember, until it is a check.
@@ -257,8 +302,20 @@ jobs:
       # accessibility check of any kind. The population is what the app LINKS
       # to, derived from index.html: `plan.html` is noindex and linked from
       # nowhere, and its own header says it joins the moment it gains a route.
+      #
+      # IT NEEDS A BROWSER, AND SAT AMONG THE FILE-ONLY GATES CLAIMING NOT TO
+      # (3.23.14). It carried a bare `!cancelled()`, so on a run where the
+      # chromium install had been skipped it went ahead and launched anyway,
+      # failed with Playwright's "run npx playwright install" banner, and then
+      # its own failure stopped the build and all three walks below it. Two
+      # stop-the-world failures in one run, from one misfiled step.
+      #
+      # It is also invisible while nothing changes: it walks only the pages whose
+      # content hash moved, so on every run where no hosted page changed it
+      # printed "unchanged" three times and exited 0 — a gate that cannot run at
+      # all, reporting success, for as long as nobody edits a page.
       - name: Every hosted page is measured, when it changes
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' }}
         run: npm run pages:a11y
 
       # The unit tests prove the spine folds. They cannot prove the bundle
@@ -266,7 +323,10 @@ jobs:
       # back — which is the app's one promise. Only driving the built page does
       # that, so the build and the walk are both gates (build-plan §4).
       - run: npm run build
+        id: build
+        if: ${{ !cancelled() }}
       - name: Headless walk of the built app
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' && steps.build.outcome == 'success' }}
         run: npm run smoke
 
       # Doctrine §7h asks for a REAL second worker rather than a mocked
@@ -275,6 +335,7 @@ jobs:
       # It found a live §7h.3 defect on its first run that the source-reading
       # unit tests could not see.
       - name: A real second worker waits for the reader
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' && steps.build.outcome == 'success' }}
         run: npm run update:walk
 
       # The rendered app, audited: contrast computed per state in both themes,
@@ -282,6 +343,7 @@ jobs:
       # text). This is B-08's claimed gate actually existing for the app, not
       # only for the brand tokens. Its first run caught a real defect (F-01).
       - name: Rendered accessibility
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' && steps.build.outcome == 'success' }}
         run: npm run a11y
 
       # HOW MUCH IS THERE TO GET THROUGH. Reported on a real device: finding one
@@ -290,6 +352,7 @@ jobs:
       # defensible, and nothing measured the SUM — so the shell reached 5,702
       # words with every gate green. This is the gate that counts.
       - name: Within the reading budget
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' && steps.build.outcome == 'success' }}
         run: npm run size:check
 
       # ADR-0036: the default build's guarantee is that the BROWSER refuses to
@@ -305,6 +368,7 @@ jobs:
       # checked against a sync build so the gate cannot pass by testing for words
       # nothing emits.
       - name: Two editions
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' && steps.build.outcome == 'success' }}
         run: npm run build:sync
 
       # The vocabulary is a closed list and "overdue"/"streak" are banned
@@ -458,6 +522,7 @@ jobs:
       # commit putting the document's focus after it: never reachable by tabbing
       # forward, never reachable by finger, green everywhere, for 142 releases.
       - name: Every off-canvas route names a way a finger can take it
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' && steps.build.outcome == 'success' }}
         run: npm run touch:check
 
       # AND THE OTHER HALF OF THE SAME QUESTION: not "can this be pressed" but

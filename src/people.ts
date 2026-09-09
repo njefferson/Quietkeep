@@ -62,14 +62,14 @@ export interface PersonLine {
  * One thing YOU said you would do for somebody.
  *
  * **IT CARRIES NO `days` FIELD, AND THAT IS THE DESIGN.** `PersonLine` above has
- * one because ageing what somebody else owes you is a fact about a date:
+ * one because aging what somebody else owes you is a fact about a date:
  * *"With Sam for three weeks"* describes their debt, and the app is entitled to
  * describe it.
  *
  * Pointed the other way the same words become *"you have owed Sam this for three
  * weeks"* — which is the ledger `src/requests.ts` says in terms this app exists
  * NOT to keep (ADR-0042, restated in ADR-0056): a record of the times you did
- * not do your own work. A promise carries no shame, no ageing score and no
+ * not do your own work. A promise carries no shame, no aging score and no
  * count of how long anybody has been waiting on you.
  *
  * Enforced by the SHAPE rather than by this paragraph. There is no field to
@@ -208,7 +208,7 @@ export function promisedToAnyone(state: State): PromiseLine[] {
 }
 
 /**
- * The count line, mirroring `peopleWords` and ageing nothing.
+ * The count line, mirroring `peopleWords` and aging nothing.
  *
  * Says WHAT IT IS and never how long it has been so. "You said you would" is a
  * statement about an undertaking; every word that could attach a duration or a
@@ -250,7 +250,7 @@ export function personName(state: State, id: string | null): string | null {
 /**
  * WHO IS HERE — the third filter axis (2.26.0, entry 24's third candidate).
  *
- * The catalogue grades this the **best evidenced of the three**: a specific
+ * The catalog grades this the **best evidenced of the three**: a specific
  * person standing in front of somebody is the most distinctive, focal
  * event-based cue of the three, closer to Einstein & McDaniel's strongest case
  * than a generic room ever is.

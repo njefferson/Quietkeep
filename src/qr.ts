@@ -528,7 +528,7 @@ export function toSvg(m: Matrix, opts: { moduleSize?: number; quiet?: number } =
  * The pairing link a code carries.
  *
  * The key rides in the FRAGMENT, which no browser transmits to a server — so the
- * secret stays on the device even though it travelled inside a URL, and the target
+ * secret stays on the device even though it traveled inside a URL, and the target
  * can be scanned by the built-in Camera app rather than needing a decoder in the
  * bundle (ADR-0037).
  */

@@ -16,7 +16,7 @@ below it once dressed one up as the other.** The research is established; the
 reading of the mark against it is mine, and it is arguable.
 
 `docs/nd-collisions.md` entry 3 is the app's thesis and **the best-evidenced
-entry in the catalogue** — cue-dependent prospective memory failure, Einstein &
+entry in the catalog** — cue-dependent prospective memory failure, Einstein &
 McDaniel, decades of experimental work:
 
 > *a thing that leaves the visual field leaves existence … visible is the only
@@ -127,7 +127,7 @@ same reason.
 **READ EVERY ENTRY BY ITS MEANING, NOT BY ITS SHAPE WORDS.** Added 2026-09-03,
 after a filtering round encoded this list literally and let two badge
 compositions through because the entry said *square* and the candidates were
-circles. The list is a catalogue of what a reader will RECOGNIZE; the shape
+circles. The list is a catalog of what a reader will RECOGNIZE; the shape
 words are examples of how each one has turned up so far, never the definition.
 
 ## What this list is telling you

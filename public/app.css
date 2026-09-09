@@ -934,6 +934,12 @@ button.ghost,
 .jump::after {
   content: " \2193";        /* a downward arrow, decorative — the words carry it */
 }
+/* EXCEPT THE ONE THAT GOES UP (3.23.13, cold read). `.jump` is shared by the
+   controls that send you DOWN a page and by `#to-top`, which sends you back, so
+   *Back to the top* was drawn with a downward arrow. Decorative or not, an
+   arrow pointing the opposite way to the words is the kind of small wrongness
+   that costs trust in everything beside it. */
+#to-top::after { content: " \2191"; }
 
 /* THE WAY TO ANYWHERE (2.3.0, ADR-0093), AND IT IS NOT FIXED.
  *
@@ -2866,6 +2872,13 @@ summary::-webkit-details-marker { display: none; }
   flex-wrap: wrap;
   gap: 0.5rem 1.25rem;
 }
+/* THE LEAD-IN ON A PICKS LIST (3.23.14). `.detail-hint` carries the ink and is
+   already in the contrast registry on this surface; this changes layout only —
+   no color, so no new pair ships and the registry's existing row covers it by
+   construction (the trade ACCESSIBILITY.md B-40 records). It sits in the flex
+   row with the picks rather than above them, so the sentence and the things it
+   describes wrap together instead of leaving a stranded line. */
+.detail-picks-lead { margin: 0; align-self: center; }
 .detail-fix { margin: 0.5rem 0 0; }
 /* The arithmetic, in words. `--ink`, not an alert color: "it needed starting
    two days ago" is a fact about the dates, and this app has no red walls. */

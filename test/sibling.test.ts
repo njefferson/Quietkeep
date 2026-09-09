@@ -3,7 +3,7 @@
 // The interesting assertions here are the null ones. A derived URL that quietly
 // guesses is the failure this repo spent an afternoon on: `RELAY_HOST` held a
 // plausible workers.dev hostname, passed every gate, and would have shipped an
-// app dialling an address that does not resolve. A link is the same shape of
+// app dialing an address that does not resolve. A link is the same shape of
 // mistake in a smaller coat — one that 404s reads as "this is broken", not "you
 // are somewhere unexpected".
 

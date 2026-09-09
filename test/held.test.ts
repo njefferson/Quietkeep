@@ -490,7 +490,7 @@ test('THE ONE THAT WOULD HAVE BEEN MISSED: the clock source survives a snapshot'
 });
 
 test('a log written before the source existed behaves exactly as it did', () => {
-  // No source recorded means "somebody's", which errs towards showing work rather
+  // No source recorded means "somebody's", which errs toward showing work rather
   // than quieting it. Every log already on a device predates this field.
   const s = st(
     ev('node.created', 'O', { nodeKind: 'action', title: 'O' }),

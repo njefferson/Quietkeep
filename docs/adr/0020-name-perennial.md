@@ -49,7 +49,7 @@ themselves design constraints.
 
 - ****Horizons**** — The sibling app's claim is **literal** — *Clear Horizons* records your actual horizon and computes what is visible from where you stand. That is its differentiating feature. A figurative claim loses to a literal one.
 - ****Hyperfocal**** — **Hyperfocus 2** is a Mac productivity app explicitly marketing to ADHD users. Same niche, one letter apart.
-- ****Spectrum**** — "On the spectrum" is autism vocabulary. Diagnosis-flavoured — banned by this app's own voice rules.
+- ****Spectrum**** — "On the spectrum" is autism vocabulary. Diagnosis-flavored — banned by this app's own voice rules.
 - ****Prism**** — PRISM Corporation holds a class 9 registration, and PRISM was the NSA's mass-surveillance program — actively hostile to a no-telemetry, no-server app.
 - ****Lens**, **Gauge**, **Objective**** — Collide with this app's own vocabulary: the *person lens* is a v1 surface, the *coverage gauge* is law 2, and `goal` nodes carry OKR-style key results.
 - ****Diopter**** — Names a *correction applied to the eye* — implies the user is the defect. Against the shame-free voice.
@@ -114,7 +114,7 @@ grounds or not at all.*
 - ****Breezeway**** — Breezeway is hospitality-operations software. Also a specifically American architectural term few outside the US read instantly.
 - ****Porch**** — **Porch Group** is a publicly traded home-services company (NASDAQ: PRCH). The image was right — a place between outside and inside where things are set down — and the name is entirely unavailable.
 - ****Kettle**** — Kettle (reinsurance ML), Kettle the design tool, and in British English a kettle is a household appliance first and only. The glacial-kettle sense reaches almost nobody.
-- ****Stillpoint**** — Stillpoint Spaces, Stillpoint Lodge, several therapy practices — and the therapy adjacency is itself disqualifying under the no-diagnosis-flavour rule.
+- ****Stillpoint**** — Stillpoint Spaces, Stillpoint Lodge, several therapy practices — and the therapy adjacency is itself disqualifying under the no-diagnosis-flavor rule.
 - ****Handhold**** — Reads as **hand-holding** — condescension, and the exact thing the app promises not to do.
 - ****Mudroom**, **Cleat**** — Both survived their checks. **Mudroom** — the room where you drop what you carried in before entering the house — is close to the thesis; passed over as domestic-American and slightly comic. **Cleat** is clean and short; passed over as too nautical/athletic to carry the whole product.
 

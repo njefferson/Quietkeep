@@ -16,7 +16,7 @@ The corridor was real and it was structural, not a matter of tone:
 - `#triage` is markup order 218 in `public/index.html`. `#nextup` is 384. On
   arrival with anything unsorted, the forced choice rendered **above** the answer
   to *what now*.
-- `mountTriage` initialised its own `suppressed` flag to `false`, so the first
+- `mountTriage` initialized its own `suppressed` flag to `false`, so the first
   `refresh()` on load revealed the surface and put a card in front of you.
 - The gauge read `12 to clarify · 5 not yet hot/cold`.
 

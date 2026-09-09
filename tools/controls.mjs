@@ -131,7 +131,7 @@ function locate(id) {
   let label = aria ? aria[1] : '';
 
   // A FIELD HAS NO TEXT OF ITS OWN, and pretending otherwise reads the
-  // NEIGHBOUR'S words (found 1.38.0).
+  // Neighbor'S words (found 1.38.0).
   //
   // "The element's own text" is `slice(tagEnd, indexOf('</'))`, which for a
   // `<button>` is exactly right and for an `<input>` is whatever markup happens
@@ -142,7 +142,7 @@ function locate(id) {
   //
   // That is the false-receipt shape: a confident wrong value that nothing
   // contradicts. It matters because this manifest is the baseline a MOVE is
-  // declared against, so a label that tracks the neighbourhood rather than the
+  // declared against, so a label that tracks the neighborhood rather than the
   // control turns an unrelated edit into a spurious rename — and, worse, would
   // let a REAL rename hide behind one.
   //

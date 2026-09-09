@@ -557,7 +557,7 @@ export function taskPaperEvents(
         // test caught before this shipped.
         //
         // A project is excluded for a different reason: it is a container, and
-        // offering one is the alignment theatre `docs/horizon-models.md`
+        // offering one is the alignment theater `docs/horizon-models.md`
         // refuses by name.
         ...(line.kind === 'project' || keepsADate ? {} : { arrived: true as const }),
       });
@@ -700,7 +700,7 @@ export function parseCsv(text: string): string[][] {
 
 const norm = (h: string): string => h.toLowerCase().replace(/[^a-z]/g, '');
 
-/** Header name to index, by normalised name, first match wins. */
+/** Header name to index, by normalized name, first match wins. */
 function columns(header: readonly string[]): Map<string, number> {
   const at = new Map<string, number>();
   header.forEach((h, i) => { const k = norm(h); if (!at.has(k)) at.set(k, i); });
@@ -973,7 +973,7 @@ export function importFacts(s: ImportSummary): { lead: string; facts: string[] }
   // export this was "15 lines could not be read." — the single largest
   // unexplained loss in a 1,445-row import, and no way to tell from it whether
   // fifteen pieces of work had gone missing. They had not: every one of the
-  // fifteen was a row with an empty name column, with its neighbouring Project
+  // fifteen was a row with an empty name column, with its neighboring Project
   // cell filled in, which is what made them look like titles at a glance.
   //
   // BOTH parsers refuse for exactly this one reason and no other — a CSV row

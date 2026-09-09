@@ -121,7 +121,7 @@ ciphertext, and the key never leaves the device.
 - the **IP address** of each request — therefore approximate location, and which
   networks the devices are on
 
-That third and second together are the real cost and are not minimised here: for
+That third and second together are the real cost and are not minimized here: for
 this audience, a log of *when you open your planner and how often* is a record of
 the shape of your day. It is not content. It is not nothing.
 
@@ -230,7 +230,7 @@ supply-chain surface for a screen shown twice in a device's lifetime.
 
 The target scans it with the **built-in Camera app** — which the user already knows
 and which needs no permission from us — and iOS opens the link. A fragment is never
-transmitted to a server, so the key stays on the device even though it travelled
+transmitted to a server, so the key stays on the device even though it traveled
 inside a URL. Only the encoder ships. No camera code, no decoder, no dependency.
 
 **[V-16](../verifications.md) must be settled on the device first**: whether iOS

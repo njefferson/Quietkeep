@@ -115,8 +115,8 @@ const json = (status: number, body: unknown): Response =>
       headers: {
         'content-type': 'application/json; charset=utf-8',
         // A mailbox is reached from a web app on another origin, and the only
-        // credential is the id in the path. Origin is not the authorisation here
-        // and pretending otherwise would be security theatre — the contents are
+        // credential is the id in the path. Origin is not the authorization here
+        // and pretending otherwise would be security theater — the contents are
         // sealed before they arrive, which is the actual protection.
         'access-control-allow-origin': '*',
         'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS',
@@ -197,7 +197,7 @@ export async function handle(request: Request, deps: Deps): Promise<Response> {
   if (request.method === 'DELETE' && parts.length === 2) {
     // REVOCATION. Replacing a key mints a new mailbox; this empties the OLD one,
     // so a device still holding the old key cannot collect the last weeks of work
-    // that were waiting there. It is authorised by knowing the id, like every
+    // that were waiting there. It is authorized by knowing the id, like every
     // other route — the id is a 128-bit secret, and the only harm a stranger who
     // learned one could do is force the owner to re-upload (every device keeps
     // its full local log, so nothing is LOST by a delete, exactly as nothing is

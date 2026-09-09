@@ -158,12 +158,12 @@ const SHOTS = [
     // above its final row of buttons, so framing to the section shipped a
     // picture cut through "Put it somewhere" — and nothing was wrong with the
     // clip, which is why the cut-detection above stayed quiet. The element was
-    // honoured exactly; it was the wrong element.
+    // honored exactly; it was the wrong element.
     frame: { from: '#triage', to: '#triage-actions button' },
     async reach(page) {
       await seed(page);
       // The inline one-card-at-a-time pass on the main screen — which is what
-      // this step describes, and not the `Sort things out` batch picker.
+      // this step describes, and not the `Sort a batch` picker.
       // The hub's door IS the way in now, and entering the job opens the card —
       // the second door inside it collapsed in 3.0.0.
       await intoJob(page, 'triage');
@@ -447,7 +447,7 @@ for (const theme of ['light', 'dark']) {
       // THE LOWEST BOTTOM ACROSS ALL MATCHES, not one element's box. These
       // choices are a wrapping grid, so the last button in DOM order is not the
       // one furthest down the screen — framing to it cut the final row in half,
-      // twice, while every check above reported the clip as honoured.
+      // twice, while every check above reported the clip as honored.
       const bot = await page.evaluate((sel) => {
         const boxes = [...document.querySelectorAll(sel)]
           .map((n) => n.getBoundingClientRect())
@@ -462,7 +462,7 @@ for (const theme of ['light', 'dark']) {
       // GROW THE WINDOW TO THE FRAME, THEN CLIP — in that order. Clipping first
       // and taking "whatever is left below y" truncates in silence, and it did:
       // the sorting card shipped cut through its final row of choices while
-      // every guard reported the clip honoured. The guard was real; it had been
+      // every guard reported the clip honored. The guard was real; it had been
       // edited into the OTHER branch of this function and never ran here.
       const want = Math.ceil(top.y + (bot.y - top.y) + pad * 2 + 8);
       if (want > page.viewportSize().height) {

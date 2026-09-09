@@ -9,7 +9,7 @@ unfinished product. That is right, and the defect record says precisely where th
 unfinishedness lives. Three of the last four shipped defects were **one defect
 in different clothes**:
 
-- 1.15.1 — journal entries itemised in the coverage list as "(untitled) — held".
+- 1.15.1 — journal entries itemized in the coverage list as "(untitled) — held".
 - 1.17.0 — every person ever named sitting as a row in the todo list, since the
   day people existed.
 - 1.17.2 (this release) — the detail sheet offering date, start and repeat
@@ -100,7 +100,7 @@ smoke assertions (run, watched red, restored).
 
 - **The table rotting into ceremony** — allowed-sets widened without sentences
   to make red go green. The reasons are the gate; if they stop being written,
-  the table is theatre and should be said so.
+  the table is theater and should be said so.
 - **A surface the table cannot see** — it covers list projections; a surface
   that renders from somewhere else (the DOM directly, an export format) needs
   its own row or its own instrument, and pretending the table covers it would

@@ -83,7 +83,7 @@ existed; nothing wrote the clock.
   (which turns the hollow-return test red directly), a `due` instead of a
   `review`, a malformed day, and the control withheld from the receipt.
 - **The smoke block moved three times before it stopped littering.** It ate a
-  card its neighbours routed by name, then perturbed a six-routes accounting,
+  card its neighbors routed by name, then perturbed a six-routes accounting,
   then assumed an empty inbox that only exists near the start of the walk. It
   now sits last, brings its own item, and cleans up with the app's own Undo.
   Every walk section should bring its own subject.
@@ -92,7 +92,7 @@ existed; nothing wrote the clock.
 
 When a dated place comes round, it arrives as itself — a row saying the place is
 ready. **It does not yet show what is inside it.** That is the collision
-catalogue's top-ranked proposal (entry 3, place-return-with-contents) and the
+catalog's top-ranked proposal (entry 3, place-return-with-contents) and the
 other half of this promise; it is deliberately left until the owner has used
-dating, because the catalogue's own routing says to ask the owner after filing
+dating, because the catalog's own routing says to ask the owner after filing
 rather than to guess at the shape.

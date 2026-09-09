@@ -184,7 +184,7 @@ test('the words never round to something friendlier than the truth', () => {
 
 // ——— THE LONG END IS A DIFFERENT QUESTION (2.25.0, entry 24) ———
 //
-// The catalogue's second candidate for this axis: at the long end the right
+// The catalog's second candidate for this axis: at the long end the right
 // answer is not a longer duration-sorted worklist, because a block of open time
 // is want-limited rather than duration-limited. These assert that the long
 // answer ROUTES and does not narrow — and that the filter itself is untouched,

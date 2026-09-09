@@ -72,7 +72,7 @@ export function heldRanges(events: readonly AppEvent[]): Held {
     byDevice.get(e.device)!.push(e.seq);
   }
   const out: Held = {};
-  // Device ids in sorted order, so two identical sets serialise identically —
+  // Device ids in sorted order, so two identical sets serialize identically —
   // which is what lets a caller compare or hash a summary.
   for (const d of [...byDevice.keys()].sort()) out[d] = toRanges(byDevice.get(d)!);
   return out;

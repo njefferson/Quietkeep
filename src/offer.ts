@@ -202,7 +202,7 @@ export function offerWords(shown: number, anyWork: boolean): string {
   if (!anyWork) return 'Nothing is asking. Something you wanted';
   // "One more" was the first singular and `test/offer.test.ts` refused it: the
   // line may carry no word that implies a pile, and `more` is on that list. It
-  // is a fair refusal — "one more" counts down towards an end, and there is no
+  // is a fair refusal — "one more" counts down toward an end, and there is no
   // end here.
   return shown === 1 ? 'Something else you could pick up' : 'A few things you could pick up';
 }
