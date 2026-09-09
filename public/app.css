@@ -2072,7 +2072,15 @@ dialog[id^="sheet-"][open] {
      the bottom of the scrollport, and the ring is painted outside the element.
      Ten controls across ten sheet states, each losing the same 5px, in both
      themes. The bottom padding cannot help: it is at the end of the CONTENT,
-     and this happens at every scroll position. */
+     and this happens at every scroll position.
+
+     TRIED AT 0.75rem AND PUT BACK (3.23.10). Four rings went red when the
+     receipt above Close shortened this box, and raising this did not move them:
+     scroll-padding applies WHEN the browser scrolls, and it does not scroll for
+     an element it already calls fully visible — which it decides without
+     counting the outline. The fix was to stop shortening the box. Recorded
+     because the next person to see a clipped ring will reach for this number
+     first, and it is the wrong lever for that failure. */
   scroll-padding-block: 0.5rem;
   /* And 6px at the TOP OF THE CONTENT, which scroll-padding cannot give: the
      first field in a sheet sits at scroll position zero, where there is nothing
@@ -2520,11 +2528,20 @@ dialog h2:focus {
 
 .detail-title { margin: 0 0 0.25rem; font-size: 1.125rem; overflow-wrap: anywhere; }
 .detail-state { margin: 0 0 1rem; color: var(--ink-soft); font-size: 0.9375rem; }
-/* The pinned receipt (3.23.8). No colour of its own — it wears `.detail-state`,
-   so nothing new enters the contrast inventory. `:empty` because a live region
-   is empty for most of a sheet's life and an empty line that reserves space
-   would push the Close button down for nothing. */
-.detail-receipt { margin: 0; padding: 0.25rem 0 0.5rem; }
+/* The pinned receipt (3.23.8, moved into the actions row in 3.23.10). No colour
+   of its own — it wears `.detail-state`, so nothing new enters the contrast
+   inventory. It shares the row with the way out rather than standing above it,
+   for the reason the markup gives: as its own line it shortened the one
+   scrolling box in the dialog and clipped four focus rings. `:empty` because a
+   live region is empty for most of a sheet's life, and `flex-wrap` on the row
+   still lets a long message take a second line rather than overflow. */
+.detail-receipt {
+  flex: 1 1 8rem;
+  min-width: 0;
+  margin: 0;
+  align-self: center;
+  text-align: start;
+}
 .detail-receipt:empty { display: none; }
 .detail-group { margin: 0 0 1.25rem; }
 .detail-label {

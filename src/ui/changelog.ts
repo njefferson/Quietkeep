@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.10',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**The confirmation on a thing\u2019s page sits beside *Close* now, not above it.** Yesterday it became visible for the first time \u2014 it had been spoken to a screen reader and shown to nobody \u2014 and on its own line it took a strip out of the one part of that sheet that scrolls. The cost was small and real: four controls, when you reached them by keyboard, had the outline that shows where you are cut off by two pixels at the edge of the scrolling area. It shares the row with the way out instead, so nothing was taken from the sheet, and it is still there to be read.',
+      '**Still to sort, unchanged:** the sorting screens confirm what you did in a line only a screen reader gets. And naming a person is still only possible from *More about this* on a thing, a long way from the People screen that says nobody is named yet.',
+    ],
+  },
+  {
     triplet: '3.23.9',
     kind: 'ITERATION',
     date: '2026-09-09',

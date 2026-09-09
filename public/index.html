@@ -2100,8 +2100,16 @@
        thing that scrolls, so a confirmation cannot scroll away from the control
        that produced it. `.detail-state` is reused for the colour rather than a
        new class, so the contrast inventory is unchanged. -->
-  <p id="detail-live" role="status" aria-live="polite" class="detail-state detail-receipt"></p>
   <div class="about-actions">
+    <!-- BESIDE THE WAY OUT, NOT ABOVE IT (3.23.10). As its own line above this
+         row it took about 32px out of `.sheet-body`, which is the only thing in
+         this dialog that scrolls — and four focus rings that had been clearing
+         the scrollport edge by 3px stopped clearing it, because a field's ring
+         is 2px at 3px offset and the browser calls an element "fully visible"
+         without counting its outline. Inside the row it wears the space the
+         Close button already occupies, so the scroller's height is what it was
+         before this receipt existed. -->
+    <p id="detail-live" role="status" aria-live="polite" class="detail-state detail-receipt"></p>
     <button id="detail-close" data-way-out type="button" class="ghost">Close</button>
   </div>
 </dialog>

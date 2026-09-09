@@ -645,6 +645,27 @@ real design question about the registry, not a line of CSS, and guessing at it
 inside a release about something else is how the a11y stamp gets spent twice.
 Named in 3.23.9's own *still to sort*.
 
+**AND MAKING THE RECEIPT VISIBLE COST FOUR FOCUS RINGS, WHICH THE WALK CAUGHT
+AND 3.23.10 FIXED.** Given its own line above *Close*, `#detail-live` took about
+32px out of `.sheet-body` — the only thing in that dialog that scrolls — and
+`#detail-note`'s outline came back **CLIPPED 2px vertically** on two detail
+states, in both themes. A field's ring is 2px at 3px offset (3.20.4), so it needs
+5px of room; the browser calls an element *fully visible*, and therefore declines
+to scroll it, **without counting its outline**, so anything between 0 and 5px of
+room clips.
+
+**`scroll-padding-block` is the wrong lever and it was tried first.** Raising it
+from 0.5rem to 0.75rem changed nothing, for the reason above: scroll padding
+applies WHEN the browser scrolls, and it had already decided not to. Put back to
+0.5rem with that written beside it, because the next person to see a clipped ring
+will reach for that number.
+
+The fix was to stop shortening the box: the receipt shares the actions row the
+way out already occupies, so the scroller's height is what it was before the
+receipt existed. **A newly visible element is a layout change** — worth saying
+plainly, because it did not read like one while it was being made. Hub LESSONS
+§253 carries both halves.
+
 **What the report also carried, and what was done with it.** Seventeen
 unprompted observations arrived; the seven above are those that survived being
 checked against the source. The rest were restatements of the seven claim
@@ -1470,7 +1491,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.9**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.10**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.7, so the two hosts are one
   tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
   three of its four are regressions from the session that shipped 3.23.2
