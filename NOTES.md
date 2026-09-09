@@ -1355,6 +1355,14 @@ count here is maintained by hand and nothing would catch it going stale.
   `tools/deployed-check.mjs` treats an unreachable host as a SKIP with the reason
   printed. A gate that goes red because of how a container was configured teaches
   people to ignore red.
+  **AND A SINGLE READ RIGHT AFTER A PUSH IS NOT AN ANSWER (2026-09-09).** Three
+  reads of staging inside two minutes, immediately after the 3.23.10 deploy
+  reported success, returned 3.23.9, then 3.23.10, then 3.23.10 — the edge was
+  mid-rollout and different requests reached different versions. That is
+  ordinary for a CDN and it is worth writing down because of what the first read
+  looks like: an authoritative FAIL saying the deploy did not land, at exactly
+  the moment somebody would believe it. Read it twice, and if the two disagree
+  the answer is *still rolling out*, never *it failed*.
   **TWO TRAPS, both of which bit before the tool worked.** Node's built-in
   `fetch` does not read `HTTPS_PROXY` unless `NODE_USE_ENV_PROXY=1` is set
   BEFORE startup — setting it in-process is too late — and without it every
