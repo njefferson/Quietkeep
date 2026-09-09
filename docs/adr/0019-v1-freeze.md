@@ -31,7 +31,7 @@ gate can be passed without them, and the gate is what proves the spine works.
 **Making the gate rather than the feature list the definition of done** is the
 important half of this decision. A feature list can be completed by an app nobody
 can use. The gate cannot be passed by anything except an app that has actually
-replaced the paper, and it is deliberately behavioural: *the desk paper holds
+replaced the paper, and it is deliberately behavioral: *the desk paper holds
 nothing the app doesn't* is checkable by looking at the desk.
 
 The reset rule is what gives it teeth. Twenty-nine good days and a day of

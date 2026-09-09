@@ -1,19 +1,19 @@
-# ADR-0110 · Colour is checked by arithmetic, once per palette, not by rendering
+# ADR-0110 · Color is checked by arithmetic, once per palette, not by rendering
 
 **Status:** Accepted · **Date:** 2026-08-25 ·
-**Changes what the accessibility gate MEANS for colour** ·
+**Changes what the accessibility gate MEANS for color** ·
 **Touches:** [0025](0025-visual-identity.md), [0098](0098-the-apps-own-size.md) ·
 **Cites:** hub `PALETTES.md`, hub `palette-check.mjs`, hub LESSONS 28, 104
 
 ## Decision
 
-The colour half of the accessibility gate splits in two.
+The color half of the accessibility gate splits in two.
 
 **Structure**, measured in a browser, once per release: which (foreground role,
-background role, floor) pairs the UI actually renders. `npm run colour:inventory`
-walks every state under a **sentinel palette** — each of the seven colour roles
-painted a unique probe value — so every computed colour maps to exactly one role
-**by construction** rather than by luck. It writes `docs/colour-inventory.json`.
+background role, floor) pairs the UI actually renders. `npm run color:inventory`
+walks every state under a **sentinel palette** — each of the seven color roles
+painted a unique probe value — so every computed color maps to exactly one role
+**by construction** rather than by luck. It writes `docs/color-inventory.json`.
 
 **Values**, arithmetic, per palette, no browser: `npm run palette:check` reads the
 inventory and `docs/palettes.json` and checks every pair in every palette.
@@ -38,21 +38,21 @@ computations.
 
 ## What the sentinel palette bought that nothing else could
 
-A colour hard-coded in the stylesheet is contrast-checked like any other today,
+A color hard-coded in the stylesheet is contrast-checked like any other today,
 so it passes — and then survives every palette swap unchanged, looking like the
 product in one palette and like nothing in all the others. Under a sentinel
-palette it is simply a colour that is not a sentinel, and that is a hard failure.
+palette it is simply a color that is not a sentinel, and that is a hard failure.
 
 Extracting the first inventory found **thirteen form controls** — every
-`<select>`, `<textarea>` and `<input type=date>` in the app — whose colours the
+`<select>`, `<textarea>` and `<input type=date>` in the app — whose colors the
 USER AGENT paints from `color-scheme`, not the palette. They are declared in
-`.colour-ua-owned` with a reason each, held in **both directions**: an undeclared
+`.color-ua-owned` with a reason each, held in **both directions**: an undeclared
 one fails the extraction, and a declaration whose selector no longer renders a UA
-colour fails it too, so an exemption cannot outlive the thing it exempts.
+color fails it too, so an exemption cannot outlive the thing it exempts.
 
 **And it found a shipped bug.** `applyTheme` set `data-theme` and never
 `color-scheme`, so choosing *light* on a device set to dark turned the app cream
-and left every form control white-on-grey — a hole in the page, on exactly the
+and left every form control white-on-gray — a hole in the page, on exactly the
 setting the control exists to provide. Measured: `--bg` became `#F4F1E9` while the
 select still rendered `rgb(255,255,255)` on `rgb(107,107,107)`.
 
@@ -73,13 +73,13 @@ takes palettes in roles precisely so every app in the family can share it.
 
 ## How a stale inventory is prevented
 
-`docs/colour-inventory.json` carries the same UI hash `.a11y-stamp` uses, and
+`docs/color-inventory.json` carries the same UI hash `.a11y-stamp` uses, and
 `palette:check` refuses to answer if it does not match the tree. A gate checking
 palettes against a structure the app no longer has is worse than no gate, because
 it reports green. Same argument as the accessibility receipt, same hash, so the
 two cannot disagree about what "this markup" means.
 
-`colour:inventory` is declared in `.spine-exempt`: it WRITES a tracked file, and
+`color:inventory` is declared in `.spine-exempt`: it WRITES a tracked file, and
 CI regenerating the artefact a gate checks is how drift gets repaired instead of
 reported — the argument `branch-guard` already makes about `--install`.
 

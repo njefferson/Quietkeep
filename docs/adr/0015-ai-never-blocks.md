@@ -23,7 +23,7 @@ morning — are exactly the moments when waiting on a request is unacceptable.
 
 There is a sharper reason too. The content here is a government workplace's
 suspenses and a private journal. Any flow that *silently* sends that content
-somewhere is a serious breach, and "the user must have known" is not a defence.
+somewhere is a serious breach, and "the user must have known" is not a defense.
 Storing the literal consent sentence — rather than a boolean — means the record
 of what was agreed survives a later copy change, so a reviewer can see what the
 user was actually told, not what the current build says.

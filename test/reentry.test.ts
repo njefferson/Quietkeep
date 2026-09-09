@@ -132,7 +132,7 @@ test('what is written down records the guarantee, not what happened to render', 
   assert.equal(REENTRY_TRIAGE_CAP, 3, 'and the promise is three');
 });
 
-test('the words state a fact and never apologise on your behalf', () => {
+test('the words state a fact and never apologize on your behalf', () => {
   for (const d of [7, 9, 14, 30, 200]) {
     const w = reentryWords(reentryView(st(...stale('A', d)), NOW, TZ));
     for (const bad of ['sorry', 'behind', 'catch up', 'caught up', 'backlog', 'neglect',
@@ -306,7 +306,7 @@ test('an import is an arrival, and the greeting says so without inventing an abs
   assert.equal(arrival.waitingToTriage, 40, 'and it knows what came in');
 
   // "You were away 0 days" would be false, and the greeting's own rule is that
-  // it never apologises for you or on your behalf.
+  // it never apologizes for you or on your behalf.
   const words = reentryWords(arrival);
   assert.equal(/away/.test(words), false, words);
   assert.match(words, /It is all here/);

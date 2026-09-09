@@ -138,7 +138,7 @@ export function meetingView(
  * A COUNT OF THINGS AND NOTHING ELSE. No readiness, no "you are behind on
  * three", no ordering of the people by how much is on them — that last is
  * `roleLoads`' own rule, and ranking the people in a room by how much you owe
- * each of them is a worse version of the same judgement the app does not make.
+ * each of them is a worse version of the same judgment the app does not make.
  *
  * The empty case is stated rather than hidden, for the reason `lineViewWords`
  * gives: walking in knowing nothing is outstanding is worth as much as walking

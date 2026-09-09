@@ -1,7 +1,7 @@
 // A cure inherits the intent of the event it cured — and every cured kind is
 // classified, or this fails.
 //
-// `isAppClock` shipped recognising two of the gate's twenty-eight cured kinds,
+// `isAppClock` shipped recognizing two of the gate's twenty-eight cured kinds,
 // so twenty-six cures were read as somebody asking for something. Nothing made
 // that omission visible: each cure was correct in isolation, and the predicate
 // looked complete because it had a careful docblock. This file is the thing

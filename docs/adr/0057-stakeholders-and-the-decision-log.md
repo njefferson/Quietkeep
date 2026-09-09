@@ -61,7 +61,7 @@ smaller feature of a record, it is a different product. The way back is stated
 in the hint rather than hidden behind a missing button: **log the new
 decision.** That is what a real decision log does — "on the 12th we reversed
 the 3rd's call" — and it is the append-only law expressed as product
-behaviour. The bargain accepted out loud: a typo is permanent, the same
+behavior. The bargain accepted out loud: a typo is permanent, the same
 bargain `request.declined`'s `what` snapshot already makes.
 
 `meeting?` is **folded and rendered when present, and written by nothing** in

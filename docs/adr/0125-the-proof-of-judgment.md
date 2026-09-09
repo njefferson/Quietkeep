@@ -1,4 +1,4 @@
-# ADR-0125 · The proof of judgement — law 4's analogue of the coverage gauge
+# ADR-0125 · The proof of judgment — law 4's analogue of the coverage gauge
 
 **Status:** Accepted · **Date:** 2026-09-03 · **Extends:** ADR-0011 (the
 no-silent-nodes gate), ADR-0013 (levels push down), ADR-0099 (the proof where
@@ -17,7 +17,7 @@ precisely not being able to trust an assurance from the inside*.
 way to check the offer was to read the whole store — which is the reviewing
 this app exists to remove, not something it should require. `NOTES.md` names
 the asymmetry in terms: the app can demonstrate its integrity and cannot
-demonstrate its judgement, and the law-4 analogue of the coverage gauge is the
+demonstrate its judgment, and the law-4 analogue of the coverage gauge is the
 single highest-value thing to build. It was gated on Q-11 — *no feeling of
 being shown the right things* — saying whether the cause was ranking or trust.
 Q-11 closed on the **ranking** half on 2026-08-17 (ADR-0097, and ADR-0095's
@@ -26,7 +26,7 @@ measurement before it). The **trust** half stood, and its gate had discharged.
 ## Decision
 
 **A second proof beside the first, in the same idiom and to the same standard.**
-`judgementProof` (`src/assurance.ts`) states where everything is: a fact line
+`judgmentProof` (`src/assurance.ts`) states where everything is: a fact line
 under the gauge — *everything accounted for · N in front of you* — and a door
 onto the thing it claims, so the claim can be checked and disagreed with.
 
@@ -51,7 +51,7 @@ does not have.
 
 ## Refused
 
-Any rank, score, grade, badge, colour escalation, or ordering by importance,
+Any rank, score, grade, badge, color escalation, or ordering by importance,
 stakes or return — `docs/nd-collisions.md` entry 5 refuses an importance rank
 in terms, and Q-11 carries the argument that a loose capture is very often the
 most important thing in the store. Any inference about what matters to the

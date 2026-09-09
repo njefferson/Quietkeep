@@ -663,7 +663,7 @@ export function admit(
       // is itself covered, so a loop would be an unbounded coverage question.
       // `isSilent` guards against one anyway, because the fold has to be total
       // over logs this gate never saw — but the loop must never be WRITABLE, or
-      // the defence becomes the behaviour.
+      // the defense becomes the behavior.
       // Walk the chain forward from the proposed antecedent. Reaching this node
       // closes the loop. The walk has its own guard so a loop ALREADY in the
       // store (imported, or written by an older build) terminates rather than
@@ -682,7 +682,7 @@ export function admit(
     // PARENT graph makes every ancestor walk infinite, and those run inside fold
     // consumers, exports and renders. `src/tree.ts` walks defensively so a shard
     // that delivers half a loop cannot hang the app — but the loop must never be
-    // writable from here, or the defence becomes the behaviour.
+    // writable from here, or the defense becomes the behavior.
     if (e.kind === 'node.parented') {
       const parent = (e.payload as { parent?: unknown }).parent;
       if (typeof parent !== 'string' || !parent) {
@@ -905,7 +905,7 @@ export function cureFor(node: NodeState, cause: AppEvent, opts: GateOptions): Ap
     // the right cure for the same reason it is right after a lost parent: the
     // thing is now waiting for nothing, so it goes back to being asked about.
     //
-    // `after.set` shares this branch as defence in depth. The refusals above
+    // `after.set` shares this branch as defense in depth. The refusals above
     // make coverage-loss unreachable on the real write path — the new antecedent
     // is checked to exist, live, be unfinished and close no loop — so this is
     // the same shape as the clarify.routed branch below: kept so the invariant
@@ -928,7 +928,7 @@ export function cureFor(node: NodeState, cause: AppEvent, opts: GateOptions): Ap
 
     // Routing must terminate somewhere legal. `someday`/`reference` land on the
     // Menu; everything else takes a clock. NOTE: this branch is redundant
-    // defence-in-depth — it is unreachable on the real write paths, because a node
+    // defense-in-depth — it is unreachable on the real write paths, because a node
     // is always already covered by the time it is routed (its capture clock, or an
     // earlier cure in the same batch), and clarify.routed removes no coverage, so
     // `newlySilent` never attributes silence to a route. It is kept so the

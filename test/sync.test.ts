@@ -311,7 +311,7 @@ test('a gap is posted as a request, and another device answers it', async () => 
   // B opens later, sees the request, and hands over exactly those two.
   const b = device('b', Array.from({ length: 5 }, (_, i) => ev('b', i)));
   const rb = await exchangeOnce(b.deps(wire));
-  assert.equal(rb.fulfilled, 2, 'exactly the gap, not the whole log');
+  assert.equal(rb.fulfillled, 2, 'exactly the gap, not the whole log');
 
   // A opens again and the hole is closed.
   const a2 = device('a', [...a.log], a.mark);
@@ -326,9 +326,9 @@ test('a request is answered once, not on every open forever', async () => {
   await drop(box, { kind: 'request', want: { b: [[0, 1]] } });
   const b = device('b', [ev('b', 0), ev('b', 1)]);
   const first = await exchangeOnce(b.deps(wire));
-  assert.equal(first.fulfilled, 2);
+  assert.equal(first.fulfillled, 2);
   const second = await exchangeOnce(b.deps(wire));
-  assert.equal(second.fulfilled, 0, 'the request chunk was taken in and is not re-read');
+  assert.equal(second.fulfillled, 0, 'the request chunk was taken in and is not re-read');
 });
 
 test('a request cannot make a device upload without bound', async () => {
@@ -339,7 +339,7 @@ test('a request cannot make a device upload without bound', async () => {
   await drop(box, { kind: 'request', want: { b: [[0, MAX_FULFIL + 500]] } });
   const b = device('b', Array.from({ length: MAX_FULFIL + 500 }, (_, i) => ev('b', i)));
   const r = await exchangeOnce(b.deps(wire));
-  assert.equal(r.fulfilled, MAX_FULFIL);
+  assert.equal(r.fulfillled, MAX_FULFIL);
 });
 
 test('a device does not ask for a gap it cannot prove after arrivals close it', async () => {

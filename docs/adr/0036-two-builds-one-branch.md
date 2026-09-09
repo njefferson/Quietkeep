@@ -46,7 +46,7 @@ than one product with a module. If that day comes, this record is superseded.
 cannot make a request to a relay — the browser refuses it**, whatever code is in
 the bundle. That is enforcement, not discipline.
 
-So the guarantee is defence in depth, and both halves are checkable:
+So the guarantee is defense in depth, and both halves are checkable:
 
 1. **The sync module is absent from the default bundle.** A build-time exclusion,
    not a runtime toggle, so there is no flag to get wrong at runtime and nothing

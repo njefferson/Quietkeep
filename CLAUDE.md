@@ -369,7 +369,7 @@ CI-only.
 
 ## Accessibility
 WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the
-append-only register and it already records the design-time colour bindings —
+append-only register and it already records the design-time color bindings —
 read it **before** writing any UI. Pressure and decay never ride on hue; the
 contrast gate is computed in CI and exits non-zero, and new foreground/background
 pairs are added to the gate in the same commit that introduces them.

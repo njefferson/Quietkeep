@@ -28,7 +28,7 @@ const isInboxItem = (n: NodeState): boolean =>
  * first within each tier. A thing the boss asked for that is sitting unclarified
  * is the most expensive kind to lose (build-plan item 16), so it jumps the queue.
  * This is a two-tier priority — all boss items ahead of all non-boss items — not
- * a within-age nudge; the tests lock that behaviour.
+ * a within-age nudge; the tests lock that behavior.
  */
 export function unclarified(state: State): NodeState[] {
   const items = [...state.nodes.values()].filter(isInboxItem);

@@ -104,7 +104,7 @@ export function mountClock(session: Session, now: () => number): ClockUI {
       return;
     }
     const a = handAngles(face);
-    // Rotated about the dial's centre. The hands are drawn pointing at twelve,
+    // Rotated about the dial's center. The hands are drawn pointing at twelve,
     // so the angle IS the time and there is no offset to get wrong.
     hour.setAttribute('transform', `rotate(${a.hour.toFixed(2)} 20 20)`);
     minute.setAttribute('transform', `rotate(${a.minute.toFixed(2)} 20 20)`);

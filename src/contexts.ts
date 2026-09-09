@@ -12,15 +12,15 @@
 // filtered out still has its clock, still counts in the gauge, still comes back.
 // Anything else is an archive with a friendlier name, which law 3 forbids.
 //
-// ## Unlabelled means anywhere, and that is load-bearing
+// ## Unlabeled means anywhere, and that is load-bearing
 //
 // A thing with no context fits every context. It is the honest default — most
 // of what anybody writes down is not tied to a place — and it is what stops the
 // filter from being a cliff: switching to "At home" on a store where nothing is
-// labelled hides nothing at all, so the feature cannot make the app look empty
+// labeled hides nothing at all, so the feature cannot make the app look empty
 // and broken on the day somebody first tries it.
 //
-// The opposite rule — unlabelled means nowhere — would be a system that
+// The opposite rule — unlabeled means nowhere — would be a system that
 // punishes you for not having filed everything, which is the shape this app
 // exists to avoid.
 
@@ -104,7 +104,7 @@ export const contextNames = (state: State, n: NodeState): string[] =>
  * A thing's own places are added to its ancestors', not replaced by them. A
  * thing can honestly be reachable in two places, the same way it can carry two
  * contexts of its own, and an override rule would mean a place set on an item
- * silently cancelled the one it inherits — a rule nobody can see working.
+ * silently canceled the one it inherits — a rule nobody can see working.
  *
  * ## What this does NOT do
  *
@@ -139,7 +139,7 @@ export function placesReaching(state: State, n: NodeState): NodeState[] {
  * Does this thing fit where you are?
  *
  * `where === null` means "everywhere" — the filter is off and everything fits.
- * An unlabelled thing fits any answer, per the note at the top.
+ * An unlabeled thing fits any answer, per the note at the top.
  */
 /**
  * Is this thing reached by ANY place — its own or an ancestor's?
@@ -147,8 +147,8 @@ export function placesReaching(state: State, n: NodeState): NodeState[] {
  * The negation of `fitsHere`'s "fits every answer" clause, named so the
  * diagnostic can count it. It matters that this is the same call and not a
  * second reading of `n.contexts`: a thing inheriting its project's place is
- * reached, and a census that missed that would report a store as unlabelled
- * while the filter treated it as labelled. Both go through `placesReaching`,
+ * reached, and a census that missed that would report a store as unlabeled
+ * while the filter treated it as labeled. Both go through `placesReaching`,
  * and `test/diagnostic.test.ts` asserts the count agrees with `fitsHere`
  * rather than merely resembling it.
  */

@@ -7,7 +7,7 @@
 ## The demand
 
 From use, in plain terms: dated work — answer-owed dates above all — must be
-visible INSIDE the app, organised by day, current as of now, because those
+visible INSIDE the app, organized by day, current as of now, because those
 dates change. Sending a `.ics` out and switching apps to look at it means the
 app shows one half of the reader's obligations and a snapshot shows the other.
 The export's documented purpose was always narrower than "the calendar story":
@@ -54,7 +54,7 @@ snapshot framing changes.
 
 A fourth walk of the clocks anywhere in the app. `review` clocks on this
 surface, for the export's own recorded reason. Any past day rendered. Any
-per-row urgency grading, colour escalation, or count of what went by — the
+per-row urgency grading, color escalation, or count of what went by — the
 view says *when*, and the replan surface owns *what now*.
 
 ## Held by

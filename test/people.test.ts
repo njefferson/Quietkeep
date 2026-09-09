@@ -186,7 +186,7 @@ test('how long is a duration, never a verdict', () => {
     // The temptation here is enormous and it is refused: this app keeps score on
     // nobody's behalf, least of all on someone else's.
     for (const verdict of ['overdue', 'late', 'chased', 'ignored', 'still', 'no reply', 'nagg']) {
-      assert.doesNotMatch(w, new RegExp(verdict, 'i'), `"${w}" passes no judgement on anyone`);
+      assert.doesNotMatch(w, new RegExp(verdict, 'i'), `"${w}" passes no judgment on anyone`);
     }
   }
 });

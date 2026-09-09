@@ -9,7 +9,7 @@
 //    drift — and this family has already been bitten repeatedly by
 //    must-change-together token definitions."
 //
-// Quietkeep declared its colours in four places before this: `:root`, a
+// Quietkeep declared its colors in four places before this: `:root`, a
 // `--dark-*` mirror, and two mapping blocks. Five families would have been
 // twenty blocks nobody could hold in their head.
 //
@@ -72,7 +72,7 @@ for (const [key, f] of families) {
 // THE SECOND GENERATED SITE, AND IT IS NOT A STYLESHEET (3.4.2, ADR-0111).
 //
 // The service worker reads the reader's palette out of IndexedDB and writes it
-// onto `<html>` before the page is parsed, so the colours are right on the first
+// onto `<html>` before the page is parsed, so the colors are right on the first
 // painted pixel. To do that safely it holds its own list of the families —
 // a value not on that list never reaches the markup — and a hand-kept copy of
 // something this file generates is exactly the drift PALETTES.md §6 warns about,
@@ -83,7 +83,7 @@ for (const [key, f] of families) {
 // file does not know would be an injection site with no source.
 //
 // The DEFAULT is absent from that list on purpose — the stylesheet declares it
-// unattributed, so "no attribute" IS the default, and an unrecognised value
+// unattributed, so "no attribute" IS the default, and an unrecognized value
 // falls back to precisely that.
 const SW = 'public/sw.js';
 const swExpected = families.map(([k]) => k).filter((k) => k !== def);
@@ -166,12 +166,12 @@ if (CHECK) {
 
   // AND THE WORDS, which are the half a reader actually meets. `src/palette.ts`
   // carries a name and a sentence per family and `docs/palettes.json` carries
-  // the same two, and they went out of step the first time the colours moved:
+  // the same two, and they went out of step the first time the colors moved:
   // three families were redrawn and their descriptions still claimed the old
-  // ones — *exact-neutral night*, *cool night, warm paper day* — about colours
+  // ones — *exact-neutral night*, *cool night, warm paper day* — about colors
   // that no longer existed. A palette that paints one thing and describes
   // another is worse than one with no description, because the words are what
-  // Doctrine §4 leans on when it refuses colour as the sole carrier of meaning.
+  // Doctrine §4 leans on when it refuses color as the sole carrier of meaning.
   const words = [];
   {
     const src = readFileSync('src/palette.ts', 'utf8');
@@ -184,7 +184,7 @@ if (CHECK) {
     }
   }
   if (words.length) {
-    console.error('  FAIL  the words and the colours disagree:');
+    console.error('  FAIL  the words and the colors disagree:');
     for (const w of words) console.error(`        ${w}`);
     console.error('        A family that paints one thing and describes another is worse');
     console.error('        than one with no description at all.');

@@ -1,6 +1,6 @@
 /* Quietkeep — the shell.
  *
- * Colour tokens are ACCESSIBILITY.md B-11, with their measured ratios. Nothing
+ * Color tokens are ACCESSIBILITY.md B-11, with their measured ratios. Nothing
  * here is decided at the keyboard, and no new pair enters without joining the
  * gate in the same commit (B-08).
  *
@@ -35,7 +35,7 @@
 :root {
   color-scheme: light dark;
 
-  /* THE SEVEN COLOUR ROLES ARE NOT DECLARED HERE ANY MORE (3.4.0).
+  /* THE SEVEN COLOR ROLES ARE NOT DECLARED HERE ANY MORE (3.4.0).
    *
    * They live in `public/palettes.css`, generated from `docs/palettes.json` by
    * `npm run palettes`. PALETTES.md §6: "if a palette is currently declared in
@@ -320,7 +320,7 @@ body {
   margin-bottom: calc(0.6rem - 6px);
 }
 
-/* THE COLOUR PICKER'S PICTURES (3.5.0).
+/* THE COLOR PICKER'S PICTURES (3.5.0).
  *
  * A grid rather than a row: five tiles across a phone would be 70px each, which
  * is too small to judge a palette by, and a horizontal scroller inside a sheet
@@ -330,9 +330,9 @@ body {
  * The IMAGE is never the control's state. Its border is the app's own `--line`,
  * a pair already in the thirteen, and it does not change when the tile is
  * chosen — the radio beside the name says that, in a shape rather than a hue.
- * A coloured ring round the chosen tile would be colour as the sole carrier
+ * A colored ring round the chosen tile would be color as the sole carrier
  * (Doctrine §4) AND would put a fourteenth pair on screen that nothing measures. */
-/* ONE COLUMN, WHICH IS THE WHOLE REASON COLOUR HAS ITS OWN DOOR (3.5.1).
+/* ONE COLUMN, WHICH IS THE WHOLE REASON COLOR HAS ITS OWN DOOR (3.5.1).
  *
  * This was `repeat(auto-fill, minmax(6.5rem, 1fr))` — two tiles per row inside
  * Settings, where they had to be small enough not to take the sheet over its
@@ -372,12 +372,12 @@ body {
  *
  * SCALING THE NATIVE ONE TO 44px WAS TRIED AND LOOKED IT: five circles the size
  * of a thumbnail, painted in the browser's own accent rather than the app's,
- * shouting over the pictures they were meant to be labelling.
+ * shouting over the pictures they were meant to be labeling.
  *
  * So the input is stretched over the tile instead. It is the honest shape of the
  * thing — you press the picture, not a dot beside it — and the box the gate
  * measures is the box a finger aims at. The mark below is what the reader sees,
- * and it is a SHAPE before it is a colour: an empty ring becomes a filled one,
+ * and it is a SHAPE before it is a color: an empty ring becomes a filled one,
  * and the name goes bold with it, so nothing here says "this is the one you
  * have" in hue alone (Doctrine §4) on the one screen that is entirely about hue. */
 .palette-opt input[type="radio"] {
@@ -413,7 +413,7 @@ body {
   box-shadow: inset 0 0 0 3px var(--surface);
 }
 /* `appearance: none` takes the native rendering with it, so the mark has to be
-   drawn again in the colours the OS is forcing rather than the app's. */
+   drawn again in the colors the OS is forcing rather than the app's. */
 @media (forced-colors: active) {
   .palette-name::before { border-color: CanvasText; }
   .palette-opt input[type="radio"]:checked ~ .palette-name::before {
@@ -453,7 +453,7 @@ body {
 
 /* --- focus ---------------------------------------------------------------
  * Never removed. The ring is drawn with outline so it follows the shape and
- * survives a forced-colours mode. */
+ * survives a forced-colors mode. */
 :focus-visible {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
@@ -511,17 +511,17 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
  * three facts and that is all it does. The dial is aria-hidden and the words
  * beside it are the accessible version of the same thing.
  *
- * NO NEW COLOUR PAIR ENTERS THE GATE (B-08), because every colour here is an
+ * NO NEW COLOR PAIR ENTERS THE GATE (B-08), because every color here is an
  * existing token on the existing page background: the hands and the pin are
  * --ink, the rim is --line (a graphical object at 3:1, WCAG 1.4.11), and the
  * words are --ink-soft. Those three pairs are already held in `tools/brand.mjs`.
  * The RENDERED result is measured all the same — `.clock-face` and
  * `.clock-words` are registered in `tools/a11y.mjs` in both themes, so a later
- * hand recolouring the dial cannot do it unmeasured.
+ * hand recoloring the dial cannot do it unmeasured.
  *
  * The hands are `currentColor` on purpose. The contrast sampler resolves an
  * element's `color`, not its `stroke`, so a hard-coded stroke would be drawn in
- * one colour and measured in another — a gate reporting a number about a colour
+ * one color and measured in another — a gate reporting a number about a color
  * that is not on the screen. Tying them together makes the measurement honest.
  *
  * Nothing here animates. The hands move once a minute by being redrawn, so
@@ -787,7 +787,7 @@ button.ghost,
 /* A CONTROL HAS TO LOOK LIKE A CONTROL (2.1.0, ADR-0091).
  *
  * This was `background: none; border: none; color: --ink-soft` — a full-width
- * line of soft grey prose. Measured on the work surface at 390px: 50 controls,
+ * line of soft gray prose. Measured on the work surface at 390px: 50 controls,
  * and 7 of them had no border, no fill and no underline. Five of those seven
  * were EVERY route off this page — the claim, the tree, the Menu, sort mode,
  * and the jump to the list. The other 45 controls all carry a border or a fill.
@@ -830,7 +830,7 @@ button.ghost,
    decorative arrow after the words — pointing onward rather than down,
    because it opens a sheet instead of moving down the page. One control, one
    target: splitting them in two would halve a 44px target to make a point
-   the colour already makes. */
+   the color already makes. */
 .gauge-fact { color: var(--ink-soft); }
 .gauge-door { display: block; margin-top: 0.125rem; }
 .gauge-door::after {
@@ -891,7 +891,7 @@ button.ghost,
 .card-where { color: var(--ink-soft); }
 
 /* PLACEHOLDERS ARE TEXT SOMEBODY READS (2.2.0). The browser's default applies
- * its own opacity on top of the colour, which measured 4.08:1 on the detail
+ * its own opacity on top of the color, which measured 4.08:1 on the detail
  * sheet — under the 4.5:1 floor. `#capture`, `#capture-many` and the search
  * field each set this explicitly and pass; the detail sheet's inputs never did,
  * and nothing had measured them because no registry entry named the pseudo.
@@ -939,7 +939,7 @@ button.ghost,
  *
  * It was, for one build, and the measurement is why it is not. A floating
  * control in the bottom corner, probed at 820x1180 and 390x844 over thirteen
- * sample things: it overlapped ten controls and took the CENTRE of three, every
+ * sample things: it overlapped ten controls and took the CENTER of three, every
  * one of them a card's Done. Reserving space with `padding-bottom` on `main`
  * fixes only the END of the document — mid-scroll, content passes under a fixed
  * element no matter what, because that is what fixed means. So the failure is
@@ -1078,7 +1078,7 @@ button.ghost,
 }
 
 /* The alignment tree (1.6.0, ADR-0013): depth is indentation and nothing
-   else — no lines, no boxes-in-boxes, no colour carrying structure. */
+   else — no lines, no boxes-in-boxes, no color carrying structure. */
 .tree { list-style: none; margin: 0.75rem 0 0; padding: 0; }
 .tree-item { margin: 0 0 0.35rem; padding-left: calc(var(--tree-depth, 0) * 1.1rem); }
 .tree-open-row {
@@ -1097,7 +1097,7 @@ button.ghost,
 .tree-title { overflow-wrap: anywhere; }
 /* What kind of thing the row is (3.6.0) — the tree was the one container-listing
    surface that drew every row as a bare title. `--ink-soft` on `--surface` is a
-   pair the contrast gate already carries, so this adds a word and not a colour. */
+   pair the contrast gate already carries, so this adds a word and not a color. */
 /* SAID AS A CHIP, NOT A STRAY WORD (3.20.4, device report: a role row "looks
    like a task except for the little role label" — the label was bare small
    text, which reads as debris). A bordered chip in the quiet pair the row
@@ -1194,7 +1194,7 @@ button.ghost,
 
 /* --- sort mode (1.3.0) -----------------------------------------------------
  *
- * The picker rows and the card reuse the app's card look; every colour token is
+ * The picker rows and the card reuse the app's card look; every color token is
  * an already-registered pair on these backgrounds. The card itself reuses
  * `.triage-card` (now a button on both surfaces). */
 .sort-choices {
@@ -1251,7 +1251,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 /* --- last-action undo (triage) --------------------------------------------
  *
  * A plain line beside the do-now offer: where the card just went, and one tap to
- * take it back. Every colour here is already registered against these
+ * take it back. Every color here is already registered against these
  * backgrounds — ink-soft on the page, and `.linklike` for the button — so no new
  * contrast pair is introduced. */
 /* A COLUMN WITH A GAP (2.9.3). This region holds one bar per undo, and each bar
@@ -1282,7 +1282,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * there is no column-axis trap here, and the basis stays on the axis it was
  * written for. `flex: 0 0 auto` regardless, because that trap cost a release
  * (1.24.1) and this is a date input on a wrapping row: exactly the shape that
- * produced it. No new colour pair — the input inherits the same tokens every
+ * produced it. No new color pair — the input inherits the same tokens every
  * other field uses, and the control reuses .linklike beside Undo. */
 .triage-place-when {
   flex: 0 0 auto;
@@ -1320,7 +1320,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
    default gray measured 4.08:1 on the sheet and failed the gate.
    #nextup-bite-input joined them in 1.24.0, having shipped straight into the
    identical trap: a new input with no placeholder rule inherits that same UA
-   grey, and it measured 4.08:1 light and 3.78:1 dark. Third time. Any new
+   gray, and it measured 4.08:1 light and 3.78:1 dark. Third time. Any new
    placeholder in this app belongs on this list on the day it is written. */
 #detail-parent-filter::placeholder,
 #detail-merge-filter::placeholder,
@@ -1360,7 +1360,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  *
  * Deliberately the SAME visual weight as Next up. No red, no border that reads
  * as an alarm, nothing that says "this is a problem" — a passed date is a
- * decision to make, not a wall to be shouted at from. Every colour token here is
+ * decision to make, not a wall to be shouted at from. Every color token here is
  * one already registered against these backgrounds; nothing new is introduced,
  * so the contrast gate needs no new pair.
  */
@@ -1378,7 +1378,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 .replan-count { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
 
 /* --- all of them at once (3.9.0) -------------------------------------------
- * COLOURS ONLY BY REUSE. The lead line joins `.replan-count`'s rule and the two
+ * COLORS ONLY BY REUSE. The lead line joins `.replan-count`'s rule and the two
  * buttons join `.replan-choice`'s, so every pair on this block is one the
  * contrast registry already measures. That is the `.nextup-place` trade and the
  * honest way past hub LESSONS 28 — same ink, same paper, a different
@@ -1404,7 +1404,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
    Larger type and more room, and NOTHING that moves: no transition, no
    animation, nothing that redraws itself. Motion is processing, and processing
    is the cost this state exists to cut. The palette is untouched, because a
-   different colour scheme would be a second thing to take in. */
+   different color scheme would be a second thing to take in. */
 .nextup-plain #nextup-title { font-size: 1.5rem; line-height: 1.3; }
 .nextup-plain .nextup-actions { gap: 0.75rem; }
 .nextup-plain #nextup-done { font-size: 1.125rem; min-height: 3.5rem; }
@@ -1445,7 +1445,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 .replan-card-title { overflow-wrap: anywhere; }
 .replan-card-when { color: var(--ink-soft); font-size: 0.875rem; }
 
-/* The way past a card. Aligned to the card's own left edge rather than centred
+/* The way past a card. Aligned to the card's own left edge rather than centered
    or right-floated, so the eye meets it in the same column as everything else
    on this surface, and it reads as the quieter of two options because it is. */
 .replan-card {
@@ -1465,7 +1465,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  * reads as part of the same sentence rather than as the ask. */
 #replan-sheet-ask { margin: 1rem 0 0; }
 /* A failure gets its own line rather than overwriting the card's context. Plain
- * `--ink`, not an alert colour: "pick a date first" is an instruction, not an
+ * `--ink`, not an alert color: "pick a date first" is an instruction, not an
  * alarm, and nothing on this surface shouts. */
 .replan-error { margin: 0.25rem 0 0; color: var(--ink); font-weight: 600; }
 
@@ -1511,13 +1511,13 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
  */
 /* NO FRAME AROUND IT (2.33.2), and the frame was the whole defect.
    With a file chosen, Safari draws its own small document thumbnail between the
-   button and the filename. Inside a rounded bordered box that grey block reads
+   button and the filename. Inside a rounded bordered box that gray block reads
    as a TRACK WITH A PARTIAL FILL — a progress bar that has stalled — which is
    the worst available misreading on the surface somebody uses to bring in a
    thousand things. Reported from a device in exactly those words.
    The thumbnail cannot be styled: it is in the platform's shadow DOM and only
    `::file-selector-button` is addressable. But the track is OURS. Without it
-   there is nothing for the grey block to look like the end of, and the row
+   there is nothing for the gray block to look like the end of, and the row
    reads as what it is: a button, then what you picked.
    The explicit sizing stays — it exists for the 44px floor, which has nothing
    to do with the border. */
@@ -1620,11 +1620,11 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   background: transparent;
   border: 0;
   /* THE UNDERLINE IS THE CONTROL, and it is why this does not reopen 2.1.0.
-     That release found five routes off the page rendered as plain grey
+     That release found five routes off the page rendered as plain gray
      sentences — no border, no fill, NO UNDERLINE — and gave everything a box.
      The finding was that a control must be legible as one, not that a box is
      the only way to be one: an underlined word has been a control since before
-     any of this, and these keep their 44px target and their accent colour.
+     any of this, and these keep their 44px target and their accent color.
      What they give up is the boxed weight that made four secondary verbs read
      as peers of Done. */
   text-decoration: underline;
@@ -1633,7 +1633,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 
 /* --- the two things you can do when you cannot start (1.24.0) --------------
  *
- * NO NEW COLOUR PAIR (B-08). The named first step is --ink on the page
+ * NO NEW COLOR PAIR (B-08). The named first step is --ink on the page
  * background, the same pair the card's own title uses, because it is the
  * concrete thing to actually do and is not a hint about something else; the
  * form's hint uses .detail-hint, already measured everywhere else it appears.
@@ -1674,7 +1674,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
 /* Each "also asking" item is a ROW with its own title and a quiet reason beneath
    it — the same title-over-reason shape as the primary Next-up card above. They
    used to sit as title-and-reason justified on one line, same weight and same
-   quiet colour, which read as a run of prose rather than a list of things —
+   quiet color, which read as a run of prose rather than a list of things —
    found on device. A divider and a title in full ink make them separate,
    nameable items. */
 .behind-item {
@@ -1826,7 +1826,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   border-radius: var(--radius);
 }
 /* "N more under ready now — show them". A card-shaped row so it sits in the list
-   rather than beside it, and its own text colour so it does not read as work. */
+   rather than beside it, and its own text color so it does not read as work. */
 .card-more > .card-open { color: var(--ink-soft); justify-content: flex-start; }
 
 /* The actions travel TOGETHER. One wrapper as a single flex item, so the group
@@ -1887,7 +1887,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   min-width: 0;
   color: var(--ink-soft);
   font-size: 0.9375rem;
-  /* The status is words. Nothing here depends on seeing a colour, and there is
+  /* The status is words. Nothing here depends on seeing a color, and there is
      no alarm state to reach — a passed clock becomes a live card, not a red
      one (law 5, B-01). */
 }
@@ -1900,7 +1900,7 @@ button.triage-card:disabled { cursor: default; color: var(--ink-soft); }
   font-size: 0.9375rem;
 }
 /* The build, on the main screen. `--ink-soft` on `--bg` is an already-registered
- * pair, so this adds no new colour to the contrast gate — a version stamp is not
+ * pair, so this adds no new color to the contrast gate — a version stamp is not
  * a reason to introduce a shade nobody has measured. */
 /* It is a <button> since 1.18.0 (it opens the diagnostic, §7f) and it must not
  * LOOK like one: it is a stamp you can press, not a call to action in the
@@ -2096,7 +2096,7 @@ dialog[id^="sheet-"][open] {
    * shows a shadow at an edge there is more content past. Nothing to maintain
    * and no JS: it is arithmetic the compositor already does.
    *
-   * Gradients only, so forced-colours modes drop them harmlessly and the
+   * Gradients only, so forced-colors modes drop them harmlessly and the
    * `prefers-reduced-motion` block below has nothing here to suppress. */
   background:
     linear-gradient(var(--surface) 30%, rgba(0 0 0 / 0)) top / 100% 1.25rem no-repeat local,
@@ -2170,15 +2170,15 @@ dialog[id^="sheet-"][open] > button {
  * a padding change, a new element in the chrome — shows the panel's text
  * straight through the way out, and nothing goes red.
  *
- * `--surface` is the dialog's own background, so this is not a new colour: the
+ * `--surface` is the dialog's own background, so this is not a new color: the
  * accent/surface pair is already in the contrast gate at 3:1 and the button was
- * already sitting visually on that colour. No new pair, nothing for
+ * already sitting visually on that color. No new pair, nothing for
  * ACCESSIBILITY.md B-08 to register.
  *
  * WHY THE EXISTING CHECK COULD NOT SEE IT. The walk already scrolls each sheet
  * to its end and asks whether the Close is on screen and whether anything is on
  * top of it — a hit test. A transparent button IS the topmost thing at its own
- * centre; `elementFromPoint` returns the button and the check passes. "You can
+ * center; `elementFromPoint` returns the button and the check passes. "You can
  * see through it" and "something is over it" are different questions, and only
  * one of them was ever asked. The walk now measures the rectangles instead. */
 /* THE BUTTON ITSELF, not only the bar around it. The first version of this rule
@@ -2347,7 +2347,7 @@ dialog, dialog * { overflow-wrap: anywhere; }
    `dialog h2`, NOT a title class: 3.20.1 scoped this to `.section` and the
    cold read-back found the ring missing on the three headings that are not one
    — the item sheet's own title (the most-opened sheet in the app), the About
-   panel's, and the walkthrough's on any reopen. Every dialog's labelling
+   panel's, and the walkthrough's on any reopen. Every dialog's labeling
    heading is an h2 and every one takes focus, so the element is the honest
    scope and a new sheet is covered on the day it exists. */
 dialog h2:focus {
@@ -2363,7 +2363,7 @@ dialog h2:focus {
    thing on screen.
    OUTLINE AND NEVER A FILL: real buttons in this app are filled, and a name in
    the middle of a sentence that looks exactly like a button invites a tap on
-   the sentence. No new colour pair — `--ink` on the panel surface and `--line`
+   the sentence. No new color pair — `--ink` on the panel surface and `--line`
    are both already measured in ACCESSIBILITY.md. */
 .ui-name {
   font-style: normal;
@@ -2376,7 +2376,7 @@ dialog h2:focus {
 }
 /* The import's facts, one per line (2.36.0). No bullets: these are not a list
    of things to do, they are seven statements about a file, and a disc beside
-   each one reads as a checklist somebody has to get through. No new colour
+   each one reads as a checklist somebody has to get through. No new color
    pair — `--ink-soft` on the sheet is what `.storage-note` above it already
    uses and is already measured. */
 .storage-facts {
@@ -2570,7 +2570,7 @@ textarea { min-height: var(--target); }
 summary {
   display: block;
   min-height: var(--target);
-  /* Vertically centred, so the words sit in the middle of the target rather than
+  /* Vertically centered, so the words sit in the middle of the target rather than
      at its top with dead space beneath — a target you have to aim at the top of
      is not really the size it measures. */
   display: flex;
@@ -2602,7 +2602,7 @@ summary::-webkit-details-marker { display: none; }
    The same declarations as `.detail-row input` and deliberately not a shared
    class: these two rows are different shapes with different rules, and merging
    them to save eight lines is how one of them later inherits a change meant for
-   the other. No new colour pair — every token here is already in the gate. */
+   the other. No new color pair — every token here is already in the gate. */
 .lens-row input {
   min-height: var(--target);
   padding: 0.4rem 0.6rem;
@@ -2646,7 +2646,7 @@ summary::-webkit-details-marker { display: none; }
    only — a horizontal drag could push the sheet past 320px (B-16's gate).
    WHERE IT STANDS AND WHAT WOULD CHANGE IT JOIN IT (3.18.0), and the choice
    between the two treatments in this file is deliberate. `#detail-situation`
-   and `#journal-text` are declared UA-owned in `.colour-ua-owned`: the app
+   and `#journal-text` are declared UA-owned in `.color-ua-owned`: the app
    styles their box and never their ink, so the platform paints them. These two
    go the other way, with the note, because what is typed in them is RENDERED
    BACK by the app on the arrangements list in its own ink. A box that looks
@@ -2737,7 +2737,7 @@ summary::-webkit-details-marker { display: none; }
   border-radius: var(--radius);
   font: inherit;
 }
-/* The UA placeholder grey is a colour nobody chose and it fails the contrast
+/* The UA placeholder gray is a color nobody chose and it fails the contrast
    gate — the same correction `#pebble-text` and `#capture` already carry. */
 #anchor-name::placeholder,
 #anchor-recurrence::placeholder { color: var(--ink); opacity: 1; }
@@ -2814,7 +2814,7 @@ summary::-webkit-details-marker { display: none; }
 /* THE SET YOU ALREADY HAVE, AS A ROW OF TAPS (3.8.0). See the note in the
    markup for why a native <datalist> is not on this sheet any more.
 
-   LAYOUT ONLY. Every colour on these comes from `.linklike`, which is already
+   LAYOUT ONLY. Every color on these comes from `.linklike`, which is already
    in the contrast registry with a measured pair, so no unmeasured foreground
    ships — the trade `.nextup-place` makes on the offer card, and the honest way
    past LESSONS 28 rather than a second row nobody added to the gate.
@@ -2832,7 +2832,7 @@ summary::-webkit-details-marker { display: none; }
   gap: 0.5rem 1.25rem;
 }
 .detail-fix { margin: 0.5rem 0 0; }
-/* The arithmetic, in words. `--ink`, not an alert colour: "it needed starting
+/* The arithmetic, in words. `--ink`, not an alert color: "it needed starting
    two days ago" is a fact about the dates, and this app has no red walls. */
 .detail-feed-words { margin-top: 0.35rem; color: var(--ink); font-weight: 600; }
 #detail-feeds { min-height: var(--target); flex: 1 1 8rem; min-width: 0; font: inherit;
@@ -2968,7 +2968,7 @@ summary::-webkit-details-marker { display: none; }
   border-radius: var(--radius); font: inherit; cursor: pointer;
 }
 .portfolio-title { overflow-wrap: anywhere; }
-/* Facts joined with middots. There is NO colour here that means "at risk", and
+/* Facts joined with middots. There is NO color here that means "at risk", and
    there will not be one: a hue aimed at somebody else's work is this app
    grading them on evidence it does not have (B-01, law 5). */
 .portfolio-why { color: var(--ink-soft); font-size: 0.875rem; overflow-wrap: anywhere; }
@@ -3040,7 +3040,7 @@ summary::-webkit-details-marker { display: none; }
 }
 .menu-title { overflow-wrap: anywhere; }
 /* Two numbers and the difference. There is deliberately NO bar and no
-   percentage here, and no colour that changes as the numbers do — a bar is a
+   percentage here, and no color that changes as the numbers do — a bar is a
    machine for implying you are behind, on the one surface in this app that is
    structurally incapable of nagging. */
 .menu-money { color: var(--ink-soft); font-size: 0.875rem; }
@@ -3055,7 +3055,7 @@ summary::-webkit-details-marker { display: none; }
 #bother-text { min-height: var(--target); flex: 1 1 6rem; min-width: 0; font: inherit; }
 #bother-text::placeholder { color: var(--ink); opacity: 1; }
 /* The load entry's box, on the same rule and for the same reason (1.15.0): the
-   UA default is a grey nobody chose and it fails the contrast gate. */
+   UA default is a gray nobody chose and it fails the contrast gate. */
 #pebble-text::placeholder { color: var(--ink); opacity: 1; }
 .bother {
   margin: 0 0 1.5rem; padding: 1rem;
@@ -3074,7 +3074,7 @@ summary::-webkit-details-marker { display: none; }
   border-radius: var(--radius); font: inherit; cursor: pointer;
 }
 .bother-choice-label { font-weight: 600; }
-/* The consequence of each choice. A forced choice with unlabelled outcomes is a
+/* The consequence of each choice. A forced choice with unlabeled outcomes is a
    guess, and this is the one question the whole flow turns on. All three are
    styled identically — "not mine to carry" is not a lesser option and must not
    look like one. */
@@ -3168,7 +3168,7 @@ summary::-webkit-details-marker { display: none; }
 
 /* WHERE it sits (V2 stage 1, "It says where"). Layout only — every place line
    reuses an already-registered text class (.nextup-why, .behind-why, .chip-why)
-   so its colour pair is the one the contrast gate already measures on this
+   so its color pair is the one the contrast gate already measures on this
    surface. A new hue here would be a new unmeasured pair; same ink is the
    honest route. */
 .nextup-place { margin-block: 0 0.25rem; }
@@ -3294,7 +3294,7 @@ summary::-webkit-details-marker { display: none; }
    The old comment said the glyph was "not the only signal: the words say so
    too" — and the words do not. "Every one of them" says what is inside, never
    that pressing it opens anything. Drawn from two borders in `currentColor`, so
-   it introduces no colour pair, no asset and no icon font, and it inherits the
+   it introduces no color pair, no asset and no icon font, and it inherits the
    contrast `.held-fold-label` is already measured at.
    NO TRANSITION: this app animates nothing, so reduced-motion is honoured by
    having no motion to reduce. */
@@ -3443,7 +3443,7 @@ body[data-plain="1"] #held
  * ADR-0108 built the stance model for this and said so: "a stance is therefore a
  * region the layout places, and it must never assume its own size. Narrow shows
  * exactly one and the hub is a place you return to; wide can show the hub beside
- * one or more stances. Same definitions, one set of behaviours, two
+ * one or more stances. Same definitions, one set of behaviors, two
  * arrangements." That is why stances are sections with a class rather than
  * dialogs — a `<dialog>` owns the viewport and can never be one pane.
  *
@@ -3587,7 +3587,7 @@ body[data-plain="1"] #held
 }
 
 /* WHO IS IN IT, and the room it opens (3.16.0, ADR-0119).
-   No new colour pair enters the contrast gate: the toggles are `.ghost`, the
+   No new color pair enters the contrast gate: the toggles are `.ghost`, the
    room door is `.ghost`, and every name inside the room is `.linklike` — all
    three already have their pairs in the inventory, which is what keeps this
    release from owing the palette gate a new row. */
@@ -3606,7 +3606,7 @@ body[data-plain="1"] #held
    would have drawn nothing at all while reading as deliberate. */
 /* PRESSED READS AS IN THE ROOM (3.20.4, device report: the ring read as
    "selected and waiting to be added"). The outline stays, and the border
-   itself turns ink and the words gain weight — three signals, no new colour
+   itself turns ink and the words gain weight — three signals, no new color
    pair (ink on bg is the text's own). The hint under the group now names the
    gesture. */
 .situation-who-one[aria-pressed="true"] {
@@ -3663,6 +3663,6 @@ body[data-plain="1"] #held
   font-size: 0.9375rem;
   overflow-wrap: anywhere;
 }
-/* The label carries the weight rather than a colour of its own — two words in
+/* The label carries the weight rather than a color of its own — two words in
    front of the reader's own sentence, told apart without a second pair. */
 .arrangement-said-label { font-weight: 600; }

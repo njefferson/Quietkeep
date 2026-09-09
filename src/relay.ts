@@ -180,7 +180,7 @@ export async function handle(request: Request, deps: Deps): Promise<Response> {
     // corrupted; the damage is that a household's sync stops until the quota
     // resets, silently, because request logging is deliberately off.
     //
-    // "Keep the URL secret" is not available as a defence — it is published.
+    // "Keep the URL secret" is not available as a defense — it is published.
     // Rate limiting is, and it is keyed on the caller rather than on the mailbox:
     // a per-mailbox limit would let one flooder open a million mailboxes.
     const caller = request.headers.get('cf-connecting-ip') ?? 'unknown';

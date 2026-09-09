@@ -78,11 +78,24 @@ export function captureContextWords(atIso: string, zone: string, nowIso: string)
   // tomorrow morning".
   if (days > 0) return null;
 
-  if (days === 0) return `Written this ${when === 'overnight' || when === 'night' ? 'night' : when}`;
+  // TONIGHT, NOT "THIS NIGHT". The other three parts of the day take `this`
+  // without complaint — this morning, this afternoon, this evening — and the
+  // night branch is the one English has a single word for. Reported from a cold
+  // read of the served app: it is the line under every card in the sort queue,
+  // so the one part of the day nobody says was the one shown most often.
+  if (days === 0) {
+    return when === 'overnight' || when === 'night' ? 'Written tonight' : `Written this ${when}`;
+  }
   if (days === -1) return `Written yesterday ${when}`;
 
   if (days > -7) {
-    const weekday = new Intl.DateTimeFormat('en-GB', { timeZone: zone, weekday: 'long' })
+    // THE READER'S LOCALE, NOT A CHOSEN ONE. This said 'en-GB', which is a
+    // decision about somebody else's device made in the source — and the app
+    // does not hold it anywhere else: `dateWords` in held.ts already passes
+    // `undefined` and takes whatever the device is set to. One app, two
+    // answers, and the hardcoded one wins wherever a weekday or a date is
+    // written next to a thing.
+    const weekday = new Intl.DateTimeFormat(undefined, { timeZone: zone, weekday: 'long' })
       .format(new Date(atIso));
     return `Written ${weekday} ${when}`;
   }
@@ -90,7 +103,9 @@ export function captureContextWords(atIso: string, zone: string, nowIso: string)
   // Older than a week: a date, because a weekday name no longer locates
   // anything. No part of day either — nobody remembers the afternoon of a
   // Tuesday in June, so offering it implies a precision the cue does not have.
-  const date = new Intl.DateTimeFormat('en-GB', {
+  // Same again: the locale decides day-before-month or month-before-day, and
+  // the options below decide nothing about that order.
+  const date = new Intl.DateTimeFormat(undefined, {
     timeZone: zone, day: 'numeric', month: 'short',
     ...(days <= -365 ? { year: 'numeric' } : {}),
   }).format(new Date(atIso));

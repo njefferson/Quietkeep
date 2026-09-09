@@ -45,7 +45,7 @@ ADR-0045) exists. Declining someone's request becomes a first-class decision:
   toggle's label stating the next press. A row is a title, a name, and a
   date — **never a count**.
 - **The request slot: ONE slot, weekday granularity, not a module.**
-  `weekly:mon`…`weekly:sun`, `''` clears; unrecognised strings are refused,
+  `weekly:mon`…`weekly:sun`, `''` clears; unrecognized strings are refused,
   never guessed. A null slot makes the feature invisible everywhere — setting
   a day IS the opt-in, so `module.enabled` ceremony (which earns itself for
   surface families like Composed Today) is not spent on one LWW setting. Set

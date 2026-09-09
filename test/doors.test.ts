@@ -26,7 +26,7 @@ interface Surface {
   /** What the surface publishes about its own state. */
   readonly count?: string;
   /** No aria-labelledby at all. */
-  readonly unlabelled?: boolean;
+  readonly unlabeled?: boolean;
 }
 
 /** The two methods `doors` calls, over a described set of surfaces. */
@@ -42,7 +42,7 @@ const pageOf = (surfaces: readonly Surface[]): Document => {
         'doors must ask only for the surfaces that have marked themselves');
       return surfaces.map(s => ({
         id: s.id,
-        getAttribute: (a: string) => (a === 'aria-labelledby' && !s.unlabelled ? s.label : null),
+        getAttribute: (a: string) => (a === 'aria-labelledby' && !s.unlabeled ? s.label : null),
       }));
     },
     getElementById: (id: string) => byId.get(id) ?? null,
@@ -66,9 +66,9 @@ test('nothing is a door until it says so — an unmarked dialog has no row', () 
   assert.deepEqual(doors(pageOf([])), []);
 });
 
-test('a door with nothing labelling it is skipped, not rendered nameless', () => {
+test('a door with nothing labeling it is skipped, not rendered nameless', () => {
   const d = doors(pageOf([
-    { id: 'sheet-load-entry', label: 'x', name: 'How you are', unlabelled: true },
+    { id: 'sheet-load-entry', label: 'x', name: 'How you are', unlabeled: true },
     { id: 'sort', label: 'sort-title', name: 'Sort things out' },
   ]));
   assert.deepEqual(d.map(x => x.id), ['sort']);
@@ -131,7 +131,7 @@ test('the door never scores, never totals against a target, and never judges', (
       assert.equal(/%|\bof\b\s*\d|\bout of\b/.test(words), false,
         `no proportion in "${words}"`);
       assert.equal(/overdue|behind|too much|should|failing|streak/i.test(words), false,
-        `no judgement in "${words}"`);
+        `no judgment in "${words}"`);
     }
   }
 });

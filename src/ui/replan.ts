@@ -225,7 +225,7 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
   };
 
   /** The five options, built once. `new-date` is the only one that needs an
-   *  answer from the user, so it renders as a labelled date box beside its
+   *  answer from the user, so it renders as a labeled date box beside its
    *  button rather than as a second hidden step. */
   function buildOptions(): void {
     OPTIONS.replaceChildren(...REPLAN_CHOICES.map(({ choice, label, hint }) => {
@@ -238,7 +238,7 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
         input.id = 'replan-new-date';
         // A new plan for a date already behind you is not a plan. `min` lets the
         // PLATFORM say so, which is better than the app refusing after the fact:
-        // it is a date picker doing what date pickers do, not a judgement. If one
+        // it is a date picker doing what date pickers do, not a judgment. If one
         // still gets through, the returning card says plainly that it went by —
         // which is true, so nothing is claimed that the data does not support.
         input.min = localDayKey(nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) });
@@ -341,7 +341,7 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
       const b = el('button', 'replan-open');
       b.type = 'button';
       b.append(el('span', 'replan-card-title', card.node.title || '(untitled)'));
-      // States the fact in words, so nothing here depends on seeing a colour
+      // States the fact in words, so nothing here depends on seeing a color
       // (B-01) — and it is a fact, never a rebuke.
       b.append(el('span', 'replan-card-when', replanWords(card.daysAgo)));
       b.addEventListener('click', () => open(card));

@@ -23,7 +23,7 @@ The replan card answers both, and it does it at the only moment the user is
 actually thinking about the item. Assembling the context — *what it fed*, *what
 the suspense is*, *how many days are left* — is the expensive part, and it is
 exactly the part someone with temporal myopia cannot reconstruct on demand.
-Handing them a bare row labelled "3 days late" asks them to do the impossible
+Handing them a bare row labeled "3 days late" asks them to do the impossible
 part themselves.
 
 The three options are deliberately **all forward-facing**. There is no "mark as

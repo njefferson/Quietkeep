@@ -125,10 +125,10 @@ export type EcLevel = 'L' | 'M';
 /** Side length in modules. */
 export const sizeOf = (version: number): number => version * 4 + 17;
 
-/** Alignment-pattern centres. For versions 2 to 6 there is exactly one, because the
+/** Alignment-pattern centers. For versions 2 to 6 there is exactly one, because the
  *  other three coordinates collide with the finders — derived from the rule rather
  *  than tabulated. Version 1 has none. */
-export function alignmentCentres(version: number): number[] {
+export function alignmentCenters(version: number): number[] {
   if (version < 2) return [];
   if (version > 6) throw new Error(`qr: version ${version} needs an alignment table this file does not carry`);
   return [6, sizeOf(version) - 7];
@@ -266,9 +266,9 @@ export function blankMatrix(version: number): Matrix {
   }
 
   // Alignment patterns, skipping the finder corners.
-  const centres = alignmentCentres(version);
-  for (const cy of centres) {
-    for (const cx of centres) {
+  const centers = alignmentCenters(version);
+  for (const cy of centers) {
+    for (const cx of centers) {
       const nearFinder = (cx === 6 && cy === 6)
         || (cx === 6 && cy === size - 7) || (cx === size - 7 && cy === 6);
       if (nearFinder) continue;
@@ -393,7 +393,7 @@ export function penalty(dark: readonly boolean[][]): number {
     if (run >= 5) score += run - 2;
   }
 
-  // Rule 2: 2x2 blocks of one colour.
+  // Rule 2: 2x2 blocks of one color.
   for (let y = 0; y < n - 1; y++) {
     for (let x = 0; x < n - 1; x++) {
       const a = dark[y]![x];

@@ -1,9 +1,9 @@
-// THE PROOF OF JUDGEMENT — law 4's analogue of the coverage gauge (3.23.0).
+// THE PROOF OF JUDGMENT — law 4's analogue of the coverage gauge (3.23.0).
 //
 // `coverageProof` answers law 1: nothing is LOST, and here are the named
 // reasons, checkable from outside. Nothing answered law 4 — that what is being
 // SHOWN is right — so the app could demonstrate its integrity and not its
-// judgement, and the only way to check the offer was to read the whole store.
+// judgment, and the only way to check the offer was to read the whole store.
 // `NOTES.md` names that asymmetry and calls this the highest-value thing to
 // build; Q-11 gated it on ranking-versus-trust and closed on 2026-08-17.
 //
@@ -25,7 +25,7 @@ import assert from 'node:assert/strict';
 import { fold, type State } from '../src/fold.ts';
 import { heldWork } from '../src/gate.ts';
 import { heldGroups } from '../src/held.ts';
-import { judgementProof, assuranceWords, assuranceFact, placeCountWords, gapWords } from '../src/assurance.ts';
+import { judgmentProof, assuranceWords, assuranceFact, placeCountWords, gapWords } from '../src/assurance.ts';
 import type { AppEvent } from '../src/events.ts';
 
 const DENVER = 'America/Denver';
@@ -52,7 +52,7 @@ const mixed = (): AppEvent[] => [
 
 test('it is TOTAL — every held thing sits in exactly one named place', () => {
   const s = st(...mixed());
-  const p = judgementProof(s, NOW, DENVER);
+  const p = judgmentProof(s, NOW, DENVER);
   const summed = p.places.reduce((n, x) => n + x.count, 0);
   assert.equal(summed, p.total, 'the places account for everything held');
   assert.equal(p.total, heldWork(s).length, 'and the total is the gate’s own set');
@@ -63,7 +63,7 @@ test('it is TOTAL — every held thing sits in exactly one named place', () => {
 
 test('the places ARE the held list’s groups, in its own words', () => {
   const s = st(...mixed());
-  const p = judgementProof(s, NOW, DENVER);
+  const p = judgmentProof(s, NOW, DENVER);
   const groups = heldGroups(s, NOW, DENVER);
   assert.deepEqual(p.places.map(x => x.key), groups.map(g => g.key),
     'same groups, same order — one definition, so they cannot disagree');
@@ -76,7 +76,7 @@ test('the places ARE the held list’s groups, in its own words', () => {
 
 test('it says what is in front of you NOW, and that is ready and replan', () => {
   const s = st(...mixed());
-  const p = judgementProof(s, NOW, DENVER);
+  const p = judgmentProof(s, NOW, DENVER);
   const groups = heldGroups(s, NOW, DENVER);
   const ready = groups.find(g => g.key === 'ready')?.items.length ?? 0;
   const replan = groups.find(g => g.key === 'replan')?.items.length ?? 0;
@@ -89,7 +89,7 @@ test('it NAMES what it cannot account for — the exceptions that never surface'
   // A goal with nothing feeding it is a review exception, computed in
   // `review.ts` and never reaching a surface. That is the honest gap.
   const s = st(mk('G', 'goal', 'a calmer service'), clockAt('G', 30));
-  const p = judgementProof(s, NOW, DENVER);
+  const p = judgmentProof(s, NOW, DENVER);
   assert.ok(p.neverSurfaced.length > 0, 'the gap is reported rather than papered over');
   assert.match(gapWords(p.neverSurfaced.length) ?? '', /worth a look/i);
   assert.equal(gapWords(0), null, 'and nothing is said when there is no gap');
@@ -99,7 +99,7 @@ test('it NAMES what it cannot account for — the exceptions that never surface'
 
 test('the words end the scan without grading anybody', () => {
   const s = st(...mixed());
-  const p = judgementProof(s, NOW, DENVER);
+  const p = judgmentProof(s, NOW, DENVER);
   const said = [assuranceWords(p), ...p.places.map(x => placeCountWords(x)), gapWords(p.neverSurfaced.length) ?? '']
     .join(' ');
   assert.match(assuranceWords(p), /accounted for/i, 'it states the claim plainly');
@@ -112,7 +112,7 @@ test('the words end the scan without grading anybody', () => {
 });
 
 test('an empty store makes no claim about nothing', () => {
-  const p = judgementProof(st(), NOW, DENVER);
+  const p = judgmentProof(st(), NOW, DENVER);
   assert.equal(p.total, 0);
   assert.equal(p.places.length, 0);
   assert.match(assuranceWords(p), /nothing here yet/i);
@@ -121,13 +121,13 @@ test('an empty store makes no claim about nothing', () => {
 test('it narrows nothing — the projection is pure', () => {
   const s = st(...mixed());
   const before = JSON.stringify([...s.nodes.keys()].sort());
-  judgementProof(s, NOW, DENVER);
+  judgmentProof(s, NOW, DENVER);
   assert.equal(JSON.stringify([...s.nodes.keys()].sort()), before);
 });
 
 test('the button says it in the gauge’s own register, short', () => {
   const s = st(...mixed());
-  const fact = assuranceFact(judgementProof(s, NOW, DENVER));
+  const fact = assuranceFact(judgmentProof(s, NOW, DENVER));
   assert.match(fact, /^everything accounted for · \d+ in front of you$/,
     'lowercase, one middot, two facts — `#gauge`’s line, not a second style');
   assert.ok(fact.length < 60, `short enough to glance at (${fact.length})`);

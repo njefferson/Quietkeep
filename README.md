@@ -54,16 +54,16 @@ incapable of letting something go quiet.
 ## Accessibility
 
 WCAG 2.2 AA is the target, with COGA-informed patterns for the cognitive load
-this app exists to reduce. Pressure and time are never encoded by colour alone.
+this app exists to reduce. Pressure and time are never encoded by color alone.
 Shared statement across all of these apps:
 **[noahjefferson.pages.dev/accessibility](https://noahjefferson.pages.dev/accessibility)**
 
 Found a barrier? That is a bug report, and it is welcome.
 
-## Licence
+## License
 
 [PolyForm Noncommercial 1.0.0](LICENSE.md) — use it, change it, share it; don't
-sell it. **Your data is not covered by the licence, because it isn't ours.**
+sell it. **Your data is not covered by the license, because it isn't ours.**
 
 ---
 

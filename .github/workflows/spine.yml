@@ -66,12 +66,12 @@ jobs:
   #
   # `palette-path` stays off DELIBERATELY and is not the same omission.
   # `tools/palette-gate.mjs` (Spine step 49) holds every palette against the
-  # colour inventory the a11y walk actually produced, which is strictly more
+  # color inventory the a11y walk actually produced, which is strictly more
   # than one palette file against the floors. `zizmor` stays off because the hub
   # holds that opt-in while three repos still carry findings; REPOS.md names
   # them and it is the hub's call, not this repo's.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@3f2a37374fd7fb9fa5671f6c6b79e1c95d660b06
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@38586969c59174490d490b0fa0ea8238b63aa7e0
     with:
       pwa: true
       mirror: true
@@ -491,7 +491,7 @@ jobs:
       # The picker shows a picture of each family, generated from the same file
       # the stylesheet comes from. A family cannot look like one thing in the
       # chooser and paint another once chosen.
-      - name: The palette pictures are of the colours that ship
+      - name: The palette pictures are of the colors that ship
         run: npm run palette:shots:check
         if: ${{ !cancelled() }}
 

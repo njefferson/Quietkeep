@@ -2,7 +2,7 @@
 
 **Status:** Accepted · **Date:** 2026-08-26 ·
 **Removes the cold-start flash of palette and mode** ·
-**Touches:** [0002](0002-storage-dexie-indexeddb.md), [0110](0110-colour-is-checked-by-arithmetic.md) ·
+**Touches:** [0002](0002-storage-dexie-indexeddb.md), [0110](0110-color-is-checked-by-arithmetic.md) ·
 **Cites:** hub `PALETTES.md`, hub LESSONS 142
 
 ## Decision
@@ -15,7 +15,7 @@ and still own every later change; this is only about the first frame.
 ## The problem, and why it was called unfixable
 
 Storage is IndexedDB (ADR-0002; `localStorage` is banned outright). IndexedDB is
-asynchronous, so nothing could know which colours to wear until after the page
+asynchronous, so nothing could know which colors to wear until after the page
 had already painted. Every cold start showed one beat of the default palette,
 then settled to the choice.
 
@@ -44,10 +44,10 @@ stale the moment somebody changes their mind after installing — the shortcut
 cannot be rewritten. The store stays the single source of truth instead.
 
 That second one is not closed for the SPLASH SCREEN, which is a different
-problem: an installed app's splash colour comes from the manifest captured at
+problem: an installed app's splash color comes from the manifest captured at
 install time and nothing the app does later can change it. Fixing that needs a
 per-palette manifest chosen before the shortcut is saved, and rests on iOS
-behaviour that must be measured on a device rather than assumed.
+behavior that must be measured on a device rather than assumed.
 
 ## How it is kept honest
 

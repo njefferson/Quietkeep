@@ -113,7 +113,7 @@ part that does not survive.
 **A stance is therefore a region the layout places**, and it must never assume
 its own size. Narrow shows exactly one and the hub is a place you return to;
 wide can show the hub beside one or more stances. Same definitions, one set of
-behaviours, two arrangements — not a second implementation, and not a phone app
+behaviors, two arrangements — not a second implementation, and not a phone app
 with a desktop mode bolted on.
 
 The thing that would make this expensive later is building three stances as

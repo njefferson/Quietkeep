@@ -5,7 +5,7 @@
     The mark: a warm opening within a sheltering form. A doorway in a wall, lit
     from inside.
 
-    Geometry, not illustration. Three flat colours, no gradient, no shadow, no
+    Geometry, not illustration. Three flat colors, no gradient, no shadow, no
     transparency — every one of those breaks down at 48px or on a light surface.
 
     Why this shape and not the generated candidate it came from: that one's outer
@@ -14,7 +14,7 @@
     that nothing you put in is lost. The arch here appears ONLY in the warm
     opening; the silhouette is a rounded square, which is a shelter and a wall.
 
-    Colours are the design-time bindings recorded in ACCESSIBILITY.md B-10, with
+    Colors are the design-time bindings recorded in ACCESSIBILITY.md B-10, with
     their measured ratios. Nothing here is decided at the keyboard.
 
     Maskable-safe: the artwork sits inside the centre 80% circle (r=204.8 about

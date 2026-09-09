@@ -55,7 +55,7 @@ claim the same ground, that order decides.
   it does not produce the ones that live between the parts.
 
 **Who holds what**
-- Doctrine: task organisation.
+- Doctrine: task organization.
 - Project practice: a responsibility assignment — who is accountable, who does it.
 - This app: person links — *they are running it*, *they owe me this*, *I said I
   would*, *they asked for it*, *they care about it*.

@@ -253,7 +253,7 @@ export const PLAIN_CHROME_HIDDEN = [
                       // an invitation to go and worry about whether they are
                       // still true, which is precisely the checking this feature
                       // exists to take off somebody.
-  '#assurance',       // THE PROOF OF JUDGEMENT (3.23.0). `#gauge` above is KEPT
+  '#assurance',       // THE PROOF OF JUDGMENT (3.23.0). `#gauge` above is KEPT
                       // and this is not, and the difference is the whole reason
                       // the two are separate controls: the gauge's claim is that
                       // nothing has gone QUIET, which carries no demand at all,
@@ -339,6 +339,6 @@ export const PLAIN_CHROME_KEPT = [
   '#nextup-plain-off',
   '#focus',           // the session you are already inside: one thing, its acts,
                       // and a capture line that does not make you stop to use it.
-  '#foot',            // the licence and the accessibility statement. Static, at
+  '#foot',            // the license and the accessibility statement. Static, at
                       // the very bottom, and an obligation rather than furniture.
 ] as const;

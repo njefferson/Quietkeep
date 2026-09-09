@@ -139,10 +139,13 @@ pressed. There is nowhere to go.
 
 ### Name a meeting, and open the room
 
-The same sheet has **Recognise this one?** at the bottom. Give what you have set
+The same sheet has **Recognize this one?** at the bottom. Give what you have set
 a name and it comes back in one tap — the Tuesday standup, a free weekend, a
-call with one person. **Who is in it?** above it names the people; more than one
-makes it a meeting.
+call with one person. **Who is in the room?** <span data-was>(it said *Who is in it?* until
+3.23.7)</span> above it names the people; more than one makes it a meeting. It
+is a different question from **Who is in front of you now** further up the same
+sheet: that one narrows what you are offered right now, and this one does not
+narrow anything &mdash; it belongs to the situation you save.
 
 A saved situation that names somebody gains **See what is in the room**. Open it
 and you get, for each person who will be there, what is still outstanding with
@@ -167,7 +170,7 @@ If you answer one and almost nothing changes, that is worth knowing rather than
 guessing at: the report described below counts how much of what you are holding
 any of these three questions can actually reach.
 
-**Recognise this one?** names what you have just set so it returns in one tap.
+**Recognize this one?** names what you have just set so it returns in one tap.
 That is for the meeting you have every Tuesday, or the shape of a free weekend.
 
 ### Find something
@@ -220,8 +223,12 @@ that reading all of them stops being the only way to be sure.
 
 ### See the days ahead
 
-**The days ahead**, on the front page, is every dated thing you hold, day by
-day — today first, then each day something is waiting on. Each row says which
+**The days ahead**, on the front page, is every dated thing you have sorted,
+day by day — today first, then each day something is waiting on. A date you set
+before sorting the thing is kept and does not appear here yet; nor does one on
+something you have finished, or put on the Menu, which is the same rule the
+calendar goes by. The door itself only appears once something it can show
+carries a date. Each row says which
 date is talking: *due*, *starts*, *comes back*, or *answer owed* — and an
 answer owed names who is waiting, when you have said so. The list reads the
 store every time it opens, so when a date moves, the day it sits under moves
@@ -346,8 +353,8 @@ One section is worth knowing about even when nothing is wrong. **What the
 situation can narrow** says how much of what you are holding is reached by a
 place, names somebody, or carries a time estimate — and how many projects and
 other containers already carry a place. Those numbers explain something that
-otherwise looks broken: if almost nothing is labelled, answering *where are you*
-changes almost nothing, because anything unlabelled turns up wherever you are.
+otherwise looks broken: if almost nothing is labeled, answering *where are you*
+changes almost nothing, because anything unlabeled turns up wherever you are.
 That is the design and not a fault, and the section says so. It also points at
 where a little filing goes furthest, since a place on a container reaches
 everything inside it.
@@ -397,7 +404,7 @@ when there is a reason.
   three on the screen are not all of it.
 - **Running without you** — everything you have said runs on its own, when you
   last checked each was still true, and where any of it stands.
-- **What's the situation?** — where you are, how long you have, who is with you,
+- **What's the situation?** — where you are, how long you have, who is in front of you,
   and the situations you have named.
 - **In the room** — what a named meeting is about: what is outstanding with each
   person in it, and what that work sits under.
@@ -427,9 +434,9 @@ The named ones:
   of *What you are holding*.
 - **Elsewhere in the app** — the way to everything below.
 - **How it works** · **Help** · **Your data** · **Things you can do** ·
-  **Settings** · **Colours** — the destinations behind *Elsewhere in the app*.
+  **Settings** · **Colors** — the destinations behind *Elsewhere in the app*.
 - **Quietkeep** — the ⓘ: what this is, what it is not, how to install it, what
-  changed, and the licence.
+  changed, and the license.
 - **If something is wrong** — inside the ⓘ: the report the app writes about
   itself, which contains counts and states and nothing you wrote.
 - **Stopping for now** — ending a timer without ending the thing.
@@ -442,13 +449,13 @@ Stated because a promise is only worth what it refuses.
 
 - **No streaks, no scores, no completion percentage.** Nothing accumulates and
   nothing can be broken.
-- **No red.** Nothing on any screen escalates in colour to make you act.
+- **No red.** Nothing on any screen escalates in color to make you act.
 - **No counting what you did not do.** No misses, no late tally, no per-person
   record of how long you kept somebody waiting.
 - **No guessing.** The app never infers a place, a person or a project from
-  your behaviour. It asks, once, or it does without.
+  your behavior. It asks, once, or it does without.
 - **No setup.** There is no wizard, no template to choose, and no screen asking
-  you to get organised before you can use it.
+  you to get organized before you can use it.
 - **Nothing leaves the device** unless you export it yourself.
 
 ---

@@ -74,7 +74,7 @@ built first. It was wrong, and the next section is why.
 
 `<h2>What you are holding</h2>` sat loose in the middle of `<main>` — no section
 around it, no id, no `tabindex`. Every other block on the surface is a
-`<section>` with a labelled focusable heading; the one the reader spends most of
+`<section>` with a labeled focusable heading; the one the reader spends most of
 their time in was markup with no region, announced by a screen reader as a
 heading belonging to nothing and invisible to any navigation built on the page's
 own structure.
@@ -86,11 +86,11 @@ nothing named the list, so nothing distinguished it from the page.
 
 The first build put a floating **Contents** button in the bottom-right corner.
 It was probed at 820×1180 and 390×844 over the thirteen-item sample, hit-testing
-every visible control's own centre at thirteen scroll positions:
+every visible control's own center at thirteen scroll positions:
 
-- **10 controls overlapped it on the iPad, 3 of them lost their own centre to
+- **10 controls overlapped it on the iPad, 3 of them lost their own center to
   it.** All three were a card's **Done**.
-- On the phone, 14 overlapped and 1 lost its centre.
+- On the phone, 14 overlapped and 1 lost its center.
 
 So the failure is not *"it is sometimes in the way"*. It is: **you press Done and
 the contents open.** A control that silently performs a different action is worse
@@ -106,7 +106,7 @@ Done at each size. There is no CSS that makes a fixed overlay stop overlapping.
 `overflow-y`, the bar as a flex sibling outside it. That is the shape `#about`
 already uses here, and its comment records that it is the version which held on
 the reference iPad when `position: sticky` did not. **It is deliberately not
-taken.** Moving the whole app off document scrolling changes behaviour on iPadOS
+taken.** Moving the whole app off document scrolling changes behavior on iPadOS
 Safari that cannot be verified from a build machine, and shipping an unverifiable
 layout change to the one device this app is actually used on is precisely the
 mistake ADR-0091 exists because of.
@@ -156,7 +156,7 @@ control that does not go where it says.
   it, so it was the one block a jump could scroll to and not land in.
 - The controls budget goes **219 → 222**, for the two doors and the sheet's
   Close. The rows are not counted against it: there is one per live block, each
-  replaces travelling past that block, and none exists when its block does not.
+  replaces traveling past that block, and none exists when its block does not.
 - The two doors carry **different names** — *Contents* in the header, *What's on
   this page* at the end of the list, which is also the sheet's own title. Doctrine
   §4 forbids two controls on one surface answering to the same name, and the gate

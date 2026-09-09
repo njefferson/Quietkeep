@@ -184,7 +184,7 @@ for (const id of CORE) {
   if (LABEL_AT_RUNTIME.has(id)) found.label = null;
   else if (!found.label) {
     // A core control with no readable label in the markup is either mis-located
-    // by this gate or genuinely unlabelled, and either way the baseline would be
+    // by this gate or genuinely unlabeled, and either way the baseline would be
     // worthless: `""` compares equal to `""` for ever.
     console.log(`\n  FAIL  #${id} has no readable label — either it needs one, or it belongs in LABEL_AT_RUNTIME\n`);
     process.exit(1);
@@ -212,7 +212,7 @@ for (const id of CORE) {
     moved.push(`#${id} is now ${b.region} position ${b.ordinal}; it was ${a.region} position ${a.ordinal}`);
   }
   if (!LABEL_AT_RUNTIME.has(id) && a.label !== b.label) {
-    moved.push(`#${id} is now labelled "${b.label}"; it was "${a.label}"`);
+    moved.push(`#${id} is now labeled "${b.label}"; it was "${a.label}"`);
   }
 }
 
@@ -227,18 +227,18 @@ if (!moved.length) {
 //
 // THE FIRST VERSION OF THIS CHECK PASSED AN UNDECLARED MOVE. It asked whether
 // "is now … it was" appeared anywhere in the head release's notes, and some
-// unrelated sentence satisfied it, so the gate reported a relabelled control as
+// unrelated sentence satisfied it, so the gate reported a relabeled control as
 // properly declared. A gate that fails OPEN is worse than none: it converts an
 // unchecked thing into a checked-looking one.
 //
 // So the declaration must name the CONTROL. For each thing that moved, one note
 // has to carry both halves of the place-language AND the control's own label,
-// which is the only string a reader would recognise it by.
+// which is the only string a reader would recognize it by.
 const changelog = readFileSync(join(root, 'src/ui/changelog.ts'), 'utf8');
 const notesAt = changelog.indexOf('notes: [');
 const head = notesAt < 0 ? '' : changelog.slice(notesAt, changelog.indexOf('\n    ],', notesAt));
 
-/** What a reader calls this control. Runtime-labelled ones get a written name,
+/** What a reader calls this control. Runtime-labeled ones get a written name,
  *  because "" would match every note and declare everything. */
 const READER_NAME = {
   capture: 'capture', 'open-about': 'ⓘ', 'nextup-done': 'Done',

@@ -32,7 +32,7 @@ const DAY_WORDS: Record<SlotDay, string> = {
   fri: 'Friday', sat: 'Saturday', sun: 'Sunday',
 };
 
-/** 'weekly:thu' -> 'thu'; anything unrecognised -> null. REFUSED, not guessed
+/** 'weekly:thu' -> 'thu'; anything unrecognized -> null. REFUSED, not guessed
  *  (the import-inspection rule): a malformed recurrence from an older or newer
  *  shard reads as no slot rather than as a Thursday somebody never chose. */
 export function parseSlot(recurrence: string | null | undefined): SlotDay | null {

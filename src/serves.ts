@@ -26,7 +26,7 @@
 // That is the ranking reading. The trust reading asks for grounds to believe an
 // offer, the way the coverage gauge is grounds to believe law 1. **One build
 // serves both**: when the offer says *"serves A calmer house"*, the reasoning is
-// on screen and can be disagreed with. A judgement you can check is the only
+// on screen and can be disagreed with. A judgment you can check is the only
 // kind you can come to trust.
 //
 // ## What it will not do
@@ -36,7 +36,7 @@
 // nothing about it is a control.
 //
 // **It scores nothing** (law 5, law 7). There is no count of what a goal holds,
-// no proportion, no "3 of 8 done", no colour. It is one fact: this is what you
+// no proportion, no "3 of 8 done", no color. It is one fact: this is what you
 // filed this under, several levels up.
 //
 // **It infers nothing about the reader** (law 7). The horizon is a container the

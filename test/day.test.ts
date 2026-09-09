@@ -33,7 +33,7 @@ import type { AppEvent } from '../src/events.ts';
 
 /** The day key exactly as it read before the boundary existed — the calendar day
  *  containing the instant, with no shift. Reimplemented here rather than
- *  imported, so the comparison is against the old BEHAVIOUR and not against the
+ *  imported, so the comparison is against the old BEHAVIOR and not against the
  *  new code wearing a default. */
 const oldLocalDayKey = (iso: string, tz: string): string => {
   const p = localParts(iso, tz);
@@ -55,7 +55,7 @@ const setHour = (s: State, hour: number, at = AT): State =>
 
 test('nobody has said, so it is midnight — and midnight is what every clock already did', () => {
   // The whole safety of this change. A person who never opens the control gets
-  // the exact behaviour they had before it existed, so shipping it cannot move
+  // the exact behavior they had before it existed, so shipping it cannot move
   // a single answer for them.
   const s = emptyState();
   assert.equal(s.dayBoundaryHour, null);
@@ -156,7 +156,7 @@ test('the day ENDS at the boundary, so a thing dated today is not gone by at 00:
   const halfPastMidnight = '2026-08-09T06:30:00.000Z';
   assert.equal(Date.parse(halfPastMidnight) < Date.parse(end), true,
     'half past midnight is still INSIDE the day that thing was dated for');
-  // At midnight it had already gone by, which is the behaviour being fixed.
+  // At midnight it had already gone by, which is the behavior being fixed.
   assert.equal(Date.parse(halfPastMidnight) > Date.parse(endOfLocalDay(afternoon, atMidnight(TZ))), true);
 });
 
@@ -360,7 +360,7 @@ test('nothing observes it — there is no function here that reads a log and pro
 //
 // These are the assertions the rest of the suite cannot make, because every
 // other `pressureOf` test passes `atMidnight` — correctly, since it is asserting
-// what happens under the default. Behaviour-preserving under midnight is exactly
+// what happens under the default. Behavior-preserving under midnight is exactly
 // what makes the threading safe; it is also what makes it invisible, so the
 // non-midnight case needs saying out loud.
 
@@ -394,7 +394,7 @@ test('the boundary moves WHEN it comes round, never how insistent it gets', () =
 
 test('an unset boundary cannot move a single existing answer', () => {
   // `boundaryOf` on a store nobody has told reads 0, so every reader who has not
-  // asked for this keeps exactly the behaviour they had. That is the condition
+  // asked for this keeps exactly the behavior they had. That is the condition
   // for shipping a change to the primitive underneath everything.
   const n = { intervalDays: 7, comfortWindowDays: 2, lastDone: '2026-08-01T18:00:00.000Z' } as never;
   const nowIso = '2026-08-09T07:00:00.000Z';

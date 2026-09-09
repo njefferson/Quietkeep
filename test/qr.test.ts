@@ -15,7 +15,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import {
-  alignmentCentres, bitStream, blankMatrix, capacity, dataPositions, ecCodewords,
+  alignmentCenters, bitStream, blankMatrix, capacity, dataPositions, ecCodewords,
   encodeQr, formatBits, gfMul, gfPow, pairingUrl, penalty, readQr, rsGenerator,
   rsRemainder, sizeOf, smallestVersion, syndromes, toSvg, totalCodewords,
 } from '../src/qr.ts';
@@ -124,11 +124,11 @@ test('every data position is visited exactly once', () => {
 test('the function patterns are where a scanner looks for them', () => {
   const m = blankMatrix(4);
   const s = m.size;
-  // Three finders: a dark 7x7 ring with a dark 3x3 centre.
+  // Three finders: a dark 7x7 ring with a dark 3x3 center.
   for (const [ox, oy] of [[0, 0], [s - 7, 0], [0, s - 7]] as const) {
     assert.equal(m.dark[oy]![ox], true, 'finder corner');
     assert.equal(m.dark[oy + 1]![ox + 1], false, 'the light ring inside it');
-    assert.equal(m.dark[oy + 3]![ox + 3], true, 'the dark centre');
+    assert.equal(m.dark[oy + 3]![ox + 3], true, 'the dark center');
   }
   // The fourth corner has NO finder — that is how a scanner knows the orientation.
   assert.equal(m.dark[s - 1]![s - 1], false, 'no fourth finder');
@@ -138,11 +138,11 @@ test('the function patterns are where a scanner looks for them', () => {
   assert.equal(m.dark[8]![6], true);
   // The dark module, which is always dark.
   assert.equal(m.dark[s - 8]![8], true);
-  // One alignment pattern for version 4, centred at 26,26.
-  assert.deepEqual(alignmentCentres(4), [6, 26]);
-  assert.equal(m.dark[26]![26], true, 'alignment centre');
+  // One alignment pattern for version 4, centered at 26,26.
+  assert.deepEqual(alignmentCenters(4), [6, 26]);
+  assert.equal(m.dark[26]![26], true, 'alignment center');
   assert.equal(m.dark[25]![26], false, 'and its light ring');
-  assert.deepEqual(alignmentCentres(1), [], 'version 1 has none');
+  assert.deepEqual(alignmentCenters(1), [], 'version 1 has none');
 });
 
 // --- format information -----------------------------------------------------
@@ -206,7 +206,7 @@ test('the penalty rules each fire on the shape they are about', () => {
   for (let x = 4; x < 9; x++) run[10]![x] = true;
   assert.ok(penalty(run) > base, 'a run of five must cost something');
 
-  // Rule 2: a 2x2 block of one colour.
+  // Rule 2: a 2x2 block of one color.
   const block = board.map(r => [...r]);
   block[5]![5] = true; block[5]![6] = true; block[6]![5] = true; block[6]![6] = true;
   assert.ok(penalty(block) >= base + 3, 'a 2x2 block costs at least three');
@@ -264,7 +264,7 @@ test('a version needing multi-block interleaving is refused, not guessed', () =>
   // the honest failure; a guessed table produces a code nothing can read.
   assert.throws(() => ecCodewords(5, 'L'), /refuses rather than guesses/);
   assert.throws(() => ecCodewords(4, 'M'), /refuses rather than guesses/);
-  assert.throws(() => alignmentCentres(7), /alignment table this file does not carry/);
+  assert.throws(() => alignmentCenters(7), /alignment table this file does not carry/);
 });
 
 test('the pad bytes are the specified ones', () => {

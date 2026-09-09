@@ -114,7 +114,7 @@ export function generateEvents(opts: GenOptions): AppEvent[] {
     const node = pick(r, known);
 
     if (roll < 0.42) {
-      out.push({ ...s, kind: 'node.field.set', node, payload: { field: pick(r, ['note', 'tag', 'colour']), value: Math.floor(r() * 100) } });
+      out.push({ ...s, kind: 'node.field.set', node, payload: { field: pick(r, ['note', 'tag', 'color']), value: Math.floor(r() * 100) } });
     } else if (roll < 0.52) {
       const kind = pick(r, ['due', 'review', 'start'] as const);
       // A demand clock never lands on a Menu item (the swallowed-date belt);

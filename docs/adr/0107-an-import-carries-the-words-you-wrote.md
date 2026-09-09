@@ -8,7 +8,7 @@ The importer creates **contexts** from the tags on an imported line, and records
 an **estimate** from `@estimate`. Both were dropped before this, and named in the
 summary as things that would not come across.
 
-- Every tag that is not a recognised clock, `@done`, `@flagged` or a repeat rule
+- Every tag that is not a recognized clock, `@done`, `@flagged` or a repeat rule
   becomes one `context.created`, in the words it was written in, and one
   `context.attached` per item carrying it.
 - Names match case-insensitively and are created in the first spelling seen, so
@@ -32,7 +32,7 @@ fake clock would invent a demand nobody made.
 ## Why this is not the inference the research refuses
 
 `docs/nd-collisions.md` entry 23 refuses "inferring a context, role or container
-from behaviour rather than asking", and grades its own evidence as Community —
+from behavior rather than asking", and grades its own evidence as Community —
 "enough to refuse an inference on and never enough to build one".
 
 Nothing here is inferred. A tag is a word the person typed, in the system they
@@ -49,12 +49,12 @@ situational vocabulary somebody had built — places, locations, energy, people 
 was discarded at the door with one sentence in the summary.
 
 The consequence was invisible for a different reason: `fitsHere`'s "an
-unlabelled thing fits every answer" default is load-bearing precisely so a store
+unlabeled thing fits every answer" default is load-bearing precisely so a store
 with no labels is never shown an empty screen. It did its job perfectly, on a
 store that had labels. Every situational feature looked correct and did nothing.
 
 ## What this does NOT do
 
-No setup wizard, no template chooser, no "get organised" flow, no percentage of
+No setup wizard, no template chooser, no "get organized" flow, no percentage of
 how much structure exists, and no guess about what any label means. All four are
 refused by name in entry 23. This creates nothing the person did not write.

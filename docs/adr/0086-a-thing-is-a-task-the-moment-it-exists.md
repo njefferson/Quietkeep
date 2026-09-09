@@ -83,7 +83,7 @@ precision; it cost the item ever being offered at all.
 - The inbox, the forced-choice card, the hot/cold pass and the arrival corridor
   are all downstream of the gate that just went. Each now has to justify itself
   on its own terms; 2.0.2 moved the offer above the sorting door as the first
-  instalment of that.
+  installment of that.
 - `test/nextup.test.ts` holds it, and one existing test was **split** rather than
   edited: it had bundled five unrelated exclusions into a single assertion, so it
   would go green while any subset held and could never say which had moved. Four
@@ -95,7 +95,7 @@ precision; it cost the item ever being offered at all.
 ## What would overturn it
 
 - **If the offer becomes noise in a real store.** The cap and the ranking are the
-  defence; if a large unsorted backlog still drowns the surface for somebody
+  defense; if a large unsorted backlog still drowns the surface for somebody
   using it daily, the answer is a better rank within the tier — never a return to
   gating existence on classification.
 - **If "you put this down" reads as a reproach** to anybody. It is meant as the

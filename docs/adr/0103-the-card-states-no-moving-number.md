@@ -55,10 +55,10 @@ remainder renders in the header *and* on the card, in two different phrasings �
 "5 hours 20 minutes left" and "About 5h 20m left today." That is the defect
 ADR-0102 was written about, at line granularity instead of block granularity.
 
-### The line's own defence needed a second half that never shipped
+### The line's own defense needed a second half that never shipped
 
-The defence in the source was that the number is **prospective** — a fit
-judgement made before an attempt, where it can still change what somebody picks
+The defense in the source was that the number is **prospective** — a fit
+judgment made before an attempt, where it can still change what somebody picks
 up. That is a real and good argument, and it requires knowing how long the
 offered thing takes.
 
@@ -67,7 +67,7 @@ of the person's own history, never an average — renders in the **detail sheet*
 and nowhere else. V2 stage 5 shipped a pair that never met: *how long things
 take* behind a door, *how much of today is left* on the card.
 
-A remainder with nothing to measure against is not a fit judgement. It is a
+A remainder with nothing to measure against is not a fit judgment. It is a
 countdown.
 
 ### The research puts this fact on the clock, by name

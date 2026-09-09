@@ -34,7 +34,7 @@ export const NODE_KINDS = [
   // WHO A THING IS FOR (2.6.0, ADR-0096). A role is an IDENTITY that crosses
   // multiple areas — recorded as the owner's own framing in NOTES Q-13, which
   // settled the shape on 2026-08-04 and then deferred the build for thirteen
-  // days behind a judgement about whether enough containers existed yet.
+  // days behind a judgment about whether enough containers existed yet.
   //
   // Same shape as `context`, different axis. This tree is single-parent, so
   // anything that crosses containers is a cross-cutting LINK and can never be a
@@ -86,7 +86,7 @@ export type ClockKind = 'due' | 'start' | 'suspense' | 'review' | 'park';
 export type ClarifyRoute = 'do-now' | 'next-action' | 'waiting-for' | 'someday' | 'reference' | 'trash' | 'filed';
 // `sample` is the demonstration set (src/sample.ts). Named rather than folded
 // into `quick`, because a capture that says it came from a keystroke when it came
-// from a button labelled "sample work" is a small lie in the one place the app
+// from a button labeled "sample work" is a small lie in the one place the app
 // keeps its history. Additive only, so every log already written stays readable.
 // `dump` is one line of a many-line capture — the batch ADR-0015 already calls a
 // "Dump session". Named rather than folded into `quick` for the same reason
@@ -95,7 +95,7 @@ export type ClarifyRoute = 'do-now' | 'next-action' | 'waiting-for' | 'someday' 
 export type CaptureSource = 'quick' | 'share-target' | 'url-endpoint' | 'shortcut' | 'focus-interrupt' | 'sample' | 'dump';
 export type Heat = 'hot' | 'cold';
 /** The closed set of capacities, as VALUES so the fold can refuse an
- *  unrecognised one rather than guess at it (1.15.0). Four words and no
+ *  unrecognized one rather than guess at it (1.15.0). Four words and no
  *  number: a level you can say out loud is a description, and a number would
  *  be a score about yourself (law 5). */
 export const CAPACITIES = ['low', 'steady', 'sharp', 'unsure'] as const;
@@ -220,7 +220,7 @@ export type ClarifyReopened  = Ev<'clarify.reopened',   { from: ClarifyRoute }>;
  * stopped wrote a verdict — same flow, same person, opposite policies.
  *
  * What remains is the `focus.started` / `focus.ended` shape: a span, no
- * judgement. The chosen length is deliberately NOT in the payload, so a
+ * judgment. The chosen length is deliberately NOT in the payload, so a
  * shortfall cannot be computed by subtraction — the arithmetic that got the
  * report's "Started" section deleted in 1.9.0.
  *
@@ -345,14 +345,14 @@ export type RequestDeclined  = Ev<'request.declined',   { person: NodeId | null;
 /** The one request slot (stimulus control, ADR-0056). `node: null`.
  *  `recurrence` is 'weekly:mon'…'weekly:sun'; '' clears the slot (the
  *  note-field precedent: an empty value is an honest removal). An
- *  unrecognised string reads as no slot — refused, never guessed. */
+ *  unrecognized string reads as no slot — refused, never guessed. */
 export type RequestSlotSet   = Ev<'request.slot.set',   { recurrence: string }>;
 /** How long a timer runs when you start one, in whole minutes (1.10.0). A
  *  preference about how you work, so it travels with the log like the request
  *  slot rather than sitting on one device. `node: null`. */
 export type TimerLengthSet   = Ev<'timer.length.set',   { minutes: number }>;
 /** The hour at which today becomes tomorrow, local (V2 stage 5). `node: null`.
- *  0–11; 0 is midnight and is the behaviour every clock had before this
+ *  0–11; 0 is midnight and is the behavior every clock had before this
  *  existed, so an unset boundary changes nothing. Outside the range it is
  *  REFUSED at the fold, never clamped — the timer-length precedent: a number
  *  nobody chose is worse than no number at all. Like the timer length and the
@@ -385,7 +385,7 @@ export type DeviceRegistered = Ev<'device.registered',  { device: DeviceId; labe
  *
  * **It is an event and not a device preference, and the line matters.**
  * `where.now` and `how.long` are preferences because where you are is not a
- * fact about your work. A situation you named is a thing you recognise about
+ * fact about your work. A situation you named is a thing you recognize about
  * how you work — nearer a context or a role — and it should survive a device.
  */
 export type SituationSaved   = Ev<'situation.saved',    { name: string; context: string | null; minutes: number | null; people?: NodeId[] }>;
@@ -414,7 +414,7 @@ export type ImportSeeded     = Ev<'import.seeded',      { fromExport: string; at
  */
 export type ShardFolded      = Ev<'shard.folded',       { fromDevice: DeviceId; taken: number; skipped: number; at: ISODateTime }>;
 export type TerminologySkinApplied=Ev<'terminology.skin.applied',{ skin: string; vault: VaultId }>;
-export type TemplateLoaded   = Ev<'template.loaded',    { template: string; source: string; licence: string }>;
+export type TemplateLoaded   = Ev<'template.loaded',    { template: string; source: string; license: string }>;
 export type ShardCompacted   = Ev<'shard.compacted',    { device: DeviceId; throughSeq: number; archivedTo: string }>;
 
 // --- H · people and journal --------------------------------------------------
@@ -482,7 +482,7 @@ export type ContextDetached  = Ev<'context.detached',   { node: NodeId; context:
 // `context.*`'s shape exactly, on a different axis. A context is WHERE work can
 // be done; a role is WHO IT IS FOR — an identity that crosses multiple areas.
 // Q-13 settled this shape on 2026-08-04 in exactly these terms and it was then
-// deferred for thirteen days behind a session's judgement about whether enough
+// deferred for thirteen days behind a session's judgment about whether enough
 // containers existed yet to make it worth building.
 //
 // A role is a node so it can be renamed and so nothing has to parse a string,
@@ -658,7 +658,7 @@ export const SILENT_RISK_KINDS = [
   'node.unmerged',
   // Cutting an `after` removes law 1 clause (e) — the dependent was covered by
   // the promise that finishing the antecedent would surface it, and that promise
-  // has just been withdrawn. `after.set` is here too, as defence in depth: the
+  // has just been withdrawn. `after.set` is here too, as defense in depth: the
   // gate validates the new antecedent hard enough that coverage cannot in fact
   // be lost, but "every silent-risk event carries a cure" is the invariant that
   // makes this list checkable, and an event that touches coverage at all belongs

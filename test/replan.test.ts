@@ -369,7 +369,7 @@ test('the work surface does not also offer it — one item, one question', () =>
 });
 
 test('an upkeep with a live card is not offered as a chip either', () => {
-  const up = ev('node.created', 'U', { nodeKind: 'upkeep', title: 'renew the licence' });
+  const up = ev('node.created', 'U', { nodeKind: 'upkeep', title: 'renew the license' });
   const every = ev('upkeep.interval.set', 'U', { intervalDays: 365, comfortWindowDays: 14 });
   const ready = st(up, every);
   assert.equal(workSurface(ready, NOW, TZ).chips.length, 1, 'ordinarily a chip');

@@ -81,8 +81,8 @@ function parseHeaders(root) {
  * `redirects` is a `Map` of request path -> location, answered as a 302. It
  * exists because a redirect is a thing the EDGE can do that this server never
  * did, and the difference was invisible until Safari refused a navigation the
- * worker had answered with a redirected response. A production behaviour no
- * local server reproduces is a production behaviour no gate can see.
+ * worker had answered with a redirected response. A production behavior no
+ * local server reproduces is a production behavior no gate can see.
  */
 export function serve(root, port = 0, overrides = new Map(), redirects = new Map()) {
   const extraHeaders = parseHeaders(root);

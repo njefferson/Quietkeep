@@ -30,7 +30,12 @@ const ROUTES: { route: ClarifyRoute; label: string; hint: string }[] = [
   { route: 'do-now', label: 'Do now', hint: 'this one is for today — two minutes if you want them' },
   { route: 'next-action', label: 'Next action', hint: 'a real next step, comes back tomorrow' },
   { route: 'waiting-for', label: 'Waiting for', hint: 'someone else owes you this' },
-  { route: 'someday', label: 'Someday', hint: 'onto the Menu, no clock' },
+  // NOT "no clock" (3.23.6). The Menu drops every demand clock and keeps the
+  // gate's own capture cure, so a thing sent here does carry one — and two
+  // surfaces read it out. Promising an absence the store does not have is the
+  // half of that defect that lives in the copy. `replan-intents.ts` retired
+  // this exact phrase for this exact reason; these are its words.
+  { route: 'someday', label: 'Someday', hint: 'onto the Menu \u2014 nothing owed, no date to meet' },
   { route: 'reference', label: 'Reference', hint: 'keep it, don’t act on it' },
   { route: 'trash', label: 'Trash', hint: 'not a thing after all' },
 ];
@@ -149,7 +154,7 @@ export function mountTriage(
    * from state, synchronously, exactly as it always has; this fills in
    * afterwards or not at all. Nothing on the path to a first capture waits on a
    * store read (ADR-0001), and a store that is slow or broken costs a line of
-   * grey text rather than the item somebody was deciding about.
+   * gray text rather than the item somebody was deciding about.
    *
    * The `showing` guard is the other half: a lookup resolving after the card
    * has moved on would attach one item's history to another item's title, which
@@ -348,7 +353,7 @@ export function mountTriage(
     const minutes = timerMinutesOf(session.state());
     // `data-seconds` on the timer's own region stays a deliberate test seam —
     // a gate cannot wait twenty real minutes to check what happens at the end.
-    // Nothing in the app writes it, so shipped behaviour is always the choice.
+    // Nothing in the app writes it, so shipped behavior is always the choice.
     const DURATION = Number(DONOW.dataset.seconds) || minutes * 60;
     let ended = false;
     let timeout: number | undefined;
@@ -636,7 +641,7 @@ export function mountTriage(
    * "Not this one" — the way past a card, on both passes.
    *
    * It commits nothing and announces the move rather than the decision: there
-   * was no decision. The words matter as much as the behaviour here, because
+   * was no decision. The words matter as much as the behavior here, because
    * this control exists for the moment somebody cannot answer the question, and
    * a label that implied they had answered it would be the surface putting a
    * verdict in their mouth.
@@ -1248,7 +1253,24 @@ export function mountTriage(
     // bigger number, it is arrivals having their own set to be worked through —
     // which is the next piece of work and is why this is the forward-compatible
     // half of the trade rather than something that has to be undone.
-    setHere(yours === 1 ? 'One here to work through.' : `${yours} here to work through.`);
+    // AND IT COUNTS THE PASS YOU ARE IN, not the queue behind both of them.
+    //
+    // `yours` counts things with no route yet, and the hot-or-cold pass sets
+    // `heat` and never touches `route` — so by construction the number could not
+    // move until the SECOND pass began. Five answers, five times the same
+    // number, on the screen whose whole job is to feel finishable, and then it
+    // counted down properly through "What is this?" as though the first pass had
+    // not happened.
+    //
+    // The per-pass count already existed: `needsHeat` applies `!n.arrived` just
+    // as `yours` does, so the two are directly comparable, and it is already
+    // published as `dataset.unheated` for the walk to read. This says whichever
+    // one the reader is actually looking at, decided by the same `heatItem` the
+    // render picked above rather than by a second guess at which pass is up.
+    const hereNow = heatItem
+      ? heatQueue.filter(n => !straightToSort.has(n.id)).length
+      : yours;
+    setHere(hereNow === 1 ? 'One here to work through.' : `${hereNow} here to work through.`);
 
     const mayReveal = !suppressed;
     if (heatItem) {

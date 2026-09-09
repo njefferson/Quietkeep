@@ -8,7 +8,7 @@
 // stops opening the app.
 //
 // Everything a person reads here is set with textContent, states its reason in
-// words (nothing depends on seeing a colour, B-01), and every control is a real
+// words (nothing depends on seeing a color, B-01), and every control is a real
 // <button> at full target size. Focus is moved deliberately after an action,
 // because acting removes the control that was acted on.
 
@@ -109,7 +109,7 @@ export function mountWork(
    * Never blocks: the card is painted from state, synchronously, and this
    * arrives afterwards or not at all (ADR-0001 — nothing on the path to a first
    * capture waits on a store read). A store that is slow or broken costs a line
-   * of grey text, never the item somebody was deciding about.
+   * of gray text, never the item somebody was deciding about.
    *
    * The identity guard is the other half: a lookup resolving after the offer has
    * moved on would attach one item's history to another item's title, which is
@@ -588,7 +588,7 @@ export function mountWork(
     // from that ranking; it does not re-rank anything.
     //
     // Law 1 is not bent: what is filtered out still has its clock, still counts
-    // in the claim, and still comes back. Unlabelled things fit anywhere.
+    // in the claim, and still comes back. Unlabeled things fit anywhere.
     const here = getWhereNow();
     // `NextUp` is head + behind + total, not an array. Filtering has to keep
     // that shape honest: if the head does not fit, the first thing behind that
@@ -600,7 +600,7 @@ export function mountWork(
     // and in the same place, because it is the same kind of narrowing: what is
     // filtered out still has its clock, still counts in the claim, and still
     // comes back. An unestimated thing fits every answer, exactly as an
-    // unlabelled thing fits anywhere.
+    // unlabeled thing fits anywhere.
     //
     // THE OFFER IS THE HALF THAT MATTERS. Narrowing only the held list would
     // leave the one thing the app actually hands you unfiltered — "I have
@@ -638,7 +638,7 @@ export function mountWork(
 
     // SETTLED (1.35.0). The offer, its reason, its behind-list and every control
     // that acts on it are withheld while the surface is settled — not merely
-    // greyed. The whole point is that nothing is being asked, and a demand that
+    // grayed. The whole point is that nothing is being asked, and a demand that
     // is present but disabled is still a demand on the screen.
     //
     // `current` is cleared with it, so a stray keypress cannot act on an item
@@ -684,7 +684,7 @@ export function mountWork(
       // is worth having on a settled afternoon. A count is not.
       if (DATED) { DATED.textContent = ''; DATED.hidden = true; }
     }
-    // The offer's controls are WITHHELD while settled, not greyed. A demand that
+    // The offer's controls are WITHHELD while settled, not grayed. A demand that
     // is present but disabled is still a demand on the screen.
     for (const sel of ['#nextup-enough', '#nextup-heavy']) {
       const b = q<HTMLButtonElement>(sel);
@@ -813,11 +813,11 @@ export function mountWork(
       }
       // "THE ONE PERMITTED NUMBER" STOOD HERE AND IS GONE (2.12.2, ADR-0103).
       // It read "About 2h 30m left today." on every ordinary offer, and it was
-      // defended as prospective — a fit judgement made before the attempt. The
-      // card never carried the other half of that judgement: how long the
+      // defended as prospective — a fit judgment made before the attempt. The
+      // card never carried the other half of that judgment: how long the
       // offered thing takes is `rangeWords`, and `rangeWords` renders only in
       // the detail sheet. A remainder with nothing to measure against is not a
-      // fit judgement, it is a countdown — which is the thing the header clock
+      // fit judgment, it is a countdown — which is the thing the header clock
       // is opt-in to avoid imposing.
       //
       // THE NEXT FIXED THING TODAY, by name (collisions 7 and 9). An absorbed
@@ -1025,13 +1025,19 @@ export function mountWork(
    * with no failure mode is not checkable, and an app that can only ever say
    * "fine" is asking for the exact faith the reader does not have.
    */
+  // EACH ONE FOLLOWS A BARE NUMBER, so each one has to read after any number.
+  // These were written as plural verbs — "6 have a day they come back to you"
+  // is fine and "1 have a day they come back to you" is not, and a reader with
+  // one thing under a reason sees only the broken one. Rather than a second
+  // table of singulars to keep in step, every phrase is now number-agnostic:
+  // it modifies the count instead of agreeing with it.
   const REASON_WORDS: Record<string, string> = {
-    clock: 'have a day they come back to you',
-    menu: 'are on the Menu — no clock, because you said so',
-    parent: 'come back with something they are part of',
-    after: 'are waiting on something that will be shown to you first',
-    'demand-free': 'are not work, and have a place of their own',
-    decided: 'you have already put down or let go',
+    clock: 'with a day they come back to you',
+    menu: 'on the Menu — no clock, because you said so',
+    parent: 'coming back with something they are part of',
+    after: 'waiting on something that will be shown to you first',
+    'demand-free': 'not work, and with a place of their own',
+    decided: 'already put down or let go',
   };
 
   function buildProof(): void {
@@ -1118,8 +1124,15 @@ export function mountWork(
       b.type = 'button';
       b.append(el('span', 'coverage-title', n.title || '(untitled)'));
       const clock = rowClock(n);
+      // THE MENU ARM WAS UNREACHABLE. A thing routed to Someday keeps the
+      // `review` clock the gate wrote at capture — demand clocks are cleared,
+      // that one never was a demand — so `clock` is truthy for every Menu item
+      // and this row said `returns today` about something the reader had just
+      // put down indefinitely. The `on the Menu` branch existed and could not
+      // be reached. Asking `onMenu` first is the precedence `heldGroups` has
+      // always used.
       b.append(el('span', 'coverage-when',
-        clock ? `returns ${returns(clock.at)}` : n.onMenu ? 'on the Menu' : 'held'));
+        n.onMenu ? 'on the Menu' : clock ? `returns ${returns(clock.at)}` : 'held'));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(n.id);
         if (!fresh) return;

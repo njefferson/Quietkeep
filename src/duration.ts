@@ -29,7 +29,7 @@
 // they can still inform a decision. The same numbers computed afterwards are a
 // verdict on what you just did.
 //
-// **No bar, no colour, no instruction.** A shape that fills is a fraction of a
+// **No bar, no color, no instruction.** A shape that fills is a fraction of a
 // target however it is drawn, and there is no target here.
 //
 // PURE, like every projection here.
@@ -163,7 +163,7 @@ export const isLongStretch = (minutes: number | null): boolean =>
  * The range is on the card for the reader to weigh; it is not the app's to
  * weigh for them (law 7).
  *
- * **AN UNESTIMATED THING FITS.** The same rule as an unlabelled thing fitting
+ * **AN UNESTIMATED THING FITS.** The same rule as an unlabeled thing fitting
  * anywhere, and for a stronger reason: most things are never estimated, so
  * hiding them would empty the surface and read as broken the first time
  * somebody tried the feature. The app does not know how long an unestimated

@@ -378,7 +378,7 @@ test('an unreachable relay is an ordinary condition, said as one', async () => {
 //
 // The relay's ADDRESS IS PUBLIC. It is named in the Sync edition's
 // Content-Security-Policy, so every visitor can read it — "keep the URL private"
-// was never available as a defence. A mailbox is addressed by an unguessable
+// was never available as a defense. A mailbox is addressed by an unguessable
 // 128-bit id, so a stranger can neither read nor corrupt anything; but every
 // accepted POST spends one of a small daily quota of storage writes, and a
 // household whose quota is spent simply stops syncing, silently, because request
@@ -452,7 +452,7 @@ test('reading is never rate limited, so a throttled device still catches up', as
   assert.equal(lim.asked.length, 2, 'and reads never consulted the limiter');
 });
 
-test('with no limiter configured the relay still works, and says so by behaviour', async () => {
+test('with no limiter configured the relay still works, and says so by behavior', async () => {
   // Self-hosting is a supported case and the limiter is Cloudflare-specific.
   // Absent means unlimited — the alternative, refusing every write when a binding
   // is missing, turns a misconfiguration into total transfer failure.

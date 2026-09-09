@@ -9,7 +9,7 @@
 // category that carries a number could not carry one.
 //
 // **The Menu is demand-free by construction (law 6) and this surface must not
-// undo that.** Nothing here has a clock, nothing accrues, nothing turns a colour
+// undo that.** Nothing here has a clock, nothing accrues, nothing turns a color
 // as time passes. A save-for gauge is the sharpest test of that: a progress bar
 // is a machine for implying you are behind, and the only honest version states
 // two numbers and their difference and stops.

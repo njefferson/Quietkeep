@@ -315,7 +315,7 @@ test('a new date in bulk is the same resolution a person makes by hand', () => {
   const n = after.nodes.get('A')!;
   // Asked in the READER'S day, not by slicing the UTC string. End of the local
   // 20th in a UTC-6 zone is the 21st in UTC, and a substring assertion would have
-  // called correct behaviour a defect — the exact class V-13 exists for.
+  // called correct behavior a defect — the exact class V-13 exists for.
   assert.equal(localDayKey(n.clocks['due']!.at, atMidnight(TZ)), '2026-08-20', 'the new date landed');
   assert.equal(n.clocks['suspense'], undefined,
     'and the OTHER date that had gone by was retired too — resolving one of two resolves nothing');
@@ -373,7 +373,7 @@ test('a whole place goes down in one act, and comes back in one', () => {
   }
   // COVERED, not necessarily CLOCKED. These ride their parent's clock through
   // law 1 clause (d), so the gate correctly mints nothing for them — asserting
-  // "it has a clock of its own" would have called correct behaviour a defect,
+  // "it has a clock of its own" would have called correct behavior a defect,
   // which is what the first version of this line did.
   assert.equal(silentNodes(back).length, 0, 'nothing came back silent');
   assert.deepEqual(

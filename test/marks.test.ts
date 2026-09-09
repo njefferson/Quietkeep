@@ -50,11 +50,39 @@ test('an empty run emits no segment, so nothing renders an empty element', () =>
   assert.equal(segments('a **b** c', '**').every(s => s.text !== ''), true);
 });
 
-// The two markers are used by different callers on different strings and are
-// NOT designed to nest. Asserted so the ceiling is a decision on the record
-// rather than something a future caller discovers.
-test('the two marks do not nest, and the parser says so plainly', () => {
+// THE PARSER STILL DOES NOT NEST, and that is a fact about `segments` rather
+// than about what the panel can render. One pass over one marker leaves the
+// other marker sitting in the text, exactly as before.
+test('one pass leaves the other marker in the text, untouched', () => {
   assert.equal(shape('**a *b* c**', '**'), '[a *b* c]');
+});
+
+// AND THAT IS WHY THE PANEL NEEDED A SECOND PASS. The ceiling used to be
+// absolute — a string mixing both marks was unsupported — and the patch notes
+// mixed them anyway, from 3.22.0 on, so the ⓘ printed asterisks at readers in
+// the release that announced controls being named. `richLine` composes the two
+// passes with fixed precedence; this is the pure half of that composition, so
+// the contract is testable without a DOM like everything else here.
+const twoPass = (text: string): string =>
+  segments(text, '**').flatMap(s => segments(s.text, '*').map(t => t.text)).join('');
+
+test('both marks resolve when one is inside the other', () => {
+  assert.equal(twoPass('**a *b* c**'), 'a b c');
+});
+
+// Every patch note is parsed here. A stray asterisk in this copy is not a typo
+// nobody sees — it is printed, in the panel, to the reader, which is what
+// happened for two releases before anybody looked at the screen.
+test('no patch note leaves an asterisk on the panel', async () => {
+  const src = await import('node:fs').then(fs =>
+    fs.readFileSync(new URL('../src/ui/changelog.ts', import.meta.url), 'utf8'));
+  const lines = [...src.matchAll(/^\s+'((?:[^'\\]|\\.)*)',?$/gm)].map(m => m[1]!);
+  const withMarks = lines.filter(l => l.includes('*'));
+  assert.ok(withMarks.length >= 10, `expected marked patch notes, found ${withMarks.length}`);
+  for (const line of withMarks) {
+    assert.ok(!twoPass(line).includes('*'),
+      `an asterisk survives both passes and would print: ${line.slice(0, 70)}`);
+  }
 });
 
 // Every walkthrough string is parsed here, so a typo in the copy — one asterisk

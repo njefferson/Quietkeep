@@ -157,7 +157,7 @@ test('the failure message is a CONSTANT — it says nothing about the input', as
   // failure and asserted the two messages were equal. It passed against an
   // implementation that appended the ciphertext length and the IV to the
   // message — because those two cases share a length and an IV, so the leak
-  // cancelled out in exactly the comparison meant to catch it. Testing the
+  // canceled out in exactly the comparison meant to catch it. Testing the
   // technique ("these two agree") instead of the property ("it does not depend
   // on the input") is how a check ends up with no detection power at all.
   //

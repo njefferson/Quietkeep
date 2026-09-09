@@ -86,7 +86,7 @@ export const isReadyAgain = (p: number | null): boolean => p !== null && p >= 0;
 
 /**
  * Words for a pressure, for the text channel of B-01 — because nothing in this
- * app may depend on seeing a colour, and pressure least of all.
+ * app may depend on seeing a color, and pressure least of all.
  *
  * Deliberately gentle and deliberately vague at the top end: past a point the
  * exact number is not information a person can act on, and naming it precisely

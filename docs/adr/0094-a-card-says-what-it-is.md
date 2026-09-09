@@ -88,7 +88,7 @@ joining the unmarked case.
 - `placeWords` changes shape for containers: `2 under it` becomes
   `Project · 2 under it`. `test/held.test.ts` was updated to assert the new
   string rather than being loosened.
-- **No new control, no new class, no new colour pair.** The words ride in
+- **No new control, no new class, no new color pair.** The words ride in
   `.card-place` and `.detail-state`, both of which the contrast gate already
   measures — so this is covered from the first run rather than needing a registry
   entry, which is how `.card-where` and the detail placeholders each cost a

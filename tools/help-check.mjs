@@ -138,6 +138,13 @@ const COVERS = [
 // directions; ordinary words get one, on purpose.
 const RETIRED = [
   ['How it hangs together', 'renamed in 3.6.1 to the current tree label'],
+  // 3.23.7. The situation sheet asked "who" twice — a single-valued filter
+  // labelled `Who is here` sitting 25 lines above a multi-select labelled
+  // `Who is in it?`, teaching the reader the answer is one person before the
+  // second one appeared. Both controls are right and ADR-0118 says so; only
+  // the labels never carried the distinction ADR-0119 states in words.
+  ['Who is in it?', 'renamed in 3.23.7 to Who is in the room?'],
+  ['Who is here', 'renamed in 3.23.7 to Who is in front of you now'],
 ];
 
 const HELP = [...new Set(COVERS.map((c) => c[0]))];

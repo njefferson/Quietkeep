@@ -1,7 +1,7 @@
 // THE SAMPLE HAS TO BE DATA SOMEBODY COULD ACTUALLY HAVE.
 //
 // It is the instrument the app is tested with, so a defect in it is a defect in
-// every judgement made using it — and it is also the first thing a new reader
+// every judgment made using it — and it is also the first thing a new reader
 // sees. It was built from flat lists paired at random: fourteen project names,
 // twenty action fragments, and ten areas, combined by index and by chance. That
 // produced cards like "Photograph the meter" under "Plan the trip north", and
@@ -43,7 +43,7 @@ async function sample(): Promise<State> {
 test('every action sits under a project whose own steps include it', async () => {
   // The load-bearing one. A step belongs to exactly one project by
   // construction, so "is this step listed by its parent" is decidable without
-  // any judgement about whether the words go together.
+  // any judgment about whether the words go together.
   const { PROJECTS, MOVE_STEPS, AWKWARD_TITLES } = await import('../src/big-sample.ts');
   const stepsOf = new Map(PROJECTS.map(p => [p.title, new Set(p.steps)]));
   const state = await sample();

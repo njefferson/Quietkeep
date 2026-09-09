@@ -39,7 +39,7 @@ It also collides with nothing the owner owns, which the previous name did.
 
 **The floral reading is a branding choice, not a property of the word.** A *perennial
 stream* flows year-round where an intermittent one does not; a *perennial problem* and a
-*perennial favourite* are simply recurring. The brand leans to periodicity and endurance.
+*perennial favorite* are simply recurring. The brand leans to periodicity and endurance.
 Nothing about borders, bedding plants, or bees.
 
 ## The graveyard
@@ -50,7 +50,7 @@ themselves design constraints.
 - ****Horizons**** — The sibling app's claim is **literal** — *Clear Horizons* records your actual horizon and computes what is visible from where you stand. That is its differentiating feature. A figurative claim loses to a literal one.
 - ****Hyperfocal**** — **Hyperfocus 2** is a Mac productivity app explicitly marketing to ADHD users. Same niche, one letter apart.
 - ****Spectrum**** — "On the spectrum" is autism vocabulary. Diagnosis-flavoured — banned by this app's own voice rules.
-- ****Prism**** — PRISM Corporation holds a class 9 registration, and PRISM was the NSA's mass-surveillance programme — actively hostile to a no-telemetry, no-server app.
+- ****Prism**** — PRISM Corporation holds a class 9 registration, and PRISM was the NSA's mass-surveillance program — actively hostile to a no-telemetry, no-server app.
 - ****Lens**, **Gauge**, **Objective**** — Collide with this app's own vocabulary: the *person lens* is a v1 surface, the *coverage gauge* is law 2, and `goal` nodes carry OKR-style key results.
 - ****Diopter**** — Names a *correction applied to the eye* — implies the user is the defect. Against the shame-free voice.
 - ****Parfocal**** — `parfocal.ca` is a Toronto agency doing **product photography** — adjacency in the owner's own field.
@@ -99,7 +99,7 @@ grounds or not at all.*
 - ****Context**** — Same trap. Also now swallowed whole by LLM vocabulary — context window, context length.
 - ****Question log**** — Descriptive of one v1 surface, not the product. A feature name wearing a product name's clothes.
 - ****Chief of staff**** — The workplace register the app exists to be a relief from. Three words, and it makes the app the boss's office.
-- ****All things considered**** — NPR's flagship programme since 1971.
+- ****All things considered**** — NPR's flagship program since 1971.
 - ****Orbital / Orbitals**** — Orbital Insight, Orbital Sciences, Orbital Materials, an App Store game. Class 9 is dense with it.
 - ****Naowat**** — The joke ("now what?") does not survive being read cold — it reads as a foreign loanword of unclear origin, and the spelling has to be explained every time.
 - ****Quest log**** — the owner's own suggestion, so the vocabulary bar did not apply. Killed on register instead: it is game UI, and a planner that calls a life a quest log makes the user a player character. Also literally the name of the panel in a dozen games.

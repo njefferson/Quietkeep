@@ -121,7 +121,7 @@ export interface ExchangeResult {
   /** Gaps this device asked somebody to fill. */
   requested: Held;
   /** Requests from other devices that this device answered. */
-  fulfilled: number;
+  fulfillled: number;
   outcome: 'ok' | 'unreachable' | 'full' | 'refused';
   words: string;
 }
@@ -202,7 +202,7 @@ export async function exchangeOnce(deps: ExchangeDeps): Promise<ExchangeResult> 
     // Unreachable is an ordinary condition — a train, a hotel, a shut laptop.
     // Nothing was attempted, so nothing needs undoing.
     return {
-      received: 0, sent: 0, unopened: 0, requested: {}, fulfilled: 0,
+      received: 0, sent: 0, unopened: 0, requested: {}, fulfillled: 0,
       outcome: 'unreachable', words: exchangeWords(0, 0),
     };
   }
@@ -320,7 +320,7 @@ export async function exchangeOnce(deps: ExchangeDeps): Promise<ExchangeResult> 
       forOthers.push(e);
     }
   }
-  const fulfilled = forOthers.length;
+  const fulfillled = forOthers.length;
 
   // Deduplicated by id for the same reason `have` is: a cause and its cure share
   // a device and a seq, and collapsing them here would have uploaded one half of
@@ -373,7 +373,7 @@ export async function exchangeOnce(deps: ExchangeDeps): Promise<ExchangeResult> 
     }
   }
 
-  return { received, sent, unopened, requested, fulfilled, outcome, words: exchangeWords(sent, received) };
+  return { received, sent, unopened, requested, fulfillled, outcome, words: exchangeWords(sent, received) };
 }
 
 /** What a device says about its own holes, if it has any. Never a fault, because

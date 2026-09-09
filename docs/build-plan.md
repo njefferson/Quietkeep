@@ -216,7 +216,7 @@ to build or verify.
 ### Phase 8 — Gate readiness
 
 40. ~~Session close screen — a win and a green gauge (peak-end).~~ **(done,
-    1.6.0 — the gauge speaks in WORDS, never colour, per B-02; the second
+    1.6.0 — the gauge speaks in WORDS, never color, per B-02; the second
     rider on the comms chip's ramp, ADR-0052)**
 41. Accessibility pass against every binding in
     [`ACCESSIBILITY.md`](../ACCESSIBILITY.md), both themes.

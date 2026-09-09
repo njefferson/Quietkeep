@@ -9,7 +9,7 @@ people have been sold a great deal of confident nonsense.
 
 - ****established**** — Replicated, broadly accepted in the literature. Safe to design on.
 - ****emerging**** — Real research, genuinely unsettled. Designed for cautiously and reversibly.
-- ****community-construct**** — Named and described by the community it concerns, widely recognised as real experience, **not** a validated clinical construct. Treated as a *description of experience*, never as a mechanism.
+- ****community-construct**** — Named and described by the community it concerns, widely recognized as real experience, **not** a validated clinical construct. Treated as a *description of experience*, never as a mechanism.
 - ****negative finding**** — Something once believed that **did not replicate** or does not transfer. These constrain the design by forbidding things.
 
 A design decision resting on an `emerging` or `community-construct` finding is
@@ -32,14 +32,14 @@ apply to you, the app should still be fine; nothing here is diagnostic.
   memory (do X at 3pm) is markedly less reliable than **event-based** (do X when
   you see Y), because time-based tasks have no external cue and depend on
   self-initiated checking. *(established)*
-- **Barkley: temporal myopia.** The future is weakly represented; behaviour is
+- **Barkley: temporal myopia.** The future is weakly represented; behavior is
   governed by what is present. The **point of performance** — the place and
-  moment where the behaviour must happen — is where support has to be, not
+  moment where the behavior must happen — is where support has to be, not
   earlier and not in the abstract. *(established)*
 - **Gilbert: intention offloading.** People offload intentions to external stores
   and, having done so, *reduce internal rehearsal*. Offloading works — and it
   transfers the reliability burden entirely to the store. *(established)*
-- **Masicampo & Baumeister.** An unfulfilled goal produces intrusive thoughts;
+- **Masicampo & Baumeister.** An unfulfillled goal produces intrusive thoughts;
   **making a specific plan quiets them** even before any action is taken. The
   relief comes from the plan, not from the doing. *(established)*
 
@@ -79,7 +79,7 @@ calendar fires the cue whether or not the app is open
 
 **What follows.** An "overdue" flag adds aversion to a task that is already
 aversive, and it does so at the exact moment the person is deciding whether to
-approach it. It is a machine for producing the behaviour it labels.
+approach it. It is a machine for producing the behavior it labels.
 
 **Streaks are the same error with better marketing.** A streak converts something
 you valued into a score, and its real design purpose is the moment it breaks. For
@@ -300,13 +300,13 @@ least afford it. An active pebble may **depress capacity/WIP** — which is the 
 asking for less, automatically, without requiring you to explain yourself.
 **REVERSED IN 1.34.0, and this sentence outlived it (corrected 2026-08-30).**
 `offerCapFor` is now a constant — it returns the cap unchanged — and the argument
-against the old behaviour is kept at that call site rather than the behaviour:
+against the old behavior is kept at that call site rather than the behavior:
 narrowing the offer on a low day is a pacing mechanism, and two of the populations
 this app serves need opposite things from it, so what bends is **which** things
 are offered (`weightOrderFor`) and never **how many**. The app's copy was fixed
-in the same release, with its own note that copy outliving the behaviour it
+in the same release, with its own note that copy outliving the behavior it
 describes is the plainest kind of lie a surface can tell; this research document
-was not, and `what-it-should-be.md` has stated the corrected behaviour correctly
+was not, and `what-it-should-be.md` has stated the corrected behavior correctly
 the whole time. Two research files in one repo disagreed, and the stale one was
 the one being cited.
 → **Pebbles annotate the timeline so low-capacity stretches have a visible
@@ -360,7 +360,7 @@ because the cost of checking is the switch, and a switch already happening is fr
   and reward. *(community-construct — widely circulated and clinically originated,
   but not an experimentally validated model. Treated as description, never mechanism.)*
 - **Rejection-sensitive dysphoria (RSD).** *(community-construct — named
-  clinically, widely recognised as experience, **not** a validated diagnostic
+  clinically, widely recognized as experience, **not** a validated diagnostic
   construct with an established evidence base. Tagged explicitly because it is
   frequently presented as settled science and is not.)*
 
@@ -377,7 +377,7 @@ rejection, because a rejection log would eventually be shown to someone.
 surface ([ADR-0060](adr/0060-a-few-things-you-could-pick-up.md)), carrying no
 date and no Done, so interest is *present* rather than merely permitted.
 → **The voice rules — no rebukes, no disappointed copy, no red walls, no implied
-judgement in an empty state — are the app's answer here**, and they cost nothing
+judgment in an empty state — are the app's answer here**, and they cost nothing
 if any particular account of the sensitivity is wrong.
 
 **Corrected 2026-08-09.** This paragraph used to say the RSD *tag* drove the
@@ -411,7 +411,7 @@ each corresponds to a feature that would look perfectly reasonable in a spec.
   - What it forbids here: No habit-formation countdown, no automaticity progress bar, no promise of a timeline the data cannot support.
 - ****Information degrades between neurotypes** — the widely cited N = 72 result did not replicate at N = 311**
   - Status: **negative finding**
-  - What it forbids here: No feature, copy or record may explain a misunderstanding between two people by a mismatch of neurotype. A pre-registered diffusion-chain study across three sites found **no difference in information transfer** between single-neurotype and mixed-neurotype chains (Crompton et al., 2025, *Nature Human Behaviour* 9(7), 1488–1500), overturning the 2020 original (*Autism* 24(7), 1704–1712). **The rapport half did not survive in the form it is usually restated either** — the 2025 paper's own words are that *non-autistic* chains indicated higher rapport, which is not the claim that rapport is higher within same-neurotype pairs; only "disclosing diagnosis improved rapport" holds as commonly stated. This one is worth reading twice, because it is the cleanest example in this document of the failure mode the epistemic tags exist for: a well-cited finding, congenial to a theory this document is sympathetic to, partly overturned by a larger registered report — **and then restated in a stronger form than either paper supports.** The prohibition binds the sympathetic direction as hard as the hostile one. What autistic chains are *not* is impaired: the 2025 paper states they transfer information as accurately as non-autistic chains, and that is the finding to carry forward.
+  - What it forbids here: No feature, copy or record may explain a misunderstanding between two people by a mismatch of neurotype. A pre-registered diffusion-chain study across three sites found **no difference in information transfer** between single-neurotype and mixed-neurotype chains (Crompton et al., 2025, *Nature Human Behavior* 9(7), 1488–1500), overturning the 2020 original (*Autism* 24(7), 1704–1712). **The rapport half did not survive in the form it is usually restated either** — the 2025 paper's own words are that *non-autistic* chains indicated higher rapport, which is not the claim that rapport is higher within same-neurotype pairs; only "disclosing diagnosis improved rapport" holds as commonly stated. This one is worth reading twice, because it is the cleanest example in this document of the failure mode the epistemic tags exist for: a well-cited finding, congenial to a theory this document is sympathetic to, partly overturned by a larger registered report — **and then restated in a stronger form than either paper supports.** The prohibition binds the sympathetic direction as hard as the hostile one. What autistic chains are *not* is impaired: the 2025 paper states they transfer information as accurately as non-autistic chains, and that is the finding to carry forward.
 
 **Why they are here rather than quietly obeyed:** each of these is a feature
 somebody will eventually propose in good faith, because they all appear in
@@ -471,7 +471,7 @@ varies.**
 Saying that is not a widening of the audience. It is a statement of the
 mechanism, and it earns its place because it makes whole literatures legitimately
 applicable — cognitive aids and structured protocols below, structured handover,
-high-reliability organisations, distributed cognition, situation awareness. Every
+high-reliability organizations, distributed cognition, situation awareness. Every
 one of those studies competent people in degraded conditions, none of them is
 reachable from a diagnosis alone, and all of them bear directly on what this app
 is trying to do.
@@ -485,7 +485,7 @@ document reaches from cognitive psychology, arrived at institutionally and
 decades earlier. It is an acknowledged influence on how the problem is framed.
 **It stays out of the product's own vocabulary entirely** — the voice is adult,
 calm and civilian, and no military term appears in any name or line of copy in
-this app. Influence on the thinking is not licence over the words.
+this app. Influence on the thinking is not license over the words.
 
 > **THE RULE THAT COMES WITH THE FRAMING, and it exists because it will not
 > announce itself.** The moment this reads as *for people under load*, ordinary
@@ -536,7 +536,7 @@ required to file. **A structure does not do the work by existing.**
 > implementation, and this app cannot implement anything into somebody's life —
 > it can only be cheap enough to use and honest about what it does.
 
-That reads as a limitation and is closer to a licence: it is the argument for
+That reads as a limitation and is closer to a license: it is the argument for
 why capture is one box, why nothing here has a setup flow, and why every
 surface has to earn its place at the moment of use rather than at configuration
 time.

@@ -348,7 +348,7 @@ test('no METHOD, because this is a publication and not an iTIP message (audit)',
   assert.equal(unfold(ics).some(l => l.startsWith('METHOD:')), false,
     'METHOD:PUBLISH would require an ORGANIZER on every VEVENT (RFC 5546 3.2.1)');
   assert.equal(unfold(ics).some(l => l.startsWith('ORGANIZER')), false,
-    'and a personal, serverless export has no organiser to name');
+    'and a personal, serverless export has no organizer to name');
 });
 
 test('INTERVAL is always a positive integer, or absent (audit)', () => {
@@ -534,7 +534,7 @@ test('a due date beats a sooner review clock, rather than the review winning', (
 });
 
 test('the kinds a calendar may carry are named, and review is not one of them', () => {
-  // Asserted as a set rather than inferred from behaviour, so adding a kind is a
+  // Asserted as a set rather than inferred from behavior, so adding a kind is a
   // decision somebody has to make here rather than a side effect elsewhere.
   assert.deepEqual([...CALENDAR_KINDS].sort(), ['due', 'park', 'start', 'suspense']);
   assert.equal(CALENDAR_KINDS.has('review'), false);

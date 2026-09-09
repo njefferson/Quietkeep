@@ -24,7 +24,7 @@ test('the V-13 bug itself: an evening capture ends its day tonight, not tomorrow
   const end = endOfLocalDay(captured, atMidnight(DENVER));
   assert.equal(end, '2026-07-29T05:59:59.000Z', 'end of the 28th in Denver = 05:59:59Z on the 29th');
   assert.equal(localDayKey(end, atMidnight(DENVER)), '2026-07-28', 'and it is still the same local day');
-  assert.notEqual(end, '2026-07-29T23:59:59.000Z', 'not the end of the UTC day (the old behaviour)');
+  assert.notEqual(end, '2026-07-29T23:59:59.000Z', 'not the end of the UTC day (the old behavior)');
 });
 
 test('end of local day lands at 23:59:59 wall time, in every zone tried', () => {

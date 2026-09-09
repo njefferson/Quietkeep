@@ -1,10 +1,10 @@
 {
-  "note": "Every palette this app can wear, described in ROLES. Palette and mode are independent axes (hub PALETTES.md §6): a family carries a light and a dark, and the reader chooses each separately. `npm run palette:check` holds every family in both modes against docs/colour-inventory.json — the pairs the UI actually renders — by arithmetic, with no browser. `npm run palettes` generates public/palettes.css from this file, which is the ONE source for the values: PALETTES.md warns that N declarations times F families is a drift factory, and says to consolidate before adding families. See ADR-0110.",
+  "note": "Every palette this app can wear, described in ROLES. Palette and mode are independent axes (hub PALETTES.md §6): a family carries a light and a dark, and the reader chooses each separately. `npm run palette:check` holds every family in both modes against docs/color-inventory.json — the pairs the UI actually renders — by arithmetic, with no browser. `npm run palettes` generates public/palettes.css from this file, which is the ONE source for the values: PALETTES.md warns that N declarations times F families is a drift factory, and says to consolidate before adding families. See ADR-0110.",
   "default": "quietkeep",
   "families": {
     "quietkeep": {
       "name": "Quietkeep",
-      "why": "the original — warm paper by day, deep blue-grey by night",
+      "why": "the original — warm paper by day, deep blue-gray by night",
       "light": {
         "bg": "#F4F1E9",
         "surface": "#FFFFFF",
@@ -70,7 +70,7 @@
     },
     "mono": {
       "name": "Mono",
-      "why": "no hue at all — neutral grey by day, neutral charcoal by night",
+      "why": "no hue at all — neutral gray by day, neutral charcoal by night",
       "light": {
         "bg": "#D2D2D2",
         "surface": "#F7F7F7",
@@ -92,7 +92,7 @@
     },
     "soft": {
       "name": "Soft",
-      "why": "the lowest glare — a dimmed page and a night that is grey rather than black",
+      "why": "the lowest glare — a dimmed page and a night that is gray rather than black",
       "light": {
         "bg": "#BFBCB2",
         "surface": "#D9D6CC",

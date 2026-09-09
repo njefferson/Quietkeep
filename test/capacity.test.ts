@@ -2,7 +2,7 @@
 //
 // The rule is one line and the argument behind it is not. Narrowing the offer on
 // a low day is a PACING mechanism: correct for post-exertional conditions, and
-// iatrogenic for depression, where behavioural activation says offer anyway. The
+// iatrogenic for depression, where behavioral activation says offer anyway. The
 // same declaration, two correct and opposite responses — the sharpest of the
 // conflicts in the synthesis, and the one that looked like it needed a standing
 // preference to resolve.
@@ -61,14 +61,14 @@ test('THE RULE: a low day changes which is offered and never how many', () => {
   const low = offerNow(lowDay(s), NOW, TZ, 0);
   assert.equal(low.work.length, ordinary.work.length,
     'the same number of things arrive — a shorter list would say "you can manage less today", '
-    + 'which is a statement about the person and the harm behavioural activation warns of');
+    + 'which is a statement about the person and the harm behavioral activation warns of');
   assert.ok(low.work.length > 0, 'fixture: something is being offered at all');
 });
 
 test('the cap itself is constant, whatever the day is like', () => {
   // Asked of the function directly, because this is the line that used to read
   // `load.heavy ? cap - 1 : cap` and is the one somebody would reach for to put
-  // the old behaviour back.
+  // the old behavior back.
   const heavy: Load = { capacity: 'low', pebbles: [], weight: 9, heavy: true };
   const light: Load = { capacity: 'steady', pebbles: [], weight: 0, heavy: false };
   assert.equal(offerCapFor(heavy, OFFER_CAP), OFFER_CAP);

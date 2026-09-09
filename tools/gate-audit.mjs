@@ -185,13 +185,53 @@ const create = (rel, body) =>
 const GATES = [
   {
     name: 'brand:check',
-    catches: 'the brand words and colours drifting from what is declared',
-    // A DECLARED COLOUR PAIR, which is what `:check` actually measures — it
+    // WHAT IT ACTUALLY ASSERTS, and the old line said neither half. It read
+    // "the brand words and colors drifting from what is declared". `--check`
+    // asserts nothing about WORDS — the name and the tagline live only inside
+    // `socialHtml`, which `--check` never calls. And it never compares a color
+    // to a declaration: it computes WCAG ratios FROM the declaration, so a
+    // token can drift as far as it likes and pass while the ratio holds.
+    // Drift-from-declaration is `palettes:check`'s byte-compare, which is now
+    // audited below with the plant that used to sit here.
+    catches: 'a palette family whose token pair falls under its WCAG floor, '
+      + 'or a brand asset that is the wrong size, too heavy, or too low-contrast',
+    // A DECLARED COLOR PAIR, which is what `:check` actually measures — it
     // reports `warm/surface`, `line/bg` and so on, computed from the tokens.
     // Two earlier plants edited the wordmark and then the icon file; rendering
     // the assets is `npm run brand`, and `:check` reads the palette, so both
     // were aimed at a gate that was doing exactly its job.
-    plant: () => edit('public/app.css', (s) =>
+    // AND IT READS docs/palettes.json, WHICH IS NEITHER OF THE FILES THIS PLANT
+    // HAS TRIED. It began on `public/app.css`, where the token has never lived
+    // — 0 occurrences there — so the plant made no edit, the gate saw an
+    // unchanged tree, and the audit reported brand:check as "not doing its
+    // job" about a gate it had never handed anything to catch. A MISAIMED
+    // plant is worse than a missing one: it accuses a working gate, and
+    // nothing surfaced it because `gates:audit` is not a Spine step. Re-aiming
+    // it at `public/palettes.css` was the same mistake one file over —
+    // `brand.mjs` reads the JSON and deliberately stopped reading a stylesheet
+    // in 3.4.0 (ADR-0110: "A THIRD place was reading the values").
+    //
+    // TWO THINGS THIS PLANT HAS TO GET RIGHT, both measured against the live
+    // file. The JSON spells it `"line": "#8E8A7F"`, so a `--line:` regex
+    // matches nothing. And it must land on a LIGHT family: `quietkeep/light`
+    // reads 3.45:1 for line/surface today and #F3F0E8 takes it to 1.14:1
+    // against a floor of 3, while the same value in `quietkeep/dark` sits at
+    // 13.29:1 and sails through. The first `"line"` in the file is the light
+    // one.
+    plant: () => edit('docs/palettes.json', (s) =>
+      s.replace(/"line":\s*"#[0-9A-Fa-f]{6}"/, '"line": "#F3F0E8"')),
+  },
+  {
+    // THE PLANT THAT USED TO SIT ABOVE, GIVEN THE GATE IT WAS ALWAYS FOR.
+    // Editing `--line:` in the generated stylesheet is a correct plant — for
+    // the gate that byte-compares that file against the JSON it is generated
+    // from. `palettes:check` had NO entry here at all while being a Spine
+    // step, so a gate that runs on every push was never once verified. That is
+    // the shape this whole audit exists to find, and it was sitting inside the
+    // audit.
+    name: 'palettes:check',
+    catches: 'the generated palette stylesheet drifting from the palette file it comes from',
+    plant: () => edit('public/palettes.css', (s) =>
       s.replace(/--line:\s*#[0-9A-Fa-f]{6}/, '--line: #F3F0E8')),
   },
   {
@@ -290,7 +330,7 @@ const GATES = [
   },
   {
     name: 'controls:check',
-    catches: 'a core control moving or being relabelled without the release saying so',
+    catches: 'a core control moving or being relabeled without the release saying so',
     plant: () => edit('public/index.html', (s) =>
       s.replace('<button id="menu-open"', '<button id="gate-audit-decoy" type="button">Decoy</button>\n  <button id="menu-open"')),
   },

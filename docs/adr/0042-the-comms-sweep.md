@@ -32,7 +32,7 @@ habit it replaces.
 
 `surfacing` is held **in memory and never as an event**. It is a property of this
 sitting, not of your history; persisting it would mean the chip greeting you on a
-cold start tomorrow morning, which is precisely the arriving-unbidden behaviour
+cold start tomorrow morning, which is precisely the arriving-unbidden behavior
 the design refuses. Starting a focus lowers it, because you are back in
 something.
 
@@ -52,7 +52,7 @@ as if it had never asked.
 
 ### It counts nothing
 
-No badge, no unread count, no colour. An unread count is the single most
+No badge, no unread count, no color. An unread count is the single most
 effective piece of shame-by-arithmetic in software, and this app cannot see your
 messages anyway. The words are an offer and a duration — *"Last pass through your
 messages was 6 days ago."* — and never *"you haven't checked since Tuesday"*,

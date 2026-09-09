@@ -4,7 +4,7 @@ A reference document for Quietkeep. The question it answers, as asked: what mode
 
 The compatibility filter throughout is the ten product laws (NOTES.md), especially law 4 (higher horizons project lineage and health downward; the runway is the only workspace; the user never climbs), law 5 (one decay primitive; no overdue, no streaks, no red walls), and law 7 (the app plots, the human interprets; descriptive, never prescriptive). ADR-0013 is law 4's full statement; ADR-0038 built its first half (containment, exceptions-first Review). Q-13 — roles are identities that cross multiple areas, modelled as a cross-cutting link in the shape the feeds relation already has — turns out to be the load-bearing observation of this whole survey, because the model the model named first has exactly that shape.
 
-One vocabulary note up front: several of these models are military. Their *shapes* are analysed here freely; the app's voice rule (no military vocabulary in naming or brand copy) means the shapes can ship and the words cannot.
+One vocabulary note up front: several of these models are military. Their *shapes* are analyzed here freely; the app's voice rule (no military vocabulary in naming or brand copy) means the shapes can ship and the words cannot.
 
 ---
 
@@ -26,7 +26,7 @@ One vocabulary note up front: several of these models are military. Their *shape
 
 **The mechanism.** Commander's intent is a deliberately short statement — expanded purpose, key tasks, end state — meant to be carried in the head, so that when the plan breaks (it will), subordinates can act toward the end state without new orders; the discipline is that each echelon's plan nests inside the intent two levels up. Backward planning (reverse planning) starts from the time of execution and works backward to now, allocating time by the one-third/two-thirds rule so subordinates get most of it.
 
-**Why it leads to action.** Intent is a compression that makes *initiative at the bottom* legal: the top level's contribution to bottom-level behaviour is not a cascade of tasks but a portable test — "does this serve the end state?" Backward planning converts a distant end date into a **start-now fact**: if the ceremony is Friday and the printing takes two days, the latest start is Wednesday, and that arithmetic is what makes a far horizon bite today.
+**Why it leads to action.** Intent is a compression that makes *initiative at the bottom* legal: the top level's contribution to bottom-level behavior is not a cascade of tasks but a portable test — "does this serve the end state?" Backward planning converts a distant end date into a **start-now fact**: if the ceremony is Friday and the printing takes two days, the latest start is Wednesday, and that arithmetic is what makes a far horizon bite today.
 
 **Why software never offers it.** Intent is authored prose with no schema — software has nowhere to put a *why* that ranks anything. Backward planning does exist in project tools (critical path), but only in the heavyweight Gantt tier that nobody runs their life in.
 
@@ -57,7 +57,7 @@ One vocabulary note up front: several of these models are military. Their *shape
 
 **The mechanism.** The organizing axis is the **role** — not a project, not an area, an identity: parent, spouse, professional, "sharpen the saw" self. Weekly, on a worksheet: list your roles (about seven), choose one or two Quadrant II goals per role ("big rocks"), schedule the rocks into the calendar *first*, fill the gravel around them. The cadence is a weekly planning session, classically Sunday.
 
-**Why it leads to action.** Better than most, mechanically: the translation from role to behaviour is *literal calendar placement*. A role produces a goal produces a block of Tuesday. Nothing is left to intuition at runtime. Where it decays: the entire linkage lives inside the weekly ritual and nowhere else. The roles sheet has no memory, no computed state, no persistence between sessions — it is re-derived from blank every week, so two missed Sundays and the system is not stale, it is *gone*. The guilt of the missed session then does the rest (ADR-0038 names this exact failure for reviews generally).
+**Why it leads to action.** Better than most, mechanically: the translation from role to behavior is *literal calendar placement*. A role produces a goal produces a block of Tuesday. Nothing is left to intuition at runtime. Where it decays: the entire linkage lives inside the weekly ritual and nowhere else. The roles sheet has no memory, no computed state, no persistence between sessions — it is re-derived from blank every week, so two missed Sundays and the system is not stale, it is *gone*. The guilt of the missed session then does the rest (ADR-0038 names this exact failure for reviews generally).
 
 **Why software never offers it.** FranklinCovey tried — PlanPlus and its descendants — and it never took, because a role is a cross-cutting tag with semantics no task schema carries, and because the product *is* the ritual: software can display the worksheet but cannot hold the Sunday.
 
@@ -110,9 +110,9 @@ One vocabulary note up front: several of these models are military. Their *shape
 ### 10. Impact Mapping — Gojko Adzic
 **Origin.** Adzic, *Impact Mapping* (2012), software delivery; descended from effect mapping in the Swedish agile community.
 
-**The mechanism.** A four-level map built in a facilitated workshop: **Why** (the goal, with a measurable target) → **Who** (actors — the people whose behaviour must change) → **How** (the impacts — the behaviour changes) → **What** (deliverables). The distinctive move is the actor layer: between the goal and the work stands a named human, which is where most plans are silently vague. The map's declared use is **pruning**: a deliverable with no path to the goal does not get built.
+**The mechanism.** A four-level map built in a facilitated workshop: **Why** (the goal, with a measurable target) → **Who** (actors — the people whose behavior must change) → **How** (the impacts — the behavior changes) → **What** (deliverables). The distinctive move is the actor layer: between the goal and the work stands a named human, which is where most plans are silently vague. The map's declared use is **pruning**: a deliverable with no path to the goal does not get built.
 
-**Why it leads to action.** It leads to *less* action, deliberately, and that is its virtue — it is a scope-culling instrument, and the cull is mechanical (no path, no build). It does not drive daily behaviour; it decides what the backlog may contain.
+**Why it leads to action.** It leads to *less* action, deliberately, and that is its virtue — it is a scope-culling instrument, and the cull is mechanical (no path, no build). It does not drive daily behavior; it decides what the backlog may contain.
 
 **Why software never offers it.** It is a workshop artifact — alive for an afternoon, stale in a week. Mind-map tools hold the picture, but the links from map leaves to backlog items rot immediately, because they live in two different tools with no shared identity.
 
@@ -158,9 +158,9 @@ One vocabulary note up front: several of these models are military. Their *shape
 
 **Where it stops.** Three places, precisely. The computed health is **completion arithmetic** — percent done — which measures motion, not meaning: a goal can read 80% while every completed task was the easy ones. The status layer is RAG by another name. And the goals live in a **separate tab you must climb to** — the projection runs upward into a view nobody visits, the exact inversion of law 4.
 
-**Why this matters.** Asana is the existence proof that the linkage *can* live in a task tool. It then demonstrates the default failure: given a link, software computes a percentage and paints a colour, because those are the easy implementations.
+**Why this matters.** Asana is the existence proof that the linkage *can* live in a task tool. It then demonstrates the default failure: given a link, software computes a percentage and paints a color, because those are the easy implementations.
 
-**Quietkeep compatibility.** The link survives (it is containment plus feeds, shipped); the roll-up percentage and status colours die by name (laws 5, 7); the direction inverts — lineage prints on the runway card (law 4, and 1.20.0's place line is the first production instance of exactly that projection).
+**Quietkeep compatibility.** The link survives (it is containment plus feeds, shipped); the roll-up percentage and status colors die by name (laws 5, 7); the direction inverts — lineage prints on the runway card (law 4, and 1.20.0's place line is the first production instance of exactly that projection).
 
 ### 15. The other software that genuinely tried
 **A roster, each taken honestly.**
@@ -168,7 +168,7 @@ One vocabulary note up front: several of these models are military. Their *shape
 - **Workflowy / Notion (freeform).** An infinite outline or database can *hold* any horizon structure you care to build, including all six of Allen's levels. Nothing computes: no clocks, no health, no return, no consequence. The structure is exactly as alive as your discipline, which is to say it is Allen's model with better indentation. Freeform is why: a tool that cannot distinguish a goal from a grocery list cannot project anything from one to the other.
 - **Amplenote.** The "idea execution funnel" (jots → tasks) with a **Task Score** — a computed composite of urgency and importance that grows as a task ages. Credit where due: it actually computes something. But the something is a score that manufactures urgency by aging (a streak's evil twin — laws 5 and 7 both), and there are no horizons above the task at all.
 - **Sunsama.** The most serious attempt to hold the *ritual* in software: guided daily planning, weekly objectives, channels (roughly areas), timeboxing, a shutdown ceremony. It stops at the week horizon, and the ritual is load-bearing — skip it and the day opens with a ceremony demanding to be performed, which for this app's audience is a demand in costume (the PDA reading recorded in nd-collisions and in the 2026-08-04 cadence decision).
-- **Complice** (Malcolm Ocean). The closest philosophical cousin in the list. You declare a handful of goals; each day you write today's intentions *against* those goals (colour-typed to them); yesterday is reviewed, not rolled over — it is **anti-backlog by design**, and the goal-to-day linkage is real because it is re-authored daily. Where it stops: the daily re-derivation *is* the system. Lapse, and there is nothing holding anything — the connective tissue was the habit itself, which is precisely the dependence Quietkeep's thesis forbids ("the app cannot depend on the user remembering to review, because that is the exact capacity it is compensating for"). Its momentum displays are law-5 casualties besides.
+- **Complice** (Malcolm Ocean). The closest philosophical cousin in the list. You declare a handful of goals; each day you write today's intentions *against* those goals (color-typed to them); yesterday is reviewed, not rolled over — it is **anti-backlog by design**, and the goal-to-day linkage is real because it is re-authored daily. Where it stops: the daily re-derivation *is* the system. Lapse, and there is nothing holding anything — the connective tissue was the habit itself, which is precisely the dependence Quietkeep's thesis forbids ("the app cannot depend on the user remembering to review, because that is the exact capacity it is compensating for"). Its momentum displays are law-5 casualties besides.
 
 **The shared lesson.** Every one either computes nothing (freeform), computes the wrong thing (scores), or computes the right thing on a habit that cannot be assumed (Complice, Sunsama).
 

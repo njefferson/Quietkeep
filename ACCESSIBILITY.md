@@ -22,7 +22,7 @@ most of what the user sees. Pressure is continuous, and it is carried by **four
 redundant channels**, of which hue is the least important:
 
 - ****Position**** — Higher pressure sorts higher in the list. Order alone conveys the ranking.
-- ****Fill**** — A horizontal fill bar, 0–100% of the comfort window. Length is readable with no colour perception at all.
+- ****Fill**** — A horizontal fill bar, 0–100% of the comfort window. Length is readable with no color perception at all.
 - ****Luminance**** — Fill darkens monotonically as pressure rises. Survives a grayscale render — the pass condition, not a nicety.
 - ****Text**** — Every item states its own status in words ("ready again", "ready in 3 days").
 
@@ -46,23 +46,23 @@ shipped feature. The day a hue-bearing pressure surface lands, the grayscale
 check lands in the same commit (B-08's rule) — and if the fill and luminance
 channels are built, they arrive with it.
 
-**No red walls.** Rising pressure never terminates in an alarm colour, because
+**No red walls.** Rising pressure never terminates in an alarm color, because
 there is no failure state to alarm about (product law 5). The gradient runs
 toward *emphasis*, not toward *danger*.
 
 ### B-02 · The coverage gauge
 Reads as text first — "everything returns · 0 silent". The number is the
-information; any colour is decoration. **Today it is a static `<p>`** that reports
-the count; when it gains the expand-to-show-return-dates behaviour it becomes a
+information; any color is decoration. **Today it is a static `<p>`** that reports
+the count; when it gains the expand-to-show-return-dates behavior it becomes a
 real `<button>` with `aria-expanded`, never a bare `<div>` with a click handler.
-The interactive form is a design commitment for when the behaviour exists, not a
+The interactive form is a design commitment for when the behavior exists, not a
 description of the current element.
 
 ### B-03 · Capacity, heat, and magnitude
 Three places use small ordinal scales: capacity (low / steady / sharp / unsure),
 the heat pass (hot / cold), pebble magnitude (pebble / rock / boulder). All three
-are **labelled in words on the control itself** and differentiated by glyph and
-size. Colour is never the distinguishing feature. Per LESSONS.md, the accepted
+are **labeled in words on the control itself** and differentiated by glyph and
+size. Color is never the distinguishing feature. Per LESSONS.md, the accepted
 filter-chip pattern is used — **strike-through is banned for off-states**, it
 reads as deleted.
 
@@ -114,7 +114,7 @@ gate in the same commit that introduces it.** No exceptions, including for
 disabled states and placeholder text.
 
 Known instrument limitation, inherited from a sibling app: automated audits
-silently drop colour-contrast to `incomplete` (not `violations`) for elements
+silently drop color-contrast to `incomplete` (not `violations`) for elements
 under a CSS transform. Any transformed surface is checked by explicit
 measurement, not by trusting the audit's summary. A green axe run over
 transformed content proves nothing.
@@ -135,12 +135,12 @@ pass is a file; the observed run is recorded in NOTES.md's log.
 ### B-12 · Containment and Review (0.13.0)
 Two surfaces added, both audited in the same commit that introduced them.
 
-**Review** (`#review`) carries no colour of its own. Its rows use the same
+**Review** (`#review`) carries no color of its own. Its rows use the same
 `--ink`-on-`--bg` and `--ink-soft`-on-`--bg` pairs as every other list in the
 app, measured at **13.94:1** and **6.48:1** light, **and its heading at 15.73:1**.
 That is the point rather than an economy: this is the surface that tells you
 something is structurally wrong, and it must not be the one place the app raises
-its voice. There is no alert colour here to check, and the *absence* is the
+its voice. There is no alert color here to check, and the *absence* is the
 measurement (law 5, and B-01's rule that nothing rides on hue).
 
 **`#detail-place`** — the line stating what a thing is part of — is `--ink`, not
@@ -155,7 +155,7 @@ structural selects cannot drift into looking like different kinds of control.
 Both are `min-height: var(--target)`; targets pass at 44px in both themes.
 
 ### B-13 · Focus and the way back (0.14.0)
-The focus surface carries no colour of its own and nothing on it counts down.
+The focus surface carries no color of its own and nothing on it counts down.
 Elapsed time is stated in the quiet token, the same one every other "when" line
 uses — it is a fact, not a pace to keep up with, and there is no threshold at
 which it changes appearance. That absence is deliberate and it is the point
@@ -190,11 +190,11 @@ the surface and it is load-bearing: it is the fact you use to decide whether to
 mention something. `--ink-soft` on `--bg`, measured in both themes and in the
 registry.
 
-**There is no colour that means "they have had this a while", and there will not
+**There is no color that means "they have had this a while", and there will not
 be.** Duration is stated in words at one weight, and no threshold changes the
 appearance of anything. B-01's rule that nothing rides on hue applies here for a
-second reason as well: a colour aimed at how long someone else has taken is this
-app passing judgement on a third party, which it does not do (law 5).
+second reason as well: a color aimed at how long someone else has taken is this
+app passing judgment on a third party, which it does not do (law 5).
 
 The surface deliberately shares `.review`'s shape. Both answer *"what is not
 ordinary work right now"*, and two different-looking boxes for the same kind of
@@ -210,7 +210,7 @@ when an answer is owed, what is outstanding — so it is the lowest-contrast
 load-bearing text on the surface. `--ink-soft` on `--bg`, in the registry, both
 themes.
 
-**There is no colour on this surface that means "at risk", and there will not
+**There is no color on this surface that means "at risk", and there will not
 be.** A hue aimed at how somebody else's work is going is this app grading a
 third party on evidence it does not have. Every status is stated in words at one
 weight; no threshold changes the appearance of anything. B-01, and law 5 applied
@@ -233,7 +233,7 @@ apology, and it therefore has to be as readable as any other text in the app.
 the surface, not an aside. Registered in both themes, along with the two controls
 and the opt-in in the panel.
 
-**There is no badge, no count, and no colour on this surface.** An unread count
+**There is no badge, no count, and no color on this surface.** An unread count
 is the most effective piece of shame-by-arithmetic in software; this app cannot
 see your messages and would not report a number if it could. The words are an
 offer and a duration, and the test asserts the absence of seven specific
@@ -251,7 +251,7 @@ fortnight. Everything you put down is still here."* is the **content** of this
 surface, and the reassurance is the reason it exists. The counts beneath it are
 the lesser fact and sit in `--ink-soft`. Both are registered, both themes.
 
-**Nothing here is keyed to how long you were away** — no colour, no threshold, no
+**Nothing here is keyed to how long you were away** — no color, no threshold, no
 emphasis that grows with the number. A lapse is not a severity. This is B-01's
 rule about hue, applied to the one surface where a designer's instinct is
 strongest to signal urgency, and where doing so would contradict law 8 outright.
@@ -270,7 +270,7 @@ control was written rather than after an audit found it.
 says. Registered in both themes along with the category headings, the items and
 the opening control.
 
-**There is no bar, no percentage, and no colour keyed to the numbers.** The smoke
+**There is no bar, no percentage, and no color keyed to the numbers.** The smoke
 gate asserts the absence structurally — no `<progress>`, no `role="progressbar"`,
 no percentage width in the rendered markup — because this is the one accessibility
 question on the surface that a contrast check cannot answer. A progress bar is a
@@ -284,7 +284,7 @@ list of things you owe.
 
 ### B-19 · The bother flow (0.20.0)
 `.bother-choice-hint` is the lowest-contrast text on the surface and it is
-load-bearing: it states what each answer will DO. A forced choice with unlabelled
+load-bearing: it states what each answer will DO. A forced choice with unlabeled
 consequences is a guess, and this is the one question the whole flow turns on.
 Registered in both themes, with the entry line and its placeholder.
 
@@ -305,7 +305,7 @@ not itself be a prompt to find one.
 **There was no print stylesheet in this repo at all until now**, and 0.16.0
 shipped a "Print it" button regardless. `window.print()` against the live page
 produced the About dialog, the app behind it, and whatever the screen layout did
-under print media. The control was reachable, operable and correctly labelled —
+under print media. The control was reachable, operable and correctly labeled —
 and the artefact it produced was unusable, which no contrast or target check can
 see.
 
@@ -366,7 +366,7 @@ are folded behind one control; nothing is removed.
 COGA-informed: plain words, one idea per line, no idioms, no shame. Error and
 empty states say what happened and what to do. Nothing is phrased as a rebuke.
 
-### B-10 · The brand colours — the first colour decision this app has made
+### B-10 · The brand colors — the first color decision this app has made
 Everything above states *channels*. These are the first actual values, and they
 are recorded here rather than in a stylesheet because B-08's rule is that a new
 foreground/background pair joins the gate **in the same commit that introduces
@@ -434,10 +434,10 @@ saturate(1.05)` in the composite. Heavier lifts were rendered and rejected: at 1
 the scene flattens and the single small lamp stops reading as a light, which is the whole
 subject.
 
-**The warm note is never an alarm.** `--light` is the app's one warm colour and it
+**The warm note is never an alarm.** `--light` is the app's one warm color and it
 means *lit*, *held*, *here* — never *late* and never *wrong*. B-01's no-red-walls
 rule is a palette rule as well as a pressure-surface rule: **no red or amber
-enters this identity**, because a colour that means "attention" in the brand will
+enters this identity**, because a color that means "attention" in the brand will
 eventually mean "you failed" in the UI.
 
 **Grayscale survival is checked, not assumed.** The gate asserts the shelter and
@@ -451,7 +451,7 @@ palette. Per [V-10](docs/verifications.md), a gate nobody has watched pass is a
 file. CI installs **chromium build v1194**, the revision `playwright-core` 1.56.0
 pins to — the matched pair holds on a machine that is not this sandbox.
 
-### B-11 · The app's own colours, both themes
+### B-11 · The app's own colors, both themes
 B-10 is the identity. These are the **interface** tokens in `public/app.css`,
 which is a separate question — an icon is seen once, a surface is lived in.
 
@@ -578,7 +578,7 @@ rendered gate in this same commit.**
   route-button skin; the preview sentence is `detail-hint` class but carries
   the act's terms — measured, not waved through. The place filter has a
   placeholder, so it inherits the placeholder rule. A selected verb is marked
-  with `aria-pressed` AND a 2px `--ink` outline — never colour alone (B-01).
+  with `aria-pressed` AND a 2px `--ink` outline — never color alone (B-01).
 - **The destructive confirm** (`sort bulk confirm` state): revealed by
   choosing Let-them-go and audited OPEN, per the purge rule — a control that
   only exists after a click is still a control somebody reads. The typed-word
@@ -598,7 +598,7 @@ rendered gate in this same commit.**
 
 - **The tree** (`tree open` state): rows are full-width buttons on
   `--surface` with `--line` borders; depth is INDENTATION ONLY — structure
-  never rides on colour or weight (B-01 applied to hierarchy). The branch
+  never rides on color or weight (B-01 applied to hierarchy). The branch
   remainder ("N more under it") is a real dashed-border button in
   `--ink-soft`, measured, not decoration.
 - **The doors** (the behind-list and coverage rows became buttons): the
@@ -614,7 +614,7 @@ rendered gate in this same commit.**
   audit implicitly via the group's standard controls.
 - **The session close** (`close strip` state): the words are the whole
   surface — the win line and the gauge line are ordinary `--ink`-class text
-  and the gauge is stated in words, never colour (B-02's rule made load-
+  and the gauge is stated in words, never color (B-02's rule made load-
   bearing). Driven by actually ending a session, then lowered so later
   states see the ordinary page.
 
@@ -681,7 +681,7 @@ rendered gate in this same commit.**
 - **The slot control** (`#slot-day`/`#slot-set`, in `DIALOG_COMMON`): a
   native select and a ghost button on existing tokens; the status note rides
   the registered `--warm` storage-note pair and states the chosen day in
-  words, never colour.
+  words, never color.
 
 ### B-28 · Who cares, and what was decided (1.9.0)
 
@@ -700,7 +700,7 @@ rendered gate in this same commit.**
   carry no control at all: the log is read-only, asserted structurally in
   smoke rather than by reading copy.
 - **Nothing anywhere is keyed to how many** stakeholders or decisions a thing
-  has — no colour, no weight, no ordering by volume. That absence is the
+  has — no color, no weight, no ordering by volume. That absence is the
   measurement (B-01, law 5). The portfolio's clause names people rather than
   counting them, and its overflow number is a true count of what is not
   shown, in the caps convention's own grammar.
@@ -828,7 +828,7 @@ buttons measured 1.26:1", not "contrast looked low".
 
 ### B-29 · A timer that shows presence, not progress (1.10.0)
 
-**No new colour tokens.** The presence mark uses `--warm`, already bound and
+**No new color tokens.** The presence mark uses `--warm`, already bound and
 already measured; the timer's words sit in `.donow-label` on the same binding
 they have always used, so the rendered gate covers both without a new pair.
 
@@ -843,7 +843,7 @@ they have always used, so the rendered gate covers both without a new pair.
   ambiguous; a steady mark is not.
 - **Nothing here encodes an amount, and that is an accessibility property as
   well as a product one.** A pulsing dot has no state a low-vision user has to
-  judge by size or by arc length, and no colour that has to be read as a
+  judge by size or by arc length, and no color that has to be read as a
   quantity. Pressure and decay never ride on hue (B-02); this now holds for
   elapsed time too, because there is no quantity rendered at all.
 - **The end of a timer is announced, never silent.** The bar removes itself and
@@ -852,14 +852,14 @@ they have always used, so the rendered gate covers both without a new pair.
   a screen-reader user with no way to know it had — which is why "it just goes
   away" is implemented as *goes away and says so once*, not as silence.
 - **The length control** (`#timer-length`, `#timer-length-set`,
-  `#timer-length-note`) is the request-slot pattern exactly: a labelled
+  `#timer-length-note`) is the request-slot pattern exactly: a labeled
   `<select>`, a ghost button at full target size, and a `role="status"` note
   that states what is now set. Measured in the `dialog` states of the rendered
   gate alongside `#slot-day`, which shares its bindings.
 
 ### B-30 · The offer, and the wish inside it (1.11.0)
 
-**No new colour tokens.** The offer reuses `.behind-item` / `.behind-title` /
+**No new color tokens.** The offer reuses `.behind-item` / `.behind-title` /
 `.behind-why`, already bound and already in the rendered gate; the wish adds a
 `--line` rule and an italic on top of those bindings, both of which the existing
 pairs already cover.
@@ -881,7 +881,7 @@ pairs already cover.
 
 ### B-31 · A person's own page (1.12.0)
 
-**No new colour tokens.** The group reuses `.detail-label`, `.detail-hint`,
+**No new color tokens.** The group reuses `.detail-label`, `.detail-hint`,
 `.detail-feed`, `.detail-when` and the `linklike` button, all already bound and
 already measured.
 
@@ -900,12 +900,12 @@ already measured.
   just now" is an answer; a group that disappears leaves the question looking
   unanswerable, which is the empty-state rule this register already records.
 - **Nothing on the page is a grade.** Durations and relationships only — law 7,
-  and it is an accessibility property too: there is no colour, position or
-  emphasis carrying a judgement that a reader has to decode.
+  and it is an accessibility property too: there is no color, position or
+  emphasis carrying a judgment that a reader has to decode.
 
 ### B-32 · The journal, in its three states (1.13.0)
 
-**No new colour tokens.** The journal reuses `.storage-note`, `.detail-label`,
+**No new color tokens.** The journal reuses `.storage-note`, `.detail-label`,
 `.detail-hint`, `.about-caveat` and `.trash-list`, all already bound and
 measured; all three states are in the rendered gate in this same commit.
 
@@ -931,7 +931,7 @@ measured; all three states are in the rendered gate in this same commit.
 
 ### B-33 · The copy, and the way back (1.14.0)
 
-**One new class, no new colour pair.** `.restore-note` carries `--ink-soft` on
+**One new class, no new color pair.** `.restore-note` carries `--ink-soft` on
 the page background — the pair `.empty` already uses and the gate already
 measures — and it is registered as its own selector all the same, because a pair
 that is measured through one selector is not measured for another. `#copy-note`
@@ -958,7 +958,7 @@ reuses `.storage-note`. Both are in the rendered gate in this commit.
 
 ### B-34 · Load, not work (1.15.0)
 
-**No new colour tokens.** The load entry reuses `.bother-entry`,
+**No new color tokens.** The load entry reuses `.bother-entry`,
 `.detail-label`, `.detail-hint`, `.detail-row`, `.trash-list` and
 `.nextup-count` — every one already bound and measured. Two new states are in
 the rendered gate in this same commit.
@@ -967,7 +967,7 @@ the rendered gate in this same commit.
   by default, so the driver opens it and audits what is inside, the way it has
   audited the bother entry since 0.17.0.
 - **The placeholder needed its own rule**, and the gate caught it: the UA
-  default grey measured 4.08:1 against a 4.5:1 requirement. `#pebble-text`
+  default gray measured 4.08:1 against a 4.5:1 requirement. `#pebble-text`
   joins `#bother-text` on the explicit `--ink` rule. A placeholder is text
   somebody has to read to know what the box wants.
 - **`#nextup-load` is registered in its own state, not with the entry.** It
@@ -975,7 +975,7 @@ the rendered gate in this same commit.
   have named a selector matching nothing visible — which this gate fails on by
   design. It is also why the audit sits immediately after `next up`: the line
   lives inside the offer, and an offer that is not showing has no line.
-- **Nothing about weight rides on colour.** Heavier is a WORD — a pebble, a
+- **Nothing about weight rides on color.** Heavier is a WORD — a pebble, a
   rock, a boulder — and the shorter offer is a shorter list, not a warmer one.
   B-02's rule (the gauge speaks in words, never hue) applies here unchanged.
 - **The row carries one verb**, like the trash view. "Settled", not "Done":
@@ -1003,7 +1003,7 @@ the rendered gate in this same commit.
 - **The button is disabled only while it runs**, and comes back either way —
   including on failure. A control that stays disabled after an error strands
   somebody with no way to retry and no statement of what happened.
-- **No new colour pair.** The block reuses `.about-section`, `.about-p`,
+- **No new color pair.** The block reuses `.about-section`, `.about-p`,
   `.about-caveat`, `.ghost` and `.storage-note`, all measured since B-08; the
   two new selectors are added to the contrast registry in this same commit and
   measure 10.07:1 and 7.20:1 in light, 8.21:1 and 9.73:1 in dark.
@@ -1020,7 +1020,7 @@ the rendered gate in this same commit.
   less than half the floor. Borrowed wholesale from `#purge-word` for the reason
   that control already states: a surface somebody reaches for at a moment they
   are not at their best. The select carries it too.
-- **The placeholder colour is set explicitly.** The UA grey is a colour nobody
+- **The placeholder color is set explicitly.** The UA gray is a color nobody
   chose and it fails the contrast gate; `#pebble-text` and `#capture` already
   carry the same correction, so this is the third instance of one rule rather
   than a new one.
@@ -1041,7 +1041,7 @@ the rendered gate in this same commit.
   log whenever the panel opens or an anchor changes, and a repaint landing
   mid-choice is how a surface throws away an answer somebody was in the middle of
   giving — the detail sheet's no-clobber rule, applied to a select.
-- **No new colour pair.** Everything reuses tokens measured since B-08; the six
+- **No new color pair.** Everything reuses tokens measured since B-08; the six
   new selectors joined the contrast registry in this same commit.
 
 ### B-37 · The diagnostic report (1.18.0)
@@ -1069,7 +1069,7 @@ the rendered gate in this same commit.
 - **Monospace at 0.8125rem is the smallest type in the app**, so the five new
   selectors joined the contrast registry in this same commit rather than being
   assumed to inherit a measured pair. Measured at 15.73:1 light and 13.28:1
-  dark, on `--surface`, which adds no new colour.
+  dark, on `--surface`, which adds no new color.
 - **The focus-ring check itself was found to be order-dependent** while this was
   built, and fixed here: `blur()` does not reset Chromium's sequential-focus
   starting point, so the Tab walk resumed from wherever the previous audit left
@@ -1104,7 +1104,7 @@ release-engineering one — which is why it is recorded here.
   described the wrong action. The accessible name is the visible text, as before,
   so the criterion is satisfied by construction rather than by a matching
   `aria-label` — the accident hub LESSONS §29 warns about.
-- **No new colour pairs.** The change is behavioural and textual; every selector
+- **No new color pairs.** The change is behavioral and textual; every selector
   involved was already in the contrast registry, and the gate was re-run in both
   themes with the update strip in its shown state.
 - **The reader is never told on a first visit** (§7h.3). The no-controller gate
@@ -1156,7 +1156,7 @@ wrong before it was right.** A `<select>`'s option list was being read as "the
 words on the control", failing every select in the app for text no one sees on
 it. And `textContent` concatenates across element boundaries, so a card's title
 and status ran together as "a held thoughtnot sorted yet" — which reported a
-duplicate under a name no reader would recognise. Both fixed before the gate was
+duplicate under a name no reader would recognize. Both fixed before the gate was
 believed (§37: ask whether the pixels are the ones it thinks; §33: a check that
 cannot see a thing reports the wrong diagnosis).
 
@@ -1166,7 +1166,7 @@ V2 stage 1. The offer's head card, the rows behind it, and the upkeep chips
 gain a lineage line — "in Errands · under Home" — and the filing flow gains a
 visible receipt ("Filed under Errands — no return date yet.").
 
-- **No new colour pair ships.** Every new span reuses a text class the
+- **No new color pair ships.** Every new span reuses a text class the
   contrast registry already measures on the same surface (`.nextup-why`,
   `.behind-why`, `.chip-why`); the modifier classes (`.nextup-place`,
   `.behind-place`, `.chip-place`) change layout only. Same ink, same paper,
@@ -1188,7 +1188,7 @@ visible receipt ("Filed under Errands — no return date yet.").
 ADR-0083. Help, Settings, Your data, Things you can do and How it works stop
 being folding groups inside the ⓘ and become their own screens off More.
 
-**No new tokens and no new colour pair.** Every element came across with its id
+**No new tokens and no new color pair.** Every element came across with its id
 and its classes intact, so each is measured against the same foreground /
 background binding it was measured against yesterday. What changed is which
 surface it is measured ON, and that is the whole finding below.
@@ -1238,7 +1238,7 @@ as an achievement: the split moved 10,425px around and cut nothing.
 ### B-42 · The link that could not open, and the link that opens the wrong app (1.40.2)
 
 Two findings on the same path — the capture link — reported from an iPad. Neither
-is a colour or a name; both are the same class of failure as an unreachable
+is a color or a name; both are the same class of failure as an unreachable
 control, which is why they are recorded here rather than only in the changelog.
 
 - **The entrance could fail outright**, and the browser named it: *"Safari can't
@@ -1261,8 +1261,8 @@ control, which is why they are recorded here rather than only in the changelog.
 
 **Why eleven green gates missed a breakage every engine agrees on**, recorded
 because the answer is not the flattering one: the local server answered every
-path 200 or 404. It could not redirect, so the one edge behaviour that triggers
-this was the one behaviour no walk ever had. Not an engine difference — a hole in
+path 200 or 404. It could not redirect, so the one edge behavior that triggers
+this was the one behavior no walk ever had. Not an engine difference — a hole in
 the rig. `serve.mjs` can now redirect, and the §7h walk drives one.
 
 **Two false trails on the way, both of which looked exactly like "the fix does
@@ -1331,7 +1331,7 @@ control under the offer, rendered only when a section is live above the list and
 the list has rows. It scrolls to `#cards` and moves focus there, so a keyboard or
 screen-reader user continues from the list rather than from where they pressed.
 
-**The skip link stays**, unchanged in behaviour and still first in the document:
+**The skip link stays**, unchanged in behavior and still first in the document:
 it is the right pattern for a keyboard, and removing it would trade one input
 method for another. It now carries `data-touch-partner="#to-held"`.
 
@@ -1385,7 +1385,7 @@ column by that 6px at each end. Nothing on screen moved.
 
 **Every accessibility gate here was green throughout, and this one could not
 have been otherwise.** `auditFocusRings` read `outline-style`, `outline-width`
-and the ring's contrast — all three correct, in both themes, in every colour
+and the ring's contrast — all three correct, in both themes, in every color
 set, on every release. Computed style is what the cascade RESOLVED, not what the
 compositor PAINTED, and `outline-width` is 3px whether or not one of those pixels
 arrives. **142 releases.**

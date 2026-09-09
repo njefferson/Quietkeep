@@ -8,7 +8,7 @@
 //
 // Everything below goes through `admit`, not `fold`. The whole question is what
 // the GATE does with these events; folding them directly would assert the
-// author's intention rather than the boundary's behaviour.
+// author's intention rather than the boundary's behavior.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';

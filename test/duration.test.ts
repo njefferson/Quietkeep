@@ -205,7 +205,7 @@ test('a long stretch does not narrow anything — fitsWithin is untouched', () =
   assert.equal(duration.fitsWithin(noEstimate(), 15), true, 'no estimate fits any window');
 });
 
-test('the long end is recognised, and the short end is not', () => {
+test('the long end is recognized, and the short end is not', () => {
   assert.equal(duration.isLongStretch(duration.LONG_STRETCH), true);
   assert.equal(duration.isLongStretch(duration.LONG_STRETCH + 60), true);
   assert.equal(duration.isLongStretch(120), false, 'two hours is still a window to fit into');

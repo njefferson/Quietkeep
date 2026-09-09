@@ -48,7 +48,7 @@
   --warm: #7A4E00;
 }
 
-/* Quietkeep — the original — warm paper by day, deep blue-grey by night */
+/* Quietkeep — the original — warm paper by day, deep blue-gray by night */
 :root[data-palette="quietkeep"] {
   --bg: #F4F1E9;
   --surface: #FFFFFF;
@@ -168,7 +168,7 @@
   --warm: #7A4700;
 }
 
-/* Mono — no hue at all — neutral grey by day, neutral charcoal by night */
+/* Mono — no hue at all — neutral gray by day, neutral charcoal by night */
 :root[data-palette="mono"] {
   --bg: #D2D2D2;
   --surface: #F7F7F7;
@@ -208,7 +208,7 @@
   --warm: #6E3200;
 }
 
-/* Soft — the lowest glare — a dimmed page and a night that is grey rather than black */
+/* Soft — the lowest glare — a dimmed page and a night that is gray rather than black */
 :root[data-palette="soft"] {
   --bg: #BFBCB2;
   --surface: #D9D6CC;

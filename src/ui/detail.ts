@@ -20,7 +20,8 @@ import type { StampContext } from './session.ts';
 import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
-import { everyDaysWords, localDayKey, atMidnight} from '../time.ts';
+import { everyDaysWords, localDayKey, atMidnight, recordDayWords } from '../time.ts';
+import { clockDayWords } from '../held.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
 import {
   isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo,
@@ -39,14 +40,14 @@ import {
 } from './detail-intents.ts';
 import { normalize } from '../search.ts';
 import { doneEvents } from './work.ts';
-import { declareFeedsEvents, releaseFeedsEvents } from './detail-intents.ts';
+import { declareFeedsEvents, releaseFeedsEvents, endOfDayKey } from './detail-intents.ts';
 import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
 import { biteEvents } from './work-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
 // "home, office, text" is THREE places (3.8.0) — see `src/names.ts` for why the
-// placeholder was kept and the behaviour changed rather than the other way round.
+// placeholder was kept and the behavior changed rather than the other way round.
 import { splitNames, andWords } from '../names.ts';
 import { allRoles, rolesOf, lineView, lineViewWords } from '../roles.ts';
 import { servesNode } from '../serves.ts';
@@ -453,7 +454,10 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (declinedBox) declinedBox.hidden = !declined;
     const words = q<HTMLElement>('#detail-declined-words');
     if (words && standing) {
-      const day = localDayKey(standing.at, dayOf(session));
+      // THE SAME FACT, THE SAME WORDS. `requests.ts` renders this ledger entry
+      // with `recordDayWords` — "3 Aug" — and this one printed the key, so the
+      // Not Now ledger and a thing's own page described one decline two ways.
+      const day = recordDayWords(standing.at, session.zone, new Date(now()).toISOString());
       const who = standing.person ? (st.nodes.get(standing.person)?.title || null) : null;
       words.textContent = who
         ? `Declined ${day} — ${who} asked. It sits in the Not Now ledger.`
@@ -591,7 +595,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     if (changed) setRest(false);
     TITLE.textContent = n.title || '(untitled)';
 
-    // What is true about it now, in words — never a colour, never a badge.
+    // What is true about it now, in words — never a color, never a badge.
     const p = pressureOf(n, new Date(now()).toISOString(), dayOf(session));
     const bits: string[] = [];
     // WHAT IT IS, FIRST (2.4.0, ADR-0094). This line said everything true about
@@ -617,7 +621,18 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
     // The quiet fact line (1.4.0): where a sorted thing went, in the sorting's
     // own words — the sheet is where "it feels lost" gets its answer.
-    if (n.route && n.route !== 'trash') bits.push(`sorted as ${String(n.route).replace(/-/g, ' ')}`);
+    // IN THE SORTING'S OWN WORDS, and one of them was not. Every route value
+    // doubles as the label on the button that set it — Do now, Next action,
+    // Waiting for, Someday, Reference — except `filed`, which no control has
+    // ever shown anybody. A reader who pressed *Put it under something* was
+    // told their thing was "sorted as filed", a word from the event vocabulary
+    // wearing the line whose stated job is the reader's vocabulary.
+    if (n.route && n.route !== 'trash') {
+      const said = n.route === 'filed'
+        ? 'put under something'
+        : String(n.route).replace(/-/g, ' ');
+      bits.push(`sorted as ${said}`);
+    }
     if (standingDecline(n)) bits.push('in the Not Now ledger');
     if (isArrangement(n)) {
       // The words say CONFIRMED rather than done, because that is the whole
@@ -629,8 +644,37 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     }
     const words = pressureWords(p);
     if (words) bits.push(words);
+    // A CLOCK THAT IS KEPT IS NOT A CLOCK THAT WILL SPEAK. The log is
+    // append-only, so finishing a thing does not erase the day it carried —
+    // and this line read that retained day out as `comes back`, on a thing the
+    // same line had already called `done`. One row of the sheet said the work
+    // was finished and the next said it was returning in October.
+    //
+    // An upkeep is the case where both ARE true: it is done AND it comes back,
+    // which is what a cadence means, so the interval is what separates them
+    // rather than the word `done`.
+    // IN THE APP'S OWN WORDS FOR A DAY. This printed the raw key, so a thing's
+    // own page said `comes back 2026-09-09` while the held card and the
+    // coverage sheet both said *tomorrow* about that same date — three screens,
+    // one date, two vocabularies, and the machine-shaped one on the page a
+    // reader opens to understand a single thing.
+    //
+    // AND THE MENU IS ASKED FIRST. Routing to Someday clears every DEMAND clock
+    // — due, start, suspense, park — and deliberately leaves the `review` clock
+    // the gate wrote when the thing was captured, because a review clock is the
+    // app's own resurfacing marker and was never a demand (triage-intents.ts's
+    // DEMAND_KINDS says so, and gate.ts's law-6 belts pass it correctly). This
+    // line then fell through `?? n.clocks.review` and read that bookkeeping
+    // clock out as `comes back today`, one bit after `on the Menu`, to a reader
+    // who had just been told the Menu has no clock. `heldGroups` has always had
+    // the right precedence — it buckets `onMenu` BEFORE it looks at any clock —
+    // so this is that order, here.
     const clock = n.clocks.due ?? n.clocks.review ?? n.clocks.start;
-    if (clock) bits.push(`comes back ${localDayKey(clock.at, dayOf(session))}`);
+    const willReturn = !n.onMenu && (!n.lastDone || Boolean(n.intervalDays));
+    if (clock && willReturn) {
+      bits.push(`comes back ${clockDayWords(
+        clock.at, new Date(now()).toISOString(), session.zone, dayOf(session))}`);
+    }
     // A PERSON'S PLACES, IN A PERSON'S WORDS (3.21.0, ADR-0123). The places
     // group has always rendered on every kind, so places could be put on a
     // person before anything read them — the affiliation the choosers now
@@ -1427,11 +1471,29 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     setRest(moreBtn.getAttribute('aria-expanded') !== 'true');
   });
 
+
+  /**
+   * A DAY YOU JUST PICKED, SPOKEN THE WAY THE APP SAYS DAYS.
+   *
+   * These three confirmations read the date input's own key straight out —
+   * "Due 2026-09-09." — into the live region, so the one moment the app speaks
+   * a date aloud was the one place it spoke storage format. The words existed
+   * (`clockDayWords`) and took an instant, and the key had no route to one.
+   *
+   * It does now, and it is the SAME route the emitter takes: `endOfDayKey` is
+   * exactly what `setDueEvents`, `setStartEvents` and `setSuspenseEvents` run
+   * the key through before storing it, so what is said and what is kept cannot
+   * describe one day two ways.
+   */
+  const dayPicked = (key: string): string => clockDayWords(
+    endOfDayKey(key, session.zone),
+    new Date(now()).toISOString(), session.zone, dayOf(session));
+
   btn('#detail-date-set')?.addEventListener('click', () => {
     const key = DATE.value;
     // A date input yields '' when empty or invalid; nothing is a legal answer.
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a date first.'); return; }
-    void run(ctx => setDueEvents(ctx, current!.id, key), `Due ${key}.`);
+    void run(ctx => setDueEvents(ctx, current!.id, key), `Due ${dayPicked(key)}.`);
   });
   btn('#detail-date-clear')?.addEventListener('click', () => {
     void run(ctx => clearDueEvents(ctx, current!.id), 'Date removed — it comes back to you today.');
@@ -1440,7 +1502,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     const key = startInput?.value ?? '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a day first.'); return; }
     void run(ctx => setStartEvents(ctx, current!.id, key),
-      `Out of the way until ${key} — it comes back on its own.`);
+      `Out of the way until ${dayPicked(key)} — it comes back on its own.`);
   });
   btn('#detail-start-clear')?.addEventListener('click', () => {
     void run(ctx => clearStartEvents(ctx, current!.id),
@@ -1832,7 +1894,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   btn('#detail-role-set')?.addEventListener('click', () => {
     const input = q<HTMLInputElement>('#detail-role');
     if (!input || !current) return;
-    // Commas separate them, on this axis too — one shape, one behaviour.
+    // Commas separate them, on this axis too — one shape, one behavior.
     const names = splitNames(input.value);
     if (names.length === 0) { say('A name first — or leave it, and it belongs to no one in particular.'); return; }
     input.value = '';
@@ -1861,7 +1923,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   btn('#detail-suspense-set')?.addEventListener('click', () => {
     const key = q<HTMLInputElement>('#detail-suspense')?.value ?? '';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a date first.'); return; }
-    void run(ctx => setSuspenseEvents(ctx, current!.id, key), `Answer owed by ${key}.`);
+    void run(ctx => setSuspenseEvents(ctx, current!.id, key), `Answer owed by ${dayPicked(key)}.`);
   });
 
   btn('#detail-save-set')?.addEventListener('click', () => {

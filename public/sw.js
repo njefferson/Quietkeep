@@ -3,7 +3,7 @@
 // The cache name carries the version.capability.iteration triplet and is bumped
 // with it (Doctrine §7, CLAUDE.md). Changing the triplet is what retires the old
 // cache — that is the whole mechanism, so it is not optional.
-const CACHE = 'quietkeep-3.23.1';
+const CACHE = 'quietkeep-3.23.7';
 
 // The shell only. User data is NEVER cached here — it lives in IndexedDB, which
 // this file does not touch and must not.
@@ -12,8 +12,8 @@ const SHELL = [
   './index.html',
   // The palette values, generated from docs/palettes.json (3.4.0). It is a
   // SEPARATE stylesheet and therefore a separate thing to precache: an
-  // offline-first app that caches its rules and not its colours would come back
-  // with no colours at all, which is a worse failure than not coming back.
+  // offline-first app that caches its rules and not its colors would come back
+  // with no colors at all, which is a worse failure than not coming back.
   './palettes.css',
   './app.css',
   './app.js',
@@ -50,7 +50,7 @@ const SHELL = [
 // WHAT THE READER CHOSE, READ BEFORE THE PAGE EXISTS (ADR-0111).
 //
 // A palette is stored in IndexedDB, which is asynchronous, so the app could not
-// know which colours to wear until after it had already painted — one beat of
+// know which colors to wear until after it had already painted — one beat of
 // the default on every cold start, in the right mode, so a hue settling rather
 // than day turning into night. That was recorded as unfixable "without storing
 // the choice somewhere this app deliberately does not store things", which is

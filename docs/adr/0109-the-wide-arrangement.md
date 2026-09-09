@@ -16,7 +16,7 @@ This is not a new decision. ADR-0108 made it and built for it:
 > A stance is therefore a region the layout places, and it must never assume its
 > own size. Narrow shows exactly one and the hub is a place you return to; wide
 > can show the hub beside one or more stances. Same definitions, one set of
-> behaviours, two arrangements — not a second implementation, and not a phone app
+> behaviors, two arrangements — not a second implementation, and not a phone app
 > with a desktop mode bolted on.
 
 That is why stances are `main > section[data-stance-name]` toggled by a class

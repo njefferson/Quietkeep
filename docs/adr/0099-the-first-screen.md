@@ -140,7 +140,7 @@ repeated it.
 Somebody reaching for the worry box, not finding it, and the thought going
 unwritten. That is the failure this trades against and it outweighs every pixel
 in this record — the entries come back to the runway and the finding stands
-anyway, since what the release was run to learn is already learnt.
+anyway, since what the release was run to learn is already learned.
 
 Or the opposite, which would be the stronger result: the first screen reading as
 calmer in use than the 42px suggests, in which case the number was measuring the

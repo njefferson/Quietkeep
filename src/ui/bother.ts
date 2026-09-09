@@ -3,7 +3,7 @@
 // Rendering and wiring only; everything structural is in `src/bother.ts`.
 //
 // One card at a time, and the choices carry their consequences as hints — a
-// forced choice with unlabelled outcomes is a guess, and this is the one question
+// forced choice with unlabeled outcomes is a guess, and this is the one question
 // the whole flow turns on.
 
 import type { Session } from './session.ts';

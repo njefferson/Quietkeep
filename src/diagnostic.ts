@@ -257,12 +257,12 @@ export function kindCounts(state: State): Record<NodeKind, number> {
  * WHAT AN ANSWER TO THE SITUATION QUESTIONS COULD NARROW.
  *
  * The report already says what a store CONTAINS. This says how much of it is
- * labelled, which is a different question and the one that decides whether the
+ * labeled, which is a different question and the one that decides whether the
  * three situation questions do anything at all.
  *
  * It exists because of a store read from a device: 1,432 things, one place, no
  * people. Answering *where are you* returned that one place's things plus every
- * unlabelled one, which is all of them — correct, and load-bearing, since a
+ * unlabeled one, which is all of them — correct, and load-bearing, since a
  * filter that can empty the screen is a filter nobody trusts twice. But the
  * person who answers and sees nothing change cannot tell whether the feature is
  * broken, whether they did it wrong, or whether it is working exactly as
@@ -278,7 +278,7 @@ export function kindCounts(state: State): Record<NodeKind, number> {
  * EVERY PREDICATE IS THE FILTER'S OWN. `reachedByAPlace` is the negation of
  * `fitsHere`'s "fits every answer" clause, `namedOn` is the list `fitsWith`
  * branches on, `estimateOf` is what `fitsWithin` reads. Counting a second
- * reading of the same fields would let the census and the behaviour disagree
+ * reading of the same fields would let the census and the behavior disagree
  * about one store, which is the defect this whole file exists to make visible.
  */
 export interface SituationReach {
@@ -402,7 +402,7 @@ export function diagnosticReport(
   const load = loadNow(state);
 
   L.push('QUIETKEEP — DIAGNOSTIC REPORT');
-  L.push(`Taken ${recordDayWords(nowIso, r.zone, nowIso)} · build ${r.triplet} · ${r.edition ?? 'unrecognised'} edition`);
+  L.push(`Taken ${recordDayWords(nowIso, r.zone, nowIso)} · build ${r.triplet} · ${r.edition ?? 'unrecognized'} edition`);
   L.push('');
 
   L.push('WHAT IS WRONG');
@@ -458,7 +458,7 @@ export function diagnosticReport(
   L.push(`  Room available: ${r.quotaMb == null ? 'unknown' : `${r.quotaMb} MB`}`);
   // WHAT THE NUMBER ACTUALLY MEASURES (2.9.4). `navigator.storage.estimate()` is
   // per-ORIGIN: it counts the app's own downloaded code alongside anything the
-  // reader has put in, and the browser does not separate them. Labelled "Used by
+  // reader has put in, and the browser does not separate them. Labeled "Used by
   // Quietkeep" it read as "used by your things" — and a report showing 1.3 MB
   // beside a log of 0 events reads as either a lie or a bug. It was neither; the
   // label was claiming a precision the number does not have.

@@ -36,7 +36,7 @@ arrival, which is the modal session: median 30-day retention in this category is
 3.3–3.9%, so the typical open is a re-entry after weeks — and re-entry after weeks
 is precisely when the inbox is fullest and the decision is most expensive.
 
-## The claim the old behaviour rested on, and why it is false
+## The claim the old behavior rested on, and why it is false
 
 The reveal was defended in a comment: a fresh arrival is a fresh decision, so
 coming back should always show you what waited. That reasoning assumes the reveal

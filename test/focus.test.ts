@@ -230,7 +230,7 @@ test('elapsed time is a fact, never a pace', () => {
   for (const m of [1, 5, 42, 60, 135, 600]) {
     const w = focusWords(m)!;
     for (const shame of ['only', 'just', 'still', 'already', 'late', 'wasted']) {
-      assert.doesNotMatch(w, new RegExp(`\\b${shame}\\b`, 'i'), `"${w}" carries no judgement`);
+      assert.doesNotMatch(w, new RegExp(`\\b${shame}\\b`, 'i'), `"${w}" carries no judgment`);
     }
   }
 });
