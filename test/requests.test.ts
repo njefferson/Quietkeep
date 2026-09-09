@@ -137,7 +137,14 @@ test('the ledger: standing declines only, newest first, and its words never coun
   const titleOf = (id: string): string | null => s.nodes.get(id)?.title ?? null;
   for (const row of notNowLedger(s)) {
     const words = ledgerRowWords(row, titleOf, TZ, NOW);
-    assert.match(words, /declined \d+ \w+/, 'a date in words');
+    // A MONTH IN WORDS AND A DAY, IN WHATEVER ORDER THE DEVICE PUTS THEM
+    // (3.23.8). This was /declined \d+ \w+/ — day-then-month, the en-GB order
+    // `recordDayWords` was hardcoded to, so the assertion could only pass while
+    // the defect existed. The rule law 5 wants is "a date in words rather than
+    // a numeric mask"; which half comes first is the reader's device's
+    // business and never this test's.
+    assert.match(words, /declined (\d+ \w+|\w+ \d+)/, 'a date in words');
+    assert.doesNotMatch(words, /declined \d+[/\-.]\d+/, 'never a numeric mask');
     assert.doesNotMatch(words, /\d+\s*(times|of|\/)|%|remaining/, 'never a tally');
   }
 });

@@ -299,7 +299,16 @@ export function calendarDaysBetween(fromIso: string, toIso: string, day: DayShap
  * line and the journal list each re-wrote this format inline and every one of
  * them dropped the year clause (1.17.4), which is why it is ONE helper now:
  * a record surface that wants day words has no format of its own to forget
- * the rule in. en-GB day-month order, the house style of the record surfaces.
+ * the rule in.
+ *
+ * THE READER'S LOCALE, NOT A CHOSEN ONE (3.23.8). This passed 'en-GB' and this
+ * comment called it "the house style of the record surfaces", which is a house
+ * style nobody here asked for and a country nobody here is in. 3.23.4 fixed the
+ * two sites in `capture-context.ts` that had no justification written beside
+ * them and stopped at this one, which did — so an app that writes `Sep 7, 2028`
+ * on one surface was writing `8 Sept` on the Not Now ledger and the decline
+ * confirmation. A comment asserting the defect is how the defect survived the
+ * sweep that was looking for it.
  */
 export function recordDayWords(atIso: string, tz: string, nowIso: string): string {
   // Midnight on purpose, and it is not a shortcut: this distance is only ever
@@ -307,7 +316,7 @@ export function recordDayWords(atIso: string, tz: string, nowIso: string): strin
   // person's day ends cannot move a year-scale threshold, and threading a
   // boundary in here would imply it could.
   const days = calendarDaysBetween(nowIso, atIso, atMidnight(tz));
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(undefined, {
     timeZone: tz, day: 'numeric', month: 'short',
     ...(Math.abs(days) >= 365 ? { year: 'numeric' } : {}),
   }).format(new Date(atIso));

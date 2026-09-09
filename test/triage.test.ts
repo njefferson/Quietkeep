@@ -365,10 +365,10 @@ test('filing refuses the two shapes that would corrupt the tree', () => {
 // --- the filed receipt (V2 stage 1) ------------------------------------------
 
 test('the receipt answers WHEN honestly, both branches, and never reproaches', () => {
-  assert.equal(fileReceiptWords('Errands', null), 'Filed under Errands — no return date yet.');
-  assert.equal(fileReceiptWords('Errands', 0), 'Filed under Errands — it comes round today.');
-  assert.equal(fileReceiptWords('Errands', 1), 'Filed under Errands — it comes round tomorrow.');
-  assert.equal(fileReceiptWords('Errands', 4), 'Filed under Errands — it comes round in 4 days.');
+  assert.equal(fileReceiptWords('Errands', null), 'Put under Errands — no return date yet.');
+  assert.equal(fileReceiptWords('Errands', 0), 'Put under Errands — it comes round today.');
+  assert.equal(fileReceiptWords('Errands', 1), 'Put under Errands — it comes round tomorrow.');
+  assert.equal(fileReceiptWords('Errands', 4), 'Put under Errands — it comes round in 4 days.');
   for (const w of [fileReceiptWords('X', null), fileReceiptWords('X', 3)]) {
     for (const bad of ['overdue', 'late', 'still', "haven't", 'you should', 'behind']) {
       assert.doesNotMatch(w, new RegExp(bad, 'i'), `receipt says "${bad}"`);

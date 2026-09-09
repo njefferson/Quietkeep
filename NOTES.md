@@ -554,6 +554,36 @@ written from the diff, and a diff cannot show the surface the fix did not reach.
   §7h's defect one layer down — an app that cannot notice it has gone stale, in
   the version where it never arrived.
 
+**FOUR OF THE ABOVE ARE CLOSED IN 3.23.8** — the three regressions and the
+invisible confirmation. `whyCovered` asks the Menu before the clock and the
+comment that hid it is rewritten to say where it stops matching `isSilent` and
+why; `fileReceiptWords` says *Put under*, the words on the button; both
+remaining `'en-GB'` literals are gone and `recordDayWords`'s doc comment no
+longer declares the defect. `#detail-live` is visible, pinned above *Close*
+outside the only part of the sheet that scrolls, wearing `.detail-state` so no
+new colour pair enters the contrast gate.
+
+**And `say()` lost its mirror, which was never doing anything.** F-08's remedy
+was to write a failure into the fact line as well as the live region — but
+`render` rewrites the fact line from `bits` on every paint and `run` paints
+immediately after a write, so a failure mirrored there survived microseconds.
+Only the validation messages that return BEFORE `run` ever stayed on screen,
+which is why it looked fixed for eight releases. One visible region replaces it,
+and it covers the half nobody had noticed was missing: the SUCCESS path never
+wrote anywhere a sighted reader could see at all.
+
+**Two assertions had to change, and both could only pass while a defect
+existed.** `test/requests.test.ts` matched `/declined \d+ \w+/` — day-then-month,
+which is the en-GB order the code was hardcoded to, so the test was pinning the
+country. It asks for a month in words in either order now, and refuses a numeric
+mask, which is what law 5 actually wants. And `test/coverage-proof.test.ts`'s
+fixture routed a node to `someday` without adding the Menu row, so the menu
+clause was never exercised — `clarify.routed`'s own menu branch is unreachable
+defence-in-depth and says so in its comment. The new test asserts the node is on
+the Menu AND still carries a clock before asserting which reason is printed, so
+it cannot quietly stop measuring anything. Planted: with the old precedence put
+back it goes red, and green again when restored.
+
 **SEVEN MORE THAT NO CLAIM MENTIONED**, which the protocol weighs as heavily as
 a disagreement:
 
@@ -1406,9 +1436,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.7**, which production does
-  not carry: promoted last on 2026-09-03 at 3.23.1, so the two hosts are one
-  tree plus this release. 3.23.2 is the first fix from the first cold view —
+- **https://staging.quietkeep.pages.dev** — **3.23.8**, which production does
+  not carry: promoted last on 2026-09-09 at 3.23.7, so the two hosts are one
+  tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
+  three of its four are regressions from the session that shipped 3.23.2
+  through 3.23.7: the Menu-before-clock precedence in the one place 3.23.6 did
+  not reach, the route word 3.23.3 left standing on the receipt one second
+  before the page it fixed, and the last hardcoded `en-GB`, which survived
+  3.23.4's sweep because it had a doc comment declaring it. The fourth is
+  older and no gate can see it — the date confirmation 3.23.6 promises was
+  written into a `visually-hidden` live region, so it was announced correctly
+  and shown to nobody, which every accessibility gate passes by design.
+  3.23.2 is the first fix from the first cold view —
   the date box on a thing's page promised *The days ahead* with no condition
   on it, and a date kept before the thing is sorted cannot appear there,
   because the door reads the calendar's own selection and that drops

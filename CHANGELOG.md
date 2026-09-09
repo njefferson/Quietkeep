@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.8 — ITERATION
+
+*2026-09-09*
+
+- **Setting a date now says the day back to you where you can SEE it.** The last release said this had been fixed. The words were right and they were spoken only to a screen reader — nothing appeared on screen, so if you were reading rather than listening, pressing Set still looked like nothing happening. Every confirmation this screen gives now appears just above *Close*, where it cannot scroll away from the button that produced it.
+- **Something on the Menu is counted as being on the Menu.** The line that accounts for everything you are holding said *6 with a day they come back to you* over rows of which two said *on the Menu*. Nothing was lost and nothing was double-counted — the number was right and the reason beside it was wrong, because the app keeps a quiet marker of its own on everything and that marker was being read as a date. It says the reason you would say now.
+- **Putting something under a place says the word on the button you pressed.** *Put it under this* handed back a receipt reading *Filed under ⟨place⟩*. Two releases ago a thing’s own page stopped saying *filed*, for the reason that nothing has ever shown you a button called Filed; the receipt you meet one second earlier kept saying it.
+- **And the last date that ignored your device now asks it.** The Not Now ledger and a declined request wrote their day in a fixed British form while the rest of the app was already asking what your device is set to — so one screen said *Sep 7* and another said *8 Sept* about days a week apart.
+- **Still to sort:** a handful of British spellings survive in these notes and on the *Why this exists* page, and the note announcing that change reads back to front. The walkthrough’s last screen still leaves through a button marked *Skip*. The flowcharts still carry a word this app stopped using.
+
 ## 3.23.7 — ITERATION
 
 *2026-09-09*

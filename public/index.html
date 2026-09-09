@@ -2081,7 +2081,21 @@
 
   </div><!-- /.sheet-body -->
 
-  <p id="detail-live" role="status" aria-live="polite" class="visually-hidden"></p>
+  <!-- THE RECEIPT, SEEN AND HEARD (3.23.8). This was `visually-hidden`, so
+       every confirmation this sheet gives — "Due tomorrow.", "Put on the Menu.",
+       "Let go." — was announced to a screen reader and shown to nobody. F-08's
+       rule is written thirty lines into `detail.ts` and was applied only to the
+       failure path; the success path wrote here and stopped. A cold reader
+       looking for the date confirmation 3.23.6 promises could not find it,
+       which is exactly right: it was not on screen.
+       AND EVERY ACCESSIBILITY GATE PASSED IT, because a correctly-announced
+       live region is what they are for. Invisibility and correctness are
+       indistinguishable to a conformance check.
+       IT IS PINNED HERE ON PURPOSE — outside `.sheet-body`, which is the only
+       thing that scrolls, so a confirmation cannot scroll away from the control
+       that produced it. `.detail-state` is reused for the colour rather than a
+       new class, so the contrast inventory is unchanged. -->
+  <p id="detail-live" role="status" aria-live="polite" class="detail-state detail-receipt"></p>
   <div class="about-actions">
     <button id="detail-close" data-way-out type="button" class="ghost">Close</button>
   </div>

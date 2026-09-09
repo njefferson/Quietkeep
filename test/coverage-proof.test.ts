@@ -39,7 +39,12 @@ const write = (prior: State, offered: AppEvent[]): State =>
 function store(): State {
   let s = write(emptyState(), [ev('capture.recorded', 'A', { text: 'strip the old sealant' })]);
   s = write(s, [ev('capture.recorded', 'B', { text: 'ring the school' })]);
+  // ROUTED AND ON THE MENU, which is what the real path does: `clarify.routed`
+  // alone does not add the Menu row (its own branch there is unreachable
+  // defense-in-depth, and says so), so a store built without this one exercises
+  // the menu clause not at all.
   s = write(s, [ev('clarify.routed', 'B', { to: 'someday' })]);
+  s = write(s, [ev('menu.item.added', 'B', { category: 'try' })]);
   s = write(s, [ev('capture.recorded', 'C', { text: 'book the car in' })]);
   s = write(s, [ev('clarify.routed', 'C', { to: 'next-action' })]);
   return s;
@@ -72,6 +77,26 @@ test('no reason is listed with a count of zero — a proof is not a glossary', (
   const proof = coverageProof(store());
   assert.ok(proof.reasons.length > 0, 'no reasons at all means the proof saw nothing');
   for (const r of proof.reasons) assert.ok(r.count > 0, `${r.reason} listed with no items`);
+});
+
+test('a thing on the Menu is covered BY the Menu, not by the cure it still carries', () => {
+  // THE PRECEDENCE, ASSERTED (3.23.8). B is routed to someday, so it is on the
+  // Menu — and it still carries the gate's own `review` cure, because
+  // `demandClocksOf` deliberately never clears that one. Asking `node.clocks`
+  // first named the cure as the reason, so the coverage line read "6 with a day
+  // they come back to you" over rows that said *on the Menu*, which is the same
+  // defect 3.23.6 fixed in `heldStatus` and in `detail.ts`.
+  //
+  // The clock is asserted PRESENT rather than assumed absent: if the cure ever
+  // stops being left in place, this test stops measuring anything and says so
+  // here rather than passing quietly.
+  const s = store();
+  const b = s.nodes.get('B')!;
+  assert.ok(b.onMenu !== null, 'B is not on the Menu, so this proves nothing');
+  assert.ok(Object.keys(b.clocks).length > 0,
+    'B carries no clock, so the precedence this test exists for is untested');
+  assert.equal(whyCovered(b, s), 'menu',
+    'the reason printed is the reason a reader would give, and they would not say a date');
 });
 
 test('the promise HOLDS on a store the gate accepted — it refuses silence at the boundary', () => {
