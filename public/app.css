@@ -934,6 +934,12 @@ button.ghost,
 .jump::after {
   content: " \2193";        /* a downward arrow, decorative — the words carry it */
 }
+/* EXCEPT THE ONE THAT GOES UP (3.23.13, cold read). `.jump` is shared by the
+   controls that send you DOWN a page and by `#to-top`, which sends you back, so
+   *Back to the top* was drawn with a downward arrow. Decorative or not, an
+   arrow pointing the opposite way to the words is the kind of small wrongness
+   that costs trust in everything beside it. */
+#to-top::after { content: " \2191"; }
 
 /* THE WAY TO ANYWHERE (2.3.0, ADR-0093), AND IT IS NOT FIXED.
  *

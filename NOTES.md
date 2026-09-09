@@ -549,7 +549,7 @@ is documented nowhere.
 offer (*you said this one was for today, and that it was hot*) — its words: the
 best single feature, because it quotes the reader's own decisions back rather
 than asserting an algorithm. *What comes back, and when* answered every question
-it had accumulated, and sits behind a status box labelled *nothing here has gone
+it had accumulated, and sits behind a status box labeled *nothing here has gone
 quiet*, which it called the least inviting label it could have. And the
 volunteered iPad Shortcut bug in the ⓘ, which it said it had never seen an app
 admit.
@@ -1708,9 +1708,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.12**, which production now
-  carries too: promoted 2026-09-09 at `152d425`, so the two hosts are the same
-  tree. 3.23.8 is the first fix from the THIRD cold read, and
+- **https://staging.quietkeep.pages.dev** — **3.23.13**, which production does
+  not carry: promoted last on 2026-09-09 at 3.23.12, so the two hosts are one
+  tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
   three of its four are regressions from the session that shipped 3.23.2
   through 3.23.7: the Menu-before-clock precedence in the one place 3.23.6 did
   not reach, the route word 3.23.3 left standing on the receipt one second

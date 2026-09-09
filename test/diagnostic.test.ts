@@ -496,7 +496,11 @@ test('the storage line says what the number measures, not what it seems to', () 
   // downloaded code. Labeled "Used by Quietkeep" it read as the reader's own
   // things, and 1.3 MB beside a log of 0 events reads as a lie or a bug.
   const r = diagnosticReport(emptyState(), [], wellDevice({ usageMb: 1.3 }), NOW);
-  assert.match(r, /Used at this address: 1\.3 MB/);
+  // "AT THIS ADDRESS" WAS DEVELOPER FRAMING (3.23.13). It said the right thing
+  // — the number covers the whole origin — in the words of somebody who thinks
+  // in origins. The label says where the reader is; the sentence under it still
+  // says what is counted, which is the half this test is actually about.
+  assert.match(r, /Used on this device: 1\.3 MB/);
   assert.match(r, /the app's own downloaded code as well as anything you have put in/);
   assert.equal(/Used by Quietkeep/.test(r), false,
     'the old label claimed a precision the number does not have');

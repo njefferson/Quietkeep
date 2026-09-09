@@ -14,12 +14,23 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.13 — ITERATION
+
+*2026-09-09*
+
+- **Sorting says what it is asking, and *Hot* says what it does.** *Hot or cold?* is a quick feel about the handful you just put down — hot ones get offered before cold ones, and that is the whole of it. *Hot* was the only button on that screen with nothing written under it, which made it the one you were supposed to already understand.
+- **And the button beside them says where it goes.** It read *Just sort it — skip this question*, and it does not skip anything: it takes you straight to the other question, the one with nine answers. It says *Choose where it goes* now, because that is where it goes.
+- **The count says which question it is counting.** Two questions, one sentence: the number fell as you answered the first and then jumped as the second began, with the words unchanged. It now says *N to say hot or cold about* while that is what is being asked, and *N here to work through* for the sorting itself.
+- **The front page stops reading as empty while it is holding things.** Put ten things down before sorting any of them and it said *nothing here has gone quiet · nothing ready yet* — both true, and together they read as *nothing is here*. It adds *some still to sort*. Not a number: a count of the pile is the thing this screen has always refused, and what was missing was only that the pile exists.
+- **These notes stop talking about themselves.** The panel printed the project’s own word for each release — ITERATION — and a count of how many there have been, and one note had a paragraph about how many times a thing had been fixed. None of that is about you or anything you can do.
+- **And three small ones.** *Room available* said six-figure megabytes where it means gigabytes; *Used at this address* is *Used on this device*; and *Back to the top* had a downward arrow on it.
+- **Still to sort:** *Just one thing* lands on a screen with nothing on it — it says one thing is ready and does not show you the one. *Show me everything again* is the way back.
+
 ## 3.23.12 — ITERATION
 
 *2026-09-09*
 
-- **Opening something from the People screen lands on the naming control.** A row there can say *Nobody named yet*, and tapping it opened a page with no name field on it — *Who is this with?* sat nine sections down, behind *More about this*. The sheet arrives with that half open and the control on screen. Nothing moved and nothing was added: the trip goes where it was always going.
-- **Which is the third time this has been the fix.** Opening a person, and opening a goal or area, both already ask for the folded half to be open, for the same stated reason — a screen whose point is folded away is a screen you landed on for nothing. The People screen was the one nobody had noticed doing it.
+- **Opening something from the People screen takes you straight to the naming control.** A row there can say *Nobody named yet*, and tapping it used to open a page with no name field in sight — the control was there, nine sections down and folded away. It is open and on screen when you arrive now. Nothing moved and nothing was added.
 
 ## 3.23.11 — ITERATION
 

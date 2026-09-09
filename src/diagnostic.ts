@@ -485,7 +485,7 @@ export function diagnosticReport(
   // Quietkeep" it read as "used by your things" — and a report showing 1.3 MB
   // beside a log of 0 events reads as either a lie or a bug. It was neither; the
   // label was claiming a precision the number does not have.
-  L.push(`  Used at this address: ${r.usageMb == null ? 'unknown' : `${r.usageMb} MB`}`);
+  L.push(`  Used on this device: ${r.usageMb == null ? 'unknown' : `${r.usageMb} MB`}`);
   L.push('    (the app\'s own downloaded code as well as anything you have put in —');
   L.push('     the browser does not separate them, so on an empty store it is almost all app)');
   L.push('');

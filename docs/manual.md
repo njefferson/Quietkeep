@@ -51,9 +51,16 @@ it exists.
 
 ### Decide what a captured thing is
 
-*Sort things out* takes them one at a time and offers eight plain choices: Do
-now, Next action, Waiting for, Someday, Reference, Trash, put it somewhere, or
-not this one. Each choice says what it means underneath.
+*Sort things out* takes them one at a time. When you have put a few things down
+at once it asks a quick question first — **Hot or cold?** — which is a feel
+about the handful in front of you and nothing more: hot ones get offered before
+cold ones, and cold removes nothing and hides nothing. *Choose where it goes*
+takes you past that question to the sorting one for that item; *Not this one*
+moves to the next item.
+
+Then the sorting question itself, with nine plain choices: Do now, Next action,
+Waiting for, Someday, Reference, Trash, put it somewhere, say where it can be
+done, or not this one. Each choice says what it means underneath.
 
 You never have to do this. Unsorted things are still offered — last, behind
 anything with a real reason to be asking — so the pile costs you a few taps of
@@ -379,7 +386,7 @@ when there is a reason.
   same place every time, and a **+** for putting a thought down without leaving
   what you are doing.
 - **Next up** — the one thing offered, with why.
-- **Sort things out** — captured things, one at a time, with eight plain choices.
+- **Sort things out** — captured things, one at a time: *Hot or cold?* when there are a few, then nine plain choices.
 - **Needs a new plan** — a date went by. Not a failure and not a backlog.
   Each card offers five ways forward, one of which is **Take the date off** —
   nothing has changed except the date, so it stays yours and comes back on its

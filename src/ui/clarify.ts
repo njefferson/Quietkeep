@@ -678,8 +678,17 @@ export function mountTriage(
   const sortNowControl = (nodeId: string): HTMLButtonElement => {
     const b = el('button', 'route ghost');
     b.type = 'button';
-    b.append(el('span', 'route-label', 'Just sort it'),
-             el('span', 'route-hint', 'skip this question — nothing is recorded'));
+    // IT SAYS WHERE IT GOES, NOT THAT IT SKIPS (3.23.13). This read *Just sort
+    // it · skip this question · nothing is recorded* and it does not skip
+    // anything: it goes STRAIGHT TO the other question, which has nine answers
+    // rather than two. A cold reader reached for it as the low-effort way out —
+    // its own words said skip — and got the bigger grid. The button beside it,
+    // *Not this one*, carries the same "nothing is recorded" reassurance and IS
+    // the way past, so the two were indistinguishable at exactly the moment one
+    // of them mattered. A control may not describe itself by what it declines
+    // to do when what it actually does is go somewhere.
+    b.append(el('span', 'route-label', 'Choose where it goes'),
+             el('span', 'route-hint', 'to the sorting question — no heat recorded'));
     b.addEventListener('click', () => {
       straightToSort.add(nodeId);
       clearUndo();
@@ -717,9 +726,17 @@ export function mountTriage(
       // label and a hint — and because the doubt arrives at the moment of
       // pressing, not before it.
       b.append(el('span', 'route-label', h === 'hot' ? 'Hot' : 'Cold'));
-      if (h === 'cold') {
-        b.append(el('span', 'route-hint', 'still comes back — nothing is ever hidden'));
-      }
+      // BOTH OF THEM SAY WHAT THEY ARE (3.23.13). Cold got its line because the
+      // doubt it answers was reported from a device — "when do the cold ones
+      // hide from me?" — and Hot was left bare because nobody had asked
+      // anything about it. A cold reader then stopped ON THIS SCREEN, ninety
+      // seconds in, because Hot was the only control in the flow with no
+      // explanation and it could not tell what it was being asked. A control
+      // with no hint beside controls that have them does not read as simple; it
+      // reads as the one you are supposed to already understand.
+      b.append(el('span', 'route-hint', h === 'hot'
+        ? 'offered before the cold ones — that is all it does'
+        : 'still comes back — nothing is ever hidden'));
       b.addEventListener('click', () => {
         // A heat pass is a new action, so any pending route-undo is now stale.
         clearUndo();
@@ -1276,10 +1293,22 @@ export function mountTriage(
     // published as `dataset.unheated` for the walk to read. This says whichever
     // one the reader is actually looking at, decided by the same `heatItem` the
     // render picked above rather than by a second guess at which pass is up.
+    // AND THE SENTENCE SAYS WHICH QUESTION IT IS COUNTING (3.23.13).
+    //
+    // 3.23.6 made this count the pass in front of you rather than the queue
+    // behind both, which was necessary and not sufficient: both passes then
+    // printed the SAME SENTENCE. A cold reader watched it read 7, 6, 5, 4, 3, 2
+    // and then 9 on the next tap — the heat pass had drained and the sorting
+    // pass had started — and the only thing telling them a second question had
+    // begun was a number going the wrong way under unchanged words. A count
+    // that changes meaning silently is worse than no count.
     const hereNow = heatItem
       ? heatQueue.filter(n => !straightToSort.has(n.id)).length
       : yours;
-    setHere(hereNow === 1 ? 'One here to work through.' : `${hereNow} here to work through.`);
+    const num = hereNow === 1 ? 'One' : String(hereNow);
+    setHere(heatItem
+      ? `${num} to say hot or cold about.`
+      : `${num} here to work through.`);
 
     const mayReveal = !suppressed;
     if (heatItem) {

@@ -1047,6 +1047,9 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
   // The gauge reads as text first and the number is the information (B-02).
   const { silent, total } = coverageGauge(session.state());
   const readyNow = groups.find(g => g.key === 'ready')?.items.length ?? 0;
+  // WHETHER ANYTHING IS WAITING TO BE SORTED, as a fact and never as a number
+  // (3.23.13). See the branch below for what it is for.
+  const anyUnsorted = (groups.find(g => g.key === 'unsorted')?.items.length ?? 0) > 0;
   // The gauge is a button: its number is a claim, and the claim opens into the
   // itemized list that backs it (build-plan item 21).
   //
@@ -1120,9 +1123,28 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
     } else {
       const fact = document.createElement('span');
       fact.className = 'gauge-fact';
+      // "NOTHING READY YET" READ AS "NOTHING HERE" (3.23.13, cold read).
+      //
+      // 3.9.1 already fixed half of this: "0 ready now" became "nothing ready
+      // yet", because a zero at the moment somebody is checking whether the app
+      // took their work reads as nothing having happened. The other half
+      // survived. A reader put TEN things down, got this line saying nothing
+      // has gone quiet and nothing is ready yet, and concluded the app had
+      // eaten them — both clauses true, the pair reading as empty.
+      //
+      // A STATE, NEVER A COUNT, and that is the whole care here. The comment on
+      // the capture confirmation refuses a number for a measured reason: a
+      // count is what turns a good day's dump into a visible backlog, and this
+      // is the surface most able to reintroduce one. "Some still to sort" says
+      // the things exist and does not say how many, which is what the doubt
+      // needed and not what the refusal forbids. The door to them is already on
+      // this page.
+      const ready = readyNow === 0
+        ? (anyUnsorted ? 'nothing ready yet — some still to sort' : 'nothing ready yet')
+        : `${readyNow} ready now`;
       fact.textContent = silent > 0
         ? `${silent} ${silent === 1 ? 'thing has' : 'things have'} gone quiet`
-        : `nothing here has gone quiet · ${readyNow === 0 ? 'nothing ready yet' : `${readyNow} ready now`}`;
+        : `nothing here has gone quiet · ${ready}`;
       const door = document.createElement('span');
       door.className = 'gauge-door';
       door.textContent = 'What comes back, and when';
