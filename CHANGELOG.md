@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.17 — ITERATION
+
+*2026-09-09*
+
+- **A project or an area shows the date you gave it.** Dating one while you sort puts it in the app’s own words — a project *comes back to you*, it is not *due*, because you do not finish an area, you look in it again. Its own page did not know that: the date box read the other kind of date and sat empty while the card above it said *comes back in 6 days*. One thing, one date, and the one control you would open to change it could not see it.
+
 ## 3.23.16 — ITERATION
 
 *2026-09-09*

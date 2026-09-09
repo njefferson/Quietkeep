@@ -1719,9 +1719,19 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.16**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.17**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
-  tree plus this release. 3.23.16 is the first of the FIFTH cold read, which was
+  tree plus two releases. 3.23.17 is the sheet's date control learning what
+  `triage-intents.ts` already argued — a container takes a `review` clock and not
+  a `due` — so a dated project stops showing an empty date box beside a card
+  reading "comes back in 6 days".
+  **AND IT IS A SEPARATE RELEASE FOR A REASON WORTH WRITING DOWN.** It was going
+  to be a second bullet on 3.23.16, and `release:check` refused: 3.23.16 was cut
+  and PUSHED and then the work continued, so two shipped files had moved with no
+  triplet behind them. That is the second time in one session — 3.23.15 exists for
+  the identical mistake. The triplet belongs in the commit that FINISHES the work,
+  never in the one that starts describing it, and the gate is the only thing that
+  has caught it either time. 3.23.16 is the first of the FIFTH cold read, which was
   asked to use the app rather than to read it and got all the way through — and
   found two things the app said that were not true. `whyCovered` named a finished
   thing's retained clock as the reason it is covered, so the coverage sheet listed

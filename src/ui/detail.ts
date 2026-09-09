@@ -17,7 +17,7 @@
 import type { Session } from './session.ts';
 import type { AppEvent, MenuCategory } from '../events.ts';
 import type { StampContext } from './session.ts';
-import { noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
+import { isAppClock, noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
 import { everyDaysWords, localDayKey, atMidnight, recordDayWords } from '../time.ts';
@@ -773,7 +773,24 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // in-progress rename — in an app whose capture line persists a draft per
     // keystroke precisely because interruption is the expected case (audit).
     if (document.activeElement !== NAME || NAME.value.trim() === '') NAME.value = n.title;
-    DATE.value = n.clocks.due ? localDayKey(n.clocks.due.at, dayOf(session)) : '';
+    // THE CLOCK THIS THING ACTUALLY CARRIES (3.23.16). This read the `due` slot
+    // only, so a container dated through the sort flow — which writes `review`,
+    // for the reasons `triage-intents.ts` sets out — showed an EMPTY box while
+    // the card two inches above it said "comes back in 6 days".
+    //
+    // `isAppClock` is what makes reading `review` safe: every container carries
+    // the gate's own `gate:node.created` cure in that slot from the moment it
+    // exists, and showing that as the reader's date would put a date nobody set
+    // into the box on every container in the store — a worse defect than the one
+    // being fixed, and in the direction this app must never round.
+    //
+    // `due` is still read as a fallback so a container dated by THIS control
+    // before today keeps showing its date. That clock stays in the log and still
+    // groups the node, so nothing is lost by the control no longer writing it.
+    const own = isContainer(n)
+      ? (isAppClock(n.clocks.review) ? undefined : n.clocks.review) ?? n.clocks.due
+      : n.clocks.due;
+    DATE.value = own ? localDayKey(own.at, dayOf(session)) : '';
     if (startInput) startInput.value = n.clocks.start ? localDayKey(n.clocks.start.at, dayOf(session)) : '';
     // The note rides the same no-clobber rule as the rename box: `render` runs
     // after every commit here, and prose is the costliest thing to eat.
@@ -1559,10 +1576,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     const key = DATE.value;
     // A date input yields '' when empty or invalid; nothing is a legal answer.
     if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) { say('Pick a date first.'); return; }
-    void run(ctx => setDueEvents(ctx, current!.id, key), `Due ${dayPicked(key)}.`);
+    void run(ctx => setDueEvents(ctx, current!.id, key, isContainer(current!)),
+      isContainer(current!) ? `Comes back ${dayPicked(key)}.` : `Due ${dayPicked(key)}.`);
   });
   btn('#detail-date-clear')?.addEventListener('click', () => {
-    void run(ctx => clearDueEvents(ctx, current!.id), 'Date removed — it comes back to you today.');
+    void run(ctx => clearDueEvents(ctx, current!.id, isContainer(current!)),
+      'Date removed — it comes back to you today.');
   });
   btn('#detail-start-set')?.addEventListener('click', () => {
     const key = startInput?.value ?? '';

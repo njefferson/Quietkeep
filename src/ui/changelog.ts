@@ -29,6 +29,14 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.17',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**A project or an area shows the date you gave it.** Dating one while you sort puts it in the app\u2019s own words \u2014 a project *comes back to you*, it is not *due*, because you do not finish an area, you look in it again. Its own page did not know that: the date box read the other kind of date and sat empty while the card above it said *comes back in 6 days*. One thing, one date, and the one control you would open to change it could not see it.',
+    ],
+  },
+  {
     triplet: '3.23.16',
     kind: 'ITERATION',
     date: '2026-09-09',
