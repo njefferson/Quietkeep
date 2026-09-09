@@ -972,8 +972,8 @@
          One line under the lists, which is also the only place somebody who has
          just read *Nobody named yet* is standing. -->
     <p id="people-where" class="detail-hint">Sorting never asks who, so a thing
-      can be with somebody you have not named. The name goes on the thing: open
-      it, then <em>More about this</em> &rarr; <em>Who is this with?</em></p>
+      can be with somebody you have not named. Open one from here and it lands
+      on <em>Who is this with?</em></p>
   </section>
 
   <!-- Review, as EXCEPTIONS ONLY (v1 Must). Never a list of your work — only
@@ -1913,7 +1913,12 @@
   <!-- Who this is with. Clarify's "Waiting for" route is one tap and never asks
        who — asking there would make it three. It is asked here instead, and a
        waiting-for nobody has named stays perfectly usable. -->
-  <div class="detail-group">
+  <!-- NAMED `detail-person-link-group`, NOT `detail-person-group` (3.23.12).
+       That id was already taken, twenty lines up, by *What is with them* on a
+       person's own sheet — and the smoke walk already reads it. Adding it here
+       made two elements answer to one id: legal-looking markup, a strict-mode
+       crash in the walk, and a selector that silently means two things. -->
+  <div class="detail-group" id="detail-person-link-group">
     <label class="detail-label" for="detail-person">Who is this with?</label>
     <div class="detail-row">
       <input id="detail-person" type="text" autocomplete="off" spellcheck="false"

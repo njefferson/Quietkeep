@@ -297,7 +297,11 @@ const BUDGET = {
   // compatible or where the name goes. Said ONCE, under the lists, rather than
   // on the rows: law 5 keeps a row to a name and a date, and an instruction
   // repeated on every row is the nag this app refuses.
-  words: 4028,
+  // 4028 -> 4023 on 2026-09-09 (3.23.12). Five back: the hint no longer has to
+  // recite the route, because opening a row from that screen now lands on the
+  // control. A budget raise bought by copy that has since been replaced by
+  // behaviour goes back down — the same trade recorded at 3,400 -> 3,000.
+  words: 4023,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.

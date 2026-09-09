@@ -88,7 +88,11 @@ const RELATION_WORDS: Record<string, string> = {
   'mentioned': 'they came up',
 };
 
-export interface DetailUI { open(node: NodeState): void }
+/** What a caller can ask the sheet to have OPEN when it arrives. A trip that
+ *  lands on the folded half is a trip that failed (1.39.1), and this is the
+ *  third surface to need saying so. */
+export interface DetailOpen { reveal?: 'person' }
+export interface DetailUI { open(node: NodeState, opts?: DetailOpen): void }
 
 export function mountDetail(session: Session, now: () => number, onChange: () => void): DetailUI {
   /**
@@ -2015,5 +2019,27 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     focusSheetTitle(DLG);
   }
 
-  return { open: showNode };
+  /**
+   * OPEN, AND SHOW THE THING THE TRIP WAS FOR (3.23.12).
+   *
+   * `1.39.1` established this twice already — a role's sheet and a person's
+   * sheet are almost entirely the folded half, so a navigation that lands on
+   * them shut puts the point of the trip out of sight, and both of those
+   * handlers call `setRest(true)` themselves. The People screen is the third,
+   * and it was the one that broke: its rows say *Nobody named yet*, tapping
+   * one opened a sheet with no name field on it, and the control that answers
+   * the question was nine sections down behind *More about this*.
+   *
+   * SCROLLED, NEVER FOCUSED. The sheet focuses its heading on open — the house
+   * rule for a navigated view — and stealing that would announce a text field
+   * instead of the thing that was opened. Unfolding and bringing the group into
+   * view is what a reader needs; where the caret goes is still theirs.
+   */
+  const openRevealing = (n: NodeState, opts?: DetailOpen): void => {
+    showNode(n);
+    if (opts?.reveal !== 'person') return;
+    setRest(true);
+    q('#detail-person-link-group')?.scrollIntoView({ block: 'nearest' });
+  };
+  return { open: openRevealing };
 }

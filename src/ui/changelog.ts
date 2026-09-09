@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.12',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**Opening something from the People screen lands on the naming control.** A row there can say *Nobody named yet*, and tapping it opened a page with no name field on it \u2014 *Who is this with?* sat nine sections down, behind *More about this*. The sheet arrives with that half open and the control on screen. Nothing moved and nothing was added: the trip goes where it was always going.',
+      '**Which is the third time this has been the fix.** Opening a person, and opening a goal or area, both already ask for the folded half to be open, for the same stated reason \u2014 a screen whose point is folded away is a screen you landed on for nothing. The People screen was the one nobody had noticed doing it.',
+    ],
+  },
+  {
     triplet: '3.23.11',
     kind: 'ITERATION',
     date: '2026-09-09',

@@ -22,7 +22,7 @@ import { openSheet, closeSheet, wireSheetClose, onSheetOpen } from './sheets.ts'
 import { paintContents } from './contents.ts';
 import { frameShouldStandDown } from '../frame.ts';
 import { mountWork } from './work.ts';
-import { mountDetail } from './detail.ts';
+import { mountDetail, type DetailOpen, type DetailUI } from './detail.ts';
 import { mountSearch } from './search.ts';
 import { mountSort } from './sort.ts';
 import { mountFocus, type FocusUI } from './focus.ts';
@@ -256,7 +256,8 @@ function openHeld(): void {
   if (fold && !fold.open) fold.open = true;
 }
 
-function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: (id: string) => void,
+function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen) => void,
+                onDone?: (id: string) => void,
                 onFocus?: (n: NodeState) => void): void {
   const list = $('#cards');
   const nowIso = new Date(now()).toISOString();
@@ -901,7 +902,13 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         // hiding the row.
         w.textContent = [whom ? `With ${whom}` : 'Nobody named yet', how].filter(Boolean).join(' ') + '.';
         b.append(t, w);
-        if (openDetail) b.addEventListener('click', () => openDetail(line.node));
+        // OPENED ON THE NAMING CONTROL (3.23.12). These rows can say *Nobody
+        // named yet*, and until now tapping one opened a sheet with no name
+        // field on it — the control is nine sections down behind *More about
+        // this*. Same fix and same reason as the role and person doors one
+        // file over: a trip that lands on the folded half is a trip that
+        // failed (1.39.1).
+        if (openDetail) b.addEventListener('click', () => openDetail(line.node, { reveal: 'person' }));
         li.append(b);
         return li;
       }));
@@ -933,7 +940,13 @@ function render(session: Session, openDetail?: (n: NodeState) => void, onDone?: 
         w2.className = 'people-why';
         w2.textContent = promisedRowWords(line.person);
         b.append(t2, w2);
-        if (openDetail) b.addEventListener('click', () => openDetail(line.node));
+        // OPENED ON THE NAMING CONTROL (3.23.12). These rows can say *Nobody
+        // named yet*, and until now tapping one opened a sheet with no name
+        // field on it — the control is nine sections down behind *More about
+        // this*. Same fix and same reason as the role and person doors one
+        // file over: a trip that lands on the folded half is a trip that
+        // failed (1.39.1).
+        if (openDetail) b.addEventListener('click', () => openDetail(line.node, { reveal: 'person' }));
         li.append(b);
         return li;
       }));
@@ -1218,7 +1231,12 @@ export async function main(edition?: Edition): Promise<void> {
   // native GET navigation, which clears the input and destroys the typed thought
   // with no error whatsoever, permanently, while the data sits intact and
   // unreachable. Capture is the promise; everything else is a surface.
-  let detail: { open(n: NodeState): void } = { open() {} };
+  // TYPED FROM THE SHEET'''S OWN INTERFACE (3.23.12). This restated the shape
+  // by hand with one argument, so a caller passing options typechecked as an
+  // error while the lambda that dropped them typechecked fine — a local
+  // re-declaration of somebody else'''s contract, which is the same second copy
+  // this repo keeps finding in lists and workflows.
+  let detail: DetailUI = { open() {} };
   let search: { refresh(): void } = { refresh() {} };
   let sort: { refresh(): void } = { refresh() {} };
   let work: { refresh(): void } = { refresh() {} };
@@ -1269,7 +1287,11 @@ export async function main(edition?: Edition): Promise<void> {
   // on this" is choosing to do one thing; leaving the reader on the pile they
   // just chose from is the old page's shape. `#focus` is not live until the
   // session has started, which is what `pending` in hub.ts is for.
-  const rerender = (): void => render(session, n => detail.open(n), markDone,
+  // THE LAMBDA HAS TO PASS THE OPTIONS ON (3.23.12). `n => detail.open(n)`
+  // drops any second argument silently, which is how the People screen's
+  // reveal was built, typechecked and shipped doing nothing — the smoke
+  // assertion is what said so.
+  const rerender = (): void => render(session, (n, opts) => detail.open(n, opts), markDone,
     (n) => { focus.start(n); enterStance('focus'); });
   // The held list AND the replan surface. `workSurface` excludes every id with a
   // live card, so these two must never be refreshed apart from one another: if
