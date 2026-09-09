@@ -52,10 +52,10 @@ const pageOf = (surfaces: readonly Surface[]): Document => {
 test('a door is named by the surface itself — never by a list kept here', () => {
   const d = doors(pageOf([
     { id: 'sheet-load-entry', label: 'sheet-load-entry-title', name: 'How you are, and anything weighing on you' },
-    { id: 'sort', label: 'sort-title', name: 'Sort things out' },
+    { id: 'sort', label: 'sort-title', name: 'Sort a batch' },
   ]));
   assert.deepEqual(d.map(x => x.name),
-    ['How you are, and anything weighing on you', 'Sort things out']);
+    ['How you are, and anything weighing on you', 'Sort a batch']);
   assert.deepEqual(d.map(x => x.id), ['sheet-load-entry', 'sort']);
 });
 
@@ -69,7 +69,7 @@ test('nothing is a door until it says so — an unmarked dialog has no row', () 
 test('a door with nothing labeling it is skipped, not rendered nameless', () => {
   const d = doors(pageOf([
     { id: 'sheet-load-entry', label: 'x', name: 'How you are', unlabeled: true },
-    { id: 'sort', label: 'sort-title', name: 'Sort things out' },
+    { id: 'sort', label: 'sort-title', name: 'Sort a batch' },
   ]));
   assert.deepEqual(d.map(x => x.id), ['sort']);
 });
@@ -84,7 +84,7 @@ test('a door whose label element is empty is skipped too', () => {
 test('a door carries what its surface publishes about itself, or null', () => {
   const d = doors(pageOf([
     { id: 'sheet-load-entry', label: 'sheet-load-entry-title', name: 'How you are', count: 'a low stretch · 2 things on you' },
-    { id: 'sort', label: 'sort-title', name: 'Sort things out' },
+    { id: 'sort', label: 'sort-title', name: 'Sort a batch' },
   ]));
   assert.equal(d[0]!.count, 'a low stretch · 2 things on you');
   assert.equal(d[1]!.count, null);

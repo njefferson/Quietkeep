@@ -21,8 +21,6 @@ import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
 import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { fitsWith, getWithNow } from '../people.ts';
-import { MENU_WORDS } from '../menu.ts';
-import type { MenuCategory } from '../events.ts';
 import { undatedCount } from '../held.ts';
 import { servesNode } from '../serves.ts';
 import { pressureWords } from '../pressure.ts';
@@ -882,11 +880,25 @@ export function mountWork(
       }));
       // The wish rides last and says what it is. It owes nothing (law 6), so it
       // never carries a reason, a date, or a word that could read as asking.
+      //
+      // AND IT NO LONGER NAMES A CATEGORY NOBODY CHOSE (3.23.14). This read
+      // "something you wanted · Read", and a cold reader took the second half
+      // for a fact about the item — reasonably, since it is printed in the same
+      // place and register as every other fact on that row. Nothing had chosen
+      // it: `read` is the DEFAULT the gate writes when a `someday` or
+      // `reference` route lands something on the Menu (`gate.ts`, and
+      // `triage-intents.ts` beside it), so a reader who pressed *Someday* was
+      // shown a word they never picked, asserted about their own thing.
+      //
+      // The Menu screen still groups by category and still needs a bucket to
+      // group into, which is what the default is for and why it stays. The
+      // difference is that a heading over a group is a filing scheme, and a word
+      // after a middot on the thing itself is a claim about the thing.
       if (offer.wish && offer.wish.id !== head?.node.id) {
         rows.push({
           id: offer.wish.id,
           title: offer.wish.title || '(untitled)',
-          why: `something you wanted · ${MENU_WORDS[offer.wish.onMenu as MenuCategory] ?? 'on the Menu'}`,
+          why: 'something you wanted',
           // The wish line already says everything a wish owes anyone (law 6);
           // a location would dress it as filed work.
           place: null as string | null,

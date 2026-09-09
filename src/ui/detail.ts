@@ -579,7 +579,32 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // there is a control that does nothing. Correcting shows every one of them,
     // because the label you typed wrong is usually the one you attached.
     const shown = fixing ? all : all.filter(c => !already.includes(c.id));
-    listEl.replaceChildren(...shown.map(c => {
+    // AN OFFER THAT SAYS IT IS ONE (3.23.14, cold read). Under the label "Where
+    // can this be done?" an item with NO place showed a bare underlined "on the
+    // phone", and it was read as the answer — as a statement about the item —
+    // rather than as one of the places you could tap to add. Nothing on the
+    // screen distinguished the two: the list has no name of its own, it sits
+    // directly under the question, and every entry is styled like the links
+    // elsewhere on this sheet that state facts.
+    //
+    // The lead is also the list's ACCESSIBLE NAME, so the same sentence reaches
+    // a screen reader as the name of the region the buttons are inside, rather
+    // than a run of unexplained place names after a question. It comes off
+    // `drop.noun`, which both call sites already pass, so a third list gets it
+    // without anybody remembering to write one.
+    const noun = drop?.noun ?? 'one';
+    const lead = fixing
+      ? `Tap one to say it is not a ${noun}`
+      : `${noun[0]!.toUpperCase()}${noun.slice(1)}s you already use — tap to add`;
+    listEl.setAttribute('aria-label', lead);
+    const leadEl = document.createElement('li');
+    // `.detail-hint` VERBATIM for the ink, and a layout-only modifier beside it.
+    // Same ink, same paper, so the contrast registry's existing row covers this
+    // by construction rather than by a new entry somebody has to add (the shape
+    // ACCESSIBILITY.md B-40 records, and hub LESSONS §28's same-commit rule).
+    leadEl.className = 'detail-hint detail-picks-lead';
+    leadEl.textContent = lead;
+    listEl.replaceChildren(leadEl, ...shown.map(c => {
       const li = document.createElement('li');
       const b = document.createElement('button');
       b.type = 'button';
@@ -595,6 +620,9 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       li.append(b);
       return li;
     }));
+    // Nothing to offer is nothing to introduce — an empty list under a lead-in
+    // reads as a list that failed to load.
+    if (shown.length === 0) listEl.replaceChildren();
     if (!drop?.fixEl) return;
     // Nothing to correct when there is nothing there, and the row goes with the
     // list rather than standing on an empty sheet offering to fix it.
@@ -647,11 +675,29 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // ever shown anybody. A reader who pressed *Put it under something* was
     // told their thing was "sorted as filed", a word from the event vocabulary
     // wearing the line whose stated job is the reader's vocabulary.
+    //
+    // AND ONE FACT IS SAID ONCE (3.23.14). Two routes were answering the same
+    // question a second time in a second register. A thing routed `waiting-for`
+    // carries the kind word "Waiting for" six bits above and read
+    // "Waiting for · sorted as waiting for"; a thing routed `someday` sits on
+    // the Menu and read "on the Menu · sorted as someday". The reader has to
+    // work out that the two halves are one fact, and the second half is the
+    // machine's spelling of the first.
+    //
+    // DROPPED ON THE BIT, not on the route. Each route names the bit that would
+    // already have said it, and the line goes only when that bit is actually
+    // there — so a someday thing TAKEN OFF the Menu still says how it was
+    // sorted, which is the case where this line earns its keep.
     if (n.route && n.route !== 'trash') {
       const said = n.route === 'filed'
         ? 'put under something'
         : String(n.route).replace(/-/g, ' ');
-      bits.push(`sorted as ${said}`);
+      const alreadySaidBy: Record<string, string | null> = {
+        'waiting-for': kindWords('waiting-for'),
+        someday: 'on the Menu',
+      };
+      const dup = alreadySaidBy[String(n.route)];
+      if (!dup || !bits.includes(dup)) bits.push(`sorted as ${said}`);
     }
     if (standingDecline(n)) bits.push('in the Not Now ledger');
     if (isArrangement(n)) {

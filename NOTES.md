@@ -1708,9 +1708,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.13**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.14**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.12, so the two hosts are one
-  tree plus this release. 3.23.8 is the first fix from the THIRD cold read, and
+  tree plus two releases. 3.23.14 closes the fourth cold read — the *Just one
+  thing* dead end it found, the sorting screen's three names, and four places
+  where the app printed one fact twice or printed a word nobody chose. Two of
+  those left gates behind them: an opener is now held to its own door's name,
+  and no row may repeat the heading it sits under. The naming one also found a
+  coverage hole rather than only a confusion — the manual's description of the
+  sorting SCREEN was satisfying `manual-coverage.mjs`'s requirement that the
+  batch DIALOG be named, because the two shared a name, so the dialog went its
+  whole life undescribed with the gate reporting full coverage. 3.23.13 is the
+  first of that read. 3.23.8 is the first fix from the THIRD cold read, and
   three of its four are regressions from the session that shipped 3.23.2
   through 3.23.7: the Menu-before-clock precedence in the one place 3.23.6 did
   not reach, the route word 3.23.3 left standing on the receipt one second

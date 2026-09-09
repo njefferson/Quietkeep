@@ -658,8 +658,14 @@ const REGISTRY = {
   // So it came off, and this is what replaced it — joining the gate in the SAME
   // COMMIT that builds it, which is hub LESSONS 28's rule and the reason a
   // surface here has never shipped unmeasured.
+  //
+  // AND THE LEAD-IN JOINS IT IN THE COMMIT THAT ADDS IT (3.23.14), which is the
+  // same rule one paragraph up. It is prose on a measured surface — `.detail-hint`
+  // ink, so no new contrast pair — and it is also the list's accessible name, so
+  // what it says is read by the name audits and not only by the contrast one.
   'detail sheet, the places you have': [
     '#detail-context-picks button', '#detail-context-fix button',
+    '#detail-context-picks .detail-picks-lead',
   ],
   // The SAME buttons wearing their REMOVAL words, and it is a separate state
   // rather than a fold of the one above because words are exactly what SC 2.5.3
@@ -668,6 +674,10 @@ const REGISTRY = {
   // says, and only one of them would have been measured.
   'detail sheet, correcting a place': [
     '#detail-context-picks button', '#detail-context-fix button',
+    // Its words change with the buttons' — "tap to add" becomes "tap one to say
+    // it is not a place" — so it is measured in both states for the same reason
+    // the buttons are.
+    '#detail-context-picks .detail-picks-lead',
   ],
   // The sheet open on a CONTAINER, with a rhythm set on it (2.17.0). Its own
   // state and not a fold of 'detail sheet', because these three controls carry

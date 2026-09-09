@@ -726,7 +726,12 @@
          this surface offers to sort rather than asking about the thing you just
          typed. Deciding while dumping stops the dumping; ten captures in a row
          used to mean ten interruptions on the one path that must stay clear. -->
-    <button id="triage-open" type="button" class="ghost" data-stance-opener hidden>Sort what you have put down</button>
+    <!-- THE SAME NAME AS THE DOOR. It said "Sort what you have put down" while
+         `data-stance-name` above said "Sort what you put down" and the manual
+         called it "Sort things out" — three names for one screen, which a cold
+         reader met as three screens. `help-check.mjs` holds the opener to the
+         stance name now, both derived from this file. -->
+    <button id="triage-open" type="button" class="ghost" data-stance-opener hidden>Sort what you put down</button>
     <p id="triage-gauge" class="triage-gauge"></p>
     <!-- WHAT IS BEHIND THIS DOOR, for the hub (3.9.1). The hub reads
          `#<id>-count` to say what a job holds, and this section had none — so
@@ -1254,7 +1259,12 @@
 <dialog id="sort" aria-labelledby="sort-title"
         data-contents-door
         data-door="#contents-open | #contents-doors .contents-go[data-open='sort']">
-  <h2 id="sort-title" class="detail-title">Sort things out</h2>
+  <!-- ITS OWN NAME (3.23.14). This heading was "Sort things out", which is what
+       the manual called the TRIAGE screen — so the manual's two descriptions of
+       triage satisfied `manual-coverage.mjs`'s requirement that THIS dialog be
+       named, and it went its whole life undescribed. A name collision does not
+       merely confuse a reader; it can make a coverage gate green over a hole. -->
+  <h2 id="sort-title" class="detail-title">Sort a batch</h2>
   <!-- THE SCROLL CONTAINER (3.1.0). The way out used to be the last thing in a
        box that scrolled as a whole, so leaving meant scrolling past everything
        you had opened this to get through — reported from a device, and the same

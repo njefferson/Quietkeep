@@ -59,6 +59,7 @@ import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCor
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents, reclaimEvents } from './detail-intents.ts';
 import { paintHub, leave, watchJobs, enter as enterStance } from './hub.ts';
+import { plainIsOn } from '../plain.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
   isLongStretch, longStretchWords,
@@ -536,14 +537,38 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
         open.append(w);
       }
 
-      const when = document.createElement('span');
-      when.className = 'card-when';
       // Every item states its own status in words — the text channel of B-01, so
       // nothing here depends on seeing a color. A finished thing says "done"
       // rather than reporting the cure clock it happens to still carry.
-      when.textContent = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
-
-      open.append(title, when);
+      //
+      // EXCEPT WHERE THE HEADING JUST SAID IT (3.23.14). `heldStatus` and
+      // `heldGroups` share one vocabulary on purpose — three phrasings for one
+      // state is three things to learn — and the cost of that decision is that
+      // four of the seven groups have every row repeating their heading back at
+      // them: "Not sorted yet" over a column of rows each ending "not sorted
+      // yet", and the same for Needs a new plan, On the Menu and Done. A cold
+      // reader read the second copy as a second fact and went looking for the
+      // difference.
+      //
+      // THE TEXT CHANNEL IS NOT LOST, which is the only thing that could make
+      // this the wrong trade. The heading is text three lines up, and the list
+      // itself carries `aria-label="<group title>"`, so the state reaches a
+      // screen reader as the name of the region the row is inside. What goes is
+      // the repetition, not the words.
+      //
+      // COMPARED, NOT LISTED. Nothing here knows WHICH groups collide; it asks
+      // whether these two strings are the same sentence. Add a group whose
+      // heading happens to match its status and this handles it unasked, and
+      // change either vocabulary and it stops firing on its own.
+      const status = heldStatus(node, nowIso, session.zone, { zone: session.zone, boundary: boundaryOf(session.state()) });
+      const echoesHeading = status.toLowerCase() === group.title.toLowerCase();
+      open.append(title);
+      if (!echoesHeading) {
+        const when = document.createElement('span');
+        when.className = 'card-when';
+        when.textContent = status;
+        open.append(when);
+      }
 
       // Where it sits, when that is a fact worth stating: "in Boy Scouts", or
       // "7 under it" for a container. This is what tells an already-filed import
@@ -2642,6 +2667,23 @@ export async function main(edition?: Edition): Promise<void> {
   // looks like.
   paintHub(heldWork(session.state()).length > 0);
   watchJobs();
+
+  // AND IN THE REDUCED MODE, ARRIVE AT THE THING (3.23.14).
+  //
+  // A cold reader turned *Just one thing* on, came back, and got a screen with
+  // NOTHING on it — a gauge saying something was ready, a capture box, and the
+  // way out. Everything worked as designed and the design had a hole in it:
+  // the mode strips `#hub`, because a list of places to go is what it is a
+  // rebuttal to; the app lands on the hub, because that is where everyone
+  // arrives; and the offer lives INSIDE a job. Strip the doors and land on the
+  // doors and the one thing is unreachable, from the screen whose whole promise
+  // is to hand it to you.
+  //
+  // So the mode arrives where it means to. This is not a general "remember the
+  // last screen" — that is a different question, and answering it here would be
+  // answering it for everybody on the strength of one mode's need. Somebody who
+  // has reduced the day to one thing has already said where they want to be.
+  if (plainIsOn(session.state())) enterStance('nextup');
 
   // The store is open, state is folded, and the surface reflects it. Marked on
   // the document so the headless walk waits for the app rather than for `load`,

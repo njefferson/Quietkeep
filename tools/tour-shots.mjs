@@ -163,7 +163,7 @@ const SHOTS = [
     async reach(page) {
       await seed(page);
       // The inline one-card-at-a-time pass on the main screen — which is what
-      // this step describes, and not the `Sort things out` batch picker.
+      // this step describes, and not the `Sort a batch` picker.
       // The hub's door IS the way in now, and entering the job opens the card —
       // the second door inside it collapsed in 3.0.0.
       await intoJob(page, 'triage');

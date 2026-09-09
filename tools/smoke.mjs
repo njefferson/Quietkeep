@@ -848,8 +848,27 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await page.waitForSelector('.card');
   is(await page.locator('.card-title').first().textContent(), 'Ring the dentist',
     'it came back after a full reload');
-  const when = await page.locator('.card-when').first().textContent();
-  is(typeof when === 'string' && when.length > 0, true, `every card states its own status in words ("${when}")`);
+  // A ROW SAYS ITS STATE, OR ITS HEADING DOES — and never both (3.23.14).
+  // This asked `.card-when` on the first card, which was the strongest thing it
+  // could ask while every row carried one. Now that a row under a heading that
+  // already says its status drops the repeat, the invariant to hold is the pair:
+  // some row states its status in words, and NO row repeats the heading above
+  // it. Asking only the first card would have gone quietly vacuous the day the
+  // fixture's first row landed in a colliding group.
+  const whens = await page.locator('.card-when').allTextContents();
+  is(whens.length > 0 && whens.every(w => w.trim().length > 0), true,
+    `cards state their own status in words (${whens.length} of them, e.g. "${whens[0] ?? ''}")`);
+  const echoed = await page.evaluate(() => {
+    const bad = [];
+    for (const ul of document.querySelectorAll('.cards-group')) {
+      const head = (ul.getAttribute('aria-label') || '').toLowerCase();
+      for (const w of ul.querySelectorAll('.card-when')) {
+        if ((w.textContent || '').trim().toLowerCase() === head) bad.push(head);
+      }
+    }
+    return bad;
+  });
+  is(echoed.length, 0, `no row repeats the heading it sits under (${echoed.join(', ') || 'none'})`);
 
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
@@ -6183,11 +6202,11 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const heatPrompt = await tpage.locator('#triage-prompt').textContent();
   if (onMine && /hot or cold/i.test(heatPrompt || '')) {
     await intoJob(tpage, 'triage');
-    await tpage.locator('#triage-actions .route', { hasText: 'Just sort it' }).first().click();
+    await tpage.locator('#triage-actions .route', { hasText: 'Choose where it goes' }).first().click();
     await settled(tpage, 200);
     const after = await tpage.locator('#triage-prompt').textContent();
     is(/hot or cold/i.test(after || ''), false,
-      `"Just sort it" leaves the heat pass and offers the routes ("${after}")`);
+      `"Choose where it goes" leaves the heat pass and offers the routes ("${after}")`);
     is(await tpage.locator('#triage-actions .route', { hasText: 'Next action' }).count() > 0, true,
       'and the real routes are there — the item was in the clarify queue the whole time');
     const card = await tpage.locator('#triage-card').textContent();
@@ -6607,6 +6626,24 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(await tpage.locator('#nextup-plain-bar').isHidden(), false,
     'still on after a full reload');
   is(await tpage.locator('#nextup-why').isHidden(), true, 'and still stripped');
+
+  // AND IT STILL SHOWS THE ONE THING (3.23.14).
+  //
+  // The two assertions above check that the MODE survived a reload. They do not
+  // check that anything did, and for four releases nothing did: the mode strips
+  // `#hub`, the app lands on the hub, and the offer lives inside a job \xe2\x80\x94 so
+  // coming back put the reader on a screen with a capture box, a gauge saying
+  // something was ready, and no route to it. A cold reader found it; every
+  // assertion here was green throughout, because the marker of the mode is kept
+  // on the landing surface and its CONTENT is not.
+  //
+  // The lesson is the assertion: a mode that survives a reload has to be asked
+  // what it is showing, not whether it is on.
+  await settled(tpage, 300);
+  is(await tpage.locator('#nextup').isVisible(), true,
+    'and it arrives at the one thing rather than on an empty landing screen');
+  is(((await tpage.locator('#nextup').textContent()) ?? '').trim().length > 0, true,
+    'with something actually in it');
 
   // AND NOTHING WAS TAKEN FROM THE STORE. The list is off the screen from
   // 2.14.0 and every card of it is still rendered, one attribute away — which is

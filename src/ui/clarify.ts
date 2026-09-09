@@ -1187,8 +1187,8 @@ export function mountTriage(
     // not the same thing at all: the surface simply fell through to somebody
     // else's heat card, the prompt still said "Hot or cold?", and the item the
     // reader had just asked to sort was nowhere. The walk caught it saying
-    // exactly that. "Just sort it" is a request about THIS item, so it has to
-    // put THIS item in front of you.
+    // exactly that. "Choose where it goes" is a request about THIS item, so it
+    // has to put THIS item in front of you.
     // THE SWEEP IS FOR A PILE, and a pile is what it was designed against
     // (1.39.3). ADR-0029 calls heat "an optional, lighter-weight first pass"
     // whose whole value is that a cheap hot/cold run across many items is easier

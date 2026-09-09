@@ -422,7 +422,15 @@ export async function mountAbout(
 
     const rows: [string, string][] = [
       ['Keeping your data', r.persisted ? 'yes' : r.supported ? 'not yet' : 'cannot tell'],
-      ['Asked for', first ? new Date(first).toLocaleString() : r.persisted ? 'just now' : '—'],
+      // A DASH IS NOT AN ANSWER (3.23.14, cold read). This printed a bare em
+      // dash in a column of words — "yes", "not yet", "unknown", "cannot tell" —
+      // and it read as a field the app had failed to fill rather than as a state
+      // it was reporting. There IS a state, and the row above already has the
+      // words for it: there is no date because the browser has not granted
+      // keeping, so the two rows now say the same thing in the same way, which
+      // is the whole reason they sit next to each other.
+      ['Asked for', first ? new Date(first).toLocaleString()
+        : r.persisted ? 'just now' : r.supported ? 'not yet' : 'cannot tell'],
       // The durability fact that is actually under your control, sitting beside
       // the one that is not. `export.written` has been written since Phase 0 and
       // read by nothing until now (ADR-0062).
