@@ -1634,7 +1634,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.12**, promoted 2026-09-09 at `152d425` — five
+- **PRODUCTION CARRIES 3.23.15**, promoted 2026-09-09 at `fadd34c` — the whole
+  of the FOURTH cold read, in three releases. 3.23.13 answers the minute that
+  read would have stopped at ("Hot or cold?", the one control in the sorting flow
+  with nothing written under it). 3.23.14 is the rest of it, including a name
+  collision that was making a coverage gate report full coverage over a dialog
+  the manual had never described. 3.23.15 is a correction: a fix was tried,
+  refused by the smoke walk on two assertions that read a row for its state, and
+  reverted AFTER 3.23.14 was cut — so shipped bytes had moved without the
+  triplet, which is the state where a release is published and cannot arrive.
+  Verified at `f70e705` with the Spine green across 53 steps and all three
+  browser walks actually running, then read back off the host twice.
+  Before it, 3.23.12, promoted at `152d425` — five
   releases across two promotes today, 3.23.8 through 3.23.12, all of them the
   third cold read. The second promote carried 3.23.11 and 3.23.12, the two
   findings that had been put up as decisions and were not: the sorting screens'
@@ -3439,7 +3450,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.12** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.23.15** — promoted at
+  `fadd34c` on 2026-09-09: 3.23.13, 3.23.14 and 3.23.15, the whole of the FOURTH
+  cold read. The merged tree asserted byte-identical to `f70e705`, the staging
+  head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
+  that read as empty — with that SHA's Spine green across 53 steps and Deploy
+  green, found by head SHA. **Both editions read back by content, twice**, each
+  serving 3.23.15 and each serving `manual.html`, `paths.html` and `why.html` as
+  themselves.
+  That 53-step green is the first of the day, and the first in which the browser
+  walks RAN: four earlier pushes went red at a stale-receipt check, which is a
+  fact about a file, and each time that failure silenced twelve steps including
+  the whole test suite, the build and all three walks. They reported as
+  `skipped` under a run reporting as red, so nobody asked which of the thirty
+  gates the red belonged to. `release:check` had been red underneath all four,
+  saying shipped bytes had moved after the triplet — the state where a release
+  is published and cannot arrive.
+- **Superseded, and kept for the record: production at 3.23.12** — promoted at
   `152d425` on 2026-09-09: 3.23.11 and 3.23.12, the last of the third cold
   read's findings and the two that had been carried as decisions when neither
   was one. The merged tree asserted byte-identical to `6b63baf`, the staging
