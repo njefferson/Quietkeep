@@ -696,6 +696,28 @@ all. **A regex that survives one round of escaping as a DIFFERENT valid regex is
 the worst kind of typo**: there is no crash to notice, and the count it produces
 looks like an answer. Caught only by counting the steps before and after.
 
+**A HEALTHY CI RUN WAS CANCELLED ON A MISREAD OF THE CLOCK (2026-09-09).** The
+Spine run for 3.23.10 was thirteen minutes old — its normal length — and was
+cancelled as wedged. Nothing was lost but the minutes and a re-dispatch, and the
+misreading is worth more than the mistake:
+
+**A sleep that is moved to the background is not a wait.** Each long `sleep` was
+backgrounded by the harness almost immediately and returned in seconds, and each
+one was followed straight away by another poll of the run. Twelve polls felt like
+an hour and were about four minutes. **The number of times something was checked
+is not a duration** — which is the same error, exactly, as the session that
+turned nineteen releases into four months of calendar time (hub LESSONS 75).
+`date -u` costs nothing and settles it; the poll count never can.
+
+**And `updated_at` does not advance while a run is in progress.** It was read as
+proof the run had stopped moving. It is not: the field sat frozen at the run's
+first second on both a healthy run and a cancelled one, from two different
+endpoints. A field that does not change is not evidence of a thing that is not
+changing — the JOBS endpoint is where progress actually shows.
+
+The re-dispatch is the right fallback (hub LESSONS 161) and it ran on the same
+head SHA, so the verification stands; it just did not need doing.
+
 **What the report also carried, and what was done with it.** Seventeen
 unprompted observations arrived; the seven above are those that survived being
 checked against the source. The rest were restatements of the seven claim
