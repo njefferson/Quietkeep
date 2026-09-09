@@ -666,6 +666,36 @@ receipt existed. **A newly visible element is a layout change** — worth saying
 plainly, because it did not read like one while it was being made. Hub LESSONS
 §253 carries both halves.
 
+**AND THE SPINE ITSELF CARRIED THE SECOND COPY IT EXISTS TO PREVENT.** CI went
+red on 3.23.10 at a hub gate the local Spine had never run: `example-check`,
+which refused `placeholder="7"` on the repeat field as an undeclared example —
+correctly; a placeholder is published copy and this one is now declared as
+`product-copy`, since it is the app's own default cadence rather than anybody's
+scenario.
+
+**The local Spine could not have caught it, because its hub-gate list was typed
+into `tools/spine.mjs` by hand.** The hub gates arrive as one `uses:` call with
+no steps to read, so the tool synthesised them back — from a literal array of
+five plus three conditionals. `example-check` and `svg-check` were added to
+`hub-gates.yml`, ran in CI from the day the pin moved, and were never added
+here. The Spine's ONE promise is that everything CI runs is run here, and it was
+broken by its own source, in the exact shape it was written to stop.
+
+**It reads the hub's own workflow now**, off the sibling checkout, evaluating
+each step's `if: inputs.x` against the caller's `with:` over the workflow's
+declared defaults. Ten gates, matching CI's ten. It reads the LOCAL hub, which
+can be ahead of the pin — a superset rather than a gap, and `hub-pin-check.mjs`
+is what holds the pin honest.
+
+**The bug inside the fix is worth more than the fix.** The reader is Python
+inside a JS template literal, so every regex is escape-processed on the way in.
+Written as `[\w.-]` it reaches Python as `[w.-]` — a character class matching a
+literal *w*, a dot and a dash. Still a valid regex. Still compiles. Matches
+nothing, silently, and the tool reported 45 steps instead of 55 with no error at
+all. **A regex that survives one round of escaping as a DIFFERENT valid regex is
+the worst kind of typo**: there is no crash to notice, and the count it produces
+looks like an answer. Caught only by counting the steps before and after.
+
 **What the report also carried, and what was done with it.** Seventeen
 unprompted observations arrived; the seven above are those that survived being
 checked against the source. The rest were restatements of the seven claim

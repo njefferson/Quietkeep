@@ -110,7 +110,7 @@ if (PARITY) {
 // on this machine and on every runner, and a node YAML parser in
 // devDependencies to read three files would be the worse trade.
 const raw = execFileSync('python3', ['-c', `
-import yaml, json, sys
+import yaml, json, re, sys
 d = yaml.safe_load(open(sys.argv[1]))
 out = []
 for job in d.get('jobs', {}).values():
@@ -123,23 +123,70 @@ for job in d.get('jobs', {}).values():
     # left to somebody to remember.
     u = job.get('uses', '')
     if 'hub-gates.yml@' in u:
-        w = job.get('with', {}) or {}
-        gates = [
-            ("The owner's person is not repo material", 'privacy-check.mjs --repo .'),
-            ('Every set-apart quotation says whose words it is', 'quote-check.mjs --repo .'),
-            ('No grid in anything the owner reads', 'docs-check.mjs .'),
-            ('npm hygiene', 'pin-check.mjs --repo .'),
-            ('The commit guard is the one that was declared', 'branch-guard.mjs --repo . --artefact'),
-        ]
-        if w.get('third-person', True):
-            gates.append(('No third-person reference to the owner', 'third-person-check.mjs --repo .'))
-        if w.get('mirror'):
-            gates.append(('The offline pattern mirror has not drifted', 'privacy-mirror-check.mjs --repo .'))
-        if w.get('pwa'):
-            gates.append(('A new version waits and the reader is told', 'pwa-check.mjs --repo .'))
-        for name, cmd in gates:
-            out.append({'name': name + ' (hub)', 'run': 'node ../noahjefferson/' + cmd,
-                        'uses': '', 'if': ''})
+        # READ FROM THE HUB'S OWN WORKFLOW, NOT FROM A LIST TYPED IN HERE.
+        #
+        # This used to carry a hand-written copy of the hub's gate steps, which
+        # is the second copy this whole tool exists to prevent -- and it went
+        # stale exactly the way a second copy does. example-check and svg-check
+        # were added to hub-gates.yml, ran in CI, and were never added here, so
+        # npm run spine said green and CI went red on an undeclared
+        # placeholder. That is the Spine's one promise broken by its own source.
+        #
+        # The hub is a sibling checkout, so its workflow file is on disk. Its
+        # steps are node hub/<gate>.mjs --repo app with an optional
+        # if: inputs.<name>, so each one rewrites to the sibling path and the
+        # condition is evaluated against the caller's with: over the workflow's
+        # own declared defaults.
+        #
+        # IT READS THE LOCAL HUB, WHICH MAY BE AHEAD OF THE PIN, and that is a
+        # superset rather than a gap: a gate the pin does not have yet runs here
+        # early. hub-pin-check.mjs is what holds the pin itself honest.
+        hub = '../noahjefferson/.github/workflows/hub-gates.yml'
+        try:
+            hg = yaml.safe_load(open(hub))
+        except Exception as e:
+            out.append({'name': 'The hub gates (hub)', 'run': '',
+                        'uses': '', 'if': '',
+                        'unreadable': 'cannot read %s: %s' % (hub, e)})
+            continue
+        declared = ((hg.get(True) or hg.get('on') or {})
+                    .get('workflow_call', {}).get('inputs', {}) or {})
+        vals = {k: v.get('default') for k, v in declared.items()}
+        vals.update(job.get('with', {}) or {})
+        def truthy(cond):
+            if not cond:
+                return True
+            c = str(cond).strip()
+            # Two shapes only, and anything else is reported rather than guessed.
+            m = re.fullmatch(r"inputs\\.([\\w-]+)", c)
+            if m:
+                return bool(vals.get(m.group(1)))
+            m = re.fullmatch(r"inputs\\.([\\w-]+)\\s*!=\\s*''", c)
+            if m:
+                return str(vals.get(m.group(1)) or '') != ''
+            return None
+        for st in (hg.get('jobs', {}).get('gates', {}) or {}).get('steps', []) or []:
+            run = str(st.get('run', '') or '')
+            m = re.search(r"node (?:\\.\\./)?hub/([\\w.-]+\\.mjs)(.*)", run)
+            if not m:
+                continue
+            keep = truthy(st.get('if'))
+            if keep is False:
+                continue
+            name = st.get('name', m.group(1))
+            args = m.group(2).strip()
+            # docs-check takes a POSITIONAL path built from an input, and it
+            # dies on --repo. Everything else here is --repo app.
+            if m.group(1) == 'docs-check.mjs':
+                args = str(vals.get('docs-path') or '.')
+            else:
+                args = args.replace('--repo app', '--repo .').replace('"app/$DOCS_PATH"', '.')
+            entry = {'name': name + ' (hub)',
+                     'run': 'node ../noahjefferson/' + m.group(1) + (' ' + args if args else ''),
+                     'uses': '', 'if': ''}
+            if keep is None:
+                entry['unreadable'] = 'its condition (%s) is not one this reads' % st.get('if')
+            out.append(entry)
         continue
     for s in job.get('steps', []):
         out.append({
