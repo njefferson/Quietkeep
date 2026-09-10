@@ -510,6 +510,20 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
     for (const node of shown) {
       const li = document.createElement('li');
       li.className = 'card';
+      // WHAT KIND OF THING THIS ROW IS, machine-readable and invisible (3.23.18).
+      //
+      // Nothing on a row said its kind in any form a walk could ask, so
+      // `tools/a11y.mjs` picked "the first card" and ASSUMED it could take a hard
+      // date — an assumption that held for two hundred releases, was never
+      // asserted, and when it stopped holding produced a failure about the
+      // ambient horizon rather than about the drive. `data-kind` lets that drive
+      // name its own precondition and check it.
+      //
+      // Not a badge and not a class: nothing styles it, nothing reads it at
+      // runtime, and it says the same word `NodeKind` uses rather than a
+      // reader-facing one — `kind-words.ts` owns those, and a kind a reader sees
+      // is a decision this attribute must not quietly pre-empt.
+      li.dataset.kind = node.kind;
 
       const open = document.createElement('button');
       open.type = 'button';

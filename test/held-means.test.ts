@@ -14,7 +14,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { admit, coverageGauge, heldNodes, heldWork, silentNodes } from '../src/gate.ts';
-import { heldGroups, undatedCount } from '../src/held.ts';
+import { comingBack, heldGroups, undatedCount } from '../src/held.ts';
 import { searchHeld } from '../src/search.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -114,4 +114,40 @@ test('held-means: a resume card is not work, spent or not', () => {
   s = write(s, [ev('resume.card.spent', 'R', {})]);
   assert.equal(coverageGauge(s).total, 0, 'and spending it changes nothing about that');
   assert.equal(heldGroups(s, NOW, TZ).flatMap(g => g.items).length, 0, 'and the two agree');
+});
+
+
+test('sorting things for tomorrow leaves the offer something true to say about them', () => {
+  // THE FIFTH COLD READ'S WALL, reproduced. Seven things sorted as *Next action*
+  // — which takes tomorrow's clock BY DESIGN, so a triage run does not become a
+  // work session — and the offer said "Nothing is asking today" over a sentence
+  // that counted only the UNDATED things. The seven were covered, were returning,
+  // and were named nowhere. That is entry 3 of `docs/nd-collisions.md`, the
+  // best-evidenced entry in the catalog and this product's thesis, committed by
+  // the app: a surface that goes quiet about what it is holding.
+  //
+  // THE REMEDY IS THE SENTENCE, NOT THE CLOCK, and this test is where that is
+  // pinned. The reader ALSO expected the seven to be offered today; that is an
+  // expectation and not a finding, and the research supports saying what is
+  // coming rather than moving when it comes. So the clock is asserted still to be
+  // tomorrow, immediately below — if a later session decides to make next actions
+  // same-day, this test should fail and be argued with, not quietly satisfied.
+  let s = write(emptyState(), [ev('node.created', 'A', { nodeKind: 'action', title: 'ring the plumber' })]);
+  s = write(s, [ev('clock.set', 'A', {
+    clockKind: 'review',
+    at: '2026-08-04T05:59:59.000Z',            // end of TOMORROW, Denver (NOW is noon on the 2nd there)
+    source: 'clarify:next-action',
+  })]);
+
+  const back = comingBack(s, NOW, TZ);
+  assert.ok(back, 'something dated for tomorrow is something coming back');
+  assert.equal(back!.count, 1, 'and it is counted');
+  assert.equal(back!.words, 'tomorrow', 'in the app\'s own word for that day');
+
+  // The clock stands. Sorting is not doing.
+  assert.equal(undatedCount(s, NOW, TZ), 0, 'it is not undated — it has a date, and the date is tomorrow');
+
+  // AND NOTHING TO SAY WHEN THERE IS NOTHING, so the sentence cannot appear over
+  // an empty store and read as a promise about work that does not exist.
+  assert.equal(comingBack(emptyState(), NOW, TZ), null, 'an empty store has nothing coming back');
 });

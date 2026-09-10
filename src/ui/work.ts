@@ -21,7 +21,7 @@ import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
 import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { fitsWith, getWithNow } from '../people.ts';
-import { undatedCount } from '../held.ts';
+import { comingBack, undatedCount } from '../held.ts';
 import { servesNode } from '../serves.ts';
 import { pressureWords } from '../pressure.ts';
 import { captureContextWords } from '../capture-context.ts';
@@ -931,10 +931,18 @@ export function mountWork(
       // stays, says the real number, and the two action buttons go — there is
       // nothing to be done to, and a live button with no subject is worse than none.
       const undated = undatedCount(session.state(), nowIso(), session.zone);
+      // AND WHAT IS COMING BACK, which this branch could not say (3.23.18).
+      // The sentence below has always named the UNDATED things; work that IS
+      // dated and is not due today was named nowhere, so sorting seven things as
+      // *Next action* — which takes tomorrow's clock on purpose — produced
+      // "Nothing is asking today" over a count of five other things, with the
+      // seven invisible. `held.ts:comingBack` says why this is the fix and the
+      // clock is not.
+      const coming = comingBack(session.state(), nowIso(), session.zone);
       BEHIND.replaceChildren();
       if (doneBtn) doneBtn.hidden = undated > 0;
       if (skipBtn) skipBtn.hidden = undated > 0;
-      if (undated > 0) {
+      if (undated > 0 || coming) {
         REGION.hidden = false;
         TITLE.textContent = 'Nothing is asking today.';
         TITLE.hidden = false;
@@ -945,9 +953,19 @@ export function mountWork(
         // head would attach a previous item's downstream to "Nothing is asking".
         if (APPROACH) { APPROACH.textContent = ''; APPROACH.hidden = true; }
         paintBite(null);
-        WHY.textContent = undated === 1
-          ? 'One thing is here without a date. It is waiting on you to decide, not the other way round.'
-          : `${undated} things are here without a date. They are waiting on you to decide, not the other way round.`;
+        // TWO FACTS, EACH ONLY WHEN IT IS TRUE. The undated half is unchanged. The
+        // coming-back half is stated as a fact and never as a demand — it says
+        // when, and asks for nothing, because nothing is being asked today and
+        // saying otherwise would put a date's weight on a day it does not own.
+        const loose = undated === 0 ? ''
+          : undated === 1
+            ? 'One thing is here without a date. It is waiting on you to decide, not the other way round.'
+            : `${undated} things are here without a date. They are waiting on you to decide, not the other way round.`;
+        const back = !coming ? ''
+          : coming.count === 1
+            ? `One thing comes back to you ${coming.words}.`
+            : `${coming.count} things come back to you, the first of them ${coming.words}.`;
+        WHY.textContent = [back, loose].filter(Boolean).join(' ');
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
         if (FIXED) { FIXED.textContent = ''; FIXED.hidden = true; }

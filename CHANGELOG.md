@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.18 — ITERATION
+
+*2026-09-10*
+
+- **Sorting a pile no longer empties the day in silence.** Sort a handful of things as *Next action* and each one takes tomorrow — on purpose, so a sorting run does not turn into a working one. But *Next up* then said *Nothing is asking today* and counted only the things with no date at all, so the work you had just done appeared nowhere and read as lost. It now says how many come back to you and when the first of them is. The dates have not moved; the silence has gone.
+
 ## 3.23.17 — ITERATION
 
 *2026-09-09*

@@ -29,6 +29,14 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.18',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**Sorting a pile no longer empties the day in silence.** Sort a handful of things as *Next action* and each one takes tomorrow \u2014 on purpose, so a sorting run does not turn into a working one. But *Next up* then said *Nothing is asking today* and counted only the things with no date at all, so the work you had just done appeared nowhere and read as lost. It now says how many come back to you and when the first of them is. The dates have not moved; the silence has gone.',
+    ],
+  },
+  {
     triplet: '3.23.17',
     kind: 'ITERATION',
     date: '2026-09-09',

@@ -4714,7 +4714,30 @@ try {
     });
     await page.waitForSelector('#focus[hidden]').catch(() => {});
     await enterStance(page, 'held');
-    await page.locator('#cards .card-open').first().click();
+    // A CARD THAT CAN CARRY A HARD DATE, NAMED — not simply the first one
+    // (3.23.18). This drive took `.card-open` first and assumed the sheet's date
+    // control would write a `due` clock, which `nextFixedToday` requires. The
+    // assumption held for two hundred releases and was never asserted, so when
+    // it stopped holding, the failure arrived as "the ambient horizon did not
+    // render" — a true statement about the wrong thing.
+    //
+    // TWO CHANGES CONSPIRED, and neither was visible from here. 3.23.16 took
+    // resume cards out of `heldWork`, which changed which card is first in this
+    // list; 3.23.17 made the sheet's date control write `review` rather than
+    // `due` on a CONTAINER, deliberately, because you do not finish an area, you
+    // look in it again. So the drive could land on a container, set a date that
+    // is correctly not a hard date, and then fail an assertion about hard dates.
+    //
+    // The precondition is now chosen and CHECKED. `data-kind` is on the row, so
+    // this asks the markup rather than guessing from the title, and a fixture
+    // with nothing datable says so here instead of failing four lines down about
+    // something else.
+    const datable = page.locator('#cards .card[data-kind="action"] .card-open').first();
+    if (await datable.count() === 0) {
+      fail(`${theme}/focus: no ordinary action in the held list to put a hard date on `
+        + `— the ambient-horizon drive below cannot run, so it would prove nothing`);
+    }
+    await datable.click();
     await page.waitForSelector('#detail[open]');
     const todayKey = await page.evaluate(() => {
       const d = new Date();

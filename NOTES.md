@@ -1769,9 +1769,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.17**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.18**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
-  tree plus two releases. 3.23.17 is the sheet's date control learning what
+  tree plus three releases. 3.23.18 is the fifth cold read's WALL, answered from
+  the research rather than from what the read expected. It reported that sorting
+  seven things as *Next action* left the offer saying *Nothing is asking today*
+  and expected the seven to be offered. The clock is deliberate — sorting is not
+  doing — so what was wrong was the SILENCE: entry 3 of `docs/nd-collisions.md`,
+  the best-evidenced entry in the catalog and this product's thesis, is a surface
+  going quiet about what it is holding, and 2.8.1 moved the coverage gauge for
+  exactly that reason. The empty offer now says how many come back and when the
+  first is. No date moved.
+  **AND THE A11Y WALK CAUGHT A REGRESSION FROM 3.23.16 AND 3.23.17 CONSPIRING**,
+  which is the first thing that has, and neither change was visible from the other
+  end. 3.23.16 took resume cards out of `heldWork`, changing which card is first
+  in the held list; 3.23.17 made the sheet's date control write `review` on a
+  container. The walk's ambient-horizon drive took "the first card" and ASSUMED it
+  could carry a hard date — true for two hundred releases, asserted nowhere — so
+  it could date a container, correctly get a soft clock, and then fail an
+  assertion about hard dates. The drive names and checks its precondition now,
+  and `data-kind` on a card row is what lets it ask. 3.23.17 is the sheet's date control learning what
   `triage-intents.ts` already argued — a container takes a `review` clock and not
   a `due` — so a dated project stops showing an empty date box beside a card
   reading "comes back in 6 days".

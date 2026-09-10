@@ -193,6 +193,51 @@ export function clockDayWords(at: string, nowIso: string, zone: string, day: Day
 }
 
 /**
+ * WHAT IS COMING BACK, AND WHEN THE NEAREST OF IT IS — or null when nothing is.
+ *
+ * For the one surface that had no way to say it. Next up correctly offers nothing
+ * when nothing has arrived, and its empty branch already names the UNDATED things
+ * ("N things are here without a date") because a screen reading *nothing here*
+ * over a full store is entry 3 of `docs/nd-collisions.md` rendered by the app —
+ * the best-evidenced entry in the catalog and this product's thesis. What that
+ * branch could not say is anything about work that IS dated and is not due today.
+ *
+ * A cold read walked into the gap: seven things sorted as *Next action*, which
+ * takes tomorrow's clock by design, and the offer said *Nothing is asking today*
+ * over a sentence counting five OTHER things. The seven were covered, were
+ * returning, and appeared nowhere. Entry 3's own record of the same shape is
+ * 2.8.1, which moved the coverage gauge out of the held list on the finding that
+ * "a surface that goes quiet the moment it is out of sight commits the failure
+ * this entry describes".
+ *
+ * THE CLOCK IS NOT TOUCHED, and that is the point of putting this here rather
+ * than making next-actions available today. Sorting is not doing — `clarify:
+ * next-action` dates tomorrow deliberately, so a triage run does not turn into a
+ * work session — and the reader's own expectation that the seven would be offered
+ * is an expectation, not a finding. What was wrong was the SILENCE, not the date.
+ *
+ * NOT A SECOND "WHAT IS COMING" PROJECTION. `datedDays` is the calendar-aligned
+ * one and must stay identical to the exported file (`ics.ts` says so, and says
+ * what re-deriving it cost in 0.9.0); this reads the `soon` bucket `heldGroups`
+ * already computes and already draws a heading for. It adds no definition.
+ */
+export function comingBack(
+  state: State, nowIso: string, zone: string,
+): { count: number; words: string } | null {
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
+  const soon = heldGroups(state, nowIso, zone).find(g => g.key === 'soon');
+  if (!soon || soon.items.length === 0) return null;
+  let nearest: string | null = null;
+  for (const n of soon.items) {
+    const d = soonestDemand(n, day, nowIso);
+    if (!d) continue;
+    if (nearest === null || d.at < nearest) nearest = d.at;
+  }
+  if (nearest === null) return null;
+  return { count: soon.items.length, words: clockDayWords(nearest, nowIso, zone, day) };
+}
+
+/**
  * Exactly one group per node in `heldWork` — the grouping is TOTAL over that
  * set, so the sum of the groups equals `coverageGauge(state).total` and equals
  * the coverage list's rows. The number, the claim it invites you to open, and
