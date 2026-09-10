@@ -18,7 +18,7 @@
 // so rather than implying the calendar is live. Both the calendar name and every
 // event description carry the moment they were made.
 
-import type { NodeState, State } from './fold.ts';
+import { isAppClock, type NodeState, type State } from './fold.ts';
 import { heldGroups } from './held.ts';
 import { standingDecline } from './requests.ts';
 import { localDayKey, isValidIso, atMidnight} from './time.ts';
@@ -155,13 +155,45 @@ export const exportsToCalendar = (n: NodeState): boolean =>
  *  date outranks plain due because it is the one a reader most needs to see
  *  named. Only the dated view reads the kind — the file writes `at` alone, so
  *  this choice cannot alter a single byte of the export. */
-const KIND_PRIORITY: readonly string[] = ['suspense', 'due', 'start', 'park'];
+const KIND_PRIORITY: readonly string[] = ['suspense', 'due', 'start', 'park', 'review'];
+
+/**
+ * A clock the READER set, as opposed to one that may carry an alarm — and until
+ * 3.23.21 `CALENDAR_KINDS` was one predicate answering both questions.
+ *
+ * `clock.ts`'s own comment called that set "only the clocks a PERSON set". It is
+ * not: a `review` clock is what the app writes when somebody presses *Next
+ * action*, answers *when should this come back*, or types a date on a project.
+ * Three deliberate acts, none of them in the set named after deliberate acts.
+ *
+ * The two questions come apart cleanly. **May it carry an alarm** keeps the
+ * EXPORTED FILE narrow, and must: an alarm on a soft clock is the nag this app
+ * refuses everywhere (entry 15, and the standing-decline reasoning above).
+ * **Did a person set it** governs what the app shows the reader about their own
+ * dates, and there the answer has to be yes, because a date somebody set that
+ * appears on no surface is a date they go on carrying.
+ *
+ * That is not taste. Entry 28 of `docs/nd-collisions.md` is a well-powered
+ * experiment crossing reminder reliability at 0%, 50% and 100%, and the 50%
+ * condition "did not substitute at all" — uncertainty kept people maintaining
+ * the intention internally. Reliability the reader cannot CHECK is 50%
+ * reliability from the inside, whatever the log holds.
+ *
+ * `isAppClock` is what makes this safe: every node carries the gate's own cure
+ * in a `review` slot from the moment it exists, and treating those as dates
+ * somebody set would fill the view with dates nobody chose — the 1,012-ready
+ * failure `arrivedClock` already records, in a second place.
+ */
+const readerSet = (kind: string, c: { source?: string | null } | null | undefined): boolean =>
+  CALENDAR_KINDS.has(kind) || (kind === 'review' && !isAppClock(c as never));
 
 /** The soonest clock a calendar may carry, and WHICH kind is speaking. NOT
  *  `soonestClock`, which answers a different question — `held.ts` groups on any
  *  clock, because the app genuinely should resurface a review-clocked item.
  *  Only the export is narrower. */
-const soonestAt = (n: NodeState, zone: string, nowIso: string): { at: string; kind: string } | null => {
+const soonestAt = (
+  n: NodeState, zone: string, nowIso: string, includeSoft = false,
+): { at: string; kind: string } | null => {
   void zone; void nowIso;
   const rank = (k: string): number => {
     const i = KIND_PRIORITY.indexOf(k);
@@ -170,7 +202,7 @@ const soonestAt = (n: NodeState, zone: string, nowIso: string): { at: string; ki
   let best: { at: string; kind: string; ms: number } | null = null;
   for (const c of Object.values(n.clocks)) {
     if (!c || !isValidIso(c.at)) continue;
-    if (!CALENDAR_KINDS.has(c.kind)) continue;
+    if (!(includeSoft ? readerSet(c.kind, c) : CALENDAR_KINDS.has(c.kind))) continue;
     const ms = Date.parse(c.at);
     if (best === null || ms < best.ms || (ms === best.ms && rank(c.kind) < rank(best.kind))) {
       best = { at: c.at, kind: c.kind, ms };
@@ -198,13 +230,15 @@ export interface CalendarEntry {
  * the clocks itself it would eventually disagree with the file, and the 0.9.0
  * dropped-replan defect above is what that costs. Nothing may re-derive this.
  */
-export function calendarEntries(state: State, nowIso: string, zone: string): CalendarEntry[] {
+export function calendarEntries(
+  state: State, nowIso: string, zone: string, includeSoft = false,
+): CalendarEntry[] {
   const out: CalendarEntry[] = [];
   for (const group of heldGroups(state, nowIso, zone)) {
     if (!inCalendar(group.key)) continue;
     for (const n of group.items) {
       if (!exportsToCalendar(n)) continue;
-      const best = soonestAt(n, zone, nowIso);
+      const best = soonestAt(n, zone, nowIso, includeSoft);
       // No real clock, nothing to put in a calendar. Skipping rather than
       // throwing is deliberate: one malformed stored date must not take the
       // whole export down (the audit's crash class).

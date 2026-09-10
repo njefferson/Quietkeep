@@ -61,6 +61,22 @@ async function store(): Promise<State> {
  *  the table below reads as decisions rather than repetition. */
 const WORK: NodeKind[] = ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', 'bother', 'resume-card'];
 
+/** `resume-card` LEFT THIS LIST IN 3.23.16 AND CAME BACK IN 3.23.21, and both
+ *  halves are worth keeping because the finding behind the removal is still open.
+ *
+ *  It is the only kind the app writes about ITSELF rather than about anything the
+ *  reader said, and a cold read met it at the top of the tree with a Done button
+ *  on it and said, correctly, that it had never written that. So it was excluded.
+ *
+ *  The exclusion took away the reader's only way back into an interrupted thread:
+ *  `heldGroups` is built from `heldWork`, and the row it draws carries the one
+ *  "Pick it back up" in the app. The category error is real; removing the row is
+ *  not the fix for it. The fix is a route that is not the work list — the offer
+ *  already carries the card and its title already opens the sheet — and until
+ *  that exists the row stays. `RESUME` is kept as a name so the surfaces that
+ *  admit it for the RESUMING can say so in their own sentence. */
+const RESUME: NodeKind = 'resume-card';
+
 interface SurfaceRule {
   /** Why this surface admits what it admits — the sentence is the gate. */
   why: string;
@@ -74,32 +90,32 @@ interface SurfaceRule {
 
 const SURFACES: Record<string, SurfaceRule> = {
   'todo list (heldGroups)': {
-    why: 'The list you work from. Work plus off-Menu aspirations (a wish taken off the Menu is still yours and must be SOMEWHERE — its row is how you find it to promote it). Never a person, journal entry, pebble or anchor: each has its own surface, and a row here is what "becoming a task" looks like (ADR-0061/0065/0068, 1.15.1/1.17.0).',
+    why: 'The list you work from. Work plus off-Menu aspirations (a wish taken off the Menu is still yours and must be SOMEWHERE — its row is how you find it to promote it). Never a person, journal entry, pebble or anchor: each has its own surface, and a row here is what "becoming a task" looks like (ADR-0061/0065/0068, 1.15.1/1.17.0). A live resume-card IS here, and only because its row carries the one "Pick it back up" in the app — see the note on RESUME above; the category error that argues against it is real and open.',
     allowed: [...WORK, 'aspiration'],
     expect: ['action', 'project', 'upkeep', 'waiting-for', 'aspiration', 'resume-card'],
     rows: st => heldGroups(st, NOW, TZ).flatMap(g => g.items),
   },
   'coverage list / gauge total (heldWork)': {
-    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again.',
+    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again. This surface is where the cost of a live resume-card being in shows: a card the app wrote about its own bookkeeping is listed here as returning today. It is the open half of the finding, and it may not be closed by narrowing this surface alone — the one definition is the whole point of the row.',
     allowed: [...WORK, 'aspiration'],
     expect: ['action', 'project', 'upkeep', 'aspiration'],
     rows: st => heldWork(st),
   },
   'search (searchHeld)': {
     why: 'Answers "where did that go" — so wider than work: people, anchors and contexts are findable because each opens a sheet that can say something true about it. A context is allowed for the same reason a person is: "at home" is a real thing the reader named, and typing it should reach it. A ROLE is allowed on identical grounds (2.6.0): it is a thing the reader named, its sheet says what belongs to it, and typing "parent" and being told there is no such thing would be the app denying a word the reader gave it. Pebbles are excluded (their sheet is all verbs the gate refuses — 1.15.1) and a journal entry cannot match (no title, by design).',
-    allowed: [...WORK, 'aspiration', 'person', 'anchor', 'context', 'role'],
+    allowed: [...WORK, 'aspiration', 'person', 'anchor', 'context', 'role', RESUME],
     expect: ['action', 'person', 'anchor', 'aspiration', 'context', 'role'],
     rows: st => searchHeld(st, 'e', 100000).items,
   },
   'next-up queue': {
     why: 'What the app offers to DO next: NOT_ACTIONABLE (kinds.ts) is the rule, so actions, upkeep and resume cards only. The 1.17.2 version of this row allowed bothers with a sentence about the mine-to-track park "bringing it back" — the seam audit proved that mechanism cannot occur (parks are excluded from arrival), and the bother that WAS surfacing was the unanswered fresh worry, offered with a Done button before "whose is this?" was ever asked. A worry is not work (1.17.3).',
-    allowed: ['action', 'upkeep', 'resume-card'],
+    allowed: ['action', 'upkeep', RESUME],
     expect: ['action'],
     rows: st => nextUpQueue(st, NOW, TZ).map(q => q.node),
   },
   'the offer (offerNow work)': {
     why: 'Up to OFFER_CAP pieces of work, chosen so picking is a preference (ADR-0060). Same actionable bound as the queue it draws from.',
-    allowed: ['action', 'upkeep', 'resume-card'],
+    allowed: ['action', 'upkeep', RESUME],
     expect: ['action'],
     rows: st => offerNow(st, NOW, TZ).work.map(w => w.node),
   },
@@ -141,7 +157,7 @@ const SURFACES: Record<string, SurfaceRule> = {
   },
   'composed today': {
     why: 'What YOU chose for today. `choosable` excludes person/bother/pebble (never doable) and, since 1.17.2, journal and anchor — a private entry and a named period have no place in a hand of five. A resume-card stays choosable: picking a thread back up today is a real choice.',
-    allowed: ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', 'aspiration', 'resume-card'],
+    allowed: ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', 'aspiration', RESUME],
     expect: ['action'],
     rows: st => composedFor(st, NOW, TZ),
   },
@@ -171,7 +187,7 @@ const SURFACES: Record<string, SurfaceRule> = {
   },
   'the exported calendar': {
     why: 'What leaves for the OS diary — read from the real ICS output, because the diary cannot be corrected by the next glance. Work with real dates only. Never a bother (a worry with an alarm is an appointment nobody made) and never a standing decline (ADR-0056: no nag when the slot day arrives — the seam audit found the decline\u2019s park exporting as an all-day event with a 9 am alarm, the exact nag the ledger removes). Both closed by `exportsToCalendar`, one predicate for the file and the count (1.17.3).',
-    allowed: ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', 'resume-card'],
+    allowed: ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', RESUME],
     expect: ['action', 'waiting-for'],
     rows: st => {
       const ids = [...toCalendar(st, NOW, TZ).matchAll(/^UID:(.+)@quietkeep$/gm)].map(m => m[1]!);

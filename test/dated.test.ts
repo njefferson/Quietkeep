@@ -42,24 +42,60 @@ const shownIds = (days: ReturnType<typeof datedDays>): string[] =>
 const fileIds = (ics: string): string[] =>
   [...ics.replace(/\r\n[ \t]/g, '').matchAll(/^UID:(.+)@quietkeep$/gm)].map(m => m[1]!).sort();
 
-test('the view IS the export: identical membership on a mixed store', () => {
+test('the view is the export PLUS the soft dates the reader set — and nothing else', () => {
+  // THIS ASSERTED IDENTICAL MEMBERSHIP UNTIL 3.23.21, and the widening is the
+  // point rather than a relaxation, so the difference is pinned exactly.
+  //
+  // `CALENDAR_KINDS` was one predicate answering two questions — did a person
+  // set this, and may it carry an alarm. The second keeps the FILE narrow and
+  // must: an alarm on a soft clock is the nag ADR-0056 and entry 15 refuse. The
+  // first governs what the app shows somebody about their own dates, and a
+  // `review` clock is what gets written when they press *Next action*, answer
+  // *when should this come back*, or type a date on a project. Three deliberate
+  // acts, invisible to the one surface that answers "what is coming".
+  //
+  // The old fixture's own comment was wrong about why W was excluded: it said
+  // "app clock" while giving it `source: 't'`, which is not a cure at all. It
+  // was out purely on kind. A real cure is used below so the exclusion that
+  // MUST hold is actually exercised.
   const s = st(
     ...item('A', 'renew the pass', 3),
     ...item('B', 'the answer for the review', 5, 'suspense'),
-    ...item('W', 'a review-only marker', 4, 'review'),          // app clock — out of both
+    ...item('W', 'a project the reader dated', 4, 'review'),    // reader-set soft — view only
     ev('node.created', 'U', { nodeKind: 'action', title: 'undated' }),
-    ev('clock.set', 'U', { clockKind: 'review', at: new Date(Date.parse(NOW) + 86_400_000).toISOString(), source: 'gate' }),
+    ev('clock.set', 'U', {
+      clockKind: 'review',
+      at: new Date(Date.parse(NOW) + 86_400_000).toISOString(),
+      source: 'gate:node.created',                              // the gate's cure — out of both
+    }),
     ...item('M', 'a want', 2),
     ev('menu.item.added', 'M', { category: 'read' }),           // Menu is demand-free — out of both
     ...item('D', 'already finished', 2),
     ev('done.marked', 'D', { at: NOW }),                        // done — out of both
   );
   const view = datedDays(s, NOW, DENVER);
-  assert.deepEqual(shownIds(view), ['A', 'B'], 'exactly the exportable items, nothing else');
-  assert.deepEqual(shownIds(view), fileIds(toCalendar(s, NOW, DENVER)),
-    'the screen and the file hold the same nodes');
-  assert.equal(view.flatMap(d => d.items).length, calendarCount(s, NOW, DENVER),
-    'and the ⓘ count is the same number');
+  const file = fileIds(toCalendar(s, NOW, DENVER));
+
+  assert.deepEqual(file, ['A', 'B'], 'the file holds only what a calendar can sensibly alarm on');
+  assert.deepEqual(shownIds(view), ['A', 'B', 'W'],
+    'the view holds those and the date the reader set on a project');
+
+  // A SUPERSET, stated as one: everything in the file is on the screen, and the
+  // difference is exactly the reader-set soft clocks. Neither half alone would
+  // catch the view quietly losing a hard date.
+  assert.ok(file.every(id => shownIds(view).includes(id)),
+    'nothing the file carries is missing from the screen');
+  assert.deepEqual(shownIds(view).filter(id => !file.includes(id)), ['W'],
+    'and the only difference is the soft date somebody set by hand');
+
+  // THE CURE IS IN NEITHER, which is what keeps the widening from filling the
+  // view with dates nobody chose — every node carries one from birth.
+  assert.equal(shownIds(view).includes('U'), false,
+    'the gate\'s own cure is not a date the reader set');
+
+  // The ⓘ count still counts the FILE, because that is what it is a count of.
+  assert.equal(file.length, calendarCount(s, NOW, DENVER),
+    'and the count beside the export is the export\'s');
   // PLANT: any private re-walk of the clocks here — a fourth definition — lets
   // one surface gain or lose an item without the others noticing, which is how
   // 0.9.0 silently dropped every passed hard date from the calendar.

@@ -4171,6 +4171,14 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
 
   // Pick it back up: the card is spent and focus lands on the WORK, never on a
   // card about a focus session.
+  //
+  // AND THIS ROW IS THE ONLY ROUTE, which is what 3.23.16 did not know when it
+  // took resume cards out of `heldWork` — the exclusion removed this row, and
+  // with it the one "Pick it back up" the app has. Restored in 3.23.21. THIS
+  // WALK IS WHAT FOUND IT: the change's unit tests were updated and passed, and
+  // the claim that "the route back is untouched" had been checked against
+  // projections still CONTAINING the card, which says nothing about whether a
+  // reader can act on it.
   await intoJob(tpage, 'held');
   await tpage.locator('#cards .card:has-text("where you left off") .card-focus').first().click();
   await tpage.waitForSelector('#focus:not([hidden])');

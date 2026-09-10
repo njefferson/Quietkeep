@@ -4714,15 +4714,51 @@ try {
     });
     await page.waitForSelector('#focus[hidden]').catch(() => {});
     await enterStance(page, 'held');
-    await page.locator('#cards .card-open').first().click();
+    // AN ORDINARY ACTION, NAMED AND CHECKED (3.23.20). This took the first card
+    // and assumed it could carry a HARD date, which is what `nextFixedToday`
+    // reads. Nothing asserted that, and 3.23.17 ended it: the sheet's date
+    // control writes a soft `review` clock on a CONTAINER, correctly, because
+    // you do not finish an area — you look in it again. The drive then landed on
+    // the sample's "sweep one", a project, set a date the horizon rightly
+    // ignores, and reported that the horizon had not rendered.
+    //
+    // FOUR RUNS OF THIS WALK WENT INTO FINDING THAT, and the detour is worth
+    // recording. The first diagnosis was this one and was abandoned after a run
+    // that seemed to disprove it — that run's `data-kind` fix had been silently
+    // undone by a `git stash pop` before it started, so it measured a tree
+    // nobody had built. The second blamed the empty branch clearing the line,
+    // which was a REAL defect (fixed in 3.23.19, and the reason this check had
+    // been passing on residue for its whole life) and still not the cause. What
+    // ended it was putting the fields in the failure message: the dated item's
+    // own sheet said "Project · sorted as next action" in plain sight.
+    //
+    // So the precondition is chosen and CHECKED, and a fixture with no ordinary
+    // action says so HERE rather than failing four lines down about something
+    // else. `data-kind` on the row is what lets it ask.
+    const datable = page.locator('#cards .card[data-kind="action"] .card-open').first();
+    if (await datable.count() === 0) {
+      fail(`${theme}/focus: no ordinary action in the held list to put a hard date on `
+        + `— the ambient-horizon drive cannot run, so it would prove nothing`);
+    }
+    await datable.click();
     await page.waitForSelector('#detail[open]');
     const todayKey = await page.evaluate(() => {
       const d = new Date();
       const p = (n) => String(n).padStart(2, '0');
       return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
     });
+    // WHAT IS BEING DATED, AND WHAT THE APP SAID BACK. Carried into the failure
+    // below, because "the horizon did not render" turned out to be true of the
+    // date never reaching `nextFixedToday` at all, and no field distinguished
+    // that from the line being suppressed.
+    const datedTitle = await page.evaluate(() =>
+      document.querySelector('#detail-title')?.textContent?.trim() ?? null);
     await page.fill('#detail-date', todayKey);
     await page.click('#detail-date-set');
+    const datedReceipt = await page.evaluate(() =>
+      document.querySelector('#detail-live')?.textContent?.trim() ?? null);
+    const datedState = await page.evaluate(() =>
+      document.querySelector('#detail-state')?.textContent?.trim() ?? null);
     // THE APP SAYS WHEN THE WRITE HAS LANDED (3.0.2) — ask it rather than
     // guessing 200ms. The guess was right on this machine, in both themes, and
     // wrong on a CI runner in the SECOND one: light passed and dark reported
@@ -4746,16 +4782,73 @@ try {
     // same fold and there was no reason to wait for one and not the other.
     await page.waitForSelector('#nextup-fixed:not([hidden])', { timeout: 5000 }).catch(() => {});
 
-    const horizon = await page.evaluate(() => ({
-      onFocus: document.querySelector('#focus-fixed')?.hidden === false
-        ? document.querySelector('#focus-fixed')?.textContent?.trim() ?? '' : '',
-      onWork: document.querySelector('#nextup-fixed')?.hidden === false
-        ? document.querySelector('#nextup-fixed')?.textContent?.trim() ?? '' : '',
-    }));
-    if (horizon.onWork) {
-      (horizon.onFocus === horizon.onWork ? pass : fail)(
-        `${theme}/focus: the ambient horizon says the same thing here as on the work surface `
-        + `("${horizon.onFocus}" vs "${horizon.onWork}")`);
+    // THE FAILURE CARRIES ITS OWN DIAGNOSIS (3.23.19). This read two strings, so
+    // when it went red the message could only say "it did not render" — which is
+    // true of at least four different causes, and two wrong fixes were built
+    // before anybody could tell them apart. The extra fields cost one evaluate on
+    // a path that already runs one, and they are the difference between a finding
+    // and a guess: whether the line is absent or merely empty, whether the work
+    // surface has a head at all (the line is deliberately suppressed when it
+    // would name that head), and what the offer is actually showing.
+    const horizon = await page.evaluate(() => {
+      const el = document.querySelector('#nextup-fixed');
+      const head = document.querySelector('#nextup-title');
+      return {
+        onFocus: document.querySelector('#focus-fixed')?.hidden === false
+          ? document.querySelector('#focus-fixed')?.textContent?.trim() ?? '' : '',
+        onWork: el?.hidden === false ? el?.textContent?.trim() ?? '' : '',
+        // Diagnosis only — never asserted on, so this cannot become a second
+        // source of truth about the line.
+        why: {
+          present: !!el,
+          hidden: el ? el.hidden : null,
+          text: el?.textContent?.trim() ?? null,
+          headHidden: head ? head.hidden : null,
+          headText: head?.textContent?.trim() ?? null,
+          why: document.querySelector('#nextup-why')?.textContent?.trim() ?? null,
+        },
+      };
+    });
+    // THE FOCUS SURFACE IS THE ONE THIS RELEASE WAS FOR, and asserting the work
+    // surface first is what made this check unmeasurable (3.23.20).
+    //
+    // 2.7.1 is titled "the ambient horizon, on the surface it was asked for", and
+    // its own comment says the work surface hides the line when it would NAME THE
+    // HEAD — "a line about the thing you are already looking at has no value
+    // left, only length" — while "the focus surface renders the same projection
+    // and is untouched: nothing there shows the head".
+    //
+    // This drive dates something today. A hard date today is the FIRST tier
+    // `nextUp` ranks on, so the thing just dated becomes the head, so the work
+    // surface correctly suppresses the line — every single time. The old
+    // assertion required `onWork` before it would check anything, so it could
+    // only ever pass on a value left in the DOM from an earlier state, which is
+    // exactly what it had been doing (3.23.19 removed that residue and this went
+    // red). It has never once measured the thing it names.
+    //
+    // So: the FOCUS line is the assertion, and the work line is checked for the
+    // behavior it actually has — suppressed when it would name the head, equal
+    // when it would not.
+    if (horizon.onFocus) {
+      pass(`${theme}/focus: the ambient horizon renders on the focus surface `
+        + `("${horizon.onFocus}") — the surface 2.7.1 was asked for`);
+
+      // THE WORK SURFACE, held to what it actually promises rather than to
+      // "it is there too". It withholds the line while it would name the head,
+      // and says the same thing when it would not.
+      const namesHead = Boolean(horizon.why.headText)
+        && horizon.onFocus.includes(horizon.why.headText);
+      if (namesHead) {
+        (horizon.onWork === '' ? pass : fail)(
+          `${theme}/focus: the work surface withholds it while it would name the head `
+          + `("${horizon.why.headText}") — a line about the thing in front of you is `
+          + `length, not news`);
+      } else {
+        (horizon.onFocus === horizon.onWork ? pass : fail)(
+          `${theme}/focus: the ambient horizon says the same thing here as on the work `
+          + `surface ("${horizon.onFocus}" vs "${horizon.onWork}")`);
+      }
+
       // A NAME AND NEVER A COUNTDOWN — a countdown is a deadline and adds
       // aversion, which is the entry's own reason for the shape.
       (!/\d+\s*(min|hour|hr|:\d\d)/i.test(horizon.onFocus) ? pass : fail)(
@@ -4763,11 +4856,13 @@ try {
       await auditContrast(page, 'focus, with a fixed thing ahead', theme);
       await auditFocusRings(page, 'focus, with a fixed thing ahead', theme);
     } else {
-      // NOT A PASS. The whole point of driving the date above is that this
-      // branch means the drive failed, and reporting that as "correctly absent"
-      // is how the check was vacuous in the first place.
-      fail(`${theme}/focus: a date was set for today and the ambient horizon still did not render `
-        + `— the line the release exists for was not measured`);
+      // NOT A PASS. The drive above exists to create this state, so an absent
+      // line here means the drive failed, and reporting that as "correctly
+      // absent" is how this check was vacuous for its whole life.
+      fail(`${theme}/focus: a date was set for today and the ambient horizon did not render `
+        + `on the focus surface — the line the release exists for was not measured. `
+        + `#nextup-fixed ${JSON.stringify(horizon.why)} `
+        + `· dated ${JSON.stringify({ title: datedTitle, key: todayKey, receipt: datedReceipt, state: datedState })}`);
     }
 
     await page.fill('#focus-interrupt', 'the phone rang');

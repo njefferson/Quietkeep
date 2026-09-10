@@ -14,7 +14,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { admit, coverageGauge, heldNodes, heldWork, silentNodes } from '../src/gate.ts';
-import { heldGroups, undatedCount } from '../src/held.ts';
+import { comingBack, heldGroups, undatedCount } from '../src/held.ts';
 import { searchHeld } from '../src/search.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -103,12 +103,55 @@ test('held-means: "you have not decided about these yet" counts only work', () =
   assert.equal(undatedCount(s, NOW, TZ), 1, 'the plumber, and nothing else');
 });
 
-test('held-means: a spent resume card is not work, and this is where that lives now', () => {
-  // Moved out of `heldGroups` in 1.15.1. It has been true since the tier
-  // existed; it was true in one projection and false in the gauge.
+test('held-means: a spent resume card is not work; a live one is, because its row is the way back', () => {
+  // Moved out of `heldGroups` in 1.15.1 for the spent half. The other half landed
+  // in 3.23.16, and this test asserted it the old way: `total` was expected to be
+  // 1 for an unspent card, with the sentence "an unspent card is a thread to pick
+  // back up" — which is true, and is not the same claim as "it is one of the
+  // things you are holding". The gauge counts work. The app wrote this one.
   let s = write(emptyState(), [ev('node.created', 'R', { nodeKind: 'resume-card', title: 'where you left off' })]);
+  // 3.23.16 made both of these 0 and 3.23.21 restored the first, because the
+  // row a live card draws is the only "Pick it back up" the app has. The
+  // category error the exclusion was fixing is real and is still open; it needs
+  // a route that is not the work list, not a removal from the work list.
   assert.equal(coverageGauge(s).total, 1, 'an unspent card is a thread to pick back up');
   s = write(s, [ev('resume.card.spent', 'R', {})]);
   assert.equal(coverageGauge(s).total, 0, 'a spent one is residue');
   assert.equal(heldGroups(s, NOW, TZ).flatMap(g => g.items).length, 0, 'and the two agree');
+});
+
+
+test('sorting things for tomorrow leaves the offer something true to say about them', () => {
+  // THE FIFTH COLD READ'S WALL, reproduced. Seven things sorted as *Next action*
+  // — which takes tomorrow's clock BY DESIGN, so a triage run does not become a
+  // work session — and the offer said "Nothing is asking today" over a sentence
+  // that counted only the UNDATED things. The seven were covered, were returning,
+  // and were named nowhere. That is entry 3 of `docs/nd-collisions.md`, the
+  // best-evidenced entry in the catalog and this product's thesis, committed by
+  // the app: a surface that goes quiet about what it is holding.
+  //
+  // THE REMEDY IS THE SENTENCE, NOT THE CLOCK, and this test is where that is
+  // pinned. The reader ALSO expected the seven to be offered today; that is an
+  // expectation and not a finding, and the research supports saying what is
+  // coming rather than moving when it comes. So the clock is asserted still to be
+  // tomorrow, immediately below — if a later session decides to make next actions
+  // same-day, this test should fail and be argued with, not quietly satisfied.
+  let s = write(emptyState(), [ev('node.created', 'A', { nodeKind: 'action', title: 'ring the plumber' })]);
+  s = write(s, [ev('clock.set', 'A', {
+    clockKind: 'review',
+    at: '2026-08-04T05:59:59.000Z',            // end of TOMORROW, Denver (NOW is noon on the 2nd there)
+    source: 'clarify:next-action',
+  })]);
+
+  const back = comingBack(s, NOW, TZ);
+  assert.ok(back, 'something dated for tomorrow is something coming back');
+  assert.equal(back!.count, 1, 'and it is counted');
+  assert.equal(back!.words, 'tomorrow', 'in the app\'s own word for that day');
+
+  // The clock stands. Sorting is not doing.
+  assert.equal(undatedCount(s, NOW, TZ), 0, 'it is not undated — it has a date, and the date is tomorrow');
+
+  // AND NOTHING TO SAY WHEN THERE IS NOTHING, so the sentence cannot appear over
+  // an empty store and read as a promise about work that does not exist.
+  assert.equal(comingBack(emptyState(), NOW, TZ), null, 'an empty store has nothing coming back');
 });

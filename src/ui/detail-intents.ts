@@ -188,11 +188,33 @@ export const disableModuleEvents = (ctx: StampContext, module: string): AppEvent
   [base(ctx, 'module.disabled', null as never, { module })];
 
 /** "This is due Thursday." A real, hard date — the immovable kind that Next-up
- *  ranks above everything computed. */
-export const setDueEvents = (ctx: StampContext, node: string, dayKey: string): AppEvent[] =>
-  [base(ctx, 'clock.set', node, {
-    clockKind: 'due', at: endOfDayKey(dayKey, ctx.zone), source: 'detail:due',
-  })];
+ *  ranks above everything computed.
+ *
+ *  **ON A CONTAINER IT IS A REVIEW CLOCK, NOT A DUE (3.23.16).** `triage-intents`
+ *  argued this out when it gave places a date at file time and wrote `review`
+ *  deliberately: you do not FINISH Errands, you look in it again, and `due` is a
+ *  hard clock whose only reason for not raising a replan card on a container is
+ *  that every container sits in `NO_REPLAN_CARD` — an accident of kind rather
+ *  than a decision about places. That reasoning applied to this control too and
+ *  nothing here had heard it.
+ *
+ *  What it cost: a project dated through the sort flow carried `review`, its card
+ *  correctly read "comes back in 6 days", and THIS control — the one place a
+ *  reader goes to see or change that date — read the `due` slot and showed an
+ *  empty box. One thing, two clocks, and the surface whose job is to say which
+ *  date it has could not see the one it had. Found by a cold read that set a date
+ *  and then went looking for it.
+ *
+ *  Writing `review` here is also what stops the fix creating a worse state: had
+ *  only the READ side learned about `review`, editing the box would have written
+ *  a second clock on a different day, and then the card and the box would each
+ *  have been honestly reporting a different date. */
+export const setDueEvents = (
+  ctx: StampContext, node: string, dayKey: string, container = false,
+): AppEvent[] =>
+  [base(ctx, 'clock.set', node, container
+    ? { clockKind: 'review', at: endOfDayKey(dayKey, ctx.zone), source: 'detail:container-return' }
+    : { clockKind: 'due', at: endOfDayKey(dayKey, ctx.zone), source: 'detail:due' })];
 
 /**
  * Taking a date off again.
@@ -203,8 +225,13 @@ export const setDueEvents = (ctx: StampContext, node: string, dayKey: string): A
  * precisely the same-day review clock the gate attaches. A test asserts the node
  * does not go silent, so the reliance is checked rather than assumed.
  */
-export const clearDueEvents = (ctx: StampContext, node: string): AppEvent[] =>
-  [base(ctx, 'clock.cleared', node, { clockKind: 'due' })];
+export const clearDueEvents = (
+  ctx: StampContext, node: string, container = false,
+): AppEvent[] =>
+  // The same asymmetry as `setDueEvents`, and it has to be: clearing the slot the
+  // control does not write would leave the date on screen after the reader took
+  // it off, which is the loudest possible version of this defect.
+  [base(ctx, 'clock.cleared', node, { clockKind: container ? 'review' : 'due' })];
 
 /**
  * "Not before Thursday." The defer verb (1.3.0) — and the schema finished this

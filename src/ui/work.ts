@@ -15,13 +15,13 @@
 import type { Session } from './session.ts';
 import type { AppEvent, NodeKind } from '../events.ts';
 import type { NodeState } from '../fold.ts';
-import { coverageProof, heldWork } from '../gate.ts';
+import { coverageProof, heldWork, whyCovered } from '../gate.ts';
 import { workSurface, type NextUpItem } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
 import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { fitsWith, getWithNow } from '../people.ts';
-import { undatedCount } from '../held.ts';
+import { comingBack, undatedCount } from '../held.ts';
 import { servesNode } from '../serves.ts';
 import { pressureWords } from '../pressure.ts';
 import { captureContextWords } from '../capture-context.ts';
@@ -931,10 +931,18 @@ export function mountWork(
       // stays, says the real number, and the two action buttons go — there is
       // nothing to be done to, and a live button with no subject is worse than none.
       const undated = undatedCount(session.state(), nowIso(), session.zone);
+      // AND WHAT IS COMING BACK, which this branch could not say (3.23.18).
+      // The sentence below has always named the UNDATED things; work that IS
+      // dated and is not due today was named nowhere, so sorting seven things as
+      // *Next action* — which takes tomorrow's clock on purpose — produced
+      // "Nothing is asking today" over a count of five other things, with the
+      // seven invisible. `held.ts:comingBack` says why this is the fix and the
+      // clock is not.
+      const coming = comingBack(session.state(), nowIso(), session.zone);
       BEHIND.replaceChildren();
       if (doneBtn) doneBtn.hidden = undated > 0;
       if (skipBtn) skipBtn.hidden = undated > 0;
-      if (undated > 0) {
+      if (undated > 0 || coming) {
         REGION.hidden = false;
         TITLE.textContent = 'Nothing is asking today.';
         TITLE.hidden = false;
@@ -945,12 +953,48 @@ export function mountWork(
         // head would attach a previous item's downstream to "Nothing is asking".
         if (APPROACH) { APPROACH.textContent = ''; APPROACH.hidden = true; }
         paintBite(null);
-        WHY.textContent = undated === 1
-          ? 'One thing is here without a date. It is waiting on you to decide, not the other way round.'
-          : `${undated} things are here without a date. They are waiting on you to decide, not the other way round.`;
+        // TWO FACTS, EACH ONLY WHEN IT IS TRUE. The undated half is unchanged. The
+        // coming-back half is stated as a fact and never as a demand — it says
+        // when, and asks for nothing, because nothing is being asked today and
+        // saying otherwise would put a date's weight on a day it does not own.
+        const loose = undated === 0 ? ''
+          : undated === 1
+            ? 'One thing is here without a date. It is waiting on you to decide, not the other way round.'
+            : `${undated} things are here without a date. They are waiting on you to decide, not the other way round.`;
+        const back = !coming ? ''
+          : coming.count === 1
+            ? `One thing comes back to you ${coming.words}.`
+            : `${coming.count} things come back to you, the first of them ${coming.words}.`;
+        WHY.textContent = [back, loose].filter(Boolean).join(' ');
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
-        if (FIXED) { FIXED.textContent = ''; FIXED.hidden = true; }
+        // THE AMBIENT HORIZON IS PAINTED HERE, NOT CLEARED (3.23.18). Every other
+        // element in this branch belongs to the offered item, so clearing them is
+        // right — a line left from the last head would attach a previous item's
+        // downstream to "Nothing is asking". `#nextup-fixed` is not one of those:
+        // `nextFixedToday` is a fact about the whole store, and the head branch
+        // above hides it only when it names the head, because a line about the
+        // thing you are already looking at has no value left.
+        //
+        // With no head there is nothing for it to duplicate, and this is the
+        // state the line is MOST for — nothing is asking, and an appointment at
+        // three o'clock is the afternoon being eaten (collisions 7 and 9). It was
+        // being wiped instead.
+        //
+        // AND THE A11Y WALK WAS PASSING ON WHAT THIS LEFT BEHIND. Its
+        // ambient-horizon assertion reads `#nextup-fixed` during a focus session,
+        // when the work surface has no head — so this branch ran, and before
+        // 3.23.18 it ran only when something was undated. When it did not run,
+        // whatever the line last said stayed in the DOM and was read back as a
+        // pass. Widening this branch's condition removed the stale value and the
+        // assertion went red, which is the check finally measuring something.
+        if (FIXED) {
+          const fixed = nextFixedToday(
+            session.state(), nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) });
+          const fw = nextFixedWords(fixed);
+          FIXED.textContent = fw ?? '';
+          FIXED.hidden = fw === null;
+        }
         // The settled branch already says "Nothing is asking today" above, so a
         // second sentence about dates would be the same news twice.
         if (DATED) { DATED.textContent = ''; DATED.hidden = true; }
@@ -1045,6 +1089,11 @@ export function mountWork(
   // it modifies the count instead of agreeing with it.
   const REASON_WORDS: Record<string, string> = {
     clock: 'with a day they come back to you',
+    // FINISHED, AND NOT COMING BACK (3.23.16). These were counted under `clock`
+    // and listed as returning today, because the log is append-only and marking
+    // a thing done does not erase the day it carried. An upkeep between rounds
+    // stays under `clock`, where it belongs — it genuinely does come back.
+    done: 'finished, and not waiting to come back',
     menu: 'on the Menu — no clock, because you said so',
     parent: 'coming back with something they are part of',
     after: 'waiting on something that will be shown to you first',
@@ -1136,15 +1185,28 @@ export function mountWork(
       b.type = 'button';
       b.append(el('span', 'coverage-title', n.title || '(untitled)'));
       const clock = rowClock(n);
-      // THE MENU ARM WAS UNREACHABLE. A thing routed to Someday keeps the
-      // `review` clock the gate wrote at capture — demand clocks are cleared,
-      // that one never was a demand — so `clock` is truthy for every Menu item
-      // and this row said `returns today` about something the reader had just
-      // put down indefinitely. The `on the Menu` branch existed and could not
-      // be reached. Asking `onMenu` first is the precedence `heldGroups` has
-      // always used.
+      // THE ROW ASKS `whyCovered` NOW, AND THAT IS THE POINT (3.23.16).
+      //
+      // This was a ternary — `onMenu ? … : clock ? … : 'held'` — which is a
+      // SECOND statement of the precedence `whyCovered` exists to state, on the
+      // same surface, three lines from the counts that use the first one. So the
+      // two could be independently wrong about one row, and they were: a finished
+      // thing counted under "with a day they come back to you" up there and read
+      // "returns today" down here, and fixing either alone would have left the
+      // surface contradicting itself.
+      //
+      // The comment this replaces recorded the identical bug in the identical
+      // spot: the `on the Menu` arm was unreachable, because a Menu item keeps
+      // the gate's own `review` cure and `clock` is therefore truthy for every
+      // one of them. That was fixed by adding a branch — one more copy of the
+      // order — rather than by asking the function that owns it. There is one
+      // copy now, so the next state that has to win is added once.
+      const why = whyCovered(n, state);
       b.append(el('span', 'coverage-when',
-        n.onMenu ? 'on the Menu' : clock ? `returns ${returns(clock.at)}` : 'held'));
+        why === 'menu' ? 'on the Menu'
+          : why === 'done' ? 'finished'
+            : why === 'clock' && clock ? `returns ${returns(clock.at)}`
+              : 'held'));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(n.id);
         if (!fresh) return;

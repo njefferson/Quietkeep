@@ -303,21 +303,29 @@ test('an interrupt with no focus running is just a capture', () => {
   assert.deepEqual(resumeCards(s), []);
 });
 
-test('a spent card is not something you are holding', () => {
-  // It carries a cure clock like every node, so without an explicit exclusion it
-  // sat in "Ready now" for ever, reading "where you left off" about work that
-  // was already finished. Next up had excluded spent cards since the tier
-  // existed and the held list had not — two surfaces, one node, opposite claims
-  // (smoke).
+test('a live resume card IS on your list, because that row is the way back', () => {
+  // 3.23.16 EXCLUDED AN UNSPENT CARD AND 3.23.21 PUT IT BACK, and the reason is
+  // worth keeping where the test is. The exclusion was right about what the card
+  // IS — the app wrote it, so counting it among the reader's things and drawing
+  // it at the top of the tree with a Done button is a category error a cold read
+  // met and named. It was wrong about what the row DOES: `app.ts` labels that
+  // row's `.card-focus` "Pick it back up" for this kind and nothing else in the
+  // app resumes a thread. Removing the row removed the act.
+  //
+  // The 3.23.16 claim that "the route back is untouched" was checked against
+  // `offer.ts`, `focus.ts` and `search.ts` still CONTAINING the card — which
+  // proves the data is reachable and says nothing about whether a reader can act
+  // on it. The smoke walk found it by trying to.
   const s0 = st(mk('A', 'the chapter'));
   let s = apply(s0, startFocusEvents(ctx, s0, 'A'));
   s = apply(s, endFocusEvents(ctx, s, 'abandoned'));
   const card = resumeCards(s)[0]!.card.id;
   const listed = () => heldGroups(s, NOW, TZ).flatMap(g => g.items).map(n => n.id);
-  assert.equal(listed().includes(card), true, 'a live card IS on your list — it is how you find it');
+  assert.equal(listed().includes(card), true,
+    'a live card IS on your list — its row carries the only "Pick it back up" there is');
 
   s = apply(s, resumeEvents(ctx, s, card, 'A'));
-  assert.equal(listed().includes(card), false, 'a spent one is not');
+  assert.equal(listed().includes(card), false, 'a spent one is not — the thread is picked up');
   assert.equal(s.nodes.get(card)!.trashed, false,
     'and it is not deleted either — it happened, and the log says so');
 });

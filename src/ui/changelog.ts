@@ -29,6 +29,66 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.22',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**A date you set on a project now shows up in *What comes back, and when*.** It did not. Dating something while you sort it, answering *when should this come back*, or typing a date on a project all set a softer kind of date than a deadline \u2014 and that page only listed the hard ones, so three dates you had set could show as two. A date you set that appears on no screen is a date you go on carrying.',
+      '**Send to my calendar still carries only the fixed days, and says so now.** A soft date is *bring this back to me*, not an appointment, and putting an alarm on one turns a gentle return into a demand. The line above the list used to say the file carried the same list; it says what it actually carries.',
+    ],
+  },
+  {
+    triplet: '3.23.21',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**The way back into something you were interrupted in is on your list again.** A recent change took the app\u2019s own bookmark \u2014 *where you left off* \u2014 out of that list, because the app writes it and you did not, and it was sitting at the top of everything you had written with a *Done* button on it. That was right about what the card is and wrong about what its row does: the row carries the only **Pick it back up** in the app, so taking it out took the act with it. It is back.',
+      '**Still to sort:** the reason it was taken out has not gone away. The card is counted with your things and listed as coming back today, and it is the app talking about itself. What it needs is a home that is not your work list, with the way back attached \u2014 not simply removing it from the list.',
+    ],
+  },
+  {
+    triplet: '3.23.20',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**Nothing you can see changed in this one.** A row in your list now carries an invisible note saying what kind of thing it is, so the accessibility checks can tell a project from an ordinary task before they test something. Nothing reads it while you use the app and nothing is drawn from it. It is here because a check had been quietly measuring the wrong thing.',
+    ],
+  },
+  {
+    triplet: '3.23.19',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**When nothing is asking, the app still tells you about the fixed thing later today.** That line \u2014 an appointment, a real date, something you cannot move \u2014 is the one worth catching out of the corner of your eye, and it is most worth it on the quiet screen: nothing is being asked of you, and there is still a three o\u2019clock. It was being wiped from exactly that screen.',
+    ],
+  },
+  {
+    triplet: '3.23.18',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**Sorting a pile no longer empties the day in silence.** Sort a handful of things as *Next action* and each one takes tomorrow \u2014 on purpose, so a sorting run does not turn into a working one. But *Next up* then said *Nothing is asking today* and counted only the things with no date at all, so the work you had just done appeared nowhere and read as lost. It now says how many come back to you and when the first of them is. The dates have not moved; the silence has gone.',
+    ],
+  },
+  {
+    triplet: '3.23.17',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**A project or an area shows the date you gave it.** Dating one while you sort puts it in the app\u2019s own words \u2014 a project *comes back to you*, it is not *due*, because you do not finish an area, you look in it again. Its own page did not know that: the date box read the other kind of date and sat empty while the card above it said *comes back in 6 days*. One thing, one date, and the one control you would open to change it could not see it.',
+    ],
+  },
+  {
+    triplet: '3.23.16',
+    kind: 'ITERATION',
+    date: '2026-09-09',
+    notes: [
+      '**Things you have finished no longer appear as things that are coming back.** *What comes back, and when* is the page you open to check that nothing has been lost, and it was listing work you had marked done as *returns today* — counted, in the same breath, among the things with a day they come back to you. Two people could not both be right, and it was the wrong one. Something that comes round on a rhythm still says so, because that is what a rhythm is.',
+      '**And the app no longer counts its own bookmark as one of your things.** When you start working on something, Quietkeep saves your way back in. That marker was being counted with your work, listed as returning today, and drawn as the first card in your tree — above everything you had written, with a *Done* button on it. It is still there when you need it and you can still find it by typing; it is not one of your things any more.',
+      '**Fixed properly rather than in the one place it was noticed.** The list of what is coming and the count above it were each deciding, separately, what to say about the same thing — so they could disagree about one row, and did. There is one answer now, and both read it.',
+    ],
+  },
+  {
     triplet: '3.23.15',
     kind: 'ITERATION',
     date: '2026-09-09',

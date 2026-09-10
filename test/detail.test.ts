@@ -10,7 +10,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { admit, silentNodes, gateOptionsFor } from '../src/gate.ts';
-import { fold, emptyState, type State } from '../src/fold.ts';
+import { fold, emptyState, isAppClock, type State } from '../src/fold.ts';
 import { pressureOf } from '../src/pressure.ts';
 import { upkeepChips, nextUpQueue } from '../src/nextup.ts';
 import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
@@ -443,4 +443,53 @@ test('the Menu groups by category, so more than one is more than one group', () 
   const groups = menuGroups(s);
   assert.equal(groups.length, 2, 'two categories, two groups');
   assert.deepEqual(groups.map(g => g.items.length), [1, 1]);
+});
+
+test('a container dated from the sheet gets the clock a container carries, not a due', () => {
+  // 3.23.16. `triage-intents.ts` argued this out when it gave places a date at
+  // file time and chose `review` deliberately: you do not FINISH Errands, you
+  // look in it again, and the only reason a passed `due` does not raise a replan
+  // card on a container is that every container sits in `NO_REPLAN_CARD` — an
+  // accident of kind rather than a decision about places.
+  //
+  // The sheet's date control had never heard that argument. So a project dated
+  // through the sort flow carried `review`, its card correctly read "comes back
+  // in 6 days", and the one control a reader opens to see or change that date
+  // read the `due` slot and showed an EMPTY BOX. Found by a cold read that set a
+  // date and then went looking for it.
+  //
+  // Asserted on the CLOCK rather than on the box, because the box is markup: what
+  // makes the box right is that both sides now name the same slot.
+  let s = write(emptyState(), [{
+    id: 'p1', vault: 'personal', at: AT, device: 'd0', seq: seq++,
+    kind: 'node.created', node: 'P', payload: { nodeKind: 'project', title: 'Lisbon trip' },
+  } as AppEvent]);
+  s = write(s, setDueEvents(ctx(), 'P', '2026-08-04', true));
+  const p = s.nodes.get('P')!;
+  assert.ok(p.clocks.review, 'a dated container carries a review clock');
+  assert.equal(p.clocks.review!.source, 'detail:container-return',
+    'and the log says which control set it');
+  assert.equal(p.clocks.due, undefined,
+    'and NOT a due — a container is not finished, it is looked at again');
+
+  // AND CLEARING TAKES OFF THE ONE IT SET. Clearing the slot the control does not
+  // write would leave the date on screen after the reader took it off, which is
+  // the loudest possible version of the same defect.
+  //
+  // AND THE SLOT IS NOT EMPTY AFTERWARDS, which this test asserted first and was
+  // wrong to. `clock.cleared` is silent-risk, so the gate attaches its own
+  // same-day `review` cure — and on a container that lands in the SAME SLOT the
+  // control just cleared. The reader-set date is gone and a `gate:clock.cleared`
+  // cure is in its place, which is the gate working, not the fix leaking: the
+  // sheet reads through `isAppClock`, so the box shows nothing. What has to be
+  // asserted is therefore "no date the READER set", not "no clock at all".
+  s = write(s, clearDueEvents(ctx(), 'P', true));
+  const cleared = s.nodes.get('P')!.clocks.review;
+  assert.ok(isAppClock(cleared),
+    'what is left in the slot is the gate\'s own cure, so the box reads empty');
+
+  // An ordinary action is untouched — the asymmetry is the whole change.
+  let a = captured('N');
+  a = write(a, setDueEvents(ctx(), 'N', '2026-08-04'));
+  assert.ok(a.nodes.get('N')!.clocks.due, 'an action still takes a due date');
 });

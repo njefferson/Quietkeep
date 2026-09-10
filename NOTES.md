@@ -472,6 +472,56 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### What a cold read IS, and the two things it may not do (2026-09-10, the owner's instruction)
+
+Five of these have now run and they have been the most productive instrument this
+repo has. They also have a failure mode that had already started and that nothing
+here named, so it is named now, before a sixth.
+
+**A COLD READ REPORTS A SYMPTOM. IT DOES NOT GET TO PICK THE REMEDY.** A fresh
+reader can say *I stopped here*, *this said something untrue*, *I could not find
+it* — and every one of those is evidence nothing else in this repo produces. What
+it cannot say is what the app should therefore do, because it has read none of
+the research, none of the ADRs, and none of the refusals; its expectation is one
+person's expectation, and this app is not built to meet expectations. The remedy
+is decided from `docs/nd-collisions.md`, the ADRs and the ten laws — and the
+entry is CITED when the fix lands, or the fix is refused.
+
+**IT HAPPENED IN THIS SESSION AND THAT IS WHY THIS IS HERE.** The fifth read
+reported that sorting seven things as *Next action* left the offer saying
+*Nothing is asking today*, and said what it had expected instead. That
+expectation went out as a recommendation with reasons of its own, and only on
+being asked what the research indicated did anybody open the catalog. The
+research turned out to point the same way — entry 4, time blindness, Strong for
+the phenomenon and measured on this audience — but the ORDER was wrong, and on
+the second question that session got it backwards: it recommended a ninth sort
+destination for a worry, which entry 30 spends its whole length arguing against.
+A cold read agreeing with the research is luck. Checking first is the method.
+
+**AND THE HELD-LIST ECHO IS THE GOOD CASE, kept as the shape to imitate.** The
+same read reported every row under *Not sorted yet* also saying *not sorted yet*.
+That is real repetition and the fix was written — and the smoke walk refused it,
+on two assertions written years earlier that read the ROW for the state. It was
+reverted within the hour and 3.23.15 exists to say so in the reader's own words.
+The instrument that caught it was a measurement, not a judgment.
+
+**THE SECOND THING IT MAY NOT DO: BE RUN AS A PERSON.** A read is never framed as
+*a neurodivergent user*, and the reason is the same reason this app is designed
+against a CONDITION rather than a diagnosis — low capacity, high demand,
+interruption, engagement that varies. A persona is a stereotype with a costume
+on; it produces what the model believes about a group rather than what the app
+does under load. And the condition is not owned by any group: everybody enters it
+under stress, illness, grief, a bad week, a new baby, a deadline. That is the
+whole reason one design serves both, and it is why the audience question — *can
+somebody who meets this condition most often and most severely understand this
+app* — is answered by putting the app UNDER THE CONDITION, not by asking a model
+to impersonate a diagnosis.
+
+So a read that wants to test that is given the CONDITION as its circumstances:
+arriving cold with no memory of a previous session, interrupted mid-action and
+made to come back, given minutes rather than an hour, holding more than fits in a
+head, on a phone, by touch. Those are testable. *Be neurodivergent* is not.
+
 ### The FOURTH cold read — 2026-09-09, and it was asked whether the app can be UNDERSTOOD
 
 **Outstanding.** A different question from the first three: not "does it do what
@@ -1634,7 +1684,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.12**, promoted 2026-09-09 at `152d425` — five
+- **PRODUCTION CARRIES 3.23.15**, promoted 2026-09-09 at `fadd34c` — the whole
+  of the FOURTH cold read, in three releases. 3.23.13 answers the minute that
+  read would have stopped at ("Hot or cold?", the one control in the sorting flow
+  with nothing written under it). 3.23.14 is the rest of it, including a name
+  collision that was making a coverage gate report full coverage over a dialog
+  the manual had never described. 3.23.15 is a correction: a fix was tried,
+  refused by the smoke walk on two assertions that read a row for its state, and
+  reverted AFTER 3.23.14 was cut — so shipped bytes had moved without the
+  triplet, which is the state where a release is published and cannot arrive.
+  Verified at `f70e705` with the Spine green across 53 steps and all three
+  browser walks actually running, then read back off the host twice.
+  Before it, 3.23.12, promoted at `152d425` — five
   releases across two promotes today, 3.23.8 through 3.23.12, all of them the
   third cold read. The second promote carried 3.23.11 and 3.23.12, the two
   findings that had been put up as decisions and were not: the sorting screens'
@@ -1708,9 +1769,78 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.15**, which production does
-  not carry: promoted last on 2026-09-09 at 3.23.12, so the two hosts are one
-  tree plus three releases. 3.23.15 exists because a fix was tried, measured
+- **https://staging.quietkeep.pages.dev** — **3.23.22**, which production does
+  not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
+  tree plus seven releases. 3.23.22 splits `CALENDAR_KINDS`, which was one
+  predicate answering two questions — *did a person set this* and *may this carry
+  an alarm*. The second keeps the exported FILE narrow and must; the first
+  governs the in-app dated view, where a `review` clock set by pressing *Next
+  action*, answering *when should this come back*, or typing a date on a project
+  was invisible. Decided by entry 28's 50% condition rather than by taste, and
+  the view's own sentence stopped claiming the file carries the same list.
+  3.23.21 PUTS THE RESUME CARD BACK IN THE HELD LIST,
+  because 3.23.16's exclusion removed the reader's only way back into an
+  interrupted thread — `heldGroups` is built from `heldWork`, and that row's
+  `.card-focus` carries the one "Pick it back up" in the app; the detail sheet
+  has no focus starter and `#detail-reclaim` is 1.32.0's put-it-down pair. The
+  cold read's finding is UNCHANGED and open: the app writes that card, so
+  counting it among the reader's things and drawing it above everything they
+  wrote with a Done button is the same category error as a person or a place.
+  It needs a route that is not the work list, with the act attached — the offer
+  already carries the card and its title already opens the sheet.
+  **The 3.23.16 commit claimed "the route back is untouched and is asserted",
+  and that claim was checked against the wrong thing:** `offer.ts`, `focus.ts`
+  and `search.ts` do still CONTAIN the card, which proves the data is reachable
+  and says nothing about whether a reader can act on it. The smoke walk found it
+  by trying, three releases later. 3.23.20 gives a card row an invisible `data-kind`, which
+  is what let the a11y walk finally name the thing it had been getting wrong for
+  four runs: its ambient-horizon drive dated "the first card", the sample's first
+  card is a PROJECT, and 3.23.17 correctly made a project take a soft clock. The
+  failure said only "did not render" until the fields went into the message.
+  3.23.19 paints the ambient horizon on the empty offer
+  screen, where it was being wiped — and it exists because the a11y walk found
+  that its own assertion about that line had been passing on a STALE DOM VALUE for
+  as long as the check existed. 3.23.18 is the fifth cold read's WALL, answered from
+  the research rather than from what the read expected. It reported that sorting
+  seven things as *Next action* left the offer saying *Nothing is asking today*
+  and expected the seven to be offered. The clock is deliberate — sorting is not
+  doing — so what was wrong was the SILENCE: entry 3 of `docs/nd-collisions.md`,
+  the best-evidenced entry in the catalog and this product's thesis, is a surface
+  going quiet about what it is holding, and 2.8.1 moved the coverage gauge for
+  exactly that reason. The empty offer now says how many come back and when the
+  first is. No date moved.
+  **AND THE A11Y WALK CAUGHT A REGRESSION FROM 3.23.16 AND 3.23.17 CONSPIRING**,
+  which is the first thing that has, and neither change was visible from the other
+  end. 3.23.16 took resume cards out of `heldWork`, changing which card is first
+  in the held list; 3.23.17 made the sheet's date control write `review` on a
+  container. The walk's ambient-horizon drive took "the first card" and ASSUMED it
+  could carry a hard date — true for two hundred releases, asserted nowhere — so
+  it could date a container, correctly get a soft clock, and then fail an
+  assertion about hard dates. The drive names and checks its precondition now,
+  and `data-kind` on a card row is what lets it ask. 3.23.17 is the sheet's date control learning what
+  `triage-intents.ts` already argued — a container takes a `review` clock and not
+  a `due` — so a dated project stops showing an empty date box beside a card
+  reading "comes back in 6 days".
+  **AND IT IS A SEPARATE RELEASE FOR A REASON WORTH WRITING DOWN.** It was going
+  to be a second bullet on 3.23.16, and `release:check` refused: 3.23.16 was cut
+  and PUSHED and then the work continued, so two shipped files had moved with no
+  triplet behind them. 3.23.15 exists for the identical mistake, and 3.23.19 for
+  a third — so the rule as first written, *the triplet belongs in the commit that
+  finishes the work*, is the wrong shape. **The last thing that can send a session
+  back to the code is the browser walk, and the walk runs after the push.** So a
+  walk-driven fix is ALWAYS its own release, and that is not a slip: the triplet
+  names a cache generation, and three honest generations beat one that claims work
+  it does not carry. What to stop doing is DESCRIBING a release before the walk has
+  validated it — 3.23.18's note was written, pushed, and then the walk found a
+  regression in the same file the note was about. 3.23.16 is the first of the FIFTH cold read, which was
+  asked to use the app rather than to read it and got all the way through — and
+  found two things the app said that were not true. `whyCovered` named a finished
+  thing's retained clock as the reason it is covered, so the coverage sheet listed
+  work marked done as *returns today*; that is the FOURTH round of one mistake in
+  one function, whose own comment already recorded two. And `heldWork` excluded a
+  SPENT resume card on reasoning equally true of an unspent one — the app wrote
+  it — so its own bookmark was counted as work, listed as returning, and drawn as
+  the first row of the tree with a Done button. 3.23.15 exists because a fix was tried, measured
   wrong and taken back out AFTER 3.23.14 was cut — the held list keeps saying
   each row's own status under a heading that says the same thing, because the
   smoke walk refused the alternative on two assertions that read the row for the
@@ -3439,7 +3569,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.12** — promoted at
+- **https://quietkeep.pages.dev** — production, **3.23.15** — promoted at
+  `fadd34c` on 2026-09-09: 3.23.13, 3.23.14 and 3.23.15, the whole of the FOURTH
+  cold read. The merged tree asserted byte-identical to `f70e705`, the staging
+  head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
+  that read as empty — with that SHA's Spine green across 53 steps and Deploy
+  green, found by head SHA. **Both editions read back by content, twice**, each
+  serving 3.23.15 and each serving `manual.html`, `paths.html` and `why.html` as
+  themselves.
+  That 53-step green is the first of the day, and the first in which the browser
+  walks RAN: four earlier pushes went red at a stale-receipt check, which is a
+  fact about a file, and each time that failure silenced twelve steps including
+  the whole test suite, the build and all three walks. They reported as
+  `skipped` under a run reporting as red, so nobody asked which of the thirty
+  gates the red belonged to. `release:check` had been red underneath all four,
+  saying shipped bytes had moved after the triplet — the state where a release
+  is published and cannot arrive.
+- **Superseded, and kept for the record: production at 3.23.12** — promoted at
   `152d425` on 2026-09-09: 3.23.11 and 3.23.12, the last of the third cold
   read's findings and the two that had been carried as decisions when neither
   was one. The merged tree asserted byte-identical to `6b63baf`, the staging
