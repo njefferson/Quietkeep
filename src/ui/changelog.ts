@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.21',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**The way back into something you were interrupted in is on your list again.** A recent change took the app\u2019s own bookmark \u2014 *where you left off* \u2014 out of that list, because the app writes it and you did not, and it was sitting at the top of everything you had written with a *Done* button on it. That was right about what the card is and wrong about what its row does: the row carries the only **Pick it back up** in the app, so taking it out took the act with it. It is back.',
+      '**Still to sort:** the reason it was taken out has not gone away. The card is counted with your things and listed as coming back today, and it is the app talking about itself. What it needs is a home that is not your work list, with the way back attached \u2014 not simply removing it from the list.',
+    ],
+  },
+  {
     triplet: '3.23.20',
     kind: 'ITERATION',
     date: '2026-09-10',

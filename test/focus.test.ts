@@ -303,33 +303,29 @@ test('an interrupt with no focus running is just a capture', () => {
   assert.deepEqual(resumeCards(s), []);
 });
 
-test('a resume card is not something you are holding — spent or not', () => {
-  // THIS ASSERTED THE OPPOSITE UNTIL 3.23.16, in its second line: "a live card IS
-  // on your list — it is how you find it". The first half stopped being the rule;
-  // the second half was never true, and that is why the rule changed.
+test('a live resume card IS on your list, because that row is the way back', () => {
+  // 3.23.16 EXCLUDED AN UNSPENT CARD AND 3.23.21 PUT IT BACK, and the reason is
+  // worth keeping where the test is. The exclusion was right about what the card
+  // IS — the app wrote it, so counting it among the reader's things and drawing
+  // it at the top of the tree with a Done button is a category error a cold read
+  // met and named. It was wrong about what the row DOES: `app.ts` labels that
+  // row's `.card-focus` "Pick it back up" for this kind and nothing else in the
+  // app resumes a thread. Removing the row removed the act.
   //
-  // A resume card is the only node the app writes about ITSELF. `heldWork`
-  // excluded a SPENT one on the reasoning that it "simply is not work" — equally
-  // true of an unspent one, since what makes it not work is the authorship, not
-  // the spending. So an unspent card was counted in the gauge, listed in the
-  // coverage sheet as returning today, and drawn as the FIRST ROW OF THE TREE
-  // above everything the reader had written, with a Done button. A cold read
-  // found it there and said, correctly, that it had never written it.
-  //
-  // "It is how you find it" was answered by the wrong surface. `resumeCards` is
-  // how you find it, and search reads `heldNodes` so typing its words still
-  // reaches it. Both are asserted below, because removing a thing from a list is
-  // only safe if the route that actually matters is shown to survive.
+  // The 3.23.16 claim that "the route back is untouched" was checked against
+  // `offer.ts`, `focus.ts` and `search.ts` still CONTAINING the card — which
+  // proves the data is reachable and says nothing about whether a reader can act
+  // on it. The smoke walk found it by trying to.
   const s0 = st(mk('A', 'the chapter'));
   let s = apply(s0, startFocusEvents(ctx, s0, 'A'));
   s = apply(s, endFocusEvents(ctx, s, 'abandoned'));
   const card = resumeCards(s)[0]!.card.id;
   const listed = () => heldGroups(s, NOW, TZ).flatMap(g => g.items).map(n => n.id);
-  assert.equal(listed().includes(card), false, 'a live card is not on the work list');
-  assert.equal(resumeCards(s).length, 1, 'and the route back to the thread is untouched');
+  assert.equal(listed().includes(card), true,
+    'a live card IS on your list — its row carries the only "Pick it back up" there is');
 
   s = apply(s, resumeEvents(ctx, s, card, 'A'));
-  assert.equal(listed().includes(card), false, 'nor is a spent one');
+  assert.equal(listed().includes(card), false, 'a spent one is not — the thread is picked up');
   assert.equal(s.nodes.get(card)!.trashed, false,
     'and it is not deleted either — it happened, and the log says so');
 });

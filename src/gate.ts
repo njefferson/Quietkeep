@@ -188,31 +188,39 @@ export const releasedNodes = (state: State): NodeState[] =>
  */
 export const heldWork = (state: State): NodeState[] =>
   heldNodes(state).filter(n => {
-    // A RESUME CARD IS NOT WORK — SPENT OR NOT (3.23.16), and this said `spent`.
+    // A SPENT resume card is the residue of a thread already picked back up —
+    // or let go. It carries a cure clock like everything else, so without this
+    // it sat in "Ready now" for ever, reading "where you left off" about work
+    // that was finished. It is not trashed and not hidden from an export: it
+    // happened, and the log says so. It simply is not work.
     //
-    // The original clause and its reasoning were right and were HALF APPLIED. It
-    // read: a spent card "is the residue of a thread already picked back up — or
-    // let go … it simply is not work". Every word of that is true of an unspent
-    // one too. What makes it not work is not being finished; it is that THE APP
-    // WROTE IT. `delta.ts` has said so in as many words since it existed — "the
-    // app's own artifact about where you left off, not work".
+    // AN UNSPENT ONE WAS EXCLUDED TOO IN 3.23.16 AND PUT BACK IN 3.23.21,
+    // because the exclusion took away the reader's only way back into an
+    // interrupted thread. The reasoning for it still stands and the finding is
+    // still open: the app WRITES this card, so counting it among the reader's
+    // things, listing it as returning today and drawing it at the top of the
+    // tree with a Done button on it is the same category error as a person, a
+    // place or a role. A cold read met it there and said, correctly, that it had
+    // never written that.
     //
-    // What the half-fix shipped: `focus-intents.ts` writes a `node.created` with
-    // the title "where you left off" the moment somebody starts a sitting, and
-    // until it is spent that node was counted in the gauge's total, listed in the
-    // coverage sheet as returning today, and drawn as the FIRST CARD IN THE TREE,
-    // above everything the reader had written, with a Done button on it. A cold
-    // read found it there and in search and said, correctly, *I never wrote it*.
-    // Same category error as a context, a role and a person, with the aggravation
-    // that this one is the app's own bookkeeping.
+    // WHAT THE EXCLUSION MISSED. `heldGroups` is built from this function — one
+    // definition, so the gauge and the list cannot disagree (1.15.1) — and the
+    // row it draws is the ONLY control anywhere that resumes a thread:
+    // `app.ts` labels that row's `.card-focus` "Pick it back up" for this kind
+    // and nothing else does. The detail sheet has no focus starter;
+    // `#detail-reclaim` is 1.32.0's put-it-down pair and a different thing. So
+    // removing the row removed the act, and the 3.23.16 commit's claim that the
+    // route was "untouched and asserted" was checked against the wrong thing:
+    // `offer.ts`, `focus.ts` and `search.ts` do still CONTAIN the card, which
+    // proves the data is reachable and says nothing about whether a reader can
+    // do anything with it. The smoke walk is what found it, by trying.
     //
-    // THE ROUTE BACK IS UNAFFECTED, which is the thing to check before removing
-    // it from anything. `offer.ts` and `focus.ts` read `heldNodes`, not this, so
-    // the resume offer and the way back into an interrupted thread are untouched;
-    // `search.ts` reads `heldNodes` too and says in its own comment that the
-    // difference from `heldWork` is deliberate, so the card stays findable. What
-    // it leaves is the work list, the work count and the coverage rows.
-    if (n.kind === 'resume-card') return false;
+    // THE FIX IS A ROUTE, NOT A LIST. The card belongs somewhere that is not the
+    // work list, with the act attached — the offer already carries it, and its
+    // title already opens the sheet, so a "Pick it back up" there would close
+    // this properly. Until that exists the row stays, because a category error
+    // a reader can work around beats a missing act they cannot.
+    if (n.kind === 'resume-card' && n.resumeSpent) return false;
     // NOR IS A CONTEXT (2.2.0, ADR-0092). "At home" is WHERE work can be done,
     // and putting it in the todo list would make the label a task — the same
     // category error the person and journal exclusions below and above exist

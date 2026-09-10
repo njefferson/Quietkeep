@@ -1769,9 +1769,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.20**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.21**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
-  tree plus five releases. 3.23.20 gives a card row an invisible `data-kind`, which
+  tree plus six releases. 3.23.21 PUTS THE RESUME CARD BACK IN THE HELD LIST,
+  because 3.23.16's exclusion removed the reader's only way back into an
+  interrupted thread — `heldGroups` is built from `heldWork`, and that row's
+  `.card-focus` carries the one "Pick it back up" in the app; the detail sheet
+  has no focus starter and `#detail-reclaim` is 1.32.0's put-it-down pair. The
+  cold read's finding is UNCHANGED and open: the app writes that card, so
+  counting it among the reader's things and drawing it above everything they
+  wrote with a Done button is the same category error as a person or a place.
+  It needs a route that is not the work list, with the act attached — the offer
+  already carries the card and its title already opens the sheet.
+  **The 3.23.16 commit claimed "the route back is untouched and is asserted",
+  and that claim was checked against the wrong thing:** `offer.ts`, `focus.ts`
+  and `search.ts` do still CONTAIN the card, which proves the data is reachable
+  and says nothing about whether a reader can act on it. The smoke walk found it
+  by trying, three releases later. 3.23.20 gives a card row an invisible `data-kind`, which
   is what let the a11y walk finally name the thing it had been getting wrong for
   four runs: its ambient-horizon drive dated "the first card", the sample's first
   card is a PROJECT, and 3.23.17 correctly made a project take a soft clock. The

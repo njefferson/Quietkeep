@@ -59,21 +59,22 @@ async function store(): Promise<State> {
 /** Kinds that are work when held: everything except the demand-free kinds and
  *  the residue/lens kinds each of which has a surface of its own. Named once so
  *  the table below reads as decisions rather than repetition. */
-const WORK: NodeKind[] = ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', 'bother'];
+const WORK: NodeKind[] = ['action', 'outcome', 'project', 'area', 'goal', 'waiting-for', 'upkeep', 'bother', 'resume-card'];
 
-/** `resume-card` LEFT THIS LIST IN 3.23.16, and it is the only kind the app
- *  writes about itself rather than about anything the reader said.
+/** `resume-card` LEFT THIS LIST IN 3.23.16 AND CAME BACK IN 3.23.21, and both
+ *  halves are worth keeping because the finding behind the removal is still open.
  *
- *  `heldWork` excluded only a SPENT one, on reasoning — "it simply is not work" —
- *  that is equally true of an unspent one, because what makes it not work is that
- *  the app authored it. Until then an unspent card was counted in the gauge, was
- *  listed in the coverage sheet as returning today, and was drawn as the first
- *  row of the tree above everything the reader had written, with a Done button.
+ *  It is the only kind the app writes about ITSELF rather than about anything the
+ *  reader said, and a cold read met it at the top of the tree with a Done button
+ *  on it and said, correctly, that it had never written that. So it was excluded.
  *
- *  It is still admitted where picking a thread back up is the point — the offer,
- *  the focus surface, today's hand, search — all of which read `heldNodes`. Named
- *  per surface below rather than folded into WORK, so each admission is a
- *  sentence somebody wrote. */
+ *  The exclusion took away the reader's only way back into an interrupted thread:
+ *  `heldGroups` is built from `heldWork`, and the row it draws carries the one
+ *  "Pick it back up" in the app. The category error is real; removing the row is
+ *  not the fix for it. The fix is a route that is not the work list — the offer
+ *  already carries the card and its title already opens the sheet — and until
+ *  that exists the row stays. `RESUME` is kept as a name so the surfaces that
+ *  admit it for the RESUMING can say so in their own sentence. */
 const RESUME: NodeKind = 'resume-card';
 
 interface SurfaceRule {
@@ -89,13 +90,13 @@ interface SurfaceRule {
 
 const SURFACES: Record<string, SurfaceRule> = {
   'todo list (heldGroups)': {
-    why: 'The list you work from. Work plus off-Menu aspirations (a wish taken off the Menu is still yours and must be SOMEWHERE — its row is how you find it to promote it). Never a person, journal entry, pebble or anchor: each has its own surface, and a row here is what "becoming a task" looks like (ADR-0061/0065/0068, 1.15.1/1.17.0). And never a resume-card since 3.23.16: the app wrote it, and it arrived here as the first row of the tree with a Done button on it.',
+    why: 'The list you work from. Work plus off-Menu aspirations (a wish taken off the Menu is still yours and must be SOMEWHERE — its row is how you find it to promote it). Never a person, journal entry, pebble or anchor: each has its own surface, and a row here is what "becoming a task" looks like (ADR-0061/0065/0068, 1.15.1/1.17.0). A live resume-card IS here, and only because its row carries the one "Pick it back up" in the app — see the note on RESUME above; the category error that argues against it is real and open.',
     allowed: [...WORK, 'aspiration'],
-    expect: ['action', 'project', 'upkeep', 'waiting-for', 'aspiration'],
+    expect: ['action', 'project', 'upkeep', 'waiting-for', 'aspiration', 'resume-card'],
     rows: st => heldGroups(st, NOW, TZ).flatMap(g => g.items),
   },
   'coverage list / gauge total (heldWork)': {
-    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again. A resume-card is out of both since 3.23.16, and this surface is where the cost of it being in showed: a card the app wrote about its own bookkeeping was listed here as returning today.',
+    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again. This surface is where the cost of a live resume-card being in shows: a card the app wrote about its own bookkeeping is listed here as returning today. It is the open half of the finding, and it may not be closed by narrowing this surface alone — the one definition is the whole point of the row.',
     allowed: [...WORK, 'aspiration'],
     expect: ['action', 'project', 'upkeep', 'aspiration'],
     rows: st => heldWork(st),

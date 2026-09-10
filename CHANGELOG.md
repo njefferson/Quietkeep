@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.21 — ITERATION
+
+*2026-09-10*
+
+- **The way back into something you were interrupted in is on your list again.** A recent change took the app’s own bookmark — *where you left off* — out of that list, because the app writes it and you did not, and it was sitting at the top of everything you had written with a *Done* button on it. That was right about what the card is and wrong about what its row does: the row carries the only **Pick it back up** in the app, so taking it out took the act with it. It is back.
+- **Still to sort:** the reason it was taken out has not gone away. The card is counted with your things and listed as coming back today, and it is the app talking about itself. What it needs is a home that is not your work list, with the way back attached — not simply removing it from the list.
+
 ## 3.23.20 — ITERATION
 
 *2026-09-10*

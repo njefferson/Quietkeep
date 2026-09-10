@@ -4827,7 +4827,7 @@ try {
     // red). It has never once measured the thing it names.
     //
     // So: the FOCUS line is the assertion, and the work line is checked for the
-    // behaviour it actually has — suppressed when it would name the head, equal
+    // behavior it actually has — suppressed when it would name the head, equal
     // when it would not.
     if (horizon.onFocus) {
       pass(`${theme}/focus: the ambient horizon renders on the focus surface `
