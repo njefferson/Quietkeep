@@ -691,6 +691,16 @@ const REGISTRY = {
   'detail sheet, a container with a rhythm': [
     '#detail-repeat-label', '#detail-repeat-set', '#detail-repeat-stop',
     '#detail-every', '#detail-slack', '#detail-repeat-hint',
+    // WHAT IT IS HOLDING (3.23.23), joining the gate in the commit that creates
+    // it — hub LESSONS §28, which has cost this repo a release twice.
+    //
+    // `whenShown` because an EMPTY container is a real and correct state and
+    // this line is deliberately absent there: "holding nothing" is not news.
+    // §257's second half is what keeps that honest — absence is a note per
+    // state, and the selector must still have been seen somewhere in the run or
+    // the whole thing fails, so a line that stopped rendering everywhere cannot
+    // hide behind the exemption.
+    { sel: '#detail-holding', whenShown: 'a container with nothing in it has nothing to list' },
   ],
   // The situation field (1.29.0). Scoped to its own group: `.detail-label`
   // unscoped answers for every group on the sheet, so a registry entry written

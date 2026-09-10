@@ -3723,6 +3723,17 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // child as a door, which is the hop that already existed.
   is(await tpage.locator('#detail-children .detail-child-open', { hasText: 'draft the brief' }).count(), 1,
     'and from there the child is a door back down');
+  // AND IT SAYS SO WITHOUT OPENING THE FOLD (3.23.23). The door above is inside
+  // the region `#detail-more` hides, so a container answered "what is in this"
+  // one press deeper than anybody looks — a cold read opened a project holding
+  // four things and reported no list of them, correctly, about what it could
+  // see. The assertion is deliberately that the line is VISIBLE, not merely
+  // present: this whole defect was a rendered element nobody could reach, and
+  // `.textContent` on a hidden node would reproduce it exactly.
+  const holdingVisible = await tpage.locator('#detail-holding').isVisible();
+  const holdingText = await tpage.locator('#detail-holding').textContent();
+  is(holdingVisible && /draft the brief/.test(holdingText ?? ''), true,
+    `a container names what it holds above the fold ("${holdingText}", visible: ${holdingVisible})`);
   await tpage.click('#detail-close');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
@@ -8538,6 +8549,60 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       'and it can be forgotten');
     is(await tpage.locator('#how-long').inputValue(), '30',
       'AND FORGETTING IT LEAVES THE SITUATION SET — the shortcut goes, not the answer');
+
+    // AND IT SURVIVES A RELOAD, WHICH NOTHING ASKED (3.23.23). Every assertion
+    // above this drives the control inside one page life; a fifth cold read set
+    // fifteen minutes, came back later, and reported the answer gone. Whether it
+    // was gone or merely UNSHOWN is the thing to measure, because those are
+    // different defects and one of them is worse: a filter still applied behind
+    // a control that reads "as long as it takes" means a list narrowed for a
+    // reason nothing on screen gives.
+    //
+    // So BOTH are asserted. The control's own value, and the note beside it that
+    // only renders while the filter is on — `data-narrows="#nextup,#held"` names
+    // what it claims to be narrowing, so if the two ever disagree this says which
+    // way round it went.
+    await tpage.reload({ waitUntil: 'load' });
+    await tpage.waitForSelector('body[data-ready=true]');
+    // WAIT FOR THE APP'S OWN SIGNAL, NOT A DELAY — and the reason is the reason
+    // the control cannot be the assertion. `body[data-ready=true]` is set before
+    // the view preferences come back out of IndexedDB, and CHROMIUM RESTORES A
+    // `<select>`'s value across a soft reload by itself. So a fixed settle read
+    // "30" from the browser's form restoration while the app was still null, and
+    // the first version of this check passed the control and failed the note —
+    // which is precisely the disagreement it was written to catch, arriving as a
+    // race in the walk rather than a defect in the app.
+    //
+    // The note is the app's own claim, so it is what we wait for and what is
+    // asserted first. The control is checked after, and only then means anything.
+    // AND IT ASKS `hidden`, NOT `isVisible` — the two are different questions and
+    // the difference cost a run. `isVisible` also requires every ancestor to be
+    // showing, and after this reload the walk lands inside a JOB, where the
+    // runway's gauges are correctly hidden because a job is the whole screen.
+    // So the honest question here is whether the APP still holds the filter and
+    // says so, which is the `hidden` attribute its own render sets. Whether that
+    // line is on screen in a given stance is a separate matter and not this
+    // assertion's.
+    const noteBack = await tpage.evaluate(async () => {
+      for (let i = 0; i < 80; i += 1) {
+        const el = document.querySelector('#how-long-note');
+        if (el && el.hidden === false) return true;
+        await new Promise(r => setTimeout(r, 100));
+      }
+      return false;
+    });
+    is(noteBack, true,
+      'how long you have survives a reload — the app still holds it and says so');
+    const keptLong = await tpage.locator('#how-long').inputValue();
+    is(keptLong, '30', `and the control agrees with it ("${keptLong}")`);
+    // AND PUT THE SHEET BACK, because a reload closes it and every check below
+    // needs it open. The first version of this assertion did not, and the walk
+    // failed four lines down on `#with-who` — a control that was simply not on
+    // screen, reported as a defect in who-is-with. An assertion that changes
+    // the surface owes the next one the state it was handed.
+    await tpage.click('#situation-open');
+    await tpage.waitForSelector('#sheet-situation[open]');
+    await settled(tpage, 150);
 
     // WHO IS WITH YOU SURVIVES THE ROUND TRIP (3.15.0) — the third thing this
     // sheet sets and the only one a saved situation could not carry.

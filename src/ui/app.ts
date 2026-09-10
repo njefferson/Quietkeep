@@ -2509,6 +2509,20 @@ export async function main(edition?: Edition): Promise<void> {
   setWhereNow(whereNow);
   setHowLong(howLongNow);
   setWithNow(withNow);
+  // AND PAINT WHAT WAS JUST RESTORED (3.23.23). Every line above reads a device
+  // view preference out of the store and sets the module caches, and NOTHING
+  // between here and the end of `main` repaints — the three `refreshAll()`
+  // calls below are all inside change handlers. So the first render had already
+  // run with nulls, and the restored answers reached the caches and never the
+  // screen.
+  //
+  // A cold read set "how long you have" to fifteen minutes, came back later,
+  // and found it reading "as long as it takes". The smoke walk reproduced it
+  // exactly — control `""`, and the line that says the list is narrowed hidden
+  // with it. Both halves matter: had the caches applied while the control read
+  // empty, the list would have been narrowed for a reason nothing on screen
+  // gave, which is the worse of the two failures.
+  refreshAll();
 
   /** ONE WRITER for the situation (2.21.0). Three routes set these two values —
    *  each chooser, and recalling a saved situation — and before this each did

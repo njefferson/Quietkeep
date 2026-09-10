@@ -472,55 +472,42 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-### What a cold read IS, and the two things it may not do (2026-09-10, the owner's instruction)
+### What a cold read IS — the method is the HUB's now (2026-09-10)
 
-Five of these have now run and they have been the most productive instrument this
-repo has. They also have a failure mode that had already started and that nothing
-here named, so it is named now, before a sixth.
+[`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md)
+carries the method and both prompts. **This section was written here first and
+that was a fork** — the hub's `CLAUDE.md` had already declared the file
+canonical, and the file simply did not exist yet, so a rule written in this repo
+looked like the only copy. It is not, and the rule against forking the doctrine
+does not have an exception for being first. What follows is only what belongs to
+THIS repo: the runs, and the two rulings measured on them.
 
-**A COLD READ REPORTS A SYMPTOM. IT DOES NOT GET TO PICK THE REMEDY.** A fresh
-reader can say *I stopped here*, *this said something untrue*, *I could not find
-it* — and every one of those is evidence nothing else in this repo produces. What
-it cannot say is what the app should therefore do, because it has read none of
-the research, none of the ADRs, and none of the refusals; its expectation is one
-person's expectation, and this app is not built to meet expectations. The remedy
-is decided from `docs/nd-collisions.md`, the ADRs and the ten laws — and the
-entry is CITED when the fix lands, or the fix is refused.
+**The two refusals now live in the hub**, in short: a cold read reports a SYMPTOM
+and does not pick the remedy — the remedy is decided from `docs/nd-collisions.md`,
+the ADRs and the ten laws, and the entry is CITED when the fix lands or the fix
+is refused. And a read is never run as a PERSON; the condition is given as
+circumstances instead.
 
-**IT HAPPENED IN THIS SESSION AND THAT IS WHY THIS IS HERE.** The fifth read
-reported that sorting seven things as *Next action* left the offer saying
-*Nothing is asking today*, and said what it had expected instead. That
-expectation went out as a recommendation with reasons of its own, and only on
-being asked what the research indicated did anybody open the catalog. The
-research turned out to point the same way — entry 4, time blindness, Strong for
-the phenomenon and measured on this audience — but the ORDER was wrong, and on
-the second question that session got it backwards: it recommended a ninth sort
-destination for a worry, which entry 30 spends its whole length arguing against.
-A cold read agreeing with the research is luck. Checking first is the method.
+**WHAT THIS REPO CONTRIBUTED, and it is a scoreboard rather than an opinion.**
+Across the fifth read's fixes:
 
-**AND THE HELD-LIST ECHO IS THE GOOD CASE, kept as the shape to imitate.** The
-same read reported every row under *Not sorted yet* also saying *not sorted yet*.
-That is real repetition and the fix was written — and the smoke walk refused it,
-on two assertions written years earlier that read the ROW for the state. It was
-reverted within the hour and 3.23.15 exists to say so in the reader's own words.
-The instrument that caught it was a measurement, not a judgment.
+- Taken from the research, **both held.** 3.23.18's wall came from entry 3 (out
+  of sight, out of mind — Strong, and this product's thesis); 3.23.22's split of
+  `CALENDAR_KINDS` came from entry 28's 50% condition.
+- Taken from a session's own reading of a symptom, **both were wrong**, and both
+  were caught by a browser walk rather than by review. The held-list echo was
+  written and reverted within the hour when the smoke walk refused it on two
+  assertions that read the ROW for the state (3.23.15 says so in the reader's
+  words). Excluding the resume card took the only *Pick it back up* in the app
+  with it (3.23.21 put the route back).
 
-**THE SECOND THING IT MAY NOT DO: BE RUN AS A PERSON.** A read is never framed as
-*a neurodivergent user*, and the reason is the same reason this app is designed
-against a CONDITION rather than a diagnosis — low capacity, high demand,
-interruption, engagement that varies. A persona is a stereotype with a costume
-on; it produces what the model believes about a group rather than what the app
-does under load. And the condition is not owned by any group: everybody enters it
-under stress, illness, grief, a bad week, a new baby, a deadline. That is the
-whole reason one design serves both, and it is why the audience question — *can
-somebody who meets this condition most often and most severely understand this
-app* — is answered by putting the app UNDER THE CONDITION, not by asking a model
-to impersonate a diagnosis.
-
-So a read that wants to test that is given the CONDITION as its circumstances:
-arriving cold with no memory of a previous session, interrupted mid-action and
-made to come back, given minutes rather than an hour, holding more than fits in a
-head, on a phone, by touch. Those are testable. *Be neurodivergent* is not.
+**And the order was wrong on the read that produced the best fix.** The fifth
+read reported that sorting seven things as *Next action* left the offer saying
+*Nothing is asking today*, and said what it expected instead; that expectation
+went out as a recommendation before anybody opened the catalog. The research
+happened to agree. On the second question in the same reply it did not: a ninth
+sort destination for a worry was recommended, and entry 30 spends its whole
+length arguing against one. A cold read agreeing with the research is luck.
 
 ### The FOURTH cold read — 2026-09-09, and it was asked whether the app can be UNDERSTOOD
 
@@ -1483,7 +1470,7 @@ count here is maintained by hand and nothing would catch it going stale.
   - Status: **Closed.** The name is Quietkeep, [ADR-0024](docs/adr/0024-name-quietkeep.md).
 - **Q-09**
   - Question: The four §10 repo-metadata values
-  - Answer: **All four set, 2026-07-28.** Description, website, topics (`indexeddb` corrected during the pass), and the **social preview uploaded**. Per §10 the repo is now *set up* — and the confirmation **is** the verification: a session cannot read this repo's live metadata at all ([V-11](docs/verifications.md)).
+  - Answer: **All four set, 2026-07-28.** Description, website, topics (`indexeddb` corrected during the pass), and the **social preview uploaded**. Per §10 the repo is now *set up*. **The clause that used to close this line — “the confirmation IS the verification: a session cannot read this repo's live metadata at all” — was stale and contradicted [V-11](docs/verifications.md)'s own correction, which had said otherwise since 2026-08-09.** All four are verified now: description, website, topics and default branch through the GitHub MCP, and the social preview by reading the repo page's `og:image` host (`repository-images.githubusercontent.com`, so a real card was uploaded). Every one matches. The confirmation is still what AUTHORIZES a value under §10; it is no longer the only thing that can see one.
   - Status: **Closed.** All four metadata values set 2026-07-28, per Doctrine §10.
 - **Q-04**
   - Question: Pages subdomain string
@@ -1684,7 +1671,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.15**, promoted 2026-09-09 at `fadd34c` — the whole
+- **PRODUCTION CARRIES 3.23.22**, promoted 2026-09-10 at `90354c1` — seven
+  releases, 3.23.16 through 3.23.22, all of them the FIFTH cold read and what
+  chasing it turned up. Verified at `6163eda`: merged tree the same tree OBJECT
+  as the staging head, Spine and Deploy green by head SHA, and both editions read
+  back by content twice.
+  Two of the seven are mine rather than the app's. 3.23.21 restores a route
+  3.23.16 removed — taking resume cards out of the work list took away the only
+  "Pick it back up" in the app, and that commit's claim that the route was
+  untouched had been checked against projections still CONTAINING the card, which
+  says nothing about whether a reader can act on it. 3.23.20 exists because the
+  a11y walk had no way to ask what a card row was, and had been dating a project
+  for four runs while reporting something else.
+  **And the scoreboard for the session's own method, which is the thing to carry
+  forward:** the two fixes taken from the research (3.23.18's wall, from entry 3;
+  3.23.22's split, from entry 28's 50% condition) both held. The two taken from a
+  session's own reading of a cold-read symptom — the held-list echo, and the
+  resume-card exclusion — were both wrong, and both were caught by a walk rather
+  than by review.
+- **Superseded, and kept for the record: production at 3.23.15** — promoted
+  2026-09-09 at `fadd34c` — the whole
   of the FOURTH cold read, in three releases. 3.23.13 answers the minute that
   read would have stopped at ("Hot or cold?", the one control in the sorting flow
   with nothing written under it). 3.23.14 is the rest of it, including a name
@@ -1769,7 +1775,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.22**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.23**, which production does
+  not carry: 3.23.23 is the fifth cold read's USABILITY half, and both of its
+  findings were the same shape — the app had the answer and never put it where
+  anybody could see it. `main` restored where you are, how long you have and who
+  is with you out of the store and then never repainted, because the three
+  `refreshAll()` calls after that point are all inside change handlers; and a
+  container's children have always rendered as doors, inside the region
+  `#detail-more` folds away. Neither was a missing feature.
+  **Two things the walk caught that reasoning did not**, both worth the record: a
+  first attempt put the new line beside `#detail-place`, which is ALSO inside the
+  fold — right text, `visible: false`; and the reload assertion passed on
+  Chromium's own form restoration, which puts a `<select>`'s value back by itself
+  while the app is still booting, so the control read "30" while the app held
+  null. The assertion asks the app's own claim now, and asks `hidden` rather than
+  `isVisible`, because after that reload the walk lands inside a job where the
+  runway is correctly hidden and the two questions are not the same.
+- **Superseded: 3.23.22**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
   tree plus seven releases. 3.23.22 splits `CALENDAR_KINDS`, which was one
   predicate answering two questions — *did a person set this* and *may this carry
@@ -3569,8 +3591,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.15** — promoted at
-  `fadd34c` on 2026-09-09: 3.23.13, 3.23.14 and 3.23.15, the whole of the FOURTH
+- **https://quietkeep.pages.dev** — production, **3.23.22** — promoted at
+  `90354c1` on 2026-09-10: 3.23.16 through 3.23.22, the whole of the FIFTH cold
+  read. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
   cold read. The merged tree asserted byte-identical to `f70e705`, the staging
   head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
   that read as empty — with that SHA's Spine green across 53 steps and Deploy

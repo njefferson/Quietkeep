@@ -1425,6 +1425,23 @@
        this size buries the one line that changed behavior. -->
   <div class="sheet-body">
   <p id="detail-state" class="detail-state"></p>
+  <!-- WHAT IS INSIDE IT, ABOVE THE FOLD (3.23.23).
+       `#detail-children` renders every child as a door and always has — but it
+       lives inside `#detail-rest`, which `#detail-more` folds away. So a
+       container answered "what is in this" one press deeper than anybody looks,
+       and a cold read that opened a project holding four things reported there
+       was no list of them. It was right about what it could see.
+       THE FIRST ATTEMPT PUT THIS LINE BESIDE `#detail-place` and the smoke walk
+       refused it — correct text, `visible: false`, because that paragraph is
+       inside the fold too. The assertion asks for VISIBLE rather than present
+       for exactly this reason: the whole defect was a rendered element nobody
+       could reach, and checking `textContent` would have reproduced it.
+       For a CONTAINER what is inside is not "more about this" — it is the
+       thing, which is the call 3.20.4 already made for places. The doors stay
+       where they are; this is the bounded SENTENCE from `contentsWords`, whose
+       docblock cites the out-of-sight collision and whose cap is law 8. Absent
+       on a non-container, and on an empty one: "holding nothing" is not news. -->
+  <p id="detail-holding" class="detail-hint"></p>
 
   <div class="detail-group">
     <label class="detail-label" for="detail-name">What it says</label>
