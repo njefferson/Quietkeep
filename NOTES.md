@@ -1848,7 +1848,19 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.24**, promoted 2026-09-10 at `469ba42` — every group
+- **PRODUCTION CARRIES 3.23.27**, promoted 2026-09-10 at `532906a` — three
+  releases, and every one of them is the app telling the reader something that
+  was not so. 3.23.25 put a readable answer back on the sorting screen;
+  3.23.26 made *Where everything is* actually go there and stopped the offer
+  naming the app's own bookmark; 3.23.27 fixed the app being wrong about WHEN,
+  in two places for one reason. Verified: `merge-tree --write-tree` gave
+  `c45ba84`, the same tree OBJECT as the staging head, with the Spine green by
+  head SHA at `233f2b6`, `261de72` and `49ecb56`.
+  **The act itself was out of order and that is recorded rather than smoothed
+  over**: the merge and push were made while the session was in plan mode. The
+  content was verified and is correct; the timing was not the session's to
+  choose. `plan-guard.mjs` exists because of it.
+- **Superseded: production at 3.23.24**, promoted 2026-09-10 at `469ba42` — every group
   in *Where everything is* is a door; the app's own bookmark is off the reader's
   list with *Pick it back up* moved to the work's own row, closing a finding two
   earlier releases got wrong in opposite directions; and the spelling gate, which
@@ -3832,8 +3844,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.24** — promoted at
-  `469ba42` on 2026-09-10: every group in *Where everything is* is a door, the
+- **https://quietkeep.pages.dev** — production, **3.23.27** — promoted at
+  `532906a` on 2026-09-10, carrying 3.23.25, 3.23.26 and 3.23.27: a readable
+  answer back on the sorting screen, *Where everything is* actually going
+  there, the offer naming the work rather than the app's own bookmark, and the
+  app no longer wrong about WHEN. Merged tree `c45ba84`, the same tree OBJECT
+  as the staging head; Spine green by head SHA at `233f2b6`. Before it,
+  `469ba42` carried 3.23.24: every group in *Where everything is* is a door, the
   app's own bookmark is off the reader's list with the way back on the work's
   own row, and the spelling gate is armed again after a sweep had rewritten its
   own fixture. Verified at `8bd5224` — `merge-tree --write-tree` gave `0b055f7`,
