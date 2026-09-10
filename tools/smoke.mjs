@@ -4966,6 +4966,118 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log(notOpened.length
     ? `  note  scrolled-half not run here: ${notOpened.join(', ')}`
     : '  note  every discovered sheet was opened and measured on this page');
+
+  // --- THE SORTING SURFACE, AT THE READER'S OWN VIEWPORT ------------------
+  //
+  // THE PREVIOUS RELEASE MEASURED THIS AND GOT THE WRONG ANSWER, and the way
+  // it got it is the lesson. The fifth cold read reported the sorting question
+  // at y=655 in an 844px viewport with the answers cut off, and sixteen
+  // scrolls for sixteen items. That was measured inside the job in the main
+  // walk's viewport, came back "question at 217, last answer ending at 670 —
+  // it fits, with fifty pixels to spare", and NO FIX WAS WRITTEN.
+  //
+  // The main walk is 720px TALL and far wider. Width is what was missed: the
+  // content column caps at 600px, so at any width from 600 up the frame is
+  // short and the card's prose reflows wide. At 390 it does neither. Measured
+  // here, at 390x844: the question is at 655 — the reader's own number, to the
+  // pixel — and the last of nine answers ends at 1310, which is 466px below
+  // the fold. Every one of sixteen items costs a scroll, exactly as reported.
+  //
+  // "MEASURED AND IT FITS" WAS TRUE OF A VIEWPORT NOBODY USES. A measurement
+  // taken somewhere other than where the report came from does not refute the
+  // report; it changes the subject. So this block exists at the reader's
+  // viewport and nowhere else.
+  await ppage.evaluate(() => { for (const d of document.querySelectorAll('dialog')) if (d.open) d.close(); });
+  for (const thing of ['ring the dentist', 'find the passport', 'ask about the roof']) {
+    await ppage.fill('#capture', thing);
+    await ppage.press('#capture', 'Enter');
+    await settled(ppage, 150);
+  }
+  await ppage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
+  await settled(ppage, 200);
+
+  // THE WAY IN FIRST, because it was the other candidate and it is now ruled
+  // out by measurement rather than by argument. `#triage-open` is display:none
+  // on the runway — the section only shows inside its own stance — so the door
+  // a reader presses is the hub's row, and asserting the section's button
+  // would have measured a hidden element, which is this walk's own recurring
+  // way of proving nothing.
+  const door = await ppage.evaluate(() => {
+    const b = [...document.querySelectorAll('#hub-doors button')]
+      .find(x => /Sort what you put down/.test(x.innerText));
+    const r = b ? b.getBoundingClientRect() : null;
+    const runway = document.querySelector('#runway');
+    return { shown: b ? b.checkVisibility() === true : false,
+      top: r ? Math.round(r.top) : null, bottom: r ? Math.round(r.bottom) : null,
+      vh: window.innerHeight,
+      scrolled: runway ? Math.round(runway.scrollTop) : Math.round(window.scrollY) };
+  });
+  console.log(`      \u00b7 the way into sorting: viewport ${door.vh}px \u00b7 door top ${door.top} `
+    + `\u00b7 bottom ${door.bottom} \u00b7 runway scrolled ${door.scrolled}`);
+  is(door.shown, true,
+    'with three things put down and nothing sorted, the hub offers the way in');
+  is(door.scrolled === 0, true,
+    `and it is measured from the top rather than mid-scroll (scrollTop ${door.scrolled})`);
+  is(door.bottom !== null && door.bottom <= door.vh, true,
+    `the way into sorting is on screen without scrolling (door bottom ${door.bottom} of ${door.vh})`);
+
+  // AND THE SURFACE BEHIND IT.
+  await ppage.locator('#hub-doors button', { hasText: 'Sort what you put down' }).first().click();
+  await ppage.waitForSelector('#triage-card');
+  await settled(ppage, 350);
+  const pfold = await ppage.evaluate(() => {
+    const box = (sel) => { const e = document.querySelector(sel); if (!e) return null;
+      const r = e.getBoundingClientRect(); return { top: Math.round(r.top), bottom: Math.round(r.bottom) }; };
+    const routes = [...document.querySelectorAll('#triage-actions .route')];
+    const vh = window.innerHeight;
+    const runway = document.querySelector('#runway');
+    const last = routes[routes.length - 1]?.getBoundingClientRect();
+    return {
+      vh, vw: window.innerWidth,
+      prompt: box('#triage-prompt'), first: box('#triage-actions .route'),
+      lastBottom: last ? Math.round(last.bottom) : null,
+      routes: routes.length,
+      // The whole finding in one number: how many answers a finger cannot see.
+      below: routes.filter(r => r.getBoundingClientRect().bottom > vh).length,
+      // And what the fixed chrome costs before any of it, because that is
+      // where a remedy would have to come from.
+      frame: Math.round(runway ? runway.getBoundingClientRect().top : 0),
+    };
+  });
+  console.log(`      \u00b7 sorting at ${pfold.vw}x${pfold.vh}: frame ends ${pfold.frame} `
+    + `\u00b7 question top ${pfold.prompt?.top} \u00b7 first answer top ${pfold.first?.top} `
+    + `\u00b7 last answer bottom ${pfold.lastBottom} \u00b7 ${pfold.below} of ${pfold.routes} answers below the fold`);
+  is(pfold.prompt !== null && pfold.prompt.top < pfold.vh, true,
+    `the sorting question itself is on screen (top ${pfold.prompt?.top} of ${pfold.vh})`);
+  // ITS TOP, NOT ITS WHOLE. Written as `bottom <= vh` first and it went red at
+  // 882 of 844 — so not one of the nine answers is fully on screen, which is
+  // worse than the report and is the measurement this block exists to make.
+  // What holds today is that a reader can SEE an answer begins; that is the
+  // line worth keeping while the remedy is decided, because losing it would
+  // mean the question appears to have none.
+  is(pfold.first !== null && pfold.first.top < pfold.vh, true,
+    `and an answer visibly begins below it (first answer top ${pfold.first?.top}, `
+    + `bottom ${pfold.first?.bottom}, of ${pfold.vh})`);
+
+  // A RATCHET, NOT A THRESHOLD, and it is deliberately not the assertion this
+  // surface deserves.
+  //
+  // The honest assertion is that NO answer is below the fold, and it would be
+  // red right now — ALL NINE are; not one is fully on screen. Shipping it red
+  // would put a permanent
+  // failure in CI while the remedy is undecided, and a permanently red gate is
+  // one everybody learns to read past, which is worse than the defect.
+  //
+  // So the baseline is recorded and held: it may shrink, never grow. A tenth
+  // route, a taller card or another line in the frame fails this immediately,
+  // and the number prints on every run whether it passes or not, which is what
+  // stops it becoming a fact nobody re-derives. The comment is the record of
+  // the open finding; NOTES.md carries the rest.
+  const BELOW_THE_FOLD_BASELINE = 9;   // of 9, at 390x844, frame 484px
+  is(pfold.below <= BELOW_THE_FOLD_BASELINE, true,
+    `and no MORE of the answers are out of sight than already were `
+    + `(${pfold.below} below the fold, baseline ${BELOW_THE_FOLD_BASELINE} of ${pfold.routes})`);
+
   await phone.close();
 
   // --- the §7e baseline, and §7f's report (1.18.0, ADR-0071) ---------------

@@ -472,6 +472,47 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### The sorting surface has no answer on screen, on a phone (measured 2026-09-10)
+
+**Not one of the nine answers is fully visible at 390x844.** The frame ends at
+484 — 57% of the screen, fixed. The question sits at 655, the first answer
+begins at 779 and is cut off by the bottom edge at 882. The last ends at 1310,
+466px below the fold. Sorting sixteen things costs sixteen scrolls before any
+answer can be read, which is what the fifth cold read reported.
+
+**THE RELEASE BEFORE THIS ONE MEASURED IT AND CONCLUDED IT FITS.** That reading
+— "question at 217, last answer ending at 670, fifty pixels to spare" — was
+taken in the main walk's viewport, which is 720 tall and far wider. The content
+column caps at 600px, so from 600 up the frame is short and the card's prose
+reflows wide; at 390 it does neither. **A measurement taken somewhere other
+than where the report came from does not refute the report, it changes the
+subject** — and the reader's figure of 655 turned out to be exact, to the pixel,
+once it was taken where they were standing.
+
+**What the fixed frame is made of, at 390 wide, inside a job:** a 133px bar,
+the 47px capture field, a 24px status line, 44px of page navigation, and then
+**two 88px gauges — `#gauge` and `#assurance` — which are 176px, 21% of the
+whole screen**, present on every surface whether or not the surface is about
+them. `body[data-plain="1"]` already hides `#assurance`, so it is not
+load-bearing at all times; ADR-0100 already ruled that chrome "used at the
+START of a sitting and almost never again" belongs on the runway rather than
+the frame, and it accepted a real cost to say so; ADR-0108 says one job is the
+screen, and applies that to the runway's sections but not to the frame above
+them.
+
+**The grounding is entry 1 (task initiation, Strong)** — activation cost is
+highest when the next act is not in front of you — rather than entry 16, whose
+own correction says the choice-overload effect is near zero and that ADR-0060's
+cap stands on activation instead. So the remedy is not fewer answers: **the
+route count is ADR-0029's and is not in question.** It is that the answers are
+off the screen.
+
+**It is held by a ratchet, not fixed.** `tools/smoke.mjs` measures all of it at
+390x844 and prints every number on every run; the assertion is that no MORE
+than nine of nine are below the fold, so a tenth route or another line in the
+frame fails immediately. The honest assertion — none below the fold — would be
+red today, and a permanently red gate is one everybody learns to read past.
+
 ### What a cold read IS — the method is the HUB's now (2026-09-10)
 
 [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md)
