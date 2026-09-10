@@ -1671,7 +1671,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.22**, promoted 2026-09-10 at `90354c1` — seven
+- **PRODUCTION CARRIES 3.23.23**, promoted 2026-09-10 at `8a38b28` — the fifth
+  cold read's USABILITY half, after the seven that closed its untrue statements.
+  Both findings were the same shape and neither was a missing feature: the app
+  had the answer and never put it where a reader looks. Verified at `8d5d340`,
+  merged tree the same tree OBJECT as the staging head, Spine and Deploy green by
+  head SHA, both editions read back by content twice.
+- **Superseded: production at 3.23.22**, promoted 2026-09-10 at `90354c1` — seven
   releases, 3.23.16 through 3.23.22, all of them the FIFTH cold read and what
   chasing it turned up. Verified at `6163eda`: merged tree the same tree OBJECT
   as the staging head, Spine and Deploy green by head SHA, and both editions read
@@ -3591,9 +3597,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.22** — promoted at
-  `90354c1` on 2026-09-10: 3.23.16 through 3.23.22, the whole of the FIFTH cold
-  read. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
+- **https://quietkeep.pages.dev** — production, **3.23.23** — promoted at
+  `8a38b28` on 2026-09-10: 3.23.23, the fifth cold read's usability half. Before
+  it, `90354c1` carried 3.23.16 through 3.23.22, the same read's untrue statements. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
   cold read. The merged tree asserted byte-identical to `f70e705`, the staging
   head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
   that read as empty — with that SHA's Spine green across 53 steps and Deploy
