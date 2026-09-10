@@ -510,6 +510,22 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
     for (const node of shown) {
       const li = document.createElement('li');
       li.className = 'card';
+      // WHAT KIND OF THING THIS ROW IS — machine-readable, invisible (3.23.20).
+      //
+      // Nothing on a row said its kind in any form a walk could ask, so
+      // `tools/a11y.mjs` picked "the first card" and ASSUMED it could take a hard
+      // date. That held for two hundred releases and was asserted nowhere. When
+      // 3.23.17 made the sheet's date control write a soft `review` clock on a
+      // CONTAINER — correctly; you do not finish an area, you look in it again —
+      // the drive started landing on a project, got a clock `nextFixedToday`
+      // rightly ignores, and reported that the ambient horizon had not rendered.
+      // A true sentence about the wrong thing, and it cost four runs of the walk.
+      //
+      // Not a badge and not a class: nothing styles it, nothing reads it at
+      // runtime, and it carries `NodeKind`'s own word rather than a
+      // reader-facing one — `kind-words.ts` owns those, and what a reader sees
+      // is a decision this attribute must not quietly pre-empt.
+      li.dataset.kind = node.kind;
 
       const open = document.createElement('button');
       open.type = 'button';

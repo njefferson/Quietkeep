@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.20 — ITERATION
+
+*2026-09-10*
+
+- **Nothing you can see changed in this one.** A row in your list now carries an invisible note saying what kind of thing it is, so the accessibility checks can tell a project from an ordinary task before they test something. Nothing reads it while you use the app and nothing is drawn from it. It is here because a check had been quietly measuring the wrong thing.
+
 ## 3.23.19 — ITERATION
 
 *2026-09-10*

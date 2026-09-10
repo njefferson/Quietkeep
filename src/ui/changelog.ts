@@ -29,6 +29,14 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.20',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**Nothing you can see changed in this one.** A row in your list now carries an invisible note saying what kind of thing it is, so the accessibility checks can tell a project from an ordinary task before they test something. Nothing reads it while you use the app and nothing is drawn from it. It is here because a check had been quietly measuring the wrong thing.',
+    ],
+  },
+  {
     triplet: '3.23.19',
     kind: 'ITERATION',
     date: '2026-09-10',

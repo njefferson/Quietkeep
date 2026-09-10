@@ -1769,9 +1769,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.19**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.20**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
-  tree plus four releases. 3.23.19 paints the ambient horizon on the empty offer
+  tree plus five releases. 3.23.20 gives a card row an invisible `data-kind`, which
+  is what let the a11y walk finally name the thing it had been getting wrong for
+  four runs: its ambient-horizon drive dated "the first card", the sample's first
+  card is a PROJECT, and 3.23.17 correctly made a project take a soft clock. The
+  failure said only "did not render" until the fields went into the message.
+  3.23.19 paints the ambient horizon on the empty offer
   screen, where it was being wiped — and it exists because the a11y walk found
   that its own assertion about that line had been passing on a STALE DOM VALUE for
   as long as the check existed. 3.23.18 is the fifth cold read's WALL, answered from
