@@ -29,6 +29,14 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.19',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**When nothing is asking, the app still tells you about the fixed thing later today.** That line \u2014 an appointment, a real date, something you cannot move \u2014 is the one worth catching out of the corner of your eye, and it is most worth it on the quiet screen: nothing is being asked of you, and there is still a three o\u2019clock. It was being wiped from exactly that screen.',
+    ],
+  },
+  {
     triplet: '3.23.18',
     kind: 'ITERATION',
     date: '2026-09-10',

@@ -1769,9 +1769,12 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.18**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.19**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
-  tree plus three releases. 3.23.18 is the fifth cold read's WALL, answered from
+  tree plus four releases. 3.23.19 paints the ambient horizon on the empty offer
+  screen, where it was being wiped — and it exists because the a11y walk found
+  that its own assertion about that line had been passing on a STALE DOM VALUE for
+  as long as the check existed. 3.23.18 is the fifth cold read's WALL, answered from
   the research rather than from what the read expected. It reported that sorting
   seven things as *Next action* left the offer saying *Nothing is asking today*
   and expected the seven to be offered. The clock is deliberate — sorting is not
@@ -1795,10 +1798,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   **AND IT IS A SEPARATE RELEASE FOR A REASON WORTH WRITING DOWN.** It was going
   to be a second bullet on 3.23.16, and `release:check` refused: 3.23.16 was cut
   and PUSHED and then the work continued, so two shipped files had moved with no
-  triplet behind them. That is the second time in one session — 3.23.15 exists for
-  the identical mistake. The triplet belongs in the commit that FINISHES the work,
-  never in the one that starts describing it, and the gate is the only thing that
-  has caught it either time. 3.23.16 is the first of the FIFTH cold read, which was
+  triplet behind them. 3.23.15 exists for the identical mistake, and 3.23.19 for
+  a third — so the rule as first written, *the triplet belongs in the commit that
+  finishes the work*, is the wrong shape. **The last thing that can send a session
+  back to the code is the browser walk, and the walk runs after the push.** So a
+  walk-driven fix is ALWAYS its own release, and that is not a slip: the triplet
+  names a cache generation, and three honest generations beat one that claims work
+  it does not carry. What to stop doing is DESCRIBING a release before the walk has
+  validated it — 3.23.18's note was written, pushed, and then the walk found a
+  regression in the same file the note was about. 3.23.16 is the first of the FIFTH cold read, which was
   asked to use the app rather than to read it and got all the way through — and
   found two things the app said that were not true. `whyCovered` named a finished
   thing's retained clock as the reason it is covered, so the coverage sheet listed

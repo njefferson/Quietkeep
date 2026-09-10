@@ -968,7 +968,33 @@ export function mountWork(
         WHY.textContent = [back, loose].filter(Boolean).join(' ');
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
-        if (FIXED) { FIXED.textContent = ''; FIXED.hidden = true; }
+        // THE AMBIENT HORIZON IS PAINTED HERE, NOT CLEARED (3.23.18). Every other
+        // element in this branch belongs to the offered item, so clearing them is
+        // right — a line left from the last head would attach a previous item's
+        // downstream to "Nothing is asking". `#nextup-fixed` is not one of those:
+        // `nextFixedToday` is a fact about the whole store, and the head branch
+        // above hides it only when it names the head, because a line about the
+        // thing you are already looking at has no value left.
+        //
+        // With no head there is nothing for it to duplicate, and this is the
+        // state the line is MOST for — nothing is asking, and an appointment at
+        // three o'clock is the afternoon being eaten (collisions 7 and 9). It was
+        // being wiped instead.
+        //
+        // AND THE A11Y WALK WAS PASSING ON WHAT THIS LEFT BEHIND. Its
+        // ambient-horizon assertion reads `#nextup-fixed` during a focus session,
+        // when the work surface has no head — so this branch ran, and before
+        // 3.23.18 it ran only when something was undated. When it did not run,
+        // whatever the line last said stayed in the DOM and was read back as a
+        // pass. Widening this branch's condition removed the stale value and the
+        // assertion went red, which is the check finally measuring something.
+        if (FIXED) {
+          const fixed = nextFixedToday(
+            session.state(), nowIso(), { zone: session.zone, boundary: boundaryOf(session.state()) });
+          const fw = nextFixedWords(fixed);
+          FIXED.textContent = fw ?? '';
+          FIXED.hidden = fw === null;
+        }
         // The settled branch already says "Nothing is asking today" above, so a
         // second sentence about dates would be the same news twice.
         if (DATED) { DATED.textContent = ''; DATED.hidden = true; }

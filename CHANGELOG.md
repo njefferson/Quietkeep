@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.19 — ITERATION
+
+*2026-09-10*
+
+- **When nothing is asking, the app still tells you about the fixed thing later today.** That line — an appointment, a real date, something you cannot move — is the one worth catching out of the corner of your eye, and it is most worth it on the quiet screen: nothing is being asked of you, and there is still a three o’clock. It was being wiped from exactly that screen.
+
 ## 3.23.18 — ITERATION
 
 *2026-09-10*
