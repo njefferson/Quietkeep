@@ -121,6 +121,17 @@ export function paintHub(hasWork: boolean, doc: Document = document): void {
 
   if (now === null) runway.removeAttribute('data-stance');
   else runway.setAttribute('data-stance', now);
+  // AND THE SAME FACT ON `<body>`, because the FRAME cannot see this one.
+  //
+  // `header.frame` is a SIBLING of `#runway` (ADR-0100 — one scrolling child,
+  // the chrome outside it), so no selector rooted at the runway can reach the
+  // two proofs in the frame. CSS has no way up. This is a derived write in the
+  // same shape as `bar.hidden` two lines down, and it exists for one rule in
+  // `app.css`: inside a job the proofs state their claim on ONE line instead
+  // of two. Nothing else reads it, and it is set from the same `now` in the
+  // same pass, so the two cannot say different things.
+  if (now === null) delete doc.body.dataset.stance;
+  else doc.body.dataset.stance = now;
   bar.hidden = now === null;
 
   if (now !== null) return;                    // the doors are only read on the hub

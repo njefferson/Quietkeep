@@ -837,6 +837,52 @@ button.ghost,
   content: " \2192";        /* an onward arrow, decorative — the words carry it */
 }
 
+/* INSIDE A JOB THE PROOF IS ONE LINE, NOT TWO (3.23.25, collisions 1/7/28).
+   Measured at 390x844 in the sorting job: the fixed frame ends at 484 — 57% of
+   the screen — the question sits at 655, and NOT ONE of the nine answers is
+   fully on it, the first being cut off at 882. ADR-0100 measured and accepted
+   this frame at 201-225px; two 88px proofs are the growth.
+
+   THE RESEARCH RULES OUT THE OBVIOUS FIX AND NAMES THIS ONE. Removing either
+   proof inside a job trades a scroll for a SWITCH, and entry 6's own paragraph
+   says that exact trade is a named thing to find out in use over days rather
+   than something settleable from a chair. Entry 28's design rule is firmer
+   still: uncertainty about whether the store is holding something produces the
+   same behavior as a store that is not holding it, so a surface that holds
+   something and says nothing about it withholds the signal the whole product
+   depends on. The claim stays.
+
+   What entry 7 shipped instead is the form this borrows: ONE FACT LINE,
+   catchable peripherally, on the surface where the reader actually is. So the
+   door joins the fact on its line rather than leaving.
+
+   AND THE DOOR ITSELF STAYS VISIBLE, which is why this is not `display: none`.
+   3.20.1 measured that on a device: as a bare statement the control read as a
+   fact with a typo on the end and nothing said button. Hiding the words would
+   also take them out of the accessible name, and the name is computed from
+   this text (no `aria-label` here, deliberately, SC 2.5.3).
+
+   The 44px floor is `min-height` on `.gauge` and is untouched — this removes a
+   line of text, never a target. */
+body[data-stance] #gauge .gauge-door,
+body[data-stance] #assurance .gauge-door {
+  display: inline;
+  margin-top: 0;
+}
+
+/* AND THE SPACE AROUND THEM, WHICH IS THE HALF THAT IS NOT A DESIGN QUESTION.
+   Inlining the door bought 26px, because `#gauge`'s fact already wraps to two
+   lines at 390px — measured, not assumed, and the reason this rule exists at
+   all. Padding and margin decide nothing about what the proof SAYS, so they
+   are the part of the frame's budget that can be spent without touching a
+   record. `min-height: var(--target)` is left alone: this is space, never a
+   target. */
+body[data-stance] #gauge,
+body[data-stance] #assurance {
+  margin-bottom: 0.375rem;
+  padding-block: 0.375rem;
+}
+
 /* THE WAY PAST THE STACK (2.0.8, ADR-0090). Built on `.gauge`'s shape — a full
    width, left-aligned, quiet row — because that is already the idiom for "a line
    on this surface that takes you somewhere", and a reader's hands have learned

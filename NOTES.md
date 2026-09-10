@@ -472,7 +472,7 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-### The sorting surface has no answer on screen, on a phone (measured 2026-09-10)
+### The sorting surface, on a phone — narrowed in 3.23.25, not closed
 
 **Not one of the nine answers is fully visible at 390x844.** The frame ends at
 484 — 57% of the screen, fixed. The question sits at 655, the first answer
@@ -507,11 +507,43 @@ cap stands on activation instead. So the remedy is not fewer answers: **the
 route count is ADR-0029's and is not in question.** It is that the answers are
 off the screen.
 
-**It is held by a ratchet, not fixed.** `tools/smoke.mjs` measures all of it at
+**WHAT 3.23.25 DID, AND WHY IT IS THAT AND NOT THE OBVIOUS THING.** The two
+proofs state their claim on ONE line inside a job rather than two, and their
+padding and margin tighten there. The frame goes 484 to 438, the question 655
+to 608, and the first answer now ends at 835 of 844 — readable without
+scrolling for the first time. Seven of nine are still below the fold.
+
+**The research ruled out removing either proof, and it is not close.** Entry 28
+was read in full and its 2026-09-10 addition is a design rule: uncertainty
+about whether the store is holding something produces the same behavior as a
+store that is not holding it — the 50%-reliable condition of Dupre & Ball did
+not substitute at all — so **a surface that holds something and says nothing
+about it withholds the exact signal the redistribution of attention depends
+on, and the redistribution is the product.** Entry 6's own last paragraph
+refuses the trade a second time and from a different direction: moving
+something off a screen and behind a door swaps a SCROLL for a SWITCH, and it
+names that as a thing to find out in use over days rather than one settleable
+from a chair. Entry 7 supplied the form that IS supported — one fact line,
+catchable peripherally, on the surface where the reader is — which is what
+this borrows. And `display: none` on the door was refused for a measured
+reason: 3.20.1 found on a device that a bare statement reads as a fact with a
+typo on the end, and the door's words are the accessible name (no `aria-label`
+here, deliberately, SC 2.5.3).
+
+**What is left is a frame decision and it is the owner's.** 438px is still 52%
+of an 844px phone against ADR-0100's measured and accepted 201–225px. The
+remaining 149 of it is the two proofs; the other 289 is a 133px bar, the
+capture field, the status line and page navigation. Getting the rest of the
+answers on screen means deciding what the frame is for, and two accepted ADRs
+(0100 lists the coverage proof as frame content, 0125 puts the judgment proof
+beside it) sit on one side of that.
+
+**Held by a ratchet, not closed.** `tools/smoke.mjs` measures all of it at
 390x844 and prints every number on every run; the assertion is that no MORE
-than nine of nine are below the fold, so a tenth route or another line in the
-frame fails immediately. The honest assertion — none below the fold — would be
-red today, and a permanently red gate is one everybody learns to read past.
+than seven of nine are below the fold, and that the whole of the first answer
+is readable — which is 9px from failing. The honest assertion, none below the
+fold, would still be red, and a permanently red gate is one everybody learns
+to read past.
 
 ### What a cold read IS — the method is the HUB's now (2026-09-10)
 
@@ -1712,7 +1744,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.23**, promoted 2026-09-10 at `8a38b28` — the fifth
+- **PRODUCTION CARRIES 3.23.24**, promoted 2026-09-10 at `469ba42` — every group
+  in *Where everything is* is a door; the app's own bookmark is off the reader's
+  list with *Pick it back up* moved to the work's own row, closing a finding two
+  earlier releases got wrong in opposite directions; and the spelling gate, which
+  a sweep had disarmed by rewriting its own fixture, is armed again. It also
+  carries the sorting surface measured at the reader's viewport for the first
+  time — a walk and a record, no shipped file moved. Verified at `8bd5224`:
+  `merge-tree --write-tree` gave `0b055f7`, the same tree OBJECT as the staging
+  head, and the Spine green by head SHA at both `ef422f5` and `8bd5224`.
+- **Superseded: production at 3.23.23**, promoted 2026-09-10 at `8a38b28` — the fifth
   cold read's USABILITY half, after the seven that closed its untrue statements.
   Both findings were the same shape and neither was a missing feature: the app
   had the answer and never put it where a reader looks. Verified at `8d5d340`,
@@ -1822,7 +1863,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.24**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.25**, which production does
+  not carry: sorting on a phone shows a readable answer again. The frame gives
+  46px back inside a job — the two proofs say their claim on one line and sit
+  tighter — so the question moves 655 to 608 and the first of nine answers now
+  ends at 835 of 844 instead of 882. Seven of nine are still below the fold and
+  that is a frame decision, not this release; `docs/nd-collisions.md` entries 28
+  and 6 both refuse taking either proof off the screen, from opposite
+  directions, and entry 7 supplied the compressed form this uses.
+- **Superseded: 3.23.24**, which production does
   not carry: every group in *Where everything is* is a way in. The renderer's own
   gap block had argued it since it was written — "a named exception you cannot
   open is a worry with a number on it" — and made its rows doors; the block above
@@ -3666,9 +3715,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.23** — promoted at
-  `8a38b28` on 2026-09-10: 3.23.23, the fifth cold read's usability half. Before
-  it, `90354c1` carried 3.23.16 through 3.23.22, the same read's untrue statements. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
+- **https://quietkeep.pages.dev** — production, **3.23.24** — promoted at
+  `469ba42` on 2026-09-10: every group in *Where everything is* is a door, the
+  app's own bookmark is off the reader's list with the way back on the work's
+  own row, and the spelling gate is armed again after a sweep had rewritten its
+  own fixture. Verified at `8bd5224` — `merge-tree --write-tree` gave `0b055f7`,
+  the same tree OBJECT as the staging head, with the Spine green by head SHA at
+  both `ef422f5` and `8bd5224`. Before it, `8a38b28` carried 3.23.23, the fifth
+  cold read's usability half. Before it,
+  `90354c1` carried 3.23.16 through 3.23.22, the same read's untrue statements. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
   cold read. The merged tree asserted byte-identical to `f70e705`, the staging
   head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
   that read as empty — with that SHA's Spine green across 53 steps and Deploy

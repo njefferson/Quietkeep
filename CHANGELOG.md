@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.25 — ITERATION
+
+*2026-09-10*
+
+- **Sorting on a phone shows you an answer again.** The question *what is this?* sat at 655 pixels down an 844-pixel screen, and not one of the nine answers under it was fully visible — so every single thing you sorted cost a scroll before you could read a single choice. Sixteen things, sixteen scrolls. The two standing lines at the top of the app — the one saying nothing has gone quiet, and *Where everything is* — now say the same thing on one line while you are inside a job, and sit a little tighter. Both still say it, and both still open. The question has moved up 47 pixels and the first answer is on the screen.
+- **Still not right:** seven of the nine answers are still below the fold, and that is a bigger change than this one — the fixed strip at the top of the app is 438 pixels of an 844-pixel phone, and getting the rest of the answers onto the screen means deciding what that strip is for. Nothing that says what you are holding is going to be taken off it quietly.
+
 ## 3.23.24 — ITERATION
 
 *2026-09-10*

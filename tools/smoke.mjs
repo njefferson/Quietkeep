@@ -5049,21 +5049,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     + `\u00b7 last answer bottom ${pfold.lastBottom} \u00b7 ${pfold.below} of ${pfold.routes} answers below the fold`);
   is(pfold.prompt !== null && pfold.prompt.top < pfold.vh, true,
     `the sorting question itself is on screen (top ${pfold.prompt?.top} of ${pfold.vh})`);
-  // ITS TOP, NOT ITS WHOLE. Written as `bottom <= vh` first and it went red at
-  // 882 of 844 — so not one of the nine answers is fully on screen, which is
-  // worse than the report and is the measurement this block exists to make.
-  // What holds today is that a reader can SEE an answer begins; that is the
-  // line worth keeping while the remedy is decided, because losing it would
-  // mean the question appears to have none.
-  is(pfold.first !== null && pfold.first.top < pfold.vh, true,
-    `and an answer visibly begins below it (first answer top ${pfold.first?.top}, `
-    + `bottom ${pfold.first?.bottom}, of ${pfold.vh})`);
+  // ITS WHOLE, AND IT WAS NOT TRUE UNTIL 3.23.25. Written as `bottom <= vh`
+  // first and it went red at 882 of 844 — not one of the nine answers fully on
+  // screen, worse than the report. The frame gave 46px back (the two proofs
+  // state their claim on one line inside a job, and their spacing tightened),
+  // and the first answer now ends at 835. This is the assertion that says a
+  // reader can READ an answer rather than infer that answers exist, and it is
+  // the one worth defending: it is 9px from failing again.
+  is(pfold.first !== null && pfold.first.bottom <= pfold.vh, true,
+    `and the WHOLE of the first answer is readable without scrolling `
+    + `(top ${pfold.first?.top}, bottom ${pfold.first?.bottom}, of ${pfold.vh})`);
 
   // A RATCHET, NOT A THRESHOLD, and it is deliberately not the assertion this
   // surface deserves.
   //
-  // The honest assertion is that NO answer is below the fold, and it would be
-  // red right now — ALL NINE are; not one is fully on screen. Shipping it red
+  // The honest assertion is that NO answer is below the fold, and it would
+  // still be red — seven of nine are, down from nine of nine. Shipping it red
   // would put a permanent
   // failure in CI while the remedy is undecided, and a permanently red gate is
   // one everybody learns to read past, which is worse than the defect.
@@ -5073,7 +5074,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // and the number prints on every run whether it passes or not, which is what
   // stops it becoming a fact nobody re-derives. The comment is the record of
   // the open finding; NOTES.md carries the rest.
-  const BELOW_THE_FOLD_BASELINE = 9;   // of 9, at 390x844, frame 484px
+  const BELOW_THE_FOLD_BASELINE = 7;   // of 9, at 390x844, frame 438px (was 9 of 9 at 484px)
   is(pfold.below <= BELOW_THE_FOLD_BASELINE, true,
     `and no MORE of the answers are out of sight than already were `
     + `(${pfold.below} below the fold, baseline ${BELOW_THE_FOLD_BASELINE} of ${pfold.routes})`);

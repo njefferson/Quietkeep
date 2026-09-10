@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.25',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**Sorting on a phone shows you an answer again.** The question *what is this?* sat at 655 pixels down an 844-pixel screen, and not one of the nine answers under it was fully visible \u2014 so every single thing you sorted cost a scroll before you could read a single choice. Sixteen things, sixteen scrolls. The two standing lines at the top of the app \u2014 the one saying nothing has gone quiet, and *Where everything is* \u2014 now say the same thing on one line while you are inside a job, and sit a little tighter. Both still say it, and both still open. The question has moved up 47 pixels and the first answer is on the screen.',
+      '**Still not right:** seven of the nine answers are still below the fold, and that is a bigger change than this one \u2014 the fixed strip at the top of the app is 438 pixels of an 844-pixel phone, and getting the rest of the answers onto the screen means deciding what that strip is for. Nothing that says what you are holding is going to be taken off it quietly.',
+    ],
+  },
+  {
     triplet: '3.23.24',
     kind: 'ITERATION',
     date: '2026-09-10',
