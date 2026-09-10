@@ -472,6 +472,56 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### What a cold read IS, and the two things it may not do (2026-09-10, the owner's instruction)
+
+Five of these have now run and they have been the most productive instrument this
+repo has. They also have a failure mode that had already started and that nothing
+here named, so it is named now, before a sixth.
+
+**A COLD READ REPORTS A SYMPTOM. IT DOES NOT GET TO PICK THE REMEDY.** A fresh
+reader can say *I stopped here*, *this said something untrue*, *I could not find
+it* — and every one of those is evidence nothing else in this repo produces. What
+it cannot say is what the app should therefore do, because it has read none of
+the research, none of the ADRs, and none of the refusals; its expectation is one
+person's expectation, and this app is not built to meet expectations. The remedy
+is decided from `docs/nd-collisions.md`, the ADRs and the ten laws — and the
+entry is CITED when the fix lands, or the fix is refused.
+
+**IT HAPPENED IN THIS SESSION AND THAT IS WHY THIS IS HERE.** The fifth read
+reported that sorting seven things as *Next action* left the offer saying
+*Nothing is asking today*, and said what it had expected instead. That
+expectation went out as a recommendation with reasons of its own, and only on
+being asked what the research indicated did anybody open the catalog. The
+research turned out to point the same way — entry 4, time blindness, Strong for
+the phenomenon and measured on this audience — but the ORDER was wrong, and on
+the second question that session got it backwards: it recommended a ninth sort
+destination for a worry, which entry 30 spends its whole length arguing against.
+A cold read agreeing with the research is luck. Checking first is the method.
+
+**AND THE HELD-LIST ECHO IS THE GOOD CASE, kept as the shape to imitate.** The
+same read reported every row under *Not sorted yet* also saying *not sorted yet*.
+That is real repetition and the fix was written — and the smoke walk refused it,
+on two assertions written years earlier that read the ROW for the state. It was
+reverted within the hour and 3.23.15 exists to say so in the reader's own words.
+The instrument that caught it was a measurement, not a judgment.
+
+**THE SECOND THING IT MAY NOT DO: BE RUN AS A PERSON.** A read is never framed as
+*a neurodivergent user*, and the reason is the same reason this app is designed
+against a CONDITION rather than a diagnosis — low capacity, high demand,
+interruption, engagement that varies. A persona is a stereotype with a costume
+on; it produces what the model believes about a group rather than what the app
+does under load. And the condition is not owned by any group: everybody enters it
+under stress, illness, grief, a bad week, a new baby, a deadline. That is the
+whole reason one design serves both, and it is why the audience question — *can
+somebody who meets this condition most often and most severely understand this
+app* — is answered by putting the app UNDER THE CONDITION, not by asking a model
+to impersonate a diagnosis.
+
+So a read that wants to test that is given the CONDITION as its circumstances:
+arriving cold with no memory of a previous session, interrupted mid-action and
+made to come back, given minutes rather than an hour, holding more than fits in a
+head, on a phone, by touch. Those are testable. *Be neurodivergent* is not.
+
 ### The FOURTH cold read — 2026-09-09, and it was asked whether the app can be UNDERSTOOD
 
 **Outstanding.** A different question from the first three: not "does it do what
