@@ -2083,6 +2083,25 @@ export async function main(edition?: Edition): Promise<void> {
         // to selector: the held list labels its own `<ul>` with this same title.
         open.addEventListener('click', () => {
           closeSheet('sheet-assurance');
+          // ENTER THE JOB, not just open the fold (3.23.26). 3.23.24 called
+          // `openHeld()` alone, which sets `#held-fold.open` and nothing else —
+          // and on the hub `#runway[data-hub]:not([data-stance])` hides every
+          // section that is not the hub, so the fold it opened was display:none.
+          // Pressing a group from this sheet closed it and left the reader on
+          // "Where do you want to be?", with no list and no state carried.
+          //
+          // `enter` is the one answer to "what belongs to this job", shared with
+          // `src/reach.ts` — the same call `contents.ts`'s `goTo` makes, whose
+          // comment already said why: "A block is on screen only while it is the
+          // stance, so scrolling to one that is not would move nothing and land
+          // focus on an invisible heading."
+          //
+          // THE WALK PASSED THIS AND THE DEFECT SHIPPED, which is hub LESSONS
+          // §268 one release after that lesson was written. The smoke block
+          // called `intoJob(page, 'held')` BEFORE pressing, so it measured from
+          // inside the job — a standing point no reader arrives from, because
+          // this sheet's own door is on the hub. It enters from the hub now.
+          enterStance('held');
           openHeld();
           requestAnimationFrame(() => {
             const group = document.querySelector(`.cards-group[aria-label="${place.title}"]`);

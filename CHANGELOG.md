@@ -14,6 +14,28 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.27 — ITERATION
+
+*2026-09-10*
+
+- **A date weeks away is no longer offered as today’s work.** Something dated for next month could lead *See what is next* under the words *a real date, and it is here* — a few lines above the same screen saying nothing was dated today. Both could not be right. The app was checking two different things and treating them as one: whether ANYTHING about a thing had come round, and whether it had a date at all. It asks about the date itself now.
+- **And a date you typed shows up on the day you typed.** If a thing was also coming back today for some other reason, *The days ahead* showed only today and the date you had set appeared nowhere in the app — which is the whole thing that page is for. It lists both now: the day it comes back, and the day it is due. What you send to your own calendar is unchanged, one entry per thing, because a diary with two alarms for one job is the nagging this app will not do.
+
+## 3.23.26 — ITERATION
+
+*2026-09-10*
+
+- **Pressing a group in *Where everything is* actually takes you there now.** It did nothing at all: the page closed and you were left back on *Where do you want to be?*, with no list and nothing to show you had asked. It opened your list without going to it — so the list it opened was on a screen you were no longer on. Pressing a group now puts you in your list with that group in front of you, which is what it said it would do when it was built.
+- **The one thing to do next is the thing you were doing, called by its name.** When something interrupted you, the app kept its own note about it — and then offered that note back as the next thing to do, headed *where you left off*, with the same words repeated underneath. Neither line said what you had been doing. It offers the work now, under the name you gave it, and says *you were about to…* in your own words as the reason.
+- **Still not right, and this one is the worst of them:** a thing dated weeks away can be offered as today’s work, with a reason saying the date has arrived, on a screen that also says nothing is dated today. It has been seen and is not yet fixed — the date itself is right everywhere you can read it, so nothing is lost, but the app is telling you the wrong thing about when.
+
+## 3.23.25 — ITERATION
+
+*2026-09-10*
+
+- **Sorting on a phone shows you an answer again.** *What is this?* sat so far down the screen that not one of its nine answers was fully in view — so every single thing you sorted cost a scroll before you could read a single choice. Sixteen things, sixteen scrolls. The two standing lines at the top — the one saying nothing has gone quiet, and *Where everything is* — now say the same thing on one line while you are working, and sit a little closer together. Both still say it and both still open. The question and its first answer are both on the screen now.
+- **Still not right:** most of the nine answers are still off the bottom of a phone screen, and getting them up needs a bigger change than this one. The strip at the top — the box you type into, and the lines telling you nothing has been lost — takes up more than half the screen, and nothing in it that tells you what you are holding is coming off quietly.
+
 ## 3.23.24 — ITERATION
 
 *2026-09-10*

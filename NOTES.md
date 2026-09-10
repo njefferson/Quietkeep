@@ -472,7 +472,111 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-### The sorting surface has no answer on screen, on a phone (measured 2026-09-10)
+### The SIXTH cold read — 2026-09-10, against staging 3.23.25, both passes
+
+Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
+two independent agents in parallel, neither reading this repository. The
+unprompted pass captured 23 things, sorted all 23, built four containers, set
+five dates, finished three, handled a real interruption and reloaded twice.
+
+**IT COULD USE THE APP.** It knew what the app was for from the first sentence
+of screen one and said so; it named the interruption-and-return flow the
+best-built thing in the app; and it listed what it was relieved not to find —
+no streak, no score, no percentage, no badge, no *overdue*, no red, no account,
+no cookie banner — having gone looking for each. Nothing was lost across three
+reloads, item by item. **The refusals are landing.** What it could not do was
+four specific things, and what it was told was untrue in seven places.
+
+**Two findings in its report are its own rig, not the app**, and are recorded
+so a later session does not chase them: the edition could not be told from a
+`127.0.0.1` address, and four of twenty-six offline files did not download.
+Chromium could not complete TLS to the host through this container's egress, so
+both passes drove the deployed bytes through a local pass-through. Everything
+else is the app.
+
+#### Fixed in 3.23.26
+
+- **Pressing a group in *Where everything is* did nothing** — the sheet closed
+  and the reader was left on the hub with no list. `openHeld()` sets
+  `#held-fold.open` and nothing else, and on the hub
+  `#runway[data-hub]:not([data-stance])` hides every section but the hub, so it
+  opened a fold inside a `display: none` section. **The walk passed it and the
+  defect reached production**, because the smoke block ran wherever the walk
+  was standing — inside the held job — which is a standing point no reader can
+  arrive from, since that sheet's door is in the frame. Hub LESSONS §268, one
+  release after this repo wrote §268.
+- **The offer named the app's own bookmark as the thing to do**, headed *where
+  you left off* with the identical words repeated in the why line under it, and
+  neither line named the work. Same category error 3.23.16 tried to fix on the
+  held list and 3.23.24 closed, surviving one surface over. `nextup.ts` pushes
+  the TARGET now; the card's clock stays the trigger and `reason: 'resume'`
+  makes the why line an explanation.
+- **The release notes were written in pixels** — *"655 pixels down an 844-pixel
+  screen"*, *"moved up 47 pixels"*, *"below the fold"*. Called a developer's
+  diary entry, correctly, and it was written the same day by the session that
+  is recording this. Doctrine §5. **Not a repo-wide pattern and deliberately
+  not gated:** other notes measure in pixels to describe something a reader can
+  SEE, such as a focus ring cut off at the edge, and a gate refusing the word
+  would fire on those. CHECKLIST, not GATE.
+
+#### Open, and the first of these is the worst thing the app currently says
+
+- **FIXED IN 3.23.27 — a thing dated five weeks out was offered as today's
+  work, and it was TWO defects rather than one.** Both reproduced with a
+  fixture before either was touched; the first synthetic attempt gave the
+  review clock a FUTURE date and produced no offer at all, which is why the
+  first pass recorded it as unreproduced rather than guessing.
+  **One: the offer.** The tier read `arrived && hasHardDate(n)` and those are
+  DIFFERENT CLOCKS — `arrivedClock` is true when ANY non-park, non-cure clock
+  has come round, `hasHardDate` when a `due` or `suspense` clock EXISTS at any
+  date. A node sorted today (review clock, arrived) carrying a date five weeks
+  out satisfied both, so the app announced the arrival of a date that had not
+  arrived. `hardDateHere` asks about the hard clock itself now.
+  **Two: the days ahead.** `soonestAt` returns ONE clock per node, so the
+  review always won and the date the reader typed appeared on NO SURFACE.
+  `ics.ts`'s own header had already written the rule the code was breaking —
+  *a date they set that appears on no surface is a date they go on carrying* —
+  citing entry 28's 50% condition. The VIEW now takes every reader-set clock
+  and the FILE still takes one, behind the same `includeSoft` flag that
+  already means view-not-file, because a diary with two alarms for one job is
+  entry 15's nag. Both directions are asserted and both were planted red.
+- **No way to make an Area, a Goal or an Outcome, or to change one after.** The
+  sorting prompt says *"a project, area or goal — make one if it is not
+  there"*; four containers made that way all came back `Project`, including one
+  made as an ongoing area. The kind chooser exists but only on a row revealed
+  when creating a parent from inside an item's *More about this*, and neither
+  the container's editor nor the tree dialog offers a way to change it.
+- **One tap of *Choose where it goes* silently ended the hot/cold pass for
+  everything behind it**, permanently — later captures went straight to *What
+  is this?* and nothing said the question had been switched off.
+- **The date prompt after *Put under…* is lost for the third container
+  onwards.** *"Put under X — no return date yet."* drops a field into a
+  trailing stack that keeps only the last two; four containers produced two
+  prompts.
+- **Stale trailing DOM on the hub** — a finished item's *Now:* card, two dead
+  *Put under…* prompts and an orphan `Undo`, scrolled past all session and gone
+  after a reload, so it was never state.
+- **Six more untrue statements**, each with its own evidence in the run:
+  *"Not this"* announcing *"Showing X instead"* naming the item just rejected;
+  *"Not kept yet — press Set."* shown permanently, including beside a header
+  that states the date; *"There is nothing here to clear"* above two clear
+  buttons on a store holding 27; two screens disagreeing on how many things
+  have a date (9+10 against 12); *"1 thing has a date you set"* after five were
+  set through a picker, against *The days ahead* calling 14 of them `due`; and
+  *"One thing is with someone else"* on a surface that omits the person link
+  the app invited, because it keys off the *Waiting for* route instead.
+- **Jargon a reader met:** *"Routed to Next action."* and *"serves X"* beside
+  *"in X"* on the same row.
+- **Asymmetry:** *Put on the Menu* is a top-level control and taking it off is
+  behind *More about this*; a Menu item's editor has no date field at all;
+  `Undo` sits at the bottom of the page rather than near what it would undo.
+- **The wall**, and it is a browser-permission question rather than the work
+  above: *Keep my data on this device* and *Ask the browser to keep it* both
+  did nothing on four presses, while the panel above them read *Asked for —
+  not yet*. If the browser refused, that is the browser's; the app recording
+  that it never asked is the app's.
+
+### The sorting surface, on a phone — narrowed in 3.23.25, not closed
 
 **Not one of the nine answers is fully visible at 390x844.** The frame ends at
 484 — 57% of the screen, fixed. The question sits at 655, the first answer
@@ -507,11 +611,43 @@ cap stands on activation instead. So the remedy is not fewer answers: **the
 route count is ADR-0029's and is not in question.** It is that the answers are
 off the screen.
 
-**It is held by a ratchet, not fixed.** `tools/smoke.mjs` measures all of it at
+**WHAT 3.23.25 DID, AND WHY IT IS THAT AND NOT THE OBVIOUS THING.** The two
+proofs state their claim on ONE line inside a job rather than two, and their
+padding and margin tighten there. The frame goes 484 to 438, the question 655
+to 608, and the first answer now ends at 835 of 844 — readable without
+scrolling for the first time. Seven of nine are still below the fold.
+
+**The research ruled out removing either proof, and it is not close.** Entry 28
+was read in full and its 2026-09-10 addition is a design rule: uncertainty
+about whether the store is holding something produces the same behavior as a
+store that is not holding it — the 50%-reliable condition of Dupre & Ball did
+not substitute at all — so **a surface that holds something and says nothing
+about it withholds the exact signal the redistribution of attention depends
+on, and the redistribution is the product.** Entry 6's own last paragraph
+refuses the trade a second time and from a different direction: moving
+something off a screen and behind a door swaps a SCROLL for a SWITCH, and it
+names that as a thing to find out in use over days rather than one settleable
+from a chair. Entry 7 supplied the form that IS supported — one fact line,
+catchable peripherally, on the surface where the reader is — which is what
+this borrows. And `display: none` on the door was refused for a measured
+reason: 3.20.1 found on a device that a bare statement reads as a fact with a
+typo on the end, and the door's words are the accessible name (no `aria-label`
+here, deliberately, SC 2.5.3).
+
+**What is left is a frame decision and it is the owner's.** 438px is still 52%
+of an 844px phone against ADR-0100's measured and accepted 201–225px. The
+remaining 149 of it is the two proofs; the other 289 is a 133px bar, the
+capture field, the status line and page navigation. Getting the rest of the
+answers on screen means deciding what the frame is for, and two accepted ADRs
+(0100 lists the coverage proof as frame content, 0125 puts the judgment proof
+beside it) sit on one side of that.
+
+**Held by a ratchet, not closed.** `tools/smoke.mjs` measures all of it at
 390x844 and prints every number on every run; the assertion is that no MORE
-than nine of nine are below the fold, so a tenth route or another line in the
-frame fails immediately. The honest assertion — none below the fold — would be
-red today, and a permanently red gate is one everybody learns to read past.
+than seven of nine are below the fold, and that the whole of the first answer
+is readable — which is 9px from failing. The honest assertion, none below the
+fold, would still be red, and a permanently red gate is one everybody learns
+to read past.
 
 ### What a cold read IS — the method is the HUB's now (2026-09-10)
 
@@ -1712,7 +1848,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.23**, promoted 2026-09-10 at `8a38b28` — the fifth
+- **PRODUCTION CARRIES 3.23.24**, promoted 2026-09-10 at `469ba42` — every group
+  in *Where everything is* is a door; the app's own bookmark is off the reader's
+  list with *Pick it back up* moved to the work's own row, closing a finding two
+  earlier releases got wrong in opposite directions; and the spelling gate, which
+  a sweep had disarmed by rewriting its own fixture, is armed again. It also
+  carries the sorting surface measured at the reader's viewport for the first
+  time — a walk and a record, no shipped file moved. Verified at `8bd5224`:
+  `merge-tree --write-tree` gave `0b055f7`, the same tree OBJECT as the staging
+  head, and the Spine green by head SHA at both `ef422f5` and `8bd5224`.
+- **Superseded: production at 3.23.23**, promoted 2026-09-10 at `8a38b28` — the fifth
   cold read's USABILITY half, after the seven that closed its untrue statements.
   Both findings were the same shape and neither was a missing feature: the app
   had the answer and never put it where a reader looks. Verified at `8d5d340`,
@@ -1822,7 +1967,28 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.24**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.27**, which production does
+  not carry: the sixth cold read's worst finding, which turned out to be two
+  defects with one symptom — the offer announcing a date that had not arrived,
+  and *The days ahead* hiding a date the reader typed behind whichever clock
+  came round sooner. Reproduced with fixtures before either was touched.
+- **Superseded: 3.23.26**, which production does
+  not carry: the SIXTH cold read's first three findings. Pressing a group in
+  *Where everything is* now enters the list rather than closing onto the hub —
+  that feature shipped broken in 3.23.24 and the walk passed it, because the
+  walk pressed from inside the job and a reader can only press from the frame.
+  The offer names the WORK rather than the app's own bookmark. And 3.23.25's
+  release note, which was written in pixels the same day, is written for a
+  reader.
+- **Superseded: 3.23.25**, which production does
+  not carry: sorting on a phone shows a readable answer again. The frame gives
+  46px back inside a job — the two proofs say their claim on one line and sit
+  tighter — so the question moves 655 to 608 and the first of nine answers now
+  ends at 835 of 844 instead of 882. Seven of nine are still below the fold and
+  that is a frame decision, not this release; `docs/nd-collisions.md` entries 28
+  and 6 both refuse taking either proof off the screen, from opposite
+  directions, and entry 7 supplied the compressed form this uses.
+- **Superseded: 3.23.24**, which production does
   not carry: every group in *Where everything is* is a way in. The renderer's own
   gap block had argued it since it was written — "a named exception you cannot
   open is a worry with a number on it" — and made its rows doors; the block above
@@ -3666,9 +3832,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.23** — promoted at
-  `8a38b28` on 2026-09-10: 3.23.23, the fifth cold read's usability half. Before
-  it, `90354c1` carried 3.23.16 through 3.23.22, the same read's untrue statements. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
+- **https://quietkeep.pages.dev** — production, **3.23.24** — promoted at
+  `469ba42` on 2026-09-10: every group in *Where everything is* is a door, the
+  app's own bookmark is off the reader's list with the way back on the work's
+  own row, and the spelling gate is armed again after a sweep had rewritten its
+  own fixture. Verified at `8bd5224` — `merge-tree --write-tree` gave `0b055f7`,
+  the same tree OBJECT as the staging head, with the Spine green by head SHA at
+  both `ef422f5` and `8bd5224`. Before it, `8a38b28` carried 3.23.23, the fifth
+  cold read's usability half. Before it,
+  `90354c1` carried 3.23.16 through 3.23.22, the same read's untrue statements. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
   cold read. The merged tree asserted byte-identical to `f70e705`, the staging
   head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
   that read as empty — with that SHA's Spine green across 53 steps and Deploy

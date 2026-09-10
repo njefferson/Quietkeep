@@ -872,6 +872,30 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // renderer had said why that is wrong since it was written — "a named
   // exception you cannot open is a worry with a number on it" — and made its
   // own rows doors. The block above it did not.
+  //
+  // AND IT IS PRESSED FROM THE HUB, WHICH IS THE WHOLE FIX (3.23.26). The
+  // first version of this block ran wherever the walk happened to be standing
+  // — inside the held job — and went green while the feature was BROKEN from
+  // the only route a reader has. `#assurance` lives in the frame, so the sheet
+  // opens from the hub, and on the hub `#runway[data-hub]:not([data-stance])`
+  // hides every section but the hub itself. The handler called `openHeld()`,
+  // which sets `#held-fold.open` and nothing else, so it opened a fold inside
+  // a `display: none` section: sheet closed, reader left on "Where do you want
+  // to be?", no list, no state carried. A cold read found it in production.
+  //
+  // That is hub LESSONS §268 — a measurement taken somewhere other than where
+  // the report came from — committed by this walk ONE RELEASE after this repo
+  // wrote that lesson. So the standing point is now asserted before the press,
+  // rather than inherited from whatever ran above.
+  // Out of whatever job the blocks above left the walk in, by the app's own
+  // control rather than by script — `#stance-back` is the way a finger takes.
+  await page.evaluate(() => { for (const d of document.querySelectorAll('dialog')) if (d.open) d.close(); });
+  if (await page.locator('#stance-back').isVisible().catch(() => false)) {
+    await page.click('#stance-back');
+    await settled(page, 250);
+  }
+  is(await page.evaluate(() => document.querySelector('#runway')?.hasAttribute('data-stance')), false,
+    'standing on the hub, which is where this sheet is opened from');
   console.log('\nWhere everything is — every group is a way in');
   await page.click('#assurance');
   await page.waitForSelector('#sheet-assurance[open]');
@@ -888,16 +912,43 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // ARRIVED, not merely navigated. The group it named has to be ON SCREEN —
   // the whole complaint was a number with no route, and a route that lands you
   // somewhere you still have to hunt is the same complaint one step along.
+  // VISIBLE, WITH A REAL BOX — and the first two versions of this assertion had
+  // neither, which is why the defect shipped twice.
+  //
+  // `querySelector` finds a node inside a `display: none` section perfectly
+  // well, and `getBoundingClientRect()` on one returns ALL ZEROS. So `found`
+  // was true and `top >= 0 && top < vh` was `0 >= 0 && 0 < 720` — green, on a
+  // list no reader could see. Planted against the broken handler and it passed.
+  //
+  // This walk has now recorded that same trap three times in its own comments
+  // (the ambient horizon, the runway door reading `top 0, hidden true`, and
+  // here), so the shape is the lesson: an assertion over an element that is not
+  // on screen proves nothing, and a ZERO is what "not on screen" looks like
+  // rather than an obviously wrong number. `checkVisibility()` plus a nonzero
+  // height is what cannot be satisfied by absence.
   const arrivedAt = await page.evaluate((title) => {
     const ul = document.querySelector(`.cards-group[aria-label="${title}"]`);
     if (!ul) return { found: false };
     const head = ul.previousElementSibling;
-    const r = (head ?? ul).getBoundingClientRect();
-    return { found: true, top: Math.round(r.top), vh: window.innerHeight };
+    const el = head ?? ul;
+    const r = el.getBoundingClientRect();
+    return {
+      found: true,
+      shown: el.checkVisibility() === true,
+      top: Math.round(r.top), h: Math.round(r.height),
+      vh: window.innerHeight,
+      stance: document.querySelector('#runway')?.getAttribute('data-stance') ?? null,
+      cards: document.querySelectorAll('#cards .card').length,
+    };
   }, doorName);
   is(arrivedAt.found, true, `and the list is showing the group it named ("${doorName}")`);
-  is(arrivedAt.found && arrivedAt.top >= 0 && arrivedAt.top < arrivedAt.vh, true,
-    `with that group on screen rather than left to be hunted (top ${arrivedAt.top} of ${arrivedAt.vh})`);
+  is(arrivedAt.stance === 'held', true,
+    `pressing it puts the reader IN the list, not back on the hub (stance ${arrivedAt.stance})`);
+  is(arrivedAt.cards > 0, true, `with the reader\u2019s things on screen (${arrivedAt.cards} cards)`);
+  is(arrivedAt.shown === true && arrivedAt.h > 0
+    && arrivedAt.top >= 0 && arrivedAt.top < arrivedAt.vh, true,
+    `and that group actually visible rather than left to be hunted `
+    + `(shown ${arrivedAt.shown}, top ${arrivedAt.top}, height ${arrivedAt.h}, of ${arrivedAt.vh})`);
 
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
@@ -5049,21 +5100,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     + `\u00b7 last answer bottom ${pfold.lastBottom} \u00b7 ${pfold.below} of ${pfold.routes} answers below the fold`);
   is(pfold.prompt !== null && pfold.prompt.top < pfold.vh, true,
     `the sorting question itself is on screen (top ${pfold.prompt?.top} of ${pfold.vh})`);
-  // ITS TOP, NOT ITS WHOLE. Written as `bottom <= vh` first and it went red at
-  // 882 of 844 — so not one of the nine answers is fully on screen, which is
-  // worse than the report and is the measurement this block exists to make.
-  // What holds today is that a reader can SEE an answer begins; that is the
-  // line worth keeping while the remedy is decided, because losing it would
-  // mean the question appears to have none.
-  is(pfold.first !== null && pfold.first.top < pfold.vh, true,
-    `and an answer visibly begins below it (first answer top ${pfold.first?.top}, `
-    + `bottom ${pfold.first?.bottom}, of ${pfold.vh})`);
+  // ITS WHOLE, AND IT WAS NOT TRUE UNTIL 3.23.25. Written as `bottom <= vh`
+  // first and it went red at 882 of 844 — not one of the nine answers fully on
+  // screen, worse than the report. The frame gave 46px back (the two proofs
+  // state their claim on one line inside a job, and their spacing tightened),
+  // and the first answer now ends at 835. This is the assertion that says a
+  // reader can READ an answer rather than infer that answers exist, and it is
+  // the one worth defending: it is 9px from failing again.
+  is(pfold.first !== null && pfold.first.bottom <= pfold.vh, true,
+    `and the WHOLE of the first answer is readable without scrolling `
+    + `(top ${pfold.first?.top}, bottom ${pfold.first?.bottom}, of ${pfold.vh})`);
 
   // A RATCHET, NOT A THRESHOLD, and it is deliberately not the assertion this
   // surface deserves.
   //
-  // The honest assertion is that NO answer is below the fold, and it would be
-  // red right now — ALL NINE are; not one is fully on screen. Shipping it red
+  // The honest assertion is that NO answer is below the fold, and it would
+  // still be red — seven of nine are, down from nine of nine. Shipping it red
   // would put a permanent
   // failure in CI while the remedy is undecided, and a permanently red gate is
   // one everybody learns to read past, which is worse than the defect.
@@ -5073,7 +5125,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // and the number prints on every run whether it passes or not, which is what
   // stops it becoming a fact nobody re-derives. The comment is the record of
   // the open finding; NOTES.md carries the rest.
-  const BELOW_THE_FOLD_BASELINE = 9;   // of 9, at 390x844, frame 484px
+  const BELOW_THE_FOLD_BASELINE = 7;   // of 9, at 390x844, frame 438px (was 9 of 9 at 484px)
   is(pfold.below <= BELOW_THE_FOLD_BASELINE, true,
     `and no MORE of the answers are out of sight than already were `
     + `(${pfold.below} below the fold, baseline ${BELOW_THE_FOLD_BASELINE} of ${pfold.routes})`);
