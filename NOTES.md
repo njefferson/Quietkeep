@@ -1769,9 +1769,16 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.21**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.22**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
-  tree plus six releases. 3.23.21 PUTS THE RESUME CARD BACK IN THE HELD LIST,
+  tree plus seven releases. 3.23.22 splits `CALENDAR_KINDS`, which was one
+  predicate answering two questions — *did a person set this* and *may this carry
+  an alarm*. The second keeps the exported FILE narrow and must; the first
+  governs the in-app dated view, where a `review` clock set by pressing *Next
+  action*, answering *when should this come back*, or typing a date on a project
+  was invisible. Decided by entry 28's 50% condition rather than by taste, and
+  the view's own sentence stopped claiming the file carries the same list.
+  3.23.21 PUTS THE RESUME CARD BACK IN THE HELD LIST,
   because 3.23.16's exclusion removed the reader's only way back into an
   interrupted thread — `heldGroups` is built from `heldWork`, and that row's
   `.card-focus` carries the one "Pick it back up" in the app; the detail sheet

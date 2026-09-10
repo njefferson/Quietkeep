@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.22',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**A date you set on a project now shows up in *What comes back, and when*.** It did not. Dating something while you sort it, answering *when should this come back*, or typing a date on a project all set a softer kind of date than a deadline \u2014 and that page only listed the hard ones, so three dates you had set could show as two. A date you set that appears on no screen is a date you go on carrying.',
+      '**Send to my calendar still carries only the fixed days, and says so now.** A soft date is *bring this back to me*, not an appointment, and putting an alarm on one turns a gentle return into a demand. The line above the list used to say the file carried the same list; it says what it actually carries.',
+    ],
+  },
+  {
     triplet: '3.23.21',
     kind: 'ITERATION',
     date: '2026-09-10',

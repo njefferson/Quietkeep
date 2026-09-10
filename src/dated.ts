@@ -70,7 +70,20 @@ export function datedKindWords(kind: string): string {
  */
 export function datedDays(state: State, nowIso: string, zone: string): DatedDay[] {
   const byDay = new Map<string, DatedItem[]>();
-  for (const e of calendarEntries(state, nowIso, zone)) {
+  // EVERY CLOCK THE READER SET, not only the ones that may carry an alarm
+  // (3.23.21). `calendarEntries` is still the one selection and the one walk —
+  // `ics.ts` says nothing may re-derive it and what re-deriving cost in 0.9.0 —
+  // and this is a declared widening of it rather than a second projection.
+  //
+  // The file stays narrow. A `review` clock is the app's "bring this back", and
+  // exporting one as a timed event with an alarm is the nag ADR-0056 and entry
+  // 15 refuse. But this view is not the file: it is where somebody checks that
+  // the date they set is being held, and a date set by pressing *Next action*,
+  // by answering *when should this come back*, or by typing one on a project
+  // appeared on NO surface here. Entry 28's 50% condition is the measured
+  // reason that matters: uncertainty about whether the store is holding
+  // something produces the same behavior as its not holding it.
+  for (const e of calendarEntries(state, nowIso, zone, true)) {
     const day = calendarDay(e.at, nowIso, zone);
     const items = byDay.get(day) ?? [];
     if (items.length === 0) byDay.set(day, items);
@@ -127,6 +140,11 @@ export function datedWords(total: number): string {
       + 'A date goes on from a thing’s own sheet, and it shows here the moment it is set.';
   }
   const head = total === 1 ? 'One dated thing is ahead.' : `${total} dated things are ahead.`;
+  // NOT "THE SAME LIST" ANY MORE, and the sentence had to move with the widening
+  // (3.23.21). This list now holds every date the reader set; the file holds the
+  // ones a calendar can sensibly alarm on. Saying they are the same would be the
+  // kind of small untruth this app has spent four cold reads removing.
   return `${head} This list is live — when a date changes, it moves here. `
-    + 'Send to my calendar carries the same list out, so your own calendar can remind you.';
+    + 'Send to my calendar carries out the ones with a fixed day, so your own '
+    + 'calendar can remind you; the softer ones stay here.';
 }
