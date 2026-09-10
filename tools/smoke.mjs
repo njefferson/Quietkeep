@@ -6222,6 +6222,59 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       `"Choose where it goes" leaves the heat pass and offers the routes ("${after}")`);
     is(await tpage.locator('#triage-actions .route', { hasText: 'Next action' }).count() > 0, true,
       'and the real routes are there — the item was in the clarify queue the whole time');
+
+    // CAN A THUMB ANSWER IT WITHOUT SCROLLING (3.23.24). A fifth cold read
+    // sorted sixteen things and scrolled sixteen times, because the question
+    // and its answers sit below the fold on every single item — measured at
+    // y=655 in an 844px viewport with the answers cut off at the bottom edge.
+    //
+    // NOTHING IN THIS REPO MEASURES WHERE A THING RENDERS except
+    // `narrows-check.mjs`, which asks a different question, so this had been
+    // true for the life of the surface with every gate green. Entry 1 of the
+    // collision catalog is Strong on activation cost, and a question you must
+    // scroll to reach before you can answer it is activation cost applied once
+    // per item.
+    //
+    // The numbers are PRINTED whether or not the check passes, because the
+    // first attempt to measure this from a standalone probe never reached the
+    // surface at all and reported zeros. Here the walk has already proved it is
+    // in front of a card, so a number here is about the layout and nothing else.
+    const fold = await tpage.evaluate(() => {
+      const box = (sel) => { const e = document.querySelector(sel); if (!e) return null;
+        const r = e.getBoundingClientRect(); return { top: Math.round(r.top), bottom: Math.round(r.bottom) }; };
+      const routes = [...document.querySelectorAll('#triage-actions .route')];
+      const last = routes[routes.length - 1]?.getBoundingClientRect();
+      return {
+        vh: window.innerHeight,
+        prompt: box('#triage-prompt'),
+        card: box('#triage-card'),
+        firstRoute: box('#triage-actions .route'),
+        lastRouteBottom: last ? Math.round(last.bottom) : null,
+        routes: routes.length,
+      };
+    });
+    console.log(`      · sorting fold: viewport ${fold.vh}px · prompt top ${fold.prompt?.top} `
+      + `· card top ${fold.card?.top} · first answer top ${fold.firstRoute?.top} `
+      + `· last answer bottom ${fold.lastRouteBottom} · ${fold.routes} answers`);
+    is(fold.prompt !== null && fold.prompt.top < fold.vh, true,
+      `the sorting question is on screen without scrolling (top ${fold.prompt?.top} of ${fold.vh})`);
+    is(fold.firstRoute !== null && fold.firstRoute.top < fold.vh, true,
+      `and so is the first answer to it (top ${fold.firstRoute?.top} of ${fold.vh})`);
+    is(fold.lastRouteBottom !== null && fold.lastRouteBottom <= fold.vh, true,
+      `and the LAST one — nine answers must not need a scroll to see (bottom `
+      + `${fold.lastRouteBottom} of ${fold.vh})`);
+
+    // THE WAY IN COULD NOT BE MEASURED HERE, and saying so beats a number that
+    // means nothing. The cold read's figure was 655, which is not what the job
+    // measures — so the scroll it counted was probably reaching the DOOR on the
+    // runway, past the capture box, the gauges and the situation control. A
+    // measurement was written for it and taken at this point in the walk, and
+    // it read `door top 0, hidden true`: by here the inbox is drained, so the
+    // door is correctly not offered and the zero is about an element that is
+    // not on screen. An assertion over a hidden element proves nothing, which
+    // is this walk's own recurring lesson, so it came out rather than shipping
+    // as a green line. Measuring it needs a point in the walk with the inbox
+    // deliberately non-empty and the runway in view.
     const card = await tpage.locator('#triage-card').textContent();
     is(/a thing to sort without heat/.test(card || ''), true,
       'it is still THIS item being sorted, not the next one');
