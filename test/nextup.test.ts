@@ -665,3 +665,49 @@ test('an ordinary ready item is untouched by any of it', () => {
   const item = nextUpQueue(s, NOW, TZ).find(i => i.node.id === 'B');
   assert.equal(item?.words, 'this one is waiting');
 });
+
+test('a date five weeks out is not "a real date, and it is here"', () => {
+  // THE SIXTH COLD READ'S WORST FINDING, reproduced. A thing dated
+  // 2026-10-15 led "See what is next" with the reason "a real date, and it is
+  // here" — eleven lines above "Nothing is dated today." on the SAME screen.
+  // The sheet said "comes back Oct 15", the field held 2026-10-15, and the
+  // export carried DTSTART;VALUE=DATE:20261015, so the date itself was right
+  // everywhere it could be read. Only the offer was wrong about WHEN.
+  //
+  // THE CAUSE IS TWO CLOCKS ANSWERING AS ONE. The tier test is
+  // `arrived && hasHardDate(n)` — and those are DIFFERENT CLOCKS.
+  // `arrivedClock` is true when ANY non-park, non-cure clock has come round;
+  // `hasHardDate` is true when a `due` or `suspense` clock EXISTS, at any
+  // date. So a node whose review clock arrived today and whose due date is
+  // five weeks out satisfies both, and the app announces the arrival of a
+  // date that has not arrived.
+  //
+  // Same shape as 3.23.22's `CALENDAR_KINDS`: one predicate answering two
+  // questions. There it was "did a person set this" against "may this carry
+  // an alarm"; here it is "has something come round" against "is there a
+  // date at all".
+  const s = st(
+    ev('node.created', 'T', { nodeKind: 'action', title: 'winter tires' }),
+    // Sorted, so it has come round today — this is the clock that ARRIVED.
+    ev('clock.set', 'T', { clockKind: 'review', at: NOW, source: 'clarify:next-action' }),
+    // And the date the reader typed, five weeks out.
+    ev('clock.set', 'T', { clockKind: 'due', at: '2026-09-02T06:00:00.000Z', source: 'me' }),
+  );
+  const head = nextUp(s, NOW, TZ).head!;
+  assert.ok(head, 'it is offered — that part is right, the review clock did come round');
+  assert.notEqual(head.reason, 'hard-date',
+    'but the reason may not be "a real date, and it is here" when the date is five weeks out');
+  assert.notEqual(head.words, 'a real date, and it is here');
+});
+
+test('a due date that HAS come round still reads as a hard date', () => {
+  // The other direction, so the fix cannot be "never say hard-date". This is
+  // the case the tier exists for and it must survive.
+  const s = st(
+    ev('node.created', 'D', { nodeKind: 'action', title: 'appointment' }),
+    ev('clock.set', 'D', { clockKind: 'due', at: NOW, source: 'me' }),
+  );
+  const head = nextUp(s, NOW, TZ).head!;
+  assert.equal(head.reason, 'hard-date');
+  assert.equal(head.words, 'a real date, and it is here');
+});

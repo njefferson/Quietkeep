@@ -424,7 +424,35 @@ function underTrackedProject(state: State, n: NodeState): boolean {
 
 /** A hard date is `due` or `suspense` — the immovable kinds. A `review` clock is
  *  the app's own "bring this back", which is soft by construction. */
-const hasHardDate = (n: NodeState): boolean => Boolean(n.clocks.due ?? n.clocks.suspense);
+/**
+ * A HARD DATE THAT HAS ACTUALLY COME ROUND — one question, not two.
+ *
+ * This used to be `Boolean(n.clocks.due ?? n.clocks.suspense)`: does a hard
+ * clock EXIST, at any date whatever. The tier then read
+ * `arrived && hasHardDate(n)`, and `arrivedClock` is true when ANY non-park,
+ * non-cure clock has come round. **Two different clocks, answering as one.**
+ *
+ * So a node sorted today (review clock, arrived) carrying a date five weeks
+ * out (due clock, not arrived) satisfied both halves, and the offer led with
+ * it under "a real date, and it is here" — eleven lines above "Nothing is
+ * dated today." on the same screen. The date was right everywhere it could be
+ * read, including the export; only the claim about WHEN was wrong. The sixth
+ * cold read found it and called it reproducible across two reloads.
+ *
+ * It asks about the hard clock ITSELF now. `park` cannot appear here by
+ * construction and a cure is never written as `due` or `suspense`, but the
+ * arrival test is the same one `arrivedClock` applies, called on one clock
+ * rather than on any of them.
+ *
+ * SAME SHAPE AS 3.23.22's `CALENDAR_KINDS`, which is why that one is cited
+ * rather than merely recalled: one predicate answering two questions. There it
+ * was "did a person set this" against "may this carry an alarm"; here it is
+ * "has something come round" against "is there a date at all".
+ */
+const hardDateHere = (n: NodeState, nowIso: string, day: DayShape): boolean =>
+  [n.clocks.due, n.clocks.suspense].some(c =>
+    c != null && isValidIso(c.at) && !isAppClock(c) &&
+    calendarDaysBetween(nowIso, c.at, day) <= 0);
 
 /**
  * Everything that could legitimately be offered right now, best first.
@@ -460,7 +488,7 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
     // A hard date outranks everything, INCLUDING a resume card — the tier test
     // comes first for every kind. A resume card carrying an arrived due date was
     // previously misfiled as tier 2 purely because its branch ran first.
-    if (arrived && hasHardDate(n)) {
+    if (hardDateHere(n, nowIso, day)) {
       items.push({ node: n, reason: 'hard-date', pressure: p, words: REASON_WORDS['hard-date']({}), place: lineageOf(state, n), approach: approachOf(state, n, nowIso, zone), situation: situationOf(n) });
       continue;
     }

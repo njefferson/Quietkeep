@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.27 — ITERATION
+
+*2026-09-10*
+
+- **A date weeks away is no longer offered as today’s work.** Something dated for next month could lead *See what is next* under the words *a real date, and it is here* — a few lines above the same screen saying nothing was dated today. Both could not be right. The app was checking two different things and treating them as one: whether ANYTHING about a thing had come round, and whether it had a date at all. It asks about the date itself now.
+- **And a date you typed shows up on the day you typed.** If a thing was also coming back today for some other reason, *The days ahead* showed only today and the date you had set appeared nowhere in the app — which is the whole thing that page is for. It lists both now: the day it comes back, and the day it is due. What you send to your own calendar is unchanged, one entry per thing, because a diary with two alarms for one job is the nagging this app will not do.
+
 ## 3.23.26 — ITERATION
 
 *2026-09-10*

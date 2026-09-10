@@ -211,6 +211,41 @@ const soonestAt = (
   return best ? { at: best.at, kind: best.kind } : null;
 };
 
+/**
+ * EVERY clock the reader set on one node, soonest first — the VIEW's answer.
+ *
+ * `soonestAt` returns one, which is right for the FILE: a diary carrying two
+ * events for one thing is noise, and narrowness there is ADR-0056 and entry
+ * 15. It is wrong for the view, and the header above already said why before
+ * the code did it — *a date they set that appears on no surface is a date
+ * they go on carrying*.
+ *
+ * WHAT THAT COST. A thing sorted today carries a `review` clock for today; a
+ * date typed on its sheet for five weeks out is a `due` clock. `soonestAt`
+ * returns the review, so *The days ahead* filed the item under TODAY and the
+ * September date the reader had typed appeared nowhere in the app. The sixth
+ * cold read reported five dates set and one surface calling it one — this is
+ * the mechanism, and it is entry 28's 50% condition exactly: uncertainty
+ * about whether the store is holding something behaves like its not holding
+ * it.
+ *
+ * Still ONE selection and ONE walk — this is called from `calendarEntries`
+ * beside `soonestAt` rather than from `dated.ts`, because that file may not
+ * re-derive the choice (the 0.9.0 dropped-replan defect the header records).
+ */
+const everyReaderClock = (n: NodeState): { at: string; kind: string }[] => {
+  const rank = (k: string): number => {
+    const i = KIND_PRIORITY.indexOf(k);
+    return i === -1 ? KIND_PRIORITY.length : i;
+  };
+  return Object.values(n.clocks)
+    .filter((c): c is NonNullable<typeof c> =>
+      Boolean(c) && isValidIso(c!.at) && readerSet(c!.kind, c))
+    .map(c => ({ at: c.at, kind: c.kind }))
+    .sort((a, b) =>
+      Date.parse(a.at) - Date.parse(b.at) || rank(a.kind) - rank(b.kind));
+};
+
 /** One selected row: the node, the instant the diary will date it, and which
  *  clock kind that instant came from. */
 export interface CalendarEntry {
@@ -238,12 +273,20 @@ export function calendarEntries(
     if (!inCalendar(group.key)) continue;
     for (const n of group.items) {
       if (!exportsToCalendar(n)) continue;
-      const best = soonestAt(n, zone, nowIso, includeSoft);
+      // THE FILE TAKES ONE; THE VIEW TAKES ALL OF THEM (3.23.27). `includeSoft`
+      // already means "this is the in-app view rather than the exported file",
+      // so it is the same flag that decides this. A diary with two events for
+      // one thing is noise; a view that hides a date the reader typed is the
+      // failure entry 28 measures.
+      const picked = includeSoft
+        ? everyReaderClock(n)
+        : [soonestAt(n, zone, nowIso, includeSoft)].filter(Boolean) as { at: string; kind: string }[];
       // No real clock, nothing to put in a calendar. Skipping rather than
       // throwing is deliberate: one malformed stored date must not take the
       // whole export down (the audit's crash class).
-      if (!best) continue;
-      out.push({ node: n, at: best.at, kind: best.kind, group: group.key });
+      for (const best of picked) {
+        out.push({ node: n, at: best.at, kind: best.kind, group: group.key });
+      }
     }
   }
   return out;

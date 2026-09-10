@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.27',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**A date weeks away is no longer offered as today\u2019s work.** Something dated for next month could lead *See what is next* under the words *a real date, and it is here* \u2014 a few lines above the same screen saying nothing was dated today. Both could not be right. The app was checking two different things and treating them as one: whether ANYTHING about a thing had come round, and whether it had a date at all. It asks about the date itself now.',
+      '**And a date you typed shows up on the day you typed.** If a thing was also coming back today for some other reason, *The days ahead* showed only today and the date you had set appeared nowhere in the app \u2014 which is the whole thing that page is for. It lists both now: the day it comes back, and the day it is due. What you send to your own calendar is unchanged, one entry per thing, because a diary with two alarms for one job is the nagging this app will not do.',
+    ],
+  },
+  {
     triplet: '3.23.26',
     kind: 'ITERATION',
     date: '2026-09-10',

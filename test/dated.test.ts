@@ -205,3 +205,49 @@ test('it narrows nothing — the projection is pure', () => {
   datedDays(s, NOW, DENVER);
   assert.equal(JSON.stringify([...s.nodes.values()].map(n => [n.id, n.clocks])), before);
 });
+
+test('a date the reader typed shows on ITS day, not only the soonest clock', () => {
+  // THE SIXTH COLD READ, second half of its worst finding. Five dates were
+  // set through a picker and one surface reported "1 thing has a date you
+  // set" — and a thing dated five weeks out was filed under TODAY.
+  //
+  // THE CAUSE. `soonestAt` returns ONE clock per node, which is right for the
+  // FILE: a diary carrying two events for one thing is noise, and that
+  // narrowness is ADR-0056 and entry 15. A node sorted today carries a review
+  // clock for today, so the soonest is always the review — and the due date
+  // the reader typed appeared on NO SURFACE. `ics.ts`'s own header had
+  // already written the rule it was breaking: a date they set that appears on
+  // no surface is a date they go on carrying, entry 28's 50% condition.
+  //
+  // BOTH ROWS ARE TRUE AND BOTH BELONG. It really does come back today,
+  // because it was sorted today; it really is due in September. The defect
+  // was never that today was wrong — it was that September was missing.
+  const s = st(
+    ev('node.created', 'T', { nodeKind: 'action', title: 'winter tires' }),
+    clockAt('T', 0, 'review'),      // sorted today — this is the soonest
+    clockAt('T', 35, 'due'),        // and the date the reader typed
+  );
+  const days = datedDays(s, NOW, DENVER);
+  const on = (d: number): string[] => {
+    const at = new Date(Date.parse(NOW) + d * 86_400_000).toISOString().slice(0, 10);
+    return (days.find(x => x.day === at)?.items ?? []).map(i => i.kind);
+  };
+  assert.deepEqual(on(35), ['due'],
+    'the date typed on the sheet is on its own day, which it was not before');
+  assert.deepEqual(on(0), ['review'],
+    'and it still says it comes back today, because it does');
+});
+
+test('the exported FILE still carries one event per thing', () => {
+  // The other half, and the reason the view's widening is behind the same
+  // flag rather than done everywhere: a calendar with two alarms for one item
+  // is the nag entry 15 refuses.
+  const s = st(
+    ev('node.created', 'T', { nodeKind: 'action', title: 'winter tires' }),
+    clockAt('T', 0, 'review'),
+    clockAt('T', 35, 'due'),
+  );
+  const ics = toCalendar(s, NOW, DENVER);
+  assert.equal((ics.match(/BEGIN:VEVENT/g) ?? []).length, 1,
+    'one thing, one event — the view got wider and the file did not');
+});

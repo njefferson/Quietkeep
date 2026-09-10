@@ -521,18 +521,25 @@ else is the app.
 
 #### Open, and the first of these is the worst thing the app currently says
 
-- **A thing dated five weeks out is offered as today's work.** Set to
-  2026-10-15: the sheet said *sorted as someday · comes back Oct 15*, the field
-  held `2026-10-15`, and the exported `.ics` carried
-  `DTSTART;VALUE=DATE:20261015` — so the date itself is right everywhere it can
-  be read. But *See what is next* led with it, reason *"a real date, and it is
-  here"*, eleven lines above *"Nothing is dated today."* on the SAME screen;
-  *The days ahead* filed it under *Today*; the held list said *today*.
-  Reproducible across two reloads. **NOT REPRODUCED HERE YET** — a synthetic
-  fixture with a `review` clock from *someday* plus a typed `due` clock
-  produces no offer at all, so the mechanism needs the reader's fuller store.
-  The shape to suspect is 3.23.22's: one predicate answering two questions
-  about clocks. Fix it with a real fixture, never by guessing.
+- **FIXED IN 3.23.27 — a thing dated five weeks out was offered as today's
+  work, and it was TWO defects rather than one.** Both reproduced with a
+  fixture before either was touched; the first synthetic attempt gave the
+  review clock a FUTURE date and produced no offer at all, which is why the
+  first pass recorded it as unreproduced rather than guessing.
+  **One: the offer.** The tier read `arrived && hasHardDate(n)` and those are
+  DIFFERENT CLOCKS — `arrivedClock` is true when ANY non-park, non-cure clock
+  has come round, `hasHardDate` when a `due` or `suspense` clock EXISTS at any
+  date. A node sorted today (review clock, arrived) carrying a date five weeks
+  out satisfied both, so the app announced the arrival of a date that had not
+  arrived. `hardDateHere` asks about the hard clock itself now.
+  **Two: the days ahead.** `soonestAt` returns ONE clock per node, so the
+  review always won and the date the reader typed appeared on NO SURFACE.
+  `ics.ts`'s own header had already written the rule the code was breaking —
+  *a date they set that appears on no surface is a date they go on carrying* —
+  citing entry 28's 50% condition. The VIEW now takes every reader-set clock
+  and the FILE still takes one, behind the same `includeSoft` flag that
+  already means view-not-file, because a diary with two alarms for one job is
+  entry 15's nag. Both directions are asserted and both were planted red.
 - **No way to make an Area, a Goal or an Outcome, or to change one after.** The
   sorting prompt says *"a project, area or goal — make one if it is not
   there"*; four containers made that way all came back `Project`, including one
@@ -1960,7 +1967,12 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.26**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.27**, which production does
+  not carry: the sixth cold read's worst finding, which turned out to be two
+  defects with one symptom — the offer announcing a date that had not arrived,
+  and *The days ahead* hiding a date the reader typed behind whichever clock
+  came round sooner. Reproduced with fixtures before either was touched.
+- **Superseded: 3.23.26**, which production does
   not carry: the SIXTH cold read's first three findings. Pressing a group in
   *Where everything is* now enters the list rather than closing onto the hub —
   that feature shipped broken in 3.23.24 and the walk passed it, because the
