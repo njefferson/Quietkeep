@@ -4809,10 +4809,46 @@ try {
         },
       };
     });
-    if (horizon.onWork) {
-      (horizon.onFocus === horizon.onWork ? pass : fail)(
-        `${theme}/focus: the ambient horizon says the same thing here as on the work surface `
-        + `("${horizon.onFocus}" vs "${horizon.onWork}")`);
+    // THE FOCUS SURFACE IS THE ONE THIS RELEASE WAS FOR, and asserting the work
+    // surface first is what made this check unmeasurable (3.23.20).
+    //
+    // 2.7.1 is titled "the ambient horizon, on the surface it was asked for", and
+    // its own comment says the work surface hides the line when it would NAME THE
+    // HEAD — "a line about the thing you are already looking at has no value
+    // left, only length" — while "the focus surface renders the same projection
+    // and is untouched: nothing there shows the head".
+    //
+    // This drive dates something today. A hard date today is the FIRST tier
+    // `nextUp` ranks on, so the thing just dated becomes the head, so the work
+    // surface correctly suppresses the line — every single time. The old
+    // assertion required `onWork` before it would check anything, so it could
+    // only ever pass on a value left in the DOM from an earlier state, which is
+    // exactly what it had been doing (3.23.19 removed that residue and this went
+    // red). It has never once measured the thing it names.
+    //
+    // So: the FOCUS line is the assertion, and the work line is checked for the
+    // behaviour it actually has — suppressed when it would name the head, equal
+    // when it would not.
+    if (horizon.onFocus) {
+      pass(`${theme}/focus: the ambient horizon renders on the focus surface `
+        + `("${horizon.onFocus}") — the surface 2.7.1 was asked for`);
+
+      // THE WORK SURFACE, held to what it actually promises rather than to
+      // "it is there too". It withholds the line while it would name the head,
+      // and says the same thing when it would not.
+      const namesHead = Boolean(horizon.why.headText)
+        && horizon.onFocus.includes(horizon.why.headText);
+      if (namesHead) {
+        (horizon.onWork === '' ? pass : fail)(
+          `${theme}/focus: the work surface withholds it while it would name the head `
+          + `("${horizon.why.headText}") — a line about the thing in front of you is `
+          + `length, not news`);
+      } else {
+        (horizon.onFocus === horizon.onWork ? pass : fail)(
+          `${theme}/focus: the ambient horizon says the same thing here as on the work `
+          + `surface ("${horizon.onFocus}" vs "${horizon.onWork}")`);
+      }
+
       // A NAME AND NEVER A COUNTDOWN — a countdown is a deadline and adds
       // aversion, which is the entry's own reason for the shape.
       (!/\d+\s*(min|hour|hr|:\d\d)/i.test(horizon.onFocus) ? pass : fail)(
@@ -4820,11 +4856,11 @@ try {
       await auditContrast(page, 'focus, with a fixed thing ahead', theme);
       await auditFocusRings(page, 'focus, with a fixed thing ahead', theme);
     } else {
-      // NOT A PASS. The whole point of driving the date above is that this
-      // branch means the drive failed, and reporting that as "correctly absent"
-      // is how the check was vacuous in the first place.
-      fail(`${theme}/focus: a date was set for today and the ambient horizon still did not render `
-        + `— the line the release exists for was not measured. `
+      // NOT A PASS. The drive above exists to create this state, so an absent
+      // line here means the drive failed, and reporting that as "correctly
+      // absent" is how this check was vacuous for its whole life.
+      fail(`${theme}/focus: a date was set for today and the ambient horizon did not render `
+        + `on the focus surface — the line the release exists for was not measured. `
         + `#nextup-fixed ${JSON.stringify(horizon.why)} `
         + `· dated ${JSON.stringify({ title: datedTitle, key: todayKey, receipt: datedReceipt, state: datedState })}`);
     }
