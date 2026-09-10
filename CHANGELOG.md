@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.23 — ITERATION
+
+*2026-09-10*
+
+- **How long you have now survives closing the app.** Say you have fifteen minutes, come back later, and it had quietly gone back to *as long as it takes*. Where you are and who you are with went the same way. The app was remembering all three and simply never put them back on the screen — which is the worse half of that bug, because a list narrowed for a reason nothing on screen gives is a list that looks broken.
+- **A project or an area says what is inside it, without your having to open anything.** It listed what it holds — behind *More about this*, one press deeper than anybody looks. So a project holding four things showed you a count and no names. The names are on the page now, and the things themselves are still there to tap.
+
 ## 3.23.22 — ITERATION
 
 *2026-09-10*

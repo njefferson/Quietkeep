@@ -1775,7 +1775,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.22**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.23**, which production does
+  not carry: 3.23.23 is the fifth cold read's USABILITY half, and both of its
+  findings were the same shape — the app had the answer and never put it where
+  anybody could see it. `main` restored where you are, how long you have and who
+  is with you out of the store and then never repainted, because the three
+  `refreshAll()` calls after that point are all inside change handlers; and a
+  container's children have always rendered as doors, inside the region
+  `#detail-more` folds away. Neither was a missing feature.
+  **Two things the walk caught that reasoning did not**, both worth the record: a
+  first attempt put the new line beside `#detail-place`, which is ALSO inside the
+  fold — right text, `visible: false`; and the reload assertion passed on
+  Chromium's own form restoration, which puts a `<select>`'s value back by itself
+  while the app is still booting, so the control read "30" while the app held
+  null. The assertion asks the app's own claim now, and asks `hidden` rather than
+  `isVisible`, because after that reload the walk lands inside a job where the
+  runway is correctly hidden and the two questions are not the same.
+- **Superseded: 3.23.22**, which production does
   not carry: promoted last on 2026-09-09 at 3.23.15, so the two hosts are one
   tree plus seven releases. 3.23.22 splits `CALENDAR_KINDS`, which was one
   predicate answering two questions — *did a person set this* and *may this carry

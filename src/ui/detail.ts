@@ -21,7 +21,7 @@ import { isAppClock, noteOf, situationOf, weightOf, type NodeState } from '../fo
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
 import { kindWords } from '../kind-words.ts';
 import { everyDaysWords, localDayKey, atMidnight, recordDayWords } from '../time.ts';
-import { clockDayWords } from '../held.ts';
+import { clockDayWords, contentsWords } from '../held.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
 import {
   isArrangement, dependsOnOthers, arrangementWords, confirmedDaysAgo,
@@ -150,6 +150,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   const decisionList = q('#detail-decision-list');
   const decisionCount = q('#detail-decision-count');
   const placeLine = q('#detail-place');
+  const holdingLine = q('#detail-holding');
   const kidsList = q('#detail-children');
   const personCount = q('#detail-person-count');
   const personOwes = q('#detail-person-owes');
@@ -1141,6 +1142,21 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
       // prose, because a control that opens nothing is this same defect wearing
       // the other face.
       const place = placeWords(st, n);
+      // WHAT IS INSIDE IT, ABOVE THE FOLD (3.23.23). `#detail-children` renders
+      // the doors and is inside the region `#detail-more` hides, so a container
+      // answered "what is in this" one press deeper than anybody looks — a cold
+      // read opened a project holding four things and reported no list of them.
+      //
+      // `contentsWords` rather than a second walk of the children: it is the
+      // projection built for exactly this in 1.27.0, its cap is law 8, and its
+      // docblock cites the out-of-sight collision this is an instance of. It
+      // returns null for an empty container, and this asks `isContainer` first,
+      // so nothing else on the sheet gains a line.
+      if (holdingLine) {
+        const holding = isContainer(n) ? contentsWords(session.state(), n) : null;
+        holdingLine.textContent = holding ?? '';
+        holdingLine.hidden = holding === null;
+      }
       PLACE.hidden = !place;
       const up = n.parent ? st.nodes.get(n.parent) : undefined;
       if (place && up && !up.trashed && !up.mergedInto) {
