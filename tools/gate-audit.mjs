@@ -247,9 +247,21 @@ const GATES = [
     // nothing about it, and one in an attribute NAME would prove the opposite
     // of what is wanted: `aria-labelledby` appears sixty-three times in this
     // file and is the spelling the HTML spec gives it.
+    //
+    // THIS PLANT WAS AN IDENTITY REPLACE FOR THREE RELEASES (fixed 3.23.24).
+    // The heading it edits used to READ the British spelling, and the plant
+    // swapped the American one in — then the sweep that took British spelling
+    // out of the app rewrote this file too, because a find-and-replace cannot
+    // tell a gate's own fixture from the prose it is fixing. Both halves became
+    // "Colors", `edit` found nothing to change, and the audit reported the gate
+    // unverified rather than green, which is the only reason it was found.
+    //
+    // So the plant now writes the WRONG spelling deliberately, which is the
+    // direction that cannot be undone by a sweep in the same direction: a sweep
+    // reaching this line would have to introduce a British spelling to break it.
     plant: () => edit('public/index.html', (s) =>
       s.replace('<h2 id="sheet-group-color-title" class="section">Colors</h2>',
-        '<h2 id="sheet-group-color-title" class="section">Colors</h2>')),
+        '<h2 id="sheet-group-color-title" class="section">Colours</h2>')),
   },
   {
     name: 'tour:check',

@@ -36,6 +36,15 @@ Epigraph: *"It holds the rest, so you can rest."*
    is not an event named here.
 4. [`docs/verifications.md`](docs/verifications.md) — what has actually been
    checked and what merely looks checked. Consult before assuming a platform fact.
+5. [`docs/code-map.md`](docs/code-map.md) — **the shape of the source, for
+   somebody who has never opened it.** Event → fold → gate → projection →
+   surface, which files hold each, and how to answer the four questions a
+   newcomer actually has. It exists because this codebase carries 0.87 comment
+   lines per line of code and almost every one of them is an INCIDENT HISTORY
+   addressed to a reader who is already oriented — invaluable when changing a
+   thing, useless for finding it. The map is the only document here whose job
+   is *what the shape is* rather than *what went wrong*, and it stops being
+   that the moment it starts collecting incidents.
 
 ## The clone rolls back. Expect it; do not report it.
 

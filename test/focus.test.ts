@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 
 import { fold, type State } from '../src/fold.ts';
 import { admit } from '../src/gate.ts';
-import { focusView, focusWords, interruptWords, resumeCards, resumeWords, elapsedMinutes } from '../src/focus.ts';
+import { focusView, focusWords, interruptWords, resumeCards, resumeCardFor, resumeWords, elapsedMinutes } from '../src/focus.ts';
 import {
   startFocusEvents, endFocusEvents, interruptEvents, resumeEvents, dropResumeEvents, cleanCue,
 } from '../src/ui/focus-intents.ts';
@@ -303,31 +303,45 @@ test('an interrupt with no focus running is just a capture', () => {
   assert.deepEqual(resumeCards(s), []);
 });
 
-test('a live resume card IS on your list, because that row is the way back', () => {
-  // 3.23.16 EXCLUDED AN UNSPENT CARD AND 3.23.21 PUT IT BACK, and the reason is
-  // worth keeping where the test is. The exclusion was right about what the card
-  // IS — the app wrote it, so counting it among the reader's things and drawing
-  // it at the top of the tree with a Done button is a category error a cold read
-  // met and named. It was wrong about what the row DOES: `app.ts` labels that
-  // row's `.card-focus` "Pick it back up" for this kind and nothing else in the
-  // app resumes a thread. Removing the row removed the act.
+test('the card is off your list, and the WORK carries the way back', () => {
+  // THREE RELEASES ARGUED ABOUT WHERE THE CARD GOES, and that was the wrong
+  // argument. 3.23.16 excluded an unspent card — right about what the card IS,
+  // since the app writes it and drawing it at the top of the reader's things
+  // with a Done button is the same category error as a person or a place.
+  // 3.23.21 put it back, because the exclusion had taken the only route back
+  // into an interrupted thread with it: that row's `.card-focus` was the one
+  // control in the app that resumed anything.
+  //
+  // 3.23.24 moved the ACT instead. The card is a pointer at work; the work is
+  // already on this list under a name the reader wrote. So the row that offers
+  // "Pick it back up" is the WORK's row, and the card does not have to be
+  // anywhere a reader looks.
   //
   // The 3.23.16 claim that "the route back is untouched" was checked against
   // `offer.ts`, `focus.ts` and `search.ts` still CONTAINING the card — which
-  // proves the data is reachable and says nothing about whether a reader can act
-  // on it. The smoke walk found it by trying to.
+  // proves the DATA is reachable and says nothing about whether a reader can
+  // act on it. A browser walk found it by trying to. So this test asserts the
+  // ACT and not the containment: `resumeCardFor` is what `app.ts` asks to
+  // choose the label, and `resumeEvents` is what its listener runs.
   const s0 = st(mk('A', 'the chapter'));
   let s = apply(s0, startFocusEvents(ctx, s0, 'A'));
   s = apply(s, endFocusEvents(ctx, s, 'abandoned'));
   const card = resumeCards(s)[0]!.card.id;
   const listed = () => heldGroups(s, NOW, TZ).flatMap(g => g.items).map(n => n.id);
-  assert.equal(listed().includes(card), true,
-    'a live card IS on your list — its row carries the only "Pick it back up" there is');
 
-  s = apply(s, resumeEvents(ctx, s, card, 'A'));
-  assert.equal(listed().includes(card), false, 'a spent one is not — the thread is picked up');
+  assert.equal(listed().includes(card), false,
+    'the app\u2019s own bookmark is not one of the reader\u2019s things');
+  assert.equal(listed().includes('A'), true, 'but the work it points at still is');
+  assert.equal(resumeCardFor(s, 'A')?.card.id, card,
+    'and that row knows a thread is waiting on it \u2014 this is what picks the label');
+
+  // The act, from the work's own row.
+  s = apply(s, resumeEvents(ctx, s, resumeCardFor(s, 'A')!.card.id, 'A'));
+  assert.equal(s.focus?.node, 'A', 'you are back on the work');
+  assert.equal(resumeCardFor(s, 'A'), null,
+    'and the card is spent \u2014 a thread you just picked up is not offered back');
   assert.equal(s.nodes.get(card)!.trashed, false,
-    'and it is not deleted either — it happened, and the log says so');
+    'not deleted either \u2014 it happened, and the log says so');
 });
 
 test('1.6.0: the drop flag — toReviewQuestion true only from the close question', () => {

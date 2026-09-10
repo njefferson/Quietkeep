@@ -991,7 +991,19 @@ const REGISTRY = {
   // surface, already held by the room, and their words by test/assurance.test.ts.
   'where everything is': ['#assurance', '#sheet-assurance-title',
     '#sheet-assurance-close', '#assurance-words',
-    '#assurance-places .roles-name', '#assurance-places .roles-held'],
+    '#assurance-places .roles-held',
+    // THE ROWS ARE DOORS NOW (3.23.24), and a door carries `--accent` where the
+    // paragraph around it carries `--ink-soft` — the distinction 3.6.0 drew for
+    // `.detail-place-open`, whose registry entry names the button separately
+    // for exactly this reason: naming only the span measures a color that is
+    // no longer on the row.
+    //
+    // EVERY ROW IS A DOOR, so this is plain rather than conditional. A span
+    // form was registered too, for a group with nothing in it — and §257's
+    // whole-run half reported it matching NOTHING in any state or theme, which
+    // is how the unreachable branch behind it was found: `heldGroups` drops an
+    // empty group before `judgmentProof` ever sees it. Both came out.
+    '#assurance-places button.roles-name'],
   // EVERYTHING WORTH A LOOK (3.17.0, ADR-0120). The capped list is measured on
   // the 'review' state above; this is the same rows without the cap, and its own
   // chrome. The DOOR is `#review-count`, which is on the review surface, so it

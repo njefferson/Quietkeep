@@ -864,6 +864,41 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(whens.length === cardCount && whens.every(w => w.trim().length > 0), true,
     `every card states its own status in words (${whens.length} of ${cardCount}, e.g. "${whens[0] ?? ''}")`);
 
+  // WHERE EVERYTHING IS — AND A WAY TO EACH OF THEM (3.23.24).
+  //
+  // This sheet is the closest thing the app has to a whole picture, and it had
+  // NO coverage in this walk at all. A cold read called it a dead end: five
+  // counts, none of them tappable, one Close. The gap block in the same
+  // renderer had said why that is wrong since it was written — "a named
+  // exception you cannot open is a worry with a number on it" — and made its
+  // own rows doors. The block above it did not.
+  console.log('\nWhere everything is — every group is a way in');
+  await page.click('#assurance');
+  await page.waitForSelector('#sheet-assurance[open]');
+  const groupRows = await page.locator('#assurance-places .roles-row').count();
+  is(groupRows > 0, true, `the whole picture names its groups (${groupRows} of them)`);
+  const doors = await page.locator('#assurance-places button.roles-name').count();
+  is(doors > 0, true,
+    `and a group holding something is a door rather than a number (${doors} of ${groupRows})`);
+  const doorName = (await page.locator('#assurance-places button.roles-name').first().textContent() ?? '').trim();
+  await page.locator('#assurance-places button.roles-name').first().click();
+  await settled(page, 300);
+  is(await page.locator('#sheet-assurance').evaluate(d => !d.open), true,
+    'pressing one closes the picture rather than stacking a sheet on it');
+  // ARRIVED, not merely navigated. The group it named has to be ON SCREEN —
+  // the whole complaint was a number with no route, and a route that lands you
+  // somewhere you still have to hunt is the same complaint one step along.
+  const arrivedAt = await page.evaluate((title) => {
+    const ul = document.querySelector(`.cards-group[aria-label="${title}"]`);
+    if (!ul) return { found: false };
+    const head = ul.previousElementSibling;
+    const r = (head ?? ul).getBoundingClientRect();
+    return { found: true, top: Math.round(r.top), vh: window.innerHeight };
+  }, doorName);
+  is(arrivedAt.found, true, `and the list is showing the group it named ("${doorName}")`);
+  is(arrivedAt.found && arrivedAt.top >= 0 && arrivedAt.top < arrivedAt.vh, true,
+    `with that group on screen rather than left to be hunted (top ${arrivedAt.top} of ${arrivedAt.vh})`);
+
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
   is(silentCount(gauge), 0, `gauge reads 0 silent ("${gauge}")`);
@@ -4183,15 +4218,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Pick it back up: the card is spent and focus lands on the WORK, never on a
   // card about a focus session.
   //
-  // AND THIS ROW IS THE ONLY ROUTE, which is what 3.23.16 did not know when it
-  // took resume cards out of `heldWork` — the exclusion removed this row, and
-  // with it the one "Pick it back up" the app has. Restored in 3.23.21. THIS
-  // WALK IS WHAT FOUND IT: the change's unit tests were updated and passed, and
-  // the claim that "the route back is untouched" had been checked against
-  // projections still CONTAINING the card, which says nothing about whether a
-  // reader can act on it.
+  // THREE RELEASES ARGUED ABOUT WHERE THE CARD GOES AND THIS WALK ARBITRATED
+  // TWICE. 3.23.16 took resume cards out of `heldWork` — which removed the row,
+  // and with it the one "Pick it back up" the app had; that change's unit tests
+  // were updated and passed, and its claim that "the route back is untouched"
+  // had been checked against projections still CONTAINING the card, which says
+  // nothing about whether a reader can act on it. 3.23.21 put the row back.
+  // 3.23.24 moved the ACT to the work's own row, so the app's bookmark could
+  // leave the reader's list without taking the act with it.
+  //
+  // SO THIS ASSERTS BOTH HALVES, and it must: either alone is a release that
+  // has already shipped and been reverted.
   await intoJob(tpage, 'held');
-  await tpage.locator('#cards .card:has-text("where you left off") .card-focus').first().click();
+  const heldNow = await tpage.locator('#cards').textContent();
+  is((heldNow || '').includes('where you left off'), false,
+    'the app\u2019s own bookmark is not among the things you wrote down');
+  const backRow = tpage.locator(`#cards .card:has-text(${JSON.stringify(focusTitle)}) .card-focus`).first();
+  is(await backRow.textContent(), 'Pick it back up',
+    'and the work it points at says so on its own row, in place of "Work on this"');
+  await backRow.click();
   await tpage.waitForSelector('#focus:not([hidden])');
   is(await tpage.locator('#focus-title').textContent(), focusTitle,
     'picking it back up puts you on the work itself, not on the card');
@@ -4921,6 +4966,118 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log(notOpened.length
     ? `  note  scrolled-half not run here: ${notOpened.join(', ')}`
     : '  note  every discovered sheet was opened and measured on this page');
+
+  // --- THE SORTING SURFACE, AT THE READER'S OWN VIEWPORT ------------------
+  //
+  // THE PREVIOUS RELEASE MEASURED THIS AND GOT THE WRONG ANSWER, and the way
+  // it got it is the lesson. The fifth cold read reported the sorting question
+  // at y=655 in an 844px viewport with the answers cut off, and sixteen
+  // scrolls for sixteen items. That was measured inside the job in the main
+  // walk's viewport, came back "question at 217, last answer ending at 670 —
+  // it fits, with fifty pixels to spare", and NO FIX WAS WRITTEN.
+  //
+  // The main walk is 720px TALL and far wider. Width is what was missed: the
+  // content column caps at 600px, so at any width from 600 up the frame is
+  // short and the card's prose reflows wide. At 390 it does neither. Measured
+  // here, at 390x844: the question is at 655 — the reader's own number, to the
+  // pixel — and the last of nine answers ends at 1310, which is 466px below
+  // the fold. Every one of sixteen items costs a scroll, exactly as reported.
+  //
+  // "MEASURED AND IT FITS" WAS TRUE OF A VIEWPORT NOBODY USES. A measurement
+  // taken somewhere other than where the report came from does not refute the
+  // report; it changes the subject. So this block exists at the reader's
+  // viewport and nowhere else.
+  await ppage.evaluate(() => { for (const d of document.querySelectorAll('dialog')) if (d.open) d.close(); });
+  for (const thing of ['ring the dentist', 'find the passport', 'ask about the roof']) {
+    await ppage.fill('#capture', thing);
+    await ppage.press('#capture', 'Enter');
+    await settled(ppage, 150);
+  }
+  await ppage.evaluate(() => { const r = document.querySelector('#runway'); if (r) r.scrollTop = 0; else window.scrollTo(0, 0); });
+  await settled(ppage, 200);
+
+  // THE WAY IN FIRST, because it was the other candidate and it is now ruled
+  // out by measurement rather than by argument. `#triage-open` is display:none
+  // on the runway — the section only shows inside its own stance — so the door
+  // a reader presses is the hub's row, and asserting the section's button
+  // would have measured a hidden element, which is this walk's own recurring
+  // way of proving nothing.
+  const door = await ppage.evaluate(() => {
+    const b = [...document.querySelectorAll('#hub-doors button')]
+      .find(x => /Sort what you put down/.test(x.innerText));
+    const r = b ? b.getBoundingClientRect() : null;
+    const runway = document.querySelector('#runway');
+    return { shown: b ? b.checkVisibility() === true : false,
+      top: r ? Math.round(r.top) : null, bottom: r ? Math.round(r.bottom) : null,
+      vh: window.innerHeight,
+      scrolled: runway ? Math.round(runway.scrollTop) : Math.round(window.scrollY) };
+  });
+  console.log(`      \u00b7 the way into sorting: viewport ${door.vh}px \u00b7 door top ${door.top} `
+    + `\u00b7 bottom ${door.bottom} \u00b7 runway scrolled ${door.scrolled}`);
+  is(door.shown, true,
+    'with three things put down and nothing sorted, the hub offers the way in');
+  is(door.scrolled === 0, true,
+    `and it is measured from the top rather than mid-scroll (scrollTop ${door.scrolled})`);
+  is(door.bottom !== null && door.bottom <= door.vh, true,
+    `the way into sorting is on screen without scrolling (door bottom ${door.bottom} of ${door.vh})`);
+
+  // AND THE SURFACE BEHIND IT.
+  await ppage.locator('#hub-doors button', { hasText: 'Sort what you put down' }).first().click();
+  await ppage.waitForSelector('#triage-card');
+  await settled(ppage, 350);
+  const pfold = await ppage.evaluate(() => {
+    const box = (sel) => { const e = document.querySelector(sel); if (!e) return null;
+      const r = e.getBoundingClientRect(); return { top: Math.round(r.top), bottom: Math.round(r.bottom) }; };
+    const routes = [...document.querySelectorAll('#triage-actions .route')];
+    const vh = window.innerHeight;
+    const runway = document.querySelector('#runway');
+    const last = routes[routes.length - 1]?.getBoundingClientRect();
+    return {
+      vh, vw: window.innerWidth,
+      prompt: box('#triage-prompt'), first: box('#triage-actions .route'),
+      lastBottom: last ? Math.round(last.bottom) : null,
+      routes: routes.length,
+      // The whole finding in one number: how many answers a finger cannot see.
+      below: routes.filter(r => r.getBoundingClientRect().bottom > vh).length,
+      // And what the fixed chrome costs before any of it, because that is
+      // where a remedy would have to come from.
+      frame: Math.round(runway ? runway.getBoundingClientRect().top : 0),
+    };
+  });
+  console.log(`      \u00b7 sorting at ${pfold.vw}x${pfold.vh}: frame ends ${pfold.frame} `
+    + `\u00b7 question top ${pfold.prompt?.top} \u00b7 first answer top ${pfold.first?.top} `
+    + `\u00b7 last answer bottom ${pfold.lastBottom} \u00b7 ${pfold.below} of ${pfold.routes} answers below the fold`);
+  is(pfold.prompt !== null && pfold.prompt.top < pfold.vh, true,
+    `the sorting question itself is on screen (top ${pfold.prompt?.top} of ${pfold.vh})`);
+  // ITS TOP, NOT ITS WHOLE. Written as `bottom <= vh` first and it went red at
+  // 882 of 844 — so not one of the nine answers is fully on screen, which is
+  // worse than the report and is the measurement this block exists to make.
+  // What holds today is that a reader can SEE an answer begins; that is the
+  // line worth keeping while the remedy is decided, because losing it would
+  // mean the question appears to have none.
+  is(pfold.first !== null && pfold.first.top < pfold.vh, true,
+    `and an answer visibly begins below it (first answer top ${pfold.first?.top}, `
+    + `bottom ${pfold.first?.bottom}, of ${pfold.vh})`);
+
+  // A RATCHET, NOT A THRESHOLD, and it is deliberately not the assertion this
+  // surface deserves.
+  //
+  // The honest assertion is that NO answer is below the fold, and it would be
+  // red right now — ALL NINE are; not one is fully on screen. Shipping it red
+  // would put a permanent
+  // failure in CI while the remedy is undecided, and a permanently red gate is
+  // one everybody learns to read past, which is worse than the defect.
+  //
+  // So the baseline is recorded and held: it may shrink, never grow. A tenth
+  // route, a taller card or another line in the frame fails this immediately,
+  // and the number prints on every run whether it passes or not, which is what
+  // stops it becoming a fact nobody re-derives. The comment is the record of
+  // the open finding; NOTES.md carries the rest.
+  const BELOW_THE_FOLD_BASELINE = 9;   // of 9, at 390x844, frame 484px
+  is(pfold.below <= BELOW_THE_FOLD_BASELINE, true,
+    `and no MORE of the answers are out of sight than already were `
+    + `(${pfold.below} below the fold, baseline ${BELOW_THE_FOLD_BASELINE} of ${pfold.routes})`);
+
   await phone.close();
 
   // --- the §7e baseline, and §7f's report (1.18.0, ADR-0071) ---------------
@@ -6222,6 +6379,59 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
       `"Choose where it goes" leaves the heat pass and offers the routes ("${after}")`);
     is(await tpage.locator('#triage-actions .route', { hasText: 'Next action' }).count() > 0, true,
       'and the real routes are there — the item was in the clarify queue the whole time');
+
+    // CAN A THUMB ANSWER IT WITHOUT SCROLLING (3.23.24). A fifth cold read
+    // sorted sixteen things and scrolled sixteen times, because the question
+    // and its answers sit below the fold on every single item — measured at
+    // y=655 in an 844px viewport with the answers cut off at the bottom edge.
+    //
+    // NOTHING IN THIS REPO MEASURES WHERE A THING RENDERS except
+    // `narrows-check.mjs`, which asks a different question, so this had been
+    // true for the life of the surface with every gate green. Entry 1 of the
+    // collision catalog is Strong on activation cost, and a question you must
+    // scroll to reach before you can answer it is activation cost applied once
+    // per item.
+    //
+    // The numbers are PRINTED whether or not the check passes, because the
+    // first attempt to measure this from a standalone probe never reached the
+    // surface at all and reported zeros. Here the walk has already proved it is
+    // in front of a card, so a number here is about the layout and nothing else.
+    const fold = await tpage.evaluate(() => {
+      const box = (sel) => { const e = document.querySelector(sel); if (!e) return null;
+        const r = e.getBoundingClientRect(); return { top: Math.round(r.top), bottom: Math.round(r.bottom) }; };
+      const routes = [...document.querySelectorAll('#triage-actions .route')];
+      const last = routes[routes.length - 1]?.getBoundingClientRect();
+      return {
+        vh: window.innerHeight,
+        prompt: box('#triage-prompt'),
+        card: box('#triage-card'),
+        firstRoute: box('#triage-actions .route'),
+        lastRouteBottom: last ? Math.round(last.bottom) : null,
+        routes: routes.length,
+      };
+    });
+    console.log(`      · sorting fold: viewport ${fold.vh}px · prompt top ${fold.prompt?.top} `
+      + `· card top ${fold.card?.top} · first answer top ${fold.firstRoute?.top} `
+      + `· last answer bottom ${fold.lastRouteBottom} · ${fold.routes} answers`);
+    is(fold.prompt !== null && fold.prompt.top < fold.vh, true,
+      `the sorting question is on screen without scrolling (top ${fold.prompt?.top} of ${fold.vh})`);
+    is(fold.firstRoute !== null && fold.firstRoute.top < fold.vh, true,
+      `and so is the first answer to it (top ${fold.firstRoute?.top} of ${fold.vh})`);
+    is(fold.lastRouteBottom !== null && fold.lastRouteBottom <= fold.vh, true,
+      `and the LAST one — nine answers must not need a scroll to see (bottom `
+      + `${fold.lastRouteBottom} of ${fold.vh})`);
+
+    // THE WAY IN COULD NOT BE MEASURED HERE, and saying so beats a number that
+    // means nothing. The cold read's figure was 655, which is not what the job
+    // measures — so the scroll it counted was probably reaching the DOOR on the
+    // runway, past the capture box, the gauges and the situation control. A
+    // measurement was written for it and taken at this point in the walk, and
+    // it read `door top 0, hidden true`: by here the inbox is drained, so the
+    // door is correctly not offered and the zero is about an element that is
+    // not on screen. An assertion over a hidden element proves nothing, which
+    // is this walk's own recurring lesson, so it came out rather than shipping
+    // as a green line. Measuring it needs a point in the walk with the inbox
+    // deliberately non-empty and the runway in view.
     const card = await tpage.locator('#triage-card').textContent();
     is(/a thing to sort without heat/.test(card || ''), true,
       'it is still THIS item being sorted, not the next one');

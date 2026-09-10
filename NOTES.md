@@ -472,6 +472,47 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### The sorting surface has no answer on screen, on a phone (measured 2026-09-10)
+
+**Not one of the nine answers is fully visible at 390x844.** The frame ends at
+484 — 57% of the screen, fixed. The question sits at 655, the first answer
+begins at 779 and is cut off by the bottom edge at 882. The last ends at 1310,
+466px below the fold. Sorting sixteen things costs sixteen scrolls before any
+answer can be read, which is what the fifth cold read reported.
+
+**THE RELEASE BEFORE THIS ONE MEASURED IT AND CONCLUDED IT FITS.** That reading
+— "question at 217, last answer ending at 670, fifty pixels to spare" — was
+taken in the main walk's viewport, which is 720 tall and far wider. The content
+column caps at 600px, so from 600 up the frame is short and the card's prose
+reflows wide; at 390 it does neither. **A measurement taken somewhere other
+than where the report came from does not refute the report, it changes the
+subject** — and the reader's figure of 655 turned out to be exact, to the pixel,
+once it was taken where they were standing.
+
+**What the fixed frame is made of, at 390 wide, inside a job:** a 133px bar,
+the 47px capture field, a 24px status line, 44px of page navigation, and then
+**two 88px gauges — `#gauge` and `#assurance` — which are 176px, 21% of the
+whole screen**, present on every surface whether or not the surface is about
+them. `body[data-plain="1"]` already hides `#assurance`, so it is not
+load-bearing at all times; ADR-0100 already ruled that chrome "used at the
+START of a sitting and almost never again" belongs on the runway rather than
+the frame, and it accepted a real cost to say so; ADR-0108 says one job is the
+screen, and applies that to the runway's sections but not to the frame above
+them.
+
+**The grounding is entry 1 (task initiation, Strong)** — activation cost is
+highest when the next act is not in front of you — rather than entry 16, whose
+own correction says the choice-overload effect is near zero and that ADR-0060's
+cap stands on activation instead. So the remedy is not fewer answers: **the
+route count is ADR-0029's and is not in question.** It is that the answers are
+off the screen.
+
+**It is held by a ratchet, not fixed.** `tools/smoke.mjs` measures all of it at
+390x844 and prints every number on every run; the assertion is that no MORE
+than nine of nine are below the fold, so a tenth route or another line in the
+frame fails immediately. The honest assertion — none below the fold — would be
+red today, and a permanently red gate is one everybody learns to read past.
+
 ### What a cold read IS — the method is the HUB's now (2026-09-10)
 
 [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md)
@@ -1671,7 +1712,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.22**, promoted 2026-09-10 at `90354c1` — seven
+- **PRODUCTION CARRIES 3.23.23**, promoted 2026-09-10 at `8a38b28` — the fifth
+  cold read's USABILITY half, after the seven that closed its untrue statements.
+  Both findings were the same shape and neither was a missing feature: the app
+  had the answer and never put it where a reader looks. Verified at `8d5d340`,
+  merged tree the same tree OBJECT as the staging head, Spine and Deploy green by
+  head SHA, both editions read back by content twice.
+- **Superseded: production at 3.23.22**, promoted 2026-09-10 at `90354c1` — seven
   releases, 3.23.16 through 3.23.22, all of them the FIFTH cold read and what
   chasing it turned up. Verified at `6163eda`: merged tree the same tree OBJECT
   as the staging head, Spine and Deploy green by head SHA, and both editions read
@@ -1775,7 +1822,35 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.23**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.24**, which production does
+  not carry: every group in *Where everything is* is a way in. The renderer's own
+  gap block had argued it since it was written — "a named exception you cannot
+  open is a worry with a number on it" — and made its rows doors; the block above
+  it, which is the whole picture rather than the exceptions, left every row a
+  span. **And a defensive guard written for an empty group came straight back
+  out**: `judgmentProof` maps its places off `heldGroups`, which drops an empty
+  group, so the branch was unreachable — found by the a11y registry, where the
+  span form was declared conditional and §257's whole-run half reported it
+  matching nothing in any state or theme.
+  It also closes the resume-card route, carried as still-to-sort since 3.23.21.
+  **Three releases argued about where the CARD goes and that was the wrong
+  argument.** 3.23.16 took the app's own bookmark out of the reader's list —
+  right about what it is, and it removed the only "Pick it back up" in the app,
+  which a browser walk found by trying. 3.23.21 put the row back. The card is a
+  POINTER at work, and the work is already on the list under a name the reader
+  wrote, so the act moved to that row: `resumeCardFor` picks the label and
+  `resumeEvents` spends the card as it starts the work. The walk asserts both
+  halves now, because either alone is a release that has already shipped and
+  been reverted.
+  **And the spelling gate had been unverified for three releases**, found by
+  `gates:audit` rather than by anything red. Its plant was an identity replace:
+  the heading it edits used to read the British spelling and the plant swapped
+  the American one in, then the sweep that took British spelling out of the app
+  rewrote the fixture too — a find-and-replace cannot tell a gate's own fixture
+  from the prose it is fixing. The plant writes the wrong spelling now, which is
+  the direction a sweep in the same direction cannot undo, and the word is
+  declared in `.spelling-allow` because the gate reads its own tools.
+- **Superseded: 3.23.23**, which production does
   not carry: 3.23.23 is the fifth cold read's USABILITY half, and both of its
   findings were the same shape — the app had the answer and never put it where
   anybody could see it. `main` restored where you are, how long you have and who
@@ -3591,9 +3666,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.22** — promoted at
-  `90354c1` on 2026-09-10: 3.23.16 through 3.23.22, the whole of the FIFTH cold
-  read. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
+- **https://quietkeep.pages.dev** — production, **3.23.23** — promoted at
+  `8a38b28` on 2026-09-10: 3.23.23, the fifth cold read's usability half. Before
+  it, `90354c1` carried 3.23.16 through 3.23.22, the same read's untrue statements. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
   cold read. The merged tree asserted byte-identical to `f70e705`, the staging
   head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
   that read as empty — with that SHA's Spine green across 53 steps and Deploy

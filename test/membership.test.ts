@@ -90,13 +90,13 @@ interface SurfaceRule {
 
 const SURFACES: Record<string, SurfaceRule> = {
   'todo list (heldGroups)': {
-    why: 'The list you work from. Work plus off-Menu aspirations (a wish taken off the Menu is still yours and must be SOMEWHERE — its row is how you find it to promote it). Never a person, journal entry, pebble or anchor: each has its own surface, and a row here is what "becoming a task" looks like (ADR-0061/0065/0068, 1.15.1/1.17.0). A live resume-card IS here, and only because its row carries the one "Pick it back up" in the app — see the note on RESUME above; the category error that argues against it is real and open.',
+    why: 'The list you work from. Work plus off-Menu aspirations (a wish taken off the Menu is still yours and must be SOMEWHERE — its row is how you find it to promote it). Never a person, journal entry, pebble or anchor: each has its own surface, and a row here is what "becoming a task" looks like (ADR-0061/0065/0068, 1.15.1/1.17.0). AND NEVER A RESUME-CARD (3.23.24): the app writes it, so a row here with a Done button on it is the same category error. It held on for eight releases only because that row carried the one "Pick it back up" in the app; the act now sits on the WORK\'s row instead, chosen by resumeCardFor.',
     allowed: [...WORK, 'aspiration'],
-    expect: ['action', 'project', 'upkeep', 'waiting-for', 'aspiration', 'resume-card'],
+    expect: ['action', 'project', 'upkeep', 'waiting-for', 'aspiration'],
     rows: st => heldGroups(st, NOW, TZ).flatMap(g => g.items),
   },
   'coverage list / gauge total (heldWork)': {
-    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again. This surface is where the cost of a live resume-card being in shows: a card the app wrote about its own bookkeeping is listed here as returning today. It is the open half of the finding, and it may not be closed by narrowing this surface alone — the one definition is the whole point of the row.',
+    why: 'The gauge\'s number itemized. One definition with the todo list by construction since 1.15.1 — so the same table row, restated to pin that they cannot drift apart again. It is the one definition that made the resume-card question hard: narrowing this surface alone was never available, so the card could only leave once the act it carried had somewhere else to live (3.23.24).',
     allowed: [...WORK, 'aspiration'],
     expect: ['action', 'project', 'upkeep', 'aspiration'],
     rows: st => heldWork(st),
