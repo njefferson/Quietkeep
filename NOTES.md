@@ -1684,7 +1684,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.15**, promoted 2026-09-09 at `fadd34c` — the whole
+- **PRODUCTION CARRIES 3.23.22**, promoted 2026-09-10 at `90354c1` — seven
+  releases, 3.23.16 through 3.23.22, all of them the FIFTH cold read and what
+  chasing it turned up. Verified at `6163eda`: merged tree the same tree OBJECT
+  as the staging head, Spine and Deploy green by head SHA, and both editions read
+  back by content twice.
+  Two of the seven are mine rather than the app's. 3.23.21 restores a route
+  3.23.16 removed — taking resume cards out of the work list took away the only
+  "Pick it back up" in the app, and that commit's claim that the route was
+  untouched had been checked against projections still CONTAINING the card, which
+  says nothing about whether a reader can act on it. 3.23.20 exists because the
+  a11y walk had no way to ask what a card row was, and had been dating a project
+  for four runs while reporting something else.
+  **And the scoreboard for the session's own method, which is the thing to carry
+  forward:** the two fixes taken from the research (3.23.18's wall, from entry 3;
+  3.23.22's split, from entry 28's 50% condition) both held. The two taken from a
+  session's own reading of a cold-read symptom — the held-list echo, and the
+  resume-card exclusion — were both wrong, and both were caught by a walk rather
+  than by review.
+- **Superseded, and kept for the record: production at 3.23.15** — promoted
+  2026-09-09 at `fadd34c` — the whole
   of the FOURTH cold read, in three releases. 3.23.13 answers the minute that
   read would have stopped at ("Hot or cold?", the one control in the sorting flow
   with nothing written under it). 3.23.14 is the rest of it, including a name
@@ -3569,8 +3588,9 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.15** — promoted at
-  `fadd34c` on 2026-09-09: 3.23.13, 3.23.14 and 3.23.15, the whole of the FOURTH
+- **https://quietkeep.pages.dev** — production, **3.23.22** — promoted at
+  `90354c1` on 2026-09-10: 3.23.16 through 3.23.22, the whole of the FIFTH cold
+  read. Before it, `fadd34c` carried 3.23.13 to 3.23.15, the whole of the FOURTH
   cold read. The merged tree asserted byte-identical to `f70e705`, the staging
   head that was walked — the same tree OBJECT out of `merge-tree`, not a diff
   that read as empty — with that SHA's Spine green across 53 steps and Deploy
