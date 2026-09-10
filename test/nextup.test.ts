@@ -98,7 +98,18 @@ test('a resume card outranks pressure but not a hard date', () => {
     ev('resume.card.created', 'R', { forNode: 'W', cue: 'the paragraph about ferries' }),
     ev('clock.set', 'R', { clockKind: 'review', at: NOW, source: 'test' }),
   );
-  assert.equal(nextUp(s, NOW, TZ).head!.node.id, 'R', 'pick up the thread first');
+  // THE WORK, NOT THE CARD (3.23.26). This asserted `'R'` and that was the
+  // defect a cold read reported: the offer's title read "where you left off"
+  // with the same words repeated in the why line under it, so the one surface
+  // that says what to do next named the app's own bookkeeping and never named
+  // the chapter. The card is a POINTER — its clock is still what makes this
+  // tier fire, and `reason` is still `resume`; what gets OFFERED is what it
+  // points at. Same correction as 3.23.24 on the held list, one surface over.
+  assert.equal(nextUp(s, NOW, TZ).head!.node.id, 'W',
+    'the thread you pick back up is the work, named as the work');
+  assert.equal(nextUp(s, NOW, TZ).head!.node.title, 'the chapter');
+  assert.equal(nextUp(s, NOW, TZ).head!.reason, 'resume',
+    'and the reason is still what makes the why line an explanation');
   assert.equal(nextUp(s, NOW, TZ).head!.words, 'you were about to: the paragraph about ferries',
     'and it says it in the words you wrote, not in the app\u2019s');
 
@@ -110,6 +121,11 @@ test('a resume card outranks pressure but not a hard date', () => {
     ev('clock.set', 'D', { clockKind: 'due', at: NOW, source: 'test' }),
   );
   assert.equal(nextUp(withDate, NOW, TZ).head!.node.id, 'D', 'but a real date still wins');
+  // AND THE CARD ITSELF IS NEVER THE HEAD, in either fixture — the assertion
+  // that would have caught this shipping is the one that says what is ABSENT.
+  assert.equal(nextUp(s, NOW, TZ).head!.node.kind === 'resume-card', false);
+  assert.equal(nextUpQueue(s, NOW, TZ).some(q => q.node.kind === 'resume-card'), false,
+    'nothing anywhere in the queue is the app\u2019s own bookmark');
 });
 
 test('within pressure, the most insistent leads', () => {

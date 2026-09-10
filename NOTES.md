@@ -472,6 +472,103 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### The SIXTH cold read — 2026-09-10, against staging 3.23.25, both passes
+
+Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
+two independent agents in parallel, neither reading this repository. The
+unprompted pass captured 23 things, sorted all 23, built four containers, set
+five dates, finished three, handled a real interruption and reloaded twice.
+
+**IT COULD USE THE APP.** It knew what the app was for from the first sentence
+of screen one and said so; it named the interruption-and-return flow the
+best-built thing in the app; and it listed what it was relieved not to find —
+no streak, no score, no percentage, no badge, no *overdue*, no red, no account,
+no cookie banner — having gone looking for each. Nothing was lost across three
+reloads, item by item. **The refusals are landing.** What it could not do was
+four specific things, and what it was told was untrue in seven places.
+
+**Two findings in its report are its own rig, not the app**, and are recorded
+so a later session does not chase them: the edition could not be told from a
+`127.0.0.1` address, and four of twenty-six offline files did not download.
+Chromium could not complete TLS to the host through this container's egress, so
+both passes drove the deployed bytes through a local pass-through. Everything
+else is the app.
+
+#### Fixed in 3.23.26
+
+- **Pressing a group in *Where everything is* did nothing** — the sheet closed
+  and the reader was left on the hub with no list. `openHeld()` sets
+  `#held-fold.open` and nothing else, and on the hub
+  `#runway[data-hub]:not([data-stance])` hides every section but the hub, so it
+  opened a fold inside a `display: none` section. **The walk passed it and the
+  defect reached production**, because the smoke block ran wherever the walk
+  was standing — inside the held job — which is a standing point no reader can
+  arrive from, since that sheet's door is in the frame. Hub LESSONS §268, one
+  release after this repo wrote §268.
+- **The offer named the app's own bookmark as the thing to do**, headed *where
+  you left off* with the identical words repeated in the why line under it, and
+  neither line named the work. Same category error 3.23.16 tried to fix on the
+  held list and 3.23.24 closed, surviving one surface over. `nextup.ts` pushes
+  the TARGET now; the card's clock stays the trigger and `reason: 'resume'`
+  makes the why line an explanation.
+- **The release notes were written in pixels** — *"655 pixels down an 844-pixel
+  screen"*, *"moved up 47 pixels"*, *"below the fold"*. Called a developer's
+  diary entry, correctly, and it was written the same day by the session that
+  is recording this. Doctrine §5. **Not a repo-wide pattern and deliberately
+  not gated:** other notes measure in pixels to describe something a reader can
+  SEE, such as a focus ring cut off at the edge, and a gate refusing the word
+  would fire on those. CHECKLIST, not GATE.
+
+#### Open, and the first of these is the worst thing the app currently says
+
+- **A thing dated five weeks out is offered as today's work.** Set to
+  2026-10-15: the sheet said *sorted as someday · comes back Oct 15*, the field
+  held `2026-10-15`, and the exported `.ics` carried
+  `DTSTART;VALUE=DATE:20261015` — so the date itself is right everywhere it can
+  be read. But *See what is next* led with it, reason *"a real date, and it is
+  here"*, eleven lines above *"Nothing is dated today."* on the SAME screen;
+  *The days ahead* filed it under *Today*; the held list said *today*.
+  Reproducible across two reloads. **NOT REPRODUCED HERE YET** — a synthetic
+  fixture with a `review` clock from *someday* plus a typed `due` clock
+  produces no offer at all, so the mechanism needs the reader's fuller store.
+  The shape to suspect is 3.23.22's: one predicate answering two questions
+  about clocks. Fix it with a real fixture, never by guessing.
+- **No way to make an Area, a Goal or an Outcome, or to change one after.** The
+  sorting prompt says *"a project, area or goal — make one if it is not
+  there"*; four containers made that way all came back `Project`, including one
+  made as an ongoing area. The kind chooser exists but only on a row revealed
+  when creating a parent from inside an item's *More about this*, and neither
+  the container's editor nor the tree dialog offers a way to change it.
+- **One tap of *Choose where it goes* silently ended the hot/cold pass for
+  everything behind it**, permanently — later captures went straight to *What
+  is this?* and nothing said the question had been switched off.
+- **The date prompt after *Put under…* is lost for the third container
+  onwards.** *"Put under X — no return date yet."* drops a field into a
+  trailing stack that keeps only the last two; four containers produced two
+  prompts.
+- **Stale trailing DOM on the hub** — a finished item's *Now:* card, two dead
+  *Put under…* prompts and an orphan `Undo`, scrolled past all session and gone
+  after a reload, so it was never state.
+- **Six more untrue statements**, each with its own evidence in the run:
+  *"Not this"* announcing *"Showing X instead"* naming the item just rejected;
+  *"Not kept yet — press Set."* shown permanently, including beside a header
+  that states the date; *"There is nothing here to clear"* above two clear
+  buttons on a store holding 27; two screens disagreeing on how many things
+  have a date (9+10 against 12); *"1 thing has a date you set"* after five were
+  set through a picker, against *The days ahead* calling 14 of them `due`; and
+  *"One thing is with someone else"* on a surface that omits the person link
+  the app invited, because it keys off the *Waiting for* route instead.
+- **Jargon a reader met:** *"Routed to Next action."* and *"serves X"* beside
+  *"in X"* on the same row.
+- **Asymmetry:** *Put on the Menu* is a top-level control and taking it off is
+  behind *More about this*; a Menu item's editor has no date field at all;
+  `Undo` sits at the bottom of the page rather than near what it would undo.
+- **The wall**, and it is a browser-permission question rather than the work
+  above: *Keep my data on this device* and *Ask the browser to keep it* both
+  did nothing on four presses, while the panel above them read *Asked for —
+  not yet*. If the browser refused, that is the browser's; the app recording
+  that it never asked is the app's.
+
 ### The sorting surface, on a phone — narrowed in 3.23.25, not closed
 
 **Not one of the nine answers is fully visible at 390x844.** The frame ends at
@@ -1863,7 +1960,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.25**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.26**, which production does
+  not carry: the SIXTH cold read's first three findings. Pressing a group in
+  *Where everything is* now enters the list rather than closing onto the hub —
+  that feature shipped broken in 3.23.24 and the walk passed it, because the
+  walk pressed from inside the job and a reader can only press from the frame.
+  The offer names the WORK rather than the app's own bookmark. And 3.23.25's
+  release note, which was written in pixels the same day, is written for a
+  reader.
+- **Superseded: 3.23.25**, which production does
   not carry: sorting on a phone shows a readable answer again. The frame gives
   46px back inside a job — the two proofs say their claim on one line and sit
   tighter — so the question moves 655 to 608 and the first of nine answers now

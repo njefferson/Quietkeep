@@ -29,12 +29,22 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.26',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**Pressing a group in *Where everything is* actually takes you there now.** It did nothing at all: the page closed and you were left back on *Where do you want to be?*, with no list and nothing to show you had asked. It opened your list without going to it \u2014 so the list it opened was on a screen you were no longer on. Pressing a group now puts you in your list with that group in front of you, which is what it said it would do when it was built.',
+      '**The one thing to do next is the thing you were doing, called by its name.** When something interrupted you, the app kept its own note about it \u2014 and then offered that note back as the next thing to do, headed *where you left off*, with the same words repeated underneath. Neither line said what you had been doing. It offers the work now, under the name you gave it, and says *you were about to\u2026* in your own words as the reason.',
+      '**Still not right, and this one is the worst of them:** a thing dated weeks away can be offered as today\u2019s work, with a reason saying the date has arrived, on a screen that also says nothing is dated today. It has been seen and is not yet fixed \u2014 the date itself is right everywhere you can read it, so nothing is lost, but the app is telling you the wrong thing about when.',
+    ],
+  },
+  {
     triplet: '3.23.25',
     kind: 'ITERATION',
     date: '2026-09-10',
     notes: [
-      '**Sorting on a phone shows you an answer again.** The question *what is this?* sat at 655 pixels down an 844-pixel screen, and not one of the nine answers under it was fully visible \u2014 so every single thing you sorted cost a scroll before you could read a single choice. Sixteen things, sixteen scrolls. The two standing lines at the top of the app \u2014 the one saying nothing has gone quiet, and *Where everything is* \u2014 now say the same thing on one line while you are inside a job, and sit a little tighter. Both still say it, and both still open. The question has moved up 47 pixels and the first answer is on the screen.',
-      '**Still not right:** seven of the nine answers are still below the fold, and that is a bigger change than this one \u2014 the fixed strip at the top of the app is 438 pixels of an 844-pixel phone, and getting the rest of the answers onto the screen means deciding what that strip is for. Nothing that says what you are holding is going to be taken off it quietly.',
+      '**Sorting on a phone shows you an answer again.** *What is this?* sat so far down the screen that not one of its nine answers was fully in view \u2014 so every single thing you sorted cost a scroll before you could read a single choice. Sixteen things, sixteen scrolls. The two standing lines at the top \u2014 the one saying nothing has gone quiet, and *Where everything is* \u2014 now say the same thing on one line while you are working, and sit a little closer together. Both still say it and both still open. The question and its first answer are both on the screen now.',
+      '**Still not right:** most of the nine answers are still off the bottom of a phone screen, and getting them up needs a bigger change than this one. The strip at the top \u2014 the box you type into, and the lines telling you nothing has been lost \u2014 takes up more than half the screen, and nothing in it that tells you what you are holding is coming off quietly.',
     ],
   },
   {

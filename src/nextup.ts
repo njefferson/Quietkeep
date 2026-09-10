@@ -511,12 +511,31 @@ export function nextUpQueue(state: State, nowIso: string, zone: string): NextUpI
       if (!n.resumeFor || n.resumeFor === state.focus?.node) continue;
       const target = state.nodes.get(n.resumeFor);
       if (!isHeld(target) || target.lastDone) continue;
+      // THE CARD IS THE TRIGGER; THE WORK IS WHAT IS OFFERED (3.23.26).
+      //
+      // This pushed the CARD, so the offer's title read "where you left off" —
+      // and `REASON_WORDS.resume` puts the same words in the why line under it.
+      // Two identical lines, neither naming the thing you were doing, on the
+      // one surface whose whole job is to say what to do next. A cold read met
+      // it there and reported the app offering its own bookkeeping as the task.
+      //
+      // It is the same category error 3.23.16 tried to fix on the held list and
+      // 3.23.24 finally closed, surviving one surface over: the card is a
+      // POINTER at work, so what gets shown is what it points at. The card's
+      // due-ness stays the trigger — that clock is the intent, "come back to me
+      // today", and it is why this tier fires at all — and `reason: 'resume'`
+      // is what makes the why line an explanation instead of a repeat.
+      //
+      // Everything downstream follows for free rather than needing a special
+      // case: the place line walks the WORK's lineage, `Done` marks the WORK
+      // done, and the pressure is the work's own so the item cannot describe
+      // one node while carrying another's number.
       items.push({
-        node: n, reason: 'resume', pressure: p,
+        node: target, reason: 'resume', pressure: pressureOf(target, nowIso, day),
         words: REASON_WORDS.resume({ cue: n.resumeCue }),
-        place: lineageOf(state, n),
-        approach: approachOf(state, n, nowIso, zone),
-        situation: situationOf(n),
+        place: lineageOf(state, target),
+        approach: approachOf(state, target, nowIso, zone),
+        situation: situationOf(target),
       });
       continue;
     }

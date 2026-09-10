@@ -872,6 +872,30 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // renderer had said why that is wrong since it was written — "a named
   // exception you cannot open is a worry with a number on it" — and made its
   // own rows doors. The block above it did not.
+  //
+  // AND IT IS PRESSED FROM THE HUB, WHICH IS THE WHOLE FIX (3.23.26). The
+  // first version of this block ran wherever the walk happened to be standing
+  // — inside the held job — and went green while the feature was BROKEN from
+  // the only route a reader has. `#assurance` lives in the frame, so the sheet
+  // opens from the hub, and on the hub `#runway[data-hub]:not([data-stance])`
+  // hides every section but the hub itself. The handler called `openHeld()`,
+  // which sets `#held-fold.open` and nothing else, so it opened a fold inside
+  // a `display: none` section: sheet closed, reader left on "Where do you want
+  // to be?", no list, no state carried. A cold read found it in production.
+  //
+  // That is hub LESSONS §268 — a measurement taken somewhere other than where
+  // the report came from — committed by this walk ONE RELEASE after this repo
+  // wrote that lesson. So the standing point is now asserted before the press,
+  // rather than inherited from whatever ran above.
+  // Out of whatever job the blocks above left the walk in, by the app's own
+  // control rather than by script — `#stance-back` is the way a finger takes.
+  await page.evaluate(() => { for (const d of document.querySelectorAll('dialog')) if (d.open) d.close(); });
+  if (await page.locator('#stance-back').isVisible().catch(() => false)) {
+    await page.click('#stance-back');
+    await settled(page, 250);
+  }
+  is(await page.evaluate(() => document.querySelector('#runway')?.hasAttribute('data-stance')), false,
+    'standing on the hub, which is where this sheet is opened from');
   console.log('\nWhere everything is — every group is a way in');
   await page.click('#assurance');
   await page.waitForSelector('#sheet-assurance[open]');
@@ -888,16 +912,43 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // ARRIVED, not merely navigated. The group it named has to be ON SCREEN —
   // the whole complaint was a number with no route, and a route that lands you
   // somewhere you still have to hunt is the same complaint one step along.
+  // VISIBLE, WITH A REAL BOX — and the first two versions of this assertion had
+  // neither, which is why the defect shipped twice.
+  //
+  // `querySelector` finds a node inside a `display: none` section perfectly
+  // well, and `getBoundingClientRect()` on one returns ALL ZEROS. So `found`
+  // was true and `top >= 0 && top < vh` was `0 >= 0 && 0 < 720` — green, on a
+  // list no reader could see. Planted against the broken handler and it passed.
+  //
+  // This walk has now recorded that same trap three times in its own comments
+  // (the ambient horizon, the runway door reading `top 0, hidden true`, and
+  // here), so the shape is the lesson: an assertion over an element that is not
+  // on screen proves nothing, and a ZERO is what "not on screen" looks like
+  // rather than an obviously wrong number. `checkVisibility()` plus a nonzero
+  // height is what cannot be satisfied by absence.
   const arrivedAt = await page.evaluate((title) => {
     const ul = document.querySelector(`.cards-group[aria-label="${title}"]`);
     if (!ul) return { found: false };
     const head = ul.previousElementSibling;
-    const r = (head ?? ul).getBoundingClientRect();
-    return { found: true, top: Math.round(r.top), vh: window.innerHeight };
+    const el = head ?? ul;
+    const r = el.getBoundingClientRect();
+    return {
+      found: true,
+      shown: el.checkVisibility() === true,
+      top: Math.round(r.top), h: Math.round(r.height),
+      vh: window.innerHeight,
+      stance: document.querySelector('#runway')?.getAttribute('data-stance') ?? null,
+      cards: document.querySelectorAll('#cards .card').length,
+    };
   }, doorName);
   is(arrivedAt.found, true, `and the list is showing the group it named ("${doorName}")`);
-  is(arrivedAt.found && arrivedAt.top >= 0 && arrivedAt.top < arrivedAt.vh, true,
-    `with that group on screen rather than left to be hunted (top ${arrivedAt.top} of ${arrivedAt.vh})`);
+  is(arrivedAt.stance === 'held', true,
+    `pressing it puts the reader IN the list, not back on the hub (stance ${arrivedAt.stance})`);
+  is(arrivedAt.cards > 0, true, `with the reader\u2019s things on screen (${arrivedAt.cards} cards)`);
+  is(arrivedAt.shown === true && arrivedAt.h > 0
+    && arrivedAt.top >= 0 && arrivedAt.top < arrivedAt.vh, true,
+    `and that group actually visible rather than left to be hunted `
+    + `(shown ${arrivedAt.shown}, top ${arrivedAt.top}, height ${arrivedAt.h}, of ${arrivedAt.vh})`);
 
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
