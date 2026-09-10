@@ -864,6 +864,41 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(whens.length === cardCount && whens.every(w => w.trim().length > 0), true,
     `every card states its own status in words (${whens.length} of ${cardCount}, e.g. "${whens[0] ?? ''}")`);
 
+  // WHERE EVERYTHING IS — AND A WAY TO EACH OF THEM (3.23.24).
+  //
+  // This sheet is the closest thing the app has to a whole picture, and it had
+  // NO coverage in this walk at all. A cold read called it a dead end: five
+  // counts, none of them tappable, one Close. The gap block in the same
+  // renderer had said why that is wrong since it was written — "a named
+  // exception you cannot open is a worry with a number on it" — and made its
+  // own rows doors. The block above it did not.
+  console.log('\nWhere everything is — every group is a way in');
+  await page.click('#assurance');
+  await page.waitForSelector('#sheet-assurance[open]');
+  const groupRows = await page.locator('#assurance-places .roles-row').count();
+  is(groupRows > 0, true, `the whole picture names its groups (${groupRows} of them)`);
+  const doors = await page.locator('#assurance-places button.roles-name').count();
+  is(doors > 0, true,
+    `and a group holding something is a door rather than a number (${doors} of ${groupRows})`);
+  const doorName = (await page.locator('#assurance-places button.roles-name').first().textContent() ?? '').trim();
+  await page.locator('#assurance-places button.roles-name').first().click();
+  await settled(page, 300);
+  is(await page.locator('#sheet-assurance').evaluate(d => !d.open), true,
+    'pressing one closes the picture rather than stacking a sheet on it');
+  // ARRIVED, not merely navigated. The group it named has to be ON SCREEN —
+  // the whole complaint was a number with no route, and a route that lands you
+  // somewhere you still have to hunt is the same complaint one step along.
+  const arrivedAt = await page.evaluate((title) => {
+    const ul = document.querySelector(`.cards-group[aria-label="${title}"]`);
+    if (!ul) return { found: false };
+    const head = ul.previousElementSibling;
+    const r = (head ?? ul).getBoundingClientRect();
+    return { found: true, top: Math.round(r.top), vh: window.innerHeight };
+  }, doorName);
+  is(arrivedAt.found, true, `and the list is showing the group it named ("${doorName}")`);
+  is(arrivedAt.found && arrivedAt.top >= 0 && arrivedAt.top < arrivedAt.vh, true,
+    `with that group on screen rather than left to be hunted (top ${arrivedAt.top} of ${arrivedAt.vh})`);
+
   console.log('\nLaw 1 — no silent nodes');
   const gauge = await page.locator('#gauge').textContent();
   is(silentCount(gauge), 0, `gauge reads 0 silent ("${gauge}")`);
@@ -4183,15 +4218,25 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // Pick it back up: the card is spent and focus lands on the WORK, never on a
   // card about a focus session.
   //
-  // AND THIS ROW IS THE ONLY ROUTE, which is what 3.23.16 did not know when it
-  // took resume cards out of `heldWork` — the exclusion removed this row, and
-  // with it the one "Pick it back up" the app has. Restored in 3.23.21. THIS
-  // WALK IS WHAT FOUND IT: the change's unit tests were updated and passed, and
-  // the claim that "the route back is untouched" had been checked against
-  // projections still CONTAINING the card, which says nothing about whether a
-  // reader can act on it.
+  // THREE RELEASES ARGUED ABOUT WHERE THE CARD GOES AND THIS WALK ARBITRATED
+  // TWICE. 3.23.16 took resume cards out of `heldWork` — which removed the row,
+  // and with it the one "Pick it back up" the app had; that change's unit tests
+  // were updated and passed, and its claim that "the route back is untouched"
+  // had been checked against projections still CONTAINING the card, which says
+  // nothing about whether a reader can act on it. 3.23.21 put the row back.
+  // 3.23.24 moved the ACT to the work's own row, so the app's bookmark could
+  // leave the reader's list without taking the act with it.
+  //
+  // SO THIS ASSERTS BOTH HALVES, and it must: either alone is a release that
+  // has already shipped and been reverted.
   await intoJob(tpage, 'held');
-  await tpage.locator('#cards .card:has-text("where you left off") .card-focus').first().click();
+  const heldNow = await tpage.locator('#cards').textContent();
+  is((heldNow || '').includes('where you left off'), false,
+    'the app\u2019s own bookmark is not among the things you wrote down');
+  const backRow = tpage.locator(`#cards .card:has-text(${JSON.stringify(focusTitle)}) .card-focus`).first();
+  is(await backRow.textContent(), 'Pick it back up',
+    'and the work it points at says so on its own row, in place of "Work on this"');
+  await backRow.click();
   await tpage.waitForSelector('#focus:not([hidden])');
   is(await tpage.locator('#focus-title').textContent(), focusTitle,
     'picking it back up puts you on the work itself, not on the card');

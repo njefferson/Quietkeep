@@ -11,7 +11,7 @@
 
 import type { Session } from './session.ts';
 import type { NodeState } from '../fold.ts';
-import { focusView, focusWords, interruptWords, resumeCards } from '../focus.ts';
+import { focusView, focusWords, interruptWords, resumeCards, resumeCardFor } from '../focus.ts';
 import { commsChip } from '../comms.ts';
 import { nextFixedToday, nextFixedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
@@ -291,6 +291,25 @@ export function mountFocus(
       if (node.kind === 'resume-card') {
         const c = resumeCards(session.state()).find(x => x.card.id === node.id);
         if (!c) return;
+        void run(ctx => resumeEvents(ctx, session.state(), c.card.id, c.target.id),
+          `Back on ${c.target.title || 'it'}.`, true);
+      } else if (resumeCardFor(session.state(), node.id)) {
+        // AND THE SAME ACT FROM THE WORK'S OWN ROW (3.23.24). The branch above
+        // starts from the CARD, which is how it worked when the card sat in the
+        // reader's list — and that placement was the category error 3.23.16
+        // removed and 3.23.21 had to put back, because taking the row out took
+        // the only "Pick it back up" in the app with it.
+        //
+        // WHAT WAS WRONG WITH BOTH ATTEMPTS: they argued about where the CARD
+        // goes. The card is a pointer at work; the work is already on the list,
+        // under a name the reader wrote. So the act belongs on THAT row, and
+        // the card does not need to be anywhere a reader looks.
+        //
+        // `startFocusEvents` alone is not this. It does not spend the card, so
+        // the thread you just picked up keeps being offered back — which is the
+        // app arguing with you about something you have already done.
+        const c = resumeCardFor(session.state(), node.id)!;
+        surfacing = false;
         void run(ctx => resumeEvents(ctx, session.state(), c.card.id, c.target.id),
           `Back on ${c.target.title || 'it'}.`, true);
       } else {

@@ -194,33 +194,30 @@ export const heldWork = (state: State): NodeState[] =>
     // that was finished. It is not trashed and not hidden from an export: it
     // happened, and the log says so. It simply is not work.
     //
-    // AN UNSPENT ONE WAS EXCLUDED TOO IN 3.23.16 AND PUT BACK IN 3.23.21,
-    // because the exclusion took away the reader's only way back into an
-    // interrupted thread. The reasoning for it still stands and the finding is
-    // still open: the app WRITES this card, so counting it among the reader's
-    // things, listing it as returning today and drawing it at the top of the
-    // tree with a Done button on it is the same category error as a person, a
-    // place or a role. A cold read met it there and said, correctly, that it had
-    // never written that.
+    // AND NEITHER IS AN UNSPENT ONE (3.23.24) — excluded in 3.23.16, put back
+    // in 3.23.21, and out again now that the thing 3.23.16 broke has somewhere
+    // else to live. Both earlier attempts argued about WHERE THE CARD GOES, and
+    // that was the wrong argument.
     //
-    // WHAT THE EXCLUSION MISSED. `heldGroups` is built from this function — one
-    // definition, so the gauge and the list cannot disagree (1.15.1) — and the
-    // row it draws is the ONLY control anywhere that resumes a thread:
-    // `app.ts` labels that row's `.card-focus` "Pick it back up" for this kind
-    // and nothing else does. The detail sheet has no focus starter;
-    // `#detail-reclaim` is 1.32.0's put-it-down pair and a different thing. So
-    // removing the row removed the act, and the 3.23.16 commit's claim that the
-    // route was "untouched and asserted" was checked against the wrong thing:
-    // `offer.ts`, `focus.ts` and `search.ts` do still CONTAIN the card, which
-    // proves the data is reachable and says nothing about whether a reader can
-    // do anything with it. The smoke walk is what found it, by trying.
+    // WHAT THE FIRST EXCLUSION MISSED. `heldGroups` is built from this function
+    // — one definition, so the gauge and the list cannot disagree (1.15.1) —
+    // and the row it drew carried the ONLY control anywhere that resumed a
+    // thread. Removing the row removed the act. The 3.23.16 commit's claim that
+    // the route was "untouched and asserted" had been checked against the wrong
+    // thing: `offer.ts`, `focus.ts` and `search.ts` do still CONTAIN the card,
+    // which proves the DATA is reachable and says nothing whatever about
+    // whether a reader can do anything with it. A browser walk found it by
+    // trying, which is the only way that class is ever found.
     //
-    // THE FIX IS A ROUTE, NOT A LIST. The card belongs somewhere that is not the
-    // work list, with the act attached — the offer already carries it, and its
-    // title already opens the sheet, so a "Pick it back up" there would close
-    // this properly. Until that exists the row stays, because a category error
-    // a reader can work around beats a missing act they cannot.
-    if (n.kind === 'resume-card' && n.resumeSpent) return false;
+    // WHAT CLOSED IT. The card is a POINTER at work, and the work is already on
+    // this list under a name the reader wrote. So the act moved to that row:
+    // `app.ts` labels a `.card-focus` "Pick it back up" when `resumeCardFor`
+    // says a thread is waiting on THAT node, and `ui/focus.ts`'s starter runs
+    // `resumeEvents` for it, which spends the card as well as starting the
+    // work. Both routes exist — from the card, wherever it is still offered,
+    // and from the work — and neither needs the app's own bookmark sitting at
+    // the top of somebody's things with a Done button on it.
+    if (n.kind === 'resume-card') return false;
     // NOR IS A CONTEXT (2.2.0, ADR-0092). "At home" is WHERE work can be done,
     // and putting it in the todo list would make the label a task — the same
     // category error the person and journal exclusions below and above exist

@@ -108,7 +108,7 @@ that a test must assert lives where a test can reach it.
 **"What happens when I press this?"**
 The listener is in `src/ui/<surface>.ts`, it calls something in
 `src/ui/<surface>-intents.ts`, and that returns events. Read the intent — it is
-the whole behaviour, and it is pure, so a unit test can drive it with no
+the whole behavior, and it is pure, so a unit test can drive it with no
 browser.
 
 **"Why does it come back?"**

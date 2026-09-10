@@ -34,6 +34,7 @@ import { mountPrint } from './print.ts';
 import { mountReplan } from './replan.ts';
 import { doneEvents } from './work.ts';
 import { contentsWords, heldGroups, heldStatus, liveChildCounts, placeWords } from '../held.ts';
+import { resumeCardFor } from '../focus.ts';
 import { datedDays, datedDayWords, datedWords, datedKindWords } from '../dated.ts';
 import { judgmentProof, assuranceFact, assuranceWords, placeCountWords, gapWords } from '../assurance.ts';
 import { calendarCount } from '../ics.ts';
@@ -687,7 +688,14 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
         // must still CONTAIN the visible words (SC 2.5.3), so it leads with
         // them. It used to read "Work on {title}" against a button showing
         // "Work on this": saying what is written on it matched nothing.
-        const words = node.kind === 'resume-card' ? 'Pick it back up' : 'Work on this';
+        // "PICK IT BACK UP" IS ABOUT THE WORK, NOT ABOUT THE CARD (3.23.24).
+        // This used to read `node.kind === 'resume-card'`, which put the act on
+        // the app's own bookmark — and that row is exactly what does not belong
+        // in a list of the reader's things. Asked of the WORK instead, the
+        // question is the one a reader has: is this the thing I was interrupted
+        // in? The card can then leave the list without the act leaving with it,
+        // which is what 3.23.16 got wrong and 3.23.21 had to undo.
+        const words = resumeCardFor(st, node.id) ? 'Pick it back up' : 'Work on this';
         go.textContent = words;
         go.setAttribute('aria-label', `${words} — ${node.title || '(untitled)'}`);
         go.addEventListener('click', () => onFocus(node));
@@ -2045,13 +2053,44 @@ export async function main(edition?: Edition): Promise<void> {
       list.replaceChildren(...proof.places.map(place => {
         const li = document.createElement('li');
         li.className = 'roles-row';
-        const name = document.createElement('span');
-        name.className = 'roles-name';
-        name.textContent = place.title;
         const count = document.createElement('span');
         count.className = 'roles-held';
         count.textContent = placeCountWords(place).split(' — ')[1] ?? '';
-        li.append(name, count);
+        // A DOOR, NOT A NUMBER (3.23.24). The gap block below has said why since
+        // it was written — "a named exception you cannot open is a worry with a
+        // number on it" — and made each of its rows a door. This block, which is
+        // the whole picture rather than the exceptions, left every row a
+        // `<span>`. So the one surface answering "where is all of it" gave five
+        // counts and a Close, and a cold read called it a dead end. The argument
+        // was already in this file, one paragraph down, unapplied.
+        //
+        // EVERY ROW IS A DOOR, with no empty-group branch, and that is measured
+        // rather than assumed. `judgmentProof` maps `places` straight off
+        // `heldGroups`, which drops a group with nothing in it — "an empty group
+        // is not a heading" — so `count` is never 0 here.
+        //
+        // A GUARD FOR THAT CASE WAS WRITTEN AND CAME BACK OUT. It looked
+        // defensive and it was unreachable, and the a11y registry is what said
+        // so: the span form was declared conditional and the whole-run half of
+        // §257 reported it matching nothing in any state or theme. An
+        // unreachable branch is worse than no branch, because it reads as
+        // handled — the same finding as the Menu arm in the coverage row.
+        const open = document.createElement('button');
+        open.type = 'button';
+        open.className = 'linklike roles-name';
+        open.textContent = place.title;
+        // Found by what the group SAYS rather than by a second mapping of key
+        // to selector: the held list labels its own `<ul>` with this same title.
+        open.addEventListener('click', () => {
+          closeSheet('sheet-assurance');
+          openHeld();
+          requestAnimationFrame(() => {
+            const group = document.querySelector(`.cards-group[aria-label="${place.title}"]`);
+            const head = group?.previousElementSibling;
+            (head ?? group)?.scrollIntoView({ block: 'start' });
+          });
+        });
+        li.append(open, count);
         return li;
       }));
     }

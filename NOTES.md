@@ -1781,7 +1781,35 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.23**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.24**, which production does
+  not carry: every group in *Where everything is* is a way in. The renderer's own
+  gap block had argued it since it was written — "a named exception you cannot
+  open is a worry with a number on it" — and made its rows doors; the block above
+  it, which is the whole picture rather than the exceptions, left every row a
+  span. **And a defensive guard written for an empty group came straight back
+  out**: `judgmentProof` maps its places off `heldGroups`, which drops an empty
+  group, so the branch was unreachable — found by the a11y registry, where the
+  span form was declared conditional and §257's whole-run half reported it
+  matching nothing in any state or theme.
+  It also closes the resume-card route, carried as still-to-sort since 3.23.21.
+  **Three releases argued about where the CARD goes and that was the wrong
+  argument.** 3.23.16 took the app's own bookmark out of the reader's list —
+  right about what it is, and it removed the only "Pick it back up" in the app,
+  which a browser walk found by trying. 3.23.21 put the row back. The card is a
+  POINTER at work, and the work is already on the list under a name the reader
+  wrote, so the act moved to that row: `resumeCardFor` picks the label and
+  `resumeEvents` spends the card as it starts the work. The walk asserts both
+  halves now, because either alone is a release that has already shipped and
+  been reverted.
+  **And the spelling gate had been unverified for three releases**, found by
+  `gates:audit` rather than by anything red. Its plant was an identity replace:
+  the heading it edits used to read the British spelling and the plant swapped
+  the American one in, then the sweep that took British spelling out of the app
+  rewrote the fixture too — a find-and-replace cannot tell a gate's own fixture
+  from the prose it is fixing. The plant writes the wrong spelling now, which is
+  the direction a sweep in the same direction cannot undo, and the word is
+  declared in `.spelling-allow` because the gate reads its own tools.
+- **Superseded: 3.23.23**, which production does
   not carry: 3.23.23 is the fifth cold read's USABILITY half, and both of its
   findings were the same shape — the app had the answer and never put it where
   anybody could see it. `main` restored where you are, how long you have and who

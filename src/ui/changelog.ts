@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.24',
+    kind: 'ITERATION',
+    date: '2026-09-10',
+    notes: [
+      '**\u201cPick it back up\u201d is on the work now, and the app\u2019s bookkeeping is off your list.** When something interrupted you, the app wrote itself a note called *where you left off* \u2014 and that note sat at the top of everything you had written, with a *Done* button on it, as though it were one of your things. It never was. Taking it out twice broke the only way back into an interrupted thread, because that row was carrying the act. The act has moved to where it belonged the whole time: the thing you were actually doing now says **Pick it back up** on its own row, under the name you gave it.',
+      '**Every group in *Where everything is* is now a way in.** That page is the closest thing to seeing all of it at once \u2014 *Ready now*, *Coming up*, *Later*, *On the Menu*, *Done*, each with a number \u2014 and none of the numbers went anywhere. Pressing one takes you to your list with that group in front of you. A group holding nothing is not listed there at all, so every row on that page opens onto something.',
+    ],
+  },
+  {
     triplet: '3.23.23',
     kind: 'ITERATION',
     date: '2026-09-10',

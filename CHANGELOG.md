@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.24 — ITERATION
+
+*2026-09-10*
+
+- **“Pick it back up” is on the work now, and the app’s bookkeeping is off your list.** When something interrupted you, the app wrote itself a note called *where you left off* — and that note sat at the top of everything you had written, with a *Done* button on it, as though it were one of your things. It never was. Taking it out twice broke the only way back into an interrupted thread, because that row was carrying the act. The act has moved to where it belonged the whole time: the thing you were actually doing now says **Pick it back up** on its own row, under the name you gave it.
+- **Every group in *Where everything is* is now a way in.** That page is the closest thing to seeing all of it at once — *Ready now*, *Coming up*, *Later*, *On the Menu*, *Done*, each with a number — and none of the numbers went anywhere. Pressing one takes you to your list with that group in front of you. A group holding nothing is not listed there at all, so every row on that page opens onto something.
+
 ## 3.23.23 — ITERATION
 
 *2026-09-10*
