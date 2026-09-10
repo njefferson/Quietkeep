@@ -648,6 +648,16 @@ so wrong.
 > **The social preview genuinely cannot be read this way** — no API field exposes it. That
 > half stands, and settling it needs the repo's raw HTML and a look at the `og:image` host.
 >
+> **AND THAT HALF IS NOW SETTLED, BY DOING IT — 2026-09-10.** The hub's `METADATA.md`
+> gained a section saying exactly how, and this row had been carrying the method as a
+> suggestion for a month without anybody running it. `curl` to `github.com` (not the API
+> host, which is still refused) returns the page, and its `og:image` reads
+> `repository-images.githubusercontent.com/1314252191/…` — the uploaded-card host, as
+> against `opengraph.githubassets.com`, which is what GitHub auto-generates when nothing
+> was uploaded. So all four §10 values are now verified rather than remembered, and none of
+> them disagrees with what the owner said. **A method written down and never run is the
+> same as not having one**, which is this file's own recurring subject.
+>
 > **What does NOT change is the rule underneath.** Doctrine §10 still says list the values
 > and ask the owner to confirm each, and the failure this row exists to record was never really
 > "the API was unreachable" — it was *contradicting the owner about the owner's own repo on the strength of

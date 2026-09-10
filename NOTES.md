@@ -472,55 +472,42 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
-### What a cold read IS, and the two things it may not do (2026-09-10, the owner's instruction)
+### What a cold read IS — the method is the HUB's now (2026-09-10)
 
-Five of these have now run and they have been the most productive instrument this
-repo has. They also have a failure mode that had already started and that nothing
-here named, so it is named now, before a sixth.
+[`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md)
+carries the method and both prompts. **This section was written here first and
+that was a fork** — the hub's `CLAUDE.md` had already declared the file
+canonical, and the file simply did not exist yet, so a rule written in this repo
+looked like the only copy. It is not, and the rule against forking the doctrine
+does not have an exception for being first. What follows is only what belongs to
+THIS repo: the runs, and the two rulings measured on them.
 
-**A COLD READ REPORTS A SYMPTOM. IT DOES NOT GET TO PICK THE REMEDY.** A fresh
-reader can say *I stopped here*, *this said something untrue*, *I could not find
-it* — and every one of those is evidence nothing else in this repo produces. What
-it cannot say is what the app should therefore do, because it has read none of
-the research, none of the ADRs, and none of the refusals; its expectation is one
-person's expectation, and this app is not built to meet expectations. The remedy
-is decided from `docs/nd-collisions.md`, the ADRs and the ten laws — and the
-entry is CITED when the fix lands, or the fix is refused.
+**The two refusals now live in the hub**, in short: a cold read reports a SYMPTOM
+and does not pick the remedy — the remedy is decided from `docs/nd-collisions.md`,
+the ADRs and the ten laws, and the entry is CITED when the fix lands or the fix
+is refused. And a read is never run as a PERSON; the condition is given as
+circumstances instead.
 
-**IT HAPPENED IN THIS SESSION AND THAT IS WHY THIS IS HERE.** The fifth read
-reported that sorting seven things as *Next action* left the offer saying
-*Nothing is asking today*, and said what it had expected instead. That
-expectation went out as a recommendation with reasons of its own, and only on
-being asked what the research indicated did anybody open the catalog. The
-research turned out to point the same way — entry 4, time blindness, Strong for
-the phenomenon and measured on this audience — but the ORDER was wrong, and on
-the second question that session got it backwards: it recommended a ninth sort
-destination for a worry, which entry 30 spends its whole length arguing against.
-A cold read agreeing with the research is luck. Checking first is the method.
+**WHAT THIS REPO CONTRIBUTED, and it is a scoreboard rather than an opinion.**
+Across the fifth read's fixes:
 
-**AND THE HELD-LIST ECHO IS THE GOOD CASE, kept as the shape to imitate.** The
-same read reported every row under *Not sorted yet* also saying *not sorted yet*.
-That is real repetition and the fix was written — and the smoke walk refused it,
-on two assertions written years earlier that read the ROW for the state. It was
-reverted within the hour and 3.23.15 exists to say so in the reader's own words.
-The instrument that caught it was a measurement, not a judgment.
+- Taken from the research, **both held.** 3.23.18's wall came from entry 3 (out
+  of sight, out of mind — Strong, and this product's thesis); 3.23.22's split of
+  `CALENDAR_KINDS` came from entry 28's 50% condition.
+- Taken from a session's own reading of a symptom, **both were wrong**, and both
+  were caught by a browser walk rather than by review. The held-list echo was
+  written and reverted within the hour when the smoke walk refused it on two
+  assertions that read the ROW for the state (3.23.15 says so in the reader's
+  words). Excluding the resume card took the only *Pick it back up* in the app
+  with it (3.23.21 put the route back).
 
-**THE SECOND THING IT MAY NOT DO: BE RUN AS A PERSON.** A read is never framed as
-*a neurodivergent user*, and the reason is the same reason this app is designed
-against a CONDITION rather than a diagnosis — low capacity, high demand,
-interruption, engagement that varies. A persona is a stereotype with a costume
-on; it produces what the model believes about a group rather than what the app
-does under load. And the condition is not owned by any group: everybody enters it
-under stress, illness, grief, a bad week, a new baby, a deadline. That is the
-whole reason one design serves both, and it is why the audience question — *can
-somebody who meets this condition most often and most severely understand this
-app* — is answered by putting the app UNDER THE CONDITION, not by asking a model
-to impersonate a diagnosis.
-
-So a read that wants to test that is given the CONDITION as its circumstances:
-arriving cold with no memory of a previous session, interrupted mid-action and
-made to come back, given minutes rather than an hour, holding more than fits in a
-head, on a phone, by touch. Those are testable. *Be neurodivergent* is not.
+**And the order was wrong on the read that produced the best fix.** The fifth
+read reported that sorting seven things as *Next action* left the offer saying
+*Nothing is asking today*, and said what it expected instead; that expectation
+went out as a recommendation before anybody opened the catalog. The research
+happened to agree. On the second question in the same reply it did not: a ninth
+sort destination for a worry was recommended, and entry 30 spends its whole
+length arguing against one. A cold read agreeing with the research is luck.
 
 ### The FOURTH cold read — 2026-09-09, and it was asked whether the app can be UNDERSTOOD
 
@@ -1483,7 +1470,7 @@ count here is maintained by hand and nothing would catch it going stale.
   - Status: **Closed.** The name is Quietkeep, [ADR-0024](docs/adr/0024-name-quietkeep.md).
 - **Q-09**
   - Question: The four §10 repo-metadata values
-  - Answer: **All four set, 2026-07-28.** Description, website, topics (`indexeddb` corrected during the pass), and the **social preview uploaded**. Per §10 the repo is now *set up* — and the confirmation **is** the verification: a session cannot read this repo's live metadata at all ([V-11](docs/verifications.md)).
+  - Answer: **All four set, 2026-07-28.** Description, website, topics (`indexeddb` corrected during the pass), and the **social preview uploaded**. Per §10 the repo is now *set up*. **The clause that used to close this line — “the confirmation IS the verification: a session cannot read this repo's live metadata at all” — was stale and contradicted [V-11](docs/verifications.md)'s own correction, which had said otherwise since 2026-08-09.** All four are verified now: description, website, topics and default branch through the GitHub MCP, and the social preview by reading the repo page's `og:image` host (`repository-images.githubusercontent.com`, so a real card was uploaded). Every one matches. The confirmation is still what AUTHORIZES a value under §10; it is no longer the only thing that can see one.
   - Status: **Closed.** All four metadata values set 2026-07-28, per Doctrine §10.
 - **Q-04**
   - Question: Pages subdomain string
