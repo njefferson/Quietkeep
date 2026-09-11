@@ -1990,7 +1990,17 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.29**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.30**, which production does
+  not carry: the closed-wait half of 3.23.29's people fix, and it is a RELEASE
+  rather than a follow-up commit because it has to be. `src/people.ts` changed
+  after 3.23.29's triplet was cut, and the service worker caches by a name
+  carrying the triplet — so until the triplet moves, `sw.js` keeps its bytes,
+  no new worker installs, and every already-installed reader keeps the old
+  bundle. `release:check` is the gate that refused it, in CI, on the run that
+  was going to be promoted: **the fix was published and could not arrive**.
+  That is LESSONS §53's shape caught before it shipped rather than four
+  releases later.
+- **Superseded: 3.23.29**, which production does
   not carry: the sixth cold read's last three untrue statements, and one of them
   was two defects wearing one symptom.
   **Two screens disagreed about how many things have a date.** The gate cures

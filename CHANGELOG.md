@@ -14,6 +14,12 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.30 — ITERATION
+
+*2026-09-11*
+
+- **And marking one of those arrived takes it off the list again.** The release before this one made something you had marked as owed to you by hand show up under *With other people*. Saying it had arrived then left it sitting there, because the note of who it was with outlives the answer about whether it came. Both halves work now: you can mark a thing as owed to you on anything at all, and you can say it arrived.
+
 ## 3.23.29 — ITERATION
 
 *2026-09-11*
