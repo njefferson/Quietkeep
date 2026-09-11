@@ -107,6 +107,37 @@ export const isOpenWaiting = (n: NodeState): boolean =>
   n.kind === 'waiting-for' && alive(n) && !n.lastDone && !n.waitingOutcome;
 
 /**
+ * THE OTHER WAY SOMEBODY SAYS THIS IS WITH SOMEONE — a person link the reader
+ * set, on any node, with the relation the detail sheet calls *they owe me this*.
+ *
+ * The sixth cold read found *"One thing is with someone else"* on a surface that
+ * omitted exactly this: the app offers that relation on EVERY node's sheet, and
+ * *With other people* keyed only off the `waiting-for` kind, so a link the app
+ * had just invited appeared nowhere. One thread was listed and another, marked
+ * more explicitly than the first, was silent.
+ *
+ * `personView`'s docblock has promised this since it was written — "built from
+ * the waiting-for kind AND the `waiting-on` relation, because those are two ways
+ * of saying the same thing and an app that showed only one of them would be
+ * right half the time". Its code said `isOpenWaiting(n) && links.some(…)`, so
+ * the relation could only ever pick WHICH person, never admit a node. A comment
+ * that states the fix is not the fix.
+ *
+ * SEPARATE FROM `isOpenWaiting` ON PURPOSE, not folded into it. That predicate
+ * also gates the detail sheet's *It arrived* button and `closeWaitingEvents`,
+ * which writes `waiting.closed` — an act that belongs to the `waiting-for` kind
+ * and to nothing else. Widening it would have put that button on any action
+ * carrying a name, which is a write this fix has no business reaching.
+ *
+ * NO DURATION, and that follows from the shape rather than from a rule anybody
+ * remembers: a `people[]` link carries no date, so `openDays` returns null, the
+ * row says "With Sam." and the sort puts it after everything that can say how
+ * long. An age invented for it would be the ledger ADR-0010 refuses.
+ */
+export const linkedWaitingOn = (n: NodeState): boolean =>
+  alive(n) && !n.lastDone && n.people.some(l => l.relation === 'waiting-on');
+
+/**
  * Everything attached to one person.
  *
  * `owes` is the half people actually come here for. It is built from the
@@ -125,7 +156,10 @@ export function personView(state: State, personId: string, nowIso: string, zone:
   for (const n of heldNodes(state)) {
     if (n.id === personId) continue;
     const links = n.people.filter(l => l.person === personId);
-    const owed = isOpenWaiting(n) && (n.waitingOn === personId || links.some(l => l.relation === 'waiting-on'));
+    // EITHER WAY OF SAYING IT ADMITS THE NODE, which is what the docblock above
+    // has always claimed and the `&&` here never did.
+    const owed = (isOpenWaiting(n) && n.waitingOn === personId)
+      || links.some(l => l.relation === 'waiting-on');
     if (owed) {
       owes.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, day) });
       continue;
@@ -159,12 +193,20 @@ export function openDays(n: NodeState, nowIso: string, day: DayShape): number | 
  * because the route that creates one is a single tap, and dropping it from the
  * one surface that lists what you are owed would make that surface quietly
  * incomplete.
+ *
+ * AND BOTH WAYS OF SAYING IT, not only the route. `linkedWaitingOn` says why: the
+ * sheet offers *they owe me this* on every node, and until 3.23.29 this read the
+ * kind alone, so a link the app had just invited was listed nowhere while the
+ * count above the list spoke as if it were complete.
  */
 export function waitingOnAnyone(state: State, nowIso: string, zone: string): PersonLine[] {
   const out: PersonLine[] = [];
   const day: DayShape = { zone, boundary: boundaryOf(state) };
   for (const n of heldNodes(state)) {
-    if (!isOpenWaiting(n)) continue;
+    // BOTH WAYS IN. `linkedWaitingOn` is the relation the detail sheet invites on
+    // every node; without it this surface listed only what the *Waiting for*
+    // route made, and said a count that did not include the rest.
+    if (!isOpenWaiting(n) && !linkedWaitingOn(n)) continue;
     out.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, day) });
   }
   return out.sort((a, b) => (b.days ?? -1) - (a.days ?? -1) || (a.node.id < b.node.id ? -1 : 1));

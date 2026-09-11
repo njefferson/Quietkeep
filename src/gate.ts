@@ -17,7 +17,7 @@ import {
   DEMAND_FREE_KINDS, isKnownKind, isSilentRisk,
   type AppEvent, type EventKind, type NodeId, type NodeKind, type VaultId,
 } from './events.ts';
-import { applyEvent, cloneShell, compareEvents, compareOrdering, fold, type NodeState, type State } from './fold.ts';
+import { applyEvent, cloneShell, compareEvents, compareOrdering, fold, isAppClock, type NodeState, type State } from './fold.ts';
 import { endOfLocalDay, isValidIso, atMidnight} from './time.ts';
 // Follows a merge chain to its living end. Lived here as a private
 // `mergeTarget` until 1.9.2, when the ledger needed the same walk — one
@@ -309,7 +309,7 @@ export const trashedNodes = (state: State): NodeState[] =>
  * fixed for, in the third place nobody looked. The reason a reader would give
  * is the reason to print.
  */
-export type CoverReason = 'decided' | 'done' | 'clock' | 'menu' | 'demand-free' | 'parent' | 'after';
+export type CoverReason = 'decided' | 'done' | 'clock' | 'cure' | 'menu' | 'demand-free' | 'parent' | 'after';
 
 /** Which clause covers this node, or null if NOTHING does — which is the answer
  *  the whole surface exists to be able to give. */
@@ -344,7 +344,31 @@ export const whyCovered = (
   // `hasCadence` is the same question asked of the fields, and `pressureOf`
   // returns null for everything it rejects, so the two cannot part company.
   if (node.lastDone && !hasCadence(node)) return 'done';
-  if (Object.keys(node.clocks).length > 0) return 'clock';
+  // A GATE CURE IS NOT A DAY THE READER SET, AND THIS IS THE FIFTH ROUND OF THIS
+  // FUNCTION'S ONE MISTAKE (3.23.29). The comments above record three — Menu
+  // before clock, twice, then Done before clock — and every one of them has the
+  // same shape: a state that should win is invisible here because the node still
+  // carries a clock in `node.clocks`, and this asks about the clock first.
+  //
+  // The remaining case is the plainest one in the app. The gate cures EVERY
+  // undated node with a `review` clock so that nothing can go silent (law 1), so
+  // an action nobody has dated arrives here carrying exactly one clock, and it is
+  // the app's own. Measured on a store of one such action: *See what is next*
+  // said "One thing is here without a date" while *What comes back, and when*
+  // said "1 with a day they come back to you", about that same node, in the same
+  // store, at the same moment. A sixth cold read met the same contradiction at
+  // scale and could not reconcile the two screens.
+  //
+  // It is `cure` rather than `null`, because the cure is real: the thing DOES
+  // come back, which is what the cure is for, and filing it under the exceptions
+  // would say the app cannot promise something it can. What was wrong was the
+  // WORDS — the proof's whole value is being checkable from outside, and a reader
+  // who opens the sheet sees rows reading "held" with no date on them.
+  //
+  // `isAppClock` is the one definition of that distinction and is already what
+  // `soonestDemand` asks, which is why the two screens can now agree at all.
+  const clocks = Object.values(node.clocks).filter(c => c != null);
+  if (clocks.length > 0) return clocks.every(c => isAppClock(c)) ? 'cure' : 'clock';
   if (isDemandFree(node.kind)) return 'demand-free';
   if (node.parent) {
     const seen = new Set<NodeId>();

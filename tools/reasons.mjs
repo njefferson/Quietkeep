@@ -16,6 +16,9 @@
 //   1. The record is TOTAL over `NextUpReason` — every reason has words.
 //      (The compiler enforces this too; the gate says so out loud, because a
 //      `Record<K, V>` quietly stops being total if the key type widens.)
+//   1b. The COVERAGE record is total over `CoverReason` — same property, second
+//      record, and ungated for its whole life until 3.23.29. Two `REASON_WORDS`
+//      of the same name exist; this read only one of them.
 //   2. No `words:` in the offer projection is an inline literal. Every one goes
 //      through the record, so there is exactly ONE writer — the property
 //      `place` already has, and the reason `place` has never disagreed with
@@ -30,6 +33,16 @@ import { dirname, join } from 'node:path';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = readFileSync(join(root, 'src/nextup.ts'), 'utf8');
+// THE SECOND RECORD OF THE SAME NAME, and it was ungated for its whole life
+// (3.23.29). `src/ui/work.ts` carries its own `REASON_WORDS`, keyed on
+// `CoverReason` from `gate.ts`, for the coverage sheet's count lines. This gate
+// read `src/nextup.ts` alone, so both checks below passed while a brand-new
+// `CoverReason` had no words at all — measured by planting exactly that: green,
+// and the sheet would have printed `undefined` beside a count on the one surface
+// in this app whose entire job is being checkable from the outside. Two records
+// with one name, and only one of them looked at.
+const gate = readFileSync(join(root, 'src/gate.ts'), 'utf8');
+const work = readFileSync(join(root, 'src/ui/work.ts'), 'utf8');
 
 let failed = 0;
 const ok = (m) => console.log(`  ok    ${m}`);
@@ -60,6 +73,42 @@ if (!typeLine) {
     });
     if (missing.length) fail(`no words for: ${missing.join(', ')} — every reason states one`);
     else ok(`every one of the ${reasons.length} reasons has words in REASON_WORDS`);
+  }
+}
+
+// --- 1b · the COVERAGE record is total over CoverReason ----------------------
+// Same property, second record. The compiler enforces it too now — `work.ts`
+// types it `Record<CoverReason, string>` rather than `Record<string, string>` —
+// and this says so out loud for the reason the header already gives: that
+// enforcement evaporates the moment somebody widens the key back to `string`,
+// which is the state it was found in.
+{
+  const decl = gate.match(/export type CoverReason\s*=\s*([^;]+);/);
+  const at = work.indexOf('const REASON_WORDS');
+  const close = at < 0 ? -1 : work.indexOf('\n  };', at);
+  if (!decl) {
+    fail('CoverReason is not declared in src/gate.ts where this gate can read it');
+  } else if (at < 0 || close < 0) {
+    fail('the coverage REASON_WORDS is not declared where this gate can read it');
+  } else {
+    const reasons = [...decl[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+    const body = work.slice(at, close);
+    const missing = reasons.filter(r => {
+      const bare = new RegExp(`(^|[\\s,{])${r}\\s*:`, 'm');
+      const quoted = new RegExp(`'${r}'\\s*:`);
+      return !bare.test(body) && !quoted.test(body);
+    });
+    if (missing.length) {
+      fail(`the coverage sheet has no words for: ${missing.join(', ')} — a count with no reason is not checkable`);
+    } else {
+      ok(`every one of the ${reasons.length} coverage reasons has words in work.ts`);
+    }
+    // AND KEYED ON THE TYPE, so the compiler carries it between runs of this.
+    if (!/const REASON_WORDS: Record<CoverReason, string>/.test(work)) {
+      fail('the coverage REASON_WORDS is not typed Record<CoverReason, string> — widen the key and totality is gone');
+    } else {
+      ok('and the record is keyed on CoverReason, so the compiler holds it too');
+    }
   }
 }
 

@@ -8029,12 +8029,55 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     });
   });
   const beforeRows = await purgeRows();
-  const beforeLog = await logCount();
+  // NOT a const: the block below deliberately puts one thing down to prove the
+  // count repaints mid-sitting, so the "wrote nothing" baseline is retaken
+  // after it. That assertion is about what the PURGE PANEL writes — which must
+  // be nothing until the word is typed — and a capture made on purpose is not
+  // what it is guarding.
+  let beforeLog = await logCount();
   await openSurface(tpage, 'about');
   await tpage.waitForSelector('#about[open]');
   await openSurface(tpage, 'sheet-group-data');
   is(/\d+ thing/.test(await tpage.locator('#purge-summary').textContent() || ''), true,
     'it says how many things are on the surfaces');
+
+  // AND IT SAYS SO AGAIN AFTER SOMETHING CHANGES, WITHOUT A RELOAD (3.23.29).
+  //
+  // The line above has passed for the life of this panel while the count was
+  // painted ONCE, inside `mountAbout`, and never again — because this walk
+  // RELOADS before it gets here, so the mount happens over a populated store
+  // and the frozen number is accidentally right. A reader who simply puts
+  // things down during a sitting never re-mounts, so on a cold start the panel
+  // said "There is nothing here to clear." for the rest of the session,
+  // whatever they added. A cold read met that over a store holding 27.
+  //
+  // THE OBVIOUS DIAGNOSIS WAS WRONG and is recorded so nobody re-derives it:
+  // the panel's header states `heldWork` and this line counts `heldNodes`,
+  // which is the SUPERSET — so the wide count cannot be zero while the narrow
+  // one is 27. Two counts disagreeing was never the mechanism. One count,
+  // frozen at boot, was.
+  //
+  // So this asserts the thing the reader does: put something down, reopen the
+  // panel, and watch the number move. Hub LESSONS §268 — the walk was
+  // measuring from after a reload, which is not where the defect lives.
+  const purgeSaidFirst = (await tpage.locator('#purge-summary').textContent() || '').trim();
+  await tpage.click('#sheet-group-data [data-way-out]').catch(async () => {
+    await tpage.evaluate(() => { for (const d of document.querySelectorAll('dialog')) if (d.open) d.close(); });
+  });
+  await tpage.evaluate(() => { for (const d of document.querySelectorAll('dialog')) if (d.open) d.close(); });
+  await tpage.fill('#capture', 'one more for the clear-out count');
+  await tpage.press('#capture', 'Enter');
+  await settled(tpage, 250);
+  await openSurface(tpage, 'about');
+  await tpage.waitForSelector('#about[open]');
+  await openSurface(tpage, 'sheet-group-data');
+  await settled(tpage, 250);
+  const purgeSaidAfter = (await tpage.locator('#purge-summary').textContent() || '').trim();
+  is(purgeSaidAfter !== purgeSaidFirst, true,
+    `and it counts again when something is added mid-sitting `
+    + `("${purgeSaidFirst.slice(0, 44)}" -> "${purgeSaidAfter.slice(0, 44)}")`);
+  // Retaken, so the guard below measures the purge panel and not this capture.
+  beforeLog = await logCount();
 
   // THE GUARD. Not "a confirm box exists" — that the button is genuinely
   // unusable until the right word is typed, and that a near-miss does not open it.

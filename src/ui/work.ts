@@ -14,14 +14,14 @@
 
 import type { Session } from './session.ts';
 import type { AppEvent, NodeKind } from '../events.ts';
-import type { NodeState } from '../fold.ts';
-import { coverageProof, heldWork, whyCovered } from '../gate.ts';
+import { isAppClock, type NodeState } from '../fold.ts';
+import { coverageProof, heldWork, whyCovered, type CoverReason } from '../gate.ts';
 import { workSurface, type NextUpItem, skipWords } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
 import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
 import { fitsWith, getWithNow } from '../people.ts';
-import { comingBack, undatedCount } from '../held.ts';
+import { comingBack, furtherOut, undatedCount } from '../held.ts';
 import { servesNode } from '../serves.ts';
 import { pressureWords } from '../pressure.ts';
 import { captureContextWords } from '../capture-context.ts';
@@ -954,10 +954,18 @@ export function mountWork(
       // seven invisible. `held.ts:comingBack` says why this is the fix and the
       // clock is not.
       const coming = comingBack(session.state(), nowIso(), session.zone);
+      // AND THE THIRD FACT, which neither of the other two could reach (3.23.29).
+      // `comingBack` is the `soon` group — a week at most, by construction — and
+      // `undatedCount` asks whether anything is demanding. A date further out than
+      // a week answers neither, so three dated projects sat on this screen named
+      // nowhere while the coverage sheet counted them. `held.ts:furtherOut` has
+      // the measurement and says why this is a sentence rather than a bucket
+      // boundary.
+      const further = furtherOut(session.state(), nowIso(), session.zone);
       BEHIND.replaceChildren();
       if (doneBtn) doneBtn.hidden = undated > 0;
       if (skipBtn) skipBtn.hidden = undated > 0;
-      if (undated > 0 || coming) {
+      if (undated > 0 || coming || further) {
         REGION.hidden = false;
         TITLE.textContent = 'Nothing is asking today.';
         TITLE.hidden = false;
@@ -980,7 +988,18 @@ export function mountWork(
           : coming.count === 1
             ? `One thing comes back to you ${coming.words}.`
             : `${coming.count} things come back to you, the first of them ${coming.words}.`;
-        WHY.textContent = [back, loose].filter(Boolean).join(' ');
+        // FURTHER OUT THAN THE WEEK, and never "more" — the word only reads as
+        // *more* when something came before it, and this clause stands alone
+        // whenever nothing is coming back inside the week.
+        const far = !further ? ''
+          : further.count === 1
+            ? `One more has a day further out, ${further.words}.`
+            : `${further.count} more have a day further out, the first of them ${further.words}.`;
+        const farAlone = !further ? ''
+          : further.count === 1
+            ? `One thing has a day further out, ${further.words}.`
+            : `${further.count} things have a day further out, the first of them ${further.words}.`;
+        WHY.textContent = [back, back ? far : farAlone, loose].filter(Boolean).join(' ');
         COUNT.textContent = '';
         if (LOADNOTE) { LOADNOTE.textContent = ''; LOADNOTE.hidden = true; }
         // THE AMBIENT HORIZON IS PAINTED HERE, NOT CLEARED (3.23.18). Every other
@@ -1102,8 +1121,23 @@ export function mountWork(
   // one thing under a reason sees only the broken one. Rather than a second
   // table of singulars to keep in step, every phrase is now number-agnostic:
   // it modifies the count instead of agreeing with it.
-  const REASON_WORDS: Record<string, string> = {
+  // TYPED ON `CoverReason`, NOT `string` (3.23.29). `Record<string, string>` let
+  // 3.23.29's own new reason be added to `gate.ts` with no words here, and the
+  // sheet would have rendered `undefined` beside a count — on the one surface in
+  // this app whose entire job is being checkable from outside. `tools/reasons.mjs`
+  // holds the same totality out loud, for the reason its own header gives about
+  // the offer's record: a `Record<K, V>` quietly stops being total the moment the
+  // key type widens back to `string`.
+  const REASON_WORDS: Record<CoverReason, string> = {
     clock: 'with a day they come back to you',
+    // THE APP'S OWN MARKER IS NOT A DAY YOU SET (3.23.29). Every undated node
+    // carries a `review` cure so that nothing goes silent (law 1), and those were
+    // counted under `clock` above — so this line said "with a day they come back
+    // to you" about the very things *See what is next* was calling "here without
+    // a date", in the same store, at the same moment. The reason a reader would
+    // give is the reason to print, and a reader opening this sheet sees these
+    // rows reading "held" with no date on them.
+    cure: 'held, with no day you have set \u2014 they still come back',
     // FINISHED, AND NOT COMING BACK (3.23.16). These were counted under `clock`
     // and listed as returning today, because the log is append-only and marking
     // a thing done does not erase the day it carried. An upkeep between rounds
@@ -1166,8 +1200,22 @@ export function mountWork(
    *  `due` while its row said `returns` from its `suspense` is a list that is
    *  wrong in the one way nobody would think to check. Same rule `src/today.ts`
    *  states about a second definition of "what matters today". */
-  const rowClock = (n: NodeState) =>
-    n.clocks.due ?? n.clocks.review ?? n.clocks.start ?? n.clocks.suspense ?? n.clocks.park;
+  /**
+   * THE DAY A READER PUT ON THIS ROW, never the app's own marker (3.23.29).
+   *
+   * `isAppClock` is the filter and it is load-bearing twice over on this sheet.
+   * Without it the gate's `review` cure — which every undated node carries, so
+   * that nothing can go silent (law 1) — was the clock this returned, so a thing
+   * nobody had dated printed "returns today" and SORTED TO THE FRONT of a sheet
+   * titled *What comes back, and when*. The comment on the sort directly below
+   * says undated things belong at the end, and it was right; nothing was
+   * reaching that branch, because a cured node is never clockless.
+   */
+  const rowClock = (n: NodeState) => {
+    const mine = [n.clocks.due, n.clocks.review, n.clocks.start, n.clocks.suspense, n.clocks.park]
+      .find(c => c != null && !isAppClock(c));
+    return mine ?? undefined;
+  };
 
   function buildCoverage(): void {
     const state = session.state();

@@ -224,6 +224,13 @@ export async function mountAbout(
    *  navigation block below, and used by the two deep links that land somebody
    *  inside a sheet: the footer's build stamp and the empty store's way back. */
   let goToSheet: (target: string) => void = () => { /* replaced below */ };
+  /** The clear-out panel's own count, repainted when its sheet opens.
+   *
+   *  Assigned where the panel is wired, several hundred lines down, and called
+   *  from `repaintSheet` — the same shape `goToSheet` above uses, and for the
+   *  same reason: the thing that must be called and the thing that can call it
+   *  are in different scopes. */
+  let repaintPurge: () => Promise<void> = async () => { /* replaced below */ };
 
   // WHERE THINGS ARE (1.40.0, ADR-0083). Things you can do, Settings, Your data,
   // Help and How it works are their own sheets, opened from "More". They were
@@ -1980,7 +1987,27 @@ export async function mountAbout(
   // would work and would also make "which screen owns this" unanswerable the
   // next time something moves.
   repaintSheet = (id) => {
-    if (id === 'sheet-group-data') void paintStorage();
+    if (id === 'sheet-group-data') {
+      void paintStorage();
+      // AND THE CLEAR-OUT COUNT (3.23.29). `paintSummary` was awaited ONCE, at
+      // mount, and never again — so the panel reported the store as it stood
+      // at boot for the rest of the session. On a fresh load that is an EMPTY
+      // store, and "There is nothing here to clear." then sat above two clear
+      // buttons for ever, whatever the reader put in afterwards. A cold read
+      // met it over a store holding 27 things.
+      //
+      // Reproduced before it was touched: three captures, reopen the panel,
+      // still "There is nothing here to clear." The obvious diagnosis — two
+      // counts disagreeing — was WRONG and is worth recording, because
+      // `heldNodes` here is the SUPERSET of the `heldWork` the header states,
+      // so the wide count cannot be zero while the narrow one is 27. It was
+      // one count, frozen.
+      //
+      // The two lines it governs are the whole safeguard on that panel: what
+      // the button will actually destroy, and whether a copy is worth pressing
+      // first. Both are worse than useless when stale.
+      void repaintPurge();
+    }
     if (id === 'sheet-group-actions') {
       paintCalendar();
       void paintAnchors().catch(() => { /* the next open repaints it */ });
@@ -2243,6 +2270,9 @@ export async function mountAbout(
         purgeBackup.classList.toggle('ghost', count.things === 0 && count.events === 0);
       }
     };
+    // Registered for the sheet's own repaint, not only run here. Mount-time is
+    // the one moment this panel is guaranteed to be wrong on a cold start.
+    repaintPurge = paintSummary;
     await paintSummary();
 
     const close = (): void => {

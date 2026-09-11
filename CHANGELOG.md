@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.29 — ITERATION
+
+*2026-09-11*
+
+- **Two screens no longer disagree about how many of your things have a date.** *What comes back, and when* counted a thing as having *a day it comes back to you* when the only day on it was one the app had put there to make sure it never went quiet — so the same thing was *here without a date* on one screen and dated on another, at the same moment, and its row said it came back today and sorted to the top of the list. Those rows say *held* now, and the line above them says what is true: held, with no day you have set — they still come back.
+- **And things you dated for further out than a week are named instead of standing there in silence.** When nothing was asking today, the screen counted what was coming back inside the week and what had no date at all — so anything dated beyond that was in neither number and appeared nowhere. It says how many have a day further out, and when the nearest of them is. It is a fact, not a nudge: nothing is being asked of you today.
+- **Something you marked as owed to you by hand now shows up under *With other people*.** You can tell the app *they owe me this* on anything, and it offers that on every thing you open — but the list of what is with other people only ever showed what you had sent through *Waiting for*. So one thread was listed, another you had marked more plainly than the first was not, and the count above them spoke for both. Both are listed now, on that screen and on the person’s own page. Nothing you marked by hand claims a length of time, because you never said when it started.
+- **And the panel of things to clear counts what is actually there while you work.** It read the store once when the page opened and never again, so it could say *There is nothing here to clear* over a store holding twenty-seven.
+
 ## 3.23.28 — ITERATION
 
 *2026-09-11*
