@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.23.28',
+    kind: 'ITERATION',
+    date: '2026-09-11',
+    notes: [
+      '**A project or an area no longer says its date is unsaved when it is saved.** *Not kept yet \u2014 press Set.* is there to tell you a day you picked has not actually been kept \u2014 the one warning in the app you cannot afford to miss, because a filled box looks exactly like a saved one. On anything you had filed something into, it was showing permanently: above a line already telling you the day it came back, and still there after you pressed Set. A warning that is always on says nothing, and teaches you to ignore the time it means something.',
+      '**And *Not this* no longer says it moved on when it did not.** Press it when there is nothing else to offer and the app said *Showing \u2026 instead*, naming the very thing you had just turned down. It says what is actually true now: still that one, and nothing else is asking today. It still records nothing, as it always has.',
+    ],
+  },
+  {
     triplet: '3.23.27',
     kind: 'ITERATION',
     date: '2026-09-10',

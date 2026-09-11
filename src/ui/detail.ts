@@ -111,6 +111,41 @@ const dayOf = (s: { zone: string; state: () => import('../fold.ts').State }): im
   ({ zone: s.zone, boundary: boundaryOf(s.state()) });
 
 const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
+
+/**
+ * WHICH CLOCK THE DATE CONTROL OWNS — asked once, answered for both readers.
+ *
+ * 3.23.16 taught the FILL to read a container's `review` slot, because a
+ * container dated through the sort flow writes `review` and the box was coming
+ * up empty while the card above it said when the thing came back. It did not
+ * teach `storedDue`, twelve hundred lines away, which went on reading `due`
+ * alone.
+ *
+ * SO THE TWO COULD NEVER AGREE ON A CONTAINER, and "Not kept yet — press Set."
+ * — the line whose entire job is to say the field and the store disagree —
+ * showed for ever. A cold read photographed it between a header reading
+ * *comes back Sep 20* and a footer reading *Comes back Sep 20.*, and it
+ * survived pressing Set, which is precisely the moment it promises to go.
+ *
+ * That line exists because a picked day looks exactly like a kept one, and a
+ * reader who cannot tell is a reader who believes something is scheduled when
+ * it is not. A version of it that is ALWAYS on says nothing at all, and worse:
+ * it trains somebody to ignore the one warning that matters.
+ *
+ * One function, two callers, so they cannot drift apart again — the shape
+ * `whyCovered` and `heldWork` are each written once for.
+ *
+ * `isAppClock` stays load-bearing: every container carries the gate's own cure
+ * in `review` from the moment it exists, and showing that would put a date
+ * nobody set into the box on every container in the store.
+ */
+const ownDateClock = (n: NodeState | null | undefined) => {
+  if (!n) return undefined;
+  return isContainer(n)
+    ? (isAppClock(n.clocks.review) ? undefined : n.clocks.review) ?? n.clocks.due
+    : n.clocks.due;
+};
+
   const dlg = q<HTMLDialogElement>('#detail');
   const title = q('#detail-title');
   const state = q('#detail-state');
@@ -788,9 +823,7 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
     // `due` is still read as a fallback so a container dated by THIS control
     // before today keeps showing its date. That clock stays in the log and still
     // groups the node, so nothing is lost by the control no longer writing it.
-    const own = isContainer(n)
-      ? (isAppClock(n.clocks.review) ? undefined : n.clocks.review) ?? n.clocks.due
-      : n.clocks.due;
+    const own = ownDateClock(n);
     DATE.value = own ? localDayKey(own.at, dayOf(session)) : '';
     if (startInput) startInput.value = n.clocks.start ? localDayKey(n.clocks.start.at, dayOf(session)) : '';
     // The note rides the same no-clobber rule as the rename box: `render` runs
@@ -1537,8 +1570,12 @@ const q = <T extends HTMLElement>(sel: string): T | null => document.querySelect
   });
 
 
-  const storedDue = (): string =>
-    current?.clocks.due ? localDayKey(current.clocks.due.at, dayOf(session)) : '';
+  // THE SAME QUESTION THE FILL ASKS. Reading `due` here while the box is filled
+  // from `review` is what left the unsaved line permanently on.
+  const storedDue = (): string => {
+    const own = ownDateClock(current);
+    return own ? localDayKey(own.at, dayOf(session)) : '';
+  };
   const storedStart = (): string =>
     current?.clocks.start ? localDayKey(current.clocks.start.at, dayOf(session)) : '';
   const storedSuspense = (): string =>
