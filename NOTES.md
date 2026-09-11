@@ -1848,7 +1848,28 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.0**, promoted 2026-09-11 at `93d023e` — a place can
+- **PRODUCTION CARRIES 3.24.1**, promoted 2026-09-11 at `4bd6b85` — the sorting
+  screen offers the kind of place it had been NAMING four times over: the
+  field's placeholder, its label, the empty-field message and the route hint
+  that opens it. Whatever was typed became a project.
+  `fileUnderNewEvents` called `createParentEvents` with no kind, and that
+  function's own comment already recorded the cost — *"Defaulted, so the triage
+  route and every existing caller keep making projects without saying so."* The
+  parameter had been there all along, unused by the one caller that needed it.
+  Verified: `merge-tree --write-tree` gave `042bbec`, the same tree OBJECT as
+  the staging head, with the Spine green by head SHA at `c57824f` (run 900),
+  read by step-level conclusions.
+  **It also closes a claim 3.24.0 itself broke** — that release's manual
+  passage said making a place while filing offers the choice in the same breath
+  as the name, true of the detail sheet and false on the sorting screen. True
+  in both now.
+  **And two limits are recorded rather than glossed.** `size:check` measures the
+  static shell, so a control rendered in JS on a sub-screen costs it nothing —
+  the a11y walk's existing *place picker* state is what measures this one, which
+  was verified by reading the targets audit's own selector. A native select's
+  option text is contrast-measured by neither the class registry nor axe;
+  pre-existing and app-wide.
+- **Superseded: production at 3.24.0**, promoted 2026-09-11 at `93d023e` — a place can
   be an area or a goal, and the choice can be changed. The cold read's remaining
   reader-blocking finding: four places made through the app, one meant as an
   ongoing area, every one a project with no way to say otherwise.
@@ -2027,8 +2048,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.1**, which production does
-  not carry: the sorting screen offers the kind of place it has been NAMING all
+- **https://staging.quietkeep.pages.dev** — **3.24.1**, which production now
+  ALSO carries (promoted at `4bd6b85`): the sorting screen offers the kind of place it has been NAMING all
   along. The field's placeholder says *"Name a new project, area or goal"*, its
   label says it again, the empty-field message a third time and the route hint
   that opens the screen a fourth — four promises, and whatever was typed became
@@ -4004,8 +4025,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.0** — promoted at
-  `93d023e` on 2026-09-11, carrying 3.24.0 alone: a place can be told it is a
+- **https://quietkeep.pages.dev** — production, **3.24.1** — promoted at
+  `4bd6b85` on 2026-09-11, carrying 3.24.1 alone: sorting something into a new
+  place asks which kind of place, which that screen had been saying all along.
+  Merged tree `042bbec`, the same tree OBJECT as the staging head; Spine green
+  by head SHA at `c57824f`, run 900. Before it, `93d023e` carried 3.24.0 alone: a place can be told it is a
   project, an outcome, an ongoing area or a goal, and told again if the first
   answer was wrong. Merged tree `dc8827e`, the same tree OBJECT as the staging
   head; Spine green by head SHA at `f106f01`, run 894. Before it, `c5a0ba8`
