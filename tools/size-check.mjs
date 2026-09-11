@@ -301,7 +301,12 @@ const BUDGET = {
   // recite the route, because opening a row from that screen now lands on the
   // control. A budget raise bought by copy that has since been replaced by
   // behavior goes back down — the same trade recorded at 3,400 -> 3,000.
-  words: 4023,
+  // 4023 -> 4026 on 2026-09-11 (3.24.0), UP by exactly three: "This is a" and
+  // the Set beside it. The four kind words the select offers are NOT in this
+  // number and must not be — they are `CONTAINER_ORDER` in `tree.ts`, already
+  // counted for the picker that has always used them, and copying them into a
+  // second place is the thing that list exists to prevent.
+  words: 4026,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -715,7 +720,15 @@ const BUDGET = {
   // 267 -> 268 on 2026-09-01 (3.20.3): the i panel's Elsewhere door. A new
   // control is exactly what this budget exists to make deliberate, and this
   // one closes a wayfinding dead-end rather than adding a destination.
-  controls: 275,
+  // 275 -> 277 on 2026-09-11 (3.24.0), UP by exactly two: the `This is a`
+  // select and its Set, on a container's own sheet. What bought it is a
+  // capability that was in the schema and reachable through no route — a cold
+  // read made four places, one meant as an ongoing area, and every one came
+  // back a project. Both controls are HIDDEN on anything that is not a
+  // container, and the row they sit in is the exact complement of "This is
+  // bigger than one step" above it, so no sheet ever shows both. The shell pays
+  // for two and the reader sees one.
+  controls: 277,
   // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
   // room's two lenses. Three controls, each one of the pass's asks.
   // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.

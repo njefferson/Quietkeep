@@ -9,6 +9,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
 import { fold, type State } from '../src/fold.ts';
+import { admit } from '../src/gate.ts';
+import { changeContainerKindEvents } from '../src/ui/detail-intents.ts';
+import type { NodeKind } from '../src/events.ts';
+import type { StampContext } from '../src/ui/session.ts';
+import { atMidnight } from '../src/time.ts';
 import { stalled, orphaned, reviewExceptions, reviewWords, idleDays, REVIEW_CAP, unfedGoals, quietAreas, quietLines, QUIET_DAYS } from '../src/review.ts';
 import type { AppEvent } from '../src/events.ts';
 
@@ -21,6 +26,16 @@ const ev = (kind: string, node: string | null, payload: unknown): AppEvent =>
 const st = (...e: AppEvent[]): State => fold(e);
 const mk = (id: string, kind: string, title = id, parent?: string): AppEvent =>
   ev('node.created', id, { nodeKind: kind, title, ...(parent ? { parent } : {}) });
+
+// Through the REAL write boundary, so a kind change is cured the way the app
+// cures it. `changeContainerKindEvents` is silent-risk — a kind change can
+// strip a role — and reading its effect on a state the gate never saw would be
+// measuring a store the app cannot produce.
+const write = (prior: State, offered: AppEvent[]): State => fold(admit(offered, prior), prior);
+const ctx = (): StampContext => ({
+  at: NOW, device: 'd0', vault: 'personal', zone: TZ, day: atMidnight(TZ),
+  seq: () => seq++, id: () => `k${seq++}`,
+});
 
 // --- the empty case, which is the normal one -------------------------------
 
@@ -389,4 +404,67 @@ test('a let-go role leaves the surface with no migration', () => {
   ]);
   assert.deepEqual(quietLines(gone), [],
     '`allRoles` resolves through state, so letting a role go removes it everywhere at once');
+});
+
+test('a container can be told what kind it is, and only a container can', () => {
+  // THE SIXTH COLD READ'S REMAINING READER-BLOCKING FINDING. Four containers
+  // made through the app, one meant as an ongoing area, and every one came back
+  // a Project with no way to say otherwise.
+  //
+  // ALMOST NOTHING WAS MISSING, which is the part worth recording.
+  // `node.kind.changed` was already in the vocabulary, ruled by the gate,
+  // applied by the fold and worded by `log-words.ts`, and six UI paths already
+  // emitted it — every one of them to a FIXED kind. So three of the four
+  // container kinds were reachable only at the instant of creation, through a
+  // row that appears after typing an unmatched name nine sections inside "More
+  // about this", and no route corrected the choice afterwards. The capability
+  // was here; the route was not. That is hub LESSONS §95: a thing nobody can
+  // reach is worse than a thing that is absent, because its presence in the
+  // source answers "have we handled this" for everyone after.
+  let s = st(mk('P', 'project', 'the shed'));
+  assert.equal(s.nodes.get('P')!.kind, 'project');
+
+  s = write(s, changeContainerKindEvents(ctx(), 'P', 'project', 'area'));
+  assert.equal(s.nodes.get('P')!.kind, 'area', 'a project can become an ongoing area');
+
+  s = write(s, changeContainerKindEvents(ctx(), 'P', 'area', 'goal'));
+  assert.equal(s.nodes.get('P')!.kind, 'goal', 'and a goal');
+
+  // NO EVENT FOR A NO-OP. A line in the reader's own log saying something
+  // happened when nothing did is the family of defect this whole cold read was
+  // about.
+  assert.deepEqual(changeContainerKindEvents(ctx(), 'P', 'goal', 'goal'), [],
+    'asked for the kind it already is, it writes nothing');
+
+  // AND NOT A ROUTE TO ANY KIND. The value arrives from a <select> in the DOM,
+  // so the predicate is asked of `tree.ts`'s one definition rather than trusted.
+  assert.deepEqual(changeContainerKindEvents(ctx(), 'P', 'goal', 'action' as NodeKind), [],
+    'a container cannot be turned into an action through this');
+  assert.deepEqual(changeContainerKindEvents(ctx(), 'P', 'action' as NodeKind, 'area' as NodeKind), [],
+    'and an action cannot be reclassified as a container through this');
+});
+
+test('the readings that no route could reach now fire', () => {
+  // THE PAYOFF, AND IT IS ASSERTED RATHER THAN CLAIMED. `detail-intents.ts` has
+  // carried a comment since the container kinds were added saying that two of
+  // Review's four readings could never fire and the offer card's "serves ⟨…⟩"
+  // line had nothing it could ever find, because no route in the app could make
+  // anything but a Project. Both were re-read against the current source before
+  // this test was written, and both were still true.
+  //
+  // `unfedGoals` wants a goal with no live work beneath it. Unreachable before,
+  // because nothing could make a goal.
+  let s = st(mk('G', 'project', 'a quieter house'));
+  assert.equal(unfedGoals(s).length, 0, 'a project is not a goal, so this reading is silent');
+
+  s = write(s, changeContainerKindEvents(ctx(), 'G', 'project', 'goal'));
+  const unfed = unfedGoals(s);
+  assert.equal(unfed.length, 1, 'told it is a goal, Review can say nothing is feeding it');
+  assert.equal(unfed[0]!.words, 'nothing is feeding it', 'in the words it has always had ready');
+
+  // AND IT GOES QUIET AGAIN once something feeds it — the reading is about the
+  // goal being unfed, not about the kind, so this proves the kind change did not
+  // simply switch a warning on.
+  const fed = write(s, [mk('W', 'action', 'ring the builder', 'G')]);
+  assert.equal(unfedGoals(fed).length, 0, 'and it stops the moment live work sits under it');
 });

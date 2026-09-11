@@ -201,6 +201,13 @@ than everything else put together.
 - **Looking at** narrows the list to one branch without hiding anything from
   the offer, the proof line or search.
 
+You say which of those a place is when you make it, and you can change your mind
+afterwards. Making a new place while you are filing something offers the choice
+in the same breath as the name; if you took the default and later want it to be
+an ongoing area rather than a project with an end, open the place and use **This
+is a** to say so. Nothing moves and nothing is lost — only what the place calls
+itself, and what the review will ask about it.
+
 ### See what you have named
 
 **Where the attention is** lists your roles, your time, and **The places you

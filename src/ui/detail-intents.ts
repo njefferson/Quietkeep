@@ -461,6 +461,54 @@ export const makeContainerEvents = (
   } as AppEvent];
 
 /**
+ * WHAT KIND OF CONTAINER THIS IS, CHANGED AFTER THE FACT.
+ *
+ * The sixth cold read made four containers, one of them meant as an ongoing
+ * area, and every one came back a Project with no way to say otherwise. That is
+ * the finding this answers, and the answer is smaller than it sounds because
+ * almost everything was already here: `node.kind.changed` is in the vocabulary,
+ * the gate rules it, the fold applies it and `log-words.ts` says it in the
+ * reader's words. Six UI paths already emit it.
+ *
+ * **AND EVERY ONE OF THOSE SIX EMITS A FIXED KIND** — upkeep, waiting-for,
+ * action, or `CONTAINER_DEFAULT`. `makeContainerEvents` directly above hard-codes
+ * its destination. So a reader could reach three of the four container kinds
+ * only at the instant of creating one, through `#detail-parent-kind`, and could
+ * never correct the choice afterwards. The capability was not missing; the route
+ * to it was, which is §95's shape — a thing nobody can reach is worse than a
+ * thing that is absent, because its presence in the source answers "have we
+ * handled this" for everyone after.
+ *
+ * DIFFERENT FROM THE CONTROL ABOVE, AND THAT DIFFERENCE IS THE DESIGN.
+ * `makeContainerEvents` is a PROMOTION — it turns a line of work into something
+ * that can hold work, and it refuses to pick between `project` and `outcome`
+ * because naming a result is a separate act of thinking. This one is a
+ * CORRECTION, asked of something that is already a container, where the reader
+ * has the thing in front of them and is answering about a name they have
+ * already chosen. Classifying something you have not named is what that control
+ * refuses; this is the opposite case.
+ *
+ * REFUSES A NON-CONTAINER AND A NO-OP. Asked to change to what it already is,
+ * it writes nothing — an event that records no change is a line in the reader's
+ * own log saying something happened when nothing did. Asked for a kind outside
+ * `CONTAINER_KINDS`, it writes nothing rather than trusting a `<select>`: the
+ * value arrives from the DOM, and the one definition of what a container is
+ * lives in `tree.ts`.
+ *
+ * Silent-risk — a kind change can strip a role — so the gate cures it, exactly
+ * as it does for the promotion above. That is its job, not this module's.
+ */
+export const changeContainerKindEvents = (
+  ctx: StampContext, node: string, fromKind: NodeKind, toKind: NodeKind,
+): AppEvent[] =>
+  !CONTAINER_KINDS.has(fromKind) || !CONTAINER_KINDS.has(toKind) || fromKind === toKind
+    ? []
+    : [{
+      id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+      kind: 'node.kind.changed', node, payload: { from: fromKind, to: toKind },
+    } as AppEvent];
+
+/**
  * Put something under something else.
  *
  * `priorParent` is carried because the vocabulary asks for it and because a log

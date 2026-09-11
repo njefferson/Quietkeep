@@ -1848,7 +1848,25 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.28**, promoted 2026-09-11 at `ef94229` — two more
+- **PRODUCTION CARRIES 3.23.30**, promoted 2026-09-11 at `c5a0ba8` — the sixth
+  cold read's last three untrue statements, and one of them was two defects
+  wearing one symptom. Two screens disagreed about how many things have a date,
+  because the gate's own cure was being read as a day the reader had set — the
+  FIFTH round of `whyCovered`'s single mistake — and separately because
+  anything dated beyond the week was named by neither sentence on the empty
+  offer. Something marked as owed to you by hand appeared on no surface. The
+  clear panel counted the store once, at mount. Verified: `merge-tree
+  --write-tree` gave `633d76e`, the same tree OBJECT as the staging head, with
+  the Spine green by head SHA at `27cea7f` (run 888), read by step-level
+  conclusions.
+  **3.23.30 exists because CI refused the first attempt at this promote, and
+  that is the most useful thing in the pair.** `src/people.ts` changed after
+  3.23.29's triplet was cut, and the worker caches by a name carrying the
+  triplet — so the closed-wait fix was published and could not arrive.
+  `release:check` caught it on the run that was about to be promoted, which is
+  LESSONS §53's shape stopped by a gate rather than by somebody asking about a
+  missing feature four releases later.
+- **Superseded: production at 3.23.28**, promoted 2026-09-11 at `ef94229` — two more
   of the sixth cold read's untrue statements, and one of them had been live for
   eleven releases. A container no longer claims its saved date is unsaved, and
   *Not this* no longer announces a move it did not make. Verified:
@@ -1990,8 +2008,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.30**, which production does
-  not carry: the closed-wait half of 3.23.29's people fix, and it is a RELEASE
+- **https://staging.quietkeep.pages.dev** — **3.24.0**, which production does
+  not carry: a place can be an area or a goal, and the choice can be changed.
+  The cold read's remaining reader-blocking finding — four places made through
+  the app, one meant as an ongoing area, every one a project with no way to say
+  otherwise.
+  **Almost nothing was missing, and that is the finding.** `node.kind.changed`
+  was already in the vocabulary, ruled by the gate, applied by the fold and
+  worded by `log-words.ts`, and six UI paths already emitted it — every one to a
+  FIXED kind. `#detail-parent-kind` could choose, but only at the instant of
+  creation, from a row that appears after typing an unmatched name several
+  sections inside *More about this*. **The capability was here; the route was
+  not**, which is hub LESSONS §95: a thing nobody can reach is worse than a
+  thing that is absent, because its presence in the source answers "have we
+  handled this" for everyone after.
+  **Two of Review's readings could never fire, and now can** — `unfedGoals` and
+  `quietAreas` — as could the offer card's *serves ⟨…⟩* line, whose `ALTITUDE`
+  walk could only ever find a project. Both re-read against the current source
+  before the work rather than taken from the comment that claims them.
+  The new control is the exact COMPLEMENT of *This is bigger than one step*: that
+  one is a promotion, offered while a thing is not yet a container and
+  deliberately refusing to pick between project and outcome; this is a
+  correction, offered once it is one. The walk asserts both sides of that
+  boundary, because the half a reader actually hits is being offered NEITHER.
+  **Still owed, and said in the release notes:** the sorting question still
+  offers three kinds of place and still makes a project.
+- **Superseded: 3.23.30**, which production ALSO carries (promoted at `c5a0ba8`): the closed-wait half of 3.23.29's people fix, and it is a RELEASE
   rather than a follow-up commit because it has to be. `src/people.ts` changed
   after 3.23.29's triplet was cut, and the service worker caches by a name
   carrying the triplet — so until the triplet moves, `sw.js` keeps its bytes,
@@ -3920,8 +3962,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.28** — promoted at
-  `ef94229` on 2026-09-11, carrying 3.23.28 alone: a container no longer claims
+- **https://quietkeep.pages.dev** — production, **3.23.30** — promoted at
+  `c5a0ba8` on 2026-09-11, carrying 3.23.29 and 3.23.30: the app no longer
+  says two different things about how many of your things have a date, work
+  dated beyond the week is named instead of standing in silence, something you
+  marked as owed to you by hand reaches *With other people* and leaves it again
+  when it arrives, and the clear panel counts what is actually there. Merged
+  tree `633d76e`, the same tree OBJECT as the staging head; Spine green by head
+  SHA at `27cea7f`, run 888. Before it, `ef94229` carried 3.23.28 alone: a container no longer claims
   its saved date is unsaved, live for eleven releases behind a walk that covered
   the line on a case the defect cannot occur in, and *Not this* no longer
   announces a move it did not make. Merged tree `d8db301`, the same tree OBJECT

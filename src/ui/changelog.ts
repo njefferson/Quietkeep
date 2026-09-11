@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.24.0',
+    kind: 'CAPABILITY',
+    date: '2026-09-11',
+    notes: [
+      '**A place can be an area or a goal now, and you can change your mind.** Making a new place while you file something into it has always offered the choice \u2014 project, outcome, area, goal \u2014 but only on a row that appears after you type a name nothing matches, several sections inside *More about this*. Take the default and everything you make is a project with no way to say otherwise. Open a place now and **This is a** says which it is, and lets you change it. Nothing moves and nothing is lost: only what the place calls itself.',
+      '**And two things the review always knew how to say, it can finally say.** It has been able to tell you when a goal has nothing feeding it, and when an area has been holding work with nothing finishing for a month \u2014 and neither could ever happen, because nothing in the app could make a goal or an area. The same goes for the line on a card saying what larger thing a piece of work serves.',
+      '**Still to sort:** the question when you first sort something offers three kinds of place, and answering it still makes a project. The choice at that moment is the one left to move.',
+    ],
+  },
+  {
     triplet: '3.23.30',
     kind: 'ITERATION',
     date: '2026-09-11',

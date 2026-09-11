@@ -3736,10 +3736,85 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(emptyPicker.length, 1, `the picker offers no parents yet (${emptyPicker.join(', ')})`);
   is(await tpage.locator('#detail-parent').isDisabled(), true,
     'and it is disabled rather than offering an empty choice');
+  // THE TWO CONTROLS ARE COMPLEMENTS, asserted from BOTH sides of the boundary
+  // the next click crosses (3.23.31). "This is bigger than one step" is a
+  // PROMOTION and is offered while this is not yet a container; "This is a …"
+  // is a CORRECTION and is offered once it is. A thing must never be offered
+  // both, and must never be offered neither — that second half is the one a
+  // reader actually hits, and it is why this is asserted here rather than on a
+  // container the walk finds lying around.
+  is(await tpage.locator('#detail-kind-row').isVisible(), false,
+    'before it is a container, there is no kind to correct');
   await tpage.click('#detail-make-project');
   await settled(tpage, 300);
   is(await tpage.locator('#detail-make-project').isHidden(), true,
     'and once it is one, the control that makes it one is gone');
+  is(await tpage.locator('#detail-kind-row').isVisible(), true,
+    'and the one that says what kind it is has taken its place');
+  is(await tpage.locator('#detail-kind').inputValue(), 'project',
+    'reading the kind the thing actually is, not a default left over from the last sheet');
+
+  // THE SIXTH COLD READ'S LAST READER-BLOCKING FINDING. Four containers made
+  // through the app, one meant as an ongoing area, and every one came back a
+  // Project with no way to say otherwise.
+  await tpage.selectOption('#detail-kind', 'area');
+  await tpage.click('#detail-kind-set');
+  await settled(tpage, 300);
+  is(await tpage.locator('#detail-kind').inputValue(), 'area',
+    'a project can be told it is an ongoing area');
+  // AND IT SURVIVES A RELOAD, so this is the fold and not a select the reader
+  // happens to be looking at. The whole app is `state = fold(log)`; a control
+  // that only changes what is on screen is the defect class this release is about.
+  await tpage.click('#detail-close');
+  await tpage.reload({ waitUntil: 'load' });
+  await tpage.waitForSelector('body[data-ready=true]');
+  await intoJob(tpage, 'held');
+  await tpage.locator('#cards .card:has-text("the quarterly report") .card-open').click();
+  await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+  is(await tpage.locator('#detail-kind').inputValue(), 'area',
+    'and it is still an area after a reload \u2014 the log carries it, not the screen');
+  // PRESSED AGAIN WITH NOTHING CHANGED, IT SAYS SO rather than reporting a
+  // change it did not make. An event recording no change is a line in the
+  // reader's own log claiming something happened, which is exactly the family
+  // of untrue statement this whole cold read was about.
+  const beforeNoop = await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').count();
+      tx.onsuccess = () => res(tx.result);
+    });
+  });
+  await tpage.click('#detail-kind-set');
+  await settled(tpage, 300);
+  const afterNoop = await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').count();
+      tx.onsuccess = () => res(tx.result);
+    });
+  });
+  is(afterNoop, beforeNoop,
+    `pressing Set on the kind it already is writes nothing (${beforeNoop} events before, ${afterNoop} after)`);
+
+  // AND BACK, which is not tidying up — it is the assertion that this is a
+  // CORRECTION and not another one-way door. `makeContainerEvents` beside it
+  // only ever goes to `project` and cannot be undone; a reader who mis-set this
+  // must be able to change their mind, and somebody who miscategorises once is
+  // exactly who this control is for.
+  //
+  // It also leaves the store as this block found it. Everything below reads the
+  // same node and says "Project" about it, correctly — and those assertions went
+  // RED on the first run of this block, which is the walk noticing a fixture
+  // change rather than a defect. Restoring the kind is the honest fix; editing
+  // their expectations would have been a session rewriting a check to suit
+  // itself.
+  await tpage.selectOption('#detail-kind', 'project');
+  await tpage.click('#detail-kind-set');
+  await settled(tpage, 300);
+  is(await tpage.locator('#detail-kind').inputValue(), 'project',
+    'and back again \u2014 the correction is not another one-way door');
+
   const kidsNote = await tpage.locator('#detail-children').textContent();
   is(/nothing is under this yet/i.test(kidsNote || ''), true,
     `the container says it is empty, on its own sheet ("${kidsNote}")`);
