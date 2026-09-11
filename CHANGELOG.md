@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.23.28 — ITERATION
+
+*2026-09-11*
+
+- **A project or an area no longer says its date is unsaved when it is saved.** *Not kept yet — press Set.* is there to tell you a day you picked has not actually been kept — the one warning in the app you cannot afford to miss, because a filled box looks exactly like a saved one. On anything you had filed something into, it was showing permanently: above a line already telling you the day it came back, and still there after you pressed Set. A warning that is always on says nothing, and teaches you to ignore the time it means something.
+- **And *Not this* no longer says it moved on when it did not.** Press it when there is nothing else to offer and the app said *Showing … instead*, naming the very thing you had just turned down. It says what is actually true now: still that one, and nothing else is asking today. It still records nothing, as it always has.
+
 ## 3.23.27 — ITERATION
 
 *2026-09-10*

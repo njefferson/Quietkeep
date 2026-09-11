@@ -16,7 +16,7 @@ import type { Session } from './session.ts';
 import type { AppEvent, NodeKind } from '../events.ts';
 import type { NodeState } from '../fold.ts';
 import { coverageProof, heldWork, whyCovered } from '../gate.ts';
-import { workSurface, type NextUpItem } from '../nextup.ts';
+import { workSurface, type NextUpItem, skipWords } from '../nextup.ts';
 import { offerNow, offerWords } from '../offer.ts';
 import { loadWords } from '../load.ts';
 import { PLAIN_MODULE, PLAIN_HIDDEN, plainIsOn } from '../plain.ts';
@@ -479,9 +479,24 @@ export function mountWork(
     // over a changing queue threw the user back to the top the moment anything
     // completed, and handed them the item they declined first.
     if (current) declined.add(current.node.id);
+    // WHAT WAS ON SCREEN BEFORE THE REFRESH (3.23.28). `current` is reassigned
+    // by `refresh()` below, so reading it afterwards and calling the result
+    // "instead" claims a swap that may not have happened: with one candidate
+    // left the refresh hands back THE SAME ITEM, and the app announced the
+    // thing just declined as its own replacement. A cold read pressed *Not
+    // this* four times and was told that four times.
+    //
+    // The tour promises this control "moves on, as often as you like, and
+    // records nothing at all". The recording half was always honest — nothing
+    // is written here, and `declined` is memory that dies with the surface. It
+    // was the MOVING ON that was being claimed without having happened.
+    const before = current?.node.id ?? null;
     cycle += 1;
     refresh();
-    say(current ? `Showing ${current.node.title} instead.` : 'Nothing else is asking.');
+    // Three states, because there are three: a different thing, the same thing
+    // still leading because nothing else qualifies, and nothing at all. The
+    // middle one used to be told as the first.
+    say(skipWords(before, current ? { id: current.node.id, title: current.node.title } : null));
     restoreFocus();
   };
 

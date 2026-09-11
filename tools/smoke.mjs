@@ -2235,6 +2235,22 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(logLenAfter, logLenBefore, `skipping appended NOTHING to the log (${logLenBefore} events before and after)`);
   is(afterSkip !== offered, true, `and it moved on ("${offered}" -> "${afterSkip}")`);
 
+  // AND WHAT IT SAID AGREES WITH WHAT IT DID (3.23.28).
+  //
+  // The announcement used to be built from `current` AFTER the refresh had
+  // reassigned it, so "Showing X instead" was printed whether or not anything
+  // had moved. With one candidate left the refresh hands back THE SAME ITEM
+  // and the app named the thing just declined as its own replacement — a cold
+  // read pressed *Not this* four times and was told that four times.
+  //
+  // This asserts the COUPLING rather than the sentence, because that holds at
+  // any queue length: the word "instead" appears if and only if the offer
+  // actually changed. The one-candidate case is where it was reported, and it
+  // is the same expression either way.
+  const skipSaid = (await tpage.locator('#nextup-live').textContent()) || '';
+  is(/instead/.test(skipSaid) === (afterSkip !== offered), true,
+    `and it said so truthfully — "instead" only when it moved ("${skipSaid.trim()}")`);
+
   // --- the two things you can do when you cannot start (1.24.0) -------------
   //
   // docs/nd-collisions.md entries 1 and 2: the same moment from two directions,
@@ -3809,6 +3825,40 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // child as a door, which is the hop that already existed.
   is(await tpage.locator('#detail-children .detail-child-open', { hasText: 'draft the brief' }).count(), 1,
     'and from there the child is a door back down');
+
+  // --- "NOT KEPT YET" ON A CONTAINER, the only place it was ever broken ----
+  //
+  // 1.38.2's block earlier in this walk already covers this line — ON AN
+  // ORDINARY ACTION, where the field and the comparison both read `due`,
+  // agree, and the defect CANNOT OCCUR. So it stayed green for eleven
+  // releases while the line was permanently on for every container.
+  //
+  // 3.23.16 taught the FILL to read a container's `review` slot and did not
+  // teach `storedDue` twelve hundred lines away, which kept reading `due`. A
+  // cold read photographed the result: a header reading "comes back Sep 20", a
+  // footer reading "Comes back Sep 20.", and "Not kept yet — press Set."
+  // between them, surviving the press of Set that is the one moment it
+  // promises to go.
+  //
+  // A WARNING THAT IS ALWAYS ON SAYS NOTHING, and teaches somebody to ignore
+  // the one warning that matters. Asserted HERE because the walk already
+  // stands on a container's sheet, reached by its own door — hub LESSONS §268
+  // is measuring from where the reader actually is.
+  await tpage.evaluate(() => {
+    const b = document.querySelector('#detail-more');
+    if (b && b.getAttribute('aria-expanded') !== 'true') b.click();
+  });
+  await settled(tpage, 150);
+  const cDate = await tpage.locator('#detail-date').inputValue();
+  is(await tpage.locator('#detail-date-unsaved').isVisible(), false,
+    `on a container, nothing claims the date is unkept when it is not (box "${cDate}")`);
+  await tpage.fill('#detail-date', '2027-03-09');
+  is(await tpage.locator('#detail-date-unsaved').isVisible(), true,
+    'picking a different day on a container still says it is not kept yet');
+  await tpage.click('#detail-date-set');
+  await settled(tpage, 250);
+  is(await tpage.locator('#detail-date-unsaved').isVisible(), false,
+    'and pressing Set clears it on a container too — the half that was broken');
   // AND IT SAYS SO WITHOUT OPENING THE FOLD (3.23.23). The door above is inside
   // the region `#detail-more` hides, so a container answered "what is in this"
   // one press deeper than anybody looks — a cold read opened a project holding
@@ -6202,6 +6252,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.click('#detail-estimate-set');
   await settled(tpage, 150);
   await tpage.click('#detail-close');
+
 
   // After the sheet closes the conveyor stands on the remaining card. Leaving
   // it too exhausts the sitting — and the lap must RESTART with the earlier

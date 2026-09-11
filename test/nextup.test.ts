@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { fold, emptyState, type State, type NodeState } from '../src/fold.ts';
 import { atMidnight } from '../src/time.ts';
 import { pressureOf, isReadyAgain, pressureWords } from '../src/pressure.ts';
-import { nextUp, nextUpQueue, upkeepChips, workSurface, BEHIND_CAP } from '../src/nextup.ts';
+import { nextUp, nextUpQueue, upkeepChips, workSurface, skipWords, BEHIND_CAP } from '../src/nextup.ts';
 import { coverageGauge, heldNodes } from '../src/gate.ts';
 import { serialiseState } from '../src/snapshot.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -710,4 +710,28 @@ test('a due date that HAS come round still reads as a hard date', () => {
   const head = nextUp(s, NOW, TZ).head!;
   assert.equal(head.reason, 'hard-date');
   assert.equal(head.words, 'a real date, and it is here');
+});
+
+test('"Not this" never claims a swap it did not make', () => {
+  // THE SIXTH COLD READ pressed *Not this* four times with one candidate left
+  // and was told each time it was showing them the item they had just
+  // declined. The handler built its sentence from the offer AFTER the refresh
+  // had reassigned it, so "instead" printed whether or not anything moved.
+  //
+  // THE BROWSER WALK CANNOT CATCH THIS and that is why these three exist. Its
+  // assertion stands where the queue holds several things, so the offer always
+  // changes and "instead" is always true — planted against the broken version
+  // it passed, which is hub LESSONS §266 exactly: a control that passes has
+  // told you about your standing point rather than about your fix.
+  assert.equal(skipWords('A', { id: 'B', title: 'ring the plumber' }),
+    'Showing ring the plumber instead.',
+    'a different thing is a swap, and says so');
+  assert.equal(skipWords('A', { id: 'A', title: 'ring the plumber' }),
+    'Still ring the plumber — nothing else is asking today.',
+    'the SAME thing is not a swap, and must not be announced as one');
+  assert.equal(skipWords('A', null), 'Nothing else is asking.',
+    'and nothing at all is its own state');
+  // The word that was the lie, asserted as absent rather than by reading the
+  // whole sentence — a later rewording must not quietly restore it.
+  assert.equal(/instead/.test(skipWords('A', { id: 'A', title: 'x' })), false);
 });

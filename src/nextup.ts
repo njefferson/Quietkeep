@@ -58,6 +58,35 @@ export type NextUpReason = 'hard-date' | 'unblocked' | 'resume' | 'pressure' | '
  * What is closed is the SET of sentences, not the words inside a title
  * somebody wrote.
  */
+/**
+ * WHAT *NOT THIS* SAYS, given what was on screen and what is now.
+ *
+ * A pure function and not three lines inside a click handler, for one reason:
+ * the handler's version could not be tested. It was built from the offer AFTER
+ * the refresh had reassigned it, so "Showing X instead" printed whether or not
+ * anything had moved — and with one candidate left the refresh hands back THE
+ * SAME ITEM, so the app named the thing just declined as its own replacement.
+ * A cold read pressed *Not this* four times and was told that four times.
+ *
+ * THE WALK COULD NOT CATCH IT, and that is why this is here. The browser
+ * assertion stands where the queue holds several things, so the offer always
+ * changes and "instead" is always true — planted against the broken version it
+ * passed. Hub LESSONS §266: a control that passes has told you about your
+ * standing point, not about your fix. Three states, three unit tests, no
+ * browser.
+ *
+ * `null` means nothing is being offered at all. Same item means the rotation
+ * came round with nowhere else to go, which is a true thing worth saying
+ * rather than a swap worth claiming.
+ */
+export const skipWords = (
+  before: string | null, after: { id: string; title: string } | null,
+): string => {
+  if (!after) return 'Nothing else is asking.';
+  if (after.id === before) return `Still ${after.title} — nothing else is asking today.`;
+  return `Showing ${after.title} instead.`;
+};
+
 export const REASON_WORDS: Record<NextUpReason, (of: { antecedent?: string; cue?: string | null; horizon?: string; hot?: boolean; arrived?: boolean; today?: boolean }) => string> = {
   'hard-date': () => 'a real date, and it is here',
   // YOUR five words when there are five words. Nothing this app composes beats

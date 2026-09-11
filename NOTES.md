@@ -1979,7 +1979,27 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.27**, which production does
+- **https://staging.quietkeep.pages.dev** — **3.23.28**, which production does
+  not carry: two more of the sixth cold read's untrue statements. A container
+  no longer claims its saved date is unsaved — live for ELEVEN releases,
+  because 3.23.16 taught the date box to read a container's `review` clock and
+  never taught the comparison twelve hundred lines away, which kept reading
+  `due`; they could never agree, so the one warning a reader cannot afford to
+  miss was permanently on, surviving the press of Set that is the moment it
+  promises to go. One shared `ownDateClock` answers for both now. And *Not
+  this* no longer announces a move it did not make.
+  **Why the first survived eleven releases is worth more than the fix:** the
+  walk already covered that line, ON AN ORDINARY ACTION, where both sides read
+  `due`, agree, and the defect cannot occur — green for ever, measuring a case
+  the bug cannot live in (hub LESSONS §268). It is asserted on a container's
+  sheet now, reached by its own door, and planted against the old code it goes
+  red on both halves.
+  **And the first assertion written for the second fix did not bite** — a
+  browser check that passed against the planted defect, because it stands
+  where the queue holds several things and "instead" is always true there.
+  That is §266 in the same session that wrote §268. The announcement is a pure
+  `skipWords()` with three unit tests now, and THAT goes red.
+- **Superseded: 3.23.27**, which production does
   not carry: the sixth cold read's worst finding, which turned out to be two
   defects with one symptom — the offer announcing a date that had not arrived,
   and *The days ahead* hiding a date the reader typed behind whichever clock
