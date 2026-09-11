@@ -133,9 +133,18 @@ export const isOpenWaiting = (n: NodeState): boolean =>
  * remembers: a `people[]` link carries no date, so `openDays` returns null, the
  * row says "With Sam." and the sort puts it after everything that can say how
  * long. An age invented for it would be the ledger ADR-0010 refuses.
+ *
+ * `waitingOutcome` IS ASKED, AND THE FIRST VERSION OF THIS DID NOT ASK IT. The
+ * smoke walk caught it: a `waiting-for` that ALSO carries a hand-set link had
+ * its wait closed — "It arrived" — and stayed on the owed list, because the
+ * link outlives the answer and this predicate was only looking at the link. A
+ * closed wait is an ANSWERED question, which is `merge-intents.ts`'s own words
+ * about the same field. On an ordinary node the field is never set, since the
+ * act that sets it belongs to the kind, so this narrows nothing there.
  */
 export const linkedWaitingOn = (n: NodeState): boolean =>
-  alive(n) && !n.lastDone && n.people.some(l => l.relation === 'waiting-on');
+  alive(n) && !n.lastDone && !n.waitingOutcome
+  && n.people.some(l => l.relation === 'waiting-on');
 
 /**
  * Everything attached to one person.
@@ -158,8 +167,14 @@ export function personView(state: State, personId: string, nowIso: string, zone:
     const links = n.people.filter(l => l.person === personId);
     // EITHER WAY OF SAYING IT ADMITS THE NODE, which is what the docblock above
     // has always claimed and the `&&` here never did.
+    //
+    // THROUGH `linkedWaitingOn`, not a bare `links.some`, so a CLOSED wait falls
+    // off here exactly as it does from `waitingOnAnyone`. Written the short way
+    // first, and the two surfaces then disagreed about one node: the list had
+    // dropped it and the person's page still owed it. One predicate, so they
+    // cannot.
     const owed = (isOpenWaiting(n) && n.waitingOn === personId)
-      || links.some(l => l.relation === 'waiting-on');
+      || (linkedWaitingOn(n) && links.some(l => l.relation === 'waiting-on'));
     if (owed) {
       owes.push({ node: n, relation: 'waiting-on', days: openDays(n, nowIso, day) });
       continue;

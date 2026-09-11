@@ -4205,6 +4205,152 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   is(/\b(overdue|late|chased|ignored|nagg|failed to)\w*/i.test(peopleText), false,
     'and none of it keeps score on anyone else\u2019s behalf');
 
+  // "THEY OWE ME THIS", SET BY HAND ON AN ORDINARY THING (3.23.29).
+  //
+  // The sixth cold read found *With other people* saying "One thing is with
+  // someone else" while omitting a thread the reader had marked MORE plainly
+  // than the one it listed: the sheet offers that relation on EVERY node, and
+  // the surface keyed off the `waiting-for` KIND alone.
+  //
+  // AND THIS WALK COULD NOT SEE IT, for the third time this week (§268). Every
+  // person it links above is linked to "the signed form" and "the numbers",
+  // both made by the *Waiting for* route — so the kind is right, the relation is
+  // never load-bearing, and the defect cannot occur. This block links the same
+  // relation onto a thing sorted as ordinary work, which is where it lives.
+  await tpage.reload({ waitUntil: 'load' });
+  await tpage.waitForSelector('body[data-ready=true]');
+  await tpage.fill('#capture', 'the deposit slip');
+  await tpage.click('#capture-form button[type=submit]');
+  await routeOne('Next action');
+  await tpage.reload({ waitUntil: 'load' });
+  await tpage.waitForSelector('body[data-ready=true]');
+  await intoJob(tpage, 'held');
+  await tpage.locator('#cards .card:has-text("the deposit slip") .card-open').click();
+  await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+  await tpage.fill('#detail-person', 'Rowan');
+  await tpage.selectOption('#detail-relation', 'waiting-on');
+  await tpage.click('#detail-person-set');
+  await tpage.waitForFunction(() => /Rowan/.test(
+    document.querySelector('#detail-people-list')?.textContent ?? ''));
+  // THE WRITE THAT ENDS A WAIT IS STILL THE KIND'S ALONE. `isOpenWaiting` gates
+  // "It arrived" and the `waiting.closed` behind it, and widening the LISTING
+  // must not have put that button on an ordinary action.
+  is(await tpage.locator('#detail-waiting-close').count(), 0,
+    'an ordinary thing marked as owed does not offer "It arrived" \u2014 that act belongs to the route');
+  await tpage.click('#detail-close');
+  await tpage.reload({ waitUntil: 'load' });
+  await tpage.waitForSelector('body[data-ready=true]');
+  is(await tpage.locator('.people-item', { hasText: /the deposit slip/ }).count(), 1,
+    'something you marked as owed to you by hand is on With other people');
+  const rowanRow = await tpage.locator('.people-item', { hasText: /the deposit slip/ })
+    .locator('.people-why').textContent() || '';
+  is(rowanRow, 'With Rowan.', `named by the person you gave it ("${rowanRow}")`);
+  // NO DURATION INVENTED FOR IT. A `people[]` link carries no date, so nothing
+  // can say how long — an age derived from nothing is the ledger ADR-0010
+  // refuses, and the row says who and stops.
+  is(/for |since /.test(rowanRow), false, 'and claims no length of time, because you never said when');
+  // AND THE COUNT ABOVE THE LIST SPEAKS FOR THE ROWS THAT ARE THERE, which is
+  // what it was doing wrongly: it counted one population and the list drew
+  // another.
+  const owedRows = await tpage.locator('.people-list').first().locator('.people-item').count();
+  const owedCount = await tpage.locator('#people-count').textContent() || '';
+  const owedSaid = /^One thing/.test(owedCount) ? 1 : Number((owedCount.match(/^(\d+)/) || [])[1] ?? -1);
+  is(owedSaid, owedRows,
+    `and the count over the list has a row for every thing it claims ("${owedCount}" -> ${owedRows} rows)`);
+
+  console.log('\nThe gate\u2019s own marker is not a day you set');
+  // A GATE CURE IS NOT A DAY THE READER SET (3.23.29).
+  //
+  // The gate cures every undated node with a `review` clock so nothing can go
+  // silent (law 1), and `whyCovered` asked only whether a clock EXISTED. So an
+  // undated thing's row on *What comes back, and when* said "returns today"
+  // while *See what is next* called that same node "here without a date", and
+  // `rowClock` sorted it to the FRONT of a list whose title is the order it
+  // claims.
+  //
+  // AND FINDING SOMEWHERE THIS CAN BE MEASURED FROM TOOK THREE GOES, every one
+  // of them standing where the defect cannot occur. That is §268 met while
+  // writing rather than a release later, and each miss is worth more than the
+  // assertion:
+  //
+  //  - IN THE GAUGE BLOCK ABOVE: nine rows, four naming a return, and NOT ONE
+  //    undated. Every node by that point is dated, on the Menu or done, so the
+  //    check reported the state absent rather than the app wrong.
+  //  - ON A FRESH CAPTURE, which looked right and was worse. Capture cures
+  //    `gate:capture.recorded`, and `fold.ts` keeps that OUT of the no-intent
+  //    set deliberately — typing something in IS an act — so a captured thing
+  //    honestly carries today and both screens already agree about it.
+  //  - ON A FIRST STEP named on a sheet. That one has a PARENT under a clock, so
+  //    the gate never needs to cure it: it came back `parent`, with no clock at
+  //    all, and the reason line said "coming back with something they are part
+  //    of", which is true.
+  //
+  // A CONTAINER MADE THROUGH THE PICKER is the node this needs: created with
+  // nothing said about when, parented to nothing, so law 1 cures it
+  // `gate:node.created` — the plainest no-intent cure there is, and the shape a
+  // reader who has just filed something into a new place is holding.
+  await intoJob(tpage, 'held');
+  await tpage.locator('#cards .card:has-text("the deposit slip") .card-open').click();
+  await tpage.waitForSelector('#detail[open]');
+  await tpage.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+  await tpage.fill('#detail-parent-filter', 'the bank run');
+  await tpage.waitForSelector('#detail-parent-create:not([hidden])');
+  await tpage.click('#detail-parent-create');
+  await settled(tpage, 250);
+  await tpage.click('#detail-close');
+  await tpage.reload({ waitUntil: 'load' });
+  await tpage.waitForSelector('body[data-ready=true]');
+  await tpage.click('#gauge');
+  await tpage.waitForSelector('#sheet-coverage[open]');
+  const cover = await tpage.evaluate(() => ({
+    rows: document.querySelectorAll('.coverage-item').length,
+    held: [...document.querySelectorAll('.coverage-when')]
+      .filter(x => x.textContent.trim() === 'held').length,
+    returns: [...document.querySelectorAll('.coverage-when')]
+      .filter(x => /^returns /.test(x.textContent.trim())).length,
+    // THE ROW FOR THE THING JUST CAPTURED, by name, so this is a statement about
+    // a node whose history the walk knows rather than about whatever the store
+    // happens to hold.
+    loose: [...document.querySelectorAll('.coverage-item')]
+      .filter(li => /the bank run/.test(li.textContent))
+      .map(li => li.querySelector('.coverage-when')?.textContent.trim() ?? ''),
+    reasons: [...document.querySelectorAll('.proof-why li')].map(li => ({
+      count: Number(li.querySelector('.proof-count')?.textContent ?? '0'),
+      words: li.querySelector('.proof-reason')?.textContent ?? '',
+    })),
+  }));
+  // THE FIX HAS TWO HALVES AND THESE ASSERTIONS COVER ONE EACH — recorded so a
+  // later session does not read either as redundant. This first one is about
+  // `rowClock`, which used to take the gate's own `review` cure and print
+  // "returns today" from it; the reason-line checks below are about
+  // `whyCovered`. Watched separately: with `rowClock` unfixed this line reported
+  // ["returns today"], and with only `whyCovered` reverted the three below go
+  // red while this one stays green, because a cured node then has no
+  // reader-clock for the row to name.
+  is(cover.loose.join(','), 'held',
+    `a thing nobody has dated says "held" rather than claiming a day (row says ${JSON.stringify(cover.loose)})`);
+  const cureLine = cover.reasons.find(r => /no day you have set/.test(r.words));
+  is(cureLine !== undefined && cureLine.count >= 1, true,
+    `and a reason line accounts for it in words a reader could check from outside`
+    + ` (reasons: ${JSON.stringify(cover.reasons)})`);
+  is(cureLine?.count, cover.held,
+    `for exactly the rows that say it, and no others (${cover.held} such rows)`);
+  // AND THE REAL CASE IS NOT SWALLOWED. Nothing may be filed under "a day they
+  // come back to you" that does not name one — which is the half the old code
+  // got wrong in the other direction.
+  const datedLine = cover.reasons.find(r => /a day they come back to you/.test(r.words));
+  is((datedLine?.count ?? 0) <= cover.returns, true,
+    `and nothing claims a day without naming one`
+    + ` (${datedLine?.count ?? 0} claimed, ${cover.returns} rows naming a day)`);
+  // THE STILL-COVERED PROMISE HOLDS. `cure` is a reason, not an exception: the
+  // thing does come back, which is what the cure is for, and filing it under
+  // "will not come back on its own" would deny a promise the app keeps.
+  is(await tpage.locator('.proof-holds').count(), 1,
+    'and the promise still holds \u2014 a cure is a reason, not a failure');
+  await tpage.click('#sheet-coverage-close');
+  await tpage.waitForSelector('#sheet-coverage[open]', { state: 'detached' });
+
   // --- Focus, interruption, and getting the thread back --------------------
   // `focus.started`, `focus.ended`, `interrupt.captured` and the three
   // `resume.card.*` nouns have been in the vocabulary since the first draft.

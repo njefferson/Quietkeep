@@ -578,3 +578,34 @@ test('a person link saying they owe me this puts the thing on With other people'
   assert.equal(isOpenWaiting(s.nodes.get('A')!), false, 'an action is not a waiting-for');
   assert.equal(isOpenWaiting(s.nodes.get('W')!), true, 'and the route’s own kind still is');
 });
+
+test('closing a wait takes it off the owed list even when a hand-set link is on it too', () => {
+  // FOUND BY THE SMOKE WALK, against the first version of the fix above. A
+  // `waiting-for` carrying BOTH the route's own wait and a hand-set *they owe me
+  // this* link had its wait closed — "It arrived" — and stayed on the list,
+  // because `linkedWaitingOn` looked only at the link and the link outlives the
+  // answer. A closed wait is an ANSWERED question, which is the phrase
+  // `merge-intents.ts` already uses about the same field.
+  //
+  // THE WALK IS WHERE THIS HAD TO COME FROM. Every unit fixture for the new
+  // predicate carried a link and no outcome, because an ordinary action can
+  // never have one — the act that sets it belongs to the kind. The overlap is
+  // the only place the bug lives, and nothing reached it until the browser did.
+  let s = st(
+    mk('p1', 'person', 'Sam'),
+    mk('W', 'waiting-for', 'the signed form'),
+    clocked('W'),
+    ev('waiting.opened', 'W', { person: 'p1', since: AGO(3) }),
+    ev('person.linked', 'W', { node: 'W', person: 'p1', relation: 'waiting-on' }),
+  );
+  assert.equal(waitingOnAnyone(s, NOW, TZ).length, 1, 'open, and owed');
+
+  s = fold([ev('waiting.closed', 'W', { outcome: 'arrived' })], s);
+  assert.equal(waitingOnAnyone(s, NOW, TZ).length, 0, 'it arrived, so it is off the owed list');
+  assert.deepEqual(personView(s, 'p1', NOW, TZ)!.owes.map(l => l.node.id), [],
+    'and their own page agrees');
+  // STILL THEIR WORK. Arriving is not finishing, and the link is still the
+  // record of who it was with.
+  assert.equal(s.nodes.get('W')!.lastDone, null, 'arriving did not mark it done');
+  assert.equal(s.nodes.get('W')!.people.length, 1, 'and the link stands \u2014 it says who, not whether');
+});
