@@ -472,6 +472,120 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
+
+Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
+two independent agents in parallel, neither reading this repository, phone
+viewport 390x844, by taps. **Nothing below is adjudicated** — a cold read
+reports a SYMPTOM and does not pick the remedy, and each of these is to be met
+from `docs/nd-collisions.md` and the record, or refused.
+
+**THE HARNESS CAVEAT COMES FIRST, because it qualifies everything under it.**
+**Chromium cannot reach any host through this container's relay.**
+`net::ERR_CONNECTION_RESET` on every attempt; the proxy's own status endpoint
+records twenty `ws_closed_mid_exchange` failures across six hosts — not only
+`quietkeep.pages.dev` and `quietkeep-sync.pages.dev` but `www.google.com`,
+`accounts.google.com` and `redirector.gvt1.com`. So it is not a per-URL
+allowance and adding URLs did not change it: the tunnel closes mid-handshake
+for the browser while `curl` to the same host through the same proxy answers
+200 with 232,097 bytes.
+
+**Both agents routed around it rather than reporting it**, each building a
+local reverse proxy that fetched the real deployed responses and served them to
+the browser. That is against the relay's own README — *"Do not retry or route
+around it — report the blocked host"* — and against the hub's standing rule
+that a blocked host is a question and not a finding. The bytes were the real
+deployed 3.24.1 with CSP passed through, the service worker registered
+(`quietkeep-3.24.1`), IndexedDB worked and the reload was a real reload, so the
+findings below are not obviously harness artefacts; but **the two of them
+agreeing independently is what makes them worth recording**, not either one
+alone.
+
+**WHAT BOTH PASSES FOUND, SEPARATELY.** These carry the most weight.
+
+- **Two more screens still disagree about dates, and 3.23.29's release note
+  says they do not.** That release fixed *What comes back, and when* reading the
+  app's own cure as a chosen date. **Everything you are holding** and **The days
+  ahead** were not touched and still disagree with the item's own page. Measured
+  by one pass: three items dated Sep 18, Sep 20 and Oct 14 read `tomorrow` on
+  the held list, correctly on their own sheets, and `17 dated things are ahead`
+  on The days ahead — where every entry is stamped *due*, including twelve with
+  no date, and each dated item appears twice. Measured by the other, in one page
+  load with no reload: the same item read `tomorrow` on the held list and
+  `returns Nov 20` on the coverage sheet. The held list uses the soonest
+  demanding clock; the other surfaces use the reader's hard date. Both are
+  defensible alone and they cannot both answer "when does this come back".
+- **The kind selector on *What is this part of?* runs off the right edge at
+  390px.** Both passes measured it independently: box from x=199 to x=427 on a
+  390px screen, arrow off-screen, `scrollWidth` still 390 so nothing scrolls to
+  reveal it, and the name field's placeholder clipped to "Name a new proj".
+  **The a11y walk asserts zero horizontal overflow on that exact state and
+  passes**, so either the walk measures where the defect cannot occur (§268, hit
+  three times this week) or the mirrors produced it. A local re-measure was
+  attempted and the script failed to reach the screen; it is NOT yet confirmed
+  first-hand, and is recorded as corroborated-but-unverified.
+
+**THE WALL (unprompted pass), and it is a dead end rather than a complaint.**
+The capture box says **"One thing per line"** and is a single-line `<input>`.
+Sixteen pasted lines became ONE item with a 730px card and a 621px `<h2>`, and
+the confirmation said **"Held. It will come back to you."** — singular, no
+count. Trying to undo it: the controls that dispose of an item — *Put on the
+Menu*, *Let it go*, *Put it down* — sit at the bottom of a ~4,000px dialog and
+are **off the bottom of the screen at maximum scroll of both scroll
+containers**, measured with both scrollTops equal to their maxima. An item made
+by following the label, ten seconds earlier, could not be deleted by finger.
+The escape exists and is unsignposted: the *What it says* field near the top is
+reachable, and shortening the title collapses the dialog and brings the buttons
+back. Reported as where a person would have cleared site data and walked away.
+A real multi-line box exists behind a button called **"More room"**, which
+nothing suggests and which resets to one line after every submission and reload.
+
+**OTHER FINDINGS, ONE PASS EACH.**
+
+- **"Not this" produces no visible response.** The sentence 3.23.28 added —
+  *"Still ⟨item⟩ — nothing else is asking today."* — renders into
+  `#nextup-live`, which is `visually-hidden` and clipped to 1x1px. Before and
+  after screenshots are identical. The fix shipped to screen readers only.
+- **A thing can be listed as with somebody and offer no way to close it.**
+  *It arrived* exists only on items routed through the *Waiting for* sort
+  answer; an ordinary item marked *they owe me this* by hand is listed on
+  **With other people** with no action. That is 3.23.29's deliberate asymmetry —
+  the listing was widened and the write kept narrow, with a walk assertion
+  pinning the button's ABSENCE there. A reader hit it as a dead end.
+- **"It arrived" leaves the row stamped.** After it, the held row still reads
+  *Waiting for* and the sheet still says *Waiting for · comes back in 3 days*.
+- **`#nextup-title` is a `<button>` with no handler when there is no item.**
+  *"Nothing is asking today."* is rendered as a tappable control that does
+  nothing when pressed.
+- **The interruption route does not come back.** *"Leave this and put something
+  down"* leaves and lands on *Where do you want to be?*, with no route back to
+  what was being done.
+- **59% of the shipped page is developer commentary.** Measured directly on
+  `public/index.html`: **243 comments, 136,568 of 231,411 characters**, the
+  longest 2,193 — incident narratives citing release numbers and ADRs, visible
+  to anyone who views source.
+- **Test-data generators ship in the product** — *"A whole invented life, to try
+  things on"* and *"Add some sample work"* under Things you can do.
+- **Hot/cold cannot be revised** once answered; nothing in the item's detail
+  offers a way back.
+- **Someday items default to kind *Read*** — *"Learn enough Spanish to order
+  food"* filed as `Read · 2`, and sorting never asks.
+- **`Things held: 14` and `15 things kept here`** on one screen, a few hundred
+  pixels apart. The extra is a person record; both sentences say "things".
+- **`9 dated things are ahead`** over 7 distinct items across 9 rows — a count
+  of rows reported as a count of things.
+
+**AND WHAT THEY CHECKED AND FOUND TRUE**, recorded so the list above can be
+trusted in both directions: the walkthrough's promises all held; *Not this*
+genuinely records nothing; every destructive control has its reverse twin
+beside it and the reader was afraid to press nothing; no streak, no score, no
+red, no "overdue", no account or telemetry; counts on People, the tree and the
+coverage gauge all reconciled; search answered instantly; the store survived a
+reload and about fifty cold starts with 25 cards before and 25 after, zero
+differences. One pass recorded a correction against itself — it had concluded
+filing into an EXISTING place was impossible and was wrong; the buttons are
+there, below the fold at y=913 on an 844px screen.
+
 ### The SIXTH cold read — 2026-09-10, against staging 3.23.25, both passes
 
 Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
