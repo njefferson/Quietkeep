@@ -18,7 +18,7 @@ import {
   datePlaceEvents, heatEvents, placeReturnDays, routeEvents, undoRouteEvents,
   restorableClocksOf, type RestorableClock,
 } from './triage-intents.ts';
-import { CONTAINER_KINDS } from '../tree.ts';
+import { CONTAINER_KINDS, CONTAINER_ORDER, CONTAINER_DEFAULT} from '../tree.ts';
 import { captureContextWords } from '../capture-context.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
 import { attachContextEvents } from './detail-intents.ts';
@@ -823,6 +823,35 @@ export function mountTriage(
     input.placeholder = 'Name a new project, area or goal';
     const label = el('label', 'visually-hidden', 'Name a new project, area or goal to put this in');
     label.setAttribute('for', 'triage-place-new');
+    // WHICH OF THE THREE THIS SCREEN HAS BEEN NAMING (3.24.1).
+    //
+    // The field above says "Name a new project, area or goal", its label says
+    // it again, the empty-field message says it a third time and the route hint
+    // that opens this screen says it a fourth — and until now whatever you
+    // typed became a project. Four promises and no way to answer one. A cold
+    // read made four places this way, one meant as an ongoing area, and every
+    // one came back a project.
+    //
+    // HERE RATHER THAN ANYWHERE ELSE, and that is `CONTAINER_ORDER`'s own
+    // ruling rather than a fresh judgment: the list "belongs where somebody is
+    // already typing a name, so choosing what kind of thing it is happens in
+    // the same breath as saying what it is called". This is that moment.
+    // `project` leads and stays selected, so the ordinary path costs no extra
+    // thought and nobody has to decide anything they were not already deciding
+    // implicitly.
+    //
+    // FILLED FROM `CONTAINER_ORDER`, never from a list written here — the same
+    // rule the two selects on the detail sheet follow, for the same reason.
+    const kindSel = document.createElement('select');
+    kindSel.id = 'triage-place-kind';
+    kindSel.setAttribute('aria-label', 'What kind of place to make');
+    for (const [kind, words] of CONTAINER_ORDER) {
+      const o = document.createElement('option');
+      o.value = kind;
+      o.textContent = words;
+      kindSel.append(o);
+    }
+    kindSel.value = CONTAINER_DEFAULT;
     const make = el('button', 'route');
     make.type = 'button';
     make.append(el('span', 'route-label', 'Make it'), el('span', 'route-hint', 'a new one, and put this in it'));
@@ -838,9 +867,13 @@ export function mountTriage(
         input.focus();
         return;
       }
-      fileInto(c => fileUnderNewEvents(c, nodeId, title, clocksOf(session.state().nodes.get(nodeId))), title, null);
+      const chosen = kindSel.value as NodeKind;
+      fileInto(
+        c => fileUnderNewEvents(
+          c, nodeId, title, clocksOf(session.state().nodes.get(nodeId)), null, chosen),
+        title, null);
     });
-    form.append(label, input, make);
+    form.append(label, input, kindSel, make);
     rows.push(form);
 
     for (const p of places) {

@@ -2027,8 +2027,31 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.0**, which production now
-  ALSO carries (promoted at `93d023e`): a place can be an area or a goal, and the choice can be changed.
+- **https://staging.quietkeep.pages.dev** — **3.24.1**, which production does
+  not carry: the sorting screen offers the kind of place it has been NAMING all
+  along. The field's placeholder says *"Name a new project, area or goal"*, its
+  label says it again, the empty-field message a third time and the route hint
+  that opens the screen a fourth — four promises, and whatever was typed became
+  a project. `fileUnderNewEvents` called `createParentEvents` with no kind, and
+  that function's own comment already recorded the cost: *"Defaulted, so the
+  triage route and every existing caller keep making projects without saying
+  so."*
+  **The choice belongs on that screen by `CONTAINER_ORDER`'s own ruling**, not a
+  fresh one: the list "belongs where somebody is already typing a name, so
+  choosing what kind of thing it is happens in the same breath as saying what it
+  is called". `project` stays selected, so the ordinary path costs nothing.
+  **And it closes a claim 3.24.0 itself broke.** That release added a manual
+  passage saying making a place while filing offers the choice in the same
+  breath as the name — true of the detail sheet, false on this screen, which is
+  the exact class of defect the whole sixth cold read was about, shipped by the
+  release fixing it. True in both now.
+  **`size:check` could not see the new control and that is worth knowing.** It
+  measures the static shell; this select is rendered in JS on a sub-screen, so
+  the budget passed without charging. What measures it is the a11y walk, which
+  already has a named *place picker* state running contrast, axe, names, targets
+  and focus rings there in both themes — so §28 is satisfied by an existing
+  state rather than by a new one.
+- **Superseded: 3.24.0**, which production ALSO carries (promoted at `93d023e`): a place can be an area or a goal, and the choice can be changed.
   The cold read's remaining reader-blocking finding — four places made through
   the app, one meant as an ongoing area, every one a project with no way to say
   otherwise.

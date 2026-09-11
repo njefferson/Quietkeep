@@ -23,6 +23,7 @@ import type { NodeState } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { calendarDaysBetween, endOfLocalDay, isValidIso, atMidnight} from '../time.ts';
 import { createParentEvents, endOfDayKey } from './detail-intents.ts';
+import { CONTAINER_DEFAULT } from '../tree.ts';
 import { isAppClock } from '../fold.ts';
 
 const base = (ctx: StampContext, kind: string, node: string, payload: unknown): AppEvent => ({
@@ -324,8 +325,24 @@ export function fileUnderEvents(
 export function fileUnderNewEvents(
   ctx: StampContext, node: string, title: string,
   clocksToClear: readonly ClockKind[] = [], priorParent?: string | null,
+  /**
+   * WHAT KIND OF PLACE THIS IS, and it is threaded here because the screen
+   * above has been PROMISING it for its whole life (3.24.1).
+   *
+   * `createParentEvents` has taken a kind since the container kinds landed, and
+   * its own comment records what leaving this caller alone cost: "Defaulted, so
+   * the triage route and every existing caller keep making projects without
+   * saying so." This IS the triage route, and the screen it serves says "Name a
+   * new project, area or goal" on the field, again on its label, again in the
+   * message when the field is empty, and a fourth time on the route hint that
+   * opens it — four promises, and no way to answer any of them.
+   *
+   * Defaulted, so the tests and any future caller that has nothing to say about
+   * kind keep the behavior they had.
+   */
+  kind: NodeKind = CONTAINER_DEFAULT,
 ): AppEvent[] {
-  const made = createParentEvents(ctx, node, title, priorParent);
+  const made = createParentEvents(ctx, node, title, priorParent, kind);
   if (made.length === 0) return [];
   return [
     ...made,

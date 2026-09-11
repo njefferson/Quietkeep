@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.24.1',
+    kind: 'ITERATION',
+    date: '2026-09-11',
+    notes: [
+      '**Sorting something into a new place now asks which kind of place, which that screen has been saying all along.** The box says *Name a new project, area or goal*, its label says it again, and the message when you press *Make it* with nothing typed says it a third time \u2014 and whatever you typed became a project. Four places made that way, four projects. It offers the choice beside the name now, with *Project* already picked, so the ordinary way through costs you nothing extra.',
+      '**That was the last thing the previous release said was still to sort**, and it was worse than owed: that release added a page to the handbook saying making a place while you file something offers the choice. True in one place in the app and not in the other, which is exactly the kind of thing these last few releases have been about. It is true in both now.',
+    ],
+  },
+  {
     triplet: '3.24.0',
     kind: 'CAPABILITY',
     date: '2026-09-11',
