@@ -41,7 +41,7 @@ import {
 import { normalize } from '../search.ts';
 import { doneEvents } from './work.ts';
 import { declareFeedsEvents, releaseFeedsEvents, endOfDayKey } from './detail-intents.ts';
-import { makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
+import { changeContainerKindEvents, makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
 import { biteEvents } from './work-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
@@ -167,6 +167,9 @@ const ownDateClock = (n: NodeState | null | undefined) => {
   const parentCreate = q<HTMLButtonElement>('#detail-parent-create');
   const parentNewRow = q<HTMLElement>('#detail-parent-new');
   const parentKind = q<HTMLSelectElement>('#detail-parent-kind');
+  // The correction's select (3.23.31), beside the creation one. Two elements,
+  // one vocabulary — both are filled by the same loop from `CONTAINER_ORDER`.
+  const kindSel = q<HTMLSelectElement>('#detail-kind');
   const startInput = q<HTMLInputElement>('#detail-start');
   const estimateInput = q<HTMLInputElement>('#detail-estimate');
   const noteInput = q<HTMLTextAreaElement>('#detail-note');
@@ -1531,6 +1534,20 @@ const ownDateClock = (n: NodeState | null | undefined) => {
 
     show('#detail-unparent', Boolean(n.parent));
     show('#detail-make-project', !isContainer(n) && !n.trashed);
+    // THE MIRROR OF THE LINE ABOVE, and deliberately its exact complement: the
+    // promotion is offered while this is not a container, the correction once
+    // it is. A thing cannot be offered both at once, and nothing can be offered
+    // neither — which is the property the walk asserts rather than this comment.
+    show('#detail-kind-row', isContainer(n) && !n.trashed);
+    // SET FROM THE NODE, NOT LEFT WHERE THE READER LAST PUT IT. This sheet is
+    // reused for every node, so a select left holding the previous container's
+    // kind states something false about this one before anybody touches it —
+    // the same residue class the cleared PLACE and APPROACH lines above exist
+    // for. Skipped while it has focus, so a repaint cannot move a choice out
+    // from under somebody mid-decision.
+    if (kindSel && isContainer(n) && document.activeElement !== kindSel) {
+      kindSel.value = n.kind;
+    }
     // History stays live while its disclosure is open — a commit from this
     // sheet should show its own line the moment it lands.
     if (historyEl?.open) buildHistory(n.id);
@@ -1953,15 +1970,26 @@ const ownDateClock = (n: NodeState | null | undefined) => {
   // FILLED FROM `CONTAINER_ORDER`, never from a list written out here — a second
   // copy of the kinds is a second thing to keep in step, and this repo has paid
   // for that shape more than once.
-  if (parentKind && parentKind.options.length === 0) {
+  //
+  // BOTH SELECTS, ONE LOOP (3.23.31). The correction row added beside the
+  // promotion needs the identical option list, and filling it separately would
+  // be the second copy this comment already refuses — one loop over one source,
+  // so a kind added to `CONTAINER_ORDER` appears in both without anybody
+  // remembering the second.
+  for (const sel of [parentKind, kindSel]) {
+    if (!sel || sel.options.length > 0) continue;
     for (const [kind, words] of CONTAINER_ORDER) {
       const o = document.createElement('option');
       o.value = kind;
       o.textContent = words;
-      parentKind.append(o);
+      sel.append(o);
     }
-    parentKind.value = CONTAINER_DEFAULT;
   }
+  // Only the CREATION select defaults to `project`. The correction one is set
+  // from the node it is describing, in `paint` above — defaulting it here would
+  // make every container read as a Project for the instant before the sheet
+  // painted, which is the claim this control exists to stop the app making.
+  if (parentKind) parentKind.value = CONTAINER_DEFAULT;
 
   parentCreate?.addEventListener('click', () => {
     if (!current || !parentFilter) return;
@@ -1977,6 +2005,21 @@ const ownDateClock = (n: NodeState | null | undefined) => {
     if (!current) return;
     void run(ctx => makeContainerEvents(ctx, current!.id, current!.kind),
       'It can hold other things now.');
+  });
+  btn('#detail-kind-set')?.addEventListener('click', () => {
+    if (!current || !kindSel) return;
+    const chosen = kindSel.value as NodeKind;
+    // SAYS SO WHEN NOTHING CHANGED, rather than reporting a change it did not
+    // make. The intent writes no event for a no-op; a confirmation over an empty
+    // write is the app claiming something happened, which is the family of
+    // defect the whole sixth cold read was about.
+    if (chosen === current.kind) {
+      say(`Already ${CONTAINER_ORDER.find(([k]) => k === chosen)?.[1] ?? 'that'}.`);
+      return;
+    }
+    const words = CONTAINER_ORDER.find(([k]) => k === chosen)?.[1] ?? 'a container';
+    void run(ctx => changeContainerKindEvents(ctx, current!.id, current!.kind, chosen),
+      `Now ${words}.`);
   });
 
   btn('#detail-person-set')?.addEventListener('click', () => {

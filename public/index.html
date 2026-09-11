@@ -1806,6 +1806,29 @@
     <div class="detail-row">
       <button id="detail-make-project" type="button" class="ghost">This is bigger than one step</button>
     </div>
+    <!-- WHAT KIND OF CONTAINER THIS IS, CORRECTABLE (3.23.31). The mirror of the
+         row directly above, and shown exactly where that one is hidden: that is
+         a PROMOTION, offered while this is not yet a container; this is a
+         CORRECTION, offered once it is.
+
+         A cold read made four containers, one of them meant as an ongoing area,
+         and every one came back a Project. `#detail-parent-kind` above could
+         already choose — but only at the instant of creating one, from a row
+         that appears after typing a name that matches nothing, nine sections
+         inside "More about this". The capability was here and the route to it
+         was not, which is worse than absent: its presence in the source answers
+         "have we handled this" for everyone after (hub LESSONS §95).
+
+         SAME SELECT, SAME SOURCE. Both are filled from `CONTAINER_ORDER` in
+         `tree.ts` by the same loop, never from a list written into this file — a
+         second copy of the kinds is a second thing to keep in step, and the
+         words on these options are what `help-check` holds the help surfaces
+         to. -->
+    <div class="detail-row" id="detail-kind-row" hidden>
+      <label class="detail-inline" for="detail-kind">This is a</label>
+      <select id="detail-kind"></select>
+      <button id="detail-kind-set" type="button">Set</button>
+    </div>
     <div class="detail-row" id="detail-track-row" hidden>
       <button id="detail-track" type="button" class="ghost">Someone else is doing this</button>
       <button id="detail-untrack" type="button" class="ghost">I am doing this</button>

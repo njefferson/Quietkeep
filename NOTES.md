@@ -2008,8 +2008,32 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.30**, which production now
-  ALSO carries (promoted at `c5a0ba8`): the closed-wait half of 3.23.29's people fix, and it is a RELEASE
+- **https://staging.quietkeep.pages.dev** — **3.24.0**, which production does
+  not carry: a place can be an area or a goal, and the choice can be changed.
+  The cold read's remaining reader-blocking finding — four places made through
+  the app, one meant as an ongoing area, every one a project with no way to say
+  otherwise.
+  **Almost nothing was missing, and that is the finding.** `node.kind.changed`
+  was already in the vocabulary, ruled by the gate, applied by the fold and
+  worded by `log-words.ts`, and six UI paths already emitted it — every one to a
+  FIXED kind. `#detail-parent-kind` could choose, but only at the instant of
+  creation, from a row that appears after typing an unmatched name several
+  sections inside *More about this*. **The capability was here; the route was
+  not**, which is hub LESSONS §95: a thing nobody can reach is worse than a
+  thing that is absent, because its presence in the source answers "have we
+  handled this" for everyone after.
+  **Two of Review's readings could never fire, and now can** — `unfedGoals` and
+  `quietAreas` — as could the offer card's *serves ⟨…⟩* line, whose `ALTITUDE`
+  walk could only ever find a project. Both re-read against the current source
+  before the work rather than taken from the comment that claims them.
+  The new control is the exact COMPLEMENT of *This is bigger than one step*: that
+  one is a promotion, offered while a thing is not yet a container and
+  deliberately refusing to pick between project and outcome; this is a
+  correction, offered once it is one. The walk asserts both sides of that
+  boundary, because the half a reader actually hits is being offered NEITHER.
+  **Still owed, and said in the release notes:** the sorting question still
+  offers three kinds of place and still makes a project.
+- **Superseded: 3.23.30**, which production ALSO carries (promoted at `c5a0ba8`): the closed-wait half of 3.23.29's people fix, and it is a RELEASE
   rather than a follow-up commit because it has to be. `src/people.ts` changed
   after 3.23.29's triplet was cut, and the service worker caches by a name
   carrying the triplet — so until the triplet moves, `sw.js` keeps its bytes,
