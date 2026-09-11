@@ -1848,7 +1848,25 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.28**, promoted 2026-09-11 at `ef94229` — two more
+- **PRODUCTION CARRIES 3.23.30**, promoted 2026-09-11 at `c5a0ba8` — the sixth
+  cold read's last three untrue statements, and one of them was two defects
+  wearing one symptom. Two screens disagreed about how many things have a date,
+  because the gate's own cure was being read as a day the reader had set — the
+  FIFTH round of `whyCovered`'s single mistake — and separately because
+  anything dated beyond the week was named by neither sentence on the empty
+  offer. Something marked as owed to you by hand appeared on no surface. The
+  clear panel counted the store once, at mount. Verified: `merge-tree
+  --write-tree` gave `633d76e`, the same tree OBJECT as the staging head, with
+  the Spine green by head SHA at `27cea7f` (run 888), read by step-level
+  conclusions.
+  **3.23.30 exists because CI refused the first attempt at this promote, and
+  that is the most useful thing in the pair.** `src/people.ts` changed after
+  3.23.29's triplet was cut, and the worker caches by a name carrying the
+  triplet — so the closed-wait fix was published and could not arrive.
+  `release:check` caught it on the run that was about to be promoted, which is
+  LESSONS §53's shape stopped by a gate rather than by somebody asking about a
+  missing feature four releases later.
+- **Superseded: production at 3.23.28**, promoted 2026-09-11 at `ef94229` — two more
   of the sixth cold read's untrue statements, and one of them had been live for
   eleven releases. A container no longer claims its saved date is unsaved, and
   *Not this* no longer announces a move it did not make. Verified:
@@ -1990,8 +2008,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.30**, which production does
-  not carry: the closed-wait half of 3.23.29's people fix, and it is a RELEASE
+- **https://staging.quietkeep.pages.dev** — **3.23.30**, which production now
+  ALSO carries (promoted at `c5a0ba8`): the closed-wait half of 3.23.29's people fix, and it is a RELEASE
   rather than a follow-up commit because it has to be. `src/people.ts` changed
   after 3.23.29's triplet was cut, and the service worker caches by a name
   carrying the triplet — so until the triplet moves, `sw.js` keeps its bytes,
@@ -3920,8 +3938,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.28** — promoted at
-  `ef94229` on 2026-09-11, carrying 3.23.28 alone: a container no longer claims
+- **https://quietkeep.pages.dev** — production, **3.23.30** — promoted at
+  `c5a0ba8` on 2026-09-11, carrying 3.23.29 and 3.23.30: the app no longer
+  says two different things about how many of your things have a date, work
+  dated beyond the week is named instead of standing in silence, something you
+  marked as owed to you by hand reaches *With other people* and leaves it again
+  when it arrives, and the clear panel counts what is actually there. Merged
+  tree `633d76e`, the same tree OBJECT as the staging head; Spine green by head
+  SHA at `27cea7f`, run 888. Before it, `ef94229` carried 3.23.28 alone: a container no longer claims
   its saved date is unsaved, live for eleven releases behind a walk that covered
   the line on a case the defect cannot occur in, and *Not this* no longer
   announces a move it did not make. Merged tree `d8db301`, the same tree OBJECT
