@@ -529,3 +529,83 @@ test('a trashed place stops sorting anybody, without a migration', () => {
   assert.deepEqual(g.anywhere.map(p => p.title), ['Cole'],
     'a dead place neither holds people nor exiles them — contextsOf resolves live');
 });
+
+test('a person link saying they owe me this puts the thing on With other people', () => {
+  // THE SIXTH COLD READ'S LAST UNTRUE STATEMENT. *With other people* said "One
+  // thing is with someone else" while omitting a second thread the reader had
+  // marked MORE explicitly than the first — because it keyed off the *Waiting
+  // for* route and the reader had used the detail sheet's *they owe me this*
+  // instead. The app offers that relation on every node; the surface listed only
+  // the kind.
+  //
+  // `personView`'s docblock has claimed both ways in since it was written. Its
+  // code was `isOpenWaiting(n) && links.some(…)`, so the relation could only ever
+  // pick WHICH person and never admit a node — a comment that states the fix.
+  const s = st(
+    mk('p1', 'person', 'Sam'),
+    // The route's own kind, with nobody named: the commonest kind, and the one
+    // that WAS listed.
+    mk('W', 'waiting-for', 'the quote'),
+    clocked('W'),
+    // An ordinary action the reader marked by hand, through the sheet.
+    mk('A', 'action', 'the signed form'),
+    clocked('A'),
+    ev('person.linked', 'A', { node: 'A', person: 'p1', relation: 'waiting-on' }),
+  );
+
+  const owed = waitingOnAnyone(s, NOW, TZ);
+  assert.deepEqual(owed.map(l => l.node.id).sort(), ['A', 'W'],
+    'both threads are with somebody, and both are listed');
+  assert.equal(peopleWords(owed.length), '2 things are with other people.',
+    'and the count over the list says the same number the list has rows for');
+
+  // NO DURATION INVENTED FOR IT. A `people[]` link carries no date, so the row
+  // says who and stops — and the sort puts it after anything that can say how
+  // long, because the thing owed for three weeks is the one worth mentioning.
+  const byHand = owed.find(l => l.node.id === 'A')!;
+  assert.equal(byHand.days, null, 'nobody said when, so nothing says how long');
+  assert.equal(withWhom(s, byHand.node), 'Sam', 'the name the reader gave is the name shown');
+
+  // AND THE PERSON'S OWN PAGE AGREES, which is where the promise was written.
+  const view = personView(s, 'p1', NOW, TZ)!;
+  assert.deepEqual(view.owes.map(l => l.node.id), ['A'],
+    'asking what Sam owes names the thing the reader said Sam owes');
+  assert.equal(view.involves.length, 0, 'and it is not filed as a mere mention');
+
+  // THE WRITE THAT ENDS A WAIT IS STILL THE KIND'S ALONE. Widening the listing
+  // must not put *It arrived* on an ordinary action — `isOpenWaiting` gates that
+  // button and `closeWaitingEvents` behind it, and it is unchanged.
+  assert.equal(isOpenWaiting(s.nodes.get('A')!), false, 'an action is not a waiting-for');
+  assert.equal(isOpenWaiting(s.nodes.get('W')!), true, 'and the route’s own kind still is');
+});
+
+test('closing a wait takes it off the owed list even when a hand-set link is on it too', () => {
+  // FOUND BY THE SMOKE WALK, against the first version of the fix above. A
+  // `waiting-for` carrying BOTH the route's own wait and a hand-set *they owe me
+  // this* link had its wait closed — "It arrived" — and stayed on the list,
+  // because `linkedWaitingOn` looked only at the link and the link outlives the
+  // answer. A closed wait is an ANSWERED question, which is the phrase
+  // `merge-intents.ts` already uses about the same field.
+  //
+  // THE WALK IS WHERE THIS HAD TO COME FROM. Every unit fixture for the new
+  // predicate carried a link and no outcome, because an ordinary action can
+  // never have one — the act that sets it belongs to the kind. The overlap is
+  // the only place the bug lives, and nothing reached it until the browser did.
+  let s = st(
+    mk('p1', 'person', 'Sam'),
+    mk('W', 'waiting-for', 'the signed form'),
+    clocked('W'),
+    ev('waiting.opened', 'W', { person: 'p1', since: AGO(3) }),
+    ev('person.linked', 'W', { node: 'W', person: 'p1', relation: 'waiting-on' }),
+  );
+  assert.equal(waitingOnAnyone(s, NOW, TZ).length, 1, 'open, and owed');
+
+  s = fold([ev('waiting.closed', 'W', { outcome: 'arrived' })], s);
+  assert.equal(waitingOnAnyone(s, NOW, TZ).length, 0, 'it arrived, so it is off the owed list');
+  assert.deepEqual(personView(s, 'p1', NOW, TZ)!.owes.map(l => l.node.id), [],
+    'and their own page agrees');
+  // STILL THEIR WORK. Arriving is not finishing, and the link is still the
+  // record of who it was with.
+  assert.equal(s.nodes.get('W')!.lastDone, null, 'arriving did not mark it done');
+  assert.equal(s.nodes.get('W')!.people.length, 1, 'and the link stands \u2014 it says who, not whether');
+});

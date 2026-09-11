@@ -238,6 +238,55 @@ export function comingBack(
 }
 
 /**
+ * DATED, AND FURTHER OUT THAN THE WEEK — or null when nothing is.
+ *
+ * The third fact the empty offer needs, and the SIXTH cold read's third untrue
+ * statement. *See what is next* said "9 things come back to you … 10 things are
+ * here without a date" while *What comes back, and when* said "12 with a day",
+ * and three dated projects appeared in neither of the first screen's numbers.
+ *
+ * The cause is a bucket, not a count. `comingBack` reads the `soon` group, which
+ * is `1 <= days <= SOON_DAYS` BY CONSTRUCTION, and `undatedCount` asks whether
+ * `soonestDemand` is null. Anything dated further out than a week satisfies
+ * neither: it is not coming back soon and it is not undated, so the screen stood
+ * over it in silence. Reproduced as arithmetic on a store of five — two named,
+ * three named nowhere.
+ *
+ * That silence is entry 3 of `docs/nd-collisions.md` — the best-evidenced entry
+ * in the catalog and this product's thesis — committed by the app, and it is the
+ * same shape as the fifth cold read's wall one release earlier: work that IS
+ * dated, is not due today, and is named on no surface. The remedy there was the
+ * sentence rather than the clock, and it is the sentence here too.
+ *
+ * STATED AS A FACT, AND IT ASKS FOR NOTHING. A date two months out must not
+ * arrive with a day's weight on it; the reader is told what is held and when the
+ * nearest of it is, and nothing more.
+ *
+ * Reads the `later` group `heldGroups` already computes rather than re-deriving,
+ * and splits it on the one question that distinguishes its two halves: does this
+ * carry a clock somebody actually set. `isAppClock` is that question everywhere
+ * else in the app, so the split cannot drift from the one the offer's other
+ * sentence makes.
+ */
+export function furtherOut(
+  state: State, nowIso: string, zone: string,
+): { count: number; words: string } | null {
+  const day: DayShape = { zone, boundary: boundaryOf(state) };
+  const later = heldGroups(state, nowIso, zone).find(g => g.key === 'later');
+  if (!later) return null;
+  let count = 0;
+  let nearest: string | null = null;
+  for (const n of later.items) {
+    const d = soonestDemand(n, day, nowIso);
+    if (!d) continue;                       // the undated half; the other sentence has it
+    count += 1;
+    if (nearest === null || d.at < nearest) nearest = d.at;
+  }
+  if (count === 0 || nearest === null) return null;
+  return { count, words: clockDayWords(nearest, nowIso, zone, day) };
+}
+
+/**
  * Exactly one group per node in `heldWork` — the grouping is TOTAL over that
  * set, so the sum of the groups equals `coverageGauge(state).total` and equals
  * the coverage list's rows. The number, the claim it invites you to open, and

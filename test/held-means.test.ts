@@ -13,8 +13,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { admit, coverageGauge, heldNodes, heldWork, silentNodes } from '../src/gate.ts';
-import { comingBack, heldGroups, undatedCount } from '../src/held.ts';
+import { admit, coverageGauge, coverageProof, heldNodes, heldWork, silentNodes, whyCovered } from '../src/gate.ts';
+import { comingBack, furtherOut, heldGroups, undatedCount } from '../src/held.ts';
 import { searchHeld } from '../src/search.ts';
 import { fold, emptyState, type State } from '../src/fold.ts';
 import type { AppEvent } from '../src/events.ts';
@@ -155,4 +155,98 @@ test('sorting things for tomorrow leaves the offer something true to say about t
   // AND NOTHING TO SAY WHEN THERE IS NOTHING, so the sentence cannot appear over
   // an empty store and read as a promise about work that does not exist.
   assert.equal(comingBack(emptyState(), NOW, TZ), null, 'an empty store has nothing coming back');
+});
+
+test('held-means: the empty offer accounts for every dated thing, not just the near ones', () => {
+  // THE SIXTH COLD READ'S THIRD UNTRUE STATEMENT, reproduced as arithmetic.
+  //
+  // *See what is next* said "9 things come back to you … 10 things are here
+  // without a date" while *What comes back, and when* said "12 with a day", and
+  // three dated projects appeared in NEITHER of the first screen's two numbers.
+  // The reader cannot reconcile two screens that disagree about the size of
+  // their own store, and the one they are more likely to trust is the one that
+  // is wrong.
+  //
+  // The cause is a bucket, not a count. `comingBack` reads the `soon` group,
+  // which is `1 <= days <= SOON_DAYS` by construction — so anything dated
+  // further out than a week is named by neither sentence: it is not undated and
+  // it is not coming back soon. `ready` and `replan` fall through the same gap
+  // whenever the offer is empty for another reason.
+  let s = write(emptyState(), [ev('node.created', 'U1', { nodeKind: 'action', title: 'one nobody dated' })]);
+  s = write(s, [ev('node.created', 'S1', { nodeKind: 'action', title: 'one for Thursday' })]);
+  s = write(s, [ev('clock.set', 'S1', {
+    clockKind: 'review', at: '2026-08-05T18:00:00.000Z', source: 'test',   // 3 days out
+  })]);
+  for (const id of ['L1', 'L2', 'L3']) {
+    s = write(s, [ev('node.created', id, { nodeKind: 'project', title: `${id} — dated, and months away` })]);
+    s = write(s, [ev('clock.set', id, {
+      clockKind: 'review', at: '2026-09-30T18:00:00.000Z', source: 'test',  // 59 days out
+    })]);
+  }
+
+  assert.equal(coverageGauge(s).total, 5, 'five things are held');
+  assert.equal(undatedCount(s, NOW, TZ), 1, 'one of them carries no date');
+  const back = comingBack(s, NOW, TZ);
+  assert.equal(back?.count, 1, 'one of them comes back inside the week');
+
+  // THE PROPERTY. Every held thing is named by one of the sentences the empty
+  // offer can say, or the screen is silent about something it is holding —
+  // which is entry 3 of `docs/nd-collisions.md` committed by the app.
+  const far = furtherOut(s, NOW, TZ);
+  assert.equal(far?.count, 3, 'and three carry a day further out than the week');
+  assert.equal(far?.words, 'Sep 30', 'named by the nearest of them, as a date and not a countdown');
+
+  // THE PROPERTY. Every held thing is named by one of the sentences the empty
+  // offer can say, or the screen is silent about something it is holding — which
+  // is entry 3 of `docs/nd-collisions.md` committed by the app.
+  //
+  // `ready` and `replan` are excluded from the sum ON PURPOSE and each has a
+  // surface of its own: a passed hard date raises a replan card directly above
+  // this, and a `ready` item the offer is not making is behind something, which
+  // the Behind list names. They are asserted empty here so this stays a
+  // statement about a store where the offer is genuinely empty for the reason
+  // the three sentences are about.
+  const groups = new Map(heldGroups(s, NOW, TZ).map(g => [g.key, g.items.length]));
+  assert.equal(groups.get('ready') ?? 0, 0, 'nothing has arrived');
+  assert.equal(groups.get('replan') ?? 0, 0, 'and no date has gone by');
+  const standing = heldGroups(s, NOW, TZ)
+    .filter(g => g.key !== 'done' && g.key !== 'menu' && g.key !== 'unsorted')
+    .flatMap(g => g.items).length;
+  assert.equal(undatedCount(s, NOW, TZ) + (back?.count ?? 0) + (far?.count ?? 0), standing,
+    'the three numbers on the empty offer sum to everything it is standing over');
+});
+
+test('held-means: the app\u2019s own marker is not a day the reader set', () => {
+  // THE OTHER HALF OF THE SAME FINDING, and the plainest contradiction in the app.
+  //
+  // The gate cures EVERY undated node with a `review` clock so that nothing can
+  // go silent (law 1). `whyCovered` asked whether any clock existed at all, so a
+  // node nobody had dated came back `clock` — and the coverage sheet's count says
+  // "with a day they come back to you" about that reason. Measured on a store of
+  // one such action: *See what is next* said "One thing is here without a date"
+  // and *What comes back, and when* said "1 with a day they come back to you",
+  // about that same node, at the same moment. The sheet's ROW said "returns
+  // today" too, and the row sorted to the FRONT of a list ordered by when things
+  // come back.
+  //
+  // This is the FIFTH round of `whyCovered`'s one mistake — Menu before clock
+  // twice, then Done before clock — and its docblock now carries all of them.
+  // `cure` rather than `null`: the cure is real and the thing does come back, so
+  // filing it under the exceptions would deny a promise the app keeps. What was
+  // wrong was the words.
+  const s = write(emptyState(), [ev('node.created', 'C', { nodeKind: 'action', title: 'nobody dated this' })]);
+  const node = s.nodes.get('C')!;
+  assert.ok(Object.values(node.clocks).length > 0, 'the gate cured it, as law 1 requires');
+  assert.equal(whyCovered(node, s), 'cure', 'covered, and not by a day anybody set');
+  assert.equal(undatedCount(s, NOW, TZ), 1, 'which is the same thing the offer says about it');
+  assert.deepEqual(coverageProof(s).reasons, [{ reason: 'cure', count: 1 }],
+    'so the proof gives the reason a reader could check from outside');
+  assert.equal(coverageProof(s).holds, true, 'and it is still covered \u2014 the cure is not a failure');
+
+  // A DATE SOMEBODY SET STILL READS AS ONE. The fix must not swallow the real case.
+  let dated = write(emptyState(), [ev('node.created', 'D', { nodeKind: 'action', title: 'ring the plumber' })]);
+  dated = write(dated, [ev('clock.set', 'D', {
+    clockKind: 'due', at: '2026-08-05T18:00:00.000Z', source: 'test',
+  })]);
+  assert.equal(whyCovered(dated.nodes.get('D')!, dated), 'clock', 'a due date is a day you set');
 });

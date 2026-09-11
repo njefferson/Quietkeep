@@ -1848,7 +1848,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.27**, promoted 2026-09-10 at `532906a` — three
+- **PRODUCTION CARRIES 3.23.28**, promoted 2026-09-11 at `ef94229` — two more
+  of the sixth cold read's untrue statements, and one of them had been live for
+  eleven releases. A container no longer claims its saved date is unsaved, and
+  *Not this* no longer announces a move it did not make. Verified:
+  `merge-tree --write-tree` gave `d8db301`, the same tree OBJECT as the staging
+  head, with the Spine green by head SHA at `9e73ece` (run 880).
+  **The method failures are the more useful half**: the walk had covered the
+  unsaved-date line since 1.38.2, on an ordinary action where both sides read
+  `due`, agree, and the defect CANNOT OCCUR — green for eleven releases,
+  measuring a case the bug cannot live in. Both assertions now stand where the
+  defect lives and both were watched going red (hub LESSONS §266, §268).
+- **Superseded: production at 3.23.27**, promoted 2026-09-10 at `532906a` — three
   releases, and every one of them is the app telling the reader something that
   was not so. 3.23.25 put a readable answer back on the sorting screen;
   3.23.26 made *Where everything is* actually go there and stopped the offer
@@ -1979,8 +1990,53 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.23.28**, which production does
-  not carry: two more of the sixth cold read's untrue statements. A container
+- **https://staging.quietkeep.pages.dev** — **3.23.30**, which production does
+  not carry: the closed-wait half of 3.23.29's people fix, and it is a RELEASE
+  rather than a follow-up commit because it has to be. `src/people.ts` changed
+  after 3.23.29's triplet was cut, and the service worker caches by a name
+  carrying the triplet — so until the triplet moves, `sw.js` keeps its bytes,
+  no new worker installs, and every already-installed reader keeps the old
+  bundle. `release:check` is the gate that refused it, in CI, on the run that
+  was going to be promoted: **the fix was published and could not arrive**.
+  That is LESSONS §53's shape caught before it shipped rather than four
+  releases later.
+- **Superseded: 3.23.29**, which production does
+  not carry: the sixth cold read's last three untrue statements, and one of them
+  was two defects wearing one symptom.
+  **Two screens disagreed about how many things have a date.** The gate cures
+  every undated node with a `review` clock so nothing can go silent (law 1), and
+  `whyCovered` asked only whether a clock EXISTED — so *See what is next* said
+  "here without a date" about the same node *What comes back, and when* counted
+  under "with a day they come back to you", at the same moment. That sheet's row
+  said "returns today" and it sorted to the FRONT of a list ordered by return.
+  A new `cure` reason says what a reader would say; `rowClock` reads only clocks
+  a reader set. **This is the FIFTH round of `whyCovered`'s one mistake** — Menu
+  before clock twice, then Done before clock — and every one has the same shape:
+  a state that should win is invisible because the node still carries a clock.
+  **And anything dated beyond the week was named nowhere.** `comingBack` is the
+  `soon` group, 1–7 days by construction; `undatedCount` asks whether anything
+  demands. A date further out answers neither, so three dated projects stood on
+  that screen in silence — reproduced as arithmetic on a store of five, two
+  named and three named nowhere. `furtherOut` is the third clause, stated as a
+  fact that asks for nothing.
+  **And something marked owed to you by hand appeared on no surface.** The sheet
+  offers *they owe me this* on every node; *With other people* keyed off the
+  `waiting-for` KIND alone. `personView`'s docblock has promised both ways in
+  since it was written while its code read `isOpenWaiting(n) && links.some(…)`,
+  so the relation could only pick WHICH person, never admit a node — a comment
+  that states the fix. `linkedWaitingOn` is deliberately separate from
+  `isOpenWaiting`, which also gates the *It arrived* write.
+  **And the clear panel counted the store once, at mount.** It could say "There
+  is nothing here to clear" over a store holding twenty-seven; the walk passed
+  because it RELOADS first, and a reload re-mounts over a populated store.
+  **A gate hole found on the way.** `tools/reasons.mjs` guarded one
+  `REASON_WORDS` and there are TWO of that name — the coverage sheet's was
+  ungated for its whole life. Planted the new reason with no words: green, and
+  the sheet would have printed `undefined` beside a count on the one surface
+  whose job is being checkable from outside. Closed twice: typed
+  `Record<CoverReason, string>` so the compiler holds it, and asserted.
+- **Superseded: 3.23.28**, which production carries: two more of the sixth cold
+  read's untrue statements. A container
   no longer claims its saved date is unsaved — live for ELEVEN releases,
   because 3.23.16 taught the date box to read a container's `review` clock and
   never taught the comparison twelve hundred lines away, which kept reading
@@ -3864,8 +3920,13 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.27** — promoted at
-  `532906a` on 2026-09-10, carrying 3.23.25, 3.23.26 and 3.23.27: a readable
+- **https://quietkeep.pages.dev** — production, **3.23.28** — promoted at
+  `ef94229` on 2026-09-11, carrying 3.23.28 alone: a container no longer claims
+  its saved date is unsaved, live for eleven releases behind a walk that covered
+  the line on a case the defect cannot occur in, and *Not this* no longer
+  announces a move it did not make. Merged tree `d8db301`, the same tree OBJECT
+  as the staging head; Spine green by head SHA at `9e73ece`, run 880. Before it,
+  `532906a` carried 3.23.25, 3.23.26 and 3.23.27: a readable
   answer back on the sorting screen, *Where everything is* actually going
   there, the offer naming the work rather than the app's own bookmark, and the
   app no longer wrong about WHEN. Merged tree `c45ba84`, the same tree OBJECT
