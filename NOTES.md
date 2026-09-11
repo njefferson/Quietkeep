@@ -1848,7 +1848,26 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.23.30**, promoted 2026-09-11 at `c5a0ba8` — the sixth
+- **PRODUCTION CARRIES 3.24.0**, promoted 2026-09-11 at `93d023e` — a place can
+  be an area or a goal, and the choice can be changed. The cold read's remaining
+  reader-blocking finding: four places made through the app, one meant as an
+  ongoing area, every one a project with no way to say otherwise.
+  **Almost nothing was missing, and that is the finding.** `node.kind.changed`
+  was already in the vocabulary, ruled by the gate, applied by the fold and
+  worded by `log-words.ts`, with six UI paths emitting it — every one to a FIXED
+  kind. The capability was here; the ROUTE was not (hub LESSONS §95). Two of
+  Review's readings — `unfedGoals` and `quietAreas` — could never fire, nor
+  could the offer card's *serves* line, whose ALTITUDE walk could only ever find
+  a project. Verified: `merge-tree --write-tree` gave `dc8827e`, the same tree
+  OBJECT as the staging head, with the Spine green by head SHA at `f106f01`
+  (run 894), read by step-level conclusions.
+  **Still owed and said in the release notes:** the sorting question offers
+  three kinds of place and still makes a project. Worse than owed, in fact —
+  3.24.0's manual passage claims "making a new place while you are filing
+  something offers the choice in the same breath as the name", which is true of
+  the detail sheet and FALSE on the sorting screen. The release that was fixing
+  this class of defect shipped one.
+- **Superseded: production at 3.23.30**, promoted 2026-09-11 at `c5a0ba8` — the sixth
   cold read's last three untrue statements, and one of them was two defects
   wearing one symptom. Two screens disagreed about how many things have a date,
   because the gate's own cure was being read as a day the reader had set — the
@@ -2008,8 +2027,8 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.0**, which production does
-  not carry: a place can be an area or a goal, and the choice can be changed.
+- **https://staging.quietkeep.pages.dev** — **3.24.0**, which production now
+  ALSO carries (promoted at `93d023e`): a place can be an area or a goal, and the choice can be changed.
   The cold read's remaining reader-blocking finding — four places made through
   the app, one meant as an ongoing area, every one a project with no way to say
   otherwise.
@@ -3962,8 +3981,12 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.23.30** — promoted at
-  `c5a0ba8` on 2026-09-11, carrying 3.23.29 and 3.23.30: the app no longer
+- **https://quietkeep.pages.dev** — production, **3.24.0** — promoted at
+  `93d023e` on 2026-09-11, carrying 3.24.0 alone: a place can be told it is a
+  project, an outcome, an ongoing area or a goal, and told again if the first
+  answer was wrong. Merged tree `dc8827e`, the same tree OBJECT as the staging
+  head; Spine green by head SHA at `f106f01`, run 894. Before it, `c5a0ba8`
+  carried 3.23.29 and 3.23.30: the app no longer
   says two different things about how many of your things have a date, work
   dated beyond the week is named instead of standing in silence, something you
   marked as owed to you by hand reaches *With other people* and leaves it again
