@@ -468,3 +468,42 @@ test('a day nobody picked writes nothing at all', () => {
   }
   assert.deepEqual(datePlaceEvents(ctx(), '', '2026-07-31'), [], 'nor is nowhere a place');
 });
+
+test('filing into a new place makes the kind of place you chose', () => {
+  // THE LAST LIVE PIECE OF THE SIXTH COLD READ, and the screen had been
+  // promising it for its whole life. The field says "Name a new project, area
+  // or goal", its label says it again, the empty-field message a third time,
+  // and the route hint that opens the screen a fourth — and whatever you typed
+  // became a project. Four promises, no way to answer one. A cold read made
+  // four places this way, one meant as an ongoing area, and every one came
+  // back a project.
+  //
+  // `createParentEvents` has taken a kind since the container kinds landed, and
+  // its own comment records exactly what leaving this caller alone cost: "so
+  // the triage route and every existing caller keep making projects without
+  // saying so". This is that route.
+  let s = capture(emptyState(), 'N', 'ring the roofer');
+  s = write(s, fileUnderNewEvents(ctx(), 'N', 'the house', clocksOf(s.nodes.get('N')), null, 'area'));
+  const made = [...s.nodes.values()].find(n => n.title === 'the house');
+  assert.ok(made, 'the place was made');
+  assert.equal(made!.kind, 'area', 'and it is the kind that was chosen, not the default');
+  assert.equal(s.nodes.get('N')!.parent, made!.id, 'with the thing filed under it');
+
+  // A GOAL TOO, so this is not one special case wired up.
+  let g = capture(emptyState(), 'M', 'a quieter house');
+  g = write(g, fileUnderNewEvents(ctx(), 'M', 'somewhere calmer', clocksOf(g.nodes.get('M')), null, 'goal'));
+  assert.equal([...g.nodes.values()].find(n => n.title === 'somewhere calmer')!.kind, 'goal');
+});
+
+test('and saying nothing about the kind still makes a project', () => {
+  // THE HALF THAT MATTERS MORE. The parameter is defaulted, so every caller
+  // that has nothing to say about kind keeps exactly the behavior it had —
+  // which is what makes this a widening rather than a change. Every other test
+  // in this file calls the five-argument form, and they are the proof; this
+  // states it on purpose so a later session cannot read the default as
+  // incidental.
+  let s = capture(emptyState(), 'N', 'ring the roofer');
+  s = write(s, fileUnderNewEvents(ctx(), 'N', 'the house', clocksOf(s.nodes.get('N'))));
+  assert.equal([...s.nodes.values()].find(n => n.title === 'the house')!.kind, 'project',
+    'unasked, it is a project, exactly as it was');
+});

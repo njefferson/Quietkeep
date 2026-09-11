@@ -8601,6 +8601,26 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   await tpage.locator('#triage-actions .route[data-route="put-under"]').first().click();
   await tpage.waitForSelector('#triage-place-new');
   await tpage.fill('#triage-place-new', 'The shed');
+  // WHICH OF THE THREE THIS SCREEN HAS BEEN NAMING (3.24.1).
+  //
+  // The field's own placeholder says "Name a new project, area or goal", its
+  // label says it again, the empty-field message a third time and the route
+  // hint that opens this screen a fourth — and whatever you typed became a
+  // project. Four promises, no way to answer one. Asserted from the promise
+  // side: the words on the offered options are read out of the DOM and compared
+  // to what the screen claims, so a kind quietly dropped from the list fails
+  // here rather than in a cold read.
+  const placeKinds = await tpage.locator('#triage-place-kind option').allTextContents();
+  is(placeKinds.length >= 3, true,
+    `the screen offers the kinds it names (${placeKinds.join(' / ')})`);
+  is(await tpage.locator('#triage-place-kind').inputValue(), 'project',
+    'with project selected, so the ordinary path costs no extra thought');
+  const fieldPromise = await tpage.getAttribute('#triage-place-new', 'placeholder') || '';
+  for (const word of ['project', 'area', 'goal']) {
+    is(placeKinds.some(k => k.toLowerCase().startsWith(word)), true,
+      `and "${word}", which the field has been promising ("${fieldPromise}"), is one of them`);
+  }
+  await tpage.selectOption('#triage-place-kind', 'area');
   await intoJob(tpage, 'triage');
   await tpage.locator('#triage-actions .route', { hasText: 'Make it' }).first().click();
   await tpage.waitForSelector('#triage-undo .triage-undo-bar');
@@ -8611,6 +8631,31 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // this was information with nothing to press.
   is(await tpage.locator('#triage-place-when').count(), 1,
     'and the way to answer it is right there on the receipt');
+  // AND IT IS THE KIND THAT WAS CHOSEN, read out of the LOG rather than out of
+  // the select the reader is looking at. The whole app is `state = fold(log)`;
+  // a control that only changed the screen is the defect class this stretch of
+  // releases has been about.
+  //
+  // NO RELOAD, and that is stronger rather than weaker. The first version of
+  // this reloaded to prove persistence and broke the fixture guard eleven lines
+  // below — which refuses to measure an empty triage queue, and was right to:
+  // a reload lands on the hub, so the surface that guard needs was gone. The
+  // log IS the persistence. If the written event says `area`, every future fold
+  // produces an area; a reload would only re-run the fold this already reads
+  // the input of.
+  const shedKind = await tpage.evaluate(async () => {
+    const db = await new Promise((res) => { const r = indexedDB.open('quietkeep'); r.onsuccess = () => res(r.result); });
+    return await new Promise((res) => {
+      const tx = db.transaction('events', 'readonly').objectStore('events').getAll();
+      tx.onsuccess = () => {
+        const made = tx.result.find(e => e.kind === 'node.created'
+          && e.payload && e.payload.title === 'The shed');
+        res(made ? made.payload.nodeKind : '(no such node)');
+      };
+    });
+  });
+  is(shedKind, 'area',
+    `a place sorted into as an area IS an area (the log says ${shedKind})`);
 
   // The place is held and asking nothing — "Later" is the hollow return, seen.
   const shedGroupBefore = await tpage.evaluate(() => {
