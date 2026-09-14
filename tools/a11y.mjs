@@ -1944,11 +1944,80 @@ async function photograph(page, stateName, theme) {
   }
 }
 
+/**
+ * DOES THE STATE FIT SIDEWAYS — asked at every state, because the list asked it
+ * of eleven.
+ *
+ * WHY THIS IS HERE AND NOT IN A LIST. B-04's sweep below opens eleven surfaces
+ * BY ID at 320px/200% and measures each one's own box, and the comment above it
+ * is proud of having grown from one id to eleven. That is the shape: a
+ * hand-written population, extended by whoever remembers the sweep exists. The
+ * container-kind select added in 3.24.1 was never in it, so the sorting screen
+ * shipped 37px wider than a 390px phone and every gate was green — the walk
+ * DROVE that state, audited it for contrast, axe, names, targets, separation
+ * and focus rings, and never once asked whether it fit. A cold read found it by
+ * looking.
+ *
+ * So it asks here, where `auditSeparationAndTargets` already runs at every
+ * state the walk drives, and where a state that joins the walk gets it by
+ * construction rather than by being remembered. Same reasoning as that
+ * function's own docblock: a second list of states to keep in step is the
+ * defect this file has paid for three times.
+ *
+ * IT NAMES THE OFFENDER, for the reason the sweep below learned: "42px of
+ * overflow" says the page is broken and nothing about where, and finding out
+ * meant writing a throwaway probe by hand, twice.
+ *
+ * EVERY SCROLL ROOT IN THE STATE, not just the document. A dialog is its own
+ * scroll container, so content escaping inside one leaves the page-level number
+ * at zero — which is exactly why the 320/200 sweep had to measure dialogs by
+ * their own boxes. Here the open dialog is whichever one the state has, asked
+ * for rather than listed.
+ */
+async function auditNoSideways(page, stateName, theme) {
+  const found = await page.evaluate(() => {
+    const name = (el) => el.id ? `#${el.id}`
+      : (typeof el.className === 'string' && el.className.trim()
+        ? '.' + el.className.trim().split(/\s+/)[0] : el.tagName.toLowerCase());
+    const roots = [document.scrollingElement || document.documentElement];
+    for (const d of document.querySelectorAll('dialog')) if (d.open) roots.push(d);
+    const out = [];
+    for (const root of roots) {
+      const px = Math.round(root.scrollWidth - root.clientWidth);
+      if (px <= 1) continue;
+      // The document's own scroller is measured against the VIEWPORT; every
+      // other root against its own right edge. `auditReach` makes the same
+      // distinction, for the same reason: `<html>` here is 100dvh with
+      // overflow hidden, so its rect does not describe what a reader can see.
+      const isDoc = root === (document.scrollingElement || document.documentElement);
+      const edge = isDoc ? document.documentElement.clientWidth
+        : root.getBoundingClientRect().right;
+      let worst = null;
+      for (const el of root.querySelectorAll('*')) {
+        const r = el.getBoundingClientRect();
+        if (r.width < 1 || r.height < 1) continue;
+        if (r.right > edge + 0.5 && (!worst || r.right > worst.right))
+          worst = { what: name(el), right: Math.round(r.right) };
+      }
+      out.push({ root: name(root), px, edge: Math.round(edge), worst });
+    }
+    return out;
+  });
+  if (!found.length) { pass(`${theme}/${stateName}: nothing escapes sideways`); return; }
+  for (const f of found) {
+    fail(`${theme}/${stateName}: ${f.root} is ${f.px}px wider than it can show`
+      + (f.worst
+        ? ` — widest past the edge is ${f.worst.what}, reaching x=${f.worst.right} against ${f.edge}`
+        : ' — no single element passes the edge, so the cause is a shrink-refusing box, not a wide one'));
+  }
+}
+
 async function auditSeparationAndTargets(page, stateName, theme) {
   await ensureStanceForState(page, stateName);
   await auditSeparation(page, stateName, theme);
   await auditTargets(page, stateName, theme);
   await auditReach(page, stateName, theme);
+  await auditNoSideways(page, stateName, theme);
   await photograph(page, stateName, theme);
 }
 

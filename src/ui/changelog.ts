@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.24.2',
+    kind: 'ITERATION',
+    date: '2026-09-14',
+    notes: [
+      '**The kind-of-place chooser the last release added ran off the right edge of a phone.** It sat in half the width of the row, and the longest thing it says — *Project — work with steps* — is wider than that, so it pushed the whole screen sideways: 427 pixels of page on a 390 pixel phone, with the arrow you press off-screen and nothing to scroll to reach it. The name field beside it was squeezed to 158 pixels and showed *Name a new proj*. Both take the full width now, one under the other, and the page is exactly as wide as the screen.',
+      '**And nothing had been checking that any screen fits sideways.** The accessibility run measures every screen this app has for contrast, for reading order, for whether a finger can reach a control and whether two controls sit too close — and it asked whether the screen fit only on eleven surfaces named in a list, which this one was never added to. It asks at every screen now, and says which element is the one hanging over the edge. That is why this release is one line about a select box and one line about the thing that should have caught it.',
+    ],
+  },
+  {
     triplet: '3.24.1',
     kind: 'ITERATION',
     date: '2026-09-11',

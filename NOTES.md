@@ -2174,8 +2174,22 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.1**, which production now
-  ALSO carries (promoted at `4bd6b85`): the sorting screen offers the kind of place it has been NAMING all
+- **https://staging.quietkeep.pages.dev** — **3.24.2**: the kind-of-place
+  chooser 3.24.1 added ran off the right edge of a phone, and nothing was
+  checking whether any screen fits sideways. Measured first-hand at 390x844 —
+  page scrollWidth 427 against a 390 viewport, the select x=199 to x=427 with
+  its arrow off-screen, the name field squeezed to 158px. A flex item's
+  min-width is `auto`, which is the identical B-04 cause already written out
+  beside `.lens-row select`, aggravated by the row sitting in one 158px column
+  of a two-column grid. The row spans every column now and the select is
+  shrink-zeroed; page width back to 390. **And the gate half matters more:**
+  horizontal overflow was asked of eleven surfaces named in a list and of
+  nothing else, so the walk drove that state and audited six other things about
+  it without ever asking whether it fit. `auditNoSideways` is asked from
+  `auditSeparationAndTargets` now — 122 states, by construction rather than by
+  being remembered — and it names the element over the edge.
+- **Superseded: 3.24.1**, which production also carries (promoted at
+  `4bd6b85`): the sorting screen offers the kind of place it has been NAMING all
   along. The field's placeholder says *"Name a new project, area or goal"*, its
   label says it again, the empty-field message a third time and the route hint
   that opens the screen a fourth — four promises, and whatever was typed became

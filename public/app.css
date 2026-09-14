@@ -3247,6 +3247,16 @@ summary::-webkit-details-marker { display: none; }
   flex-wrap: wrap;
   align-items: stretch;
   margin-block: 0.25rem;
+  /* SPANS EVERY COLUMN (3.24.2). `.triage-actions` is
+     `repeat(auto-fit, minmax(min(9rem, 100%), 1fr))`, which at 390px gives two
+     columns of 158px — and this row is not a route button, it is a form row
+     carrying a name field AND a kind chooser. Left in one cell it had 158px for
+     a select whose longest option measures 226px, and the overflow cascaded all
+     the way out: 228 past this row, 394 past the actions grid, 410 past
+     `#triage`, 427 past a 390px body. Measured at 390x844, x=199 to x=427.
+     Ignored where this row is not a grid child, which is every other place it
+     appears (the detail sheet's two). */
+  grid-column: 1 / -1;
 }
 .place-new input {
   flex: 1 1 12rem;
@@ -3258,6 +3268,18 @@ summary::-webkit-details-marker { display: none; }
   background: var(--surface);
   border: 1px solid var(--rail);
   border-radius: 0.5rem;
+}
+.place-new select {
+  /* THE SAME B-04 CAUSE `.lens-row select` ALREADY CARRIES (3.24.2), and the
+     rule beside it says it in full: a flex item's min-width is `auto`, so this
+     select refused to shrink below its longest option and pushed the page
+     sideways. That rule was written for a select whose options are container
+     titles; this one's options are fixed phrases up to 226px, which is why the
+     row above also had to stop sharing a 158px column. Zero it and give it a
+     basis, so it shares the row where there is space and takes its own line
+     where there is not — never the page's width. */
+  min-width: 0;
+  flex: 1 1 12rem;
 }
 
 /* WHERE it sits (V2 stage 1, "It says where"). Layout only — every place line
