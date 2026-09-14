@@ -663,6 +663,12 @@ const REGISTRY = {
   // same rule one paragraph up. It is prose on a measured surface — `.detail-hint`
   // ink, so no new contrast pair — and it is also the list's accessible name, so
   // what it says is read by the name audits and not only by the contrast one.
+  /* A THING WITH A VERY LONG NAME (3.24.3). Two selectors, and both are load
+     bearing: the title is the thing that has to stay bounded, and "Let it go"
+     is the control that was unreachable behind it. No new colour pair — both
+     are already-styled elements measured on the shorter detail states — so
+     this state adds a geometry input rather than a palette question. */
+  'a very long name': ['#detail-title', '#detail-trash'],
   'detail sheet, the places you have': [
     '#detail-context-picks button', '#detail-context-fix button',
     '#detail-context-picks .detail-picks-lead',
@@ -6326,6 +6332,116 @@ try {
       await auditFocusRings(page, 'replan, all at once', theme);
     }
 
+    /* A THING WITH A VERY LONG NAME CAN STILL BE GOT RID OF (3.24.3).
+     *
+     * THE CHECK FOR THIS ALREADY EXISTED AND HAD NEVER SEEN ONE. `auditReach`
+     * asks exactly the right question — is every control inside its scroller's
+     * visible box, or somewhere that scroller can scroll it to — and it has
+     * asked it at every state in this walk since it was written. Every one of
+     * those states had a short title. So a cold read found by hand what this
+     * gate is for: an item whose title filled the dialog left `.sheet-body`
+     * TWENTY-SIX pixels of client height against 1,515px of content, and the
+     * three controls that dispose of the item were painted outside that window.
+     * An item made ten seconds earlier could not be let go of by finger.
+     *
+     * So the missing thing was a STATE, not a check — hub LESSONS §28, which is
+     * about a surface joining the walk's list, read one level up: a check is
+     * only as wide as the inputs it is ever given.
+     *
+     * NOT AN EXOTIC INPUT. The app offers "Hold it as one thing" for a pasted
+     * block, which is the right reading for an address or a quote and makes
+     * exactly this item; a long typed line, an import and a sync do too.
+     *
+     * IT CLEANS UP WITH THE ACT IT ASSERTS. The item is let go of at the end
+     * through `#detail-trash` — the control whose reachability is the point —
+     * so the store is returned to the shape the next state expects BY doing the
+     * thing this state exists to prove is possible. A state that had to be
+     * tidied up some other way would be a state whose claim was untested. */
+    const LONG = Array.from({ length: 16 }, (_, n) =>
+      `Thing number ${n + 1} that came out of the meeting and needs doing`).join(' ');
+    // Made the way a reader makes one — the capture box is on the HUB, so this
+    // leaves whatever job the walk is standing in rather than looking for a
+    // door to it. An earlier version asked `enterStance` for a "capture" job
+    // and was told there is no door to it, then measured a dialog it had never
+    // opened. A missing door is a FAILURE here for that exact reason.
+    await leaveStance(page);
+    await page.waitForSelector('#capture');
+    await page.fill('#capture', LONG);
+    await page.click('#capture-form button[type=submit]');
+    await page.waitForFunction(() =>
+      /Held/.test(document.querySelector('#status')?.textContent ?? ''));
+    // Opened from the held list, which is where a thing that has just been put
+    // down actually is. `#sheet-contents` was tried first and is a NAVIGATION
+    // sheet — eight doors to other surfaces, never a list of items — so it
+    // matched nothing and reported the item missing rather than the lookup
+    // being wrong. A door that is the wrong door still opens.
+    await enterStance(page, 'held');
+    await page.waitForSelector('#cards .card-open');
+    const longDoor = page.locator('#cards .card-open')
+      .filter({ hasText: 'Thing number 1 that came out' }).first();
+    if (await longDoor.count() === 0) {
+      fail(`${theme}/a very long name: the item is not on the held list to be opened`);
+    } else {
+      await longDoor.click();
+      await page.waitForSelector('#detail[open]');
+      /* THE ASSERTION IS THE SCROLL WINDOW, not the title's share, and the
+       * first version of this got that wrong in a way worth keeping written
+       * down. It asserted the title takes at most 45% of the sheet — which
+       * PASSED, at 253px of 717px, in a state whose body was 26px. The title
+       * being bounded is the FIX; the body having somewhere to scroll is the
+       * PROPERTY, and only the property is worth gating. Measured on a real
+       * item this window is 366px for 1,515px of content.
+       *
+       * `auditReach` below is not enough on its own either, and it is honest
+       * about what it asks: "inside its scroller's visible box, or somewhere
+       * that scroller can scroll it to". Through a 26px slit every control is
+       * reachable one at a time, so it passes — correctly, by its own rule.
+       * That rule was written for a control parked off-canvas, not for a
+       * scroller squeezed to nothing. Hence a number here. */
+      const long = await page.evaluate(() => {
+        const d = document.querySelector('#detail');
+        const b = d.querySelector('.sheet-body');
+        const h = document.querySelector('#detail-title');
+        return { bodyH: b.clientHeight, bodyContent: b.scrollHeight,
+          titleH: Math.round(h.getBoundingClientRect().height),
+          titleScrolls: h.scrollHeight > h.clientHeight + 1,
+          dialogH: Math.round(d.getBoundingClientRect().height),
+          children: [...d.children].map(c => `${c.className || c.tagName.toLowerCase()}:${Math.round(c.getBoundingClientRect().height)}`).join(' + ') };
+      });
+      (long.bodyH >= 150 ? pass : fail)(
+        `${theme}/a very long name: the sheet still has somewhere to scroll `
+        + `(${long.bodyH}px of window for ${long.bodyContent}px of content; `
+        + `sheet ${long.dialogH}px = ${long.children})`);
+      (long.titleScrolls ? pass : fail)(
+        `${theme}/a very long name: the title is bounded and scrolls itself `
+        + `(${long.titleH}px shown, and it does not take the sheet)`);
+      await auditContrast(page, 'a very long name', theme);
+      await auditNames(page, 'a very long name', theme);
+      await auditSeparationAndTargets(page, 'a very long name', theme);
+      await auditFocusRings(page, 'a very long name', theme);
+      /* LET GO OF IT — the assertion and the cleanup in one act. The control
+       * whose reachability is the whole point is the one that tidies up, so a
+       * state that could not be cleaned up would be a state whose claim had
+       * failed.
+       *
+       * WHAT IT ASSERTS IS THE ACT, not a dialog closing. The first version
+       * waited for the sheet to be hidden and timed out for a good reason:
+       * "Let it go" writes `node.trashed` and STAYS, offering to keep it after
+       * all, because every destructive control here has its reverse twin
+       * beside it. So the proof is that the twin arrived — which is a stronger
+       * claim than the sheet going away, and it would have been a false
+       * failure if the walk had been "fixed" by closing the sheet itself. */
+      await page.click('#detail-trash');
+      await page.waitForSelector('#detail-untrash:not([hidden])');
+      pass(`${theme}/a very long name: "Let it go" was reachable, and pressing it `
+        + `offered to keep it after all — so the act landed on an item nothing `
+        + `could previously dispose of`);
+      await page.click('#detail-close');
+      await page.waitForSelector('#detail', { state: 'hidden' });
+    }
+    await page.evaluate(() => {
+      for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
+    });
 
     // AND THE ARRANGEMENT IS ASSERTED, not assumed. A wide pass that ran against
     // a page still showing one pane would report green about a layout that was

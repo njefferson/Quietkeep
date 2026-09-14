@@ -2042,6 +2042,45 @@ dialog {
 }
 dialog::backdrop { background: rgb(0 0 0 / 0.5); }
 dialog h2 { margin: 0 0 0.75rem; font-size: 1.25rem; }
+/* A TITLE MAY NOT TAKE THE DIALOG (3.24.3).
+ *
+ * `#detail-title` sits OUTSIDE the scroller on purpose — 3.1.0 put it there,
+ * with the Close, so neither can scroll away — and `.sheet-body` below it is
+ * `flex: 1 1 auto`, which means whatever the title takes is what the body does
+ * not get. An unbounded title therefore does not merely look wrong: it takes
+ * the whole screen that is the only way to undo the thing it names.
+ *
+ * MEASURED at 390x844, on an item made by pasting sixteen lines into the
+ * one-line capture box: a 2,400-character title left `.sheet-body` TWENTY-SIX
+ * pixels of client height against 1,515px of content, so `#detail-menu`,
+ * `#detail-trash` and `#detail-release` were painted outside that window and
+ * clipped. At maximum scroll of every scroller on the page they were still not
+ * in it. An item made by following the capture box, ten seconds earlier, could
+ * not be let go of by finger.
+ *
+ * HOW IT IS REACHED IS NOT EXOTIC. A long title arrives from a typed one, an
+ * imported one, a synced one — and from a button this app deliberately offers:
+ * paste many lines and "Hold it as one thing" joins them, which is the correct
+ * reading for an address or a quote and produces exactly this item. The dead
+ * end was reachable through a supported act, not only through a mistake.
+ *
+ * VIEWPORT UNITS, and the first version of this rule got it wrong in a way
+ * worth keeping written down: it said `max-height: 35%`, which computed to
+ * `none` and changed nothing, because a percentage max-height resolves against
+ * the containing block's HEIGHT and this dialog's height is `auto` — capped by
+ * `max-height`, which does not make it definite. Measured before and after that
+ * rule: title 972px, body 26px, identical. `vh` is definite always.
+ *
+ * A share rather than a line count, because the cap has to hold at 200% text
+ * too, where this title measured 8,640px tall and the controls sat at negative
+ * coordinates entirely off-screen. The whole title stays readable by scrolling
+ * it, and stays editable in "What it says" inside the body. */
+#detail > .detail-title {
+  flex: 0 0 auto;
+  max-height: 30vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 
 /* THE ALWAYS-REACHABLE WAY OUT, and it no longer depends on `position: sticky`.
  *

@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.24.3',
+    kind: 'ITERATION',
+    date: '2026-09-14',
+    notes: [
+      '**A thing with a very long name could not be got rid of.** Give something a name long enough \u2014 by typing one, by pasting a block and choosing *Hold it as one thing*, or by bringing one in from elsewhere \u2014 and the name filled its whole page. What was left to scroll through was twenty-six pixels tall on a phone, holding fifteen hundred pixels of content, so *Put on the Menu*, *Let it go* and *Put it down* were all pushed out of sight with no way to reach them. Something you had just made, ten seconds earlier, could not be let go of. The name now takes at most a third of the page and scrolls on its own, which leaves the rest of the page where it was: three hundred and sixty-six pixels, and every button back within reach. The whole name is still there, still readable, and still yours to change under *What it says*.',
+      '**The check that should have caught it existed and had never been given a long name.** The accessibility run already asks, at every screen, whether every control is on screen or can be scrolled to \u2014 and it asked that only about things with short names, because nothing in the run had a long one. There is now a screen in the run built from a name sixteen lines long, and it ends by pressing *Let it go* on that very thing, so the check cannot pass unless the button it needs is genuinely reachable.',
+      '**Still not right:** on a small phone with text set to twice the usual size, the room to scroll is a hundred and twelve pixels instead of twenty-six, which is much better but still tight, and one of the three buttons sits about twelve pixels below the bottom edge at that size. That is the button itself being tall at that text size rather than the name taking the page, and it is a separate thing to fix.',
+    ],
+  },
+  {
     triplet: '3.24.2',
     kind: 'ITERATION',
     date: '2026-09-14',

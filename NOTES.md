@@ -2174,7 +2174,25 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.2**: the kind-of-place
+- **https://staging.quietkeep.pages.dev** — **3.24.3**: a thing with a very
+  long name could not be disposed of. The name filled the sheet, leaving
+  `.sheet-body` TWENTY-SIX pixels of window against 1,515px of content, so
+  `#detail-menu`, `#detail-trash` and `#detail-release` were painted outside it
+  and clipped; at 320px/200% they sat at negative coordinates entirely
+  off-screen. `#detail-title` is outside the scroller by design (3.1.0, so the
+  way out cannot scroll away) and `.sheet-body` is `flex: 1 1 auto`, so
+  whatever the title takes the body does not get. Capped at `30vh` with its own
+  scroll: title 253px, body back to 366px, every control reachable.
+  **REACHED BY A SUPPORTED ACT** — "Hold it as one thing" on a pasted block is
+  the correct reading for an address or a quote and makes exactly this item.
+  **And the check already existed**: `auditReach` has asked the right question
+  at every state since it was written, and every one of those states had a
+  short title, so the missing thing was an INPUT rather than a check (§28 read
+  one level up). A state built from a sixteen-line name now ends by pressing
+  *Let it go* on it. Still not right at 320px/200%: 112px of window rather than
+  26, and one control 12px below the edge because the button itself is 228px
+  tall at that text size.
+- **Superseded on staging: 3.24.2**: the kind-of-place
   chooser 3.24.1 added ran off the right edge of a phone, and nothing was
   checking whether any screen fits sideways. Measured first-hand at 390x844 —
   page scrollWidth 427 against a 390 viewport, the select x=199 to x=427 with
