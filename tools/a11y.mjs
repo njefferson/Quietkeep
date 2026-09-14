@@ -665,7 +665,7 @@ const REGISTRY = {
   // what it says is read by the name audits and not only by the contrast one.
   /* A THING WITH A VERY LONG NAME (3.24.3). Two selectors, and both are load
      bearing: the title is the thing that has to stay bounded, and "Let it go"
-     is the control that was unreachable behind it. No new colour pair — both
+     is the control that was unreachable behind it. No new color pair — both
      are already-styled elements measured on the shorter detail states — so
      this state adds a geometry input rather than a palette question. */
   'a very long name': ['#detail-title', '#detail-trash'],
