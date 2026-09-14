@@ -510,11 +510,70 @@ every success sentence in that surface is screen-reader-only: *Done*, *Stopped
 for now*, *One thing at a time*, *Everything is back*, the skip sentence, and
 *Put under it*. Six, in one file, from one read's one finding.
 
+**AUDITED REGION BY REGION, 2026-09-14, and it is not eight of one thing.**
+Each of the ten was read back to its writer and asked whether a visible element
+already says the same thing at that moment. The answer splits four ways, and
+three findings in it are things no cold read could have seen.
+
+**FIVE are the only feedback there is, worst first.**
+
+- **`#bother-live`** is the worst in the app. After a forced three-way decision
+  about a worry, the three `outcomeWords` sentences — filed for later, parked a
+  week, let go and kept — are the entire explanation of which one happened.
+  Nothing else on screen distinguishes them; the card simply becomes the next
+  worry. Its failure and empty-text sentences have no visible echo either, and
+  `bother.ts` never writes `#status` at all.
+- **`#focus-live`** never got the fix the other files got. Every commit failure
+  and the empty-interrupt validation are invisible, and this file has no
+  `#status` route — so a failed write while interrupting or stopping a session
+  says nothing a sighted reader can see. `work.ts` and `replan.ts` both patched
+  exactly this for errors; `focus.ts` was not in that pass.
+- **`#sort-live`** has about thirteen sentences and six of them have no visible
+  counterpart — the route failure, the undo failure, both search messages and
+  both export messages — on a surface whose OTHER sentences are duplicated
+  verbatim into visible elements right beside them. The pattern is there and is
+  applied inconsistently.
+- **`#replan-live`** duplicates both success sentences into `#status`, and the
+  `resolveAll` FAILURE path is the one branch in that file that reaches nothing
+  visible.
+- **`#reentry-live`** carries a worse defect than invisibility, and this is the
+  one to fix first. `reentry.ts:89-94` sets `dismissed`, refreshes and closes
+  the section inside a `.then()` that runs **whether the write succeeded or
+  failed**, because `run()` never rethrows. So the section disappears
+  identically either way, and the single sentence that would tell the two apart
+  is hidden. **That is a false receipt** — the shape this repo's own capture
+  handler has a comment about refusing.
+
+**ONE IS DEAD MARKUP.** Nothing in `src/`, `dist/` or `test/` ever writes
+`#comms-live`. `paintComms` touches only `#comms-words` and the section's
+hidden flag. A live region that has never announced anything, alongside
+`tools/hooks/tour-fresh.sh`, which the gate census found declared nowhere.
+
+**TWO ARE ALREADY COVERED IN PRACTICE**, which is why "make them visible" is
+the wrong instruction. `#replan-sheet-live`'s two sentences both also go to the
+visible `#replan-sheet-error`, which is correctly NOT itself a live region.
+`#nextup-live`'s *Done* and *Stopped* are echoed by `#nextup-settled-what` and
+its bite sentences by the bite row appearing and disappearing — so the read's
+own finding, the skip sentence, is one of the few on that surface that is
+genuinely unsaid.
+
+**AND SEVEN SITES ANNOUNCE TWICE.** `#status` is `aria-live` too, so
+`work.ts`'s `say(msg, true)` at five call sites and `replan.ts`'s two paired
+writes give a screen reader the same sentence in both regions. The sheet-level
+`say` in `replan.ts` is the one place the pattern is right, because its visible
+target is a plain paragraph.
+
+**ONE COVERAGE GAP FOUND ON THE WAY:** `#sort-undo`, `#sort-bulk-status` and
+`#sort-bulk-outcome` are VISIBLE and in no `sort` registry array, so their
+contrast is unmeasured on that surface today.
+
 Not yet fixed. It is Phase 4 of [`docs/structural-assessment.md`](docs/structural-assessment.md)
-brought forward, and the gate has to come with it: a live region carrying a
-reader-facing sentence is either visible or DECLARED as having a visible
-counterpart, asserted per state, because nothing currently distinguishes the
-two cases.
+brought forward, and the gate has to come with it — but the gate is now clearly
+a DECLARED one rather than a sweep: a live region carrying a reader-facing
+sentence is either visible, or declares which visible element says the same
+thing, checked both directions. A blanket "no hidden live regions" rule would
+fire on the two that are already right and on the sheet pattern that is the
+model.
 
 ### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
 
