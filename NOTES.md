@@ -472,6 +472,18 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### Are the reads being answered structurally? — assessed 2026-09-14
+
+Asked twice, and answered with a census rather than adjectives in
+[`docs/structural-assessment.md`](docs/structural-assessment.md): thirty-two
+places derive a date from `node.clocks` under eight incompatible rules, the
+coverage-precedence chain has had six rounds of the same mistake, and the
+reader-facing counts run over two populations. Below the projection the app is
+one-record throughout; at the projection there is no layer, and every read has
+been fixed on the surface that showed it. The remedy is seven ordered phases,
+each a staged release, and three decisions with recommendations. **Phase 0 is
+the six dead ends from the seventh read that do not wait on any of it.**
+
 ### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
 
 Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
