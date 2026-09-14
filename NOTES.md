@@ -484,6 +484,38 @@ been fixed on the surface that showed it. The remedy is seven ordered phases,
 each a staged release, and three decisions with recommendations. **Phase 0 is
 the six dead ends from the seventh read that do not wait on any of it.**
 
+### The invisible sentence is EIGHT sentences — measured 2026-09-14
+
+The seventh read found *"Not this"* producing no visible response, because the
+sentence 3.23.28 added goes only into `#nextup-live`, which is
+`visually-hidden`. **Counted in `public/index.html`: ten elements are live
+regions (`role="status" aria-live="polite"`), and EIGHT of them carry
+`visually-hidden`** — `#bother-live`, `#reentry-live`, `#nextup-live`,
+`#replan-live`, `#focus-live`, `#comms-live`, `#sort-live` and
+`#replan-sheet-live`.
+
+**The two that are visible are the two that were fixed one at a time.**
+`#triage-live` took `triage-receipt` in 3.23.11 and `#detail-live` took
+`detail-state detail-receipt` in 3.23.8, each in answer to a read that had
+found that one. So the read has now found the third instance of a class with
+eight members, and the record of the previous two fixes is the evidence they
+were instance fixes.
+
+**And the duplication route is not available**, which is why this is not one
+class attribute. `#status` is ALSO `role="status" aria-live="polite"`
+(`index.html:199`), so `work.ts`'s `say(msg, alsoVisible)` helper — whose own
+comment records a sighted reader tapping Done and seeing nothing change —
+announces TWICE when it writes both. It passes `true` only on failures, so
+every success sentence in that surface is screen-reader-only: *Done*, *Stopped
+for now*, *One thing at a time*, *Everything is back*, the skip sentence, and
+*Put under it*. Six, in one file, from one read's one finding.
+
+Not yet fixed. It is Phase 4 of [`docs/structural-assessment.md`](docs/structural-assessment.md)
+brought forward, and the gate has to come with it: a live region carrying a
+reader-facing sentence is either visible or DECLARED as having a visible
+counterpart, asserted per state, because nothing currently distinguishes the
+two cases.
+
 ### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
 
 Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
