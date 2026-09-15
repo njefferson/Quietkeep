@@ -720,7 +720,11 @@ const REGISTRY = {
   // Just one thing (1.36.0) — the minimum state. Driven with it actually ON,
   // because the way out only exists then and the type sizes differ.
   'one thing': ['#nextup-title', '#nextup-done', '#nextup-skip', '#nextup-plain-off'],
-  'settled': ['#nextup-settled-what', '#nextup-settled-quiet', '#nextup-resume'],
+  'settled': ['#nextup-settled-what', '#nextup-settled-quiet', '#nextup-resume',
+    // VISIBLE FROM 3.24.5. Most of this surface was already echoed by
+    // `#nextup-settled-what`, so the skip sentence the seventh cold read found
+    // was the remainder rather than the whole of it.
+    { sel: '#nextup-live', whenShown: 'a receipt is empty until the reader has done the thing it reports on' }],
   'weight': ['#detail-weight-group .detail-label', '#detail-weight-light',
     '#detail-weight-ordinary', '#detail-weight-heavy', '#detail-weight-clear',
     '#detail-weight-now', '#detail-weight-hint'],
@@ -1223,7 +1227,13 @@ const REGISTRY = {
   // on purpose — "not mine to carry" is not a lesser option and must not look
   // like one.
   'bother': ['#bother-prompt', '.bother-card', '.bother-choice',
-    '.bother-choice-label', '.bother-choice-hint'],
+    '.bother-choice-label', '.bother-choice-hint',
+    // VISIBLE FROM 3.24.5, and this is the worst of the six that were not: the
+    // three outcome sentences were the ENTIRE explanation of which of three
+    // consequential choices had happened, and nothing else on screen
+    // distinguished them.
+    { sel: '#bother-live', whenShown: 'a receipt is empty until the reader has done the thing it reports on' }],
+    
   'bother entry': ['#sheet-bother-entry-title', '#sheet-bother-entry-close', '#bother-text',
     { sel: '#bother-text', pseudo: '::placeholder' },
     '#bother-form button[type=submit]', '.detail-hint'],
@@ -1265,7 +1275,8 @@ const REGISTRY = {
   // is nothing here keyed to how long you were away — no color, no threshold —
   // because a lapse is not a severity.
   'reentry': ['#reentry-heading', '.reentry-words', '.reentry-waiting',
-    '.reentry-amnesty-words', '#reentry-amnesty-go', '#reentry-dismiss'],
+    '.reentry-amnesty-words', '#reentry-amnesty-go', '#reentry-dismiss',
+],
   // The comms sweep on the focus-exit ramp. Its line is an OFFER, stated in
   // `--ink` rather than a quieter token — it is the content of the surface, not
   // an aside — and there is no badge, no count and no color anywhere on it.
@@ -1330,7 +1341,12 @@ const REGISTRY = {
     { sel: '#focus-interrupt', pseudo: '::placeholder' },
     '#focus-interrupt-form button[type=submit]', '.detail-hint', '#focus-done', '#focus-stop'],
   // The same surface once something has been written down during it.
-  'focus, interrupted': ['#focus-held', '.focus-title', '#focus-done', '#focus-stop'],
+  'focus, interrupted': ['#focus-held', '.focus-title', '#focus-done', '#focus-stop',
+    // VISIBLE FROM 3.24.5. This file never received the
+    // failures-must-be-visible fix `work.ts` and `replan.ts` got, and has no
+    // `#status` route at all, so a failed write while interrupting or stopping
+    // a session said nothing a sighted reader could find.
+    { sel: '#focus-live', whenShown: 'a receipt is empty until the reader has done the thing it reports on' }],
   // Stopping. The five words are optional, and the sheet has to say so without
   // making the empty answer look like a failure to answer.
   'focus sheet': ['#focus-sheet-title', '.detail-label', '#focus-cue',
@@ -4458,6 +4474,51 @@ try {
     await auditNames(page, 'reentry', theme);
     await auditSeparationAndTargets(page, 'reentry', theme);
     await auditFocusRings(page, 'reentry', theme, ['#reentry-amnesty-go', '#reentry-dismiss']);
+    /* NO 'reentry, forgiven' STATE, and the attempt to add one is why (3.24.5).
+     *
+     * ONE OF THREE, and the three are worth reading together. `#replan-live`,
+     * `#sort-live` and `#reentry-live` all became visible in 3.24.5, and the
+     * inventory's whole-run rule on conditional entries immediately reported
+     * all three as seen on NO state in either theme. The walk reaches each of
+     * those three surfaces, audits it at rest, and moves on without ever
+     * performing the act that writes a receipt: it never presses the
+     * all-at-once button, never routes a card on the sort surface, and never
+     * takes the amnesty. `#nextup-live`, `#bother-live` and `#focus-live` are
+     * produced and measured; these three are not, and each has its own
+     * obstacle rather than one shared cause — the amnesty closes the section
+     * (below), routing a sort card did not produce its sentence inside ten
+     * seconds and wants diagnosing rather than guessing at, and the replan
+     * press was never reached because the sort attempt died first.
+     *
+     * So none of the three carries a registry entry. Their pair is
+     * `--ink-soft` on their own surfaces, already measured by a sibling in
+     * each array — `.replan-count`, `.sort-where` and `.reentry-waiting`.
+     * Widening the walk to produce them is recorded in NOTES.md as its own
+     * piece of work, because a half-built traversal in the tree is worse than
+     * a named gap.
+     *
+     *
+     * `#reentry-live` is visible from this release like the other five, and
+     * pressing the amnesty was added here to produce its receipt so the
+     * selector could be measured. The inventory refused it: "matches nothing
+     * visible". Taking the amnesty DISMISSES the section, so the sentence is
+     * written and the box carrying it is hidden in the same turn.
+     *
+     * WHICH IS A FINDING RATHER THAN AN OBSTACLE, and a larger one than the
+     * thing being fixed. On the SUCCESS path this receipt reaches nobody: a
+     * sighted reader sees the section vanish, and a live region hidden
+     * immediately after being written may never be announced either. The
+     * sentence is only ever readable on the FAILURE path, which 3.24.4 made
+     * stay — and a browser cannot make IndexedDB refuse a commit, so the walk
+     * cannot drive that state at all (`test/reentry.test.ts` does it with a
+     * stub document, which is the instrument for it).
+     *
+     * So this region carries NO registry entry rather than a declared
+     * exemption. Its pair is `--ink-soft` on this surface, which
+     * `.reentry-waiting` already measures two lines above it in that array.
+     * Where a confirmation LIVES when the surface holding it closes is the next
+     * piece of work, recorded in NOTES.md; guessing at it here would be a
+     * design decision taken inside a gate. */
     // B-04's hardest case for the surface someone meets after a fortnight away —
     // the one screen where a horizontal scrollbar would be least forgivable.
     await page.setViewportSize({ width: 320, height: 568 });

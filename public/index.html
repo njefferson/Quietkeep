@@ -408,7 +408,7 @@
     <h2 id="bother-prompt" class="bother-prompt" tabindex="-1"></h2>
     <p id="bother-card" class="bother-card"></p>
     <div id="bother-actions" class="bother-actions"></div>
-    <p id="bother-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <p id="bother-live" role="status" aria-live="polite" class="receipt"></p>
   </section>
 
   <!-- Coming back (product law 8: rest is legitimate). The greeting is BOUNDED
@@ -429,7 +429,7 @@
     <div id="reentry-plain-actions" class="reentry-actions">
       <button id="reentry-dismiss-plain" type="button" class="ghost">Thanks</button>
     </div>
-    <p id="reentry-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <p id="reentry-live" role="status" aria-live="polite" class="receipt"></p>
   </section>
 
   <!-- THE SITUATION (2.21.0, MOVED HERE 2.23.1).
@@ -667,7 +667,7 @@
          opens is about what comes next. -->
     <p id="nextup-count" class="nextup-count nextup-lead"></p>
     <ul id="nextup-behind" class="nextup-behind"></ul>
-    <p id="nextup-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <p id="nextup-live" role="status" aria-live="polite" class="receipt"></p>
   </section>
 
 <!-- THE WAY OUT OF "JUST ONE THING", AND IT IS OUTSIDE THE OFFER (2.14.0).
@@ -800,7 +800,7 @@
          whole time it has nothing to say, which is most of the flow — and that
          emptiness is why it needs a `whenShown` entry in the contrast registry
          rather than a plain one. -->
-    <p id="triage-live" role="status" aria-live="polite" class="triage-receipt"></p>
+    <p id="triage-live" role="status" aria-live="polite" class="receipt"></p>
   </section>
 
   <!-- The do-now offer and its timer live OUTSIDE the triage section, not merely
@@ -851,7 +851,7 @@
          grades it), on the one surface least able to afford any. -->
     <div id="replan-bulk" class="replan-bulk" hidden></div>
     <ul id="replan-cards" class="replan-cards"></ul>
-    <p id="replan-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <p id="replan-live" role="status" aria-live="polite" class="receipt"></p>
   </section>
 
   <!-- Focus: one thing, and a way to be interrupted without losing it.
@@ -892,7 +892,7 @@
       <button id="focus-done" type="button">Done</button>
       <button id="focus-stop" type="button" class="ghost">Stop for now</button>
     </div>
-    <p id="focus-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <p id="focus-live" role="status" aria-live="polite" class="receipt"></p>
   </section>
 
   <!-- The comms-sweep chip on the focus-exit ramp (build-plan item 22, deferred
@@ -907,7 +907,14 @@
       <button id="comms-done" type="button">I have had a look</button>
       <button id="comms-later" type="button" class="ghost">Not now</button>
     </div>
-    <p id="comms-live" role="status" aria-live="polite" class="visually-hidden"></p>
+    <!-- A live region stood here and was REMOVED in 3.24.5. Nothing in `src/`,
+         `dist/` or `test/` ever wrote it — `paintComms` touches only
+         `#comms-words` and this section's hidden flag — so it had never
+         announced anything in its life, to anybody. The information itself is
+         on screen in `#comms-words` and always was. Found by auditing all ten
+         live regions rather than by anything failing, which is the point:
+         a region that is never written is indistinguishable from a working one
+         from every angle except reading its writers. -->
   </section>
 
   <!-- The session close (1.6.0 — build-plan item 40, ADR-0052). The second
@@ -1350,7 +1357,7 @@
   </div>
   </div><!-- /.sheet-body -->
 
-  <p id="sort-live" role="status" aria-live="polite" class="visually-hidden"></p>
+  <p id="sort-live" role="status" aria-live="polite" class="receipt"></p>
   <div class="detail-actions">
     <button id="sort-close" data-way-out type="button" class="ghost">Close</button>
   </div>

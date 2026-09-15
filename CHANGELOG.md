@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.24.5 — ITERATION
+
+*2026-09-15*
+
+- **Six screens now tell you what just happened. They were telling only screen readers.** When you answered the question about a worry, when you said *not this one* to what was offered, when you settled a date that had gone by, when you put something down mid-session, when you sorted a batch, and when you came back after a while — each of those wrote a sentence saying what it had done, into a box that was deliberately invisible to everyone who can see the screen. So the screen simply changed, and what changed and why was left for you to work out. The sentences are on the page now, in the same quiet type the rest of the app uses for this, and they take up no room at all until there is something to say.
+- **This was found by counting rather than by noticing.** One of those six turned up in a fresh read of the app, and the obvious thing would have been to fix that one — which is what happened the two previous times, in two earlier releases. Counting instead: ten of these boxes exist, eight were invisible, and the two that were not are exactly the two that had been fixed one at a time before. So all six that a reader loses something by are fixed together.
+- **One of the ten had never said anything to anybody in its life** — nothing in the app had ever written to it — and has been removed. What it was meant to announce is on the screen already and always was.
+- **Still not right:** three of the six sentences are not yet checked automatically, because the check has to make the app say them and it cannot reach those three — settling all your dates at once, sorting a card, and taking the offer to move passed dates. Their color is the same as the text beside them on the same screens, which is checked; it is the sentence itself that is not yet watched. And on the last of those three, taking the offer closes the screen the sentence is written on, so on a successful move that confirmation still reaches nobody. Both of those are named and next.
+
 ## 3.24.4 — ITERATION
 
 *2026-09-15*

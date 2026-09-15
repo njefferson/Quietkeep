@@ -2296,7 +2296,44 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.4**: the re-entry offer
+- **https://staging.quietkeep.pages.dev** — **3.24.5**: six live regions became
+  visible, one was removed as dead, and three findings came out of the attempt.
+  `.triage-receipt` was renamed `.receipt` — a class named for one surface
+  about to be worn by six — and `#bother-live`, `#reentry-live`,
+  `#nextup-live`, `#replan-live`, `#focus-live` and `#sort-live` now carry it
+  instead of `visually-hidden`. **`:empty { display: none }` is what made that
+  free**: nothing occupies space until a sentence arrives, so no state gained a
+  blank line. `--ink-soft` on these surfaces is a pair the gate already
+  measures, so no new color question.
+  **`#comms-live` REMOVED.** Nothing in `src/`, `dist/` or `test/` had ever
+  written it; `paintComms` touches only `#comms-words` and the section's hidden
+  flag. A live region that had never announced anything in its life, found by
+  auditing all ten rather than by anything failing.
+  **THREE RECEIPTS THE WALK NEVER PRODUCES**, and the inventory's whole-run
+  rule on conditional entries reported all three at once the moment they became
+  visible: `#replan-live`, `#sort-live` and `#reentry-live` were seen on NO
+  state in either theme. The walk reaches each surface, audits it at rest, and
+  never presses the all-at-once button, never routes a sort card and never
+  takes the amnesty. `#nextup-live`, `#bother-live` and `#focus-live` ARE
+  produced and measured. Acts were written for all three and backed out again:
+  the amnesty closes the section, routing a sort card did not produce its
+  sentence inside ten seconds and wants diagnosing rather than guessing, and
+  the replan press was never reached because the sort attempt died first. **A
+  half-built traversal in the tree is worse than a named gap**, so the three
+  carry no registry entry and their pair is covered by a sibling in each array.
+  **AND THE LARGEST FINDING IS ABOUT 3.24.4's OWN FIX.** Taking the amnesty
+  DISMISSES the section, so on the SUCCESS path the sentence is written and its
+  box hidden in the same turn — a sighted reader sees the section vanish, and a
+  live region hidden immediately after being written may never be announced
+  either. So that confirmation currently reaches nobody, and the sentence is
+  only ever readable on the FAILURE path that 3.24.4 made stay. **Where a
+  confirmation lives when the surface holding it closes** is the next piece of
+  work and is a design question, not a class attribute.
+  Still hidden and correctly so: `#replan-sheet-live`, whose two sentences also
+  reach the visible `#replan-sheet-error`, which is deliberately NOT itself a
+  live region. That is the model, and it is why the gate in Phase 4 has to be a
+  DECLARED one rather than a sweep.
+- **Superseded on staging: 3.24.4**: the re-entry offer
   said the write had landed when it had not. `reentry.ts`'s `run` caught the
   commit error, wrote the failure sentence into `#reentry-live` and never
   rethrew, so the promise RESOLVED on failure and the amnesty handler's
