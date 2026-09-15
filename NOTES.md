@@ -2065,7 +2065,38 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.1**, promoted 2026-09-11 at `4bd6b85` — the sorting
+- **PRODUCTION CARRIES 3.24.3**, promoted 2026-09-15 at `b7a9d8a`, carrying
+  3.24.2 and 3.24.3 together. Both answer the seventh cold read and both carry
+  a gate change that matters more than the fix beside it.
+  **3.24.2** — the container-kind select added in 3.24.1 pushed the sorting
+  screen 37px wider than a 390px phone (page scrollWidth 427 at 390x844, the
+  select x=199 to x=427, the name field squeezed to 158px). A flex item's
+  min-width is `auto`, the identical B-04 cause already written out beside
+  `.lens-row select`, aggravated by the row sitting in one 158px column of a
+  two-column grid. Page width back to 390. **And nothing had ever asked whether
+  a screen fits sideways** — the question was put to eleven surfaces named in a
+  list. `auditNoSideways` runs from the per-state geometry audit all 122 states
+  already call: 246 lines, 123 states, both themes, each named, no other screen
+  overflowing.
+  **3.24.3** — a long title filled the detail sheet, leaving the scroll area
+  26px of client height against 1,515px of content, so every disposing control
+  was painted outside that window and clipped; at 320px/200% they sat at
+  negative coordinates. Capped at `30vh` with its own scroll: title 253px of a
+  717px sheet, body back to 366px. **And the check for it already existed and
+  had never been given a long name** — `auditReach` had asked the right
+  question at every state since it was written, each with a short title, so the
+  missing thing was an INPUT rather than a check. A state built from a
+  sixteen-line name ends by pressing *Let it go* on that item.
+  Verified: Spine run 912 on `f498e94`, both jobs, all 51 steps by step-level
+  conclusions, with runs 910 and 911 CANCELED by superseding pushes and
+  verifying nothing. Tree asserted BEFORE the merge commit existed —
+  `merge-tree --write-tree` gave `7cfbe79`, the same tree OBJECT as the staging
+  head.
+  **Still not right, and the release notes say so:** at 320px with 200% text the
+  sheet's window is 112px rather than 26, and one control sits about 12px below
+  the edge because the button itself is 228px tall at that size. Row layout, not
+  the title.
+- **Superseded: 3.24.1**, promoted 2026-09-11 at `4bd6b85` — the sorting
   screen offers the kind of place it had been NAMING four times over: the
   field's placeholder, its label, the empty-field message and the route hint
   that opens it. Whatever was typed became a project.
@@ -4274,8 +4305,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.1** — promoted at
-  `4bd6b85` on 2026-09-11, carrying 3.24.1 alone: sorting something into a new
+- **https://quietkeep.pages.dev** — production, **3.24.3** — promoted at
+  `b7a9d8a` on 2026-09-15, carrying 3.24.2 and 3.24.3: the kind-of-place
+  chooser fits a 390px phone, a thing with a very long name can be got rid of
+  again, and two gates that had never been asked the question now are — whether
+  any screen fits sideways, and whether a control is reachable when the title
+  above it is long. Merged tree `7cfbe79`, the same tree OBJECT as the staging
+  head; Spine green by head SHA at `f498e94`, run 912, read by step-level
+  conclusions across both jobs. Before it, `4bd6b85` carried 3.24.1 alone: sorting something into a new
   place asks which kind of place, which that screen had been saying all along.
   Merged tree `042bbec`, the same tree OBJECT as the staging head; Spine green
   by head SHA at `c57824f`, run 900. Before it, `93d023e` carried 3.24.0 alone: a place can be told it is a
