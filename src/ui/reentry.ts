@@ -39,17 +39,46 @@ export function mountReentry(
   let dismissed = !atArrival.show;
   let busy = false;
 
-  const run = async (make: Parameters<Session['commit']>[0], announce: string): Promise<void> => {
-    if (busy) return;
+  /**
+   * IT SAYS WHETHER THE WRITE LANDED, and it has to, because a caller acting on
+   * a promise that resolves either way is a FALSE RECEIPT (3.24.4).
+   *
+   * WHAT THIS WAS. `run` caught the commit error, wrote the failure sentence
+   * into `#reentry-live`, and never rethrew — so the promise RESOLVED on
+   * failure. The amnesty handler's `.then()` set `dismissed`, repainted and
+   * moved focus to the capture box, and therefore did all of that when the
+   * write had failed. The section closed identically either way. The one thing
+   * that differed was a sentence in a `visually-hidden` paragraph, so a sighted
+   * reader was shown the exact gesture that means "done" for an amnesty that
+   * had not happened.
+   *
+   * This repo already refuses the shape from the other direction: the capture
+   * handler carries a comment about a post-commit throw telling somebody "Not
+   * saved" about a thought that WAS saved, and about the duplicate that
+   * follows. Same defect, sign flipped — and the flipped one is worse, because
+   * "it failed and said nothing" leaves work undone that the reader believes is
+   * finished.
+   *
+   * RETURNS A BOOLEAN RATHER THAN RETHROWING. The error is already handled
+   * here, in the one place that knows how to say so; rethrowing would make
+   * every call site handle it again and the arrival write at the bottom of this
+   * file deliberately has nothing to say. A caller that ignores the answer is
+   * unchanged, which is what keeps that write's contract.
+   */
+  const run = async (make: Parameters<Session['commit']>[0], announce: string): Promise<boolean> => {
+    if (busy) return false;
     busy = true;
+    let landed = false;
     try {
       await session.commit(make);
       LIVE.textContent = announce;
+      landed = true;
     } catch (err) {
       LIVE.textContent = `Couldn’t do that — ${(err as Error).message}`;
     } finally { busy = false; }
     try { onChange(); } catch { /* a render bug must not contradict a landed write */ }
     refresh();
+    return landed;
   };
 
   function refresh(): void {
@@ -90,7 +119,18 @@ export function mountReentry(
     void run(
       ctx => acceptAmnestyEvents(ctx, session.state(), new Date(now()).toISOString(), session.zone),
       'Moved to the Menu. Nothing was deleted and nothing was marked done.',
-    ).then(() => { dismissed = true; refresh(); q<HTMLElement>('#capture')?.focus(); });
+    ).then((landed) => {
+      // ONLY IF IT LANDED. Closing the section and moving focus to capture is
+      // the gesture that means the offer is finished with; doing it on a failed
+      // write tells the reader their things moved when they did not, and takes
+      // away the control that would let them try again. On a failure the
+      // section STAYS, with the sentence `run` has already put in it — which is
+      // the same reason `refresh()` is called in there rather than here.
+      if (!landed) return;
+      dismissed = true;
+      refresh();
+      q<HTMLElement>('#capture')?.focus();
+    });
   });
 
   // Record the arrival — and the OFFER, which is the interesting half: it is

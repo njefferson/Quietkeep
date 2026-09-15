@@ -311,3 +311,107 @@ test('an import is an arrival, and the greeting says so without inventing an abs
   assert.equal(/away/.test(words), false, words);
   assert.match(words, /It is all here/);
 });
+
+// --- the receipt has to be true (3.24.4) -----------------------------------
+//
+// STUB DOCUMENT, like `doors.test.ts` and `contents.test.ts` and for the same
+// reason — this repo keeps no DOM in its unit tests. And here the stub is not a
+// compromise, it is the ONLY instrument that can ask the question: the property
+// is what happens when the WRITE FAILS, and a browser walk cannot make
+// IndexedDB refuse a commit on demand. `tools/smoke.mjs` drives this section
+// against a real browser for everything it can honestly claim; this is the one
+// claim it cannot.
+//
+// WHAT WAS WRONG. `mountReentry`'s `run` caught the commit error, wrote the
+// failure sentence into `#reentry-live` and never rethrew, so the promise
+// RESOLVED on failure and the amnesty handler's `.then()` ran either way: it
+// set `dismissed`, repainted, and moved focus to the capture box. The section
+// closed exactly as it does on success. The only difference was a sentence in a
+// `visually-hidden` paragraph, so a sighted reader got the gesture that means
+// "your things have moved" for an amnesty that had not happened.
+
+interface StubEl {
+  hidden: boolean; textContent: string; focused: number;
+  addEventListener(type: string, fn: () => void): void;
+  focus(): void;
+  fire(): void;
+}
+const el = (): StubEl => {
+  let handler: (() => void) | null = null;
+  return {
+    hidden: false, textContent: '', focused: 0,
+    addEventListener(_t, fn) { handler = fn; },
+    focus() { this.focused += 1; },
+    fire() { handler?.(); },
+  };
+};
+
+/** Mount the section over a stub page whose commit either lands or throws. */
+const mountOver = async (commitThrows: boolean) => {
+  const ids = ['reentry', 'reentry-words', 'reentry-waiting', 'reentry-amnesty',
+    'reentry-amnesty-words', 'reentry-plain-actions', 'reentry-live',
+    'reentry-heading', 'reentry-dismiss', 'reentry-dismiss-plain',
+    'reentry-amnesty-go', 'capture'];
+  const page = new Map<string, StubEl>(ids.map((i) => [i, el()]));
+  const prior = (globalThis as { document?: unknown }).document;
+  (globalThis as { document?: unknown }).document = {
+    querySelector: (sel: string) => page.get(sel.replace(/^#/, '')) ?? null,
+  };
+
+  // Away long enough to be greeted, with a date that went by — which is what
+  // makes an amnesty available at all (`reentry.ts`: lapsed AND passed > 0).
+  const state = st(...stale('W', 30), ...lapsedDate('D', 20));
+  let committed = 0;
+  const session = {
+    state: () => state,
+    zone: TZ,
+    commit: async () => {
+      committed += 1;
+      if (commitThrows) throw new Error('the store refused it');
+    },
+  } as unknown as Parameters<typeof mountReentry>[0];
+
+  const { mountReentry } = await import('../src/ui/reentry.ts');
+  mountReentry(session, () => Date.parse(NOW), () => {}, true);
+  // The arrival record writes at mount — the greeting and the OFFER are events
+  // themselves — so the count is taken from here and read as a delta. Asserting
+  // a total would be asserting the arrival write too, in a test about a button.
+  await new Promise((r) => setTimeout(r, 0));
+  const atMount = committed;
+  return {
+    page, restore: () => { (globalThis as { document?: unknown }).document = prior; },
+    since: () => committed - atMount,
+  };
+};
+
+test('a failed amnesty leaves the offer on screen, and does not move focus', async () => {
+  const m = await mountOver(true);
+  try {
+    assert.equal(m.page.get('reentry')!.hidden, false, 'the greeting is up to begin with');
+    m.page.get('reentry-amnesty-go')!.fire();
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(m.since(), 1, 'the amnesty write was attempted');
+    // THE PROPERTY. Closing the section and sending focus to capture is the
+    // gesture that says the offer is finished with.
+    assert.equal(m.page.get('reentry')!.hidden, false,
+      'the offer STAYS when the write failed — closing it would say the things had moved');
+    assert.equal(m.page.get('capture')!.focused, 0,
+      'and focus does not leave, because there is still something here to try again');
+    assert.match(m.page.get('reentry-live')!.textContent, /refused it/,
+      'and it says what went wrong rather than what did not happen');
+  } finally { m.restore(); }
+});
+
+test('an amnesty that lands does close the offer, so the guard is not just "never dismiss"', async () => {
+  // The twin. Without it, the assertion above passes against a section that can
+  // never be dismissed at all, which would be a different defect wearing the
+  // same green.
+  const m = await mountOver(false);
+  try {
+    m.page.get('reentry-amnesty-go')!.fire();
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(m.since(), 1);
+    assert.equal(m.page.get('reentry')!.hidden, true, 'it closes when the write landed');
+    assert.equal(m.page.get('capture')!.focused, 1, 'and focus goes where arrival focus belongs');
+  } finally { m.restore(); }
+});

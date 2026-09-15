@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.24.4 — ITERATION
+
+*2026-09-15*
+
+- **When you came back after a while and moved your passed dates to the Menu, the app closed the offer and moved you on — even when the move had not happened.** If that write failed, everything you could see did exactly what it does when it works: the greeting went away, and you were put back at the box where you put things down. The only thing that said otherwise was a line written for screen readers and hidden from everyone else. So the reasonable thing to believe was that your dates had been dealt with, when they had not, and the button that would have let you try again was gone. Now the offer stays put when the write fails, it tells you what went wrong in words you can see, and it closes only when the move actually landed.
+- **Why this one is worth a release of its own.** The app already refuses the opposite mistake in the place where you put things down — there is a note in that code about never telling somebody a thought was not saved when it was, because they will type it again. This was the same mistake with the sign reversed, and the reversed one is worse: being told something is finished when it is not leaves the work undone and gives you no reason to look. Two tests now hold it, one for each direction, so a failed move cannot close the offer and a successful one still does.
+
 ## 3.24.3 — ITERATION
 
 *2026-09-14*

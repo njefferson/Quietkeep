@@ -2296,7 +2296,29 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.3**: a thing with a very
+- **https://staging.quietkeep.pages.dev** — **3.24.4**: the re-entry offer
+  said the write had landed when it had not. `reentry.ts`'s `run` caught the
+  commit error, wrote the failure sentence into `#reentry-live` and never
+  rethrew, so the promise RESOLVED on failure and the amnesty handler's
+  `.then()` set `dismissed`, repainted and moved focus to `#capture` either
+  way. The section closed identically, and the only thing that differed was a
+  sentence in a `visually-hidden` paragraph — so a sighted reader got the exact
+  gesture that means *your things have moved* for an amnesty that had not
+  happened, with the control to retry taken away. **A FALSE RECEIPT**, and the
+  capture handler's own comment already refuses the mirror of it (never say
+  "Not saved" about a thought that was saved, because they retype it); the
+  reversed one is worse, because work believed finished is never looked at
+  again. `run` returns whether it landed and the handler acts only on true.
+  **Two tests, one each way**, because "never dismiss" would pass the first
+  alone: the failing write must leave the offer up with focus unmoved, and the
+  landing write must still close it. Planted — the guard removed put the first
+  red on the exact sentence while the twin stayed green. STUB DOCUMENT, which
+  here is the only instrument that can ask: the property is what happens when
+  the write FAILS, and a browser cannot make IndexedDB refuse a commit on
+  demand.
+  **Found by auditing the eight hidden live regions**, not by the read, which
+  reported only that one sentence was invisible.
+- **Superseded on staging: 3.24.3**: a thing with a very
   long name could not be disposed of. The name filled the sheet, leaving
   `.sheet-body` TWENTY-SIX pixels of window against 1,515px of content, so
   `#detail-menu`, `#detail-trash` and `#detail-release` were painted outside it
