@@ -14,6 +14,21 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.24.3 — ITERATION
+
+*2026-09-14*
+
+- **A thing with a very long name could not be got rid of.** Give something a name long enough — by typing one, by pasting a block and choosing *Hold it as one thing*, or by bringing one in from elsewhere — and the name filled its whole page. What was left to scroll through was twenty-six pixels tall on a phone, holding fifteen hundred pixels of content, so *Put on the Menu*, *Let it go* and *Put it down* were all pushed out of sight with no way to reach them. Something you had just made, ten seconds earlier, could not be let go of. The name now takes at most a third of the page and scrolls on its own, which leaves the rest of the page where it was: three hundred and sixty-six pixels, and every button back within reach. The whole name is still there, still readable, and still yours to change under *What it says*.
+- **The check that should have caught it existed and had never been given a long name.** The accessibility run already asks, at every screen, whether every control is on screen or can be scrolled to — and it asked that only about things with short names, because nothing in the run had a long one. There is now a screen in the run built from a name sixteen lines long, and it ends by pressing *Let it go* on that very thing, so the check cannot pass unless the button it needs is genuinely reachable.
+- **Still not right:** on a small phone with text set to twice the usual size, the room to scroll is a hundred and twelve pixels instead of twenty-six, which is much better but still tight, and one of the three buttons sits about twelve pixels below the bottom edge at that size. That is the button itself being tall at that text size rather than the name taking the page, and it is a separate thing to fix.
+
+## 3.24.2 — ITERATION
+
+*2026-09-14*
+
+- **The kind-of-place chooser the last release added ran off the right edge of a phone.** It sat in half the width of the row, and the longest thing it says — *Project — work with steps* — is wider than that, so it pushed the whole screen sideways: 427 pixels of page on a 390 pixel phone, with the arrow you press off-screen and nothing to scroll to reach it. The name field beside it was squeezed to 158 pixels and showed *Name a new proj*. Both take the full width now, one under the other, and the page is exactly as wide as the screen.
+- **And nothing had been checking that any screen fits sideways.** The accessibility run measures every screen this app has for contrast, for reading order, for whether a finger can reach a control and whether two controls sit too close — and it asked whether the screen fit only on eleven surfaces named in a list, which this one was never added to. It asks at every screen now, and says which element is the one hanging over the edge. That is why this release is one line about a select box and one line about the thing that should have caught it.
+
 ## 3.24.1 — ITERATION
 
 *2026-09-11*

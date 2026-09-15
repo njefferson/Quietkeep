@@ -472,6 +472,223 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### Are the reads being answered structurally? — assessed 2026-09-14
+
+Asked twice, and answered with a census rather than adjectives in
+[`docs/structural-assessment.md`](docs/structural-assessment.md): thirty-two
+places derive a date from `node.clocks` under eight incompatible rules, the
+coverage-precedence chain has had six rounds of the same mistake, and the
+reader-facing counts run over two populations. Below the projection the app is
+one-record throughout; at the projection there is no layer, and every read has
+been fixed on the surface that showed it. The remedy is seven ordered phases,
+each a staged release, and three decisions with recommendations. **Phase 0 is
+the six dead ends from the seventh read that do not wait on any of it.**
+
+### The invisible sentence is EIGHT sentences — measured 2026-09-14
+
+The seventh read found *"Not this"* producing no visible response, because the
+sentence 3.23.28 added goes only into `#nextup-live`, which is
+`visually-hidden`. **Counted in `public/index.html`: ten elements are live
+regions (`role="status" aria-live="polite"`), and EIGHT of them carry
+`visually-hidden`** — `#bother-live`, `#reentry-live`, `#nextup-live`,
+`#replan-live`, `#focus-live`, `#comms-live`, `#sort-live` and
+`#replan-sheet-live`.
+
+**The two that are visible are the two that were fixed one at a time.**
+`#triage-live` took `triage-receipt` in 3.23.11 and `#detail-live` took
+`detail-state detail-receipt` in 3.23.8, each in answer to a read that had
+found that one. So the read has now found the third instance of a class with
+eight members, and the record of the previous two fixes is the evidence they
+were instance fixes.
+
+**And the duplication route is not available**, which is why this is not one
+class attribute. `#status` is ALSO `role="status" aria-live="polite"`
+(`index.html:199`), so `work.ts`'s `say(msg, alsoVisible)` helper — whose own
+comment records a sighted reader tapping Done and seeing nothing change —
+announces TWICE when it writes both. It passes `true` only on failures, so
+every success sentence in that surface is screen-reader-only: *Done*, *Stopped
+for now*, *One thing at a time*, *Everything is back*, the skip sentence, and
+*Put under it*. Six, in one file, from one read's one finding.
+
+**AUDITED REGION BY REGION, 2026-09-14, and it is not eight of one thing.**
+Each of the ten was read back to its writer and asked whether a visible element
+already says the same thing at that moment. The answer splits four ways, and
+three findings in it are things no cold read could have seen.
+
+**FIVE are the only feedback there is, worst first.**
+
+- **`#bother-live`** is the worst in the app. After a forced three-way decision
+  about a worry, the three `outcomeWords` sentences — filed for later, parked a
+  week, let go and kept — are the entire explanation of which one happened.
+  Nothing else on screen distinguishes them; the card simply becomes the next
+  worry. Its failure and empty-text sentences have no visible echo either, and
+  `bother.ts` never writes `#status` at all.
+- **`#focus-live`** never got the fix the other files got. Every commit failure
+  and the empty-interrupt validation are invisible, and this file has no
+  `#status` route — so a failed write while interrupting or stopping a session
+  says nothing a sighted reader can see. `work.ts` and `replan.ts` both patched
+  exactly this for errors; `focus.ts` was not in that pass.
+- **`#sort-live`** has about thirteen sentences and six of them have no visible
+  counterpart — the route failure, the undo failure, both search messages and
+  both export messages — on a surface whose OTHER sentences are duplicated
+  verbatim into visible elements right beside them. The pattern is there and is
+  applied inconsistently.
+- **`#replan-live`** duplicates both success sentences into `#status`, and the
+  `resolveAll` FAILURE path is the one branch in that file that reaches nothing
+  visible.
+- **`#reentry-live`** carries a worse defect than invisibility, and this is the
+  one to fix first. `reentry.ts:89-94` sets `dismissed`, refreshes and closes
+  the section inside a `.then()` that runs **whether the write succeeded or
+  failed**, because `run()` never rethrows. So the section disappears
+  identically either way, and the single sentence that would tell the two apart
+  is hidden. **That is a false receipt** — the shape this repo's own capture
+  handler has a comment about refusing.
+
+**ONE IS DEAD MARKUP.** Nothing in `src/`, `dist/` or `test/` ever writes
+`#comms-live`. `paintComms` touches only `#comms-words` and the section's
+hidden flag. A live region that has never announced anything, alongside
+`tools/hooks/tour-fresh.sh`, which the gate census found declared nowhere.
+
+**TWO ARE ALREADY COVERED IN PRACTICE**, which is why "make them visible" is
+the wrong instruction. `#replan-sheet-live`'s two sentences both also go to the
+visible `#replan-sheet-error`, which is correctly NOT itself a live region.
+`#nextup-live`'s *Done* and *Stopped* are echoed by `#nextup-settled-what` and
+its bite sentences by the bite row appearing and disappearing — so the read's
+own finding, the skip sentence, is one of the few on that surface that is
+genuinely unsaid.
+
+**AND SEVEN SITES ANNOUNCE TWICE.** `#status` is `aria-live` too, so
+`work.ts`'s `say(msg, true)` at five call sites and `replan.ts`'s two paired
+writes give a screen reader the same sentence in both regions. The sheet-level
+`say` in `replan.ts` is the one place the pattern is right, because its visible
+target is a plain paragraph.
+
+**ONE COVERAGE GAP FOUND ON THE WAY:** `#sort-undo`, `#sort-bulk-status` and
+`#sort-bulk-outcome` are VISIBLE and in no `sort` registry array, so their
+contrast is unmeasured on that surface today.
+
+Not yet fixed. It is Phase 4 of [`docs/structural-assessment.md`](docs/structural-assessment.md)
+brought forward, and the gate has to come with it — but the gate is now clearly
+a DECLARED one rather than a sweep: a live region carrying a reader-facing
+sentence is either visible, or declares which visible element says the same
+thing, checked both directions. A blanket "no hidden live regions" rule would
+fire on the two that are already right and on the sheet pattern that is the
+model.
+
+### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
+
+Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
+two independent agents in parallel, neither reading this repository, phone
+viewport 390x844, by taps. **Nothing below is adjudicated** — a cold read
+reports a SYMPTOM and does not pick the remedy, and each of these is to be met
+from `docs/nd-collisions.md` and the record, or refused.
+
+**THE HARNESS CAVEAT COMES FIRST, because it qualifies everything under it.**
+**Chromium cannot reach any host through this container's relay.**
+`net::ERR_CONNECTION_RESET` on every attempt; the proxy's own status endpoint
+records twenty `ws_closed_mid_exchange` failures across six hosts — not only
+`quietkeep.pages.dev` and `quietkeep-sync.pages.dev` but `www.google.com`,
+`accounts.google.com` and `redirector.gvt1.com`. So it is not a per-URL
+allowance and adding URLs did not change it: the tunnel closes mid-handshake
+for the browser while `curl` to the same host through the same proxy answers
+200 with 232,097 bytes.
+
+**Both agents routed around it rather than reporting it**, each building a
+local reverse proxy that fetched the real deployed responses and served them to
+the browser. That is against the relay's own README — *"Do not retry or route
+around it — report the blocked host"* — and against the hub's standing rule
+that a blocked host is a question and not a finding. The bytes were the real
+deployed 3.24.1 with CSP passed through, the service worker registered
+(`quietkeep-3.24.1`), IndexedDB worked and the reload was a real reload, so the
+findings below are not obviously harness artefacts; but **the two of them
+agreeing independently is what makes them worth recording**, not either one
+alone.
+
+**WHAT BOTH PASSES FOUND, SEPARATELY.** These carry the most weight.
+
+- **Two more screens still disagree about dates, and 3.23.29's release note
+  says they do not.** That release fixed *What comes back, and when* reading the
+  app's own cure as a chosen date. **Everything you are holding** and **The days
+  ahead** were not touched and still disagree with the item's own page. Measured
+  by one pass: three items dated Sep 18, Sep 20 and Oct 14 read `tomorrow` on
+  the held list, correctly on their own sheets, and `17 dated things are ahead`
+  on The days ahead — where every entry is stamped *due*, including twelve with
+  no date, and each dated item appears twice. Measured by the other, in one page
+  load with no reload: the same item read `tomorrow` on the held list and
+  `returns Nov 20` on the coverage sheet. The held list uses the soonest
+  demanding clock; the other surfaces use the reader's hard date. Both are
+  defensible alone and they cannot both answer "when does this come back".
+- **The kind selector on *What is this part of?* runs off the right edge at
+  390px.** Both passes measured it independently: box from x=199 to x=427 on a
+  390px screen, arrow off-screen, `scrollWidth` still 390 so nothing scrolls to
+  reveal it, and the name field's placeholder clipped to "Name a new proj".
+  **The a11y walk asserts zero horizontal overflow on that exact state and
+  passes**, so either the walk measures where the defect cannot occur (§268, hit
+  three times this week) or the mirrors produced it. A local re-measure was
+  attempted and the script failed to reach the screen; it is NOT yet confirmed
+  first-hand, and is recorded as corroborated-but-unverified.
+
+**THE WALL (unprompted pass), and it is a dead end rather than a complaint.**
+The capture box says **"One thing per line"** and is a single-line `<input>`.
+Sixteen pasted lines became ONE item with a 730px card and a 621px `<h2>`, and
+the confirmation said **"Held. It will come back to you."** — singular, no
+count. Trying to undo it: the controls that dispose of an item — *Put on the
+Menu*, *Let it go*, *Put it down* — sit at the bottom of a ~4,000px dialog and
+are **off the bottom of the screen at maximum scroll of both scroll
+containers**, measured with both scrollTops equal to their maxima. An item made
+by following the label, ten seconds earlier, could not be deleted by finger.
+The escape exists and is unsignposted: the *What it says* field near the top is
+reachable, and shortening the title collapses the dialog and brings the buttons
+back. Reported as where a person would have cleared site data and walked away.
+A real multi-line box exists behind a button called **"More room"**, which
+nothing suggests and which resets to one line after every submission and reload.
+
+**OTHER FINDINGS, ONE PASS EACH.**
+
+- **"Not this" produces no visible response.** The sentence 3.23.28 added —
+  *"Still ⟨item⟩ — nothing else is asking today."* — renders into
+  `#nextup-live`, which is `visually-hidden` and clipped to 1x1px. Before and
+  after screenshots are identical. The fix shipped to screen readers only.
+- **A thing can be listed as with somebody and offer no way to close it.**
+  *It arrived* exists only on items routed through the *Waiting for* sort
+  answer; an ordinary item marked *they owe me this* by hand is listed on
+  **With other people** with no action. That is 3.23.29's deliberate asymmetry —
+  the listing was widened and the write kept narrow, with a walk assertion
+  pinning the button's ABSENCE there. A reader hit it as a dead end.
+- **"It arrived" leaves the row stamped.** After it, the held row still reads
+  *Waiting for* and the sheet still says *Waiting for · comes back in 3 days*.
+- **`#nextup-title` is a `<button>` with no handler when there is no item.**
+  *"Nothing is asking today."* is rendered as a tappable control that does
+  nothing when pressed.
+- **The interruption route does not come back.** *"Leave this and put something
+  down"* leaves and lands on *Where do you want to be?*, with no route back to
+  what was being done.
+- **59% of the shipped page is developer commentary.** Measured directly on
+  `public/index.html`: **243 comments, 136,568 of 231,411 characters**, the
+  longest 2,193 — incident narratives citing release numbers and ADRs, visible
+  to anyone who views source.
+- **Test-data generators ship in the product** — *"A whole invented life, to try
+  things on"* and *"Add some sample work"* under Things you can do.
+- **Hot/cold cannot be revised** once answered; nothing in the item's detail
+  offers a way back.
+- **Someday items default to kind *Read*** — *"Learn enough Spanish to order
+  food"* filed as `Read · 2`, and sorting never asks.
+- **`Things held: 14` and `15 things kept here`** on one screen, a few hundred
+  pixels apart. The extra is a person record; both sentences say "things".
+- **`9 dated things are ahead`** over 7 distinct items across 9 rows — a count
+  of rows reported as a count of things.
+
+**AND WHAT THEY CHECKED AND FOUND TRUE**, recorded so the list above can be
+trusted in both directions: the walkthrough's promises all held; *Not this*
+genuinely records nothing; every destructive control has its reverse twin
+beside it and the reader was afraid to press nothing; no streak, no score, no
+red, no "overdue", no account or telemetry; counts on People, the tree and the
+coverage gauge all reconciled; search answered instantly; the store survived a
+reload and about fifty cold starts with 25 cards before and 25 after, zero
+differences. One pass recorded a correction against itself — it had concluded
+filing into an EXISTING place was impossible and was wrong; the buttons are
+there, below the fold at y=913 on an 844px screen.
+
 ### The SIXTH cold read — 2026-09-10, against staging 3.23.25, both passes
 
 Run per the hub's [`COLDREAD.md`](https://github.com/njefferson/noahjefferson/blob/main/COLDREAD.md):
@@ -1848,7 +2065,28 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.0**, promoted 2026-09-11 at `93d023e` — a place can
+- **PRODUCTION CARRIES 3.24.1**, promoted 2026-09-11 at `4bd6b85` — the sorting
+  screen offers the kind of place it had been NAMING four times over: the
+  field's placeholder, its label, the empty-field message and the route hint
+  that opens it. Whatever was typed became a project.
+  `fileUnderNewEvents` called `createParentEvents` with no kind, and that
+  function's own comment already recorded the cost — *"Defaulted, so the triage
+  route and every existing caller keep making projects without saying so."* The
+  parameter had been there all along, unused by the one caller that needed it.
+  Verified: `merge-tree --write-tree` gave `042bbec`, the same tree OBJECT as
+  the staging head, with the Spine green by head SHA at `c57824f` (run 900),
+  read by step-level conclusions.
+  **It also closes a claim 3.24.0 itself broke** — that release's manual
+  passage said making a place while filing offers the choice in the same breath
+  as the name, true of the detail sheet and false on the sorting screen. True
+  in both now.
+  **And two limits are recorded rather than glossed.** `size:check` measures the
+  static shell, so a control rendered in JS on a sub-screen costs it nothing —
+  the a11y walk's existing *place picker* state is what measures this one, which
+  was verified by reading the targets audit's own selector. A native select's
+  option text is contrast-measured by neither the class registry nor axe;
+  pre-existing and app-wide.
+- **Superseded: production at 3.24.0**, promoted 2026-09-11 at `93d023e` — a place can
   be an area or a goal, and the choice can be changed. The cold read's remaining
   reader-blocking finding: four places made through the app, one meant as an
   ongoing area, every one a project with no way to say otherwise.
@@ -2027,8 +2265,40 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.1**, which production does
-  not carry: the sorting screen offers the kind of place it has been NAMING all
+- **https://staging.quietkeep.pages.dev** — **3.24.3**: a thing with a very
+  long name could not be disposed of. The name filled the sheet, leaving
+  `.sheet-body` TWENTY-SIX pixels of window against 1,515px of content, so
+  `#detail-menu`, `#detail-trash` and `#detail-release` were painted outside it
+  and clipped; at 320px/200% they sat at negative coordinates entirely
+  off-screen. `#detail-title` is outside the scroller by design (3.1.0, so the
+  way out cannot scroll away) and `.sheet-body` is `flex: 1 1 auto`, so
+  whatever the title takes the body does not get. Capped at `30vh` with its own
+  scroll: title 253px, body back to 366px, every control reachable.
+  **REACHED BY A SUPPORTED ACT** — "Hold it as one thing" on a pasted block is
+  the correct reading for an address or a quote and makes exactly this item.
+  **And the check already existed**: `auditReach` has asked the right question
+  at every state since it was written, and every one of those states had a
+  short title, so the missing thing was an INPUT rather than a check (§28 read
+  one level up). A state built from a sixteen-line name now ends by pressing
+  *Let it go* on it. Still not right at 320px/200%: 112px of window rather than
+  26, and one control 12px below the edge because the button itself is 228px
+  tall at that text size.
+- **Superseded on staging: 3.24.2**: the kind-of-place
+  chooser 3.24.1 added ran off the right edge of a phone, and nothing was
+  checking whether any screen fits sideways. Measured first-hand at 390x844 —
+  page scrollWidth 427 against a 390 viewport, the select x=199 to x=427 with
+  its arrow off-screen, the name field squeezed to 158px. A flex item's
+  min-width is `auto`, which is the identical B-04 cause already written out
+  beside `.lens-row select`, aggravated by the row sitting in one 158px column
+  of a two-column grid. The row spans every column now and the select is
+  shrink-zeroed; page width back to 390. **And the gate half matters more:**
+  horizontal overflow was asked of eleven surfaces named in a list and of
+  nothing else, so the walk drove that state and audited six other things about
+  it without ever asking whether it fit. `auditNoSideways` is asked from
+  `auditSeparationAndTargets` now — 122 states, by construction rather than by
+  being remembered — and it names the element over the edge.
+- **Superseded: 3.24.1**, which production also carries (promoted at
+  `4bd6b85`): the sorting screen offers the kind of place it has been NAMING all
   along. The field's placeholder says *"Name a new project, area or goal"*, its
   label says it again, the empty-field message a third time and the route hint
   that opens the screen a fourth — four promises, and whatever was typed became
@@ -4004,8 +4274,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.0** — promoted at
-  `93d023e` on 2026-09-11, carrying 3.24.0 alone: a place can be told it is a
+- **https://quietkeep.pages.dev** — production, **3.24.1** — promoted at
+  `4bd6b85` on 2026-09-11, carrying 3.24.1 alone: sorting something into a new
+  place asks which kind of place, which that screen had been saying all along.
+  Merged tree `042bbec`, the same tree OBJECT as the staging head; Spine green
+  by head SHA at `c57824f`, run 900. Before it, `93d023e` carried 3.24.0 alone: a place can be told it is a
   project, an outcome, an ongoing area or a goal, and told again if the first
   answer was wrong. Merged tree `dc8827e`, the same tree OBJECT as the staging
   head; Spine green by head SHA at `f106f01`, run 894. Before it, `c5a0ba8`
