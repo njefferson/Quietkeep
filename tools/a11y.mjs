@@ -1116,6 +1116,15 @@ const REGISTRY = {
   // object literal silently wins, so the registry would have shrunk to one
   // selector while still reporting a pass.
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
+    // THE ANSWER-OWED DATE, WHICH RENDERS HERE FROM 3.24.9. It was on
+    // containers only for its whole life, sharing a boolean with the track
+    // role, so these two were named on `detail sheet, carried` and nowhere
+    // else. They are on every temporal node's sheet now — the same `temporal`
+    // predicate that gates `#detail-date-group`, which the state below this one
+    // fills — so they are measured where a reader actually meets them rather
+    // than only on a project. Named rather than left to `.detail-inline`, which
+    // covers the label and not the control, for `#detail-written`'s reason.
+    '#detail-suspense', '#detail-suspense-set',
     '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
     '#detail-context-hint',
     // WHICH KIND OF WANT (2.23.0). Named rather than left to a class, for

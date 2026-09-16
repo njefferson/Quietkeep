@@ -29,6 +29,16 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.25.0',
+    kind: 'CAPABILITY',
+    date: '2026-09-16',
+    notes: [
+      '**You can say an answer is owed on any single thing now, not only on a project or an area.** *Answer owed by* is the date you have told somebody they will hear back — and until this release the box for it appeared only on the bigger things that hold other things. So *"I’ll get back to you Thursday"* about one particular item, which is the commonest thing to come out of a conversation, had nowhere to go: not on a task, not on something you are waiting on somebody else for, not on anything small. The box is on every dated thing’s own page now.',
+      '**Nothing else about it changed, and that is the point.** An answer owed already outranked an ordinary deadline, already raised a card when the day went by, already went to your calendar and already showed up under *Carrying* as something you owe. All of that worked on any kind of thing the whole time — the only thing that was narrow was the box you set it in. It shared one switch with the *someone else is doing this* control beside it, which genuinely does only make sense on something bigger, and the two were never separated.',
+      '**Where it still will not appear**, and both are deliberate: on something you have put on the Menu, because a wish holds no demands and the app refuses to take a date there at all, and on the few kinds of thing that can never carry a date. Bring a wish back as real work first and the box is there.',
+    ],
+  },
+  {
     triplet: '3.24.8',
     kind: 'ITERATION',
     date: '2026-09-16',

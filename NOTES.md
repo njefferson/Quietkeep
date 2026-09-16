@@ -2431,7 +2431,22 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.8**: one sentence, one live
+- **https://staging.quietkeep.pages.dev** — **3.25.0**: an answer owed can be
+  set on any single thing, which is the second clause of the dogfood gate going
+  from unsatisfiable to satisfiable. *"Every suspense lives in the app"* could
+  not be true: `src/ui/detail.ts` shared ONE boolean between the track role and
+  the answer-owed date, so the date appeared on containers only and *"I'll get
+  back to you Thursday"* about one item had nowhere to live. The gate never
+  required it — law 6 refuses a demand clock on a demand-free KIND and the Menu
+  belt refuses one on a Menu PLACEMENT, which is exactly the `temporal`
+  predicate already gating the date group four hundred lines up in the same
+  function. The restriction came from a comment about labels, written once for
+  the track role, applied to both, and never measured against the clause it bore
+  on. `setSuspenseEvents`, the fold, the placement belt and every reader were
+  unchanged — nothing was ever narrow but the row. The two controls join the
+  ordinary `detail sheet` a11y state, having been measured only on
+  `detail sheet, carried` for their whole life.
+- **3.24.8**: one sentence, one live
   region, and it must be one the act does not remove
   ([ADR-0126](docs/adr/0126-one-sentence-one-region.md)). Settling every passed
   date and taking the amnesty both wrote a confirmation and removed the region

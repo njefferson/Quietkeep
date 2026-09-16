@@ -1551,16 +1551,37 @@ const ownDateClock = (n: NodeState | null | undefined) => {
     // History stays live while its disclosure is open — a commit from this
     // sheet should show its own line the moment it lands.
     if (historyEl?.open) buildHistory(n.id);
-    // The track role and the answer-owed date belong to containers only: a role
-    // on a single action would be a label with nothing under it to govern.
-    // `!n.onMenu`: a Menu-resident container must not offer the answer-owed
-    // date — the gate's Menu belt would refuse it, and offering a choice the
-    // gate refuses is the recorded anti-pattern (audit; ADR-0038).
+    // THE TRACK ROLE BELONGS TO CONTAINERS. A role on a single action would be
+    // a label with nothing under it to govern. `!n.onMenu`, because the gate's
+    // Menu belt would refuse the write and offering a choice the gate refuses
+    // is the recorded anti-pattern (audit; ADR-0038).
     const container = isContainer(n) && !n.trashed && !n.onMenu;
     const trackRow = q('#detail-track-row');
-    const suspRow = q('#detail-suspense-row');
     if (trackRow) trackRow.hidden = !container;
-    if (suspRow) suspRow.hidden = !container;
+    // THE ANSWER-OWED DATE DOES NOT (3.24.9), and it was in the same boolean as
+    // the track role for its whole life.
+    //
+    // A suspense is "the date you owe somebody an answer" — and until this
+    // release it could be recorded only on a project, area, goal or outcome.
+    // "I'll get back to you Thursday" about ONE THING, which is the commonest
+    // thing a conversation produces, had nowhere to live: not on an action, not
+    // on a waiting-for, not on an upkeep.
+    //
+    // THE GATE NEVER REQUIRED THIS. Law 6 refuses a demand clock on a
+    // demand-free KIND and the Menu belt refuses one on a Menu PLACEMENT, which
+    // is exactly what `temporal` above already computes for the date group four
+    // hundred lines up. The container restriction came from the comment it
+    // shared with the track role — an argument about labels, made once, applied
+    // to both, and never measured against the thing it bore on: the v1
+    // definition of done, whose second clause is "every suspense lives in the
+    // app". Every suspense could not.
+    //
+    // `setSuspenseEvents` is unchanged. The write, the fold, the gate's
+    // placement belt and every reader — the carrying report, the replan card,
+    // the calendar export, the dependency arithmetic — already worked on any
+    // node; nothing was ever restricted but the row.
+    const suspRow = q('#detail-suspense-row');
+    if (suspRow) suspRow.hidden = !(temporal && !n.trashed);
     show('#detail-track', container && n.role !== 'track');
     show('#detail-untrack', container && n.role === 'track');
     const susp = q<HTMLInputElement>('#detail-suspense');
