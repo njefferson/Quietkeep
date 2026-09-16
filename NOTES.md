@@ -472,6 +472,29 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### There is no test page, and §7j has been standing since 2026-09-13
+
+The [doctrine](https://github.com/njefferson/noahjefferson/blob/main/DOCTRINE.md)
+§7j: every app carries a page that RUNS things and reports what they cost, on
+the reader's own device, because a container answers a different question — it
+draws through a software rasteriser, its disk is a server's, and its core count
+is not the reader's. The §7f diagnostic is here and reports STATE; nothing in
+this app measures anything.
+
+**What it would measure here**, and each of these is a number this repo has had
+to reason about without: a fold over some thousands of events, which is the one
+operation every surface waits on; a Dexie commit CONFIRMED rather than queued,
+which is what *no silent nodes* rests on; and a long held list rendering, which
+is where the reading budget was set from a container timing.
+
+Not built, and this is not a decision waiting on anybody — §7j says build one
+without asking. It is recorded here because a test page is a SURFACE, and a
+surface in this repo owes the accessibility walk's state list, the live-region
+gate, `manual-coverage`, the precache list and the pages-a11y population in the
+commit that creates it. That is a release of its own rather than a thing to
+bolt onto the one in front of it, and the hub's per-app list was corrected the
+same day: it had said "all of them" for three days.
+
 ### A confirmation written into a surface the act closes reaches nobody — measured 2026-09-16
 
 Two of the app's live-region receipts cannot be measured, and chasing why

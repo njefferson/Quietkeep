@@ -350,6 +350,14 @@ const conditionalSeen = new Set();
 // visible FAILS, unless it declared `whenShown` — see above.
 // THE REGISTRY FOLLOWS THE SURFACES (1.40.0).
 //
+// AND A NEW STATE HAS TWO OBLIGATIONS, NOT ONE. Registering the selectors is
+// the first; the second is a `auditFocusRings` call for the same state name,
+// which `tools/surfaces.mjs` holds equal to the set of states audited for
+// contrast. A state with entries here and no ring pass is a state whose rings
+// nobody decided about — eighteen of a hundred and twelve were in that
+// condition before that check existed. It went red in CI on the very commit
+// that added `sort routed`, two pushes before anybody looked.
+//
 // DIALOG_COMMON was one list because the panel was one dialog. Help, Settings,
 // Your data and How it works are their own sheets now, so a single list spans
 // four screens and can never all be visible at once — every entry would report
