@@ -42,8 +42,16 @@ const clockInDays = (ctx: StampContext, node: string, days: number, source: stri
     clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.day, days), source,
   });
 
-const menu = (ctx: StampContext, node: string): AppEvent =>
-  base(ctx, 'menu.item.added', node, { category: 'read' });
+/** THE CATEGORY IS THE READER'S NOW, WHERE THEY HAVE SAID ONE (Phase 0, read
+ *  7). This hard-coded `'read'` was the last route deciding for somebody:
+ *  `docs/nd-collisions.md` entry 26 measured it as a verified defect — a
+ *  six-value schema field that is dead code in the shipped app, so the Menu
+ *  could not be a menu of different KINDS of thing because almost everything
+ *  arriving one at a time was filed as one kind. The default stays `read`
+ *  because entry 26 also says this must not become a requirement, and because
+ *  the `reference` route genuinely means read. */
+const menu = (ctx: StampContext, node: string, category: MenuCategory = 'read'): AppEvent =>
+  base(ctx, 'menu.item.added', node, { category });
 
 /** The heat pass: one event, no routing. */
 export const heatEvents = (ctx: StampContext, node: string, heat: Heat): AppEvent[] =>
@@ -86,6 +94,7 @@ export const clocksOf = (n: NodeState | undefined): ClockKind[] =>
 export function routeEvents(
   ctx: StampContext, node: string, route: ClarifyRoute, fromKind: NodeKind,
   demandClocks: readonly ClockKind[] = [],
+  category: MenuCategory = 'read',
 ): AppEvent[] {
   const r = routed(ctx, node, route);
   switch (route) {
@@ -108,7 +117,7 @@ export function routeEvents(
       // would make the gate write a junk same-day clock between the two.
       return [
         r,
-        menu(ctx, node),
+        menu(ctx, node, category),
         ...demandClocks.map(k => base(ctx, 'clock.cleared', node, { clockKind: k })),
       ];
     case 'trash':

@@ -19,7 +19,7 @@ import type { AppEvent, MenuCategory } from '../events.ts';
 import type { StampContext } from './session.ts';
 import { isAppClock, noteOf, situationOf, weightOf, type NodeState } from '../fold.ts';
 import { DEMAND_FREE_KINDS, type NodeKind } from '../events.ts';
-import { kindWords } from '../kind-words.ts';
+import { kindWords, nodeWords } from '../kind-words.ts';
 import { everyDaysWords, localDayKey, atMidnight, recordDayWords } from '../time.ts';
 import { clockDayWords, contentsWords } from '../held.ts';
 import { pressureOf, pressureWords } from '../pressure.ts';
@@ -43,6 +43,8 @@ import { doneEvents } from './work.ts';
 import { declareFeedsEvents, releaseFeedsEvents, endOfDayKey } from './detail-intents.ts';
 import { changeContainerKindEvents, makeContainerEvents, parentEvents, unparentEvents } from './detail-intents.ts';
 import { biteEvents } from './work-intents.ts';
+// The sorting pass's own event, so the sheet's second door writes the same act.
+import { heatEvents } from './triage-intents.ts';
 import { linkPersonEvents, closeWaitingEvents } from './detail-intents.ts';
 import { attachContextEvents, detachContextEvents, attachRoleEvents, detachRoleEvents } from './detail-intents.ts';
 import { allContexts, contextsOf } from '../contexts.ts';
@@ -689,7 +691,7 @@ const ownDateClock = (n: NodeState | null | undefined) => {
     // a thing except the one fact that decides how to read the rest of it — a
     // goal and an action carrying the same clock mean different things, and the
     // sheet named neither. Null for `action`, so the common case is unchanged.
-    const what = kindWords(n.kind as NodeKind);
+    const what = nodeWords(n);
     if (what) bits.push(what);
     if (n.trashed) bits.push('let go');
     if (n.mergedInto) {
@@ -698,6 +700,12 @@ const ownDateClock = (n: NodeState | null | undefined) => {
     }
     if (n.onMenu) bits.push('on the Menu');
     if (n.lastDone) bits.push('done');
+    // WHAT YOU SAID, IN THE PHRASE THE OFFER CARD ALREADY USES (`nextup.ts`:120
+    // — "you said it was hot"). Without it the two buttons below would be a
+    // control with no state: you could change the answer and never find out
+    // what it had been. Nothing is said when nobody answered, because
+    // unanswered sits between hot and cold and is not a third verdict.
+    if (n.heat) bits.push(`you said it was ${n.heat}`);
     // A CADENCE IS NOT A KIND. This read `kind === 'upkeep'`, so a goal or an
     // area carrying a rhythm said nothing about it here — the one line in the
     // sheet whose job is to tell you what this thing currently is.
@@ -1582,6 +1590,16 @@ const ownDateClock = (n: NodeState | null | undefined) => {
     // node; nothing was ever restricted but the row.
     const suspRow = q('#detail-suspense-row');
     if (suspRow) suspRow.hidden = !(temporal && !n.trashed);
+
+    // HOT OR COLD, REVISABLE (Phase 0, read 7). Shown on anything that is still
+    // yours: heat is a feeling about a thing rather than a demand on it — no
+    // clock, no accrual, nothing turning a color as time passes — so law 6 is
+    // not in play and a wish on the Menu is included deliberately, because
+    // `offerNow` rides one Menu item into the offer beside real work and the
+    // tie-break reads heat there too. Hidden on a thing let go or folded away,
+    // which is the same test every other act on this sheet uses.
+    const heatRow = q('#detail-heat-row');
+    if (heatRow) heatRow.hidden = Boolean(n.trashed || n.mergedInto);
     show('#detail-track', container && n.role !== 'track');
     show('#detail-untrack', container && n.role === 'track');
     const susp = q<HTMLInputElement>('#detail-suspense');
@@ -1860,6 +1878,15 @@ const ownDateClock = (n: NodeState | null | undefined) => {
   });
   btn('#detail-undone')?.addEventListener('click', () => {
     void run(ctx => undoneEvents(ctx, current!.id), 'Back on the list.');
+  });
+  // THE SAME EVENT THE SORTING PASS WRITES, and the same two sentences it
+  // reads back. `heatEvents` is untouched: the pass was never the narrow part,
+  // the absence of a second door was.
+  btn('#detail-hot')?.addEventListener('click', () => {
+    void run(ctx => heatEvents(ctx, current!.id, 'hot'), 'Marked hot.');
+  });
+  btn('#detail-cold')?.addEventListener('click', () => {
+    void run(ctx => heatEvents(ctx, current!.id, 'cold'), 'Marked cold.');
   });
   btn('#detail-menu')?.addEventListener('click', () => {
     // WHICH KIND OF WANT (2.23.0). The picker beside the button, `read` by

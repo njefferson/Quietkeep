@@ -27,12 +27,14 @@ names its state, a state saying done, refused or moot names the release or the
 record that makes it so, and this file cites the other plan because they
 conflict.
 
-## STATUS — measured 2026-09-16, at 3.25.0
+## STATUS — measured 2026-09-16, at 3.26.0
 
 **Nothing held this file when it was written, and it carried no status line
 under any phase for two days.** Its own rule below said each phase would get
 one when it landed; three of Phase 0's six items had landed by then and the
-file said nothing. The status lives here, at the head, in one place — a second
+file said nothing. **Phase 0 is finished as of 3.26.0** — the other three went
+in the release that brought this line current, which is the rule working rather
+than a coincidence. The status lives here, at the head, in one place — a second
 copy under each phase is the duplication this document spends six pages
 counting.
 
@@ -50,20 +52,33 @@ Phase 0's six dead ends first, one line each, then the six phases.
   `paintReturn`, `leaveToCapture` and `returnToStance` in `src/ui/hub.ts`, with
   3.24.7 stripping the offer on the worst day, where the place it points at is
   itself put away.
-- **"It arrived" leaves the row stamped Waiting for — OPEN.** `kindWords` applies
-  `'waiting-for': 'Waiting for'` unconditionally (`src/kind-words.ts:55`) and its
-  four consumers — `src/held.ts:537`, `src/ui/detail.ts:692` and `:735`,
+- **"It arrived" leaves the row stamped Waiting for — DONE, 3.26.0.**
+  `nodeWords` in `src/kind-words.ts` is `kindWords` plus the one fact that
+  supersedes a kind: a `waiting-for` carrying a `waitingOutcome` reads
+  **Arrived**, in `log-words.ts`'s own word for the act. The row, the tree and
+  the sheet share the one function, so they cannot drift into three
+  vocabularies, and `waiting.opened` clearing the outcome puts the word back
+  with no second rule. What it was: `kindWords` applied
+  `'waiting-for': 'Waiting for'` unconditionally and its four consumers — `src/held.ts:537`, `src/ui/detail.ts:692` and `:735`,
   `src/ui/work.ts:1361` — none branch on the arrival. [ADR-0040](adr/0040-the-person-lens.md)'s *Arriving is not
   finishing* says an arrival takes the thing off what you are owed, keeps its
   clock and does not mark it done — the right call, and it never reaches the
   word printed on the row. 3.23.30 closed a different half of it: an arrived thing lingering under
   *With other people*.
-- **The Someday default reads "Read" — OPEN.** `menu()` in
-  `src/ui/triage-intents.ts:45-46` hard-codes `category: 'read'` and takes no
-  parameter, and both the someday and the reference route call it, while
-  `src/menu.ts:22-30` carries six categories. No record addresses it.
-- **Hot and cold not revisable — OPEN, and two shipped release notes say
-  otherwise.** `heatEvents` has exactly one call site in the app
+- **The Someday default reads "Read" — DONE, 3.26.0.** The card asks once, with
+  the six answers rendered from `MENU_CATEGORIES` and `MENU_WORDS` rather than a
+  fourth hand copy, and a way past that names where the thing goes if you take
+  it. The shape is the one `docs/nd-collisions.md` entry 26 names in terms — a
+  two-tap choice at the moment the heat pass already asks one, not a new
+  surface, not a rank, not a requirement — and entry 27 is why the way past
+  exists at all. `reference` still writes `read` deliberately: reference
+  material genuinely is for reading, so the defect was only ever the Someday
+  default.
+- **Hot and cold not revisable — DONE, 3.26.0.** Hot and Cold are on every
+  thing's own page, writing the same `heatEvents` the pass writes and carrying
+  the same two hints, and the sheet says which answer was given in the phrase
+  the offer card already used. The two release notes below are true as of that
+  release. What it was: `heatEvents` has exactly one call site in the app
   (`src/ui/clarify.ts:743`), inside the pass that `needsHeat` gates on
   `n.heat === null` (`src/triage.ts:62`), so the question is asked once and never
   re-offered; `clarify.reopened` resets the route and not the heat
@@ -71,8 +86,8 @@ Phase 0's six dead ends first, one line each, then the six phases.
   contain **zero** references to heat. Meanwhile 1.39.3 told the reader
   *anything can still be marked hot or cold from its own sheet* and 2.38.0 said
   it again — a control the sheet has never carried, promised twice in patch
-  notes the app renders. Building it makes both notes true, which is why the
-  remedy is the control rather than an edit to the record.
+  notes the app renders. Building the control was the remedy rather than an edit to the
+  record, because the record described the right app.
 - **Phase 1, one reading per node — OPEN.** `src/reading.ts` does not exist and
   the thirty-two derivations stand.
 - **Phase 2, one precedence chain — OPEN.** `whyCovered` is still a function

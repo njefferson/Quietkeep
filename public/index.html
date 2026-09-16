@@ -1868,6 +1868,29 @@
               aria-describedby="detail-suspense-unsaved">Set</button>
     </div>
     <p id="detail-suspense-unsaved" class="detail-hint" hidden></p>
+    <!-- AN ANSWER YOU GAVE CAN BE CHANGED (Phase 0, read 7). Hot or cold was
+         asked ONCE, by the sorting pass, and never again: `needsHeat` gates on
+         `heat === null`, so once you answered there was no route back to it
+         anywhere in the app, and reopening the sorting resets the route and not
+         the heat. Two shipped release notes — 1.39.3 and 2.38.0 — told the
+         reader "anything can still be marked hot or cold from its own sheet"
+         about a control this sheet had never carried.
+
+         SAME WORDS AND SAME EVENT AS THE PASS. The labels and the hints are
+         `clarify.ts`'s own, and the click writes `heat.set` through the same
+         `heatEvents` — a second phrasing for one act is the defect this repo
+         keeps finding, and the hints are load-bearing rather than decorative:
+         Cold's exists because "when do the cold ones hide from me?" was
+         reported from a device, and Hot's because a cold reader stopped on that
+         screen at the one control with no explanation beside two that had
+         them. -->
+    <div class="detail-row" id="detail-heat-row" hidden>
+      <span class="detail-inline" id="detail-heat-label">Hot or cold</span>
+      <button id="detail-hot" type="button" class="ghost"
+              aria-label="Hot — offered before the cold ones, that is all it does">Hot</button>
+      <button id="detail-cold" type="button" class="ghost"
+              aria-label="Cold — still comes back, nothing is ever hidden">Cold</button>
+    </div>
     <p id="detail-parent-hint" class="detail-hint">
       Bigger things hold smaller ones. Nothing is filed out of reach.
     </p>

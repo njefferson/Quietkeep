@@ -29,7 +29,7 @@ import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
-import { kindWords } from '../kind-words.ts';
+import { nodeWords } from '../kind-words.ts';
 import { nextFixedToday, nextFixedWords, datedTodayCount, datedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
 // ONE SOURCE FOR THE EMPTY SENTENCE. `print.ts` already renders this from
@@ -1354,11 +1354,12 @@ export function mountWork(
       // at the moment they file something under one, and then the surface that
       // lists them never says it again.
       //
-      // `kindWords` returns null for `action`, so the unmarked case stays
+      // `nodeWords` returns null for `action`, so the unmarked case stays
       // unmarked and only the rows a reader cannot otherwise tell from an
-      // action get named. Same function as the other three, so the four cannot
-      // drift into four vocabularies.
-      const what = kindWords(entry.node.kind as NodeKind);
+      // action get named. Same function as the other two rows and the sheet, so
+      // they cannot drift into four vocabularies — and it carries the one fact
+      // that supersedes a kind, an answered waiting-for reading **Arrived**.
+      const what = nodeWords(entry.node);
       if (what) b.append(el('span', 'tree-kind', what));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(entry.node.id);

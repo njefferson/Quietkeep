@@ -861,6 +861,14 @@ const REGISTRY = {
   'context picker': ['.triage-gauge', '.triage-prompt', '.triage-card',
     '.route', '.route-label', '.route-hint',
     { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
+  // AS WHAT KIND OF WISH (3.26.0). The Someday route wrote `read` for every
+  // single item, so a whole Menu rendered as one group; `docs/nd-collisions.md`
+  // entry 26 names the remedy as a two-tap choice that is not a requirement.
+  // Registered in the same commit that built it or it ships unmeasured — hub
+  // LESSONS §28, and the state below it is the proof it is reachable.
+  'menu kind': ['.triage-gauge', '.triage-prompt', '.triage-card',
+    '.route', '.route-label', '.route-hint',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   // What a just-routed "Do now" offers. The timer is an offering, not a gate,
   // so this state exists before any stopwatch is running — and it carries the
   // Done the flow previously had no way to express at all.
@@ -1116,7 +1124,7 @@ const REGISTRY = {
   // object literal silently wins, so the registry would have shrunk to one
   // selector while still reporting a pass.
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
-    // THE ANSWER-OWED DATE, WHICH RENDERS HERE FROM 3.24.9. It was on
+    // THE ANSWER-OWED DATE, WHICH RENDERS HERE FROM 3.25.0. It was on
     // containers only for its whole life, sharing a boolean with the track
     // role, so these two were named on `detail sheet, carried` and nowhere
     // else. They are on every temporal node's sheet now — the same `temporal`
@@ -1125,6 +1133,12 @@ const REGISTRY = {
     // than only on a project. Named rather than left to `.detail-inline`, which
     // covers the label and not the control, for `#detail-written`'s reason.
     '#detail-suspense', '#detail-suspense-set',
+    // HOT OR COLD, REVISABLE (3.26.0). Named rather than left to `.ghost` for
+    // the reason this list gives twice already: "it happens to match a selector
+    // already in the list" is how a control goes unmeasured the moment its
+    // markup changes. The label is a `<span>` and not a `<label>`, so
+    // `.detail-inline` covers it and these two cover the acts.
+    '#detail-hot', '#detail-cold',
     '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
     '#detail-context-hint',
     // WHICH KIND OF WANT (2.23.0). Named rather than left to a class, for
@@ -3113,6 +3127,25 @@ try {
     await auditNames(page, 'context picker', theme);
     await auditSeparationAndTargets(page, 'context picker', theme);
     await auditFocusRings(page, 'context picker', theme, ['#triage-actions .route']);
+
+    // State 3b-ii-c: AS WHAT KIND OF WISH (3.26.0). Reached the way a reader
+    // reaches it — press Someday and the card asks — and by `data-route` rather
+    // than by label or position, for the reason the two states above give.
+    // Back out afterwards, so this section leaves the surface as it found it.
+    //
+    // THIS IS ALSO THE PROOF THE STEP IS REACHABLE AT ALL. A registry entry
+    // whose selectors match nothing visible fails by design, so the state
+    // cannot be registered and quietly never rendered.
+    await page.locator('#triage-actions .route.ghost', { hasText: 'Back' }).first().click();
+    await page.waitForSelector('#triage-actions .route[data-route="someday"]');
+    await page.locator('#triage-actions .route[data-route="someday"]').first().click();
+    await page.waitForSelector('#triage-actions .route[data-menu-kind="read"]');
+    await auditContrast(page, 'menu kind', theme);
+    await auditAxe(page, 'menu kind', theme);
+    await auditNames(page, 'menu kind', theme);
+    await auditSeparationAndTargets(page, 'menu kind', theme);
+    await auditFocusRings(page, 'menu kind', theme, ['#triage-actions .route']);
+
     await page.locator('#triage-actions .route.ghost', { hasText: 'Back' }).first().click();
     await page.waitForSelector('#triage-actions .route[data-route="put-under"]');
     await page.locator('#triage-actions .route[data-route="put-under"]').first().click();

@@ -20,7 +20,7 @@ import { raisesReplanCard } from './replan.ts';
 import { calendarDaysBetween, isValidIso, type DayShape } from './time.ts';
 import { boundaryOf } from './day.ts';
 import { isGone, isHeld } from './fold.ts';
-import { kindWords } from './kind-words.ts';
+import { nodeWords } from './kind-words.ts';
 import type { NodeKind } from './events.ts';
 
 export type HeldGroupKey = 'unsorted' | 'replan' | 'ready' | 'soon' | 'later' | 'menu' | 'done';
@@ -528,13 +528,15 @@ export function contentsWords(
  * it" — a number, not a name — and a project with none, a goal, an area and an
  * outcome said nothing whatever, so every row in the list drew identically.
  *
- * `kindWords` returns null for `action`, which is why this reads unchanged for
+ * `nodeWords` returns null for `action`, which is why this reads unchanged for
  * the overwhelming majority of rows: the unmarked case stays unmarked, and only
- * the kinds a reader cannot otherwise tell from an action get named.
+ * the kinds a reader cannot otherwise tell from an action get named. It is
+ * `kindWords` plus the one fact that supersedes a kind — an answered waiting-for
+ * says **Arrived** rather than going on claiming somebody else has it.
  */
 export function placeWords(n: NodeState, state: State, childCounts: Map<string, number>): string | null {
   const parts: string[] = [];
-  const what = kindWords(n.kind as NodeKind);
+  const what = nodeWords(n);
   if (what) parts.push(what);
   const parent = parentTitleOf(n, state);
   if (parent) parts.push(`in ${parent}`);

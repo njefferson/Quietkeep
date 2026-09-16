@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.26.0 — CAPABILITY
+
+*2026-09-16*
+
+- **Something you were waiting on stops telling you it has not arrived.** Mark a thing as owed to you by somebody else, say later that it arrived, and every row and its own page went on reading *Waiting for* — the one thing no longer true. It reads **Arrived** now. Nothing else moves: not marked done, its date kept, still a thing somebody else was doing, because the answer landing is the moment you can get on with it rather than the moment it is over.
+- **A wish goes onto the Menu as the kind of thing it is.** Press *Someday* and the card asks once — read, try, go, make, look into, save for. Until now every wish was filed as something to read, so the Menu showed one heading with everything under it and the other five never appeared. A ticket to the coast was reading material. *Do not say* sits beside the six, says where the thing goes if you take it, and its own page can change it later: sorting is one of the two things this app will not make expensive, so this is asked once and never required.
+- **Hot or cold can be changed from a thing’s own page.** It was asked once, during sorting, and then held for ever — no way anywhere to change your mind, and starting the sorting again reset where a thing goes but not how you felt about it. Both words are on every page now, with the same two lines the sorting card gives them, and the page says which one you gave. **Two old release notes already said this was true**, about a control that page had never carried.
+- **Still not right:** the two screens named two releases ago are still silent — after you answer the question about a worry, and a failed write on the one-thing-at-a-time screen. And *Reference* still files under Read without asking, deliberately: reference material genuinely is for reading.
+
 ## 3.25.0 — CAPABILITY
 
 *2026-09-16*

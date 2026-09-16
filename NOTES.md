@@ -2460,7 +2460,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.25.0**: an answer owed can be
+- **https://staging.quietkeep.pages.dev** — **3.26.0**: the last three of the
+  structural assessment's Phase 0, and each was an answer the app held about
+  your thing that it would not let you move. An answered waiting-for read
+  *Waiting for* on every row — `nodeWords` is `kindWords` plus the one fact that
+  supersedes a kind, and the fact is `waitingOutcome` and not `arrived`, which
+  is the importer's latch. ADR-0040 is what makes the kind untouchable and the
+  word movable. The Someday route wrote `read` for every single item, so a whole
+  Menu rendered as one group; the card asks once now, with the six answers
+  rendered from `MENU_WORDS` rather than a fourth hand copy, and a way past that
+  names where the thing goes — the shape `docs/nd-collisions.md` entry 26 names
+  in terms, with entry 27 the reason there is a way past at all. And hot or cold
+  had exactly one call site in the app, inside the pass `needsHeat` gates on a
+  null, so the question was asked once and held for ever while 1.39.3 and 2.38.0
+  both told the reader it could be changed from a thing's own page. It can now.
+- **3.25.0**: an answer owed can be
   set on any single thing, which is the second clause of the dogfood gate going
   from unsatisfiable to satisfiable. *"Every suspense lives in the app"* could
   not be true: `src/ui/detail.ts` shared ONE boolean between the track role and
