@@ -5501,7 +5501,13 @@ try {
       if (u && !u.hidden && !u.disabled) { u.click(); return true; }
       return false;
     }, null, { timeout: 10000, polling: 200 });
-    await page.waitForSelector('#sort-bulk-undo[hidden]');
+    // `{ state: 'hidden' }`, NOT a `[hidden]` attribute selector. The default
+    // state of this wait is VISIBLE, so `'#sort-bulk-undo[hidden]'` asks for a
+    // hidden element to become visible and can never resolve — it timed out
+    // after resolving to the hidden button twenty-eight times, which is the
+    // wait reporting that its condition was already met. Every other hidden
+    // wait in this file is spelled the second way.
+    await page.waitForSelector('#sort-bulk-undo', { state: 'hidden' });
 
     await page.click('#sort-bulk-cancel');
     await page.waitForSelector('#sort-bulk', { state: 'hidden' });
