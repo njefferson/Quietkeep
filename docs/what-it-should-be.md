@@ -6,13 +6,20 @@ document in this repo so far began by reading the code, finding a defect, and
 correcting it — which makes the built thing the foundation when the built thing
 is the experiment. Refinements of a wrong frame stay inside it.
 
+**Plan of record.** One of the two documents that decide what gets built here —
+[`NOTES.md`](../NOTES.md) names both — and held by
+[`tools/roadmaps.mjs`](../tools/roadmaps.mjs): every item in the STATUS section
+names its state, a state saying done, refused or moot names the release or the
+record that makes it so, and this file cites the other plan because they
+conflict.
+
 ---
 
-## STATUS — measured 2026-09-16, and the document had gone five weeks stale
+## STATUS — measured 2026-09-16, at 3.24.8
 
-**This file is the only place that says what remains, and it did not know that
-its own load-bearing item had shipped.** Written 2026-08-10 at 1.42.x; the app
-is at 3.24.8. Roughly a hundred releases and two major versions have gone past
+**The document had gone five weeks stale. It is the only place that says what
+remains, and it did not know that its own load-bearing item had shipped.**
+Written 2026-08-10 at 1.42.x; the app is at 3.24.8. Roughly a hundred releases and two major versions have gone past
 it, and Part 4 still read as four things to do.
 
 Read Part 4 for the work. Its state, measured against the source rather than
@@ -69,6 +76,16 @@ of work no cold read will ever propose.
 collisions file's own header already states the rule this file just broke: a
 catalog wrong about what exists is worse than no catalog, because it is consulted
 and it answers.
+
+**And read [`structural-assessment.md`](structural-assessment.md) beside this,
+because the two disagree.** Its Phase 3 pays to standardize the reader-facing
+count this document's third item proposes deleting — and that item is refused
+above, so the assessment is right on that point. Its Phases 1 and 2 consolidate
+the coverage invariant this document's second item proposes replacing, which
+makes the restatement cheaper afterwards: one site rather than thirty-two
+derivations. Which goes first is the owner's, and **neither document named the
+other until 2026-09-16**, so every session that read one of them was reading
+half the record.
 
 ---
 

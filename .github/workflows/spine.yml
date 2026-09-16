@@ -71,7 +71,7 @@ jobs:
   # holds that opt-in while three repos still carry findings; REPOS.md names
   # them and it is the hub's call, not this repo's.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@08e8af3704526ca0309c616b70ecdba9db7edd40
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@5adb32bc4cb5dd88a57129d91caf4629944d51bd
     with:
       pwa: true
       mirror: true
@@ -504,6 +504,22 @@ jobs:
       - name: Every question says whether it is still open
         if: ${{ !cancelled() }}
         run: npm run questions:check
+
+      # AND THE TWO LISTS THAT DECIDE WHAT GETS BUILT (2026-09-16). The Open
+      # questions list above was gated; the research catalog was gated; sixty
+      # gates hold the app to what it says about itself. Nothing held
+      # docs/what-it-should-be.md or docs/structural-assessment.md, so both went
+      # stale — the first by five weeks, still listing as work to do the item it
+      # calls the whole design, which had shipped a hundred releases earlier.
+      # Effort flows to what is measured, and the one thing nothing measured was
+      # which work happens. Shape only, like questions:check: every item names a
+      # state from a closed set, a state that says done, refused or moot names
+      # the release or the record that makes it so, each plan cites the other
+      # because they conflict, and NOTES.md names both. The gap since the last
+      # measurement is printed and never failed.
+      - name: The plans that decide what to build say what state they are in
+        if: ${{ !cancelled() }}
+        run: npm run roadmaps:check
 
       # THE INDEX AGAINST THE RECORDS. docs/adr/README.md went fifteen records
       # stale — 0074 to 0088 — before anyone noticed, including the record

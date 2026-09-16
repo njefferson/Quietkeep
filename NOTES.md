@@ -450,6 +450,35 @@ What follows from the correction, and it changes the ordering of everything:
   happening, in text, rather than requiring an essay written in the moment,
   when patience is already gone.
 
+### The plans of record
+
+Two documents say what remains before this is a finished planner, they are held
+by [`tools/roadmaps.mjs`](tools/roadmaps.mjs), and **until 2026-09-16 this file
+named one of them and had never named the other.**
+
+- [`docs/what-it-should-be.md`](docs/what-it-should-be.md) — the design, derived
+  from the demand alone and deliberately written without opening the source.
+  Part 4 is the work it makes; the STATUS section at its head carries the state
+  of each item and what makes that state so.
+- [`docs/structural-assessment.md`](docs/structural-assessment.md) — a census of
+  how the app is structured at the projection, where a node becomes a date, a
+  sentence, a count or a reason, and a seven-phase remedy. Phase 0 is the dead
+  ends that wait on none of it.
+
+**They conflict, which is why each cites the other now.** One pays to
+standardize a reader-facing count the other proposes deleting, and one
+consolidates the coverage invariant the other proposes replacing. A session
+reading either alone cannot learn that from inside it.
+
+**Neither plan is written in the vocabulary of the definition of done above, and
+that is the finding rather than a note.** Between them the two documents contain
+no staff call, no walk-in and no desk paper. *Suspense* appears five times in
+one of them and every occurrence is the clock's name inside the date-derivation
+census rather than the gate's clause. So both plans can be finished in full
+without the gate coming any closer to passing, and the work that would move it
+is in neither of them. That work is what the Block register further down is
+for.
+
 ---
 
 ## Known and not yet fixed

@@ -4,8 +4,9 @@
 read being answered with the quickest fix for its problem set. It answers with
 census numbers rather than adjectives, then gives an ordered remedy. It is a
 working document for the sessions that execute the remedy; when a phase lands,
-the release notes carry it and this file gets a one-line status under that
-phase, never a rewrite.
+the release notes carry it and its line in the STATUS section below is brought
+current, never a rewrite. **The status is in one place, not under each phase** —
+this document's own subject is what it costs to keep two copies of one fact.
 
 **Where the numbers come from.** Five read-only census passes over the source
 at `e32cc0c` against the hub at `2eb0724`: every place that derives a date
@@ -18,6 +19,90 @@ not in the tree; each claim below names the file and line it was read from.
 **Confidence limit, stated first.** The census was verified against source and
 history. This reading of it was not adversarially refuted. Check the claim you
 are about to act on before acting on it.
+
+**Plan of record.** One of the two documents that decide what gets built here —
+[`NOTES.md`](../NOTES.md) names both — and held by
+[`tools/roadmaps.mjs`](../tools/roadmaps.mjs): every item in the STATUS section
+names its state, a state saying done, refused or moot names the release or the
+record that makes it so, and this file cites the other plan because they
+conflict.
+
+## STATUS — measured 2026-09-16, at 3.25.0
+
+**Nothing held this file when it was written, and it carried no status line
+under any phase for two days.** Its own rule below said each phase would get
+one when it landed; three of Phase 0's six items had landed by then and the
+file said nothing. The status lives here, at the head, in one place — a second
+copy under each phase is the duplication this document spends six pages
+counting.
+
+Phase 0's six dead ends first, one line each, then the six phases.
+
+- **The undeletable item made by a multi-line paste — DONE, 3.24.3.** The sheet
+  title scrolls instead of growing past the screen (`public/app.css:2119`),
+  whose comment carries the repro. A smaller residual is named in that release:
+  at 320px and 200% text one button still sits about twelve pixels below the
+  sheet edge.
+- **The dead `#nextup-title` button — DONE, 3.24.6.** It is plain text on the
+  empty branch now (`src/ui/work.ts:1005`) rather than an underlined,
+  button-height control that did nothing when pressed.
+- **The interruption route with no way back — DONE, 3.24.6.** `leftFrom`,
+  `paintReturn`, `leaveToCapture` and `returnToStance` in `src/ui/hub.ts`, with
+  3.24.7 stripping the offer on the worst day, where the place it points at is
+  itself put away.
+- **"It arrived" leaves the row stamped Waiting for — OPEN.** `kindWords` applies
+  `'waiting-for': 'Waiting for'` unconditionally (`src/kind-words.ts:55`) and its
+  four consumers — `src/held.ts:537`, `src/ui/detail.ts:692` and `:735`,
+  `src/ui/work.ts:1361` — none branch on the arrival. [ADR-0040](adr/0040-the-person-lens.md)'s *Arriving is not
+  finishing* says an arrival takes the thing off what you are owed, keeps its
+  clock and does not mark it done — the right call, and it never reaches the
+  word printed on the row. 3.23.30 closed a different half of it: an arrived thing lingering under
+  *With other people*.
+- **The Someday default reads "Read" — OPEN.** `menu()` in
+  `src/ui/triage-intents.ts:45-46` hard-codes `category: 'read'` and takes no
+  parameter, and both the someday and the reference route call it, while
+  `src/menu.ts:22-30` carries six categories. No record addresses it.
+- **Hot and cold not revisable — OPEN, and two shipped release notes say
+  otherwise.** `heatEvents` has exactly one call site in the app
+  (`src/ui/clarify.ts:743`), inside the pass that `needsHeat` gates on
+  `n.heat === null` (`src/triage.ts:62`), so the question is asked once and never
+  re-offered; `clarify.reopened` resets the route and not the heat
+  (`src/fold.ts:1600`). `src/ui/detail.ts` and `src/ui/detail-intents.ts`
+  contain **zero** references to heat. Meanwhile 1.39.3 told the reader
+  *anything can still be marked hot or cold from its own sheet* and 2.38.0 said
+  it again — a control the sheet has never carried, promised twice in patch
+  notes the app renders. Building it makes both notes true, which is why the
+  remedy is the control rather than an edit to the record.
+- **Phase 1, one reading per node — OPEN.** `src/reading.ts` does not exist and
+  the thirty-two derivations stand.
+- **Phase 2, one precedence chain — OPEN.** `whyCovered` is still a function
+  (`src/gate.ts:316`) rather than an exported ordered array, so the restatements
+  have nothing to derive from.
+- **Phase 3, one population per count — OPEN**, and read
+  [ADR-0113](adr/0113-the-pile-is-counted-the-person-is-not.md) before starting
+  it: no `population()` exists yet, and that record settles what a count may
+  measure, which is the point this document and the design roadmap disagree on.
+- **Phase 4, the reachability gate asks whether it is seen — DONE, 3.24.8.**
+  Asserted by `tools/live-check.mjs` and `tools/announce-check.mjs` under
+  [ADR-0126](adr/0126-one-sentence-one-region.md), and where the phase specified
+  a per-state assertion inside `tools/a11y.mjs`, what landed reads the markup
+  statically instead — wider in population, thirty-six live elements rather than
+  the ten a state list reaches, and narrower in that it reads the document and
+  not the rendered screen. Its residue is a different class and is recorded in
+  3.24.8: two screens say nothing at all where a sentence is owed, which no
+  visibility rule can find.
+- **Phase 5, retire the eight duplications — OPEN**, two parts landed and
+  neither finished. `tour-fresh` was unwired from `.branch-guard` on 2026-08-27
+  and `tools/hooks/tour-fresh.sh` is still in the tree. `zizmor` stays off by
+  the hub's call, not this repo's, which `spine.yml:70` records.
+- **Phase 6, halve the shipped page — OPEN** and untouched.
+
+**And read [`what-it-should-be.md`](what-it-should-be.md) beside this, because
+the two disagree.** Phase 3 above standardizes the reader-facing count that
+document's third item proposes deleting — an item ADR-0113 refuses, so this one
+is the live reading. Phases 1 and 2 consolidate the coverage invariant its
+second item proposes replacing, which makes that restatement cheaper afterwards.
+Neither document named the other until 2026-09-16.
 
 ## The answer
 

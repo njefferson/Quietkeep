@@ -50,6 +50,7 @@
     "prepare": "node ../noahjefferson/branch-guard.mjs --repo . --install >/dev/null 2>&1 || true",
     "questions:check": "node tools/questions.mjs",
     "quotes:check": "node ../noahjefferson/quote-check.mjs --repo .",
+    "roadmaps:check": "node tools/roadmaps.mjs",
     "reasons:check": "node tools/reasons.mjs",
     "release:check": "node --experimental-strip-types tools/release-check.mjs",
     "sample:check": "node --experimental-strip-types tools/sample-coverage.mjs",
