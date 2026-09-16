@@ -7296,6 +7296,30 @@ not in this register, not in an ADR, not in a commit message, not as a test
 fixture, and not as an "illustrative example", which is the form it would creep
 back in as. Enforced by the HIS_LIFE class in GATE hub:privacy-check.mjs.
 
+**AND IT IS GATED NOW, BECAUSE SIX WEEKS OF EMPTY WAS THE MEASUREMENT NOBODY
+READ.** [`tools/blocks.mjs`](tools/blocks.mjs) (`npm run blocks`) checks the
+register's SHAPE — every entry names a class and either a release or that it is
+still open — on `tools/questions.mjs`'s model, which states the limit both
+share: it cannot know whether an entry is TRUE, and a gate that pretended to
+would be the false receipt the file already was.
+
+**The assertion with teeth is that it refuses an EMPTY register while this file
+says the gate runs every working day and the app fails every working day.**
+Those two cannot both be true. Either days are being lost with nothing
+recording them, or that paragraph is wrong — and both are worth refusing over.
+It reads both halves out of the file, so if the gate ever stops being described
+as running this check stands down rather than starting to lie.
+
+**It is red today, on purpose, and it is declared in
+[`.spine-exempt`](.spine-exempt) rather than wired into CI** — a push that is
+red for a true reason every time teaches everybody to ignore red, which is
+`doctrine-sync.mjs`'s own argument about itself. **It joins the Spine in the
+commit that adds the first entry below**, and that exemption line is deleted
+then. If it never happens, the exemption is the record of it never happening.
+Watched green on a well-formed entry and red five other ways: no class, no
+resolution, entries beside the placeholder, the register missing, and one of its
+three rules removed.
+
 - *(no entries yet)*
 
 **CLOSED 2026-08-21 by evidence, not by asking (decision 6 of the V2 plan).**
@@ -10348,6 +10372,13 @@ to the owner that the record could already answer.
   renders only for a node carrying a `suspense` clock, and no surface can write one
   yet, so its *rendered contrast* is untested. Its wording and guards are
   unit-tested. The a11y comment previously called that omission a virtue.
+  **THE PREMISE EXPIRED IN 0.16.0 AND THE LINE STOOD FOR SEVEN WEEKS.**
+  `#detail-suspense-set` writes one, and has since that release — so "no surface
+  can write one yet" has been false the whole time, and the untested-contrast
+  claim hanging off it was never revisited. Left in place rather than deleted
+  because the line is the record of what was believed on the day; corrected
+  2026-09-16 while measuring the app against the dogfood gate, whose second
+  clause is about suspenses.
   · Lands on `staging`; waits for the owner's word.
 - **2026-07-29** — **The app can reach you when it is closed (0.8.0 CAPABILITY,
   [ADR-0033](docs/adr/0033-calendar-export-t1.md)).** This closes a hole in the **thesis**,

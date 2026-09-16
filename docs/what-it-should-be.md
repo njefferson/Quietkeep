@@ -28,10 +28,33 @@ recalled:
   a Menu place, or a clocked parent. It does not ask whether the item will be
   offered back as something to act on. So the coverage proof still measures the
   weaker claim, which is exactly what Part 3 says about 1.42.0.
-- **Demote sorting to refinement — OPEN.** It is still a queue with a depth:
-  `#triage-count` is written on every render, and the hub's door repeats it.
-- **Re-ask what the remaining surfaces are for — OPEN, and untouched.** All five
-  named in Part 3 still exist as stages.
+- **Demote sorting to refinement — REFUSED by a later record, and the first
+  version of this line was wrong.** It read *"still a queue with a depth:
+  `#triage-count` is written on every render"*. `#triage-count` has carried no
+  number since 3.9.1 — it publishes a SENTENCE to the hub's door
+  (`src/ui/clarify.ts:1170-1173`). The standing count is `#triage-here`
+  (`clarify.ts:1338-1344`), and it was established by
+  **[ADR-0113](adr/0113-the-pile-is-counted-the-person-is-not.md), accepted
+  2026-08-29, asked for from use** — nineteen days after this document was
+  written. That record draws the distinction this item does not: progress
+  arithmetic measures the person, an inventory of what is present measures the
+  pile, and *"the instrument that was banned and the instrument that was wanted
+  are not the same instrument."* Its overturn clause pre-refuses this item's
+  remedy: *"The remedy would be to change what the number counts, not to take
+  the answer away again … going back to silence would restore the defect this
+  closes."* And no entry in `docs/nd-collisions.md` is about queue depth at all.
+  ADR-0085 had already done the *"not a pass to drain"* half.
+- **Re-ask what the remaining surfaces are for — PARTLY MOOT.** Of the five
+  named in Part 3, the arrival corridor is genuinely gone (`suppressed = true`,
+  `src/ui/clarify.ts:130`, ADR-0085) — and ADR-0108 then rebuilt the entry as a
+  hub door, which is a fifth thing to re-ask about rather than nothing. The
+  count is ADR-0113's and is refused above. Heat is not free to remove: it feeds
+  the offer's own tie-break (`src/nextup.ts:772-791`), and
+  `test/heat-ranking.test.ts:103-125` records the defect from when it did not.
+  The queue and the forced-choice card remain, and ADR-0086's consequences
+  section has said since 2.0.0 that each downstream surface *"now has to justify
+  itself on its own terms"* — which is this item, recorded by an accepted ADR
+  and untouched since.
 
 **Why the staleness is the finding and not the footnote.** A session choosing
 what to build next reads cold-read findings and gate coverage, because those are

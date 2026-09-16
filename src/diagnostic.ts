@@ -368,7 +368,17 @@ const BANDS = ['settled', 'coming round', 'ready again', 'been a while', 'been a
  * What the surfaces OPENED WITH — the count of things that have come round
  * again, and how long they have been waiting, in the app's own words.
  *
- * WHY THIS IS IN THE REPORT, and it is the most important thing here.
+ * WHY THIS IS IN THE REPORT — AND IT IS NOT THE MOST IMPORTANT THING HERE,
+ * WHICH IS WHAT THIS COMMENT USED TO CLAIM.
+ *
+ * **ADR-0073 DEMOTED THIS AND THIS DOCBLOCK KEPT ARGUING THE RETRACTED
+ * THEORY.** In its own words: it "stays but is demoted. It is honest and costs
+ * nothing, and it is not the instrument that explains a day." The theory below
+ * — that a day ends early because the surface opened with too much — was an
+ * earlier session's inference from which nouns were in use, and it was wrong.
+ * NOTES records the correction in three places. Read the rest of this comment
+ * as the reasoning that produced a measurement worth keeping for its own small
+ * sake, not as a claim about the gate.
  *
  * The v1 definition of done is the dogfood gate: thirty consecutive working
  * days run from the app's views. It has been running the whole time and the app
