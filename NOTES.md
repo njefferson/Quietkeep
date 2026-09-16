@@ -472,6 +472,42 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### A confirmation written into a surface the act closes reaches nobody — measured 2026-09-16
+
+Two of the app's live-region receipts cannot be measured, and chasing why
+turned two separate puzzles into one design question.
+
+**`#replan-live`.** Pressing the all-at-once button DOES write *"All N dates
+settled…"* — the poll waiting for it succeeded. The audit then failed in both
+themes with *"#replan-live matches nothing visible"*, because resolving every
+date empties the replan section, the section hides, and the receipt goes with
+it.
+
+**`#reentry-live`.** Taking the amnesty writes *"Moved to the Menu…"* and the
+handler dismisses the section in the same turn, for the same result.
+
+**So it is one cause, not two: the act that writes the confirmation is the act
+that removes the surface holding it.** The sentence is written and hidden
+within one turn, so it reaches nobody — not a sighted reader, and probably not
+a screen reader either, since a live region hidden immediately after being
+written may never be announced. **`#sort-live` was the odd one out** precisely
+because routing a single card leaves its surface standing, which is why that
+one could be measured by simply reading the sentence the walk's existing route
+already wrote.
+
+**The likely answer is `#status`**, and it is the owner's call rather than a
+gate's. It is where the capture confirmation already lives, it persists after
+the surface goes, and on both these surfaces it is where the reader's attention
+is sent next — the amnesty handler moves focus to `#capture` explicitly. Two
+things have to hold with it: `#status` is itself `aria-live`, so whichever
+region keeps the sentence must be the only one that gets it, and 3.24.4's
+failure path must keep working, where the section STAYS and its own sentence is
+the thing that explains why.
+
+**Not a gate problem.** Both regions carry no registry entry and their pair is
+`--ink-soft`, already measured by a sibling on each surface. Acts were written
+for both and backed out, with the reasons left where the attempt was made.
+
 ### Are the reads being answered structurally? — assessed 2026-09-14
 
 Asked twice, and answered with a census rather than adjectives in

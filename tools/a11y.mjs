@@ -4497,7 +4497,13 @@ try {
      * mid-click (Spine run 161's recorded cause), then an in-page click that
      * consumed the one staged card the later step needed. The act was never
      * what was missing. `#replan-live` is still owed, and it may well be the
-     * same shape; this one, below, is different in kind.
+     * same shape — and it turned out to BE this one's shape rather than
+     * sort's. Pressing the all-at-once button does write the sentence, and
+     * resolving every date then empties the replan section, which hides and
+     * takes the receipt with it. So replan and the amnesty are one design
+     * question: the act that writes the confirmation is the act that removes
+     * the surface holding it. Sort was the odd one out, because routing a
+     * single card leaves its surface standing.
      *
      * So none of the three carries a registry entry. Their pair is
      * `--ink-soft` on their own surfaces, already measured by a sibling in
@@ -6426,6 +6432,30 @@ try {
       await auditNames(page, 'replan, all at once', theme);
       await auditSeparationAndTargets(page, 'replan, all at once', theme);
       await auditFocusRings(page, 'replan, all at once', theme);
+      /* NO 'replan, settled' STATE, and the attempt is the finding (3.24.6).
+       *
+       * The act WAS added here — an in-page press of `.replan-bulk-go` under a
+       * poll on the receipt — and the poll succeeded: the sentence appeared.
+       * The audit then failed in both themes with "#replan-live matches
+       * nothing visible", because resolving every date empties the replan
+       * section and the section hides, taking its receipt with it.
+       *
+       * WHICH MAKES THIS THE SAME SHAPE AS THE AMNESTY, not a second puzzle —
+       * and that is the finding worth having. On BOTH surfaces the act that
+       * writes the confirmation is the act that removes the surface holding
+       * it, so the sentence is written and hidden in one turn and reaches
+       * nobody: not a sighted reader, and probably not a screen reader either,
+       * since a live region hidden immediately after being written may never
+       * be announced. The sort receipt was different precisely because routing
+       * one card LEAVES the surface up.
+       *
+       * So two of the three are one design question rather than two gate
+       * problems: a confirmation belongs somewhere that outlives the thing it
+       * confirms. `#status` is that place — it is where the capture
+       * confirmation already lives, it persists, and on both these surfaces it
+       * is where the reader's attention goes next. Deciding that is product
+       * work and is recorded in NOTES.md; taking it inside a walk would be a
+       * design decision made by a gate. */
     }
 
     /* A THING WITH A VERY LONG NAME CAN STILL BE GOT RID OF (3.24.3).
