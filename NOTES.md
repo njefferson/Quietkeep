@@ -2065,7 +2065,38 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.3**, promoted 2026-09-15 at `b7a9d8a`, carrying
+- **PRODUCTION CARRIES 3.24.5**, promoted 2026-09-15 at `389c887`, carrying
+  3.24.4 and 3.24.5 together. Both come out of auditing the app's ten live
+  regions rather than out of noticing one.
+  **3.24.4** — the re-entry offer said the write had landed when it had not.
+  `run` caught the commit error, wrote the failure sentence into a hidden
+  region and never rethrew, so the promise RESOLVED on failure and the amnesty
+  handler dismissed the section and moved focus to `#capture` either way. A
+  FALSE RECEIPT, the mirror of the one the capture handler's own comment
+  refuses, and worse reversed: work believed finished is never looked at again.
+  `run` returns whether it landed. Two tests, one each way, because "never
+  dismiss" would pass the first alone; planted by removing the guard, which put
+  the first red on its own sentence while the twin stayed green. Stub document,
+  the only instrument that can make a commit fail.
+  **3.24.5** — six regions visible, one removed. `.triage-receipt` renamed
+  `.receipt`; `:empty { display: none }` is what made it free. `#comms-live`
+  deleted — nothing had ever written it.
+  **THREE FINDINGS, and the third is about 3.24.4's own fix.** The inventory's
+  whole-run rule reported `#replan-live`, `#sort-live` and `#reentry-live` as
+  seen on NO state in either theme; acts were written for all three and backed
+  out with their obstacles recorded, because a half-built traversal is worse
+  than a named gap. And taking the amnesty DISMISSES the section, so on the
+  SUCCESS path the sentence is written and its box hidden in the same turn —
+  that confirmation reaches nobody, and the sentence is readable only on the
+  failure path 3.24.4 made stay.
+  Verified: Spine run 920 on `ec19c2b`, both jobs, all 51 steps by step-level
+  conclusions, with run 919 CANCELED by a superseding push and verifying
+  nothing. **Tree asserted BEFORE the merge commit existed, and it was
+  load-bearing**: `origin/main` was NOT an ancestor of `origin/staging` because
+  the previous promote left a merge commit here, so content equality had to be
+  proven — `merge-tree --write-tree` gave `dcdc7f8`, the same tree OBJECT as
+  the staging head.
+- **Superseded: 3.24.3**, promoted 2026-09-15 at `b7a9d8a`, carrying
   3.24.2 and 3.24.3 together. Both answer the seventh cold read and both carry
   a gate change that matters more than the fix beside it.
   **3.24.2** — the container-kind select added in 3.24.1 pushed the sorting
@@ -4364,8 +4395,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.3** — promoted at
-  `b7a9d8a` on 2026-09-15, carrying 3.24.2 and 3.24.3: the kind-of-place
+- **https://quietkeep.pages.dev** — production, **3.24.5** — promoted at
+  `389c887` on 2026-09-15, carrying 3.24.4 and 3.24.5: the re-entry offer no
+  longer says a write landed when it failed, and six of the app's ten live
+  regions show their sentence instead of writing it only for screen readers,
+  with a seventh deleted for never having been written to at all. Merged tree
+  `dcdc7f8`, the same tree OBJECT as the staging head, asserted before the
+  merge commit existed and against a `main` that was not an ancestor; Spine
+  green by head SHA at `ec19c2b`, run 920, read by step-level conclusions
+  across both jobs. Before it, `b7a9d8a` carried 3.24.2 and 3.24.3: the kind-of-place
   chooser fits a 390px phone, a thing with a very long name can be got rid of
   again, and two gates that had never been asked the question now are — whether
   any screen fits sideways, and whether a control is reachable when the title
