@@ -2065,7 +2065,38 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.1**, promoted 2026-09-11 at `4bd6b85` — the sorting
+- **PRODUCTION CARRIES 3.24.3**, promoted 2026-09-15 at `b7a9d8a`, carrying
+  3.24.2 and 3.24.3 together. Both answer the seventh cold read and both carry
+  a gate change that matters more than the fix beside it.
+  **3.24.2** — the container-kind select added in 3.24.1 pushed the sorting
+  screen 37px wider than a 390px phone (page scrollWidth 427 at 390x844, the
+  select x=199 to x=427, the name field squeezed to 158px). A flex item's
+  min-width is `auto`, the identical B-04 cause already written out beside
+  `.lens-row select`, aggravated by the row sitting in one 158px column of a
+  two-column grid. Page width back to 390. **And nothing had ever asked whether
+  a screen fits sideways** — the question was put to eleven surfaces named in a
+  list. `auditNoSideways` runs from the per-state geometry audit all 122 states
+  already call: 246 lines, 123 states, both themes, each named, no other screen
+  overflowing.
+  **3.24.3** — a long title filled the detail sheet, leaving the scroll area
+  26px of client height against 1,515px of content, so every disposing control
+  was painted outside that window and clipped; at 320px/200% they sat at
+  negative coordinates. Capped at `30vh` with its own scroll: title 253px of a
+  717px sheet, body back to 366px. **And the check for it already existed and
+  had never been given a long name** — `auditReach` had asked the right
+  question at every state since it was written, each with a short title, so the
+  missing thing was an INPUT rather than a check. A state built from a
+  sixteen-line name ends by pressing *Let it go* on that item.
+  Verified: Spine run 912 on `f498e94`, both jobs, all 51 steps by step-level
+  conclusions, with runs 910 and 911 CANCELED by superseding pushes and
+  verifying nothing. Tree asserted BEFORE the merge commit existed —
+  `merge-tree --write-tree` gave `7cfbe79`, the same tree OBJECT as the staging
+  head.
+  **Still not right, and the release notes say so:** at 320px with 200% text the
+  sheet's window is 112px rather than 26, and one control sits about 12px below
+  the edge because the button itself is 228px tall at that size. Row layout, not
+  the title.
+- **Superseded: 3.24.1**, promoted 2026-09-11 at `4bd6b85` — the sorting
   screen offers the kind of place it had been NAMING four times over: the
   field's placeholder, its label, the empty-field message and the route hint
   that opens it. Whatever was typed became a project.
@@ -2265,7 +2296,66 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.3**: a thing with a very
+- **https://staging.quietkeep.pages.dev** — **3.24.5**: six live regions became
+  visible, one was removed as dead, and three findings came out of the attempt.
+  `.triage-receipt` was renamed `.receipt` — a class named for one surface
+  about to be worn by six — and `#bother-live`, `#reentry-live`,
+  `#nextup-live`, `#replan-live`, `#focus-live` and `#sort-live` now carry it
+  instead of `visually-hidden`. **`:empty { display: none }` is what made that
+  free**: nothing occupies space until a sentence arrives, so no state gained a
+  blank line. `--ink-soft` on these surfaces is a pair the gate already
+  measures, so no new color question.
+  **`#comms-live` REMOVED.** Nothing in `src/`, `dist/` or `test/` had ever
+  written it; `paintComms` touches only `#comms-words` and the section's hidden
+  flag. A live region that had never announced anything in its life, found by
+  auditing all ten rather than by anything failing.
+  **THREE RECEIPTS THE WALK NEVER PRODUCES**, and the inventory's whole-run
+  rule on conditional entries reported all three at once the moment they became
+  visible: `#replan-live`, `#sort-live` and `#reentry-live` were seen on NO
+  state in either theme. The walk reaches each surface, audits it at rest, and
+  never presses the all-at-once button, never routes a sort card and never
+  takes the amnesty. `#nextup-live`, `#bother-live` and `#focus-live` ARE
+  produced and measured. Acts were written for all three and backed out again:
+  the amnesty closes the section, routing a sort card did not produce its
+  sentence inside ten seconds and wants diagnosing rather than guessing, and
+  the replan press was never reached because the sort attempt died first. **A
+  half-built traversal in the tree is worse than a named gap**, so the three
+  carry no registry entry and their pair is covered by a sibling in each array.
+  **AND THE LARGEST FINDING IS ABOUT 3.24.4's OWN FIX.** Taking the amnesty
+  DISMISSES the section, so on the SUCCESS path the sentence is written and its
+  box hidden in the same turn — a sighted reader sees the section vanish, and a
+  live region hidden immediately after being written may never be announced
+  either. So that confirmation currently reaches nobody, and the sentence is
+  only ever readable on the FAILURE path that 3.24.4 made stay. **Where a
+  confirmation lives when the surface holding it closes** is the next piece of
+  work and is a design question, not a class attribute.
+  Still hidden and correctly so: `#replan-sheet-live`, whose two sentences also
+  reach the visible `#replan-sheet-error`, which is deliberately NOT itself a
+  live region. That is the model, and it is why the gate in Phase 4 has to be a
+  DECLARED one rather than a sweep.
+- **Superseded on staging: 3.24.4**: the re-entry offer
+  said the write had landed when it had not. `reentry.ts`'s `run` caught the
+  commit error, wrote the failure sentence into `#reentry-live` and never
+  rethrew, so the promise RESOLVED on failure and the amnesty handler's
+  `.then()` set `dismissed`, repainted and moved focus to `#capture` either
+  way. The section closed identically, and the only thing that differed was a
+  sentence in a `visually-hidden` paragraph — so a sighted reader got the exact
+  gesture that means *your things have moved* for an amnesty that had not
+  happened, with the control to retry taken away. **A FALSE RECEIPT**, and the
+  capture handler's own comment already refuses the mirror of it (never say
+  "Not saved" about a thought that was saved, because they retype it); the
+  reversed one is worse, because work believed finished is never looked at
+  again. `run` returns whether it landed and the handler acts only on true.
+  **Two tests, one each way**, because "never dismiss" would pass the first
+  alone: the failing write must leave the offer up with focus unmoved, and the
+  landing write must still close it. Planted — the guard removed put the first
+  red on the exact sentence while the twin stayed green. STUB DOCUMENT, which
+  here is the only instrument that can ask: the property is what happens when
+  the write FAILS, and a browser cannot make IndexedDB refuse a commit on
+  demand.
+  **Found by auditing the eight hidden live regions**, not by the read, which
+  reported only that one sentence was invisible.
+- **Superseded on staging: 3.24.3**: a thing with a very
   long name could not be disposed of. The name filled the sheet, leaving
   `.sheet-body` TWENTY-SIX pixels of window against 1,515px of content, so
   `#detail-menu`, `#detail-trash` and `#detail-release` were painted outside it
@@ -4274,8 +4364,14 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.1** — promoted at
-  `4bd6b85` on 2026-09-11, carrying 3.24.1 alone: sorting something into a new
+- **https://quietkeep.pages.dev** — production, **3.24.3** — promoted at
+  `b7a9d8a` on 2026-09-15, carrying 3.24.2 and 3.24.3: the kind-of-place
+  chooser fits a 390px phone, a thing with a very long name can be got rid of
+  again, and two gates that had never been asked the question now are — whether
+  any screen fits sideways, and whether a control is reachable when the title
+  above it is long. Merged tree `7cfbe79`, the same tree OBJECT as the staging
+  head; Spine green by head SHA at `f498e94`, run 912, read by step-level
+  conclusions across both jobs. Before it, `4bd6b85` carried 3.24.1 alone: sorting something into a new
   place asks which kind of place, which that screen had been saying all along.
   Merged tree `042bbec`, the same tree OBJECT as the staging head; Spine green
   by head SHA at `c57824f`, run 900. Before it, `93d023e` carried 3.24.0 alone: a place can be told it is a

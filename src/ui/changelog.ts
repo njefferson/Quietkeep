@@ -29,6 +29,26 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.24.5',
+    kind: 'ITERATION',
+    date: '2026-09-15',
+    notes: [
+      '**Six screens now tell you what just happened. They were telling only screen readers.** When you answered the question about a worry, when you said *not this one* to what was offered, when you settled a date that had gone by, when you put something down mid-session, when you sorted a batch, and when you came back after a while \u2014 each of those wrote a sentence saying what it had done, into a box that was deliberately invisible to everyone who can see the screen. So the screen simply changed, and what changed and why was left for you to work out. The sentences are on the page now, in the same quiet type the rest of the app uses for this, and they take up no room at all until there is something to say.',
+      '**This was found by counting rather than by noticing.** One of those six turned up in a fresh read of the app, and the obvious thing would have been to fix that one \u2014 which is what happened the two previous times, in two earlier releases. Counting instead: ten of these boxes exist, eight were invisible, and the two that were not are exactly the two that had been fixed one at a time before. So all six that a reader loses something by are fixed together.',
+      '**One of the ten had never said anything to anybody in its life** \u2014 nothing in the app had ever written to it \u2014 and has been removed. What it was meant to announce is on the screen already and always was.',
+      '**Still not right:** three of the six sentences are not yet checked automatically, because the check has to make the app say them and it cannot reach those three \u2014 settling all your dates at once, sorting a card, and taking the offer to move passed dates. Their color is the same as the text beside them on the same screens, which is checked; it is the sentence itself that is not yet watched. And on the last of those three, taking the offer closes the screen the sentence is written on, so on a successful move that confirmation still reaches nobody. Both of those are named and next.',
+    ],
+  },
+  {
+    triplet: '3.24.4',
+    kind: 'ITERATION',
+    date: '2026-09-15',
+    notes: [
+      '**When you came back after a while and moved your passed dates to the Menu, the app closed the offer and moved you on \u2014 even when the move had not happened.** If that write failed, everything you could see did exactly what it does when it works: the greeting went away, and you were put back at the box where you put things down. The only thing that said otherwise was a line written for screen readers and hidden from everyone else. So the reasonable thing to believe was that your dates had been dealt with, when they had not, and the button that would have let you try again was gone. Now the offer stays put when the write fails, it tells you what went wrong in words you can see, and it closes only when the move actually landed.',
+      '**Why this one is worth a release of its own.** The app already refuses the opposite mistake in the place where you put things down \u2014 there is a note in that code about never telling somebody a thought was not saved when it was, because they will type it again. This was the same mistake with the sign reversed, and the reversed one is worse: being told something is finished when it is not leaves the work undone and gives you no reason to look. Two tests now hold it, one for each direction, so a failed move cannot close the offer and a successful one still does.',
+    ],
+  },
+  {
     triplet: '3.24.3',
     kind: 'ITERATION',
     date: '2026-09-14',
