@@ -5489,6 +5489,16 @@ try {
     await auditContrast(page, 'sort routed', theme);
     await auditNames(page, 'sort routed', theme);
     await auditSeparationAndTargets(page, 'sort routed', theme);
+    // AND A RING PASS, because `surfaces.mjs` holds the two sets equal: a state
+    // audited for contrast and not for rings is the gap that had eighteen
+    // members before that check existed. It caught this one the same day it was
+    // added — CI step 30 red on the commit that introduced the state, and the
+    // local Spine had not been run on it.
+    //
+    // `#sort-undo` is a runtime-filled DIV and focuses nothing; the control is
+    // the button `sort.ts` puts inside it, which is the same class the `route
+    // undo` state already measures on the triage surface.
+    await auditFocusRings(page, 'sort routed', theme, ['#sort-undo .triage-undo-btn']);
     await page.click('#sort-close');
 
     // The tree, open (1.6.0, ADR-0013): the sort staging filed things under a
