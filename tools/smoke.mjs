@@ -5793,10 +5793,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'a decent tripod');
   await tpage.click('#capture-form button[type=submit]');
-  // Under `save-for`, which is what this section is about — the gauge is not
-  // gated on the category (it was reached under the old `read` default for this
-  // walk's whole life), so this is the apt answer rather than a required one.
-  await routeOne('Someday', 'save-for');
+  // VIA THE WAY PAST, which is the faithful answer here and not a shortcut.
+  // Twenty lines below, this section asserts that a plain someday offers NO
+  // save-for numbers, and only then moves it into `save-for` through the log to
+  // test the gauge — so routing it as a save-for in the first place makes that
+  // assertion false, which is exactly what it did on the first attempt. Taking
+  // the way past lands it under `read`, which is what this walk saw for its
+  // whole life, and it exercises the one control entry 27 requires to exist:
+  // the step must never become a requirement.
+  await routeOne('Someday', 'skip');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
 
