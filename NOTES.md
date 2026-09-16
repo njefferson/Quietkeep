@@ -600,16 +600,34 @@ writes give a screen reader the same sentence in both regions. The sheet-level
 target is a plain paragraph.
 
 **ONE COVERAGE GAP FOUND ON THE WAY:** `#sort-undo`, `#sort-bulk-status` and
-`#sort-bulk-outcome` are VISIBLE and in no `sort` registry array, so their
-contrast is unmeasured on that surface today.
+`#sort-bulk-outcome` were VISIBLE and in no `sort` registry array, so their
+contrast was unmeasured on that surface. **Closed 2026-09-16** — `#sort-undo`
+joined a new `sort routed` state, and the other two are conditional entries on
+`sort bulk verbs`, because the status line and the outcome are both empty until
+the block has acted.
 
-Not yet fixed. It is Phase 4 of [`docs/structural-assessment.md`](docs/structural-assessment.md)
-brought forward, and the gate has to come with it — but the gate is now clearly
-a DECLARED one rather than a sweep: a live region carrying a reader-facing
-sentence is either visible, or declares which visible element says the same
-thing, checked both directions. A blanket "no hidden live regions" rule would
-fire on the two that are already right and on the sheet pattern that is the
-model.
+**FIXED, and the gate landed 2026-09-16.** Six regions became visible in 3.24.5
+carrying the `.receipt` class — which is what `triage-receipt` was renamed to,
+a class named for one surface about to be worn by seven — and `#comms-live` was
+deleted for never having been written to at all.
+[`tools/live-check.mjs`](tools/live-check.mjs) (`npm run live:check`) is the
+Spine step that holds the class shut: every announcing element in
+`public/index.html` is either visible, or declared in
+[`.live-allow`](.live-allow) as *region :: visible :: why*, and a declaration is
+honored only when the element it names EXISTS and is NOT ITSELF a live region —
+otherwise a screen reader is told the same sentence twice. Both directions, so a
+row cannot outlive what it exempts. Watched red seven ways before landing, and
+the first of those is its plant in `gates:audit`.
+
+**AND THE POPULATION WAS NEVER TEN.** The audit above counted ten because it
+counted a NAMING CONVENTION, the `*-live` family. The gate derives its
+population from the ATTRIBUTES instead and reads **thirty-six** — every
+`.storage-note` in the ⓘ panel is `role="status" aria-live="polite"` too. All
+twenty-six that the audit never saw are visible, so nothing was hiding in the
+difference; but the number the audit reported was an artefact of how it had
+looked, and a gate written to that number would have been a gate over a
+subset. Same reason `pages-a11y.mjs` derives its pages from the app's own links
+rather than from a list.
 
 ### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
 

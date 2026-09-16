@@ -535,6 +535,27 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run narrows:check
 
+      # AND THE THIRD OF THE SAME FAMILY: not "can a finger reach it", not "is
+      # it near what it acts on", but IS IT THERE TO BE READ AT ALL. A live
+      # region written `visually-hidden` tells a screen reader and nobody else,
+      # so a sighted reader watches the screen change with no sentence saying
+      # what changed. Three were found one at a time — by a cold read, by the
+      # fix for that one, and by a later cold read — before anybody counted:
+      # ten regions, EIGHT hidden, and the two that were not were exactly the
+      # two already fixed. The earlier fixes were themselves the evidence the
+      # class was being answered per instance.
+      #
+      # A DECLARED LIST, not a sweep. "No hidden live region" would fail
+      # `#replan-sheet-live`, which is correct as it stands — its sentences are
+      # also written to a visible paragraph that is deliberately not itself a
+      # live region, which is the pattern to copy. So each hidden region names
+      # the visible element that says the same thing, and the named element must
+      # exist and must not be a live region itself, or a screen reader hears the
+      # sentence twice. Both directions, so a row cannot outlive what it exempts.
+      - name: Every sentence written for a reader reaches one
+        if: ${{ !cancelled() }}
+        run: npm run live:check
+
       # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
       # somebody who did not open the app, on a lock screen, possibly in front of
       # other people, on a day they may be at their worst — and there is no

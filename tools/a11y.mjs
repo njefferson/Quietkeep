@@ -634,7 +634,13 @@ const REGISTRY = {
   'sort routed': ['#sort-live', '#sort-undo'],
   'sort bulk verbs': ['#sort-bulk-title', '#sort-bulk-verbs .route',
     '#sort-bulk-verbs .route-label', '#sort-bulk-verbs .route-hint',
-    '#sort-bulk-preview', '#sort-bulk-go', '#sort-bulk-cancel', '#sort-bulk-export'],
+    '#sort-bulk-preview', '#sort-bulk-go', '#sort-bulk-cancel', '#sort-bulk-export',
+    // The last two of the three the live-region audit found VISIBLE and in no
+    // `sort` array, so unmeasured on this surface (§28). `#sort-undo` joined
+    // `sort routed` above. Conditional: the status line and the outcome are
+    // both empty until the block has acted.
+    { sel: '#sort-bulk-status', whenShown: 'the wholesale status line is empty until a verb has been chosen' },
+    { sel: '#sort-bulk-outcome', whenShown: 'the wholesale outcome is empty until the act has happened' }],
   // The destructive confirm, revealed by choosing Let-them-go — the
   // purge-confirm rule: a control that only exists after a click is still a
   // control somebody reads.

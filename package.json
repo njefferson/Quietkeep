@@ -27,6 +27,7 @@
     "gates:audit": "node tools/gate-audit.mjs",
     "headers:check": "node tools/headers.mjs",
     "import:look": "node tools/import-look.mjs",
+    "live:check": "node tools/live-check.mjs",
     "look": "node tools/look.mjs",
     "manual": "node tools/manual.mjs",
     "manual:check": "node tools/manual.mjs --check",

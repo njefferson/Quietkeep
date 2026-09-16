@@ -424,6 +424,25 @@ const GATES = [
       + `  reg.showNotification('You are overdue — do not break your streak!');\n`),
   },
   {
+    name: 'live:check',
+    catches: 'a sentence written for a reader that only a screen reader can get at',
+    // THE PLANT IS THE DEFECT THAT HAPPENED THREE TIMES, in the direction that
+    // cannot be undone by a sweep going the same way (`spelling:check`'s
+    // lesson, above). Six regions were MADE visible in 3.24.5; a sweep that
+    // reached this line would have to re-hide one to break it, which is exactly
+    // what the gate refuses.
+    //
+    // The other six ways it was watched red are in its own header: an undeclared
+    // hidden region, a row that outlived what it exempted, a counterpart that is
+    // itself a live region, a counterpart that does not exist, a region with no
+    // id, and a malformed row. Only the first is planted here, because the rest
+    // live in `.live-allow` and a plant there proves the parser rather than the
+    // rule.
+    plant: () => edit('public/index.html', (s) =>
+      s.replace('<p id="triage-live" role="status" aria-live="polite" class="receipt">',
+        '<p id="triage-live" role="status" aria-live="polite" class="receipt visually-hidden">')),
+  },
+  {
     name: 'release:check',
     catches: 'a change to the app with no triplet bump, so the cache never retires',
     // CANNOT BE AUDITED FROM A TREE WHOSE TRIPLET IS UNCOMMITTED, and saying so
