@@ -14,6 +14,16 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.24.6 — ITERATION
+
+*2026-09-16*
+
+- **Leaving a job to put something down now offers you the way back.** The **+** inside a job is called *Leave this and put something down*, and it does leave — it takes you out to *Where do you want to be?* and puts the cursor in the box, which is what you want when a thought arrives mid-task. What it never did was say how to get back, and the list of doors you land on cannot know which one you came through. A line under the box now says **Back to** whatever you left, and pressing it puts you back in it. It appears only when you got there that way, it goes the moment you take it, and it goes if you head somewhere else instead — an offer to return to a place you are already standing in is worse than no offer.
+- **And the title on the screen that says nothing is asking has stopped pretending to be a button.** When there is something to do, the title of it is underlined and opens it. When there is not, the same line reads *Nothing is asking today.* — still underlined, still the height of a button, still turning a color under your finger, and doing absolutely nothing when pressed. It is plain text now, in the same color it always was.
+- **Two things moved down the page by one place.** **Menu** is now the forty-sixth thing on the page; it was the forty-fifth. **What’s the situation?** is now the twentieth; it was the nineteenth. Nothing else about either has changed — the line offering you the way back sits above them, and only when there is one.
+- **Two of the three unwatched sentences from the last release are watched now.** Sorting a card and sorting a whole batch both write a line saying what happened, and the check reads both of them where they appear — the batch one by doing the thing for real and then undoing it, since the app must not be left rearranged by being checked.
+- **Still not right:** the other two are settling all your dates at once and taking the offer to move dates that have gone by, and they have turned out to be one thing rather than two. In both, the act that writes the confirmation is the act that removes the screen holding it, so the sentence is written and taken away in the same instant and reaches nobody. Where that confirmation should live instead is a real decision and not a slip, so it is named here rather than guessed at.
+
 ## 3.24.5 — ITERATION
 
 *2026-09-15*

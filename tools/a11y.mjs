@@ -1437,6 +1437,13 @@ const REGISTRY = {
   // And the row that is present inside every job: the way back, and the way to
   // put a thought down without leaving the job to find the box.
   'inside a job': ['#stance-back', '#stance-capture'],
+  // AND WHAT THAT SECOND CONTROL LEAVES BEHIND (3.24.6). Pressing it drops you
+  // on the hub with the cursor in the box, and until this release nothing said
+  // how to get back to the job you left. Its own state rather than an entry on
+  // the hub: the offer exists only after that particular exit, so listing it
+  // with the hub's controls would name something matching nothing visible on
+  // every other route in — which this gate fails on by design, correctly.
+  'way back offered': ['#stance-return'],
   // The other import: somebody else's planner, described. 2.36.0 split that
   // description into a lead and a list of facts, and the list is the part that
   // says what will NOT come across — the finished rows, the rhythms, the labels
@@ -2961,6 +2968,34 @@ try {
     await auditNames(page, 'inside a job', theme);
     await auditSeparationAndTargets(page, 'inside a job', theme);
     await auditFocusRings(page, 'inside a job', theme, ['#stance-back', '#stance-capture']);
+
+    /* AND THE WAY BACK FROM THAT EXIT (3.24.6), driven end to end.
+     *
+     * The seventh read met this as a dead end: the control leaves the job,
+     * lands on the hub and offered no route back to what was being done. The
+     * offer is the fix, so the walk PRESSES the thing that creates it, reads
+     * it where it appears, and then takes it — a control whose only job is to
+     * put somebody back somewhere proves nothing by being visible.
+     *
+     * `#stance-capture` also puts the cursor in the box, which is why the
+     * assertion below is about the JOB being live again rather than about
+     * focus: taking the offer moves focus to the job's heading, and that is
+     * `enter`'s own contract, already asserted wherever a stance is entered. */
+    await page.click('#stance-capture');
+    await page.waitForSelector('#hub-doors .hub-go');
+    await page.waitForSelector('#stance-return-row:not([hidden])');
+    await auditContrast(page, 'way back offered', theme);
+    await auditNames(page, 'way back offered', theme);
+    await auditSeparationAndTargets(page, 'way back offered', theme);
+    await auditFocusRings(page, 'way back offered', theme, ['#stance-return']);
+    const backWords = await page.textContent('#stance-return');
+    if (!/^Back to \S/.test((backWords ?? '').trim())) {
+      fail(`${theme}: the way back reads "${backWords}" — it must name the job it returns to`);
+    }
+    await page.click('#stance-return');
+    await page.waitForSelector('#held:not([hidden])');
+    await page.waitForSelector('#stance-return-row[hidden]', { state: 'attached' });
+    pass(`${theme}/way back offered: taking it returns to the job and stands the offer down`);
     await leaveStance(page);
 
     // Opened the way a finger opens it, not by setting the attribute — a fold

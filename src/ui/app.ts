@@ -59,7 +59,7 @@ import { PALETTE_KEY, applyPalette, getPalette, setPalette } from '../palette.ts
 import { ARRIVAL_KEY, WHERE_KEY, allContexts, contextNames, fitsHere, offerToCorrectPlaces, placesReaching, whereWords, getWhereNow, setWhereNow } from '../contexts.ts';
 import { situationWords } from '../situations.ts';
 import { saveSituationEvents, forgetSituationEvents, releaseEvents, reclaimEvents } from './detail-intents.ts';
-import { paintHub, leave, watchJobs, enter as enterStance } from './hub.ts';
+import { paintHub, leave, watchJobs, enter as enterStance, leaveToCapture, returnToStance } from './hub.ts';
 import { plainIsOn } from '../plain.ts';
 import {
   HOW_LONG_KEY, HOW_LONG_CHOICES, fitsWithin, howLongWords, minutesWords,
@@ -2636,9 +2636,20 @@ export async function main(edition?: Edition): Promise<void> {
   // label, so it read as a second box rather than as the way out with a plus on
   // it. The wiring is right — one draft, one commit, one Dump — and the label
   // was the thing lying. See the note on `#stance-capture` in `index.html`.
+  //
+  // AND IT REMEMBERS WHICH JOB (3.24.6). `leave()` alone dropped the reader on
+  // the hub with no route back to what they had been doing — reported as a dead
+  // end, in those words. `leaveToCapture` is `leave` plus the one thing the hub
+  // cannot work out for itself: which door was come through. The offer appears
+  // under the box, where it cannot push the box down the screen.
   document.querySelector<HTMLButtonElement>('#stance-capture')?.addEventListener('click', () => {
-    leave();
+    leaveToCapture();
     document.querySelector<HTMLInputElement>('#capture')?.focus();
+  });
+  // Taking the offer. It stands itself down first, so the repaint that entering
+  // a job triggers cannot find it half-standing.
+  document.querySelector<HTMLButtonElement>('#stance-return')?.addEventListener('click', () => {
+    returnToStance();
   });
 
   // The hub's own way into the situation (3.21.0) — a second door to the one

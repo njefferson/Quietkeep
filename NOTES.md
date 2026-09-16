@@ -2404,7 +2404,30 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.5**: six live regions became
+- **https://staging.quietkeep.pages.dev** — **3.24.6**: the way back from a job
+  left to write something down, and a title that had stopped being a control.
+  **The exit was real and the return was not.** `#stance-capture` — *"Leave
+  this and put something down"* — calls `leave()` and focuses the box, and the
+  hub it lands on is a list of doors derived from the live sections, so nothing
+  recorded which one was come through. `hub.ts` holds `leftFrom` now, separate
+  from `asked` on purpose: one is where somebody is, the other a place they are
+  not, kept only long enough to offer one way back, and neither is an event.
+  `leave()` does not set it — the back button is a decision to be out of that
+  job. The offer stands down three ways, each a way it would otherwise lie:
+  nothing was left, the section stopped publishing a name, the job is no longer
+  live. The label comes from `data-stance-name`, the marker the doors already
+  derive from, so there is no second list to rename.
+  **And `#nextup-title` was the same element for the openable head and for
+  "Nothing is asking today."** — underlined, 44px, accent on hover, and inert on
+  the empty branch because the click handler guarded and returned. `disabled`
+  there now, with a rule pinning `--ink` and `opacity: 1` so the browser's gray
+  `:disabled` default does not arrive as a new pair. The empty sentence comes
+  from `today.ts` in both places that render it.
+  **Someday landing on Read is NOT a dead end** and the read's list is one
+  shorter for it: `#detail-menu-category` is a select on the item's own sheet
+  and `menu.item.added` is last-write-wins. Whether the route should ask is a
+  choice, not a defect.
+- **3.24.5**: six live regions became
   visible, one was removed as dead, and three findings came out of the attempt.
   `.triage-receipt` was renamed `.receipt` — a class named for one surface
   about to be worn by six — and `#bother-live`, `#reentry-live`,

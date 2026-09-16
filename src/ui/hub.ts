@@ -49,11 +49,55 @@ function stanceDoors(doc: Document): StanceDoor[] {
 let asked: string | null = null;
 /** A job asked for while its section was not yet live. One paint, then gone. */
 let pending: string | null = null;
+/**
+ * THE JOB SOMEBODY LEFT TO WRITE SOMETHING DOWN (3.24.6).
+ *
+ * "Leave this and put something down" does what it says — it leaves the job,
+ * lands on the hub and puts the cursor in the box. Nothing then said how to get
+ * back, and the hub is a list of doors that cannot know which one was come
+ * through. The seventh read met it as a dead end: it "leaves and lands on Where
+ * do you want to be?, with no route back to what was being done".
+ *
+ * SEPARATE FROM `asked` ON PURPOSE. `asked` is where somebody IS; this is a
+ * place they are not, held only long enough to offer one way back. Like `asked`
+ * it is not an event — where a reader is standing is not a fact about their
+ * work — and unlike `asked` it is cleared by going anywhere by any other route.
+ *
+ * `leave()` does NOT set it. The back button is somebody deciding to be out of
+ * that job, and offering a return to a place just deliberately left is the
+ * stale control this app refuses everywhere else.
+ */
+let leftFrom: string | null = null;
 
 export const currentStance = (): string | null => asked;
 
 /** The jobs that are live right now. */
 const liveIds = (doc: Document): string[] => stanceDoors(doc).map(d => d.id);
+
+/**
+ * The one offer to go back, named from the section's OWN `data-stance-name` —
+ * the same marker the doors are derived from, so a job renamed in one place is
+ * named correctly here with no second list. Three ways it stands down, and each
+ * is a way the offer would otherwise be a lie: nothing was left, the section no
+ * longer publishes a name, or the job is no longer live. A door to a section
+ * that has gone is the route to nowhere this module's header is about.
+ */
+function paintReturn(doc: Document): void {
+  const row = doc.getElementById('stance-return-row');
+  const btn = doc.querySelector<HTMLButtonElement>('#stance-return');
+  if (!row || !btn) return;
+  const name = leftFrom
+    ? (doc.getElementById(leftFrom)?.getAttribute('data-stance-name') ?? '').trim()
+    : '';
+  if (!leftFrom || !name || !liveIds(doc).includes(leftFrom)) {
+    leftFrom = null;
+    btn.textContent = '';
+    row.hidden = true;
+    return;
+  }
+  btn.textContent = `Back to ${name}`;
+  row.hidden = false;
+}
 
 /**
  * Paint the hub and the stance together, because they are one decision.
@@ -64,6 +108,10 @@ const liveIds = (doc: Document): string[] => stanceDoors(doc).map(d => d.id);
  */
 export function paintHub(hasWork: boolean, doc: Document = document): void {
   lastHasWork = hasWork;
+  // The return offer is repainted with everything else, for the reason in this
+  // function's own docblock: a job that was live a moment ago may not be, and
+  // an offer to go back to a section that has gone is a route to nowhere.
+  paintReturn(doc);
   const runway = doc.querySelector<HTMLElement>('#runway');
   const list = doc.querySelector<HTMLUListElement>('#hub-doors');
   const bar = doc.querySelector<HTMLElement>('#stance-bar');
@@ -170,6 +218,9 @@ export function paintHub(hasWork: boolean, doc: Document = document): void {
 
 /** Go into one job. */
 export function enter(id: string, doc: Document = document): void {
+  // Any way into any job ends the offer — including this one, so a reader who
+  // goes somewhere else instead is not left holding a door to a third place.
+  leftFrom = null;
   asked = id;
   pending = id;
   paintHub(lastHasWork, doc);
@@ -238,4 +289,23 @@ export function leave(doc: Document = document): void {
   const runway = doc.querySelector<HTMLElement>('#runway');
   if (runway) runway.scrollTop = 0;
   doc.getElementById('hub-heading')?.focus({ preventScroll: true });
+  paintReturn(doc);
+}
+
+/** Leave the job you are in BECAUSE you want to write something down, and
+ *  remember which one it was. The caller puts the cursor in the box. */
+export function leaveToCapture(doc: Document = document): void {
+  const from = asked;
+  leave(doc);
+  leftFrom = from;
+  paintReturn(doc);
+}
+
+/** Take the offer. The offer goes first, so the repaint `enter` triggers cannot
+ *  find it half-standing. */
+export function returnToStance(doc: Document = document): void {
+  const back = leftFrom;
+  leftFrom = null;
+  paintReturn(doc);
+  if (back) enter(back, doc);
 }

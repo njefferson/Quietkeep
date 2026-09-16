@@ -32,6 +32,11 @@ import { treeRows } from '../tree-view.ts';
 import { kindWords } from '../kind-words.ts';
 import { nextFixedToday, nextFixedWords, datedTodayCount, datedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
+// ONE SOURCE FOR THE EMPTY SENTENCE. `print.ts` already renders this from
+// `today.ts`; this file had the same words typed out, so a change to either
+// would have made the app and the printed copy disagree about the one line
+// somebody sees when there is nothing to do.
+import { EMPTY_WORDS } from '../today.ts';
 import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
 import { getHowLong, fitsWithin } from '../duration.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
@@ -68,7 +73,7 @@ export function mountWork(
   const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
   const region = q('#nextup');
   const heading = q('#nextup-heading');
-  const title = q('#nextup-title');
+  const title = q<HTMLButtonElement>('#nextup-title');
   const why = q('#nextup-why');
   const doneBtn = q<HTMLButtonElement>('#nextup-done');
   const skipBtn = q<HTMLButtonElement>('#nextup-skip');
@@ -566,6 +571,22 @@ export function mountWork(
   // The offered card opens its own sheet (2.2.0, ADR-0092). `current` is the
   // item the surface is showing, so this can never open the wrong thing —
   // and if the offer is empty there is nothing to open.
+  /**
+   * A CONTROL THAT CANNOT ACT IS NOT A CONTROL, and this one looked exactly
+   * like the openable title because it IS the openable title — same element,
+   * `--ink` at 1.375rem, underlined, 44px tall, with an accent underline on
+   * hover. On the branch that says "Nothing is asking today." there is nothing
+   * to open, so the guard below returned and the tap did nothing at all. The
+   * seventh cold read met it as a dead end; from the reader's side a title that
+   * is underlined and silent is indistinguishable from a broken one.
+   *
+   * `disabled` rather than a second element: it takes the control out of the
+   * tab order, stops a screen reader offering it, and drops the hover
+   * underline through the one rule added beside `.nextup-title` — which pins
+   * `--ink` and `opacity: 1` deliberately, so the sentence keeps the exact
+   * foreground the registry already measures and no new pair arrives with the
+   * fix.
+   */
   TITLE.addEventListener('click', () => {
     if (!current || !openDetail) return;
     const fresh = session.state().nodes.get(current.node.id);
@@ -720,6 +741,7 @@ export function mountWork(
       if (skipBtn) skipBtn.hidden = false;
       TITLE.textContent = up.head.node.title || '(untitled)';
       TITLE.hidden = false;
+      TITLE.disabled = false;
       // Why this, in words. Pressure adds its own gentle phrase; neither ever
       // reaches for the shame word this app refuses — no such state exists here,
       // and the vocabulary that replaces it is in pressure.ts (ADR-0010).
@@ -967,8 +989,9 @@ export function mountWork(
       if (skipBtn) skipBtn.hidden = undated > 0;
       if (undated > 0 || coming || further) {
         REGION.hidden = false;
-        TITLE.textContent = 'Nothing is asking today.';
+        TITLE.textContent = EMPTY_WORDS;
         TITLE.hidden = false;
+        TITLE.disabled = true;
         if (PLACE) { PLACE.textContent = ''; PLACE.hidden = true; }
         paintWritten(null);
         // Cleared beside PLACE, for its reason: this branch reuses the same
