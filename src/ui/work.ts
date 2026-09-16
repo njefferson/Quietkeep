@@ -187,17 +187,30 @@ export function mountWork(
    *  written down, which is the whole point (ADR-0030). */
   const declined = new Set<string>();
 
-  // Failures must be VISIBLE, not only announced. #nextup-live is
-  // visually-hidden, so a sighted user tapped Done, saw nothing change, and had
-  // no way to learn the write failed — while capture puts the identical failure
-  // in the visible #status. Say it in both places.
-  const say = (msg: string, alsoVisible = false): void => {
-    LIVE.textContent = msg;
-    if (alsoVisible) {
-      const status = document.querySelector<HTMLElement>('#status');
-      if (status) status.textContent = msg;
-    }
-  };
+  /**
+   * ONE REGION, AND THIS SURFACE KEEPS ITS OWN (ADR-0126).
+   *
+   * WHAT THIS COMMENT USED TO SAY, because the reasoning was sound and has
+   * expired: "#nextup-live is visually-hidden, so a sighted user tapped Done,
+   * saw nothing change, and had no way to learn the write failed — while
+   * capture puts the identical failure in the visible #status. Say it in both
+   * places." That was true and it was the fix for F-08.
+   *
+   * 3.24.5 ended it. `#nextup-live` carries `.receipt` now and is visible on
+   * the page, so the second write bought nothing a reader could see and cost
+   * what it always cost: `#status` is `aria-live` too, so a screen reader heard
+   * every one of these five failures twice. The premise outlived the defect and
+   * the parameter outlived the premise.
+   *
+   * NO `alsoVisible`, AND NO `#status` ROUTE FROM THIS SURFACE AT ALL. Every
+   * sentence here — the two Done confirmations, Stopped, the plain-mode pair,
+   * the skip sentence, Put-under, and all five failures — is written while this
+   * region is still on the page: `refresh` sets `REGION.hidden = false`
+   * whenever `settled !== null`, so finishing or stopping shows a settled card
+   * rather than taking the surface away. The act never removes what carries the
+   * sentence, so by ADR-0126's rule the local region is the only place it goes.
+   */
+  const say = (msg: string): void => { LIVE.textContent = msg; };
 
   const nowIso = (): string => new Date(now()).toISOString();
 
@@ -268,7 +281,7 @@ export function mountWork(
       // the next small step comes back instead, which is what this control is
       // for. Settling belongs to finishing the OFFERED item.
     } catch (err) {
-      say(`Couldn’t record that — ${(err as Error).message}`, true);
+      say(`Couldn’t record that — ${(err as Error).message}`);
     } finally {
       busy = false;
     }
@@ -428,7 +441,7 @@ export function mountWork(
       // after completing is what gets attached to completing.
       settled = label || '(untitled)';
     } catch (err) {
-      say(`Couldn’t record that — ${(err as Error).message}`, true);
+      say(`Couldn’t record that — ${(err as Error).message}`);
     } finally {
       busy = false;
     }
@@ -476,7 +489,7 @@ export function mountWork(
         refresh();
         restoreFocus();
       })
-      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`, true); });
+      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`); });
   };
 
   const skip = (): void => {
@@ -529,7 +542,7 @@ export function mountWork(
     if (!current || busy || !BITE_INPUT) return;
     const text = BITE_INPUT.value;
     // Said out loud rather than committing nothing quietly — capture's rule.
-    if (!text.trim()) { say('It needs to say something.', true); BITE_INPUT.focus(); return; }
+    if (!text.trim()) { say('It needs to say something.'); BITE_INPUT.focus(); return; }
     busy = true;
     const parent = current.node.id;
     void session.commit(ctx => biteEvents(ctx, ulid(Date.parse(ctx.at)), parent, text))
@@ -539,7 +552,7 @@ export function mountWork(
         BITE_INPUT.value = '';
         say('Put under it. It takes no date of its own.');
       })
-      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`, true); })
+      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`); })
       .finally(() => {
         busy = false;
         try { onChange(); refresh(); } catch { /* the next load renders it */ }

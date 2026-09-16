@@ -518,8 +518,35 @@ because routing a single card leaves its surface standing, which is why that
 one could be measured by simply reading the sentence the walk's existing route
 already wrote.
 
-**The likely answer is `#status`**, and it is the owner's call rather than a
-gate's. It is where the capture confirmation already lives, it persists after
+**ANSWERED FROM THE RECORD, 2026-09-16, as [ADR-0126](docs/adr/0126-one-sentence-one-region.md)
+in 3.24.8** — not put to the owner, because standing practice here is that the
+research answers a design question and a session that hands one back has turned
+an instruction into a request for permission. **One sentence, one live region,
+and it must be one the act does not remove**: the surface's own when the act
+leaves it standing, `#status` through `sayLasting` when the act takes it away.
+It is ADR-0105's rule with *sentence* in place of *control*, which nothing had
+ever stated, and `tools/announce-check.mjs` holds it over a DERIVED population —
+a file that writes text and addresses a live region may not name `#status`.
+
+**The seven double-announce sites are gone with it, and one of them had expired
+rather than been wrong.** `work.ts`'s helper wrote both places because
+`#nextup-live` was `visually-hidden`; 3.24.5 made it visible and left the
+parameter standing, so five failures were announced twice to buy a visibility
+that already existed. `replan.ts`'s two were the same shape with a better
+reason, and its comment was the diagnosis ADR-0126 was built from.
+
+**The walk deliberately did NOT gain the two states.** The sentence now lands in
+`#status`, which the registry already audits on `with cards`, so the color is
+measured; and the property is a PAIR — the lasting region on success, the local
+one on failure, each to the exclusion of the other — which a browser can only
+ever drive half of, because it cannot make IndexedDB refuse a commit. Two paired
+tests in `test/reentry.test.ts` drive both halves. Pressing the amnesty in the
+walk would also move every passed date to the Menu in a store the states below
+it still read, which is the starvation the sort attempts paid for twice.
+
+**What was recorded here before the record was consulted**, kept because the
+reasoning was sound and incomplete: the likely answer is `#status`, and it is the
+owner's call rather than a gate's. It is where the capture confirmation already lives, it persists after
 the surface goes, and on both these surfaces it is where the reader's attention
 is sent next — the amnesty handler moves focus to `#capture` explicitly. Two
 things have to hold with it: `#status` is itself `aria-live`, so whichever
@@ -2404,7 +2431,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.7**: the way-back line is
+- **https://staging.quietkeep.pages.dev** — **3.24.8**: one sentence, one live
+  region, and it must be one the act does not remove
+  ([ADR-0126](docs/adr/0126-one-sentence-one-region.md)). Settling every passed
+  date and taking the amnesty both wrote a confirmation and removed the region
+  carrying it in the same turn; both now write `#status`, which no act removes
+  and which is where focus is sent when a section closes. The seven
+  double-announce sites are gone: `#status` is `aria-live` too, so writing both
+  places said one sentence twice to a screen reader. One of the seven had
+  EXPIRED rather than been wrong — `work.ts` wrote both because `#nextup-live`
+  was `visually-hidden`, and 3.24.5 made it visible without retiring the
+  parameter. `sayLasting` in `src/ui/announce.ts` is the one route and
+  `announce:check` holds it over a derived population, with `src/plain.ts`
+  proving on the first run that the rule is about WRITING and not naming: it
+  lists `#status` and half the app's regions and assigns nothing.
+- **3.24.7**: the way-back line is
   stripped on the worst day, with the rest of the navigation. Plain mode already
   puts away `#hub` and `#stance-bar`, so an offer to return to a job would have
   been a control pointing at a section that mode had removed — `#skip-held`'s

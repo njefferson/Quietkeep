@@ -556,6 +556,23 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run live:check
 
+      # AND EACH ONE REACHES A READER ONCE. The step above asks whether a
+      # sentence is on the page at all; this asks whether it is in one place.
+      # `#status` is `aria-live` and so is every surface's own region, so a
+      # surface that wrote both said one sentence twice to a screen reader —
+      # seven sites did, and it looked locally correct in both files it was
+      # spread across. It arrived as the fix for the opposite defect and outlived
+      # its premise: the second write existed because six of those regions were
+      # invisible, and 3.24.5 made them visible without retiring the reasoning.
+      #
+      # The population is DERIVED — a file that writes text and addresses a
+      # live region — so a new surface joins on the day it is written. Nothing
+      # is exempt: the one file allowed to name the lasting region is the
+      # announcer, and the capture surface owns it and holds no region of its own.
+      - name: No sentence is announced twice
+        if: ${{ !cancelled() }}
+        run: npm run announce:check
+
       # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
       # somebody who did not open the app, on a lock screen, possibly in front of
       # other people, on a day they may be at their worst — and there is no

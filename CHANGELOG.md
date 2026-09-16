@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.24.8 — ITERATION
+
+*2026-09-16*
+
+- **Two things the app did for you without ever telling you it had.** Settling every date that had gone by, in one press, and taking the offer to move them to the Menu after a while away. Both wrote a line saying exactly what they had done — how many, where they went, that nothing was deleted and nothing was marked done — and both then took away the part of the screen that line was written in, in the same instant. So the section vanished and the sentence went with it. The confirmation now goes to the line under the box where you put things down, which does not go anywhere, and which is where you are put when a section closes.
+- **And it is said once.** The obvious fix is to write both places, and that is what one of these screens already did: it reached a reader, and it meant anybody using a screen reader heard the same sentence twice, because both of those places announce. Seven messages across the app were doing that. Each one now has exactly one home, chosen by whether the thing you pressed leaves the screen it was written on standing.
+- **One of those seven had been announcing twice for a reason that stopped being true.** It wrote to both places because one of them was invisible to anyone looking at the screen — which it was, until the last release but one made it visible and left the second copy behind. The reason expired and the code did not.
+- **Still not right:** two screens say nothing at all where they should. After you answer the question about a worry, the three things that can happen to it — filed for later, parked a week, let go — are told apart by that sentence and by nothing else on the screen. And on the one-thing-at-a-time screen, a failed write while interrupting or stopping says nothing you can see. Both are named and neither is fixed here.
+
 ## 3.24.7 — ITERATION
 
 *2026-09-16*

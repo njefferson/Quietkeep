@@ -4568,6 +4568,15 @@ try {
      * piece of work, because a half-built traversal in the tree is worse than
      * a named gap.
      *
+     * AND THE ANSWER CAME FROM THE DESIGN RATHER THAN THE TRAVERSAL (3.24.8,
+     * ADR-0126). Both of the two that were one question now write their success
+     * sentence to `#status`, which no act removes and which this walk already
+     * audits on `with cards` — so the receipt those two acts produce is measured
+     * where it now lands, and the reason these regions carry no entry changed
+     * from "the walk cannot reach it" to "the sentence is not written here any
+     * more". `#replan-live` and `#reentry-live` keep their failure sentences,
+     * which no browser can provoke; the unit tests hold those.
+     *
      *
      * `#reentry-live` is visible from this release like the other five, and
      * pressing the amnesty was added here to produce its receipt so the
@@ -4587,9 +4596,32 @@ try {
      * So this region carries NO registry entry rather than a declared
      * exemption. Its pair is `--ink-soft` on this surface, which
      * `.reentry-waiting` already measures two lines above it in that array.
-     * Where a confirmation LIVES when the surface holding it closes is the next
-     * piece of work, recorded in NOTES.md; guessing at it here would be a
-     * design decision taken inside a gate. */
+     *
+     * ── ANSWERED, 3.24.8 (ADR-0126), AND THE STATE STILL DOES NOT GO HERE ──
+     *
+     * The design question above is settled: one sentence, one live region, and
+     * it must be one the act does not remove. The amnesty's confirmation goes to
+     * `#status` now and this section's region keeps only the failure sentence,
+     * which is where the retry control is.
+     *
+     * THAT DOES NOT TURN INTO A WALK STATE, and the reasoning is worth keeping
+     * because the obvious move is to add one now that the sentence survives.
+     * Two things make it the wrong instrument:
+     *
+     *  - THE COLOR IS ALREADY MEASURED. The sentence lands in `#status`, which
+     *    the registry audits on `with cards`. A new state here would re-measure
+     *    a pair this walk already covers, on a surface that did not change.
+     *  - THE BEHAVIOR NEEDS AN INSTRUMENT THIS ONE HAS NOT GOT. The property
+     *    is a PAIR — the sentence reaches the lasting region on success AND the
+     *    local one on failure, each to the exclusion of the other. A browser
+     *    cannot make IndexedDB refuse a commit, so a walk can only ever drive
+     *    half of it, and half of a paired property is the shape that passes
+     *    against a version that writes nothing anywhere.
+     *    `test/reentry.test.ts` drives both halves over a stub document.
+     *
+     * And pressing the amnesty here would cost something real: it moves every
+     * passed date to the Menu in a store the states below this one still read.
+     * That is the starvation the sort attempts paid for twice, one surface over. */
     // B-04's hardest case for the surface someone meets after a fortnight away —
     // the one screen where a horizontal scrollbar would be least forgivable.
     await page.setViewportSize({ width: 320, height: 568 });

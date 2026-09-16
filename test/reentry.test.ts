@@ -351,7 +351,10 @@ const mountOver = async (commitThrows: boolean) => {
   const ids = ['reentry', 'reentry-words', 'reentry-waiting', 'reentry-amnesty',
     'reentry-amnesty-words', 'reentry-plain-actions', 'reentry-live',
     'reentry-heading', 'reentry-dismiss', 'reentry-dismiss-plain',
-    'reentry-amnesty-go', 'capture'];
+    // `status` is on the stub because ADR-0126 sends the SUCCESS sentence there
+    // — it is the one region this act does not remove — and the two tests at the
+    // bottom of this file hold each path to exactly one of the two.
+    'reentry-amnesty-go', 'capture', 'status'];
   const page = new Map<string, StubEl>(ids.map((i) => [i, el()]));
   const prior = (globalThis as { document?: unknown }).document;
   (globalThis as { document?: unknown }).document = {
@@ -413,5 +416,50 @@ test('an amnesty that lands does close the offer, so the guard is not just "neve
     assert.equal(m.since(), 1);
     assert.equal(m.page.get('reentry')!.hidden, true, 'it closes when the write landed');
     assert.equal(m.page.get('capture')!.focused, 1, 'and focus goes where arrival focus belongs');
+  } finally { m.restore(); }
+});
+
+// ── ADR-0126 · ONE SENTENCE, ONE REGION, AND IT MUST OUTLIVE THE ACT ─────────
+//
+// The two tests above hold WHETHER the section closes. These hold WHERE the
+// sentence goes, and they are a pair for the same reason: either one alone
+// passes against a version that writes nothing anywhere.
+//
+// What was wrong. Taking the amnesty dismissed the greeting in the same turn as
+// the sentence was written into `#reentry-live`, so the confirmation was
+// removed before anybody could read it — and a live region hidden immediately
+// after a write may never be announced either. This file had no `#status` route
+// of any kind, which made it the worse of the two instances ADR-0126 was
+// written for.
+//
+// Why each test asserts the OTHER region is empty. Writing both is the answer
+// that suggests itself, and it was already in `replan.ts`: it fixes the arrival
+// and says one sentence twice to a screen reader, because `#status` is
+// `aria-live` too. So "it reached the right place" is only half the property;
+// "and nowhere else" is the half that was missing for seven sites.
+
+test('an amnesty that lands says so where the sentence outlives the section', async () => {
+  const m = await mountOver(false);
+  try {
+    m.page.get('reentry-amnesty-go')!.fire();
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(m.page.get('reentry')!.hidden, true, 'the section has gone, as it should');
+    assert.match(m.page.get('status')!.textContent, /Moved to the Menu/,
+      'so the confirmation is in the region that is still on the page');
+    assert.equal(m.page.get('reentry-live')!.textContent, '',
+      'and NOT also in the section that just went, which would be said twice');
+  } finally { m.restore(); }
+});
+
+test('a failed amnesty says so where the retry control still is', async () => {
+  const m = await mountOver(true);
+  try {
+    m.page.get('reentry-amnesty-go')!.fire();
+    await new Promise((r) => setTimeout(r, 0));
+    assert.equal(m.page.get('reentry')!.hidden, false, 'the section stays on a failure');
+    assert.match(m.page.get('reentry-live')!.textContent, /refused it/,
+      'so the explanation belongs on the surface holding the control to try again');
+    assert.equal(m.page.get('status')!.textContent, '',
+      'and the lasting region says nothing, because nothing lasting happened');
   } finally { m.restore(); }
 });
