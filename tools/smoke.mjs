@@ -3574,7 +3574,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.waitForSelector('#triage:not([hidden]) .route');
   };
 
-  const routeOne = async (label) => {
+  const routeOne = async (label, menuKind = null) => {
     await openInbox();
     await tpage.waitForSelector('#triage:not([hidden]) .route');
     // WHICH PASS IS SHOWING, asked of the PROMPT rather than inferred.
@@ -3610,6 +3610,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
           `prompt=${JSON.stringify((prompt || '').trim().slice(0, 70))} ` +
           `offered=${JSON.stringify(have.map((t) => t.trim().slice(0, 34)))}`);
       throw err;
+    }
+    // AS WHAT KIND OF WISH (3.26.0). The same second tap `routeByLabel` needs,
+    // and this helper needed it too — which the first fix missed, because a
+    // `grep` without `-a` on this file reports only some of its matches and
+    // looks exactly like a complete answer. Someday is the one route that does
+    // not commit on the press, so without this the item never reaches the Menu
+    // and the failure surfaces hundreds of lines later as a Menu item that is
+    // not there.
+    if (menuKind) {
+      const kind = `#triage-actions .route[data-menu-kind="${menuKind}"]`;
+      await tpage.waitForSelector(kind);
+      await tpage.locator(kind).first().click();
     }
     await settled(tpage, 150);
   };
@@ -5781,7 +5793,10 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'a decent tripod');
   await tpage.click('#capture-form button[type=submit]');
-  await routeOne('Someday');
+  // Under `save-for`, which is what this section is about — the gauge is not
+  // gated on the category (it was reached under the old `read` default for this
+  // walk's whole life), so this is the apt answer rather than a required one.
+  await routeOne('Someday', 'save-for');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
 
