@@ -2404,7 +2404,19 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.6**: the way back from a job
+- **https://staging.quietkeep.pages.dev** — **3.24.7**: the way-back line is
+  stripped on the worst day, with the rest of the navigation. Plain mode already
+  puts away `#hub` and `#stance-bar`, so an offer to return to a job would have
+  been a control pointing at a section that mode had removed — `#skip-held`'s
+  rule, which is there because a bypass link to a stripped section is a broken
+  link. `leftFrom` is memory, so the offer is standing when the mode is left.
+  **A RELEASE OF ITS OWN BECAUSE OF WHERE IT LANDED, and `release:check` is
+  what said so.** `public/app.css` and `src/plain.ts` both moved in the commit
+  AFTER 3.24.6 cut its cache name, and the worker serves cache-first by that
+  name — so a reader already on 3.24.6 from staging would keep the old bundle
+  and never receive the fix. Squashing the two commits would have made the gate
+  green and left that true. The new bytes needed a new name.
+- **3.24.6**: the way back from a job
   left to write something down, and a title that had stopped being a control.
   **The exit was real and the return was not.** `#stance-capture` — *"Leave
   this and put something down"* — calls `leave()` and focuses the box, and the

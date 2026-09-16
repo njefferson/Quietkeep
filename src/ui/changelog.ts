@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.24.7',
+    kind: 'ITERATION',
+    date: '2026-09-16',
+    notes: [
+      '**On the worst day, the line offering you the way back is stripped with the rest of the navigation.** The mode that reduces the day to one thing already takes away the list of places to go and the row inside a job, because being asked where to be is the load it exists to cut. The **Back to** line the last release added belongs with them — and more than belongs: the job it would send you to is itself put away by that mode, so the offer would have been a control pointing at something no longer on the screen. Nothing is lost. The app still knows what you left, and the offer is standing when you come back out of the mode.',
+      '**Why this is a release of its own and not part of the last one.** The app keeps its own copy of itself so it works with no signal, and the name of that copy is the release number — so a change that lands without the number moving reaches nobody who already has the app. That fix landed after the last number was cut. This one carries it.',
+    ],
+  },
+  {
     triplet: '3.24.6',
     kind: 'ITERATION',
     date: '2026-09-16',
