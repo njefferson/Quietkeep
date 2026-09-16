@@ -8,6 +8,47 @@ is the experiment. Refinements of a wrong frame stay inside it.
 
 ---
 
+## STATUS — measured 2026-09-16, and the document had gone five weeks stale
+
+**This file is the only place that says what remains, and it did not know that
+its own load-bearing item had shipped.** Written 2026-08-10 at 1.42.x; the app
+is at 3.24.8. Roughly a hundred releases and two major versions have gone past
+it, and Part 4 still read as four things to do.
+
+Read Part 4 for the work. Its state, measured against the source rather than
+recalled:
+
+- **Make an unrefined item offerable — DONE, 2.0.0.** `isCandidate` in
+  `src/nextup.ts` no longer excludes a captured-but-unrouted item; its docblock
+  quotes this document's argument and answers ADR-0030 in those terms. *"A thing
+  is a task the moment it exists."* This was the whole design, and the rest is
+  consequence.
+- **Restate the guarantee as the reader's version, and enforce that — OPEN.**
+  `isSilent` in `src/gate.ts` still asks the schema question: a clock, a surface,
+  a Menu place, or a clocked parent. It does not ask whether the item will be
+  offered back as something to act on. So the coverage proof still measures the
+  weaker claim, which is exactly what Part 3 says about 1.42.0.
+- **Demote sorting to refinement — OPEN.** It is still a queue with a depth:
+  `#triage-count` is written on every render, and the hub's door repeats it.
+- **Re-ask what the remaining surfaces are for — OPEN, and untouched.** All five
+  named in Part 3 still exist as stages.
+
+**Why the staleness is the finding and not the footnote.** A session choosing
+what to build next reads cold-read findings and gate coverage, because those are
+the artefacts that are current. This file is the one that bears on completion,
+and an out-of-date roadmap does not read as out of date — it reads as a roadmap.
+Seven cold reads have driven about twenty-five releases of real work while the
+three open items above sat here unmoved, and the remaining work is
+**subtractive**: it removes surfaces rather than adding them, which is the kind
+of work no cold read will ever propose.
+
+**Keep this current in the same commit that changes anything Part 4 names.** The
+collisions file's own header already states the rule this file just broke: a
+catalog wrong about what exists is worse than no catalog, because it is consulted
+and it answers.
+
+---
+
 ## Part 1 — The demand
 
 One person, one condition, stated without reference to any product.
