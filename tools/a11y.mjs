@@ -643,12 +643,19 @@ const REGISTRY = {
   'sort bulk verbs': ['#sort-bulk-title', '#sort-bulk-verbs .route',
     '#sort-bulk-verbs .route-label', '#sort-bulk-verbs .route-hint',
     '#sort-bulk-preview', '#sort-bulk-go', '#sort-bulk-cancel', '#sort-bulk-export',
-    // The last two of the three the live-region audit found VISIBLE and in no
-    // `sort` array, so unmeasured on this surface (§28). `#sort-undo` joined
-    // `sort routed` above. Conditional: the status line and the outcome are
-    // both empty until the block has acted.
-    { sel: '#sort-bulk-status', whenShown: 'the wholesale status line is empty until a verb has been chosen' },
-    { sel: '#sort-bulk-outcome', whenShown: 'the wholesale outcome is empty until the act has happened' }],
+    // One of the three the live-region audit found VISIBLE and in no `sort`
+    // array, so unmeasured on this surface (§28). `#sort-undo` joined `sort
+    // routed` above; `#sort-bulk-outcome` is on `sort bulk done` below, and
+    // NOT here — it lives inside `#sort-bulk-receipt`, which is hidden until a
+    // run completes, so a conditional entry on this state was seen on no state
+    // in either theme and the whole-run rule refused it, correctly.
+    { sel: '#sort-bulk-status', whenShown: 'the wholesale status line is empty until a verb has been chosen' }],
+  // THE WHOLESALE RECEIPT, which needs the act to have HAPPENED. Its own state
+  // rather than a conditional on the one above: a conditional says "this may
+  // not be rendered right now", and the honest answer here is that it is never
+  // rendered until a run finishes, which is a different STATE and is driven as
+  // one. `#sort-bulk-undo` is visible only here too.
+  'sort bulk done': ['#sort-bulk-outcome', '#sort-bulk-undo'],
   // The destructive confirm, revealed by choosing Let-them-go — the
   // purge-confirm rule: a control that only exists after a click is still a
   // control somebody reads.
@@ -5449,6 +5456,53 @@ try {
     await auditNames(page, 'sort bulk confirm', theme);
     await auditSeparationAndTargets(page, 'sort bulk confirm', theme);
     await auditFocusRings(page, 'sort bulk confirm', theme, ['#sort-bulk-word']);
+
+    /* AND THE OUTCOME, WHICH NEEDS THE ACT TO HAVE HAPPENED (3.24.6).
+     *
+     * `#sort-bulk-receipt` is hidden until a run completes, so the first
+     * version of this coverage declared `#sort-bulk-outcome` as a CONDITIONAL
+     * on the verbs state and the walk never reached it: seen on no state in
+     * either theme, and the whole-run rule refused it. A conditional says
+     * "this may not be rendered right now"; the truth was that nothing here
+     * had ever run the act.
+     *
+     * `Put them down` is the verb to run it with, for two reasons. It takes no
+     * parameters, so `#sort-bulk-go` enables the moment it is chosen — every
+     * other non-destructive verb waits on a date or a place. And its own
+     * receipt says Undo brings the whole batch back, which this needs: the
+     * staging sequence above provides exactly ONE sortable item and the single
+     * route below needs it. Routing early to reach a state and leaving a later
+     * step nothing is the starvation that cost an earlier attempt at this same
+     * surface. So the act runs, the receipt is read, and the act is UNDONE
+     * before anything else is driven.
+     *
+     * The undo keeps the block open and calls `renderCard()`, so the cancel
+     * below is unaffected — and `#sort-bulk-undo` hides itself afterwards,
+     * which is why it is audited before the click rather than after. */
+    await page.waitForFunction(() => {
+      const b = [...document.querySelectorAll('#sort-bulk-verbs .route')]
+        .find(x => (x.textContent || '').includes('Put them down'));
+      if (b) { b.click(); return true; }
+      return false;
+    }, null, { timeout: 10000, polling: 200 });
+    await page.waitForFunction(() => {
+      const go = document.querySelector('#sort-bulk-go');
+      if (go && !go.disabled) { go.click(); return true; }
+      return false;
+    }, null, { timeout: 10000, polling: 200 });
+    await page.waitForSelector('#sort-bulk-receipt:not([hidden])');
+    await auditContrast(page, 'sort bulk done', theme);
+    await auditAxe(page, 'sort bulk done', theme);
+    await auditNames(page, 'sort bulk done', theme);
+    await auditSeparationAndTargets(page, 'sort bulk done', theme);
+    await auditFocusRings(page, 'sort bulk done', theme, ['#sort-bulk-undo']);
+    await page.waitForFunction(() => {
+      const u = document.querySelector('#sort-bulk-undo');
+      if (u && !u.hidden && !u.disabled) { u.click(); return true; }
+      return false;
+    }, null, { timeout: 10000, polling: 200 });
+    await page.waitForSelector('#sort-bulk-undo[hidden]');
+
     await page.click('#sort-bulk-cancel');
     await page.waitForSelector('#sort-bulk', { state: 'hidden' });
 
