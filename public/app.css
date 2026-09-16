@@ -3527,6 +3527,7 @@ summary::-webkit-details-marker { display: none; }
    says why each one goes; this is only the rule that makes it so. */
 body[data-plain="1"] #hub,
 body[data-plain="1"] #stance-bar,
+body[data-plain="1"] #stance-return-row,
 body[data-plain="1"] #capture-room,
 body[data-plain="1"] #contents-open,
 body[data-plain="1"] #clock,

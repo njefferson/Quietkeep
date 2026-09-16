@@ -728,7 +728,17 @@ const BUDGET = {
   // container, and the row they sit in is the exact complement of "This is
   // bigger than one step" above it, so no sheet ever shows both. The shell pays
   // for two and the reader sees one.
-  controls: 277,
+  // 277 -> 278 on 2026-09-16 (3.24.6), UP by exactly one: the way back from a
+  // job you left to put something down. Same shape as 3.20.3's Elsewhere door
+  // above, which is the precedent this leans on — it closes a wayfinding dead
+  // end rather than adding a destination, and the destination it returns to is
+  // one the app already had. A cold read met the exit as a dead end: it leaves,
+  // lands on the list of places, and nothing said how to get back to what was
+  // being done. The control is HIDDEN unless that exact exit was taken, it
+  // stands down the moment it is used or the reader goes elsewhere, and plain
+  // mode strips it with the rest of the navigation. The shell pays for one and
+  // the reader sees it only in the one state where it is true.
+  controls: 278,
   // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
   // room's two lenses. Three controls, each one of the pass's asks.
   // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.

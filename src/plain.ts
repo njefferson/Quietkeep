@@ -215,6 +215,13 @@ export const PLAIN_CHROME_HIDDEN = [
   // is what leaves — a second and third control here is exactly the count this
   // mode holds to ten.
   '#stance-bar',
+  // AND WHAT THAT ROW'S (+) LEAVES BEHIND (3.24.6). The offer to go back to the
+  // job you left is navigation by the entry above, and it is `#skip-held`'s rule
+  // as well: `#hub` is stripped and so is every job section it opens, so an
+  // offer to return to one would be a control pointing at a hidden place. It is
+  // not lost by being hidden — `leftFrom` is held in memory and the offer is
+  // standing when the surface comes back, the same way `#reentry` below waits.
+  '#stance-return-row',
   '#capture-room',    // a capture accessory, and directly in the path to the offer
   '#contents-open',   // navigation. On this day you are not navigating.
   '#clock',           // a clock face, the time, and how much of today is left
