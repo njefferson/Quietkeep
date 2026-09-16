@@ -73,7 +73,10 @@ Phase 0's six dead ends first, one line each, then the six phases.
   surface, not a rank, not a requirement — and entry 27 is why the way past
   exists at all. `reference` still writes `read` deliberately: reference
   material genuinely is for reading, so the defect was only ever the Someday
-  default.
+  default. **The return to altitude found one tension and it is recorded in
+  entry 26 rather than smoothed over:** that route used to be one tap and is now
+  two, since the way past is itself a tap, where the detail sheet's 2.23.0
+  reading of the same entry kept the common case at one.
 - **Hot and cold not revisable — DONE, 3.26.0.** Hot and Cold are on every
   thing's own page, writing the same `heatEvents` the pass writes and carrying
   the same two hints, and the sheet says which answer was given in the phrase

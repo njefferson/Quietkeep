@@ -1634,10 +1634,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nTriage — the six routes, each terminating on its own');
   // The clarify buttons are label+hint; match by their visible label. Route in
   // the capture order the queue presents (oldest first).
-  const routeByLabel = async (label) => {
+  const routeByLabel = async (label, menuKind = null) => {
     const before = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting') ?? 'NaN');
     await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
+    // AS WHAT KIND OF WISH (3.26.0). Someday asks one more question before it
+    // commits — `docs/nd-collisions.md` entry 26's two-tap choice — so the queue
+    // does NOT move on the first press for that one route, and the wait below
+    // would sit until it timed out. Every other route still commits on the
+    // press. `data-menu-kind` rather than the visible word, for the reason this
+    // walk has been timed out by a rename twice (LESSONS 180) — and the
+    // `waitForSelector` is the assertion: if the step ever stops rendering, this
+    // throws here rather than passing over a question nobody was asked.
+    if (menuKind) {
+      const kind = `#triage-actions .route[data-menu-kind="${menuKind}"]`;
+      await tpage.waitForSelector(kind);
+      await tpage.locator(kind).first().click();
+    }
     // The queue drops by one. Read from the data attribute since 1.42.1 — the
     // GAUGE's words no longer change as it drains, on purpose. (`#triage-here`
     // does change, since 3.10.0, and that is asserted right after this helper's
@@ -1677,7 +1690,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and offers a way out that keeps it for today — Done and the timer are not the only exits');
   await routeByLabel('Next action');
   await routeByLabel('Waiting for');
-  await routeByLabel('Someday');
+  // Under a CHOSEN kind, not the standing default: the press that takes the
+  // default is one tap and would not prove the step is reachable.
+  await routeByLabel('Someday', 'go');
   await routeByLabel('Reference');
   await routeByLabel('Trash');
 

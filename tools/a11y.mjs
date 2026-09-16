@@ -4524,6 +4524,13 @@ try {
     }
     await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Someday' }).first().click();
+    // AND THEN AS WHAT KIND (3.26.0). Someday asks before it commits, so this
+    // press alone no longer puts anything on the Menu — it opens the step, and
+    // this state would have waited for a Menu with nothing in it. `read` is the
+    // apt answer for "a book to read" and is also the standing default, so the
+    // Menu group this state then measures is the one it has always measured.
+    await page.waitForSelector('#triage-actions .route[data-menu-kind="read"]');
+    await page.locator('#triage-actions .route[data-menu-kind="read"]').first().click();
     await page.waitForTimeout(300);
     // The Menu, open — ITS OWN SHEET since 2.0.7 (ADR-0089), so a dialog state,
     // measured as one. `#menu-open` left this state's focus list with the fold:
