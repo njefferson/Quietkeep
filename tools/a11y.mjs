@@ -625,6 +625,13 @@ const REGISTRY = {
     '#sort-back', '#sort-close', '#sort-act-all'],
   // Wholesale (1.5.0, ADR-0049): the verbs, the preview sentence, the place
   // filter's placeholder, and the run controls.
+  // The receipt once a card is routed. VISIBLE FROM 3.24.5: six of about
+  // thirteen sentences on this surface reached nothing visible — the route
+  // failure, the undo failure and both search and both export messages — on a
+  // surface whose OTHERS are duplicated verbatim right beside them. The undo
+  // bar it raises joins it here: `#sort-undo` was VISIBLE and in no `sort`
+  // array, so its contrast was unmeasured on this surface (§28).
+  'sort routed': ['#sort-live', '#sort-undo'],
   'sort bulk verbs': ['#sort-bulk-title', '#sort-bulk-verbs .route',
     '#sort-bulk-verbs .route-label', '#sort-bulk-verbs .route-hint',
     '#sort-bulk-preview', '#sort-bulk-go', '#sort-bulk-cancel', '#sort-bulk-export'],
@@ -4479,16 +4486,18 @@ try {
      * ONE OF THREE, and the three are worth reading together. `#replan-live`,
      * `#sort-live` and `#reentry-live` all became visible in 3.24.5, and the
      * inventory's whole-run rule on conditional entries immediately reported
-     * all three as seen on NO state in either theme. The walk reaches each of
-     * those three surfaces, audits it at rest, and moves on without ever
-     * performing the act that writes a receipt: it never presses the
-     * all-at-once button, never routes a card on the sort surface, and never
-     * takes the amnesty. `#nextup-live`, `#bother-live` and `#focus-live` are
-     * produced and measured; these three are not, and each has its own
-     * obstacle rather than one shared cause — the amnesty closes the section
-     * (below), routing a sort card did not produce its sentence inside ten
-     * seconds and wants diagnosing rather than guessing at, and the replan
-     * press was never reached because the sort attempt died first.
+     * all three as seen on NO state in either theme. The walk reached each of
+     * those three surfaces, audited it at rest, and moved on without ever
+     * performing the act that writes a receipt.
+     *
+     * SORT IS FIXED (3.24.6) and the shape of the fix is the lesson: the walk
+     * ALREADY routed a card, further down, and asserted where focus landed
+     * afterwards without ever reading the sentence that route wrote. Two
+     * attempts to ADD an act failed first — a locator click that detached
+     * mid-click (Spine run 161's recorded cause), then an in-page click that
+     * consumed the one staged card the later step needed. The act was never
+     * what was missing. `#replan-live` is still owed, and it may well be the
+     * same shape; this one, below, is different in kind.
      *
      * So none of the three carries a registry entry. Their pair is
      * `--ink-soft` on their own surfaces, already measured by a sibling in
@@ -5442,6 +5451,32 @@ try {
         document.activeElement?.id || document.activeElement?.tagName || '(none)');
       fail(`${theme}: after a sort route, focus landed on "${where}" instead of the entry line or back control`);
     }
+    /* AND THE RECEIPT THAT ROUTE JUST WROTE (3.24.6), which nothing had ever
+     * looked at.
+     *
+     * `#sort-live` became visible in 3.24.5 and the inventory reported it as
+     * seen on NO state in either theme. THE ACT WAS ALREADY HERE: the route
+     * five lines above is a real one, and `sort.ts` writes `Sent to …` into
+     * this region straight after the commit. The walk performed it, asserted
+     * where focus landed, and never once read the sentence.
+     *
+     * TWO WRONG TURNS BEFORE THIS ONE, both worth keeping. A locator click was
+     * added higher up and timed out — the reason was already in this file,
+     * from the incident that cost Spine run 161: every queued commit repaints
+     * the action row, so a locator click there detaches mid-click. Replacing
+     * it with the in-page pattern then timed out FURTHER DOWN, because the
+     * staging sequence provides exactly one sortable card and routing it early
+     * left this step nothing to route. Both attempts were adding an act to a
+     * walk that already had one. The measurement was the only thing missing.
+     *
+     * `#sort-undo` joins it here: the bar this route raises was VISIBLE and in
+     * no `sort` array, so its contrast went unmeasured on this surface (§28). */
+    await page.waitForFunction(() =>
+      (document.querySelector('#sort-live')?.textContent ?? '').length > 0,
+      null, { timeout: 5000 });
+    await auditContrast(page, 'sort routed', theme);
+    await auditNames(page, 'sort routed', theme);
+    await auditSeparationAndTargets(page, 'sort routed', theme);
     await page.click('#sort-close');
 
     // The tree, open (1.6.0, ADR-0013): the sort staging filed things under a
