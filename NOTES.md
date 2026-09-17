@@ -501,6 +501,31 @@ the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
 
+### `confirmArrangementEvents` has no caller — found 2026-09-17
+
+`src/ui/arrangement-intents.ts` exports it, it writes `clock.set` with source
+`arrangement:confirmed` at the node's own upkeep interval, and **nothing in
+`src/` calls it.** Its only caller is `test/arrangement.test.ts`. The generic
+Done button calls `doneEvents`, which writes `done.marked` and no clock at all,
+so the review clock a confirmed arrangement ends up with is the gate's own
+generic cure rather than this.
+
+Found while classifying every clock source for Phase 1.1, which is the only
+reason it surfaced: the classification is exhaustive by type, so an unreachable
+writer still has to be decided about, and deciding about it meant reading it.
+
+**`app.ts` already records the identical shape happening once before**, for
+`arrangementCards` — written, exported, unit-tested and called by nothing. That
+is twice in one file's neighborhood, which makes it a class rather than an
+incident: a unit test is not evidence that a thing is reachable, and this repo
+has now paid for that twice.
+
+Left rather than fixed, because the two remedies are different work. Wiring the
+confirm act up is a product change — it means deciding what pressing Done on an
+arrangement should write, which ADR-0121's territory. Deleting it is a
+subtraction and the same question backwards. Neither is Phase 1's business, and
+recording it here is what stops the next session finding it a third time.
+
 ### There is no test page, and §7j has been standing since 2026-09-13
 
 The [doctrine](https://github.com/njefferson/noahjefferson/blob/main/DOCTRINE.md)
