@@ -18,7 +18,7 @@
 // These build events; they never touch the store. `app.ts` hands them to
 // `session.commit`, which runs them through the gate.
 
-import type { AppEvent, ClarifyRoute, ClockKind, Heat, MenuCategory, NodeKind } from '../events.ts';
+import type { AppEvent, ClarifyRoute, ClockKind, ClockSource, Heat, MenuCategory, NodeKind } from '../events.ts';
 import type { NodeState } from '../fold.ts';
 import type { StampContext } from './session.ts';
 import { calendarDaysBetween, endOfLocalDay, isValidIso, atMidnight} from '../time.ts';
@@ -37,7 +37,7 @@ const routed = (ctx: StampContext, node: string, route: ClarifyRoute): AppEvent 
 // A route's clock is "back with you before this day is out", so it lands on the
 // last second of a LOCAL calendar day — the user's day, not UTC's (V-13) — and
 // counts calendar days, so a DST changeover in between does not move it an hour.
-const clockInDays = (ctx: StampContext, node: string, days: number, source: string): AppEvent =>
+const clockInDays = (ctx: StampContext, node: string, days: number, source: ClockSource): AppEvent =>
   base(ctx, 'clock.set', node, {
     clockKind: 'review', at: endOfLocalDay(ctx.at, ctx.day, days), source,
   });

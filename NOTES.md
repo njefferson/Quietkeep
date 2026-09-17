@@ -2460,7 +2460,23 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.26.0**: the last three of the
+- **https://staging.quietkeep.pages.dev** — **3.26.1**: the intent record is
+  complete and typed, and the seventh read's date defect is measured rather than
+  argued. `ClockSource` closes the app's own twenty-one clock writers and
+  `CLOCK_INTENT` is exhaustive over it, so a new writer is a compile error until
+  it is classified — the half the gate's own totality test could never see, since
+  it can only ever read sources beginning `gate:`. No behavior changed, and a
+  test folds every source through `isAppClock` to prove it.
+  **Why nothing moved is the finding, and it corrects the census twice.** On a
+  next action carrying the sorting route's clock and a due date two months out,
+  the held card says *today* and the thing's own page says the date two months
+  away; the census says the held list shows *tomorrow*, and it shows today,
+  because the route's clock lands on the last instant of a local calendar day.
+  And the bare case — that clock and nothing else — AGREES on both surfaces
+  today, so reclassifying the source alone fixes one case and breaks the other.
+  One derivation is the fix and the classification moves with it; both cases are
+  pinned as the ledger's first entries.
+- **3.26.0**: the last three of the
   structural assessment's Phase 0, and each was an answer the app held about
   your thing that it would not let you move. An answered waiting-for read
   *Waiting for* on every row — `nodeWords` is `kindWords` plus the one fact that

@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.26.1 — ITERATION
+
+*2026-09-17*
+
+- **Two screens can disagree about when one thing comes back, and this is the first half of fixing it.** Sort something to *Next action* and give it a deadline two months out, and your held card says it is here **today** while the thing’s own page says the date two months away. Same thing, same log, two answers. The cause is that four different parts of the app work out "when does this come back" in four different ways, and only some of them can tell a date **you** set from a marker the app set for itself.
+- **Nothing you can see has changed in this release**, deliberately. What landed is the app writing down, for every clock it sets, whether you chose that moment or it did — and refusing to build at all if a new one is ever added without that being decided. Half of that had been checked since 2.0.1; the half covering the app’s own twenty-one date-setting paths had never been checked at all, so every one of them counted as you naming a date.
+- **Why it is not fixed today.** Changing which clocks count as yours reconciles the case above and breaks a case that currently works: a thing sorted to *Next action* with no other date reads the same on both screens right now, and would stop. So the two screens get one shared way of working out the answer first, and that is the next release or two. Both cases are written down as tests so neither can be quietly lost on the way.
+
 ## 3.26.0 — CAPABILITY
 
 *2026-09-16*

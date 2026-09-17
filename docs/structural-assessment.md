@@ -91,8 +91,21 @@ Phase 0's six dead ends first, one line each, then the six phases.
   it again — a control the sheet has never carried, promised twice in patch
   notes the app renders. Building the control was the remedy rather than an edit to the
   record, because the record described the right app.
-- **Phase 1, one reading per node — OPEN.** `src/reading.ts` does not exist and
-  the thirty-two derivations stand.
+- **Phase 1, one reading per node — OPEN**, and its first step has landed. The
+  intent record is complete and typed: `ClockSource` closes the app's own
+  twenty-one clock writers and `CLOCK_INTENT` is exhaustive over it, so a new
+  writer is a compile error rather than a silent new demand — the half the gate's
+  own totality test could never see. `src/reading.ts` does not exist yet and the
+  thirty-two derivations stand.
+  **Two corrections to the census above, from measuring the scenario rather than
+  reading it.** It says the held list shows *tomorrow* against the sheet's due
+  date; the held list actually says **today**, because the sorting route's clock
+  lands on the last instant of a local calendar day. And a BARE next action —
+  the route's clock and nothing else — currently AGREES on both surfaces, so
+  reclassifying that source on its own would fix the dated case and break the
+  bare one. The classification therefore moves WITH the derivation, not ahead of
+  it, and both cases are pinned in `test/clock-intent.test.ts` as the ledger's
+  first entries.
 - **Phase 2, one precedence chain — OPEN.** `whyCovered` is still a function
   (`src/gate.ts:316`) rather than an exported ordered array, so the restatements
   have nothing to derive from.
