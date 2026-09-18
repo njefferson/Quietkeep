@@ -450,6 +450,35 @@ What follows from the correction, and it changes the ordering of everything:
   happening, in text, rather than requiring an essay written in the moment,
   when patience is already gone.
 
+### The plans of record
+
+Two documents say what remains before this is a finished planner, they are held
+by [`tools/roadmaps.mjs`](tools/roadmaps.mjs), and **until 2026-09-16 this file
+named one of them and had never named the other.**
+
+- [`docs/what-it-should-be.md`](docs/what-it-should-be.md) — the design, derived
+  from the demand alone and deliberately written without opening the source.
+  Part 4 is the work it makes; the STATUS section at its head carries the state
+  of each item and what makes that state so.
+- [`docs/structural-assessment.md`](docs/structural-assessment.md) — a census of
+  how the app is structured at the projection, where a node becomes a date, a
+  sentence, a count or a reason, and a seven-phase remedy. Phase 0 is the dead
+  ends that wait on none of it.
+
+**They conflict, which is why each cites the other now.** One pays to
+standardize a reader-facing count the other proposes deleting, and one
+consolidates the coverage invariant the other proposes replacing. A session
+reading either alone cannot learn that from inside it.
+
+**Neither plan is written in the vocabulary of the definition of done above, and
+that is the finding rather than a note.** Between them the two documents contain
+no staff call, no walk-in and no desk paper. *Suspense* appears five times in
+one of them and every occurrence is the clock's name inside the date-derivation
+census rather than the gate's clause. So both plans can be finished in full
+without the gate coming any closer to passing, and the work that would move it
+is in neither of them. That work is what the Block register further down is
+for.
+
 ---
 
 ## Known and not yet fixed
@@ -471,6 +500,117 @@ outstanding defect forever, which is the same false receipt the Status lines and
 the both-directions checks were added to stop. If this grows past a couple of
 entries it should get the same treatment: an assertion that each one still
 reproduces.
+
+### `confirmArrangementEvents` has no caller — found 2026-09-17
+
+`src/ui/arrangement-intents.ts` exports it, it writes `clock.set` with source
+`arrangement:confirmed` at the node's own upkeep interval, and **nothing in
+`src/` calls it.** Its only caller is `test/arrangement.test.ts`. The generic
+Done button calls `doneEvents`, which writes `done.marked` and no clock at all,
+so the review clock a confirmed arrangement ends up with is the gate's own
+generic cure rather than this.
+
+Found while classifying every clock source for Phase 1.1, which is the only
+reason it surfaced: the classification is exhaustive by type, so an unreachable
+writer still has to be decided about, and deciding about it meant reading it.
+
+**`app.ts` already records the identical shape happening once before**, for
+`arrangementCards` — written, exported, unit-tested and called by nothing. That
+is twice in one file's neighborhood, which makes it a class rather than an
+incident: a unit test is not evidence that a thing is reachable, and this repo
+has now paid for that twice.
+
+Left rather than fixed, because the two remedies are different work. Wiring the
+confirm act up is a product change — it means deciding what pressing Done on an
+arrangement should write, which ADR-0121's territory. Deleting it is a
+subtraction and the same question backwards. Neither is Phase 1's business, and
+recording it here is what stops the next session finding it a third time.
+
+### There is no test page, and §7j has been standing since 2026-09-13
+
+The [doctrine](https://github.com/njefferson/noahjefferson/blob/main/DOCTRINE.md)
+§7j: every app carries a page that RUNS things and reports what they cost, on
+the reader's own device, because a container answers a different question — it
+draws through a software rasteriser, its disk is a server's, and its core count
+is not the reader's. The §7f diagnostic is here and reports STATE; nothing in
+this app measures anything.
+
+**What it would measure here**, and each of these is a number this repo has had
+to reason about without: a fold over some thousands of events, which is the one
+operation every surface waits on; a Dexie commit CONFIRMED rather than queued,
+which is what *no silent nodes* rests on; and a long held list rendering, which
+is where the reading budget was set from a container timing.
+
+Not built, and this is not a decision waiting on anybody — §7j says build one
+without asking. It is recorded here because a test page is a SURFACE, and a
+surface in this repo owes the accessibility walk's state list, the live-region
+gate, `manual-coverage`, the precache list and the pages-a11y population in the
+commit that creates it. That is a release of its own rather than a thing to
+bolt onto the one in front of it, and the hub's per-app list was corrected the
+same day: it had said "all of them" for three days.
+
+### A confirmation written into a surface the act closes reaches nobody — measured 2026-09-16
+
+Two of the app's live-region receipts cannot be measured, and chasing why
+turned two separate puzzles into one design question.
+
+**`#replan-live`.** Pressing the all-at-once button DOES write *"All N dates
+settled…"* — the poll waiting for it succeeded. The audit then failed in both
+themes with *"#replan-live matches nothing visible"*, because resolving every
+date empties the replan section, the section hides, and the receipt goes with
+it.
+
+**`#reentry-live`.** Taking the amnesty writes *"Moved to the Menu…"* and the
+handler dismisses the section in the same turn, for the same result.
+
+**So it is one cause, not two: the act that writes the confirmation is the act
+that removes the surface holding it.** The sentence is written and hidden
+within one turn, so it reaches nobody — not a sighted reader, and probably not
+a screen reader either, since a live region hidden immediately after being
+written may never be announced. **`#sort-live` was the odd one out** precisely
+because routing a single card leaves its surface standing, which is why that
+one could be measured by simply reading the sentence the walk's existing route
+already wrote.
+
+**ANSWERED FROM THE RECORD, 2026-09-16, as [ADR-0126](docs/adr/0126-one-sentence-one-region.md)
+in 3.24.8** — not put to the owner, because standing practice here is that the
+research answers a design question and a session that hands one back has turned
+an instruction into a request for permission. **One sentence, one live region,
+and it must be one the act does not remove**: the surface's own when the act
+leaves it standing, `#status` through `sayLasting` when the act takes it away.
+It is ADR-0105's rule with *sentence* in place of *control*, which nothing had
+ever stated, and `tools/announce-check.mjs` holds it over a DERIVED population —
+a file that writes text and addresses a live region may not name `#status`.
+
+**The seven double-announce sites are gone with it, and one of them had expired
+rather than been wrong.** `work.ts`'s helper wrote both places because
+`#nextup-live` was `visually-hidden`; 3.24.5 made it visible and left the
+parameter standing, so five failures were announced twice to buy a visibility
+that already existed. `replan.ts`'s two were the same shape with a better
+reason, and its comment was the diagnosis ADR-0126 was built from.
+
+**The walk deliberately did NOT gain the two states.** The sentence now lands in
+`#status`, which the registry already audits on `with cards`, so the color is
+measured; and the property is a PAIR — the lasting region on success, the local
+one on failure, each to the exclusion of the other — which a browser can only
+ever drive half of, because it cannot make IndexedDB refuse a commit. Two paired
+tests in `test/reentry.test.ts` drive both halves. Pressing the amnesty in the
+walk would also move every passed date to the Menu in a store the states below
+it still read, which is the starvation the sort attempts paid for twice.
+
+**What was recorded here before the record was consulted**, kept because the
+reasoning was sound and incomplete: the likely answer is `#status`, and it is the
+owner's call rather than a gate's. It is where the capture confirmation already lives, it persists after
+the surface goes, and on both these surfaces it is where the reader's attention
+is sent next — the amnesty handler moves focus to `#capture` explicitly. Two
+things have to hold with it: `#status` is itself `aria-live`, so whichever
+region keeps the sentence must be the only one that gets it, and 3.24.4's
+failure path must keep working, where the section STAYS and its own sentence is
+the thing that explains why.
+
+**Not a gate problem.** Both regions carry no registry entry and their pair is
+`--ink-soft`, already measured by a sibling on each surface. Acts were written
+for both and backed out, with the reasons left where the attempt was made.
 
 ### Are the reads being answered structurally? — assessed 2026-09-14
 
@@ -564,16 +704,34 @@ writes give a screen reader the same sentence in both regions. The sheet-level
 target is a plain paragraph.
 
 **ONE COVERAGE GAP FOUND ON THE WAY:** `#sort-undo`, `#sort-bulk-status` and
-`#sort-bulk-outcome` are VISIBLE and in no `sort` registry array, so their
-contrast is unmeasured on that surface today.
+`#sort-bulk-outcome` were VISIBLE and in no `sort` registry array, so their
+contrast was unmeasured on that surface. **Closed 2026-09-16** — `#sort-undo`
+joined a new `sort routed` state, and the other two are conditional entries on
+`sort bulk verbs`, because the status line and the outcome are both empty until
+the block has acted.
 
-Not yet fixed. It is Phase 4 of [`docs/structural-assessment.md`](docs/structural-assessment.md)
-brought forward, and the gate has to come with it — but the gate is now clearly
-a DECLARED one rather than a sweep: a live region carrying a reader-facing
-sentence is either visible, or declares which visible element says the same
-thing, checked both directions. A blanket "no hidden live regions" rule would
-fire on the two that are already right and on the sheet pattern that is the
-model.
+**FIXED, and the gate landed 2026-09-16.** Six regions became visible in 3.24.5
+carrying the `.receipt` class — which is what `triage-receipt` was renamed to,
+a class named for one surface about to be worn by seven — and `#comms-live` was
+deleted for never having been written to at all.
+[`tools/live-check.mjs`](tools/live-check.mjs) (`npm run live:check`) is the
+Spine step that holds the class shut: every announcing element in
+`public/index.html` is either visible, or declared in
+[`.live-allow`](.live-allow) as *region :: visible :: why*, and a declaration is
+honored only when the element it names EXISTS and is NOT ITSELF a live region —
+otherwise a screen reader is told the same sentence twice. Both directions, so a
+row cannot outlive what it exempts. Watched red seven ways before landing, and
+the first of those is its plant in `gates:audit`.
+
+**AND THE POPULATION WAS NEVER TEN.** The audit above counted ten because it
+counted a NAMING CONVENTION, the `*-live` family. The gate derives its
+population from the ATTRIBUTES instead and reads **thirty-six** — every
+`.storage-note` in the ⓘ panel is `role="status" aria-live="polite"` too. All
+twenty-six that the audit never saw are visible, so nothing was hiding in the
+difference; but the number the audit reported was an artefact of how it had
+looked, and a gate written to that number would have been a gate over a
+subset. Same reason `pages-a11y.mjs` derives its pages from the app's own links
+rather than from a list.
 
 ### The SEVENTH cold read — 2026-09-11, against production 3.24.1, both passes
 
@@ -2065,7 +2223,38 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.3**, promoted 2026-09-15 at `b7a9d8a`, carrying
+- **PRODUCTION CARRIES 3.24.5**, promoted 2026-09-15 at `389c887`, carrying
+  3.24.4 and 3.24.5 together. Both come out of auditing the app's ten live
+  regions rather than out of noticing one.
+  **3.24.4** — the re-entry offer said the write had landed when it had not.
+  `run` caught the commit error, wrote the failure sentence into a hidden
+  region and never rethrew, so the promise RESOLVED on failure and the amnesty
+  handler dismissed the section and moved focus to `#capture` either way. A
+  FALSE RECEIPT, the mirror of the one the capture handler's own comment
+  refuses, and worse reversed: work believed finished is never looked at again.
+  `run` returns whether it landed. Two tests, one each way, because "never
+  dismiss" would pass the first alone; planted by removing the guard, which put
+  the first red on its own sentence while the twin stayed green. Stub document,
+  the only instrument that can make a commit fail.
+  **3.24.5** — six regions visible, one removed. `.triage-receipt` renamed
+  `.receipt`; `:empty { display: none }` is what made it free. `#comms-live`
+  deleted — nothing had ever written it.
+  **THREE FINDINGS, and the third is about 3.24.4's own fix.** The inventory's
+  whole-run rule reported `#replan-live`, `#sort-live` and `#reentry-live` as
+  seen on NO state in either theme; acts were written for all three and backed
+  out with their obstacles recorded, because a half-built traversal is worse
+  than a named gap. And taking the amnesty DISMISSES the section, so on the
+  SUCCESS path the sentence is written and its box hidden in the same turn —
+  that confirmation reaches nobody, and the sentence is readable only on the
+  failure path 3.24.4 made stay.
+  Verified: Spine run 920 on `ec19c2b`, both jobs, all 51 steps by step-level
+  conclusions, with run 919 CANCELED by a superseding push and verifying
+  nothing. **Tree asserted BEFORE the merge commit existed, and it was
+  load-bearing**: `origin/main` was NOT an ancestor of `origin/staging` because
+  the previous promote left a merge commit here, so content equality had to be
+  proven — `merge-tree --write-tree` gave `dcdc7f8`, the same tree OBJECT as
+  the staging head.
+- **Superseded: 3.24.3**, promoted 2026-09-15 at `b7a9d8a`, carrying
   3.24.2 and 3.24.3 together. Both answer the seventh cold read and both carry
   a gate change that matters more than the fix beside it.
   **3.24.2** — the container-kind select added in 3.24.1 pushed the sorting
@@ -2296,7 +2485,101 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.24.5**: six live regions became
+- **https://staging.quietkeep.pages.dev** — **3.26.1**: the intent record is
+  complete and typed, and the seventh read's date defect is measured rather than
+  argued. `ClockSource` closes the app's own twenty-one clock writers and
+  `CLOCK_INTENT` is exhaustive over it, so a new writer is a compile error until
+  it is classified — the half the gate's own totality test could never see, since
+  it can only ever read sources beginning `gate:`. No behavior changed, and a
+  test folds every source through `isAppClock` to prove it.
+  **Why nothing moved is the finding, and it corrects the census twice.** On a
+  next action carrying the sorting route's clock and a due date two months out,
+  the held card says *today* and the thing's own page says the date two months
+  away; the census says the held list shows *tomorrow*, and it shows today,
+  because the route's clock lands on the last instant of a local calendar day.
+  And the bare case — that clock and nothing else — AGREES on both surfaces
+  today, so reclassifying the source alone fixes one case and breaks the other.
+  One derivation is the fix and the classification moves with it; both cases are
+  pinned as the ledger's first entries.
+- **3.26.0**: the last three of the
+  structural assessment's Phase 0, and each was an answer the app held about
+  your thing that it would not let you move. An answered waiting-for read
+  *Waiting for* on every row — `nodeWords` is `kindWords` plus the one fact that
+  supersedes a kind, and the fact is `waitingOutcome` and not `arrived`, which
+  is the importer's latch. ADR-0040 is what makes the kind untouchable and the
+  word movable. The Someday route wrote `read` for every single item, so a whole
+  Menu rendered as one group; the card asks once now, with the six answers
+  rendered from `MENU_WORDS` rather than a fourth hand copy, and a way past that
+  names where the thing goes — the shape `docs/nd-collisions.md` entry 26 names
+  in terms, with entry 27 the reason there is a way past at all. And hot or cold
+  had exactly one call site in the app, inside the pass `needsHeat` gates on a
+  null, so the question was asked once and held for ever while 1.39.3 and 2.38.0
+  both told the reader it could be changed from a thing's own page. It can now.
+- **3.25.0**: an answer owed can be
+  set on any single thing, which is the second clause of the dogfood gate going
+  from unsatisfiable to satisfiable. *"Every suspense lives in the app"* could
+  not be true: `src/ui/detail.ts` shared ONE boolean between the track role and
+  the answer-owed date, so the date appeared on containers only and *"I'll get
+  back to you Thursday"* about one item had nowhere to live. The gate never
+  required it — law 6 refuses a demand clock on a demand-free KIND and the Menu
+  belt refuses one on a Menu PLACEMENT, which is exactly the `temporal`
+  predicate already gating the date group four hundred lines up in the same
+  function. The restriction came from a comment about labels, written once for
+  the track role, applied to both, and never measured against the clause it bore
+  on. `setSuspenseEvents`, the fold, the placement belt and every reader were
+  unchanged — nothing was ever narrow but the row. The two controls join the
+  ordinary `detail sheet` a11y state, having been measured only on
+  `detail sheet, carried` for their whole life.
+- **3.24.8**: one sentence, one live
+  region, and it must be one the act does not remove
+  ([ADR-0126](docs/adr/0126-one-sentence-one-region.md)). Settling every passed
+  date and taking the amnesty both wrote a confirmation and removed the region
+  carrying it in the same turn; both now write `#status`, which no act removes
+  and which is where focus is sent when a section closes. The seven
+  double-announce sites are gone: `#status` is `aria-live` too, so writing both
+  places said one sentence twice to a screen reader. One of the seven had
+  EXPIRED rather than been wrong — `work.ts` wrote both because `#nextup-live`
+  was `visually-hidden`, and 3.24.5 made it visible without retiring the
+  parameter. `sayLasting` in `src/ui/announce.ts` is the one route and
+  `announce:check` holds it over a derived population, with `src/plain.ts`
+  proving on the first run that the rule is about WRITING and not naming: it
+  lists `#status` and half the app's regions and assigns nothing.
+- **3.24.7**: the way-back line is
+  stripped on the worst day, with the rest of the navigation. Plain mode already
+  puts away `#hub` and `#stance-bar`, so an offer to return to a job would have
+  been a control pointing at a section that mode had removed — `#skip-held`'s
+  rule, which is there because a bypass link to a stripped section is a broken
+  link. `leftFrom` is memory, so the offer is standing when the mode is left.
+  **A RELEASE OF ITS OWN BECAUSE OF WHERE IT LANDED, and `release:check` is
+  what said so.** `public/app.css` and `src/plain.ts` both moved in the commit
+  AFTER 3.24.6 cut its cache name, and the worker serves cache-first by that
+  name — so a reader already on 3.24.6 from staging would keep the old bundle
+  and never receive the fix. Squashing the two commits would have made the gate
+  green and left that true. The new bytes needed a new name.
+- **3.24.6**: the way back from a job
+  left to write something down, and a title that had stopped being a control.
+  **The exit was real and the return was not.** `#stance-capture` — *"Leave
+  this and put something down"* — calls `leave()` and focuses the box, and the
+  hub it lands on is a list of doors derived from the live sections, so nothing
+  recorded which one was come through. `hub.ts` holds `leftFrom` now, separate
+  from `asked` on purpose: one is where somebody is, the other a place they are
+  not, kept only long enough to offer one way back, and neither is an event.
+  `leave()` does not set it — the back button is a decision to be out of that
+  job. The offer stands down three ways, each a way it would otherwise lie:
+  nothing was left, the section stopped publishing a name, the job is no longer
+  live. The label comes from `data-stance-name`, the marker the doors already
+  derive from, so there is no second list to rename.
+  **And `#nextup-title` was the same element for the openable head and for
+  "Nothing is asking today."** — underlined, 44px, accent on hover, and inert on
+  the empty branch because the click handler guarded and returned. `disabled`
+  there now, with a rule pinning `--ink` and `opacity: 1` so the browser's gray
+  `:disabled` default does not arrive as a new pair. The empty sentence comes
+  from `today.ts` in both places that render it.
+  **Someday landing on Read is NOT a dead end** and the read's list is one
+  shorter for it: `#detail-menu-category` is a select on the item's own sheet
+  and `menu.item.added` is last-write-wins. Whether the route should ask is a
+  choice, not a defect.
+- **3.24.5**: six live regions became
   visible, one was removed as dead, and three findings came out of the attempt.
   `.triage-receipt` was renamed `.receipt` — a class named for one surface
   about to be worn by six — and `#bother-live`, `#reentry-live`,
@@ -4364,8 +4647,15 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.3** — promoted at
-  `b7a9d8a` on 2026-09-15, carrying 3.24.2 and 3.24.3: the kind-of-place
+- **https://quietkeep.pages.dev** — production, **3.24.5** — promoted at
+  `389c887` on 2026-09-15, carrying 3.24.4 and 3.24.5: the re-entry offer no
+  longer says a write landed when it failed, and six of the app's ten live
+  regions show their sentence instead of writing it only for screen readers,
+  with a seventh deleted for never having been written to at all. Merged tree
+  `dcdc7f8`, the same tree OBJECT as the staging head, asserted before the
+  merge commit existed and against a `main` that was not an ancestor; Spine
+  green by head SHA at `ec19c2b`, run 920, read by step-level conclusions
+  across both jobs. Before it, `b7a9d8a` carried 3.24.2 and 3.24.3: the kind-of-place
   chooser fits a 390px phone, a thing with a very long name can be got rid of
   again, and two gates that had never been asked the question now are — whether
   any screen fits sideways, and whether a control is reachable when the title
@@ -7104,6 +7394,30 @@ described and design from its shape. It may not write the particulars down —
 not in this register, not in an ADR, not in a commit message, not as a test
 fixture, and not as an "illustrative example", which is the form it would creep
 back in as. Enforced by the HIS_LIFE class in GATE hub:privacy-check.mjs.
+
+**AND IT IS GATED NOW, BECAUSE SIX WEEKS OF EMPTY WAS THE MEASUREMENT NOBODY
+READ.** [`tools/blocks.mjs`](tools/blocks.mjs) (`npm run blocks`) checks the
+register's SHAPE — every entry names a class and either a release or that it is
+still open — on `tools/questions.mjs`'s model, which states the limit both
+share: it cannot know whether an entry is TRUE, and a gate that pretended to
+would be the false receipt the file already was.
+
+**The assertion with teeth is that it refuses an EMPTY register while this file
+says the gate runs every working day and the app fails every working day.**
+Those two cannot both be true. Either days are being lost with nothing
+recording them, or that paragraph is wrong — and both are worth refusing over.
+It reads both halves out of the file, so if the gate ever stops being described
+as running this check stands down rather than starting to lie.
+
+**It is red today, on purpose, and it is declared in
+[`.spine-exempt`](.spine-exempt) rather than wired into CI** — a push that is
+red for a true reason every time teaches everybody to ignore red, which is
+`doctrine-sync.mjs`'s own argument about itself. **It joins the Spine in the
+commit that adds the first entry below**, and that exemption line is deleted
+then. If it never happens, the exemption is the record of it never happening.
+Watched green on a well-formed entry and red five other ways: no class, no
+resolution, entries beside the placeholder, the register missing, and one of its
+three rules removed.
 
 - *(no entries yet)*
 
@@ -10157,6 +10471,13 @@ to the owner that the record could already answer.
   renders only for a node carrying a `suspense` clock, and no surface can write one
   yet, so its *rendered contrast* is untested. Its wording and guards are
   unit-tested. The a11y comment previously called that omission a virtue.
+  **THE PREMISE EXPIRED IN 0.16.0 AND THE LINE STOOD FOR SEVEN WEEKS.**
+  `#detail-suspense-set` writes one, and has since that release — so "no surface
+  can write one yet" has been false the whole time, and the untested-contrast
+  claim hanging off it was never revisited. Left in place rather than deleted
+  because the line is the record of what was believed on the day; corrected
+  2026-09-16 while measuring the app against the dogfood gate, whose second
+  clause is about suspenses.
   · Lands on `staging`; waits for the owner's word.
 - **2026-07-29** — **The app can reach you when it is closed (0.8.0 CAPABILITY,
   [ADR-0033](docs/adr/0033-calendar-export-t1.md)).** This closes a hole in the **thesis**,

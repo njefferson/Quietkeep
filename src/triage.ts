@@ -72,8 +72,24 @@ export const nextToHeat = (state: State): NodeState | null => needsHeat(state)[0
 
 export interface InboxGauge { unclarified: number; unheated: number }
 
-/** For a surface header: how much triage is waiting. Zero unclarified is the
- *  inbox-clear state. */
+/**
+ * NO SURFACE READS THIS, and the line above used to say one did.
+ *
+ * It read "For a surface header: how much triage is waiting", which was true
+ * when written and has not been for some time: nothing in `src/` calls this.
+ * The sorting surface publishes its own count from `#triage-here`
+ * (`src/ui/clarify.ts`, ADR-0113) and restates the arrival rule below inline
+ * rather than calling this. The only callers are `test/triage.test.ts` and
+ * `test/sort-range.test.ts`.
+ *
+ * KEPT RATHER THAN DELETED, because the properties its tests pin are real and
+ * belong to `unclarified` and `needsHeat` — that an import must not become a
+ * headline, and that routing removes an item from the inbox. Deleting the
+ * function would mean rewriting those assertions against the two functions it
+ * wraps, which is churn for no gain. What was wrong was the claim, and a
+ * docblock naming a consumer that does not exist is the false receipt this repo
+ * spends most of its time finding. Corrected 2026-09-16.
+ */
 /**
  * THE HEADLINE COUNTS WHAT YOU PUT DOWN, NOT WHAT YOU BROUGHT IN (2.38.0).
  *

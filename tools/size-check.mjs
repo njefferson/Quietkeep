@@ -306,7 +306,14 @@ const BUDGET = {
   // number and must not be — they are `CONTAINER_ORDER` in `tree.ts`, already
   // counted for the picker that has always used them, and copying them into a
   // second place is the thing that list exists to prevent.
-  words: 4026,
+  // 4026 -> 4031 on 2026-09-16 (3.26.0), UP by exactly five: "Hot or cold" and
+  // the two buttons under it. Hot or cold was asked ONCE, by the sorting pass,
+  // and two shipped release notes said it could be changed from a thing's own
+  // page while no control there had ever existed. The six kind words the new
+  // sorting step offers are NOT in this number and must not be — they are
+  // `MENU_WORDS` in `menu.ts`, rendered from the one source, and a hand copy in
+  // the shell is the thing that list exists to prevent.
+  words: 4031,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -728,7 +735,23 @@ const BUDGET = {
   // container, and the row they sit in is the exact complement of "This is
   // bigger than one step" above it, so no sheet ever shows both. The shell pays
   // for two and the reader sees one.
-  controls: 277,
+  // 277 -> 278 on 2026-09-16 (3.24.6), UP by exactly one: the way back from a
+  // job you left to put something down. Same shape as 3.20.3's Elsewhere door
+  // above, which is the precedent this leans on — it closes a wayfinding dead
+  // end rather than adding a destination, and the destination it returns to is
+  // one the app already had. A cold read met the exit as a dead end: it leaves,
+  // lands on the list of places, and nothing said how to get back to what was
+  // being done. The control is HIDDEN unless that exact exit was taken, it
+  // stands down the moment it is used or the reader goes elsewhere, and plain
+  // mode strips it with the rest of the navigation. The shell pays for one and
+  // the reader sees it only in the one state where it is true.
+  // 278 -> 280 on 2026-09-16 (3.26.0): Hot and Cold on a thing's own page. The
+  // shell pays for two, and they are the second door to an answer the app asked
+  // for once and then held for ever — `needsHeat` gates on a null, so once you
+  // had answered there was no route back to it anywhere. The six kinds in the
+  // new sorting step cost this budget nothing: they are built from `MENU_WORDS`
+  // at the moment the step opens, not markup.
+  controls: 280,
   // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
   // room's two lenses. Three controls, each one of the pass's asks.
   // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.

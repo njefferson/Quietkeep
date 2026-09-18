@@ -424,6 +424,43 @@ const GATES = [
       + `  reg.showNotification('You are overdue — do not break your streak!');\n`),
   },
   {
+    name: 'announce:check',
+    catches: 'one sentence written into two live regions, so a screen reader reads it twice',
+    // THE PLANT IS THE DEFECT AS IT ACTUALLY SHIPPED — a surface reaching for
+    // the lasting region itself, in addition to its own. It is also the
+    // direction a sweep cannot undo: a find-and-replace tidying this file would
+    // have to ADD a second write to break the plant, which is the property
+    // `spelling:check`'s plant had to learn the hard way.
+    //
+    // Three more ways it was watched red are in its own header and are about
+    // the announcer rather than a caller — it naming a local region, it not
+    // naming the lasting one, and it being absent altogether. Only the caller
+    // case is planted here, because the other three are the gate checking
+    // itself and a plant there proves the check rather than the rule.
+    plant: () => edit('src/ui/replan.ts', (s) =>
+      s.replace('    sayLasting(said);',
+        '    sayLasting(said);\n    const status = document.querySelector(\'#status\');\n    if (status) status.textContent = said;')),
+  },
+  {
+    name: 'live:check',
+    catches: 'a sentence written for a reader that only a screen reader can get at',
+    // THE PLANT IS THE DEFECT THAT HAPPENED THREE TIMES, in the direction that
+    // cannot be undone by a sweep going the same way (`spelling:check`'s
+    // lesson, above). Six regions were MADE visible in 3.24.5; a sweep that
+    // reached this line would have to re-hide one to break it, which is exactly
+    // what the gate refuses.
+    //
+    // The other six ways it was watched red are in its own header: an undeclared
+    // hidden region, a row that outlived what it exempted, a counterpart that is
+    // itself a live region, a counterpart that does not exist, a region with no
+    // id, and a malformed row. Only the first is planted here, because the rest
+    // live in `.live-allow` and a plant there proves the parser rather than the
+    // rule.
+    plant: () => edit('public/index.html', (s) =>
+      s.replace('<p id="triage-live" role="status" aria-live="polite" class="receipt">',
+        '<p id="triage-live" role="status" aria-live="polite" class="receipt visually-hidden">')),
+  },
+  {
     name: 'release:check',
     catches: 'a change to the app with no triplet bump, so the cache never retires',
     // CANNOT BE AUDITED FROM A TREE WHOSE TRIPLET IS UNCOMMITTED, and saying so

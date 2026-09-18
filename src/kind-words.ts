@@ -92,3 +92,44 @@ export const KIND_WORDS: Record<NodeKind, string | null> = {
 
 /** The reader's word for a kind, or null when there is deliberately none. */
 export const kindWords = (kind: NodeKind): string | null => KIND_WORDS[kind] ?? null;
+
+/** What the app already calls the moment a waiting-for is answered. It is
+ *  `log-words.ts`'s own sentence for `waiting.closed` — *"It arrived."* — in the
+ *  participle this slot takes, because every other word here is a noun phrase
+ *  on a row and a sentence would read as one thing among labels. Quoted rather
+ *  than invented, which is this file's rule. */
+export const ARRIVED_WORD = 'Arrived';
+
+/**
+ * THE KIND'S WORD, EXCEPT WHERE A FACT ABOUT THE NODE HAS SUPERSEDED IT.
+ *
+ * A waiting-for whose answer has come back still read **Waiting for** on every
+ * row, in the sheet and in the tree — the seventh cold read met it as a dead
+ * end, and the structural assessment carried it as one of Phase 0's six. The
+ * kind is right and must not change: `ADR-0040`'s *Arriving is not finishing*
+ * says an arrival takes the thing off what you are owed, keeps its clock and
+ * does not mark it done, because the signed form landing on your desk is the
+ * moment the work becomes POSSIBLE rather than the moment it is over. So the
+ * node stays a `waiting-for` and the WORD stops claiming somebody else still
+ * has it.
+ *
+ * `waitingOutcome` is the fact, not `arrived` — that one is the importer's
+ * latch for a row that came in with a file, and branching on it here would have
+ * named every imported thing arrived. `waiting.opened` clears the outcome
+ * (`fold.ts:1044`), so reopening a thread puts the word back with no second
+ * rule to remember.
+ *
+ * STRUCTURAL PARAMETER ON PURPOSE. Taking `NodeState` would make this module
+ * import `fold.ts`, and this file is PURE and is imported by three surfaces and
+ * a projection. The two fields it reads are the whole of what it needs.
+ *
+ * The sheet's `sorted as` line is deliberately left alone: its duplicate check
+ * compares against the KIND's word, so a row reading **Arrived** now also says
+ * **sorted as waiting for**, which is two different true facts rather than one
+ * said twice — the case that line's own comment says it earns its keep for.
+ */
+export const nodeWords = (
+  n: { kind: NodeKind; waitingOutcome: string | null },
+): string | null => (
+  n.kind === 'waiting-for' && n.waitingOutcome ? ARRIVED_WORD : kindWords(n.kind)
+);

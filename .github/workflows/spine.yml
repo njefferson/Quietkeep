@@ -71,7 +71,7 @@ jobs:
   # holds that opt-in while three repos still carry findings; REPOS.md names
   # them and it is the hub's call, not this repo's.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@e550c5223e6b497a0d256bc31d27d59f6c23c3c7
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@eb2561dfcfeabee36e5b8b9acaf500900a248f56
     with:
       pwa: true
       mirror: true
@@ -505,6 +505,22 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run questions:check
 
+      # AND THE TWO LISTS THAT DECIDE WHAT GETS BUILT (2026-09-16). The Open
+      # questions list above was gated; the research catalog was gated; sixty
+      # gates hold the app to what it says about itself. Nothing held
+      # docs/what-it-should-be.md or docs/structural-assessment.md, so both went
+      # stale — the first by five weeks, still listing as work to do the item it
+      # calls the whole design, which had shipped a hundred releases earlier.
+      # Effort flows to what is measured, and the one thing nothing measured was
+      # which work happens. Shape only, like questions:check: every item names a
+      # state from a closed set, a state that says done, refused or moot names
+      # the release or the record that makes it so, each plan cites the other
+      # because they conflict, and NOTES.md names both. The gap since the last
+      # measurement is printed and never failed.
+      - name: The plans that decide what to build say what state they are in
+        if: ${{ !cancelled() }}
+        run: npm run roadmaps:check
+
       # THE INDEX AGAINST THE RECORDS. docs/adr/README.md went fifteen records
       # stale — 0074 to 0088 — before anyone noticed, including the record
       # written by the session that noticed. A missing row is invisible in a way
@@ -534,6 +550,44 @@ jobs:
       - name: Every filter stands in front of what it filters
         if: ${{ !cancelled() }}
         run: npm run narrows:check
+
+      # AND THE THIRD OF THE SAME FAMILY: not "can a finger reach it", not "is
+      # it near what it acts on", but IS IT THERE TO BE READ AT ALL. A live
+      # region written `visually-hidden` tells a screen reader and nobody else,
+      # so a sighted reader watches the screen change with no sentence saying
+      # what changed. Three were found one at a time — by a cold read, by the
+      # fix for that one, and by a later cold read — before anybody counted:
+      # ten regions, EIGHT hidden, and the two that were not were exactly the
+      # two already fixed. The earlier fixes were themselves the evidence the
+      # class was being answered per instance.
+      #
+      # A DECLARED LIST, not a sweep. "No hidden live region" would fail
+      # `#replan-sheet-live`, which is correct as it stands — its sentences are
+      # also written to a visible paragraph that is deliberately not itself a
+      # live region, which is the pattern to copy. So each hidden region names
+      # the visible element that says the same thing, and the named element must
+      # exist and must not be a live region itself, or a screen reader hears the
+      # sentence twice. Both directions, so a row cannot outlive what it exempts.
+      - name: Every sentence written for a reader reaches one
+        if: ${{ !cancelled() }}
+        run: npm run live:check
+
+      # AND EACH ONE REACHES A READER ONCE. The step above asks whether a
+      # sentence is on the page at all; this asks whether it is in one place.
+      # `#status` is `aria-live` and so is every surface's own region, so a
+      # surface that wrote both said one sentence twice to a screen reader —
+      # seven sites did, and it looked locally correct in both files it was
+      # spread across. It arrived as the fix for the opposite defect and outlived
+      # its premise: the second write existed because six of those regions were
+      # invisible, and 3.24.5 made them visible without retiring the reasoning.
+      #
+      # The population is DERIVED — a file that writes text and addresses a
+      # live region — so a new surface joins on the day it is written. Nothing
+      # is exempt: the one file allowed to name the lasting region is the
+      # announcer, and the capture surface owns it and holds no region of its own.
+      - name: No sentence is announced twice
+        if: ${{ !cancelled() }}
+        run: npm run announce:check
 
       # NO SENTENCE LEAVES THIS APP UNMEASURED (collision 15). A push reaches
       # somebody who did not open the app, on a lock screen, possibly in front of

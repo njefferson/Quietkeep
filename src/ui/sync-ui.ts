@@ -33,6 +33,7 @@ import { encodeQr, toSvg } from '../qr.ts';
 import { type AutoSyncClock, keepInStep, outcomeWords, revokeMailbox, runExchange } from './sync-run.ts';
 import { deviceLine, deviceRecords, devicesWords, REPLACE_KEY_WORDS, REPLACED_KEY_WORDS } from '../devices.ts';
 import type { Session } from './session.ts';
+import { sayLasting } from './announce.ts';
 
 /** What this edition sends, in the plainest words available. Exported so a test
  *  can hold it to the promise rather than trusting that somebody read it. */
@@ -416,8 +417,13 @@ export const syncEdition = (session: Session, repaint?: () => void): Promise<voi
         if (outcome.ran && (outcome.landed ?? 0) > 0) {
           // Only announced when something actually arrived. An exchange that moved
           // nothing is the ordinary case and does not deserve a line.
-          const status = document.querySelector('#status');
-          if (status) status.textContent = outcomeWords(outcome);
+          //
+          // THE LASTING REGION, and for this surface that is the only sensible
+          // home (ADR-0126): an exchange runs on a timer, so the sheet this
+          // module renders may not be open — and the note it builds at line 179
+          // is its own live region, so writing both would be the double
+          // announcement the rule refuses.
+          sayLasting(outcomeWords(outcome));
         }
       } catch {
         // Reported by the Sync now button if somebody asks; never fatal on open.

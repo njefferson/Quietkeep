@@ -6,6 +6,87 @@ document in this repo so far began by reading the code, finding a defect, and
 correcting it — which makes the built thing the foundation when the built thing
 is the experiment. Refinements of a wrong frame stay inside it.
 
+**Plan of record.** One of the two documents that decide what gets built here —
+[`NOTES.md`](../NOTES.md) names both — and held by
+[`tools/roadmaps.mjs`](../tools/roadmaps.mjs): every item in the STATUS section
+names its state, a state saying done, refused or moot names the release or the
+record that makes it so, and this file cites the other plan because they
+conflict.
+
+---
+
+## STATUS — measured 2026-09-16, at 3.24.8
+
+**The document had gone five weeks stale. It is the only place that says what
+remains, and it did not know that its own load-bearing item had shipped.**
+Written 2026-08-10 at 1.42.x; the app is at 3.24.8. Roughly a hundred releases and two major versions have gone past
+it, and Part 4 still read as four things to do.
+
+Read Part 4 for the work. Its state, measured against the source rather than
+recalled:
+
+- **Make an unrefined item offerable — DONE, 2.0.0.** `isCandidate` in
+  `src/nextup.ts` no longer excludes a captured-but-unrouted item; its docblock
+  quotes this document's argument and answers ADR-0030 in those terms. *"A thing
+  is a task the moment it exists."* This was the whole design, and the rest is
+  consequence.
+- **Restate the guarantee as the reader's version, and enforce that — OPEN.**
+  `isSilent` in `src/gate.ts` still asks the schema question: a clock, a surface,
+  a Menu place, or a clocked parent. It does not ask whether the item will be
+  offered back as something to act on. So the coverage proof still measures the
+  weaker claim, which is exactly what Part 3 says about 1.42.0.
+- **Demote sorting to refinement — REFUSED by a later record, and the first
+  version of this line was wrong.** It read *"still a queue with a depth:
+  `#triage-count` is written on every render"*. `#triage-count` has carried no
+  number since 3.9.1 — it publishes a SENTENCE to the hub's door
+  (`src/ui/clarify.ts:1170-1173`). The standing count is `#triage-here`
+  (`clarify.ts:1338-1344`), and it was established by
+  **[ADR-0113](adr/0113-the-pile-is-counted-the-person-is-not.md), accepted
+  2026-08-29, asked for from use** — nineteen days after this document was
+  written. That record draws the distinction this item does not: progress
+  arithmetic measures the person, an inventory of what is present measures the
+  pile, and *"the instrument that was banned and the instrument that was wanted
+  are not the same instrument."* Its overturn clause pre-refuses this item's
+  remedy: *"The remedy would be to change what the number counts, not to take
+  the answer away again … going back to silence would restore the defect this
+  closes."* And no entry in `docs/nd-collisions.md` is about queue depth at all.
+  ADR-0085 had already done the *"not a pass to drain"* half.
+- **Re-ask what the remaining surfaces are for — PARTLY MOOT.** Of the five
+  named in Part 3, the arrival corridor is genuinely gone (`suppressed = true`,
+  `src/ui/clarify.ts:130`, ADR-0085) — and ADR-0108 then rebuilt the entry as a
+  hub door, which is a fifth thing to re-ask about rather than nothing. The
+  count is ADR-0113's and is refused above. Heat is not free to remove: it feeds
+  the offer's own tie-break (`src/nextup.ts:772-791`), and
+  `test/heat-ranking.test.ts:103-125` records the defect from when it did not.
+  The queue and the forced-choice card remain, and ADR-0086's consequences
+  section has said since 2.0.0 that each downstream surface *"now has to justify
+  itself on its own terms"* — which is this item, recorded by an accepted ADR
+  and untouched since.
+
+**Why the staleness is the finding and not the footnote.** A session choosing
+what to build next reads cold-read findings and gate coverage, because those are
+the artefacts that are current. This file is the one that bears on completion,
+and an out-of-date roadmap does not read as out of date — it reads as a roadmap.
+Seven cold reads have driven about twenty-five releases of real work while the
+three open items above sat here unmoved, and the remaining work is
+**subtractive**: it removes surfaces rather than adding them, which is the kind
+of work no cold read will ever propose.
+
+**Keep this current in the same commit that changes anything Part 4 names.** The
+collisions file's own header already states the rule this file just broke: a
+catalog wrong about what exists is worse than no catalog, because it is consulted
+and it answers.
+
+**And read [`structural-assessment.md`](structural-assessment.md) beside this,
+because the two disagree.** Its Phase 3 pays to standardize the reader-facing
+count this document's third item proposes deleting — and that item is refused
+above, so the assessment is right on that point. Its Phases 1 and 2 consolidate
+the coverage invariant this document's second item proposes replacing, which
+makes the restatement cheaper afterwards: one site rather than thirty-two
+derivations. Which goes first is the owner's, and **neither document named the
+other until 2026-09-16**, so every session that read one of them was reading
+half the record.
+
 ---
 
 ## Part 1 — The demand

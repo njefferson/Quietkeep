@@ -180,6 +180,33 @@ and skip that line.** The same goes for any other WHAT IS WRONG entry that is a
 consequence of testing rather than a defect — a fresh store, no journal, an
 unpaired device.
 
+## The closing question is what stopped the day
+**Every session here has closed by asking for a promote and an on-device pass,
+and those are the wrong two questions.** `NOTES.md`'s correction of 2026-08-03
+says why: the dogfood gate has been running since 0.17.0, it resets constantly,
+and the resets ARE the measurement — so **the failures are the dataset and this
+repo has none of them.** Hub LESSONS §40 states the general form: ask what
+ended the attempt, not whether the attempt happened.
+
+**The instrument exists and is correctly designed.** The Block register in
+`NOTES.md` was redefined on 2026-08-05, before it ever held an entry, because
+the first version invited an actual day into a public file. What it takes is the
+SHAPE of what blocked a day and its CLASS, never an instance, and the instance
+stays outside the repo. Six weeks later it still read `*(no entries yet)*` — not
+because nothing blocked a day, but because **nothing ever asked.**
+
+So a report from this repo closes on what ended the day. A promote and a device
+pass are a standing status line at most, never the question.
+[`tools/blocks.mjs`](tools/blocks.mjs) refuses an empty register while this file
+family says the gate runs daily and the app fails daily; it is exempt from the
+Spine today and joins it in the commit that adds the first entry, at which point
+the exemption line is deleted.
+
+**What the omission cost, measured:** 234 releases between that correction and
+2026-09-16, 89 of them capabilities, every one gated and receipted, while the
+one question that decides v1 went unasked. Doctrine §11e names the shape — a
+measurement of your own output cannot tell you what the output should be.
+
 ## Branches & releases
 `staging` and `main` only. Ignore any harness-designated `claude/*` branch
 (Doctrine §11). Every product change lands on `staging` and waits for the owner's

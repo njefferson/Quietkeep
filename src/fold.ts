@@ -6,8 +6,8 @@
 // arbitrary moment and grows a timezone bug that only shows up in real use.
 
 import type {
-  AppEvent, ClarifyRoute, ClockKind, Heat, ISODateTime, Magnitude, MenuCategory,
-  NodeId, NodeKind, ReplanChoice, VaultId,
+  AppEvent, ClarifyRoute, ClockKind, ClockSource, Heat, ISODateTime, Magnitude,
+  MenuCategory, NodeId, NodeKind, ReplanChoice, VaultId,
 } from './events.ts';
 import { CAPACITIES } from './events.ts';
 import type { Capacity } from './events.ts';
@@ -126,8 +126,136 @@ const NO_INTENT_CURES: ReadonlySet<string> = new Set([
   'gate:after.set',
 ]);
 
-export const isAppClock = (c: Clock | undefined | null): boolean =>
-  c != null && c.source != null && NO_INTENT_CURES.has(c.source);
+/**
+ * THE APP'S OWN WRITERS, CLASSIFIED — the half that had no guard (Phase 1.1).
+ *
+ * `NO_INTENT_CURES` above holds the gate's cures total against the switch they
+ * come from. Nothing held the app's OWN twenty-one clock writers, so
+ * `isAppClock` returned false for every one of them and each was read as the
+ * reader naming a date. Exhaustive by TYPE over `ClockSource`, so a new writer
+ * is a compile error until somebody decides which side it falls on.
+ *
+ * **`app` means the app chose the instant.** Not "the app wrote the event" —
+ * every one of these is written by the app. The question is only ever whether
+ * the READER named this moment, and that is what the three surfaces need.
+ *
+ * ## THIS COMMIT CHANGES NO BEHAVIOR, ON PURPOSE
+ *
+ * Every entry below is classified as the app behaves TODAY, so folding any log
+ * gives the same answers it gave before this record existed. The reason is the
+ * assessment's own ordering: characterize before changing. Five of these are
+ * candidates to move and are named as such below; moving one is not a local
+ * edit, because `undatedCount` in `held.ts` asks whether `soonestDemand`
+ * returned null — so a clock that stops counting as the reader's does not go
+ * quiet, it moves a thing into "here without a date", which is a count a reader
+ * reads.
+ *
+ * MEASURED, and it is why none of them moves in this commit. On a next action
+ * carrying the route's clock AND a due date two months out, the held card says
+ * **today** and the thing's own page says the date two months away — a wider gap
+ * than the census's "tomorrow", because the route's clock lands on the last
+ * instant of a local day and so reads as today in the reader's zone. But on a
+ * BARE next action, the route's clock and nothing else, the two surfaces AGREE
+ * today. Classifying the source as the app's would fix the first case and break
+ * the second, which is the same defect moved rather than removed. One derivation
+ * is the fix (Phase 1.4), and the classification moves with it.
+ */
+export type ClockIntent = 'app' | 'reader';
+
+export const CLOCK_INTENT: Record<ClockSource, ClockIntent> = {
+  // ── The sorting routes ────────────────────────────────────────────────────
+  // CANDIDATE TO MOVE, and the one the census names. The reader pressed *Next
+  // action*; the code chose tomorrow. The held list excludes app clocks and the
+  // sheet filters nothing, so today one says tomorrow and the other says a due
+  // date two months out — the seventh read's finding, reproducible from source.
+  'clarify:next-action': 'reader',
+  // CANDIDATE. Same shape: the reader said somebody else owes them this, and
+  // the code chose three days.
+  'clarify:waiting-for': 'reader',
+  // NOT a candidate. *Do now* is a statement about when — today — and the
+  // clock is today, so the reader did name this moment. `nextup.ts` already
+  // depends on that reading by name (`saidToday`).
+  'clarify:do-now': 'reader',
+
+  // ── A date the reader typed or picked ─────────────────────────────────────
+  // Settled, all of them: the instant comes from a control the reader filled.
+  'triage:place-return': 'reader',
+  'detail:due': 'reader',
+  'detail:start': 'reader',
+  'detail:container-return': 'reader',
+  // The offset is the code's shape but the NUMBER is one the reader typed into
+  // the repeat form, so the moment is theirs.
+  'detail:repeat': 'reader',
+  'replan:new-date': 'reader',
+
+  // ── The replan card's other options ───────────────────────────────────────
+  // CANDIDATES, both: the reader chose an option and the code chose the day —
+  // three days for escalate, one for renegotiate.
+  'replan:escalate': 'reader',
+  'replan:renegotiate': 'reader',
+  // CANDIDATE, and the strongest of the five. *Still mine — just not on a
+  // date* REMOVES the date, and the code then writes a review clock for today.
+  // That is the same act as `gate:clock.cleared`, which is already classified
+  // as carrying no intent about when.
+  'replan:undate': 'reader',
+  // NOT a candidate. *Same commitment, less time* writes a DUE clock for
+  // today, and choosing it is the reader saying it is due now.
+  'replan:compress': 'reader',
+
+  // ── The app's own markers, and why two of them must stay the reader's ─────
+  // NOT a candidate, and this one looks most like an app clock of all of them.
+  // The resume card is the app's bookmark and the reader named no moment — but
+  // `test/cure-intent.test.ts` pins the interrupt cure as a DEMAND in terms
+  // ("a resume card is the thread you were pulling — it must come back"), and
+  // classifying its clock as the app's would stop it being offered. That is
+  // the "any gate:" mistake one source over, and the test above exists because
+  // it cost a release.
+  'focus:resume': 'reader',
+  // NOT a candidate, for the same reason. Opting into the sweep is opting to
+  // be brought back; an app clock here is a sweep that never surfaces.
+  'comms:start': 'reader',
+  // The reader just said the worry is theirs to solve, and it comes back
+  // today — an intent to act, like *Do now*.
+  'bother:mine-to-solve': 'reader',
+  // UNREACHABLE TODAY, and that is the finding rather than the classification.
+  // `confirmArrangementEvents` has no caller anywhere in `src/` — the generic
+  // Done button writes `done.marked` and the gate's own cure follows. Its only
+  // caller is its test. `app.ts` records the identical shape happening before
+  // for `arrangementCards`. Classified as the reader's because the interval it
+  // copies is one they typed, so switching a caller on changes nothing here.
+  'arrangement:confirmed': 'reader',
+
+  // ── Carried or restored ───────────────────────────────────────────────────
+  // Both undo paths pass the shed clock's OWN source through when it had one
+  // and only fall back to these literals when it had none — and a clock with
+  // no source already read as the reader's.
+  'undo:range': 'reader',
+  'undo:route': 'reader',
+  // The instant is copied verbatim from the source node's clock, but the
+  // source STRING is replaced — so a merged app clock becomes the reader's.
+  // Carrying the original source through would be strictly better and is a
+  // named follow-up rather than a change here.
+  'merge:carried': 'reader',
+
+  // ── Elsewhere ─────────────────────────────────────────────────────────────
+  // A date the reader wrote in another planner. Past dates are dropped by the
+  // importer rather than imported, specifically so years-old residue does not
+  // manufacture a demand for today.
+  'import:taskpaper': 'reader',
+  // Fixture data standing in for a reader's. An app clock here would empty the
+  // demo of everything the demo exists to show.
+  'sample': 'reader',
+};
+
+export const isAppClock = (c: Clock | undefined | null): boolean => {
+  if (c == null || c.source == null) return false;
+  // The gate's side, held total against the cure switch it comes from.
+  if (NO_INTENT_CURES.has(c.source)) return true;
+  // The app's own side, held total by the type. An unrecognised source — an old
+  // log, a test's arbitrary string — falls through to the reader's, which is
+  // the safe default this predicate has always had.
+  return CLOCK_INTENT[c.source as ClockSource] === 'app';
+};
 
 /** Exported so a test can assert the classification stays TOTAL over the gate's
  *  cured kinds — see `NO_INTENT_CURES`. Not read by any surface. */

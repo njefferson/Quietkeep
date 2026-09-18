@@ -11,6 +11,7 @@
 import type { Session } from './session.ts';
 import { reentryView, reentryWords, waitingWords, amnestyWords, REENTRY_TRIAGE_CAP } from '../reentry.ts';
 import { greetEvents, offerAmnestyEvents, acceptAmnestyEvents } from './reentry-intents.ts';
+import { sayLasting } from './announce.ts';
 
 export interface ReentryUI { refresh(): void }
 
@@ -71,7 +72,21 @@ export function mountReentry(
     let landed = false;
     try {
       await session.commit(make);
-      LIVE.textContent = announce;
+      // THE SUCCESS SENTENCE OUTLIVES THIS SECTION AND THE FAILURE ONE MUST NOT
+      // (ADR-0126). Taking the amnesty dismisses the whole greeting, so a
+      // sentence written into `#reentry-live` was written and hidden inside one
+      // turn and reached nobody at all — this file had no `#status` route of any
+      // kind, which made it the worse of the two instances the rule was written
+      // for. `sayLasting` puts it beside the capture box, which is exactly where
+      // the handler below sends focus.
+      //
+      // THE FAILURE PATH KEEPS `#reentry-live`, and that is 3.24.4's whole fix
+      // rather than an oversight: on a failure the section STAYS, with the
+      // control that lets somebody try again, so the explanation belongs on the
+      // surface holding that control. Two different homes because the two paths
+      // leave the surface in two different states — which is the rule, not an
+      // exception to it.
+      if (announce) sayLasting(announce);
       landed = true;
     } catch (err) {
       LIVE.textContent = `Couldn’t do that — ${(err as Error).message}`;

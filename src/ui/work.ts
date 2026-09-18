@@ -29,9 +29,14 @@ import { calendarDaysBetween, atMidnight} from '../time.ts';
 import { biteEvents } from './work-intents.ts';
 import { ulid } from '../ids.ts';
 import { treeRows } from '../tree-view.ts';
-import { kindWords } from '../kind-words.ts';
+import { nodeWords } from '../kind-words.ts';
 import { nextFixedToday, nextFixedWords, datedTodayCount, datedWords } from '../clock.ts';
 import { boundaryOf } from '../day.ts';
+// ONE SOURCE FOR THE EMPTY SENTENCE. `print.ts` already renders this from
+// `today.ts`; this file had the same words typed out, so a change to either
+// would have made the app and the printed copy disagree about the one line
+// somebody sees when there is nothing to do.
+import { EMPTY_WORDS } from '../today.ts';
 import { getWhereNow, fitsHere, contextNames } from '../contexts.ts';
 import { getHowLong, fitsWithin } from '../duration.ts';
 import { openSheet, onSheetOpen, wireSheetClose, sheetOpen, closeSheet } from './sheets.ts';
@@ -68,7 +73,7 @@ export function mountWork(
   const q = <T extends HTMLElement>(sel: string): T | null => document.querySelector<T>(sel);
   const region = q('#nextup');
   const heading = q('#nextup-heading');
-  const title = q('#nextup-title');
+  const title = q<HTMLButtonElement>('#nextup-title');
   const why = q('#nextup-why');
   const doneBtn = q<HTMLButtonElement>('#nextup-done');
   const skipBtn = q<HTMLButtonElement>('#nextup-skip');
@@ -182,17 +187,30 @@ export function mountWork(
    *  written down, which is the whole point (ADR-0030). */
   const declined = new Set<string>();
 
-  // Failures must be VISIBLE, not only announced. #nextup-live is
-  // visually-hidden, so a sighted user tapped Done, saw nothing change, and had
-  // no way to learn the write failed — while capture puts the identical failure
-  // in the visible #status. Say it in both places.
-  const say = (msg: string, alsoVisible = false): void => {
-    LIVE.textContent = msg;
-    if (alsoVisible) {
-      const status = document.querySelector<HTMLElement>('#status');
-      if (status) status.textContent = msg;
-    }
-  };
+  /**
+   * ONE REGION, AND THIS SURFACE KEEPS ITS OWN (ADR-0126).
+   *
+   * WHAT THIS COMMENT USED TO SAY, because the reasoning was sound and has
+   * expired: "#nextup-live is visually-hidden, so a sighted user tapped Done,
+   * saw nothing change, and had no way to learn the write failed — while
+   * capture puts the identical failure in the visible #status. Say it in both
+   * places." That was true and it was the fix for F-08.
+   *
+   * 3.24.5 ended it. `#nextup-live` carries `.receipt` now and is visible on
+   * the page, so the second write bought nothing a reader could see and cost
+   * what it always cost: `#status` is `aria-live` too, so a screen reader heard
+   * every one of these five failures twice. The premise outlived the defect and
+   * the parameter outlived the premise.
+   *
+   * NO `alsoVisible`, AND NO `#status` ROUTE FROM THIS SURFACE AT ALL. Every
+   * sentence here — the two Done confirmations, Stopped, the plain-mode pair,
+   * the skip sentence, Put-under, and all five failures — is written while this
+   * region is still on the page: `refresh` sets `REGION.hidden = false`
+   * whenever `settled !== null`, so finishing or stopping shows a settled card
+   * rather than taking the surface away. The act never removes what carries the
+   * sentence, so by ADR-0126's rule the local region is the only place it goes.
+   */
+  const say = (msg: string): void => { LIVE.textContent = msg; };
 
   const nowIso = (): string => new Date(now()).toISOString();
 
@@ -263,7 +281,7 @@ export function mountWork(
       // the next small step comes back instead, which is what this control is
       // for. Settling belongs to finishing the OFFERED item.
     } catch (err) {
-      say(`Couldn’t record that — ${(err as Error).message}`, true);
+      say(`Couldn’t record that — ${(err as Error).message}`);
     } finally {
       busy = false;
     }
@@ -423,7 +441,7 @@ export function mountWork(
       // after completing is what gets attached to completing.
       settled = label || '(untitled)';
     } catch (err) {
-      say(`Couldn’t record that — ${(err as Error).message}`, true);
+      say(`Couldn’t record that — ${(err as Error).message}`);
     } finally {
       busy = false;
     }
@@ -471,7 +489,7 @@ export function mountWork(
         refresh();
         restoreFocus();
       })
-      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`, true); });
+      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`); });
   };
 
   const skip = (): void => {
@@ -524,7 +542,7 @@ export function mountWork(
     if (!current || busy || !BITE_INPUT) return;
     const text = BITE_INPUT.value;
     // Said out loud rather than committing nothing quietly — capture's rule.
-    if (!text.trim()) { say('It needs to say something.', true); BITE_INPUT.focus(); return; }
+    if (!text.trim()) { say('It needs to say something.'); BITE_INPUT.focus(); return; }
     busy = true;
     const parent = current.node.id;
     void session.commit(ctx => biteEvents(ctx, ulid(Date.parse(ctx.at)), parent, text))
@@ -534,7 +552,7 @@ export function mountWork(
         BITE_INPUT.value = '';
         say('Put under it. It takes no date of its own.');
       })
-      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`, true); })
+      .catch((err: Error) => { say(`Couldn’t do that — ${err.message}`); })
       .finally(() => {
         busy = false;
         try { onChange(); refresh(); } catch { /* the next load renders it */ }
@@ -566,6 +584,22 @@ export function mountWork(
   // The offered card opens its own sheet (2.2.0, ADR-0092). `current` is the
   // item the surface is showing, so this can never open the wrong thing —
   // and if the offer is empty there is nothing to open.
+  /**
+   * A CONTROL THAT CANNOT ACT IS NOT A CONTROL, and this one looked exactly
+   * like the openable title because it IS the openable title — same element,
+   * `--ink` at 1.375rem, underlined, 44px tall, with an accent underline on
+   * hover. On the branch that says "Nothing is asking today." there is nothing
+   * to open, so the guard below returned and the tap did nothing at all. The
+   * seventh cold read met it as a dead end; from the reader's side a title that
+   * is underlined and silent is indistinguishable from a broken one.
+   *
+   * `disabled` rather than a second element: it takes the control out of the
+   * tab order, stops a screen reader offering it, and drops the hover
+   * underline through the one rule added beside `.nextup-title` — which pins
+   * `--ink` and `opacity: 1` deliberately, so the sentence keeps the exact
+   * foreground the registry already measures and no new pair arrives with the
+   * fix.
+   */
   TITLE.addEventListener('click', () => {
     if (!current || !openDetail) return;
     const fresh = session.state().nodes.get(current.node.id);
@@ -720,6 +754,7 @@ export function mountWork(
       if (skipBtn) skipBtn.hidden = false;
       TITLE.textContent = up.head.node.title || '(untitled)';
       TITLE.hidden = false;
+      TITLE.disabled = false;
       // Why this, in words. Pressure adds its own gentle phrase; neither ever
       // reaches for the shame word this app refuses — no such state exists here,
       // and the vocabulary that replaces it is in pressure.ts (ADR-0010).
@@ -967,8 +1002,9 @@ export function mountWork(
       if (skipBtn) skipBtn.hidden = undated > 0;
       if (undated > 0 || coming || further) {
         REGION.hidden = false;
-        TITLE.textContent = 'Nothing is asking today.';
+        TITLE.textContent = EMPTY_WORDS;
         TITLE.hidden = false;
+        TITLE.disabled = true;
         if (PLACE) { PLACE.textContent = ''; PLACE.hidden = true; }
         paintWritten(null);
         // Cleared beside PLACE, for its reason: this branch reuses the same
@@ -1318,11 +1354,12 @@ export function mountWork(
       // at the moment they file something under one, and then the surface that
       // lists them never says it again.
       //
-      // `kindWords` returns null for `action`, so the unmarked case stays
+      // `nodeWords` returns null for `action`, so the unmarked case stays
       // unmarked and only the rows a reader cannot otherwise tell from an
-      // action get named. Same function as the other three, so the four cannot
-      // drift into four vocabularies.
-      const what = kindWords(entry.node.kind as NodeKind);
+      // action get named. Same function as the other two rows and the sheet, so
+      // they cannot drift into four vocabularies — and it carries the one fact
+      // that supersedes a kind, an answered waiting-for reading **Arrived**.
+      const what = nodeWords(entry.node);
       if (what) b.append(el('span', 'tree-kind', what));
       if (openDetail) b.addEventListener('click', () => {
         const fresh = session.state().nodes.get(entry.node.id);

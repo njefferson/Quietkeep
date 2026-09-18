@@ -29,6 +29,69 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.26.1',
+    kind: 'ITERATION',
+    date: '2026-09-17',
+    notes: [
+      '**Two screens can disagree about when one thing comes back, and this is the first half of fixing it.** Sort something to *Next action* and give it a deadline two months out, and your held card says it is here **today** while the thing’s own page says the date two months away. Same thing, same log, two answers. The cause is that four different parts of the app work out "when does this come back" in four different ways, and only some of them can tell a date **you** set from a marker the app set for itself.',
+      '**Nothing you can see has changed in this release**, deliberately. What landed is the app writing down, for every clock it sets, whether you chose that moment or it did — and refusing to build at all if a new one is ever added without that being decided. Half of that had been checked since 2.0.1; the half covering the app’s own twenty-one date-setting paths had never been checked at all, so every one of them counted as you naming a date.',
+      '**Why it is not fixed today.** Changing which clocks count as yours reconciles the case above and breaks a case that currently works: a thing sorted to *Next action* with no other date reads the same on both screens right now, and would stop. So the two screens get one shared way of working out the answer first, and that is the next release or two. Both cases are written down as tests so neither can be quietly lost on the way.',
+    ],
+  },
+  {
+    triplet: '3.26.0',
+    kind: 'CAPABILITY',
+    date: '2026-09-16',
+    notes: [
+      '**Something you were waiting on stops telling you it has not arrived.** Mark a thing as owed to you by somebody else, say later that it arrived, and every row and its own page went on reading *Waiting for* — the one thing no longer true. It reads **Arrived** now. Nothing else moves: not marked done, its date kept, still a thing somebody else was doing, because the answer landing is the moment you can get on with it rather than the moment it is over.',
+      '**A wish goes onto the Menu as the kind of thing it is.** Press *Someday* and the card asks once — read, try, go, make, look into, save for. Until now every wish was filed as something to read, so the Menu showed one heading with everything under it and the other five never appeared. A ticket to the coast was reading material. *Do not say* sits beside the six, says where the thing goes if you take it, and its own page can change it later: sorting is one of the two things this app will not make expensive, so this is asked once and never required.',
+      '**Hot or cold can be changed from a thing’s own page.** It was asked once, during sorting, and then held for ever — no way anywhere to change your mind, and starting the sorting again reset where a thing goes but not how you felt about it. Both words are on every page now, with the same two lines the sorting card gives them, and the page says which one you gave. **Two old release notes already said this was true**, about a control that page had never carried.',
+      '**Still not right:** the two screens named two releases ago are still silent — after you answer the question about a worry, and a failed write on the one-thing-at-a-time screen. And *Reference* still files under Read without asking, deliberately: reference material genuinely is for reading.',
+    ],
+  },
+  {
+    triplet: '3.25.0',
+    kind: 'CAPABILITY',
+    date: '2026-09-16',
+    notes: [
+      '**You can say an answer is owed on any single thing now, not only on a project or an area.** *Answer owed by* is the date you have told somebody they will hear back — and until this release the box for it appeared only on the bigger things that hold other things. So *"I’ll get back to you Thursday"* about one particular item, which is the commonest thing to come out of a conversation, had nowhere to go: not on a task, not on something you are waiting on somebody else for, not on anything small. The box is on every dated thing’s own page now.',
+      '**Nothing else about it changed, and that is the point.** An answer owed already outranked an ordinary deadline, already raised a card when the day went by, already went to your calendar and already showed up under *Carrying* as something you owe. All of that worked on any kind of thing the whole time — the only thing that was narrow was the box you set it in. It shared one switch with the *someone else is doing this* control beside it, which genuinely does only make sense on something bigger, and the two were never separated.',
+      '**Where it still will not appear**, and both are deliberate: on something you have put on the Menu, because a wish holds no demands and the app refuses to take a date there at all, and on the few kinds of thing that can never carry a date. Bring a wish back as real work first and the box is there.',
+    ],
+  },
+  {
+    triplet: '3.24.8',
+    kind: 'ITERATION',
+    date: '2026-09-16',
+    notes: [
+      '**Two things the app did for you without ever telling you it had.** Settling every date that had gone by, in one press, and taking the offer to move them to the Menu after a while away. Both wrote a line saying exactly what they had done — how many, where they went, that nothing was deleted and nothing was marked done — and both then took away the part of the screen that line was written in, in the same instant. So the section vanished and the sentence went with it. The confirmation now goes to the line under the box where you put things down, which does not go anywhere, and which is where you are put when a section closes.',
+      '**And it is said once.** The obvious fix is to write both places, and that is what one of these screens already did: it reached a reader, and it meant anybody using a screen reader heard the same sentence twice, because both of those places announce. Seven messages across the app were doing that. Each one now has exactly one home, chosen by whether the thing you pressed leaves the screen it was written on standing.',
+      '**One of those seven had been announcing twice for a reason that stopped being true.** It wrote to both places because one of them was invisible to anyone looking at the screen — which it was, until the last release but one made it visible and left the second copy behind. The reason expired and the code did not.',
+      '**Still not right:** two screens say nothing at all where they should. After you answer the question about a worry, the three things that can happen to it — filed for later, parked a week, let go — are told apart by that sentence and by nothing else on the screen. And on the one-thing-at-a-time screen, a failed write while interrupting or stopping says nothing you can see. Both are named and neither is fixed here.',
+    ],
+  },
+  {
+    triplet: '3.24.7',
+    kind: 'ITERATION',
+    date: '2026-09-16',
+    notes: [
+      '**On the worst day, the line offering you the way back is stripped with the rest of the navigation.** The mode that reduces the day to one thing already takes away the list of places to go and the row inside a job, because being asked where to be is the load it exists to cut. The **Back to** line the last release added belongs with them — and more than belongs: the job it would send you to is itself put away by that mode, so the offer would have been a control pointing at something no longer on the screen. Nothing is lost. The app still knows what you left, and the offer is standing when you come back out of the mode.',
+      '**Why this is a release of its own and not part of the last one.** The app keeps its own copy of itself so it works with no signal, and the name of that copy is the release number — so a change that lands without the number moving reaches nobody who already has the app. That fix landed after the last number was cut. This one carries it.',
+    ],
+  },
+  {
+    triplet: '3.24.6',
+    kind: 'ITERATION',
+    date: '2026-09-16',
+    notes: [
+      '**Leaving a job to put something down now offers you the way back.** The **+** inside a job is called *Leave this and put something down*, and it does leave — out to *Where do you want to be?*, cursor in the box, which is what you want when a thought arrives mid-task. What it never did was say how to get back, and the list of doors you land on cannot know which one you came through. A line under the box now says **Back to** whatever you left. It appears only when you got there that way, and it goes the moment you take it or head somewhere else instead.',
+      '**The title on the screen that says nothing is asking has stopped pretending to be a button.** When there is something to do, its title is underlined and opens it. When there is not, the same line reads *Nothing is asking today.* — still underlined, still button-height, still changing color under your finger, and doing nothing at all when pressed. It is plain text now, in the color it always was.',
+      '**Two things moved down by one place.** **Menu** is now the forty-sixth thing on the page; it was the forty-fifth. **What’s the situation?** is now the twentieth; it was the nineteenth. The line offering the way back sits above them, and only when there is one.',
+      '**Two of the three unwatched sentences from the last release are watched now** — sorting a card, and sorting a whole batch. The batch one is checked by doing the thing for real and then undoing it, since a check must not leave your work rearranged.',
+      '**Still not right:** the other two — settling all your dates at once, and taking the offer to move dates that have gone by — turn out to be one thing rather than two. In both, the act that writes the confirmation removes the screen holding it, so the sentence is written and taken away in the same instant. Where it should live instead is a real decision, so it is named here rather than guessed at.',
+    ],
+  },
+  {
     triplet: '3.24.5',
     kind: 'ITERATION',
     date: '2026-09-15',

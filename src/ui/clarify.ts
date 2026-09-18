@@ -24,7 +24,8 @@ import { allContexts, contextsOf } from '../contexts.ts';
 import { attachContextEvents } from './detail-intents.ts';
 import { timerMinutesOf, timerWords, timerWordsLower } from '../timer.ts';
 import { doneEvents } from './work.ts';
-import type { AppEvent, ClarifyRoute, Heat, NodeKind } from '../events.ts';
+import type { AppEvent, ClarifyRoute, Heat, MenuCategory, NodeKind } from '../events.ts';
+import { MENU_CATEGORIES, MENU_WORDS } from '../menu.ts';
 
 const ROUTES: { route: ClarifyRoute; label: string; hint: string }[] = [
   { route: 'do-now', label: 'Do now', hint: 'this one is for today — two minutes if you want them' },
@@ -981,6 +982,75 @@ export function mountTriage(
     ACTIONS.replaceChildren(...rows);
   };
 
+  /**
+   * AS WHAT KIND OF WISH (Phase 0 of the structural assessment; read 7).
+   *
+   * The Someday route wrote `category: 'read'` for every single item, so a
+   * store's whole Menu rendered as one group called Read — a wish to go
+   * somewhere, a thing to try and something to save for, all filed as reading.
+   * `docs/nd-collisions.md` entry 26 measured it and named the remedy in terms:
+   * let the category a person already sees be chosen **at write time** instead
+   * of silently defaulting, as *"a two-tap choice at the same moment `heat.set`
+   * already asks one (ADR-0029's pattern), not a new surface, not a rank, not a
+   * requirement"*. This is that, and nothing wider: the same card, one more
+   * step, and a way past that says where it goes if you take it.
+   *
+   * ENTRY 27 IS WHY THERE IS A WAY PAST AT ALL. Two pre-registered experiments
+   * found that effortful recording is done less AND that the accuracy benefit
+   * is attenuated when it is done anyway — the price of recording is paid in
+   * the thing the tool exists to provide. So this may never become a toll gate
+   * in front of sorting; skipping it is one tap and it names its own outcome.
+   *
+   * REFERENCE DOES NOT COME HERE, and that is not an oversight. Reference
+   * material genuinely is for reading, so `read` is the honest category for
+   * that route rather than an invented one. The defect was only ever the
+   * Someday default.
+   *
+   * The six answers come from `MENU_CATEGORIES` and `MENU_WORDS` — the one
+   * source, in the order the Menu itself shows them, so this cannot become a
+   * fourth hand-written copy of a list the app already holds. Entry 26's "not a
+   * rank" is honored by taking that order unchanged rather than inventing one.
+   */
+  const renderMenuKinds = (
+    nodeId: string, text: string, kind: string, heat: Heat | null,
+    take: (category: MenuCategory) => void,
+  ): void => {
+    PROMPT.textContent = 'What kind of wish is it?';
+    PROMPT.dataset.step = 'menu-kind';
+    CARD.textContent = text;
+
+    const back = el('button', 'route ghost');
+    back.type = 'button';
+    back.append(el('span', 'route-label', 'Back'),
+      el('span', 'route-hint', 'keep deciding where it goes instead'));
+    back.addEventListener('click', () => renderClarify(nodeId, text, kind, heat));
+
+    const rows: HTMLElement[] = [back];
+    for (const category of MENU_CATEGORIES) {
+      const b = el('button', 'route');
+      b.type = 'button';
+      b.dataset.menuKind = category;
+      b.append(el('span', 'route-label', MENU_WORDS[category]),
+        el('span', 'route-hint', 'onto the Menu under this'));
+      b.setAttribute('aria-label', `${MENU_WORDS[category]} — onto the Menu under this`);
+      b.addEventListener('click', () => take(category));
+      rows.push(b);
+    }
+
+    // THE WAY PAST NAMES WHERE IT GOES. "Skip" alone would leave the reader
+    // guessing, and what it does is the thing this step exists to stop being
+    // silent — so it says it, and says the page can change it.
+    const past = el('button', 'route ghost');
+    past.type = 'button';
+    past.dataset.menuKind = 'skip';
+    past.append(el('span', 'route-label', 'Do not say'),
+      el('span', 'route-hint', `it goes under ${MENU_WORDS.read} — its own page can change that`));
+    past.addEventListener('click', () => take('read'));
+    rows.push(past);
+
+    ACTIONS.replaceChildren(...rows);
+  };
+
   const renderClarify = (nodeId: string, text: string, kind: string, heat: Heat | null): void => {
     // THE WALKTHROUGH'S OWN SENTENCE (3.9.1). This read `Clarify (cold):` — the
     // internal name for the step, plus the stored heat value in brackets. Two
@@ -1001,11 +1071,13 @@ export function mountTriage(
     showing = nodeId;
     CARD.textContent = text;
     paintContext(nodeId);
-    const routeButtons = ROUTES.map(({ route, label, hint }) => {
-      const b = el('button', 'route');
-      b.type = 'button';
-      b.append(el('span', 'route-label', label), el('span', 'route-hint', hint));
-      b.addEventListener('click', () => {
+    // ONE COMMIT PATH, TWO DOORS (3.26.0). The Someday route now asks what kind
+    // of wish it is first, so the batch is written from two places — the button
+    // directly for the other seven routes, and the kind step for that one. A
+    // second copy of this would be a second set of words for the same act, and
+    // the shed-date sentence below is exactly the kind of thing that drifts.
+    const takeRoute = (route: ClarifyRoute, label: string, category: MenuCategory = 'read'): void => {
+      {
         // Supersede any earlier undo before committing — undo only ever takes
         // back the most recent route.
         clearUndo();
@@ -1021,7 +1093,7 @@ export function mountTriage(
           : sheds === 1 ? `Routed to ${label}. Its date comes off — nothing on your wishes makes a demand. Undo puts it back.`
             : `Routed to ${label}. Its ${sheds} dates come off — nothing on your wishes makes a demand. Undo puts them back.`;
         void commit(ctx => routeEvents(ctx, nodeId, route, kind as never,
-          demandClocksOf(session.state().nodes.get(nodeId))), said)
+          demandClocksOf(session.state().nodes.get(nodeId)), category), said)
           .then(ok => {
             // Offer to take it back, whichever route it was — the answer to
             // "where did it go and how do I undo it". Captured with the id, route
@@ -1033,6 +1105,23 @@ export function mountTriage(
             if (ok && route === 'do-now') offerDoNow(nodeId);
             restoreFocus();
           });
+      }
+    };
+
+    const routeButtons = ROUTES.map(({ route, label, hint }) => {
+      const b = el('button', 'route');
+      b.type = 'button';
+      // `data-route` on every one of them, because the walks have twice been
+      // timed out by keying on a label or a position (LESSONS 180) — and the
+      // Someday button is about to become the one with a step behind it.
+      b.dataset.route = route;
+      b.append(el('span', 'route-label', label), el('span', 'route-hint', hint));
+      b.addEventListener('click', () => {
+        if (route === 'someday') {
+          renderMenuKinds(nodeId, text, kind, heat, cat => takeRoute(route, label, cat));
+          return;
+        }
+        takeRoute(route, label);
       });
       return b;
     });

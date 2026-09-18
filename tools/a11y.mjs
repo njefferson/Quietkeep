@@ -350,6 +350,14 @@ const conditionalSeen = new Set();
 // visible FAILS, unless it declared `whenShown` — see above.
 // THE REGISTRY FOLLOWS THE SURFACES (1.40.0).
 //
+// AND A NEW STATE HAS TWO OBLIGATIONS, NOT ONE. Registering the selectors is
+// the first; the second is a `auditFocusRings` call for the same state name,
+// which `tools/surfaces.mjs` holds equal to the set of states audited for
+// contrast. A state with entries here and no ring pass is a state whose rings
+// nobody decided about — eighteen of a hundred and twelve were in that
+// condition before that check existed. It went red in CI on the very commit
+// that added `sort routed`, two pushes before anybody looked.
+//
 // DIALOG_COMMON was one list because the panel was one dialog. Help, Settings,
 // Your data and How it works are their own sheets now, so a single list spans
 // four screens and can never all be visible at once — every entry would report
@@ -625,9 +633,29 @@ const REGISTRY = {
     '#sort-back', '#sort-close', '#sort-act-all'],
   // Wholesale (1.5.0, ADR-0049): the verbs, the preview sentence, the place
   // filter's placeholder, and the run controls.
+  // The receipt once a card is routed. VISIBLE FROM 3.24.5: six of about
+  // thirteen sentences on this surface reached nothing visible — the route
+  // failure, the undo failure and both search and both export messages — on a
+  // surface whose OTHERS are duplicated verbatim right beside them. The undo
+  // bar it raises joins it here: `#sort-undo` was VISIBLE and in no `sort`
+  // array, so its contrast was unmeasured on this surface (§28).
+  'sort routed': ['#sort-live', '#sort-undo'],
   'sort bulk verbs': ['#sort-bulk-title', '#sort-bulk-verbs .route',
     '#sort-bulk-verbs .route-label', '#sort-bulk-verbs .route-hint',
-    '#sort-bulk-preview', '#sort-bulk-go', '#sort-bulk-cancel', '#sort-bulk-export'],
+    '#sort-bulk-preview', '#sort-bulk-go', '#sort-bulk-cancel', '#sort-bulk-export',
+    // One of the three the live-region audit found VISIBLE and in no `sort`
+    // array, so unmeasured on this surface (§28). `#sort-undo` joined `sort
+    // routed` above; `#sort-bulk-outcome` is on `sort bulk done` below, and
+    // NOT here — it lives inside `#sort-bulk-receipt`, which is hidden until a
+    // run completes, so a conditional entry on this state was seen on no state
+    // in either theme and the whole-run rule refused it, correctly.
+    { sel: '#sort-bulk-status', whenShown: 'the wholesale status line is empty until a verb has been chosen' }],
+  // THE WHOLESALE RECEIPT, which needs the act to have HAPPENED. Its own state
+  // rather than a conditional on the one above: a conditional says "this may
+  // not be rendered right now", and the honest answer here is that it is never
+  // rendered until a run finishes, which is a different STATE and is driven as
+  // one. `#sort-bulk-undo` is visible only here too.
+  'sort bulk done': ['#sort-bulk-outcome', '#sort-bulk-undo'],
   // The destructive confirm, revealed by choosing Let-them-go — the
   // purge-confirm rule: a control that only exists after a click is still a
   // control somebody reads.
@@ -831,6 +859,14 @@ const REGISTRY = {
   // WHERE IT CAN BE DONE (3.13.0). The place picker's shape on the other axis,
   // registered in the same commit that built it or it ships unmeasured.
   'context picker': ['.triage-gauge', '.triage-prompt', '.triage-card',
+    '.route', '.route-label', '.route-hint',
+    { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
+  // AS WHAT KIND OF WISH (3.26.0). The Someday route wrote `read` for every
+  // single item, so a whole Menu rendered as one group; `docs/nd-collisions.md`
+  // entry 26 names the remedy as a two-tap choice that is not a requirement.
+  // Registered in the same commit that built it or it ships unmeasured — hub
+  // LESSONS §28, and the state below it is the proof it is reachable.
+  'menu kind': ['.triage-gauge', '.triage-prompt', '.triage-card',
     '.route', '.route-label', '.route-hint',
     { sel: '#triage-live', whenShown: 'the sorting receipt is empty until something has been done' }],
   // What a just-routed "Do now" offers. The timer is an offering, not a gate,
@@ -1088,6 +1124,21 @@ const REGISTRY = {
   // object literal silently wins, so the registry would have shrunk to one
   // selector while still reporting a pass.
   'detail sheet': ['#detail-more', '#detail-title', '.detail-state', '.detail-label', '.detail-inline',
+    // THE ANSWER-OWED DATE, WHICH RENDERS HERE FROM 3.25.0. It was on
+    // containers only for its whole life, sharing a boolean with the track
+    // role, so these two were named on `detail sheet, carried` and nowhere
+    // else. They are on every temporal node's sheet now — the same `temporal`
+    // predicate that gates `#detail-date-group`, which the state below this one
+    // fills — so they are measured where a reader actually meets them rather
+    // than only on a project. Named rather than left to `.detail-inline`, which
+    // covers the label and not the control, for `#detail-written`'s reason.
+    '#detail-suspense', '#detail-suspense-set',
+    // HOT OR COLD, REVISABLE (3.26.0). Named rather than left to `.ghost` for
+    // the reason this list gives twice already: "it happens to match a selector
+    // already in the list" is how a control goes unmeasured the moment its
+    // markup changes. The label is a `<span>` and not a `<label>`, so
+    // `.detail-inline` covers it and these two cover the acts.
+    '#detail-hot', '#detail-cold',
     '#detail-context', { sel: '#detail-context', pseudo: '::placeholder' }, '#detail-context-set',
     '#detail-context-hint',
     // WHICH KIND OF WANT (2.23.0). Named rather than left to a class, for
@@ -1409,6 +1460,13 @@ const REGISTRY = {
   // And the row that is present inside every job: the way back, and the way to
   // put a thought down without leaving the job to find the box.
   'inside a job': ['#stance-back', '#stance-capture'],
+  // AND WHAT THAT SECOND CONTROL LEAVES BEHIND (3.24.6). Pressing it drops you
+  // on the hub with the cursor in the box, and until this release nothing said
+  // how to get back to the job you left. Its own state rather than an entry on
+  // the hub: the offer exists only after that particular exit, so listing it
+  // with the hub's controls would name something matching nothing visible on
+  // every other route in — which this gate fails on by design, correctly.
+  'way back offered': ['#stance-return'],
   // The other import: somebody else's planner, described. 2.36.0 split that
   // description into a lead and a list of facts, and the list is the part that
   // says what will NOT come across — the finished rows, the rhythms, the labels
@@ -2933,6 +2991,34 @@ try {
     await auditNames(page, 'inside a job', theme);
     await auditSeparationAndTargets(page, 'inside a job', theme);
     await auditFocusRings(page, 'inside a job', theme, ['#stance-back', '#stance-capture']);
+
+    /* AND THE WAY BACK FROM THAT EXIT (3.24.6), driven end to end.
+     *
+     * The seventh read met this as a dead end: the control leaves the job,
+     * lands on the hub and offered no route back to what was being done. The
+     * offer is the fix, so the walk PRESSES the thing that creates it, reads
+     * it where it appears, and then takes it — a control whose only job is to
+     * put somebody back somewhere proves nothing by being visible.
+     *
+     * `#stance-capture` also puts the cursor in the box, which is why the
+     * assertion below is about the JOB being live again rather than about
+     * focus: taking the offer moves focus to the job's heading, and that is
+     * `enter`'s own contract, already asserted wherever a stance is entered. */
+    await page.click('#stance-capture');
+    await page.waitForSelector('#hub-doors .hub-go');
+    await page.waitForSelector('#stance-return-row:not([hidden])');
+    await auditContrast(page, 'way back offered', theme);
+    await auditNames(page, 'way back offered', theme);
+    await auditSeparationAndTargets(page, 'way back offered', theme);
+    await auditFocusRings(page, 'way back offered', theme, ['#stance-return']);
+    const backWords = await page.textContent('#stance-return');
+    if (!/^Back to \S/.test((backWords ?? '').trim())) {
+      fail(`${theme}: the way back reads "${backWords}" — it must name the job it returns to`);
+    }
+    await page.click('#stance-return');
+    await page.waitForSelector('#held:not([hidden])');
+    await page.waitForSelector('#stance-return-row[hidden]', { state: 'attached' });
+    pass(`${theme}/way back offered: taking it returns to the job and stands the offer down`);
     await leaveStance(page);
 
     // Opened the way a finger opens it, not by setting the attribute — a fold
@@ -3041,6 +3127,25 @@ try {
     await auditNames(page, 'context picker', theme);
     await auditSeparationAndTargets(page, 'context picker', theme);
     await auditFocusRings(page, 'context picker', theme, ['#triage-actions .route']);
+
+    // State 3b-ii-c: AS WHAT KIND OF WISH (3.26.0). Reached the way a reader
+    // reaches it — press Someday and the card asks — and by `data-route` rather
+    // than by label or position, for the reason the two states above give.
+    // Back out afterwards, so this section leaves the surface as it found it.
+    //
+    // THIS IS ALSO THE PROOF THE STEP IS REACHABLE AT ALL. A registry entry
+    // whose selectors match nothing visible fails by design, so the state
+    // cannot be registered and quietly never rendered.
+    await page.locator('#triage-actions .route.ghost', { hasText: 'Back' }).first().click();
+    await page.waitForSelector('#triage-actions .route[data-route="someday"]');
+    await page.locator('#triage-actions .route[data-route="someday"]').first().click();
+    await page.waitForSelector('#triage-actions .route[data-menu-kind="read"]');
+    await auditContrast(page, 'menu kind', theme);
+    await auditAxe(page, 'menu kind', theme);
+    await auditNames(page, 'menu kind', theme);
+    await auditSeparationAndTargets(page, 'menu kind', theme);
+    await auditFocusRings(page, 'menu kind', theme, ['#triage-actions .route']);
+
     await page.locator('#triage-actions .route.ghost', { hasText: 'Back' }).first().click();
     await page.waitForSelector('#triage-actions .route[data-route="put-under"]');
     await page.locator('#triage-actions .route[data-route="put-under"]').first().click();
@@ -4419,6 +4524,13 @@ try {
     }
     await enterStance(page, 'triage');
     await page.locator('#triage-actions .route', { hasText: 'Someday' }).first().click();
+    // AND THEN AS WHAT KIND (3.26.0). Someday asks before it commits, so this
+    // press alone no longer puts anything on the Menu — it opens the step, and
+    // this state would have waited for a Menu with nothing in it. `read` is the
+    // apt answer for "a book to read" and is also the standing default, so the
+    // Menu group this state then measures is the one it has always measured.
+    await page.waitForSelector('#triage-actions .route[data-menu-kind="read"]');
+    await page.locator('#triage-actions .route[data-menu-kind="read"]').first().click();
     await page.waitForTimeout(300);
     // The Menu, open — ITS OWN SHEET since 2.0.7 (ADR-0089), so a dialog state,
     // measured as one. `#menu-open` left this state's focus list with the fold:
@@ -4479,16 +4591,24 @@ try {
      * ONE OF THREE, and the three are worth reading together. `#replan-live`,
      * `#sort-live` and `#reentry-live` all became visible in 3.24.5, and the
      * inventory's whole-run rule on conditional entries immediately reported
-     * all three as seen on NO state in either theme. The walk reaches each of
-     * those three surfaces, audits it at rest, and moves on without ever
-     * performing the act that writes a receipt: it never presses the
-     * all-at-once button, never routes a card on the sort surface, and never
-     * takes the amnesty. `#nextup-live`, `#bother-live` and `#focus-live` are
-     * produced and measured; these three are not, and each has its own
-     * obstacle rather than one shared cause — the amnesty closes the section
-     * (below), routing a sort card did not produce its sentence inside ten
-     * seconds and wants diagnosing rather than guessing at, and the replan
-     * press was never reached because the sort attempt died first.
+     * all three as seen on NO state in either theme. The walk reached each of
+     * those three surfaces, audited it at rest, and moved on without ever
+     * performing the act that writes a receipt.
+     *
+     * SORT IS FIXED (3.24.6) and the shape of the fix is the lesson: the walk
+     * ALREADY routed a card, further down, and asserted where focus landed
+     * afterwards without ever reading the sentence that route wrote. Two
+     * attempts to ADD an act failed first — a locator click that detached
+     * mid-click (Spine run 161's recorded cause), then an in-page click that
+     * consumed the one staged card the later step needed. The act was never
+     * what was missing. `#replan-live` is still owed, and it may well be the
+     * same shape — and it turned out to BE this one's shape rather than
+     * sort's. Pressing the all-at-once button does write the sentence, and
+     * resolving every date then empties the replan section, which hides and
+     * takes the receipt with it. So replan and the amnesty are one design
+     * question: the act that writes the confirmation is the act that removes
+     * the surface holding it. Sort was the odd one out, because routing a
+     * single card leaves its surface standing.
      *
      * So none of the three carries a registry entry. Their pair is
      * `--ink-soft` on their own surfaces, already measured by a sibling in
@@ -4496,6 +4616,15 @@ try {
      * Widening the walk to produce them is recorded in NOTES.md as its own
      * piece of work, because a half-built traversal in the tree is worse than
      * a named gap.
+     *
+     * AND THE ANSWER CAME FROM THE DESIGN RATHER THAN THE TRAVERSAL (3.24.8,
+     * ADR-0126). Both of the two that were one question now write their success
+     * sentence to `#status`, which no act removes and which this walk already
+     * audits on `with cards` — so the receipt those two acts produce is measured
+     * where it now lands, and the reason these regions carry no entry changed
+     * from "the walk cannot reach it" to "the sentence is not written here any
+     * more". `#replan-live` and `#reentry-live` keep their failure sentences,
+     * which no browser can provoke; the unit tests hold those.
      *
      *
      * `#reentry-live` is visible from this release like the other five, and
@@ -4516,9 +4645,32 @@ try {
      * So this region carries NO registry entry rather than a declared
      * exemption. Its pair is `--ink-soft` on this surface, which
      * `.reentry-waiting` already measures two lines above it in that array.
-     * Where a confirmation LIVES when the surface holding it closes is the next
-     * piece of work, recorded in NOTES.md; guessing at it here would be a
-     * design decision taken inside a gate. */
+     *
+     * ── ANSWERED, 3.24.8 (ADR-0126), AND THE STATE STILL DOES NOT GO HERE ──
+     *
+     * The design question above is settled: one sentence, one live region, and
+     * it must be one the act does not remove. The amnesty's confirmation goes to
+     * `#status` now and this section's region keeps only the failure sentence,
+     * which is where the retry control is.
+     *
+     * THAT DOES NOT TURN INTO A WALK STATE, and the reasoning is worth keeping
+     * because the obvious move is to add one now that the sentence survives.
+     * Two things make it the wrong instrument:
+     *
+     *  - THE COLOR IS ALREADY MEASURED. The sentence lands in `#status`, which
+     *    the registry audits on `with cards`. A new state here would re-measure
+     *    a pair this walk already covers, on a surface that did not change.
+     *  - THE BEHAVIOR NEEDS AN INSTRUMENT THIS ONE HAS NOT GOT. The property
+     *    is a PAIR — the sentence reaches the lasting region on success AND the
+     *    local one on failure, each to the exclusion of the other. A browser
+     *    cannot make IndexedDB refuse a commit, so a walk can only ever drive
+     *    half of it, and half of a paired property is the shape that passes
+     *    against a version that writes nothing anywhere.
+     *    `test/reentry.test.ts` drives both halves over a stub document.
+     *
+     * And pressing the amnesty here would cost something real: it moves every
+     * passed date to the Menu in a store the states below this one still read.
+     * That is the starvation the sort attempts paid for twice, one surface over. */
     // B-04's hardest case for the surface someone meets after a fortnight away —
     // the one screen where a horizontal scrollbar would be least forgivable.
     await page.setViewportSize({ width: 320, height: 568 });
@@ -5420,6 +5572,59 @@ try {
     await auditNames(page, 'sort bulk confirm', theme);
     await auditSeparationAndTargets(page, 'sort bulk confirm', theme);
     await auditFocusRings(page, 'sort bulk confirm', theme, ['#sort-bulk-word']);
+
+    /* AND THE OUTCOME, WHICH NEEDS THE ACT TO HAVE HAPPENED (3.24.6).
+     *
+     * `#sort-bulk-receipt` is hidden until a run completes, so the first
+     * version of this coverage declared `#sort-bulk-outcome` as a CONDITIONAL
+     * on the verbs state and the walk never reached it: seen on no state in
+     * either theme, and the whole-run rule refused it. A conditional says
+     * "this may not be rendered right now"; the truth was that nothing here
+     * had ever run the act.
+     *
+     * `Put them down` is the verb to run it with, for two reasons. It takes no
+     * parameters, so `#sort-bulk-go` enables the moment it is chosen — every
+     * other non-destructive verb waits on a date or a place. And its own
+     * receipt says Undo brings the whole batch back, which this needs: the
+     * staging sequence above provides exactly ONE sortable item and the single
+     * route below needs it. Routing early to reach a state and leaving a later
+     * step nothing is the starvation that cost an earlier attempt at this same
+     * surface. So the act runs, the receipt is read, and the act is UNDONE
+     * before anything else is driven.
+     *
+     * The undo keeps the block open and calls `renderCard()`, so the cancel
+     * below is unaffected — and `#sort-bulk-undo` hides itself afterwards,
+     * which is why it is audited before the click rather than after. */
+    await page.waitForFunction(() => {
+      const b = [...document.querySelectorAll('#sort-bulk-verbs .route')]
+        .find(x => (x.textContent || '').includes('Put them down'));
+      if (b) { b.click(); return true; }
+      return false;
+    }, null, { timeout: 10000, polling: 200 });
+    await page.waitForFunction(() => {
+      const go = document.querySelector('#sort-bulk-go');
+      if (go && !go.disabled) { go.click(); return true; }
+      return false;
+    }, null, { timeout: 10000, polling: 200 });
+    await page.waitForSelector('#sort-bulk-receipt:not([hidden])');
+    await auditContrast(page, 'sort bulk done', theme);
+    await auditAxe(page, 'sort bulk done', theme);
+    await auditNames(page, 'sort bulk done', theme);
+    await auditSeparationAndTargets(page, 'sort bulk done', theme);
+    await auditFocusRings(page, 'sort bulk done', theme, ['#sort-bulk-undo']);
+    await page.waitForFunction(() => {
+      const u = document.querySelector('#sort-bulk-undo');
+      if (u && !u.hidden && !u.disabled) { u.click(); return true; }
+      return false;
+    }, null, { timeout: 10000, polling: 200 });
+    // `{ state: 'hidden' }`, NOT a `[hidden]` attribute selector. The default
+    // state of this wait is VISIBLE, so `'#sort-bulk-undo[hidden]'` asks for a
+    // hidden element to become visible and can never resolve — it timed out
+    // after resolving to the hidden button twenty-eight times, which is the
+    // wait reporting that its condition was already met. Every other hidden
+    // wait in this file is spelled the second way.
+    await page.waitForSelector('#sort-bulk-undo', { state: 'hidden' });
+
     await page.click('#sort-bulk-cancel');
     await page.waitForSelector('#sort-bulk', { state: 'hidden' });
 
@@ -5442,6 +5647,42 @@ try {
         document.activeElement?.id || document.activeElement?.tagName || '(none)');
       fail(`${theme}: after a sort route, focus landed on "${where}" instead of the entry line or back control`);
     }
+    /* AND THE RECEIPT THAT ROUTE JUST WROTE (3.24.6), which nothing had ever
+     * looked at.
+     *
+     * `#sort-live` became visible in 3.24.5 and the inventory reported it as
+     * seen on NO state in either theme. THE ACT WAS ALREADY HERE: the route
+     * five lines above is a real one, and `sort.ts` writes `Sent to …` into
+     * this region straight after the commit. The walk performed it, asserted
+     * where focus landed, and never once read the sentence.
+     *
+     * TWO WRONG TURNS BEFORE THIS ONE, both worth keeping. A locator click was
+     * added higher up and timed out — the reason was already in this file,
+     * from the incident that cost Spine run 161: every queued commit repaints
+     * the action row, so a locator click there detaches mid-click. Replacing
+     * it with the in-page pattern then timed out FURTHER DOWN, because the
+     * staging sequence provides exactly one sortable card and routing it early
+     * left this step nothing to route. Both attempts were adding an act to a
+     * walk that already had one. The measurement was the only thing missing.
+     *
+     * `#sort-undo` joins it here: the bar this route raises was VISIBLE and in
+     * no `sort` array, so its contrast went unmeasured on this surface (§28). */
+    await page.waitForFunction(() =>
+      (document.querySelector('#sort-live')?.textContent ?? '').length > 0,
+      null, { timeout: 5000 });
+    await auditContrast(page, 'sort routed', theme);
+    await auditNames(page, 'sort routed', theme);
+    await auditSeparationAndTargets(page, 'sort routed', theme);
+    // AND A RING PASS, because `surfaces.mjs` holds the two sets equal: a state
+    // audited for contrast and not for rings is the gap that had eighteen
+    // members before that check existed. It caught this one the same day it was
+    // added — CI step 30 red on the commit that introduced the state, and the
+    // local Spine had not been run on it.
+    //
+    // `#sort-undo` is a runtime-filled DIV and focuses nothing; the control is
+    // the button `sort.ts` puts inside it, which is the same class the `route
+    // undo` state already measures on the triage surface.
+    await auditFocusRings(page, 'sort routed', theme, ['#sort-undo .triage-undo-btn']);
     await page.click('#sort-close');
 
     // The tree, open (1.6.0, ADR-0013): the sort staging filed things under a
@@ -6391,6 +6632,30 @@ try {
       await auditNames(page, 'replan, all at once', theme);
       await auditSeparationAndTargets(page, 'replan, all at once', theme);
       await auditFocusRings(page, 'replan, all at once', theme);
+      /* NO 'replan, settled' STATE, and the attempt is the finding (3.24.6).
+       *
+       * The act WAS added here — an in-page press of `.replan-bulk-go` under a
+       * poll on the receipt — and the poll succeeded: the sentence appeared.
+       * The audit then failed in both themes with "#replan-live matches
+       * nothing visible", because resolving every date empties the replan
+       * section and the section hides, taking its receipt with it.
+       *
+       * WHICH MAKES THIS THE SAME SHAPE AS THE AMNESTY, not a second puzzle —
+       * and that is the finding worth having. On BOTH surfaces the act that
+       * writes the confirmation is the act that removes the surface holding
+       * it, so the sentence is written and hidden in one turn and reaches
+       * nobody: not a sighted reader, and probably not a screen reader either,
+       * since a live region hidden immediately after being written may never
+       * be announced. The sort receipt was different precisely because routing
+       * one card LEAVES the surface up.
+       *
+       * So two of the three are one design question rather than two gate
+       * problems: a confirmation belongs somewhere that outlives the thing it
+       * confirms. `#status` is that place — it is where the capture
+       * confirmation already lives, it persists, and on both these surfaces it
+       * is where the reader's attention goes next. Deciding that is product
+       * work and is recorded in NOTES.md; taking it inside a walk would be a
+       * design decision made by a gate. */
     }
 
     /* A THING WITH A VERY LONG NAME CAN STILL BE GOT RID OF (3.24.3).

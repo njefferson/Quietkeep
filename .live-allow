@@ -1,0 +1,15 @@
+# Live regions that are deliberately hidden, each naming the visible element
+# that says the same thing. Read by tools/live-check.mjs, both directions.
+#
+# One row per region, three fields separated by a double colon:
+#   the region's id, the visible element's id, and why that counts.
+# IDS ARE BARE — no leading hash — so that a hash always means a comment here.
+#
+# A row is only honored when the element it names EXISTS and is NOT ITSELF a
+# live region. "The sentence also goes to #status" is not a counterpart,
+# because that element is aria-live too, and a screen reader would hear the
+# same sentence twice.
+#
+# THERE IS ONE ROW, and it is the pattern the other six were changed to match
+# rather than an exception to it.
+replan-sheet-live :: replan-sheet-error :: both of its sentences, the empty-date refusal and the commit failure, are written to that paragraph as well, and it is deliberately not itself a live region, so the sentence is read once and announced once

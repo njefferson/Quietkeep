@@ -15,6 +15,7 @@ import { serialiseState, deserialiseState } from '../src/snapshot.ts';
 import { localDayKey, calendarDaysBetween, atMidnight} from '../src/time.ts';
 import { unclarified, needsHeat, nextToClarify, inboxGauge } from '../src/triage.ts';
 import { heldGroups } from '../src/held.ts';
+import { MENU_CATEGORIES, menuGroups } from '../src/menu.ts';
 import {
   routeEvents, heatEvents, fileUnderEvents, fileUnderNewEvents, undoRouteEvents, clocksOf,
   datePlaceEvents, fileReceiptWords, placeReturnDays, demandClocksOf, restorableClocksOf,
@@ -506,4 +507,68 @@ test('and saying nothing about the kind still makes a project', () => {
   s = write(s, fileUnderNewEvents(ctx(), 'N', 'the house', clocksOf(s.nodes.get('N'))));
   assert.equal([...s.nodes.values()].find(n => n.title === 'the house')!.kind, 'project',
     'unasked, it is a project, exactly as it was');
+});
+
+// ── The Someday route stops deciding what kind of wish it is ────────────────
+//
+// `docs/nd-collisions.md` entry 26 measured the defect: the category is a
+// six-value schema field and every single-item route wrote `read`, so a store's
+// whole Menu rendered as one group. The remedy it names is a choice at write
+// time that is not a requirement — so the parameter exists and the default
+// stands.
+
+test('a Someday route files under the kind that was chosen', () => {
+  let s = capture(emptyState(), 'W', 'a ticket to the coast', []);
+  s = write(s, routeEvents(ctx(), 'W', 'someday', s.nodes.get('W')!.kind, [], 'go'));
+  assert.equal(s.nodes.get('W')!.onMenu, 'go', 'the chosen kind is what lands');
+  assert.equal(s.nodes.get('W')!.route, 'someday');
+});
+
+test('and under Read when nobody said, because this is not a requirement', () => {
+  let s = capture(emptyState(), 'W', 'a ticket to the coast', []);
+  s = write(s, routeEvents(ctx(), 'W', 'someday', s.nodes.get('W')!.kind));
+  assert.equal(s.nodes.get('W')!.onMenu, 'read', 'the standing default is unchanged');
+});
+
+test('every one of the six is reachable, so the picker cannot outrun the schema', () => {
+  for (const category of MENU_CATEGORIES) {
+    let s = capture(emptyState(), 'W', 'a wish', []);
+    s = write(s, routeEvents(ctx(), 'W', 'someday', s.nodes.get('W')!.kind, [], category));
+    assert.equal(s.nodes.get('W')!.onMenu, category, `${category} lands`);
+    // AND IT IS STILL ON THE MENU whatever the category — the grouping is what
+    // moves, never the membership the write gate's clause (c) depends on.
+    assert.equal(menuGroups(s).some(g => g.category === category
+      && g.items.some(i => i.id === 'W')), true, `${category} groups`);
+  }
+});
+
+// A Menu landing still sheds its demands whatever kind it lands under. The
+// audit's most severe finding was a dated item keeping its date invisibly on
+// the Menu, and a new parameter must not have reopened it.
+test('the shed still happens under a chosen kind', () => {
+  let s = capture(emptyState(), 'W', 'the thing with a date', []);
+  s = write(s, [raw('clock.set', 'W', { clockKind: 'due', at: '2026-09-01T12:00:00.000Z', source: 'detail:due' })]);
+  const demands = demandClocksOf(s.nodes.get('W'));
+  assert.ok(demands.includes('due'), 'it carries the date to begin with');
+  s = write(s, routeEvents(ctx(), 'W', 'someday', s.nodes.get('W')!.kind, demands, 'save-for'));
+  assert.equal(s.nodes.get('W')!.onMenu, 'save-for');
+  assert.equal(s.nodes.get('W')!.clocks['due'], undefined, 'and the demand came off');
+});
+
+// ── Hot or cold is an answer, not a verdict ─────────────────────────────────
+//
+// `needsHeat` gates on `heat === null`, so the pass asked once and never again,
+// and `clarify.reopened` resets the route and not the heat. Nothing refused
+// revisability — there was simply no second door. Two shipped release notes
+// said there was one.
+test('a heat answer can be changed, and the pass does not ask again', () => {
+  let s = capture(emptyState(), 'N', 'a thing', []);
+  assert.equal(needsHeat(s).some(n => n.id === 'N'), true, 'asked once, at first');
+  s = write(s, heatEvents(ctx(), 'N', 'cold'));
+  assert.equal(s.nodes.get('N')!.heat, 'cold');
+  assert.equal(needsHeat(s).some(n => n.id === 'N'), false, 'and not asked again');
+  // The sheet's second door, which is the same event.
+  s = write(s, heatEvents(ctx(), 'N', 'hot'));
+  assert.equal(s.nodes.get('N')!.heat, 'hot', 'the answer changed');
+  assert.equal(needsHeat(s).some(n => n.id === 'N'), false, 'still not re-asked');
 });

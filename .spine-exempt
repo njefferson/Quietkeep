@@ -12,6 +12,7 @@
 #
 # One per line: name — reason.
 
+blocks — RED ON PURPOSE, TODAY. It refuses an empty Block register while NOTES.md says the dogfood gate runs every working day and the app fails every working day, and the register reads `*(no entries yet)*` — so it is currently reporting the true state of the project rather than a defect in the tree, and wiring it into CI now would make every push red and teach everybody to ignore red, which is the argument doctrine-sync.mjs already makes about itself. It is the measurement a session runs and reports, like deployed:check. IT JOINS THE SPINE IN THE COMMIT THAT ADDS THE REGISTER'S FIRST ENTRY, and this line is deleted then. If that never happens, this exemption is the record of it never happening.
 branch:state — deliberately NOT a Spine step. On a runner at a promote, origin/main is already the merge being pushed, so it is red by construction. It runs as a commit guard via .branch-guard instead.
 gates:audit — plants a defect per gate and restores; minutes long and it MUTATES the tree. Run by hand when adopting or changing a gate, never on a push.
 palettes — generates public/palettes.css from docs/palettes.json; palettes:check is the gate, and CI must never regenerate what a gate checks.

@@ -79,6 +79,52 @@ export type NodeKind = (typeof NODE_KINDS)[number];
 export const DEMAND_FREE_KINDS = ['aspiration', 'pebble', 'person', 'journal', 'anchor', 'context', 'role'] as const satisfies readonly NodeKind[];
 
 export type ClockKind = 'due' | 'start' | 'suspense' | 'review' | 'park';
+
+/**
+ * WHO CHOSE THE MOMENT — the app's own clock writers, as a closed union.
+ *
+ * `Clock.source` records whether the READER named this instant or the APP did,
+ * and that difference is load-bearing on three surfaces. The gate's side of it
+ * has been held total since 2.0.1 by a test that reads `gate.ts`'s own cure
+ * switch. **The app's own writers had no such guard**: twenty-one sources are
+ * written from `src/`, `isAppClock` recognized none of them, and every one was
+ * therefore read as the reader naming a date — including the three where the
+ * reader pressed a ROUTE and the code picked a number of days.
+ *
+ * Closed so that `CLOCK_INTENT` in `fold.ts` is exhaustive by TYPE: a new
+ * writer cannot ship without being classified, which is the shape `KIND_WORDS`
+ * and `MENU_WORDS` already use and is stronger than a test because it fails
+ * where the source is added rather than where the suite is run.
+ *
+ * NOT MERGED WITH THE GATE'S LIST, deliberately. The gate stamps
+ * `gate:${cause.kind}` from a template literal, so its side cannot be a union
+ * at all — and it is already held total against the switch it comes from. A
+ * hand-typed copy of that would be the second list this repo keeps paying to
+ * delete.
+ *
+ * `ClockSet.source` stays a plain `string` and must: the log is append-only
+ * DATA, it holds values written before this union existed, and an unknown
+ * source still reads as the reader's — which is the safe default and what the
+ * test sites that write an arbitrary source rely on.
+ */
+export type ClockSource =
+  // The sorting routes. The reader pressed a ROUTE; the number of days is the
+  // code's (`clockInDays`, 0, 1 and 3 respectively).
+  | 'clarify:do-now' | 'clarify:next-action' | 'clarify:waiting-for'
+  // A date the reader typed or picked from a control.
+  | 'triage:place-return' | 'detail:due' | 'detail:start'
+  | 'detail:container-return' | 'detail:repeat' | 'replan:new-date'
+  // The replan card's other four options: the reader chose an OPTION and the
+  // code chose the day.
+  | 'replan:escalate' | 'replan:compress' | 'replan:renegotiate' | 'replan:undate'
+  // The app's own markers and opt-ins.
+  | 'focus:resume' | 'comms:start' | 'bother:mine-to-solve' | 'arrangement:confirmed'
+  // Carried or restored from a clock that already existed.
+  | 'merge:carried' | 'undo:range' | 'undo:route'
+  // A date written in a file the reader wrote somewhere else.
+  | 'import:taskpaper'
+  // Fixture data, standing in for a reader's.
+  | 'sample';
 // `filed` is WHERE, and the only route that answers it. The other six say
 // when — a clock, the Menu, or gone — and an imported backlog sorted by
 // urgency and never filed is what that costs (reported 2026-08-04). Additive to

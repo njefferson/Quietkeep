@@ -1634,10 +1634,23 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   console.log('\nTriage — the six routes, each terminating on its own');
   // The clarify buttons are label+hint; match by their visible label. Route in
   // the capture order the queue presents (oldest first).
-  const routeByLabel = async (label) => {
+  const routeByLabel = async (label, menuKind = null) => {
     const before = Number(await tpage.locator('#triage-gauge').getAttribute('data-waiting') ?? 'NaN');
     await intoJob(tpage, 'triage');
     await tpage.locator('#triage-actions .route', { hasText: label }).first().click();
+    // AS WHAT KIND OF WISH (3.26.0). Someday asks one more question before it
+    // commits — `docs/nd-collisions.md` entry 26's two-tap choice — so the queue
+    // does NOT move on the first press for that one route, and the wait below
+    // would sit until it timed out. Every other route still commits on the
+    // press. `data-menu-kind` rather than the visible word, for the reason this
+    // walk has been timed out by a rename twice (LESSONS 180) — and the
+    // `waitForSelector` is the assertion: if the step ever stops rendering, this
+    // throws here rather than passing over a question nobody was asked.
+    if (menuKind) {
+      const kind = `#triage-actions .route[data-menu-kind="${menuKind}"]`;
+      await tpage.waitForSelector(kind);
+      await tpage.locator(kind).first().click();
+    }
     // The queue drops by one. Read from the data attribute since 1.42.1 — the
     // GAUGE's words no longer change as it drains, on purpose. (`#triage-here`
     // does change, since 3.10.0, and that is asserted right after this helper's
@@ -1677,7 +1690,9 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     'and offers a way out that keeps it for today — Done and the timer are not the only exits');
   await routeByLabel('Next action');
   await routeByLabel('Waiting for');
-  await routeByLabel('Someday');
+  // Under a CHOSEN kind, not the standing default: the press that takes the
+  // default is one tap and would not prove the step is reachable.
+  await routeByLabel('Someday', 'go');
   await routeByLabel('Reference');
   await routeByLabel('Trash');
 
@@ -3559,7 +3574,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
     await tpage.waitForSelector('#triage:not([hidden]) .route');
   };
 
-  const routeOne = async (label) => {
+  const routeOne = async (label, menuKind = null) => {
     await openInbox();
     await tpage.waitForSelector('#triage:not([hidden]) .route');
     // WHICH PASS IS SHOWING, asked of the PROMPT rather than inferred.
@@ -3595,6 +3610,18 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
           `prompt=${JSON.stringify((prompt || '').trim().slice(0, 70))} ` +
           `offered=${JSON.stringify(have.map((t) => t.trim().slice(0, 34)))}`);
       throw err;
+    }
+    // AS WHAT KIND OF WISH (3.26.0). The same second tap `routeByLabel` needs,
+    // and this helper needed it too — which the first fix missed, because a
+    // `grep` without `-a` on this file reports only some of its matches and
+    // looks exactly like a complete answer. Someday is the one route that does
+    // not commit on the press, so without this the item never reaches the Menu
+    // and the failure surfaces hundreds of lines later as a Menu item that is
+    // not there.
+    if (menuKind) {
+      const kind = `#triage-actions .route[data-menu-kind="${menuKind}"]`;
+      await tpage.waitForSelector(kind);
+      await tpage.locator(kind).first().click();
     }
     await settled(tpage, 150);
   };
@@ -5766,7 +5793,15 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   }
   await tpage.fill('#capture', 'a decent tripod');
   await tpage.click('#capture-form button[type=submit]');
-  await routeOne('Someday');
+  // VIA THE WAY PAST, which is the faithful answer here and not a shortcut.
+  // Twenty lines below, this section asserts that a plain someday offers NO
+  // save-for numbers, and only then moves it into `save-for` through the log to
+  // test the gauge — so routing it as a save-for in the first place makes that
+  // assertion false, which is exactly what it did on the first attempt. Taking
+  // the way past lands it under `read`, which is what this walk saw for its
+  // whole life, and it exercises the one control entry 27 requires to exist:
+  // the step must never become a requirement.
+  await routeOne('Someday', 'skip');
   await tpage.reload({ waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
 

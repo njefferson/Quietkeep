@@ -26,6 +26,7 @@ import { demandClocksOf } from './triage-intents.ts';
 import { replanEvents, canResolve, REPLAN_CHOICES, resolveAllPassedEvents, passedDateCount } from './replan-intents.ts';
 import type { ReplanChoice } from '../events.ts';
 import { boundaryOf } from '../day.ts';
+import { sayLasting } from './announce.ts';
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] => {
   const n = document.createElement(tag);
@@ -179,9 +180,12 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
       ? 'They keep their place and come back on their own.'
       : 'They are on the Menu, and nothing is owed.';
     const words = `${n === 1 ? 'One date' : `All ${n} dates`} settled. ${what} Nothing was marked done, and nothing was deleted.`;
-    LIVE.textContent = words;
-    const status = document.querySelector<HTMLElement>('#status');
-    if (status) status.textContent = words;
+    // THE LASTING REGION ONLY (ADR-0126). This act resolves EVERY passed date,
+    // so the section is always empty afterwards and always hides — `#replan-live`
+    // is gone by the time anybody could read it, which is what the a11y walk
+    // reported as "matches nothing visible" in both themes. Writing both, which
+    // is what this did, fixed the arrival and said it twice to a screen reader.
+    sayLasting(words);
   };
 
   const resolve = async (choice: ReplanChoice, dayKey?: string): Promise<void> => {
@@ -212,14 +216,21 @@ export function mountReplan(session: Session, now: () => number, onChange: () =>
     if (!landed) return;
     // From here the decision IS in the log, and nothing below may un-say it.
     try { onChange(); refresh(); } catch { /* a render bug must not contradict a landed write */ }
-    // Announce into #status as well as the section's own region. Resolving the
-    // LAST card hides the whole section, and a live region inside a hidden
-    // element announces nothing — so on the one occasion most worth confirming,
-    // the confirmation would have been silent.
+    // THE LASTING REGION ONLY, and this comment is the diagnosis ADR-0126 was
+    // built from. It used to read: "Announce into #status as well as the
+    // section's own region. Resolving the LAST card hides the whole section,
+    // and a live region inside a hidden element announces nothing — so on the
+    // one occasion most worth confirming, the confirmation would have been
+    // silent." Every word of that is still true; writing BOTH was the half
+    // that was wrong, because `#status` is `aria-live` too and a screen reader
+    // heard it twice.
+    //
+    // `#status` unconditionally rather than only on the last card: whether this
+    // section survives depends on how many passed dates are left, so the local
+    // region is sometimes there and sometimes not. A sentence whose home varies
+    // with the store is a sentence that reaches somebody only most of the time.
     const said = `${label}: ${OUTCOME[choice]}`;
-    LIVE.textContent = said;
-    const status = document.querySelector<HTMLElement>('#status');
-    if (status) status.textContent = said;
+    sayLasting(said);
     if (DLG.open) DLG.close();
     restoreFocus();
   };

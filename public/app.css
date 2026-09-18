@@ -614,6 +614,14 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 }
 .capture-offer button { margin-left: 0.25rem; }
 
+/* THE WAY BACK FROM A JOB (3.24.6). Spaced like the offer above it and not
+ * styled as a receipt: it is not a report of something that happened, it is an
+ * offer, and `.receipt`'s `--ink-soft` would put an OFFER at the weight this
+ * app reserves for context. The button inside carries `.linklike`, which is
+ * already the full-height accent text button the undo bars use, so there is no
+ * new foreground pair here — only a row to hang it in. */
+.stance-return-row { margin: 0.25rem 0 0; }
+
 /* PADDING IN `em` FOR THE SAME REASON `--target` IS (2.9.1): the space around a
    control's words has to be measured in that control's words. In `rem` it is
    measured in the page's, so a browser text control that grows the text and not
@@ -932,6 +940,21 @@ body[data-stance] #assurance {
   cursor: pointer;
 }
 .nextup-title:hover { text-decoration-color: var(--accent); }
+/* AND WHEN THERE IS NOTHING TO OPEN IT IS NOT A CONTROL (3.24.6). The head's
+ * title and the "Nothing is asking today." sentence are the SAME element, so
+ * on the empty branch the reader met an underlined, 44px, accent-on-hover
+ * heading that did nothing — `work.ts` guarded the click and returned. It is
+ * `disabled` there now, and this rule is what keeps that from arriving as a
+ * colour change: `--ink` and `opacity: 1` are PINNED because the browser's own
+ * `:disabled` default greys the text, which would be a new foreground pair on
+ * a measured surface, introduced by the fix for a different defect. The
+ * underline and the pointer go, because those are the affordance. */
+.nextup-title:disabled {
+  color: var(--ink);
+  opacity: 1;
+  text-decoration: none;
+  cursor: default;
+}
 /* Where a thing can be done, on its card. Soft like the place line it sits
  * beside — it is context, not the title. */
 .card-where { color: var(--ink-soft); }
@@ -3504,6 +3527,7 @@ summary::-webkit-details-marker { display: none; }
    says why each one goes; this is only the rule that makes it so. */
 body[data-plain="1"] #hub,
 body[data-plain="1"] #stance-bar,
+body[data-plain="1"] #stance-return-row,
 body[data-plain="1"] #capture-room,
 body[data-plain="1"] #contents-open,
 body[data-plain="1"] #clock,

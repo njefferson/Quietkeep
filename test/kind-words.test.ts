@@ -7,7 +7,7 @@
 // they are distinct, and that `action` stays unmarked.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { KIND_WORDS, kindWords } from '../src/kind-words.ts';
+import { ARRIVED_WORD, KIND_WORDS, kindWords, nodeWords } from '../src/kind-words.ts';
 import { NODE_KINDS } from '../src/events.ts';
 import { fold } from '../src/fold.ts';
 import { placeWords } from '../src/held.ts';
@@ -86,4 +86,58 @@ test('a container now says what it is, with or without anything under it', () =>
 test('a loose action still says nothing — it IS loose, and that is the reading', () => {
   const s = fold([ev('node.created', 'x', { nodeKind: 'action', title: 'Post the form' })]);
   assert.equal(placeWords(s.nodes.get('x')!, s, new Map()), null);
+});
+
+// AN ANSWERED WAITING-FOR STOPS SAYING SOMEBODY ELSE HAS IT (Phase 0, read 7).
+// The row, the tree and the sheet all read `Waiting for` after you had told the
+// app the answer came back. ADR-0040 is right that the kind must not change —
+// arriving is not finishing — so the WORD is what moves.
+test('a waiting-for reads Arrived once its answer has come back', () => {
+  const s = fold([
+    ev('node.created', 'w', { nodeKind: 'waiting-for', title: 'The signed lease' }),
+    ev('waiting.opened', 'w', { forWhat: 'the countersigned copy' }),
+  ]);
+  const open = s.nodes.get('w')!;
+  assert.equal(nodeWords(open), 'Waiting for');
+  assert.equal(placeWords(open, s, new Map()), 'Waiting for');
+
+  const after = fold([
+    ev('node.created', 'w', { nodeKind: 'waiting-for', title: 'The signed lease' }),
+    ev('waiting.opened', 'w', { forWhat: 'the countersigned copy' }),
+    ev('waiting.closed', 'w', { outcome: 'arrived' }),
+  ]);
+  const done = after.nodes.get('w')!;
+  assert.equal(nodeWords(done), ARRIVED_WORD);
+  assert.equal(ARRIVED_WORD, 'Arrived');
+  assert.equal(placeWords(done, after, new Map()), 'Arrived');
+
+  // THE KIND IS UNTOUCHED, which is the half ADR-0040 settles: it is not marked
+  // done, it keeps its clock, and it is still a waiting-for in the schema.
+  assert.equal(done.kind, 'waiting-for');
+  assert.equal(done.lastDone, null);
+  // And `kindWords` itself is unchanged — the kind's word is still the kind's
+  // word, so nothing that asks about a KIND rather than a node moves.
+  assert.equal(kindWords('waiting-for'), 'Waiting for');
+});
+
+test('reopening a waiting-for puts the word back, with no second rule', () => {
+  const s = fold([
+    ev('node.created', 'w', { nodeKind: 'waiting-for', title: 'The quote' }),
+    ev('waiting.opened', 'w', { forWhat: 'a number' }),
+    ev('waiting.closed', 'w', { outcome: 'arrived' }),
+    ev('waiting.opened', 'w', { forWhat: 'the revised number' }),
+  ]);
+  assert.equal(nodeWords(s.nodes.get('w')!), 'Waiting for');
+});
+
+// The importer's latch is a DIFFERENT fact, and branching on it here would have
+// named every imported row arrived.
+test('a thing that came in with an import is not an arrival', () => {
+  const s = fold([
+    ev('node.created', 'i', { nodeKind: 'waiting-for', title: 'Chase the deposit', arrived: true }),
+  ]);
+  const n = s.nodes.get('i')!;
+  assert.equal(n.arrived, true);
+  assert.equal(n.waitingOutcome, null);
+  assert.equal(nodeWords(n), 'Waiting for');
 });
