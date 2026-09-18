@@ -2223,7 +2223,33 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   `ac0d40e`, Deploy and Spine both green on that exact SHA — the Deploy only
   after a fresh dispatch, because the push-triggered run failed at startup and
   re-running it reproduced that.
-- **PRODUCTION CARRIES 3.24.5**, promoted 2026-09-15 at `389c887`, carrying
+- **PRODUCTION CARRIES 3.26.1**, promoted 2026-09-18 at `adb443c`, carrying six
+  releases: 3.24.6, 3.24.7, 3.24.8, 3.25.0, 3.26.0 and 3.26.1. Verified before
+  the merge by Spine run 951 on `546256a` — the head being merged — both jobs
+  and all fifty-three real steps green by step-level conclusion, with the only
+  non-green entries the hub's color gate and zizmor, which are skipped by the
+  hub's own call, and the verdict step, skipped because nothing failed. Content
+  asserted byte-identical to staging before the push, and `a11y-fresh` run on
+  `main`, where it REFUSES rather than notes.
+  **3.24.6 and 3.24.7** — leaving a job to put something down offers the way
+  back; the empty Next-up title stops pretending to be a button; and that offer
+  is stripped on the worst day with the rest of the navigation, because the job
+  it points at is itself put away by that mode.
+  **3.24.8** — one sentence, one live region. Seven messages were announcing
+  twice and two confirmations were written into a part of the screen the same
+  act removed.
+  **3.25.0** — an answer owed on any single thing. One boolean was shared
+  between the track role and the answer-owed date, so the commonest thing a
+  conversation produces had nowhere to live. The gate's second clause goes from
+  unsatisfiable to satisfiable.
+  **3.26.0** — the structural assessment's Phase 0, finished. An answered
+  waiting-for reads *Arrived*; the Someday route asks which kind of wish; hot or
+  cold is revisable from a thing's own page, which 1.39.3 and 2.38.0 had both
+  already promised about a control that page never carried.
+  **3.26.1** — the clock-intent record, complete and typed, with no behavior
+  change and a test that folds every source through the predicate to prove it.
+- **Superseded, and kept for the record: 3.24.5**, promoted 2026-09-15 at
+  `389c887`, carrying
   3.24.4 and 3.24.5 together. Both come out of auditing the app's ten live
   regions rather than out of noticing one.
   **3.24.4** — the re-entry offer said the write had landed when it had not.
@@ -4647,8 +4673,24 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   same push — recorded that way rather than as a reading of a host nobody read.
   V-15's route: a session still cannot fetch any `pages.dev` host from here, the
   proxy answers 403 at CONNECT.
-- **https://quietkeep.pages.dev** — production, **3.24.5** — promoted at
-  `389c887` on 2026-09-15, carrying 3.24.4 and 3.24.5: the re-entry offer no
+- **https://quietkeep.pages.dev** — production, **3.26.1** — promoted at
+  `adb443c` on 2026-09-18, carrying six: 3.24.6 and 3.24.7 (the way back out of
+  a job, the empty Next-up title no longer pretending to be a button, and both
+  stripped on the worst day with the rest of the navigation), 3.24.8 (one
+  sentence, one live region — seven messages were announcing twice and two
+  confirmations were written into a part of the screen the same act removed),
+  3.25.0 (an answer owed on any single thing, which takes the gate's second
+  clause from unsatisfiable to satisfiable), 3.26.0 (the structural
+  assessment's Phase 0 finished — an answered waiting-for reads *Arrived*, the
+  Someday route asks which kind of wish, and hot or cold is revisable from a
+  thing's own page, which two shipped release notes had promised about a
+  control it never carried) and 3.26.1 (the clock-intent record, complete and
+  typed, with no behavior change and a test that proves it). Merged tree
+  `cafe0c2`, the same tree OBJECT as the staging head, asserted before the push
+  and against a `main` that was not an ancestor; Spine green by head SHA at
+  `546256a`, run 951, read by step-level conclusions across both jobs, and
+  `a11y-fresh` run on `main` where it refuses rather than notes. Before it,
+  `389c887` carried 3.24.4 and 3.24.5: the re-entry offer no
   longer says a write landed when it failed, and six of the app's ten live
   regions show their sentence instead of writing it only for screen readers,
   with a seventh deleted for never having been written to at all. Merged tree
