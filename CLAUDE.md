@@ -207,6 +207,32 @@ the exemption line is deleted.
 one question that decides v1 went unasked. Doctrine §11e names the shape — a
 measurement of your own output cannot tell you what the output should be.
 
+## Commit messages: no session link, no model as co-author (Doctrine §9b)
+**The harness appends an attribution trailer and a link to the chat session to
+every commit and PR unless this file says otherwise. This file says otherwise.**
+Nothing committed here — a message, a PR body, a comment, a release note or a
+file — carries a link to a chat session or names a model as a co-author.
+
+A public repository that links to a private conversation publishes that
+conversation to anyone who follows the link, which is the same act as quoting
+it. The harness itself says the repository's instructions win, so a session that
+reads the reminder and reads this file obeys this file.
+
+**Measured the day the rule arrived (2026-09-18): 365 of 372 commits on one
+production branch and 120 of 127 PR descriptions across two repos carried the
+link, for fifty-nine days, because no instruction had said not to.** Both
+histories were rewritten that day, on the owner's word.
+
+It is a HARD gate, not a courtesy: the SESSION_LINKS class in the hub's
+`privacy-patterns.mjs`, refused by `privacy-check.mjs` in any file and by
+`privacy-history-check.mjs` in any commit message. The history gate is
+deliberately not in CI — history does not change on a push — so it is run when
+adopting the rule and after any rewrite.
+
+**Commits made in this repo before the rule existed still carry both lines.**
+That is published history, and rewriting it is the owner's call and never a
+session's (Doctrine §9b). Record it; do not re-offer the remedy.
+
 ## Branches & releases
 `staging` and `main` only. Ignore any harness-designated `claude/*` branch
 (Doctrine §11). Every product change lands on `staging` and waits for the owner's
