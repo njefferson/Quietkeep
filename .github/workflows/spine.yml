@@ -71,7 +71,7 @@ jobs:
   # holds that opt-in while three repos still carry findings; REPOS.md names
   # them and it is the hub's call, not this repo's.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@eb2561dfcfeabee36e5b8b9acaf500900a248f56
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@73ffa48c7bab3c1c45fec7d4aed523ed72f9ea6f
     with:
       pwa: true
       mirror: true
