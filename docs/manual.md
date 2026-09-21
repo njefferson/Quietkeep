@@ -33,8 +33,11 @@ Five things worth knowing, and then you can stop reading:
 - **Filing is optional, always.** Nothing needs a place, a person, a project or
   a goal. The app works with none of them. They make it better at answering
   questions when you have them, and cost you nothing when you do not.
-- **It is yours and it is here.** No account, no server, no telemetry. Nothing
-  you write leaves the device unless you export it yourself.
+- **It is yours.** No account, no telemetry. Nothing you write leaves this
+  device unless you export it, or you have paired a second device of your own —
+  and what travels then is sealed here first, where only your devices hold the
+  key. The ⓘ panel says which of those two this build is, and what the handover
+  point can and cannot see.
 
 ---
 

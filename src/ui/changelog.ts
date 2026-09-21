@@ -29,6 +29,17 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.26.2',
+    kind: 'ITERATION',
+    date: '2026-09-21',
+    notes: [
+      '**Quietkeep Sync was telling you nothing about you is collected. That was not true, and the app already knew it.** The sealing module has always stated exactly what the handover point can observe \u2014 that your devices are linked under one pseudonym, each device\u2019s network and rough location, how big each sealed parcel is, and when each one is sent, which over time is a picture of when you sync and how often. It cannot read a word of what is in them. But \u201Cnothing about you is collected\u201D was the overclaim, and it was in three places.',
+      '**The worst of them showed in both editions.** A line answering *Is my writing private?* said \u201Con this device, and nowhere else \u2026 no server, and nothing collected about you\u201D with nothing marking it as the no-network edition\u2019s answer, so a Sync reader was told all three. It is gone; the two edition-specific answers underneath it were already there and already correct. The footer\u2019s \u201Cno server\u201D is now the default edition\u2019s claim only, and the Sync answer says the relay can tell that a sync happened and roughly when.',
+      '**And one sheet was arguing with itself.** Under Your data, *What leaves this device* ended \u201Cnothing collected about you\u201D three paragraphs above *What the handover point can and cannot see*, which opens by saying it is not blind and that pretending otherwise would be dishonest. The honest passage is the one that stays.',
+      '**Two other things that were not true.** The manual is one document serving both editions and said \u201Cno server \u2026 nothing you write leaves the device\u201D, which is wrong for anyone who has paired a second device; it now says what is true of the build you are reading and points at the panel that says which one that is. And the version-one note from July said every capability was \u201Cin place and in daily use\u201D \u2014 in place was true, in daily use was not.',
+    ],
+  },
+  {
     triplet: '3.26.1',
     kind: 'ITERATION',
     date: '2026-09-17',
@@ -2909,7 +2920,7 @@ export const RELEASES: readonly Release[] = [
     kind: 'VERSION',
     date: '2026-07-31',
     notes: [
-      '**This is version one.** Every capability the planner was built to have is in place and in daily use — friction-free capture, triage, a single Next-up, dates and repeats, the Review that surfaces only what has stalled, the person lens, the carrying report, and calendar reminders. Nothing here is a preview any more.',
+      '**This is version one.** Every capability the planner was built to have is in place — friction-free capture, triage, a single Next-up, dates and repeats, the Review that surfaces only what has stalled, the person lens, the carrying report, and calendar reminders. Nothing here is a preview any more.',
       'It stays exactly what it always was: yours, on your device, with no account, no telemetry, and no server holding your data. Keeping two devices in step is a separate edition you opt into; the planner itself still cannot reach anything at all.',
     ],
   },

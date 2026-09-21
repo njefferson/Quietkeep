@@ -2511,7 +2511,21 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.26.1**: the intent record is
+- **https://staging.quietkeep.pages.dev** — **3.26.2**: three reader-facing
+  surfaces said *nothing about you is collected* while `src/seal.ts` states
+  exactly what the relay observes and calls the denial *"the overclaim this
+  project refuses"*. The worst was UNGATED — no `data-edition` — so both builds
+  told a reader "on this device, and nowhere else … no server, and nothing
+  collected about you", all three false in the sync one. 1.7.2 fixed *is there
+  a server*; this is the other half, *does it observe anything*, at four sites
+  the mechanism 1.7.2 built had never been applied to. One sheet was arguing
+  with itself: *What leaves this device* denied what *What the handover point
+  can and cannot see* opens by calling it dishonest to deny. Also corrected:
+  one manual serving both editions said "no server", and the 1.0.0 note claimed
+  every capability was "in place and in daily use" when use never started.
+  **Net subtractive** — the shell goes 4031 to 4022 words against a budget that
+  had zero headroom.
+- **3.26.1**: the intent record is
   complete and typed, and the seventh read's date defect is measured rather than
   argued. `ClockSource` closes the app's own twenty-one clock writers and
   `CLOCK_INTENT` is exhaustive over it, so a new writer is a compile error until

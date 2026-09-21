@@ -14,6 +14,15 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.26.2 — ITERATION
+
+*2026-09-21*
+
+- **Quietkeep Sync was telling you nothing about you is collected. That was not true, and the app already knew it.** The sealing module has always stated exactly what the handover point can observe — that your devices are linked under one pseudonym, each device’s network and rough location, how big each sealed parcel is, and when each one is sent, which over time is a picture of when you sync and how often. It cannot read a word of what is in them. But “nothing about you is collected” was the overclaim, and it was in three places.
+- **The worst of them showed in both editions.** A line answering *Is my writing private?* said “on this device, and nowhere else … no server, and nothing collected about you” with nothing marking it as the no-network edition’s answer, so a Sync reader was told all three. It is gone; the two edition-specific answers underneath it were already there and already correct. The footer’s “no server” is now the default edition’s claim only, and the Sync answer says the relay can tell that a sync happened and roughly when.
+- **And one sheet was arguing with itself.** Under Your data, *What leaves this device* ended “nothing collected about you” three paragraphs above *What the handover point can and cannot see*, which opens by saying it is not blind and that pretending otherwise would be dishonest. The honest passage is the one that stays.
+- **Two other things that were not true.** The manual is one document serving both editions and said “no server … nothing you write leaves the device”, which is wrong for anyone who has paired a second device; it now says what is true of the build you are reading and points at the panel that says which one that is. And the version-one note from July said every capability was “in place and in daily use” — in place was true, in daily use was not.
+
 ## 3.26.1 — ITERATION
 
 *2026-09-17*
@@ -2366,7 +2375,7 @@ triplet and what it did for you.
 
 *2026-07-31*
 
-- **This is version one.** Every capability the planner was built to have is in place and in daily use — friction-free capture, triage, a single Next-up, dates and repeats, the Review that surfaces only what has stalled, the person lens, the carrying report, and calendar reminders. Nothing here is a preview any more.
+- **This is version one.** Every capability the planner was built to have is in place — friction-free capture, triage, a single Next-up, dates and repeats, the Review that surfaces only what has stalled, the person lens, the carrying report, and calendar reminders. Nothing here is a preview any more.
 - It stays exactly what it always was: yours, on your device, with no account, no telemetry, and no server holding your data. Keeping two devices in step is a separate edition you opt into; the planner itself still cannot reach anything at all.
 
 ## 0.27.3 — ITERATION

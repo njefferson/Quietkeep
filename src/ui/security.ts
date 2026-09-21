@@ -74,7 +74,7 @@ const WHAT_TRAVELS: Passage = {
   paragraphs: [
     'Only your writing, sealed, on its way to your other device — and only once you have paired them.',
     'Sealing happens here, before anything is sent, using a key that exists only on your own devices. What travels is unreadable without that key. It goes to a single handover point on the internet, which holds it briefly so your other device can collect it. Your browser is told that this app may contact that one place and nowhere else, and it enforces that itself.',
-    'There is still no account, no sign-in, and nothing collected about you.',
+    'There is still no account and no sign-in. What the handover point can and cannot see is set out in full below, including the part that is not nothing.',
   ],
 };
 
