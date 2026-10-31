@@ -135,6 +135,34 @@ const blanked = (() => {
   return out;
 })();
 
+/**
+ * AN INLINE TAG IS NOT A WORD BOUNDARY, AND REPLACING IT WITH A SPACE SAYS IT IS.
+ *
+ * This counted words by turning EVERY tag into a space. On block elements that
+ * is right — `<p>a</p><p>b</p>` must not read as `ab`. On an inline one it
+ * invents tokens: wrapping a clause in a `<span>` turned `telemetry,` into
+ * `telemetry` + `,` and `server.` into `server` + `.`, so a footer whose
+ * rendered words did not change by one character counted 7 before and 9 after.
+ *
+ * It was measured on the real case rather than reasoned about: `data-edition`
+ * markup added to `#foot` in 3.26.2 to stop the sync edition claiming "no
+ * server" moved this gate from 8 to 10 while the default edition's footer text
+ * stayed byte for byte identical.
+ *
+ * WHY THAT MATTERS MORE THAN TWO WORDS. The gate offers `--write` to adopt the
+ * new figure, and adopting is how a budget stops being a ceiling — this repo's
+ * size gate reached exactly 280/280 and 4031/4031 through 81 such adoptions. A
+ * counter that moves when the surface does not trains somebody to take that
+ * door, and the one time it mattered the door would be taken too.
+ */
+const INLINE = new Set([
+  'a', 'abbr', 'b', 'bdi', 'bdo', 'cite', 'code', 'data', 'dfn', 'em', 'i',
+  'kbd', 'mark', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span',
+  'strong', 'sub', 'sup', 'time', 'u', 'var',
+]);
+const stripTags = (frag) => frag.replace(/<(\/?)([a-z][a-z0-9-]*)\b[^>]*>/gi,
+  (_m, _slash, tag) => (INLINE.has(tag.toLowerCase()) ? '' : ' '));
+
 const controls = [];
 const lines = [];
 const stack = [];
@@ -152,7 +180,7 @@ for (const m of blanked.matchAll(/<(\/?)([a-z][a-z0-9-]*)\b([^>]*)>/g)) {
   if (TEXT.has(tag)) {
     const close = blanked.indexOf(`</${tag}>`, m.index);
     const inner = close < 0 ? '' : blanked.slice(m.index + m[0].length, close);
-    const words = (inner.replace(/<[^>]*>/g, ' ').replace(/&[a-z]+;/g, 'x').match(/\S+/g) ?? []).length;
+    const words = (stripTags(inner).replace(/&[a-z]+;/g, 'x').match(/\S+/g) ?? []).length;
     if (words > 0) lines.push({ region: regionOf(), what: id ? `#${id}` : `<${tag}>`, words });
   }
   if (!(VOID.has(tag) || /\/$/.test(attrs))) stack.push(id);
