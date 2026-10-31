@@ -44,7 +44,14 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # NOTHING HERE USES THE CHECKOUT'S CREDENTIAL AFTER THIS STEP — no push, no
+      # commit, no GITHUB_TOKEN, and the job runs `contents: read`. Left on, the
+      # token stays in .git/config for the rest of the job, where any later step
+      # or an uploaded artefact can carry it off. Off is the honest default for
+      # a job that only reads.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
@@ -176,9 +183,13 @@ jobs:
           echo "url=$URL" >> "$GITHUB_OUTPUT"
 
       - name: Check it actually answers
+        # Same class as deploy.yml's rollback step: a step output expanded into a
+        # `run:` block is text substitution, not a shell variable. Through env.
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         run: |
           set -uo pipefail
-          URL="${{ steps.deploy.outputs.url }}"
+          URL="$DEPLOY_URL"
           # A deploy that succeeded and THE NEW WORKER being live are different
           # claims. wrangler propagates over a few seconds, so for a while the URL
           # answers with the PREVIOUS version — and a probe of a route both
@@ -259,9 +270,11 @@ jobs:
           echo "The relay is up, answering, revocable, and reachable from another origin."
 
       - name: What to do with this
+        env:
+          DEPLOY_URL: ${{ steps.deploy.outputs.url }}
         run: |
           echo ""
-          echo "  RELAY URL: ${{ steps.deploy.outputs.url }}"
+          echo "  RELAY URL: $DEPLOY_URL"
           echo ""
           echo "Put that value in src/relay-host.ts as RELAY_HOST, commit it, and the"
           echo "sync edition will build. tools/editions.mjs generates the sync build's"

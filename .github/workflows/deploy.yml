@@ -59,8 +59,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # NOTHING HERE USES THE CHECKOUT'S CREDENTIAL AFTER THIS STEP — no push, no
+      # commit, no GITHUB_TOKEN, and the job runs `contents: read`. Left on, the
+      # token stays in .git/config for the rest of the job, where any later step
+      # or an uploaded artefact can carry it off. Off is the honest default for
+      # a job that only reads.
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
 
+      # ZIZMOR REPORTS cache-poisoning HERE AND IT IS LEFT STANDING, with the
+      # reasoning written down rather than suppressed. The audit pairs this step
+      # with the wrangler publish below: a cache restored from a less-trusted ref
+      # could reach a production deploy. No `cache:` input is set, and this
+      # workflow triggers only on pushes to `staging` and `main` — both trusted —
+      # so neither half of the premise holds today. That is a fact about the
+      # trigger, like the template-injection note above, so it is recorded here
+      # and NOT turned into an ignore rule: a suppression outlives the reasoning
+      # that justified it, and the next person reads only the suppression.
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
@@ -224,13 +240,23 @@ jobs:
 
       - name: Where this went, and how to roll it back
         if: always() && steps.cf.outputs.ready == 'true'
+        # THROUGH THE ENVIRONMENT, NEVER INTERPOLATED INTO THE SHELL. A `${{ }}`
+        # expansion inside a `run:` block is substituted as TEXT before bash sees
+        # the line, so a ref whose name carries shell metacharacters becomes code
+        # rather than a string. Today the trigger below admits only `staging` and
+        # `main`, so the value is one of two literals and nothing is reachable —
+        # but that is a property of the trigger, not of this step, and widening
+        # the trigger would arm it silently. The env route is the one
+        # `hub-gates.yml` already takes for the same reason, on zizmor's say-so.
+        env:
+          REF_NAME: ${{ github.ref_name }}
         run: |
           # Doctrine §16 — the rollback path is printed on every deploy so it is
           # known BEFORE it is needed, not looked up during an outage.
-          if [ "${{ github.ref_name }}" = "main" ]; then
+          if [ "$REF_NAME" = "main" ]; then
             echo "Deployed to PRODUCTION: https://quietkeep.pages.dev"
           else
-            echo "Deployed to preview: https://${{ github.ref_name }}.quietkeep.pages.dev"
+            echo "Deployed to preview: https://$REF_NAME.quietkeep.pages.dev"
           fi
           echo ""
           echo "If this deploy is bad:"
