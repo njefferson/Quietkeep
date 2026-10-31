@@ -1,0 +1,37 @@
+# Doctrine §16.1 — pin what executes, then keep the pins current.
+#
+# SECURITY.md in the hub says `.github/dependabot.yml` in EVERY repo, for both
+# `github-actions` and `npm`. This repo did not have one. SHA-pinning an action
+# makes it safe but frozen: without this the pins quietly rot and stop receiving
+# security fixes, and nothing anywhere goes red to say so.
+#
+# No `pip` ecosystem here, deliberately. The only non-npm tool this repo runs is
+# zizmor, and it is installed from the HUB's `.github/requirements-ci.txt`,
+# which that file's own comment calls canonical for zizmor's version across all
+# the repos. A second pin here would be a second answer to one question.
+
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "Keep a build tool up to date"
+    labels:
+      - dependencies
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "Keep a build tool up to date"
+    labels:
+      - dependencies
+    # Six packages, one of them shipped (dexie); the rest is dev tooling.
+    # Grouped so a routine bump is one PR to glance at rather than several.
+    groups:
+      tooling:
+        patterns:
+          - "*"
