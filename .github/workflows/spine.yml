@@ -67,15 +67,21 @@ jobs:
   # `palette-path` stays off DELIBERATELY and is not the same omission.
   # `tools/palette-gate.mjs` (Spine step 49) holds every palette against the
   # color inventory the a11y walk actually produced, which is strictly more
-  # than one palette file against the floors. `zizmor` stays off because the hub
-  # holds that opt-in while three repos still carry findings; REPOS.md names
-  # them and it is the hub's call, not this repo's.
+  # than one palette file against the floors.
+  #
+  # `zizmor` is ON. It audits this repo's own workflows on every push, at the
+  # version and hash the hub pins, and the tree reads no findings. It was held
+  # off while deploy.yml kept the step that sets up the runtime and the wrangler
+  # publish in one job, which zizmor reports as cache-poisoning. The deploy is
+  # two jobs now: the one that publishes sets up no runtime and restores no
+  # cache. Nothing is suppressed, so a finding from here on is a red step.
   hub-gates:
     uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@73ffa48c7bab3c1c45fec7d4aed523ed72f9ea6f
     with:
       pwa: true
       mirror: true
       textsize-paths: public/app.css public/index.html
+      zizmor: true
 
   test:
     runs-on: ubuntu-latest
