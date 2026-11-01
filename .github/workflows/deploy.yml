@@ -56,8 +56,18 @@ env:
   WRANGLER_VERSION: "4.114.0"
 
 jobs:
-  deploy:
+  # TWO JOBS, SO THE JOB THAT REACHES PRODUCTION SETS UP NO RUNTIME. The build job
+  # below installs, builds and uploads; it holds no Cloudflare credential and runs
+  # no publish step. The publish job after it holds the credential and runs the
+  # wrangler steps; it sets up no runtime and restores no cache. What passes
+  # between them is one artifact carrying `public/` (with the generated app
+  # bundle in it) and `dist/sync`.
+  build:
     runs-on: ubuntu-latest
+    outputs:
+      # Carried to the publish job so an absent Sync edition stays the inert
+      # state it has always been there. Empty when the step below was skipped.
+      sync_present: ${{ steps.sync.outputs.present }}
     steps:
       # NOTHING HERE USES THE CHECKOUT'S CREDENTIAL AFTER THIS STEP — no push, no
       # commit, no GITHUB_TOKEN, and the job runs `contents: read`. Left on, the
@@ -68,15 +78,12 @@ jobs:
         with:
           persist-credentials: false
 
-      # ZIZMOR REPORTS cache-poisoning HERE AND IT IS LEFT STANDING, with the
-      # reasoning written down rather than suppressed. The audit pairs this step
-      # with the wrangler publish below: a cache restored from a less-trusted ref
-      # could reach a production deploy. No `cache:` input is set, and this
-      # workflow triggers only on pushes to `staging` and `main` — both trusted —
-      # so neither half of the premise holds today. That is a fact about the
-      # trigger, like the template-injection note above, so it is recorded here
-      # and NOT turned into an ignore rule: a suppression outlives the reasoning
-      # that justified it, and the next person reads only the suppression.
+      # ZIZMOR REPORTED cache-poisoning HERE, and it was first recorded and left
+      # standing. It is fixed now rather than argued with, and nothing is
+      # suppressed: the audit pairs a step that sets up a runtime with a publish
+      # step in the SAME job, and this was the same job. This step now lives in a
+      # job that publishes nothing and holds no credential, and the job that
+      # publishes sets up no runtime.
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: 22
@@ -85,6 +92,77 @@ jobs:
       # the deploy builds it. Without this the shell would ship with no app.
       - run: npm ci
       - run: npm run build
+
+      # --- Quietkeep Sync (ADR-0036), when there is one to ship ----------------
+      #
+      # `build:sync` writes dist/sync ONLY when src/relay-host.ts names a real
+      # relay. With no relay deployed it skips, loudly, and exits zero — so this
+      # whole tail is inert rather than red. "There is no sync edition yet" is an
+      # honest state; a permanently failing deploy step is not, and would train
+      # everybody to ignore a red Deploy.
+      #
+      # The condition is the old guard's test, made on the checkout: the publish
+      # job's guard still decides whether anything is published at all.
+      - name: Build the Sync edition, if there is a relay
+        if: hashFiles('public/index.html') != ''
+        run: npm run build:sync
+
+      - name: Is there a Sync edition to deploy?
+        id: sync
+        if: hashFiles('public/index.html') != ''
+        run: |
+          if [ -f dist/sync/index.html ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+            echo "dist/sync built — Quietkeep Sync will be published."
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "No dist/sync. There is no relay host set, so there is no Sync edition."
+            echo "This is expected until the relay is deployed — see V-18."
+          fi
+
+      # BOTH PATHS ARE LISTED ON EVERY RUN, never one of them conditionally. With
+      # two search paths the artifact's root is their common ancestor, so it keeps
+      # the `public/` and `dist/sync/` prefixes whether or not the Sync folder
+      # exists, and the publish job can unpack it into the same paths. The action
+      # leaves out files whose names begin with a dot by default; neither folder
+      # holds one (the Sync build is a copy of `public/` plus `app.js`, its map and
+      # `_headers`), so the option stays off.
+      - name: Hand the built site to the publish job
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: site
+          path: |
+            public
+            dist/sync
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      # Same reasoning as the build job's checkout: nothing here uses the
+      # credential, so it is not kept.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+
+      - name: Fetch the built site from the build job
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: site
+          path: .
+
+      # The shell without its app is what this deploy exists never to ship. The
+      # guard below tests only that the shell is there, so this is the step that
+      # fails the run, red, when the generated bundle did not come through.
+      - name: The generated app bundle came through the hand-off
+        run: |
+          if [ ! -f public/app.js ]; then
+            echo "::error::public/app.js is not in the build artifact — the shell would ship with no app."
+            exit 1
+          fi
+          echo "public/app.js found — the bundle came through."
 
       - name: Is there anything to deploy yet?
         id: site
@@ -195,32 +273,10 @@ jobs:
           wranglerVersion: ${{ env.WRANGLER_VERSION }}
           command: pages deploy public --project-name=${{ env.PROJECT }} --branch=${{ github.ref_name }} --commit-dirty=true
 
-      # --- Quietkeep Sync (ADR-0036), when there is one to ship ----------------
-      #
-      # `build:sync` writes dist/sync ONLY when src/relay-host.ts names a real
-      # relay. With no relay deployed it skips, loudly, and exits zero — so this
-      # whole tail is inert rather than red. "There is no sync edition yet" is an
-      # honest state; a permanently failing deploy step is not, and would train
-      # everybody to ignore a red Deploy.
-      - name: Build the Sync edition, if there is a relay
-        if: steps.site.outputs.present == 'true'
-        run: npm run build:sync
-
-      - name: Is there a Sync edition to deploy?
-        id: sync
-        if: steps.site.outputs.present == 'true'
-        run: |
-          if [ -f dist/sync/index.html ]; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-            echo "dist/sync built — Quietkeep Sync will be published."
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "No dist/sync. There is no relay host set, so there is no Sync edition."
-            echo "This is expected until the relay is deployed — see V-18."
-          fi
-
+      # The Sync edition's steps are skipped, exactly as before, when the build job
+      # found no dist/sync to ship — the test now arrives as that job's output.
       - name: Ensure the Sync Pages project exists
-        if: steps.cf.outputs.ready == 'true' && steps.sync.outputs.present == 'true'
+        if: steps.cf.outputs.ready == 'true' && needs.build.outputs.sync_present == 'true'
         continue-on-error: true
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
@@ -230,7 +286,7 @@ jobs:
           command: pages project create ${{ env.PROJECT }}-sync --production-branch=main
 
       - name: Deploy Quietkeep Sync
-        if: steps.cf.outputs.ready == 'true' && steps.sync.outputs.present == 'true'
+        if: steps.cf.outputs.ready == 'true' && needs.build.outputs.sync_present == 'true'
         uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
         with:
           apiToken: ${{ env.CF_TOKEN }}
