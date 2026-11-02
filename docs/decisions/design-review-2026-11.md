@@ -827,3 +827,145 @@ Seven questions, each with the entries that bear on it and whether any does.
   elaborate manual systems at a cost in effort); ADR-0085; NOTES.md dogfood correction. Not found: any entry on
   why paper, walls or boards survive; the only board method named is the work-in-progress limit
   method in section 7, community-construct.
+
+---
+
+## What was asked
+
+Written in the second pass. In the first two sections, this pass means the first pass; this
+section is the second. It records what the app is supposed to do, as it has been asked for, in
+design statements of the app in this review's own words. Nothing is quoted. No statement names or
+describes who made it, and no particulars of anybody's day or work are recorded. Where a statement
+rests on something shown in a photograph, only the properties that bear on design are written and
+the contents are not.
+
+Later sections cite a statement by its number. The statements are the measure the first draft is
+held against and not findings; whether the first draft meets one is for the later sections to say.
+
+### Sources and coverage
+
+- NOTES.md: the thesis, the failure the app exists to prevent (stated 2026-08-28), the v1
+  definition of done and its correction (2026-08-03), and the Block register and its redefinition
+  (2026-08-05). [NOTES.md]
+- CLAUDE.md: the condition framing and its hazard, the privacy rule, and the rule that a report
+  closes on what ended the day. [CLAUDE.md]
+- The record of the session in which this review was commissioned, read in place by search and
+  never copied. All 41 messages typed by a person were listed by date. Those of 31 October and 1
+  November 2026 concern the hub's updates, repository security settings, how a branch is promoted
+  and how work is run; none states a design intent for the app and none is used below. Those of 2
+  November 2026, from the one that carried a photograph of a wall board and a pad of paper through
+  the one asking that finished research not be done again, state the intent in statements 1 to 20.
+  One message of that day says another session is changing the hub and its updates are to be used
+  here later; that bears on when staging is promoted and on nothing in the design.
+- Not recorded, on purpose: the contents of the board and the pad, any particular of anybody's
+  day, and anything about who made a statement. A register entry is a shape and never an
+  instance, and the same line is held here.
+
+### The measure for this review, stated 2 November 2026
+
+The instrument that survives
+
+1. A system that fails leaves an instrument behind, and that instrument is the measure. What a
+   person runs when giving up on a planner is a record of what the planner lacked, so its
+   properties are read as design statements and its contents are not recorded. [stated 2026-11-02]
+2. One surface, read at a glance. What is needed for the day, the week and the weeks ahead is
+   visible together, without opening anything, choosing a view or scrolling a list. [stated
+   2026-11-02]
+3. Time is laid out in space. The current week is a strip and the next thirty days are a column.
+   Things that span several weeks are lanes projected against the thirty days, so that extent is
+   seen as length and is not worked out from two dates. [stated 2026-11-02]
+4. Landing a thing costs one line, and sorting waits for a moment chosen later. Every unplanned
+   thing (a note from a call, a reminder somebody drops by to give, a meeting that suddenly
+   appears) is written once, in one place, so that the day does not stop to deal with each
+   interruption. Where the thing belongs is decided at a time set aside for sorting. [stated
+   2026-11-02]
+5. The unowned stays visible. A problem not yet addressed, with no project and no date, is kept
+   on the surface and is not filed out of sight. [stated 2026-11-02]
+6. What depends on another person stays visible: things waited on from others, future dates that
+   must be planned around, and stretches when somebody else is unavailable. [stated 2026-11-02]
+7. Grain follows length. Long-term work appears as titles; short-term work carries notes
+   underneath. [stated 2026-11-02]
+
+The boundary
+
+8. The app is not asked to become a management tool. The instrument's lessons are carried by its
+   properties, and each property is tested, one at a time, against a person under the condition
+   with nobody reporting to that person. The ones that pass are in scope: a glance at one
+   surface, a one-line landing with the sorting deferred, time laid out with extent, the unowned
+   kept visible, and waiting on another person. The one that fails is out: assigning work to
+   people and tracking what each carries. A separate management surface is not part of the
+   design. The test was put in an answer to a question about drift and was accepted the same day.
+   [stated 2026-11-02]
+9. The app stays aimed at the condition. No diagnosis is a prerequisite for using it, and no role
+   is a prerequisite for benefiting from it. Two goals, a planner for people under the condition
+   and a new kind of management tooling, are not chased as one, and a candidate that serves only
+   the second is out. [stated 2026-11-02]
+10. Depending on another person is in; delegating work and tracking who carries it is out.
+    Everyone waits on other people and that belongs in any plan; handing work on and following
+    its progress is a different product. [stated 2026-11-02]
+
+Roles and contexts
+
+11. Roles and contexts are different axes, and they cross. A role is what a person is to others
+    and what is held in that capacity. A context is where the person is and what is to hand. A
+    person has several of each, and more than two contexts. [stated 2026-11-02]
+12. Two roles can share a context, and the person chooses what to do there. [stated 2026-11-02]
+13. Filtering by role gives control over what is being chosen from. The names do not matter; the
+    distinction does. [stated 2026-11-02]
+14. A role-based system runs in three directions, and all three are owed. Sort: an input is sorted
+    to the role it belongs to and aligned against what the person has, such as time, resources
+    and what is to hand. List: what has been sorted is listed, so the person can see what to do
+    now that it is sorted and can choose from it. Review: the roles are looked across to find the
+    one being neglected. [stated 2026-11-02]
+15. Neglect is of a role, and it is measured by not having looked, never by lateness. A role is
+    neglected when attention was elsewhere and nobody looked at it, not when a date went by. The
+    tie to the app's refusal of any late state is this review's reading; the rest is as stated.
+    [stated 2026-11-02]
+16. Contexts are fluid, and some stay physical. They shift as technology shifts: a phone is
+    always to hand, so having one narrows nothing; a grocery list must still be available to add
+    to and to shop from; at home, or anywhere a phone is available, research and calls can be
+    done. [stated 2026-11-02]
+17. A meeting is a context whose list is its agenda. Certain meetings need certain things shown
+    while the person is in them, and agendas for those meetings must be plannable ahead. [stated
+    2026-11-02]
+18. A context shows its own items unless the person chooses otherwise. With a work context in
+    force the home items are not shown, and with a home context in force the work items are not;
+    each is shown only on choice. [stated 2026-11-02]
+
+How the review itself is run
+
+19. Nothing is built on the first draft until it has been reviewed. The review records what the
+    app does, why it does it, what it is supposed to do, and the intent as it has been
+    communicated throughout, and then says which parts stand. [stated 2026-11-02]
+20. Learn from others rather than derive again. What others have done, and the way it was done,
+    is read before anything is designed; what the catalogs already hold is not researched again
+    unless a new entry is written to verify or expand it. [stated 2026-11-02]
+
+### Standing statements already in the record
+
+These were made before this review and are still binding. The review rests on them and does not
+restate them at length.
+
+21. What ends an attempt is the dataset. The failures are the data, and a report closes on what
+    stopped the day, not on whether a promote is due or a device pass was made. [stated
+    2026-08-03; NOTES.md, v1 definition of done; CLAUDE.md]
+22. Evidence is the shape and the class, never an instance. A Block register entry records the
+    shape of what blocked a day, its class, whether it was a hard block or an adjustment, and the
+    release that answers it; the particulars stay outside the repository. [stated 2026-08-05;
+    NOTES.md, The Block register]
+23. A missed day must not become a new list to sort. The target is rules trusted to put what
+    matters on top, not a clear inbox; noise is acceptable and being unable to see past it is
+    not. [stated 2026-08-28; NOTES.md, Thesis]
+24. The audience is neurodivergent people and the target is a condition: low capacity, high
+    demand, interruption, and engagement that varies. Naming the condition is what makes
+    cognitive aids, structured handover, high-reliability work and distributed cognition
+    applicable. [undated in the files; NOTES.md, Thesis; CLAUDE.md]
+25. The condition framing widens what may be researched and never relaxes a refusal. A
+    general-population finding may inform a design and may never override a refusal that rests on
+    a finding about this audience. The test before citing a general literature is whether the
+    finding was measured on people for whom the failure it prevents is expensive; if not, it is
+    background and not grounds. [undated in the files; CLAUDE.md; NOTES.md, Thesis]
+26. Nothing personal about any person lands in the repository: no diagnosis, health fact or
+    identity disclosure attached to a real person, in any file, commit message or pull request
+    description. The shape of a use is recordable and an instance is not. [stated 2026-08-04
+    according to CLAUDE.md; held by the privacy gate]
