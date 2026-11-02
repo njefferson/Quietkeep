@@ -969,3 +969,712 @@ restate them at length.
     identity disclosure attached to a real person, in any file, commit message or pull request
     description. The shape of a use is recordable and an instance is not. [stated 2026-08-04
     according to CLAUDE.md; held by the privacy gate]
+
+---
+
+## What the other research and plans already hold
+
+Written in the third pass. The inventory above read two research catalogs and the decision records.
+The repository also holds research and plans directly under docs/ that the inventory did not read.
+This section reads them, in the inventory's line shape, so that the outside reading in the next
+section starts from what the repository already holds and repeats none of it.
+
+### How this section is read
+
+- Facts only, each line naming the file it came from in brackets at its end. A line that corrects a
+  not-found line of the inventory opens with the word Correction. A line that records two files
+  disagreeing, or a file disagreeing with the tree, opens with Disagreement, and all of them are
+  collected again at the end of this section.
+- The seven questions of the inventory are numbered in its order: Q1 the cost of landing one item;
+  Q2 reading a system at a glance; Q3 time laid out in space, and extent; Q4 roles, and a review of
+  roles to find the one not looked at; Q5 contexts, and what is to hand; Q6 deferring the sorting of
+  an interruption; Q7 why systems are abandoned, and what survives. A line says which questions it
+  bears on, and names a numbered statement of "What was asked" where it bears on one directly. A
+  line that bears on none says so.
+- Where and on whom: none of the documents below reports a measurement of its own. They are
+  surveys of practice, a design derived from a stated demand, and plans. A line says practice, not
+  measured, wherever a document describes a method and gives no evidence for it. Where a line rests
+  on a measured finding, it names the catalog entry that holds the measurement, and the measurement
+  is that entry's.
+- Cited by: found by searching every tracked file for the document's file name, outside
+  node_modules, dist, public and .git, as the inventory did. Not guaranteed complete.
+
+### What was read, and what was skipped
+
+- Read whole: docs/horizon-models.md, docs/what-it-should-be.md, docs/structural-assessment.md,
+  docs/planning-vocabularies.md, docs/plan-situated.md and docs/plan-routed.md.
+- Read in part: docs/build-plan.md (lines 1 to 40 and 100 to 335, and the numbered item lines of
+  the module list and phase 0); docs/verifications.md (the opening, the heading of every row, and
+  the row V-08).
+- Read around each citation of the research file: ADR-0095, ADR-0096 and ADR-0118. Read beyond the
+  citation: ADR-0115 and ADR-0119, because they decide how a role line and a meeting are shown.
+- Skipped, each for a reason: docs/brand-collisions.md (the identity of the mark, not planning
+  research), docs/data-constitution.md (promises about stored data), docs/relay-operations.md
+  (running the sync relay), docs/manual.md (the help, generated into a shipped page),
+  docs/code-map.md and docs/event-vocabulary.md (read in the first pass), the four JSON files under
+  docs/ (generated data) and docs/paths.html (the flowchart source).
+
+### docs/horizon-models.md, a survey of models for working at different horizons
+
+- What it is. Seventeen models surveyed against the ten laws, then three closing sections numbered
+  1 to 3 in their own series; a line below says model N or section N. Its filter is the laws, and it
+  says the shapes of military models may ship while their words may not. NOTES.md dates it
+  2026-08-04. Where and on whom: it names no population and no measurement for any model; each
+  account of how a model fails is the document's own reading of practice. Cited by: ADR-0095,
+  ADR-0096, ADR-0115, ADR-0118, ADR-0119, the decision index, NOTES.md (seven mentions),
+  docs/plan-situated.md (five), docs/nd-collisions.md (one), and comments in src/serves.ts,
+  src/roles.ts, src/situations.ts, src/meeting.ts and src/taskpaper.ts. [docs/horizon-models.md;
+  NOTES.md; docs/adr]
+- Model 1, lines of effort. A named line crosses the organization chart and links tasks from
+  different units to an end state by logic of purpose, which makes it a graph over a tree; it decays
+  when the assessment rhythm that keeps it alive turns into slideware. Practice, not measured;
+  origin in army and joint doctrine. The document says a line of effort and the role of Q-13 are the
+  same shape. Kept under the laws: the line as a link kind, purpose projected downward, and the
+  split between measuring an effect and measuring performance. Refused: assessment slides, a
+  mandatory rhythm, the vocabulary. Bears on Q4. [docs/horizon-models.md]
+- Model 2, commander's intent and backward planning. A short statement of purpose lets the bottom of
+  an organization act when the plan breaks; backward planning turns a distant date into a fact about
+  when to start. Practice, not measured. The document records backward planning as already shipped
+  (a feeds relation with a lead estimate, a computed latest start, buffer burn and the replan card,
+  release 0.12.0). Bears on Q3. [docs/horizon-models.md]
+- Model 3, effects versus tasks. A task is what is done; an effect is the change it was meant to
+  produce; the descriptive half is kept and the predictive half refused under law 7. The document
+  records that the outcome kind held no nodes at the time of the azimuth check. Practice; the
+  framework itself was withdrawn for joint use in 2008 by the document's account. Bears on none of
+  the seven. [docs/horizon-models.md]
+- Model 4, horizons of focus. The horizons are a reflection prompt that readers mistake for a
+  system layer; no artifact links a high horizon to a next action; three pieces are missing, a link
+  artifact, computed health, and a cadence that does not rest on the reviewer's own executive
+  function. Practice, not measured. Law 4 is described as the deliberate inversion, with the
+  horizons coming down on a clock. Bears on Q4 and Q7. [docs/horizon-models.md]
+- Model 5, roles and goals. The role is the organizing axis. Each week the roles are listed, one or
+  two goals are chosen for each, and the goals are placed on the calendar first. The roles sheet has
+  no memory, so two missed weekly sessions leave the system gone rather than stale and the missed
+  session does the rest; software versions did not take because the product is the ritual. The
+  document says a role is the closest civilian ancestor of the role of Q-13, that a clock cannot
+  ride a role because a role is demand-free (law 6, ADR-0014) so the container the role labels
+  carries it, and that a descriptive readout of where attention went per role is kept while any
+  per-role quota, and any copy telling the reader a named role was neglected, is refused as a
+  rebuke with a spreadsheet behind it. Practice, not measured. Bears on Q4 and Q7; statements 14
+  and 15. [docs/horizon-models.md]
+- Model 6, objectives and key results. Failure modes named: sandbagging, cascade theater, key
+  results turning into task lists, Goodhart effects, and the grade migrating into evaluation. The
+  software for it survived by reducing alignment to numbers, as quarterly data entry in a tab apart
+  from the work. Practice; the failure modes are called well documented with no source named. Bears
+  on Q7. [docs/horizon-models.md]
+- Model 7, hoshin kanri and the X-matrix. One page whose correlation dots make an unsupported
+  objective visible by construction, filled by a negotiation between levels; it fails when the page
+  outlives the negotiation, laminated and wrong by March. The unfed-goal and quiet-area exceptions
+  are recorded as the empty row computed instead of inked. Practice, not measured. Bears on Q2 and
+  Q7. [docs/horizon-models.md]
+- Model 8, balanced scorecard strategy maps. The arrows are hypotheses never tested, and the
+  scorecard degrades to indicators and status colors because software keeps the numbers and drops
+  the arrows. Practice. Bears on none directly; in part on Q2, as the failed form of a one-page
+  view. [docs/horizon-models.md]
+- Model 9, theory of change. An explicit assumption on every arrow is its distinctive move; it is
+  written for funders and rarely consulted at the bottom. Practice. Bears on none of the seven.
+  [docs/horizon-models.md]
+- Model 10, impact mapping. A named actor stands between the goal and the work, and a deliverable
+  with no path to the goal is not built; it is a workshop artifact, stale in a week. Practice. The
+  document says the person lens already makes a goal reached through a person expressible. Bears on
+  none of the seven; statement 10 in part. [docs/horizon-models.md]
+- Model 11, V2MOM. The plan names what will stop it inside the plan; annual essays become plaques.
+  The document records the Block register as the same idea aimed at the product. Practice. Bears
+  on Q7. [docs/horizon-models.md]
+- Model 12, the 12 week year. The most action-productive model in the survey runs on a weekly score
+  and a peer meeting, and is refused almost whole; the one fragment kept is that a shorter horizon
+  shrinks projection error. Practice. Bears on Q3 and Q7. [docs/horizon-models.md]
+- Model 13, north star metric. One metric with a tree of inputs; for a person the premise collapses
+  a life into a number. Practice. Bears on none of the seven. [docs/horizon-models.md]
+- Model 14, pyramid of clarity. A mainstream task tool did ship the linkage, then computed a
+  percentage and a status color from it, in a view a person must climb to. Practice, observed in a
+  product. Bears on Q2, as a view nobody visits, and on Q7. [docs/horizon-models.md]
+- Model 15, the other software that tried. A freeform outliner or database holds any structure and
+  computes nothing; one tool computes an aging score; one holds a daily ritual and stops at the
+  week; one re-derives goals every day and has nothing holding anything after a lapse. The shared
+  lesson: they compute nothing, the wrong thing, or the right thing on a habit that cannot be
+  assumed. Practice, product behavior as of writing. Bears on Q7, and on Q3 for the week-horizon
+  tool. [docs/horizon-models.md]
+- Model 16, the wheel of life. A self-rated radar of eight to ten life areas, read for lopsidedness
+  at a glance. The document says it thrives in journals because there it is a drawing and not a
+  system, and fails in software as a dashboard demanding data entry. The readout shape is kept with
+  one correction: the app never computes the rating and plots only where attention went. Practice,
+  not measured. Bears on Q2, Q4 and Q7. [docs/horizon-models.md]
+- Model 17, Wardley mapping. Set aside as situational awareness rather than horizon alignment.
+  Bears on none of the seven. [docs/horizon-models.md]
+- Section 1, why planning software never offers these views. Five reasons: task lists are trees
+  and the links are graphs; the artifacts need a human cadence that software can only nag; strategy
+  and execution live in different tools; scoring is the easy and wrong implementation; some of the
+  artifacts are records of a negotiation and are posters without it. Practice. Bears on Q4 and Q7.
+  [docs/horizon-models.md]
+- Section 2, what survives the laws, with the state of each: the reverse walk (built in release
+  3.12.0, ADR-0115); the cross-cutting line; downward lineage projection (built in 2.5.0,
+  ADR-0095); computed orphan visibility, whose unbuilt half the document names as feeding the
+  exceptions into surfacing; backward planning (shipped); the descriptive delta; the attention
+  readout (named in ADR-0013, and recorded built in 2.24.0 by docs/plan-situated.md); effects
+  versus tasks (gated on evidence); obstacles named inside the plan (the Block register).
+  [docs/horizon-models.md; docs/plan-situated.md]
+- Section 3, what is refused by name: cascaded numeric targets; status lights; scoring of any kind;
+  mandatory cadences and review rituals; alignment theater, which includes promote buttons for empty
+  altitude nouns, the full tree as a landing view, and the rule that altitude views are inspection
+  modes and not workspaces; manufactured urgency. [docs/horizon-models.md]
+
+### docs/what-it-should-be.md, a plan of record, written from the demand alone
+
+- What it is. Written without opening the source, from the demand, on 2026-08-10 at release 1.42.x;
+  named by NOTES.md as one of the two documents that decide what gets built, and held by
+  tools/roadmaps.mjs, which requires every item of its status block to name a state. Where and on
+  whom: no measurement is reported; the demand is stated as a condition of one person, and the
+  document says it was written deliberately blind, then compared against the built app last. Cited
+  by: ADR-0086, docs/structural-assessment.md, docs/planning-for-humans.md, tools/roadmaps.mjs,
+  .github/workflows/spine.yml, NOTES.md and a docblock in src/nextup.ts. [docs/what-it-should-be.md]
+- Part 1, the demand. A person is always thinking of something and cannot see what is not being
+  thought of, so coverage cannot be verified from the inside. Four consequences: capture relieves
+  only the one thing captured; a list shows what is in it and cannot show what is missing; only a
+  claim about the container helps and it must be checkable cheaply from outside at the moment of
+  doubt; trust is dichotomous, so a container that holds most things is untrusted and does not
+  recover, because one discovered exception invalidates every past assurance. The app is for
+  execution and the answer must be shown, not looked up. The modal session is a return after an
+  absence, and anything asked of a person must cost the same however long the absence was; the test
+  is whether the data degrades or the app starts lying after three weeks skipped. Bears on Q2 and
+  Q7; statement 23. [docs/what-it-should-be.md]
+- Part 2, the design. Three moments and no fourth: put (cost as near zero as physics allows), next
+  (some capacity now, say what to do), proof (is the container holding, one look, no reading).
+  One screen: a place to put something down that is always present, one thing to do with its reason
+  in a sentence from a small closed vocabulary, and one line asserting that the container holds.
+  An item is offerable the instant it exists, and sorting is for three things only: anchoring it,
+  attaching it under something, retiring it, none of which is load-bearing for the guarantee. The
+  order is deterministic with no learned rank. Declining is free and records nothing, and relief
+  must be symmetric between doing and declining. Capacity is declared and never inferred, and it
+  changes which things are offered and never how many. Everything said is a fact about the world and
+  nothing is a fact about the person, with no counting anywhere the person arrives. The layout is
+  fixed forever and the contents are computed. Bears on Q1, Q2 and Q6; statements 2, 4 and 21.
+  [docs/what-it-should-be.md]
+- Part 3, the comparison. The guarantee the code enforced was that every node has a clock, a
+  surface, a menu place or a clocked parent; the guarantee a reader reads is that the thing will
+  come back as something to act on; they came apart in one place, a captured thought that was
+  covered and not offerable. Five surfaces are named as consequences of that one decision: the
+  sorting queue, the forced-choice card, the lighter preliminary pass, the count and the arrival
+  corridor. [docs/what-it-should-be.md]
+- Part 4 and its status block, measured 2026-09-16 at release 3.24.8. Four items, each with its
+  state. Make an unrefined item offerable: done in 2.0.0. Restate the guarantee as the reader's
+  version and enforce it: open, because the silence test in src/gate.ts still asks the schema
+  question. Demote sorting to refinement: refused by a later record, ADR-0113, which established a
+  standing count of the pile as an inventory that measures what is present and not the person, and
+  whose overturn clause says the remedy would be to change what the number counts and not to take
+  the answer away. Re-ask what the remaining surfaces are for: partly moot, the arrival corridor
+  being gone while ADR-0108 rebuilt the entry as a hub door, heat feeding the offer's tie-break, and
+  the queue and the forced-choice card remaining. The status block adds that the remaining work is
+  subtractive and that no cold read will propose it. Three checks owed before building are listed,
+  one corrected (the offer boundary excluded unclarified captures for a reason written in ADR-0030),
+  two still open: that nothing else depends on an unclarified state, and whether a large unrefined
+  backlog gives a sensible offer in arrival order on real data. [docs/what-it-should-be.md]
+- Disagreement, resolved inside the file. Part 2 says no counting anywhere the person arrives; the
+  status block records that ADR-0113 later established a standing count of the pile and that the
+  later record governs. [docs/what-it-should-be.md]
+
+### docs/structural-assessment.md, a plan of record, measured at release 3.24.1 and 3.26.0
+
+- What it is. A census of where the app's projections disagree with each other, then an ordered
+  remedy; named by NOTES.md as the second of the two documents that decide what gets built, held by
+  tools/roadmaps.mjs. Where and on whom: it is a census of the source, five read-only passes, with
+  each claim naming a file and line; it says its reading was verified against source and history and
+  was not adversarially refuted. Cited by: tools/roadmaps.mjs, .github/workflows/spine.yml,
+  docs/what-it-should-be.md, test/clock-intent.test.ts, NOTES.md (two) and this review.
+  [docs/structural-assessment.md]
+- The census. Dates: thirty-two places read the clocks of a node to answer when it comes back, in
+  eight incompatible rules, with four functions turning a date into words that disagree at the
+  edges and eleven disagreements between surfaces. Coverage precedence: one function restated three
+  times, six rounds of the same ordering mistake. Counts: two populations printed on one sheet, and
+  three incompatible meanings of under. Reachability: a live region shipped visually hidden three
+  times. Gates: twelve exist to hold two hand copies together. The shipped page is 59 percent
+  commentary. Bears on Q2, since a glance reads the same sentence on every surface only if the
+  surfaces share one reading, and on Q3, since any new surface that lays dates out reads the clocks
+  of a node unless the one reading described below exists. [docs/structural-assessment.md]
+- The status block, measured 2026-09-16 at 3.26.0. Phase 0, six dead ends: all done, in 3.24.3,
+  3.24.6 (two) and 3.26.0 (three); they include the interruption route with no way back, the
+  Someday default reading Read, and hot and cold not being revisable. Phase 1, one reading per node:
+  open, its first step landed (the intent record is complete and typed) while src/reading.ts does
+  not exist and the thirty-two derivations stand. Phase 2, one precedence chain: open. Phase 3, one
+  population per count: open, with ADR-0113 to be read first. Phase 4, the reachability gate asks
+  whether a sentence is seen: done in 3.24.8. Phase 5, retire the eight duplications: open, two
+  parts landed. Phase 6, halve the shipped page: open and untouched. Three decisions are listed as
+  awaiting a choice: the date rule, the count on the information sheet, and the phase order.
+  [docs/structural-assessment.md]
+- Bears on Q6. The interruption route with no way back is its Phase 0 item, done in 3.24.6, with
+  the offer stripped on the worst day in 3.24.7. [docs/structural-assessment.md]
+- Disagreement with the tree. Phase 5 says the workflow audit stays off by the hub's call and that
+  the Spine does not enable it; .github/workflows/spine.yml now carries the audit switched on, with
+  a comment saying why. The other Phase 5 facts read here agree with the tree: tools/hooks/
+  tour-fresh.sh is still on disk, and src/reading.ts does not exist. [docs/structural-assessment.md;
+  .github/workflows/spine.yml]
+
+### docs/planning-vocabularies.md, which of three vocabularies owns what
+
+- What it is. A mapping of military planning doctrine, project management practice and this app,
+  term by term, with the rule that doctrine owns the thinking, project practice owns the
+  decomposition and this app owns the return. It says the app holds work, not reasoning, refuses
+  containers for intent, information requirements, facts and assumptions or a restated mission, and
+  gives an eight-step sequence for one person with no staff, after which only the tasks with their
+  holders and dates, and the conditions as changes lines, go into the app. Where and on whom: none;
+  the document says the identities and dates of the doctrine manuals were confirmed from the
+  publisher on 2026-08-31 and the content was written from memory and not checked. Cited by: no
+  tracked file names it. Bears on none of the seven in full; in part on Q2, through its test that a
+  standing list holds only what would change what the reader does if told, and on statement 10
+  through its mapping of who holds what. [docs/planning-vocabularies.md]
+
+### docs/plan-situated.md, the plan and resume point for situations
+
+- What it is. A plan written after fourteen situations were put to the app on 2026-08-21, with nine
+  phases and a state block updated with the work. Its finding: thirteen of the fourteen are queries
+  against a situation and the app had one answer; no session of real use had gone past a fresh
+  import or a handful of sample items; on an import of about a thousand actions there were zero
+  contexts, roles, areas, goals and people, so the built machinery had nothing to work with. Where
+  and on whom: measured on the app's own stores, an import fixture of 840 actions under 42 projects
+  with 518 passed dates and nothing situational, and the thirteen-item sample; no people. Cited by:
+  docs/plan-routed.md (three), docs/nd-collisions.md (three) and NOTES.md (one).
+  [docs/plan-situated.md]
+- State by phase. Phase 0 done. Phase 1: the core defect fixed in 2.15.0, an import landing in the
+  inbox and offered one at a time; the situational question in the flow left open, later closed by
+  docs/plan-routed.md. Phase 2 complete (2.16.0, 2.17.0, 2.18.0 and 2.18.1): a container's kind
+  chosen when it is made, a review clock on a container without converting it, a sheet listing every
+  goal, area and outcome with the empty ones included, and bulk put-under. Phase 3 complete
+  (2.19.0 and 2.19.1): how long you have, and the count of what is dated today. Phase 4 done in
+  2.20.0: the promised-to relation, built with no field that could age a promise. Phase 5 done:
+  where you are and how long you have moved behind one door in 2.21.0, named situations as events,
+  and the attention readout per role in 2.24.0. Phase 6 done in 2.22.0: a way to read the re-entry
+  report that writes nothing. Phase 7 done in 2.23.0: the Menu category chosen at write time and a
+  second door to naming a first step. Phase 8 done in 2.23.1. Bears on Q1, Q3, Q4 and Q5.
+  [docs/plan-situated.md]
+- The attention readout. The document draws the line between load, what a role carries, and
+  attention, what it was given: a role can carry nine things and have had none of the reader's time.
+  The readout reads timed minutes from the do-now timer, never completions, is sorted by name, and
+  carries no proportion and no target; it was held back for three releases because it renders
+  empty on a store that has not used the timer. Bears on Q4. [docs/plan-situated.md]
+- Measured in screens and pixels. After the phases, rendering at phone and tablet width found the
+  situation door 2129 pixels below the offer on a phone (3.84 screens) and 1983 on a tablet, inside
+  the section it narrows; fixed in 2.23.1 to 64 pixels above the offer at both widths. The import
+  fixture reads 1.8 screens and 26 controls with one thing offered. At width 768 every card spans
+  the full width, the width of 1180 (tablet landscape) was never measured, and no maximum measure
+  was set. Bears on Q2. [docs/plan-situated.md]
+- The fourteen situations, walked. The two answered only in part: a free weekend, because the
+  longest duration choice is 120 minutes so having a lot of time has no positive expression; and a
+  spare twenty minutes with no preparation, because with no preparation is not a question the app
+  can be asked. Bears on Q3 and Q5. [docs/plan-situated.md]
+- Disagreement within the file. The summary says eleven answered and three in part; the list
+  beneath it marks twelve answered and two in part. [docs/plan-situated.md]
+- Disagreement with another file. The resume block's last lines name an old version for one branch
+  and a count of releases the other branch is ahead; docs/plan-routed.md says such claims were
+  removed from the plans because a second copy goes wrong on the next promote, and that the one
+  place for them is the branch-state block of NOTES.md. [docs/plan-situated.md; docs/plan-routed.md]
+- Disagreement with another file. The block says a session cannot read the deployed site, the
+  network policy answering the connect with a refusal for the hosting domain; CLAUDE.md says a
+  session probably can and names tools/deployed-check.mjs. Which holds depends on the session's
+  configuration, as CLAUDE.md says. [docs/plan-situated.md; CLAUDE.md]
+
+### docs/plan-routed.md, what the research routes next
+
+- What it is. A second plan written 2026-08-23 after plan-situated.md finished, in which every item
+  traces to a numbered catalog entry carrying that entry's own evidence grade, and anything derived
+  from the code is ranked last and says so. Its premise is catalog entries 23 and 3: a taxonomy is
+  treated as a prerequisite when it should be an outcome, and filing removes the cue that was doing
+  the remembering, so the work is to make the app useful at nearly zero taxonomy. Where and on
+  whom: it rests on the catalog's grades and on the same import fixture; it states that a real
+  import of 1,173 items left eleven of fourteen node kinds at zero. Cited by:
+  tools/branch-state-check.mjs and a comment in src/contexts.ts. [docs/plan-routed.md]
+- State. Phases 3, 4, 5, 6 and 7 done in 2.25.0, 2.26.0 and 2.27.0; phase 1 done in 2.28.0, its
+  trigger being the situation sheet with no place named; phase 2 not built, deliberately, because
+  role and container have no dead end to ask at and manufacturing one would be a first-run
+  organizing flow; the plan is closed. The phases are: ask once in the flow; the same mechanism for
+  role and container; the arrival as a fact and not a debt; an import's size not outranking an
+  ordinary day; a long answer routing to the Menu; presence as a third filter axis; a place
+  reaching what is under it. Bears on Q1 (phases 1, 3 and 4), Q3 (phase 5, on the reasoning that a
+  block of open time is limited by want and not by duration, which it takes from entry 24), and Q5
+  (phases 6 and 7). [docs/plan-routed.md]
+- Refusals carried forward. A setup wizard, template chooser or first-run organizing flow; a
+  completion meter for how much structure exists; inferring a context, role or container from
+  behavior; inferring structure from the free text of a situation; gap-fitting against clock time,
+  since the schema has no time of day; a hard cutoff that makes a mis-estimated item vanish; a menu
+  of named situational screens; a bespoke meeting mode, which waits on the person axis; and
+  exclusive places, because a place that hides everything not labeled with it reconstructs the
+  untrusted filter, so the default that an unlabeled thing fits every answer is load-bearing. Bears
+  on Q3 and Q5; statements 17 and 18. [docs/plan-routed.md]
+- A sequence, not a disagreement. The refusal of a bespoke meeting mode names a wait for the person
+  axis; ADR-0119, dated 2026-08-30, built a meeting as an inspection mode over the people in a
+  saved situation, and not as a filter. [docs/plan-routed.md; docs/adr/0119-a-meeting-is-somewhere-you-can-stand.md]
+
+### docs/build-plan.md, the v1 build sequence
+
+- What it is. The architecture and the build order for v1, written after the decision records and
+  the event vocabulary, ordered by what day one of the dogfood gate needs. Forty-three numbered
+  items in nine phases; by a search for items that open struck through, nine carry a done mark and
+  thirty-four carry no state mark. Section 5 carries a status note dated 2026-08-01 saying which
+  gates were live and that grayscale legibility was not built. Section 7 lists seven questions open
+  before code, among them the name, the iPadOS persistence check, the journal key derivation and
+  what earns a module offer. Where and on whom: it reports no measurement; item 9 sets a budget and
+  says it is a test. Cited by: seventeen files, NOTES.md (fourteen mentions) and ten decision
+  records among them. [docs/build-plan.md]
+- Items that bear on the questions. Item 9: the write path measured cold, under two seconds, on the
+  tablet that is the reference platform, as a test and not an aspiration; item 42 repeats it as a
+  measurement of cold start and capture budget on that device. Item 8: a dump surface with no
+  chrome, one line per card. Item 12: an interrupt gesture, pin and capture, available from every
+  screen. Item 21: a coverage gauge, tappable, showing each item's return date. Item 29: the
+  lowest notification tier, whose parts are permission, badge and glance surfaces. Item 38: an
+  attention-distribution readout, descriptive and never prescriptive. Item 37: the review kept to a
+  short ranked handful because an exhaustive list is a backlog. Bears on Q1, Q2, Q4 and Q6.
+  [docs/build-plan.md]
+- Phase 6 opens by saying it is where the gate is won or lost, and that without the work half the
+  desk paper stays. A practice claim, not measured; it is the repository's one sentence about why a
+  paper system persists. Bears on Q7. [docs/build-plan.md]
+- Disagreement. Item 32 defines a role as a mode, Execute or Track, where Track emits no next
+  actions and keeps only waiting-fors and check-ins; the role that shipped (ADR-0096, release
+  2.6.0) is an identity a thing carries and crosses areas, and item 32 carries no state mark. The
+  Track mode sits beside statement 10, which keeps depending on another person in and tracking who
+  carries delegated work out. [docs/build-plan.md; docs/adr/0096-roles.md]
+
+### docs/verifications.md, the one row about comparison
+
+- V-08, a competitive pass on the five claimed differences, is marked not run and deferred on
+  purpose, because it informs positioning copy and nothing in v1's design; its trigger is before the
+  first public release copy is written. The five claims are the decay lane, unified suspend capture
+  and resume, bother triage with clock-guaranteed routes, the horizon-integrity engine and the
+  pebble load ledger. docs/planning-for-humans.md section 11 states the same five as claims and says
+  the pass was not run. No file in the repository records a comparison of any other tool against the
+  instrument that survives a failed system (statement 1). [docs/verifications.md;
+  docs/planning-for-humans.md]
+
+### The seven questions after these documents
+
+Each line says what these documents add and what is still held by no entry in the repository. The
+outside reading that follows is aimed at the second half of each line only.
+
+- Q1, the cost of landing one item. Added: a time budget for capture, under two seconds cold on the
+  reference tablet (build-plan items 9 and 42, the second not marked done); an import measured in
+  controls and screens (plan-situated); the arrival sentence and the ask-once rule (plan-routed);
+  an item offerable the instant it exists (what-it-should-be, done in 2.0.0). Correction: the
+  inventory's not-found line was a measurement of presses per sorting route; that stands, narrowed,
+  because time and screens are measured and presses per route are not. Still held by no entry: a
+  measurement or a finding on presses per route.
+- Q2, reading a system at a glance. Correction: the inventory found no glance, board or wall as a
+  construct in either catalog. These documents hold the glance in one form, the proof as one look
+  and no reading on a screen whose layout never changes (what-it-should-be), a one-page matrix that
+  fails as a poster (model 7), a radar read at a glance that survives on paper (model 16), a
+  glance surface named in the notification tiers (build-plan item 29), and reachability measured in
+  screens (plan-situated). Still held by no entry: a physical wall or board as a construct, and any
+  evidence on what a glanceable surface does for a reader.
+- Q3, time laid out in space, and extent. Correction in part: backward planning from a far date is
+  shipped and surveyed (models 1 and 2); the longest duration choice is 120 minutes and a free
+  weekend is answered in part (plan-situated); a long answer routes to the Menu (plan-routed);
+  thirty-two derivations of when a thing comes back stand, with the one reading not built
+  (structural-assessment). Still held by no entry: time laid out spatially for one person, and
+  things with extent drawn as length.
+- Q4, roles, and a review of roles. Correction: the inventory found no entry on reviewing roles.
+  The weekly role review is surveyed as practice that decays on a missed session, with neglect copy
+  refused (model 5); the attention readout per role is built on timed minutes (plan-situated); the
+  review clock rides the container a role labels and not the role (models 5 and section 2). None of
+  these measures neglect as not having looked. Still held by no entry: neglect of a role measured
+  by not having looked, and any evidence on reviewing a set of roles.
+- Q5, contexts, and what is to hand. Added: three narrowing answers built, where you are, how long
+  you have and who is with you (plan-situated, plan-routed); the default that an unlabeled thing
+  fits every answer, load-bearing; exclusive places refused; a meeting built as an inspection mode
+  over people and not as a filter (ADR-0119). Still held by no entry: what is physically to hand as
+  a construct, a meeting whose list is its agenda, and any evidence on whether a context should hide
+  other domains by default.
+- Q6, deferring the sorting of an interruption. Added: the interruption route with a way back (done
+  in 3.24.6 and 3.24.7); sorting is not load-bearing for the guarantee and demoting it to
+  refinement is refused by ADR-0113; the interrupt gesture from every screen (build-plan item 12).
+  The catalogs already answer this question; no fetch is aimed at it.
+- Q7, why systems are abandoned, and what survives. Added: homework is abandoned first, trust is
+  dichotomous and does not recover, the modal session is a return after an absence
+  (what-it-should-be); five structural reasons software does not hold these views and the tool
+  roster (horizon-models); a machine with nothing to work on because a taxonomy was a prerequisite
+  (plan-situated, plan-routed). Correction in part: the inventory found no entry on why paper
+  survives; two practice sentences exist, the wheel thriving in journals as a drawing (model 16)
+  and the desk paper staying without the work half (build-plan phase 6), neither measured. Still
+  held by no entry: why walls and boards survive as a construct, and what ends the attempt as a
+  measured class.
+
+### Disagreements collected from this section
+
+- structural-assessment.md Phase 5 says the workflow audit stays off; spine.yml switches it on.
+- plan-situated.md counts eleven situations answered and three in part; its own list marks twelve
+  and two.
+- plan-situated.md names an old version and a releases-ahead count for the branches; plan-routed.md
+  says those claims live only in the branch-state block of NOTES.md.
+- plan-situated.md says a session cannot read the deployed site; CLAUDE.md says it probably can.
+- horizon-models.md section 3 states the inspection-mode rule for altitude views; ADR-0115,
+  ADR-0118, ADR-0119 and source comments cite it for role lines, situations and meetings, and
+  statements 13 and 18 ask for narrowing by role and by context, which roles.ts and ADR-0115
+  refuse for a role and ADR-0119 refuses for a meeting, while the shipped answers narrow by place,
+  duration and person. The assessment decides what that means.
+- build-plan.md item 32 defines a role as a mode; the shipped role is an identity.
+- horizon-models.md records the outcome kind as holding no nodes; plan-situated.md records the kind
+  chosen at creation from 2.16.0; neither says how many exist.
+
+---
+
+## Research additions
+
+Written in the third pass, and numbered R1 onward; the next pass continues the numbering. An entry
+is written only for one of three reasons, and says which. Gap: a question with no entry anywhere in
+the repository bearing on it, as the section above leaves it. Verify: an entry whose claim the
+assessment will rest on and whose source the entry does not name or measure. Expand: an entry that
+bears on a question only in part. A question the catalogs already answer gets one line and no fetch,
+and Q1 and Q6 are of that kind here.
+
+### How the outside sources were read
+
+- The page-fetch tool refused two hosts at name resolution, in the session's own words outside its
+  allowed network domains: philarchive.org, which would have returned the abstract page of the
+  1995 space paper (R6), and hci.ucsd.edu, which would have returned the draft of the 2000
+  distributed-cognition paper (R5). The tool said to stop trying further hosts once a second failed
+  the same way, so no other fetch host was tried and no other route to those two was taken. What
+  they would have answered: the full abstract and the populations of the two sources.
+- Every entry below therefore rests on what the web search tool returned: bibliographic records,
+  abstracts and secondary summaries. No primary text was opened for any source. Each entry says
+  where its figures come from, and a figure that came from a press summary or a forum is marked as
+  such. An entry that an assessment would have to rest on is to be read against the primary text
+  first, and the entry says so.
+- The app's own test is applied to each source: was the finding measured on people for whom the
+  failure it prevents is expensive. Grounds means yes. Background means no, and a general
+  population result is background even where it is large. A method with no measurement is recorded
+  as practice, and none of the entries overrides a refusal.
+- Methods are named by author, year and a description, and the titles that carry a method's
+  registered name are not written in this section. The repository already names two of them: see
+  horizon-models.md model 4 and model 16, and planning-for-humans.md section 7.
+
+### Boards, piles and why paper is used (gap, Q2 and Q7)
+
+- R1, Malone, 1983, How do people organize their desks? Implications for the design of office
+  information systems, ACM Transactions on Office Information Systems. Office desks hold two units:
+  files, which are titled and arranged, and piles, which are neither; both serve finding and
+  reminding, and files were hard because choosing a classification was hard. Where and on whom:
+  interviews and office tours with about ten office workers, by a secondary summary, which also says
+  the study is not statistically generalizable. Verdict: background. Reason: gap, Q2 and Q7; no
+  catalog entry says why a pile of unsorted things persists as a reminder, and statement 5 keeps the
+  unowned visible. Read through a secondary summary; read the primary before resting on the
+  reminding function, whose wording was not confirmed.
+- R2, Kidd, 1994, The marks are on the knowledge worker, CHI 1994. Knowledge workers carried little
+  written material, rarely consulted filed material at their desks, and used a cluttered desk as a
+  holding area for current inputs and ideas; the author concludes that software should support
+  informing and not filing. Where and on whom: interviews of two to three hours with twelve
+  knowledge workers, by the search extract; a later case study of a legal
+  team found strong agreement with the core definitions and questioned some secondary ones.
+  Verdict: background. Reason: gap, Q2 and Q7; it is the measured counterpart of R1 for what is held
+  in view and not filed, and bears on statements 4 and 5.
+- R3, Wears, Perry, Wilson, Galliers and Fone, 2007, Emergency department status boards:
+  user-evolved artefacts for inter- and intra-group coordination, Cognition, Technology and Work.
+  Status boards in a United States emergency department and a United Kingdom pediatric ward were
+  strikingly similar in form and use; front-line staff evolved them with little supervisory control,
+  and a companion paper by two of the authors cautions that standardizing or computerizing such a
+  board risks losing latent properties that matter to safe working. Where and on whom: observation
+  of clinical staff in two hospital settings, where a coordination failure is expensive. Verdict:
+  background, because the failure prevented is group coordination in a hospital and not one person
+  dropping an intention; it names a risk for any digital version of a board and grounds nothing in
+  the app. Reason: gap, Q2 and Q7; a board as a construct is held by no entry, and the document
+  names it only as a wall poster in horizon-models.md model 7. The companion paper's caution is from
+  the same search extract and was not opened.
+- R4, Xiao and colleagues, 2007, What whiteboards in a trauma center operating suite can teach us
+  about emergency department communication, Annals of Emergency Medicine. Staff use of a whiteboard
+  in a surgical trauma unit was observed and photographed; the board supported task management, task
+  articulation and resource planning and tracking, and the authors advise that any electronic
+  replacement keep those functions. Where and on whom: observation of trauma-unit staff; the full
+  author list was not confirmed. Verdict: background, for the reason given in R3. Reason: gap, Q2;
+  its three functions are a measured account of what a board does that a list does not, and bear on
+  statements 3 and 6 (extent, and what waits on others).
+
+### Distributed cognition, space and situation awareness (gap, Q2 and Q3)
+
+- R5, Hollan, Hutchins and Kirsh, 2000, Distributed cognition: toward a new foundation for
+  human-computer interaction research, ACM Transactions on Computer-Human Interaction. The paper
+  argues that research should study whole environments and how people coordinate their activity
+  within them, treating cognition as distributed across people and artifacts. Where and on whom: the
+  extract is a partial abstract only; the settings it draws on were not confirmed, and the draft was
+  at a blocked host. Verdict: background, a framework and not a measurement. Reason: gap; the
+  thesis names distributed cognition as a literature and no entry holds a finding from it. Not to be
+  rested on until the primary is read.
+- R6, Kirsh, 1995, The intelligent use of space, Artificial Intelligence. A classification of how
+  people arrange the items around them: arrangements that simplify choice, arrangements that
+  simplify perception, and dynamics that reduce internal computation; the author argues that
+  arranging items is part of how people think and plan. Where and on whom: observation of videos of
+  cooking, assembly and packing, supermarket and workshop observation, and experiments with people
+  playing a falling-blocks game, by the abstract as the search extract gave it; the abstract page was
+  at a blocked host. Verdict: background; the people were competent adults and the failure is not
+  expensive to them. Reason: gap, Q2 and Q3; it is the nearest finding to time laid out in space as
+  an arrangement that lowers the cost of perception, and nothing in either catalog says so.
+- R7, Endsley, 1995, Toward a theory of situation awareness in dynamic systems, Human Factors. A
+  model of situation awareness in three levels: perceiving the elements of a situation, comprehending
+  them, and projecting them into the near future, with attention and working memory as limits on
+  each. Where and on whom: a theoretical model built on dynamic decision making in several domains;
+  its measurement work, not read here, is in aviation and air traffic. Verdict: background; the
+  failure is expensive to the operators but is not this audience's. Reason: gap, Q2 and Q3; reading
+  a system at a glance is the first level and a layout of time ahead is the third, and the thesis
+  names situation awareness without an entry. Level two was not described in any extract.
+- R8, Weick and Sutcliffe, Managing the Unexpected, first edition 2001 and third edition 2015, with
+  the field studies of La Porte, Roberts and Rochlin in 1987 and 1988 behind it. High-reliability
+  organizing rests on five principles, named in the third edition as failure, simplification,
+  operations, resilience and expertise, and began as fieldwork on organizations with hazardous work
+  and few accidents, two of them naval aircraft carriers. Where and on whom: field studies of
+  organizations where failure is catastrophic; practice and ethnography, not an experiment. Verdict:
+  background as a pointer only; the extracts gave the names of the principles and not their
+  definitions, so nothing in the assessment may rest on this entry until the definitions are read.
+  Reason: gap, Q2 and Q7; high-reliability work is one of the four literatures the thesis names and
+  no entry holds it.
+
+### Time laid out, and what is known of calendars and schedules (gap, Q2 and Q3)
+
+- R9, Huang, Yang and Morwitz, 2022, How using a paper versus mobile calendar influences everyday
+  planning and plan fulfillment, Journal of Consumer Psychology; the year is the one the press
+  summaries agree on and the issue was not confirmed. Three experiments. In the first, 129
+  undergraduates were assigned at random to a paper or a mobile calendar for two weeks, and paper
+  users fulfilled plans at 53 percent against 33 percent; the authors explain it by the paper
+  calendar giving a broader view of nearby activities, and in a second experiment the paper
+  advantage became marginal when the mobile condition was told to take a big-picture view. Where and
+  on whom: undergraduates in the first experiment, the other samples not being described in the
+  extract, by university and college press summaries and a trade write-up; the journal article was
+  not opened. Verdict: background. The people are not the
+  audience, and the outcome, on-time fulfillment of plans, is a completion measure this app
+  refuses to compute about the reader; what it offers is a mechanism, a broad stable view over time,
+  and the finding that the view and not the paper carried the effect. Reason: gap, Q2 and Q3; no
+  entry says what laying time out in view does for a reader. Read the primary before any figure is
+  cited from it.
+- R10, Tungare, Perez-Quinones and Sams, 2008, An exploratory study of calendar use. A survey of 98
+  people, interviews with 16, and an examination of calendar artifacts, among faculty, staff and
+  students; findings include reliance on paper calendars even among regular users of electronic
+  ones, the use of multiple reminder alarms, and wide use of calendars for reporting and for
+  keeping a record. Verdict: background; a descriptive study of a university population. Reason: gap,
+  Q3 and Q7; it is the one observation in the reading of what people do with a calendar when a
+  digital one is at hand. The extract carried the abstract and the method summary only.
+- R11, Safren and colleagues, 2010, Cognitive behavioral therapy vs relaxation with educational
+  support for medication-treated adults with ADHD and persistent symptoms, JAMA. Eighty-six
+  symptomatic adults already on medication were randomized to twelve individual sessions of
+  cognitive behavioral therapy or relaxation with educational support; the first module of four
+  sessions trained organizing and planning with a calendar and a task list; responders were 53
+  percent against 23 percent on a clinician global rating and 67 against 33 percent on an
+  attention-deficit rating scale, and gains held at 6 and 12 months among responders. Where and on
+  whom: adults with the condition, which is the audience; figures from secondary summaries. Verdict:
+  grounds, narrowly. The finding is that a calendar and task-list skill set taught by a therapist,
+  inside a package, was followed by better symptom ratings than a control; it does not isolate the
+  calendar, it concerns a trained skill and not a tool that offers a shape unaided, and the
+  catalog's own frame (nd-collisions.md header) records that non-pharmacological interventions lack
+  demonstrated efficacy on core adult symptoms. It grounds no feature, and it does not override
+  any refusal. Reason: gap, Q3 and Q7; it is the one finding on a calendar-and-list system measured
+  on the audience.
+- R12, Knight, Sartini and Spriggs, 2015, Evaluating visual activity schedules as evidence-based
+  practice for individuals with autism spectrum disorders. A review of studies published from 1993
+  to 2013 of visual activity schedules, in which 31 studies met the inclusion criteria and 16 were
+  of acceptable quality; the national autism practice reviews (a 2020 update by Steinbrenner, Hume
+  and colleagues, building on Wong and colleagues, 2015) class visual supports as an evidence-based
+  practice for children and young adults on the spectrum. Where and on whom:
+  students on the autism spectrum, mostly in structured settings. Verdict: grounds, narrowly, for
+  the claim that a sequence laid out in view helps autistic students carry out the sequence, since
+  the people are part of the audience and the failure is expensive to them; background for adults,
+  and for time laid out at the scale of weeks, which a daily activity schedule is not. Reason: gap,
+  Q2 and Q3; it is the one body of evidence on laying a sequence out visibly for people under the
+  condition. The second review's figures were not read.
+
+### Roles, and a review of roles (gap, Q4)
+
+- R13, Merton, 1957, The role-set: problems in sociological theory. A role-set is the complement of
+  role relationships a person has by holding one social status, so one status carries an array of
+  relationships and not one role; a person holds several statuses, which Merton named a status set.
+  Where and on whom: a theoretical essay, practice and not measurement; the second term's definition
+  was not confirmed from the essay. Verdict: background. Reason: gap, Q4; the review's statement 11
+  defines a role as what a person is to others and what is held in that capacity, which matches a
+  role defined by its relationships, and the app's role noun is an identity a thing carries with
+  relationships held in a separate noun, the person. Expand: ADR-0096 and Q-13 define the noun and
+  no entry names where the definition comes from.
+- R14, Marks and MacDermid, 1996, Multiple roles and the self: a theory of role balance, Journal of
+  Marriage and the Family. Role balance is the tendency to engage fully in every role of one's role
+  system, with an even-handed alertness the authors liken to mindfulness; the main hypothesis was
+  that more balance goes with less role strain and depression and with higher self-esteem and
+  ease. Where and on whom: two studies by the abstract; the samples were not recovered by two
+  searches. Verdict: background, and it must not be rested on until the samples are read. Reason:
+  gap, Q4; it is a construct of attentiveness to every role, measured by engagement and not by
+  lateness, which is the nearest to statement 15 that the search found. The wording of the
+  definition is from a later essay quoting it.
+- R15, Harkin and colleagues, 2016, Does monitoring goal progress promote goal attainment? A
+  meta-analysis of the experimental evidence, Psychological Bulletin. A pooled analysis of 138
+  studies and 19,951 people randomized to a monitoring-promotion condition or a control: the
+  interventions raised monitoring frequency and modestly improved goal attainment (d about 0.40),
+  with larger effects where progress was physically recorded and where it was reported or made
+  public. Where and on whom: general-population samples, most concerning health goals; the public
+  category held three studies and a wide interval. Verdict: background, and the case the app's own
+  rule warns of: a result positive on average, built on interventions that raise the frequency of a
+  scheduled look and measured by attainment, in people for whom a missed look is cheap. It does not
+  override the refusal of a mandatory review cadence. Reason: gap, Q4; no entry holds any evidence
+  on reviewing progress. Figures are from the abstract as the search extract gave it and a press
+  release.
+
+### Contexts and what is to hand (gap, Q5)
+
+- R16, Kreiner, 2006, Consequences of work-home segmentation or integration: a person-environment
+  fit perspective, Journal of Organizational Behavior. Among 325 workers across many occupations and
+  organizations, the fit between a person's preferred segmentation of work from home and the
+  segmentation the workplace provides predicted work-home conflict, stress and satisfaction; the
+  record says the result challenges earlier work advocating integration as the remedy. Where and on
+  whom: a survey of working adults in the general population. Verdict: background. Reason: gap, Q5;
+  statement 18 sets a default that a context shows its own items unless the person chooses
+  otherwise, which is a segmentation default, and no entry says whether people differ in preferring
+  it. The effect sizes and the fit combinations were not in the extract.
+- R17, Allen, 2001, revised 2015, the workflow book that introduced context lists, whose title is
+  a registered mark and is not written here; horizon-models.md model 4 names it. A context is the
+  place or tool a next action needs, so a person at a home desk is in several at once; the 2015
+  revision was made to reflect a decade of change in information technology, by an encyclopedia
+  entry; practitioners on an online forum for the method report that phone work sits inside computer
+  work and not the reverse, that a
+  task doable on either is awkward to tag, and some have dropped contexts because estimating
+  priority, energy and time costs more than it returns. Where and on whom: practice and user
+  reports, not measurement; the book was not opened, and the forum posts are individual reports.
+  Verdict: practice, background. Reason: expand, Q5; horizon-models.md model 4 treats the method's
+  selection criteria in one line, and the nesting of one context inside another is the shape of
+  statement 16, where a phone is always to hand and narrows nothing. What the 2015 edition says
+  about contexts was not confirmed.
+
+### Notebook methods and a board method (expand, Q7 and Q6)
+
+- R18, Carroll, 2018, the book setting out a notebook method with a monthly migration step, whose
+  title carries the method's registered name and is not written here. At the
+  end of each period every open item is reviewed and rewritten forward only if it is still worth the
+  time; otherwise it is moved to a separate collection or dropped, and the method's own site frames
+  migration as distilling what is worth the effort. Guides add that an item that keeps moving
+  without progress is either being avoided or was never important; that reading is a guide's, not
+  the book's. Where and on whom: practice, not measured; one guide's figure claiming an improvement
+  in goal achievement was found unsupported and is disregarded. Verdict: practice. Reason: expand,
+  Q7 and Q6; the repository names the method once, in passing, and nothing says what migration does
+  to a stale item. The answer is that no item stays open without a decision at a chosen time, which
+  the replan card also does at the moment a date passes.
+- R19, Ayobi, Sonne, Marshall and Cox, 2018, Flexible and mindful self-tracking: design implications
+  from paper journals of the notebook method (the published subtitle carries the method's
+  registered name, which is not written here), CHI 2018. An analysis of public posts of paper
+  journals shared on a photo-sharing site, arguing that digital self-tracking is often too rigid for
+  everyday needs, that the paper form is customizable, and that tracking should support mindful
+  engagement and balance, against a behavior-change paradigm. Where and on whom: a corpus of public
+  posts and not interviews, so nothing is known of the posters; no finding about migration appeared
+  in the extracts. Verdict: background. Reason: expand, Q7; it is the one academic study of the
+  paper method, it bears on why a flexible paper form survives, and it is recorded here so that it
+  is not read as evidence about stale items.
+- R20, Benson and Barry, 2011, the book adapting kanban to one person's work, whose title carries
+  the method's name and is not written here. Two rules, visualize the work and limit work in
+  progress, adapted from a manufacturing flow system; the authors say they wrote it because
+  everyone they spoke to was overloaded. Where and on whom: practice, not measured; a search for
+  peer-reviewed evidence of effect on personal productivity found none. Verdict: practice,
+  background. Reason: expand, Q2 and Q7; planning-for-humans.md section 7 takes only the limit on
+  work in progress, tagged a community construct, and the first rule, a board that shows all the
+  work at once, is the half that bears on the glance and is not in the catalog.
+
+### Read and not entered
+
+- Sohn, Li, Lee, Smith, Scott and Griswold, 2005, Place-Its: a study of location-based reminders on
+  mobile phones, UbiComp. A ten-person, two-week study found location-based reminders useful
+  despite low accuracy because people use location in nuanced ways. Not entered: it is the
+  mechanism entry 24 already holds, and says nothing about what is physically to hand.
+- The 2008 diary study of reminders in situ by Sohn and colleagues was not found by search and is
+  not entered; a NASA diary study of everyday prospective memory by Holbrook and Dismukes, 2009,
+  was returned and not read.
+- Searched and not found: a source on what is physically to hand as a planning axis, and a source
+  that measures neglect of a role by not having looked (R14 is the nearest, and its samples were not
+  recovered); both stay held by no entry. Not searched: a meeting whose list is its agenda, because
+  it is a design statement with the person axis already built (ADR-0119) and not a method named in
+  this pass. Q1 and Q6 are answered by the catalogs, in entry 27 and in sections 3 and 4 of
+  planning-for-humans.md, and got no search.
