@@ -95,8 +95,11 @@ Phase 0's six dead ends first, one line each, then the six phases.
   intent record is complete and typed: `ClockSource` closes the app's own
   twenty-one clock writers and `CLOCK_INTENT` is exhaustive over it, so a new
   writer is a compile error rather than a silent new demand — the half the gate's
-  own totality test could never see. `src/reading.ts` does not exist yet and the
-  thirty-two derivations stand.
+  own totality test could never see. **Its second step landed in 3.27.0:**
+  `src/reading.ts` exists and states which clock of a node names a day, and three
+  of the thirty-two derivations, the days-ahead view, the calendar file and the
+  weeks ahead above the hub's doors, read it. Twenty-nine stand, and no
+  classification in `CLOCK_INTENT` has moved.
   **Two corrections to the census above, from measuring the scenario rather than
   reading it.** It says the held list shows *tomorrow* against the sheet's due
   date; the held list actually says **today**, because the sorting route's clock

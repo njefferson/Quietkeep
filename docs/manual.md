@@ -258,6 +258,30 @@ the same days, always. The calendar copy is for being reminded while the app
 is closed; this is for looking, and it is never stale. The door appears once
 something carries a date.
 
+### See the weeks ahead
+
+**The weeks ahead** is the first thing on the front page, above the doors, and
+it is nowhere else: inside a job it is gone, and with nothing held yet it is not
+there at all. It reads the dates you have already set and shows them from today,
+a day at a time. The next seven days are always listed, each with what is dated
+on it or the words *Nothing dated.* After them come only the days that hold
+something, out to thirty days. Each title opens the thing itself.
+
+A date that already went by is not in it. Those wait under **What slipped**, and
+the days ahead list keeps them under today.
+
+Under **Longer stretches** is a thing that has both a start date and a due date,
+written as the two days in words with a bar beside them along the thirty days.
+The bar is only a picture of the words. When more than four have a start and a
+due date, it says how many more and opens the days ahead.
+
+**Waiting on others** shows up to three things that are with somebody, with the
+name beside each, and one button that says how many are with other people and
+opens that list. It shows who, not how long. **Still to sort** shows up to three
+things you have put down and not yet sorted, and a button that opens that group.
+It leaves out how many are waiting on purpose: the front page has never put a
+number on that pile.
+
 ### Say a thing belongs somewhere
 
 On a thing's own panel: give it a **place** where it can be done, a **person**
@@ -388,8 +412,9 @@ when there is a reason.
 
 ### The work surface
 
+- **The weeks ahead** — above the doors on the front page: the next seven days, then any later day out to thirty that holds something, who is waited on, and what is still to sort.
 - **Where do you want to be?** — the screen you land on, and the one you come
-  back up to. A list of doors, each opening a single job and saying what is
+  back up to. The weeks ahead sit above it. A list of doors, each opening a single job and saying what is
   behind it. A door only appears when there is something behind it, so the list
   is short on a quiet day and never asks you to remember to go and look
   somewhere. Inside a job, that job is the whole screen: one way back, in the

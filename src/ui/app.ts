@@ -24,6 +24,7 @@ import { frameShouldStandDown } from '../frame.ts';
 import { mountWork } from './work.ts';
 import { mountDetail, type DetailOpen, type DetailUI } from './detail.ts';
 import { mountSearch } from './search.ts';
+import { mountGlance } from './glance.ts';
 import { mountSort } from './sort.ts';
 import { mountFocus, type FocusUI } from './focus.ts';
 import { mountReentry } from './reentry.ts';
@@ -256,6 +257,27 @@ const HELD_OPEN_KEY = 'view.held.open';
 function openHeld(): void {
   const fold = document.querySelector<HTMLDetailsElement>('#held-fold');
   if (fold && !fold.open) fold.open = true;
+}
+
+/**
+ * ENTER THE COMPLETE LIST AT ONE GROUP (3.27.0, extracted from the
+ * where-everything-is sheet's own press, 3.23.26).
+ *
+ * Two doors now press through to a group by its own title — that sheet's rows
+ * and the weeks-ahead block's *Open Not sorted yet* — so the sequence lives once.
+ * It enters the JOB and not only the fold: on the hub every section that is not
+ * the hub is hidden, so a fold opened alone is a fold nobody can see. Then it
+ * scrolls to the group found by what the held list labels it with, which is its
+ * own title, so there is no second mapping of key to selector.
+ */
+function openGroup(title: string): void {
+  enterStance('held');
+  openHeld();
+  requestAnimationFrame(() => {
+    const group = document.querySelector(`.cards-group[aria-label="${title}"]`);
+    const head = group?.previousElementSibling;
+    (head ?? group)?.scrollIntoView({ block: 'start' });
+  });
 }
 
 function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen) => void,
@@ -1307,6 +1329,7 @@ export async function main(edition?: Edition): Promise<void> {
   // this repo keeps finding in lists and workflows.
   let detail: DetailUI = { open() {} };
   let search: { refresh(): void } = { refresh() {} };
+  let glance: { refresh(): void } = { refresh() {} };
   let sort: { refresh(): void } = { refresh() {} };
   let work: { refresh(): void } = { refresh() {} };
   let triage: import('./clarify.ts').TriageUI = { refresh() {}, relabelTimer() {} };
@@ -1368,7 +1391,7 @@ export async function main(edition?: Edition): Promise<void> {
   // while its row was still on screen — one item, two questions, which is
   // exactly what the exclusion exists to prevent. This is what work.ts is handed
   // as its onChange, since work refreshes itself afterwards.
-  const rerenderLists = (): void => { rerender(); replan.refresh(); focus.refresh(); reentry.refresh(); bother.refresh(); load.refresh(); search.refresh(); sort.refresh(); clock.refresh(); };
+  const rerenderLists = (): void => { rerender(); replan.refresh(); focus.refresh(); reentry.refresh(); bother.refresh(); load.refresh(); search.refresh(); glance.refresh(); sort.refresh(); clock.refresh(); };
   rerenderAll = rerenderLists;
   // `relabelTimer`, not `refresh` (1.10.0): the do-now offer names the timer
   // length it will start, and that length is set in the (i) panel, which can be
@@ -1397,6 +1420,20 @@ export async function main(edition?: Edition): Promise<void> {
   // after detail, because a result opens the detail sheet. Contained like every
   // other surface — a broken search must never cost capture.
   try { search = mountSearch(session, now, n => detail.open(n)); } catch { /* a surface */ }
+
+  // The weeks ahead (3.27.0, ADR-0127): the days, the stretches, who is waited
+  // on and what is still to sort, above the hub's doors. Mounted after detail
+  // because a title opens it, and contained like every surface: a broken glance
+  // must never cost capture. Its refresh joins `rerenderLists`, which runs
+  // before `paintHub`, and `paintHub` stays last.
+  try {
+    glance = mountGlance(session, now, {
+      openNode: (n, opts) => detail.open(n, opts),
+      goPeople: () => enterStance('people'),
+      goUnsorted: () => openGroup('Not sorted yet'),
+      openDays: () => { openSheet('sheet-dated'); },
+    });
+  } catch { /* a surface */ }
 
   // Sort mode: the one-card conveyor over a named range (1.3.0). Mounted after
   // detail for the same reason search is — "Open it" hands the card to the
@@ -2101,13 +2138,7 @@ export async function main(edition?: Edition): Promise<void> {
           // called `intoJob(page, 'held')` BEFORE pressing, so it measured from
           // inside the job — a standing point no reader arrives from, because
           // this sheet's own door is on the hub. It enters from the hub now.
-          enterStance('held');
-          openHeld();
-          requestAnimationFrame(() => {
-            const group = document.querySelector(`.cards-group[aria-label="${place.title}"]`);
-            const head = group?.previousElementSibling;
-            (head ?? group)?.scrollIntoView({ block: 'start' });
-          });
+          openGroup(place.title);
         });
         li.append(open, count);
         return li;

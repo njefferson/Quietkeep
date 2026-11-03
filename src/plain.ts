@@ -274,6 +274,10 @@ export const PLAIN_CHROME_HIDDEN = [
                       // exactly the altitude Just-one-thing exists to come down
                       // from — #horizons-open's reasoning, on the time axis. The
                       // one date that matters on this day is on the card itself.
+  '#glance',          // THE WEEKS AHEAD (3.27.0). The same survey laid out on the
+                      // first screen, so the same reasoning as `#dated-open`:
+                      // the altitude this mode comes down from. It sits above
+                      // `#hub` and goes with it.
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.

@@ -2511,7 +2511,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.26.2**: three reader-facing
+- **https://staging.quietkeep.pages.dev** — **3.27.0**: the first screen shows
+  what is dated, a day at a time, above the doors (`#glance`, *The weeks ahead*):
+  seven days always listed, then the days out to thirty that hold something, a
+  thing with a start and a due date drawn as a stretch with its two dates in
+  words, who is waited on, and what is still to sort. One reading of when a thing
+  comes back (`src/reading.ts`) now serves the days-ahead view, the calendar file
+  and the glance; only those three places are on it and twenty-nine other
+  derivations stand. A projection, no new event, nothing stored. The pile of
+  things not sorted yet carries no figure, by ADR-0085 and ADR-0113. Record:
+  `docs/decisions/glance-2026-11.md` and ADR-0127. The Block register is not
+  touched by this release.
+- **3.26.2**: three reader-facing
   surfaces said *nothing about you is collected* while `src/seal.ts` states
   exactly what the relay observes and calls the denial *"the overclaim this
   project refuses"*. The worst was UNGATED — no `data-edition` — so both builds

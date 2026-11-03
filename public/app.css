@@ -3552,6 +3552,7 @@ body[data-plain="1"] #horizons-open,
 body[data-plain="1"] #arrangements-open,
 body[data-plain="1"] #assurance,
 body[data-plain="1"] #dated-open,
+body[data-plain="1"] #glance,
 body[data-plain="1"] #search,
 body[data-plain="1"] #foot-manual,
 body[data-plain="1"] #situation-open,
@@ -3632,6 +3633,10 @@ body[data-plain="1"] #held
   #runway[data-hub][data-stance] main > #hub { display: none; }
 }
 #runway:not([data-hub]) #hub { display: none; }
+/* THE WEEKS AHEAD (3.27.0) goes with the hub. With no hub — an empty store — the
+   landing rule above that hides every other child of `<main>` is not in force,
+   so without this the section would show to a newcomer on the first screen. */
+#runway:not([data-hub]) #glance { display: none; }
 
 /* --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) -------------------------------
  *
@@ -3665,7 +3670,8 @@ body[data-plain="1"] #held
   /* THE HUB VIEW IS UNCHANGED, deliberately. With nothing chosen there is only
      one thing on the page, and a list of doors stretched across 1,040px is a
      worse list. It keeps the measure it had and sits where it sat. */
-  #runway[data-hub]:not([data-stance]) main > #hub {
+  #runway[data-hub]:not([data-stance]) main > #hub,
+  #runway[data-hub]:not([data-stance]) main > #glance {
     max-width: 46rem;
     margin-inline: auto;
   }
@@ -3861,3 +3867,57 @@ body[data-plain="1"] #held
 /* The label carries the weight rather than a color of its own — two words in
    front of the reader's own sentence, told apart without a second pair. */
 .arrangement-said-label { font-weight: 600; }
+
+/* THE WEEKS AHEAD (3.27.0, ADR-0127), above the hub's doors.
+   TOKENS ONLY: ink and ink-soft on the surface and on the page, which are the
+   pairs `.review` and `.people` already use and the contrast gate already holds,
+   so no new foreground/background pair enters it. Nothing here rides on hue and
+   nothing is colored for pressure (B-01). Nothing animates; nothing is sticky.
+   Phone width is the layout: one column, nothing sets a width that can pass the
+   viewport, and every title wraps. Wide gains margin and nothing else (see the
+   rule beside `#hub` in the wide arrangement). */
+.glance {
+  margin: 1.25rem 0 1.5rem;
+  padding: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.glance > .section { margin-top: 0; }
+.glance-words { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.9375rem; }
+.glance-days { list-style: none; margin: 0 0 0.75rem; padding: 0; }
+.glance-day { margin: 0.75rem 0 0; }
+.glance-day-name { margin: 0 0 0.25rem; font-size: 1rem; }
+.glance-sub { margin: 1rem 0 0.35rem; font-size: 1rem; }
+.glance-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.glance-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; min-width: 0; }
+/* A TITLE IS A TARGET, shaped like `.review-open`: full width, at least the
+   target height at any text size, and the title wraps rather than widening. */
+.glance-title,
+.glance-count,
+.glance-open {
+  display: block; width: 100%; min-height: var(--target); padding: 0.5rem 0.75rem;
+  text-align: left; color: var(--ink); background: var(--bg);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  font: inherit; cursor: pointer; overflow-wrap: anywhere;
+}
+.glance-row > .glance-title { flex: 1 1 12rem; width: auto; min-width: 0; }
+.glance-count, .glance-open { margin-top: 0.5rem; }
+/* WHICH DATE IS TALKING, and who it is with, in the quiet token. Scenery beside
+   the title, never a second task. */
+.glance-kind, .glance-held { color: var(--ink-soft); font-size: 0.875rem; overflow-wrap: anywhere; }
+p.glance-held { margin: 0.5rem 0 0; }
+.glance-none { margin: 0; color: var(--ink-soft); font-size: 0.9375rem; }
+.glance-spans { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; }
+.glance-span { min-width: 0; }
+.glance-span-words { margin: 0.25rem 0 0.25rem; color: var(--ink-soft); font-size: 0.9375rem; }
+/* THE ONLY PLACE EXTENT IS DRAWN. Thirty equal columns at the card's width; the
+   filled span is set through the CSSOM (the site's policy refuses an inline
+   style attribute). The words above carry the same fact, so the bar is never
+   the only channel, and the track is hidden from assistive technology. */
+.glance-track {
+  display: grid; grid-template-columns: repeat(30, 1fr);
+  height: 0.5rem; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg); overflow: hidden;
+}
+.glance-fill { grid-row: 1; background: var(--ink-soft); }

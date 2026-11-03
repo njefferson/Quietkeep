@@ -1457,6 +1457,14 @@ const REGISTRY = {
   'the hub': ['#hub-heading', '.hub-go', '.hub-name', '.hub-count',
     // The situation, from the hub too (3.21.0) — registered the day it exists.
     '#situation-open-hub'],
+  // THE WEEKS AHEAD (3.27.0, ADR-0127), above the hub's doors on the same
+  // landing. Registered the day it exists, with every selector the block draws:
+  // the registry refuses one that matches nothing in any walked state, so the
+  // state that audits it seeds a thing dated today, a thing with a start and a
+  // due date, one waited on from somebody named, and unsorted captures.
+  'the glance': ['#glance-heading', '#glance-words', '.glance-day-name',
+    '.glance-title', '.glance-kind', '.glance-held', '.glance-none',
+    '.glance-span-words', '.glance-count', '.glance-open'],
   // And the row that is present inside every job: the way back, and the way to
   // put a thought down without leaving the job to find the box.
   'inside a job': ['#stance-back', '#stance-capture'],
@@ -2785,6 +2793,14 @@ try {
     await page.click('#about-close');
 
     // State 2: the empty store.
+    // THE WEEKS AHEAD IS NOT SHOWN TO A NEWCOMER (3.27.0). With nothing held
+    // there is no hub, and the block goes with it, so the first screen is what
+    // it was before this surface existed.
+    const glanceEmpty = await page.evaluate(() =>
+      document.querySelector('#glance')
+        ? getComputedStyle(document.querySelector('#glance')).display : 'missing');
+    (glanceEmpty === 'none' ? pass : fail)(
+      `${theme}/empty store: the weeks ahead is not shown with no hub (display ${glanceEmpty})`);
     await auditContrast(page, 'empty store', theme);
     await auditAxe(page, 'empty store', theme);
     await auditNames(page, 'empty store', theme);
@@ -3277,6 +3293,13 @@ try {
     await auditNames(page, 'one thing', theme);
     await auditSeparationAndTargets(page, 'one thing', theme);
     await auditFocusRings(page, 'one thing', theme, ['#nextup-plain-off']);
+    // THE WEEKS AHEAD GOES WITH THE HUB (3.27.0). A survey of dated days is the
+    // altitude this mode comes down from, so it is stripped with the doors.
+    const glanceInPlain = await page.evaluate(() =>
+      document.querySelector('#glance')
+        ? getComputedStyle(document.querySelector('#glance')).display : 'missing');
+    (glanceInPlain === 'none' ? pass : fail)(
+      `${theme}/one thing: the weeks ahead is stripped with the hub (display ${glanceInPlain})`);
 
     // AND THE STRIP ACTUALLY STRIPS (2.10.0) — every selector it names, gone.
     //
@@ -6768,6 +6791,230 @@ try {
     await page.evaluate(() => {
       for (const d of document.querySelectorAll('dialog')) if (d.open) d.close();
     });
+
+    /* THE WEEKS AHEAD (3.27.0, ADR-0127) — the block above the hub's doors, on
+     * the landing a session starts on.
+     *
+     * PLACED HERE, with only the wide arrangement after it, because it has to
+     * SEED and seeding changes the store every later state reads. It is seeded
+     * the way a person seeds it — dates and a name through a thing's own sheet,
+     * captures through the box — never by writing state, because a surface that
+     * is measured against a store no route can produce is measured against
+     * nothing. The registry refuses a selector that matches nothing visible, so
+     * the seed is also the proof that every one of them can be reached: a thing
+     * with a start and a due date (a stretch, and a day later in the thirty), a
+     * thing in the week waited on from somebody named, and four unsorted
+     * captures for the block that carries no number.
+     *
+     * ENTERED FROM THE LANDING the way a finger enters it, never from inside the
+     * job it leads to — hub LESSONS 268 records a walk that passed a defect by
+     * pressing from the wrong side. */
+    {
+      const keyIn = (n) => page.evaluate((k) => {
+        const d = new Date();
+        d.setDate(d.getDate() + k);
+        const p = (x) => String(x).padStart(2, '0');
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }, n);
+      // ONLY THE GROUPS A DATE CAN COUNT IN. The first version excluded just the
+      // unsorted group, and in one theme the first ordinary card was a finished
+      // one, which no selection holds, so the stretch never drew and the
+      // registry said so.
+      const ordinary = '#cards .cards-group:is([aria-label="Ready now"], [aria-label="Coming up"], [aria-label="Later"]) .card[data-kind="action"] .card-open';
+      const dateOne = async (nth, due, start, who) => {
+        await enterStance(page, 'held');
+        if (!(await page.locator('#held-fold[open]').count())) {
+          await page.locator('#held-fold-summary').click({ timeout: 4000 }).catch(() => {});
+        }
+        const door = page.locator(ordinary).nth(nth);
+        if (await door.count() === 0) {
+          fail(`${theme}/the glance: no ordinary action in the held list to date (wanted number ${nth + 1}), so the seed would prove nothing`);
+          return false;
+        }
+        await door.click();
+        await page.waitForSelector('#detail[open]');
+        await page.evaluate(() => {
+          const b = document.querySelector('#detail-more');
+          if (b && b.getAttribute('aria-expanded') !== 'true') b.click();
+        });
+        await page.fill('#detail-date', await keyIn(due));
+        await page.click('#detail-date-set');
+        await page.waitForFunction(() => /Due /.test(document.querySelector('#detail-live')?.textContent ?? ''));
+        if (start !== null) {
+          await page.fill('#detail-start', await keyIn(start));
+          await page.click('#detail-start-set');
+          await page.waitForFunction(() => /Out of the way/.test(document.querySelector('#detail-live')?.textContent ?? ''));
+        }
+        if (who) {
+          await page.fill('#detail-person', who);
+          await page.selectOption('#detail-relation', 'waiting-on');
+          await page.click('#detail-person-set');
+          await page.waitForFunction((name) =>
+            (document.querySelector('#detail-people-list')?.textContent ?? '').includes(name), who);
+        }
+        await page.click('#detail-close');
+        await page.waitForSelector('#detail', { state: 'hidden' });
+        return true;
+      };
+      const stretchSeeded = await dateOne(0, 10, 3, null);
+      const waitedSeeded = await dateOne(1, 2, null, 'Noor');
+      await leaveStance(page);
+      for (const t of ['glance sort alpha', 'glance sort beta', 'glance sort gamma', 'glance sort delta']) {
+        await page.fill('#capture', t);
+        await page.click('#capture-form button[type=submit]');
+        await page.waitForFunction(() => /Held/.test(document.querySelector('#status')?.textContent ?? ''));
+      }
+      (stretchSeeded && waitedSeeded ? pass : fail)(
+        `${theme}/the glance: the store was seeded through the sheet and the box (stretch ${stretchSeeded}, waited-on ${waitedSeeded})`);
+
+      await leaveStance(page);
+      await page.waitForSelector('#glance-week .glance-title', { timeout: 6000 }).catch(() => {});
+      const glanceOn = await page.evaluate(() => getComputedStyle(document.querySelector('#glance')).display);
+      (glanceOn !== 'none' ? pass : fail)(`${theme}/the glance: it is on the landing (display ${glanceOn})`);
+
+      // WHAT IT SAYS, and what it must not.
+      const gl = await page.evaluate(() => {
+        const t = (sel) => (document.querySelector(sel)?.textContent ?? '').replace(/\s+/g, ' ').trim();
+        return {
+          heading: t('#glance-heading'), words: t('#glance-words'),
+          week: document.querySelectorAll('#glance-week > li').length,
+          stretch: t('#glance-spans .glance-span-words'),
+          count: t('.glance-count'),
+          all: t('#glance'),
+        };
+      });
+      (gl.heading === 'The weeks ahead' ? pass : fail)(`${theme}/the glance: it is headed "${gl.heading}"`);
+      (gl.week === 7 ? pass : fail)(`${theme}/the glance: the week is seven days (${gl.week})`);
+      (/^(Starts|Started) .*, due .*\.$/.test(gl.stretch) ? pass : fail)(
+        `${theme}/the glance: a stretch reads as two dates in words ("${gl.stretch}")`);
+      (/with other people|with someone/.test(gl.count) ? pass : fail)(
+        `${theme}/the glance: who is waited on is counted in the People door's own words ("${gl.count}")`);
+      (!/overdue|\blate\b|behind|missed|slipped|streak|score|rank|percent|%/i.test(gl.all) ? pass : fail)(
+        `${theme}/the glance: nothing in it grades the reader`);
+
+      // TEXT ORDER: the DOM order and the order the layout paints are both the
+      // order a person meets it in, so the layout cannot reorder what a screen
+      // reader reads.
+      const order = await page.evaluate(() => {
+        const want = ['#glance-heading', '#glance-words', '#glance-week', '#glance-month',
+          '#glance-spans-heading', '#glance-waiting-heading', '#glance-unsorted-heading'];
+        const els = want.map((s) => ({ s, el: document.querySelector(s) })).filter((x) => x.el);
+        const dom = [...els].sort((a, b) =>
+          a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1).map((x) => x.s);
+        const top = [...els].sort((a, b) =>
+          a.el.getBoundingClientRect().top - b.el.getBoundingClientRect().top).map((x) => x.s);
+        return { want: els.map((x) => x.s), dom, top };
+      });
+      (order.want.length === 7 ? pass : fail)(
+        `${theme}/the glance: all seven parts are present to be ordered (${order.want.length})`);
+      (JSON.stringify(order.dom) === JSON.stringify(order.want) ? pass : fail)(
+        `${theme}/the glance: the markup reads in the order it is meant to (${order.dom.join(' ')})`);
+      (JSON.stringify(order.top) === JSON.stringify(order.want) ? pass : fail)(
+        `${theme}/the glance: and the layout paints it in that same order`);
+
+      // THE PILE HAS NO NUMBER: the block's own words carry no figure but the
+      // count of titles drawn above it.
+      const pile = await page.evaluate(() => {
+        const head = document.querySelector('#glance-unsorted-heading');
+        const out = [];
+        for (let n = head; n; n = n.nextElementSibling) out.push(n.textContent ?? '');
+        return out.join(' ');
+      });
+      const figures = (pile.match(/\d+/g) ?? []).filter((f) => f !== '3');
+      (pile.length > 0 && figures.length === 0 ? pass : fail)(
+        `${theme}/the glance: still to sort carries no figure for the pile ("${pile.replace(/\s+/g, ' ').trim().slice(0, 70)}")`);
+
+      await auditContrast(page, 'the glance', theme);
+      await auditAxe(page, 'the glance', theme);
+      await auditNames(page, 'the glance', theme);
+      await auditSeparationAndTargets(page, 'the glance', theme);
+      await auditFocusRings(page, 'the glance', theme,
+        ['#glance .glance-title', '#glance .glance-count', '#glance .glance-open']);
+
+      // TARGETS, measured here as well as by the shared audit: every control the
+      // block draws is at least 44px both ways.
+      const small = await page.evaluate(() => [...document.querySelectorAll(
+        '#glance .glance-title, #glance .glance-count, #glance .glance-open')]
+        .map((b) => b.getBoundingClientRect())
+        .filter((r) => r.height < 43.5 || r.width < 43.5).length);
+      (small === 0 ? pass : fail)(`${theme}/the glance: every title and button is at least 44px (${small} smaller)`);
+
+      // PRESSES, from the landing. A title opens its own sheet and closing it
+      // lands back on the landing with the block still there.
+      await page.locator('#glance-week .glance-title').first().click();
+      await page.waitForSelector('#detail[open]');
+      await page.click('#detail-close');
+      await page.waitForSelector('#detail', { state: 'hidden' });
+      const stillThere = await page.evaluate(() =>
+        getComputedStyle(document.querySelector('#glance')).display !== 'none');
+      (stillThere ? pass : fail)(`${theme}/the glance: a title opens its own sheet, and closing it returns to the landing`);
+
+      // The waiting count enters the People job, and inside a job the block is gone.
+      await page.locator('#glance .glance-count').click();
+      const inPeople = await page.waitForSelector('#runway[data-stance="people"]', { timeout: 4000 })
+        .then(() => true).catch(() => false);
+      (inPeople ? pass : fail)(`${theme}/the glance: the waiting count lands in the People job`);
+      const goneInJob = await page.evaluate(() =>
+        getComputedStyle(document.querySelector('#glance')).display === 'none');
+      (goneInJob ? pass : fail)(`${theme}/the glance: and inside a job at phone width the block is not shown`);
+      await leaveStance(page);
+      await page.waitForSelector('#glance-week .glance-title');
+
+      // Still to sort presses through to its own group in the complete list,
+      // entered from the landing, with the group's heading in view.
+      await page.locator('#glance .glance-open', { hasText: 'Open Not sorted yet' }).click();
+      const inHeld = await page.waitForSelector('#runway[data-stance="held"]', { timeout: 4000 })
+        .then(() => true).catch(() => false);
+      const headingSeen = inHeld && await page.waitForFunction(() => {
+        const g = document.querySelector('.cards-group[aria-label="Not sorted yet"]');
+        if (!g) return false;
+        const r = (g.previousElementSibling ?? g).getBoundingClientRect();
+        return r.bottom > 0 && r.top < window.innerHeight;
+      }, null, { timeout: 5000 }).then(() => true).catch(() => false);
+      (inHeld && headingSeen ? pass : fail)(
+        `${theme}/the glance: still to sort lands on its own group in the list (in the job ${inHeld}, heading in view ${headingSeen})`);
+      await leaveStance(page);
+      await page.waitForSelector('#glance-week .glance-title');
+
+      // ENLARGED TEXT at a phone's narrowest: nothing runs past the card, and a
+      // title wraps inside it.
+      await page.setViewportSize({ width: 320, height: 568 });
+      await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+      const zoomed = await page.evaluate(() => {
+        const g = document.querySelector('#glance');
+        const gr = g.getBoundingClientRect();
+        const doc = document.scrollingElement;
+        return {
+          card: g.scrollWidth - g.clientWidth,
+          page: doc.scrollWidth - doc.clientWidth,
+          outside: [...g.querySelectorAll('.glance-title, .glance-count, .glance-open')]
+            .filter((b) => b.getBoundingClientRect().right > gr.right + 1).length,
+        };
+      });
+      (zoomed.card <= 1 && zoomed.page <= 1 && zoomed.outside === 0 ? pass : fail)(
+        `${theme}/the glance at 320px and 200%: card overflow ${zoomed.card}px, page overflow ${zoomed.page}px, ${zoomed.outside} controls past the card`);
+      await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+
+      // WIDE: the block sits above the hub, no wider than the hub, and inside a
+      // job it is not shown at any width.
+      await page.setViewportSize({ width: 1024, height: 768 });
+      const wide = await page.evaluate(() => {
+        const g = document.querySelector('#glance').getBoundingClientRect();
+        const h = document.querySelector('#hub').getBoundingClientRect();
+        return {
+          shown: getComputedStyle(document.querySelector('#glance')).display !== 'none',
+          narrower: g.width <= h.width + 1, above: g.bottom <= h.top + 1,
+        };
+      });
+      (wide.shown && wide.narrower && wide.above ? pass : fail)(
+        `${theme}/the glance at 1024px: shown ${wide.shown}, no wider than the hub ${wide.narrower}, above it ${wide.above}`);
+      await enterStance(page, 'held');
+      const wideJob = await page.evaluate(() =>
+        getComputedStyle(document.querySelector('#glance')).display === 'none');
+      (wideJob ? pass : fail)(`${theme}/the glance at 1024px: inside a job it is not shown`);
+      await leaveStance(page);
+      await page.setViewportSize({ width: 390, height: 844 });
+    }
 
     // AND THE ARRANGEMENT IS ASSERTED, not assumed. A wide pass that ran against
     // a page still showing one pane would report green about a layout that was

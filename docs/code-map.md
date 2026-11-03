@@ -66,6 +66,12 @@ no writes. This is where most of the app's thinking lives:
 - `pressure.ts` — the ONE decay primitive: `(last_done, comfort_window)` to a
   continuous number. `hasCadence` says whether a thing carries it at all.
 - `gate.ts`'s `coverageProof` — the app's own evidence that law 1 holds.
+- `reading.ts` — which clock of a node names a day, stated once (3.27.0). The
+  days-ahead view, the calendar file and the glance read it, and no other
+  projection does yet.
+- `glance.ts` — the weeks ahead above the hub's doors: seven days, the days out
+  to thirty that hold something, stretches, who is waited on, what is still to
+  sort. It reads `ics.ts`'s selection and `reading.ts`'s days, and owns neither.
 - `search.ts`, `dated.ts`, `horizons.ts`, `review.ts`, `focus.ts`, `menu.ts`,
   `people.ts`, `delta.ts`, `diagnostic.ts` — one surface's question each.
 

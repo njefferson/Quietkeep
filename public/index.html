@@ -374,6 +374,20 @@
        it can be seen, and the ordinary button commits it. -->
 </div>
 
+<!-- THE WEEKS AHEAD (3.27.0, ADR-0127). One section above the doors: the days
+     from today, the stretches between two dates, who is waited on, and what is
+     still to sort. A projection that stores nothing and asks for nothing.
+     `data-hub-part` keeps it on the landing and out of every job;
+     `data-not-a-stop` keeps it out of the Contents list, as the hub is. It has
+     no `data-stance-name`, so it is not a door. No live region on purpose: it
+     repaints with every render and announces nothing. Every other word is
+     written by `src/ui/glance.ts`. -->
+<section id="glance" class="glance" data-hub-part data-not-a-stop aria-labelledby="glance-heading">
+  <h2 id="glance-heading" class="section" tabindex="-1">The weeks ahead</h2>
+  <p id="glance-words" class="glance-words">Dated things, day by day, from today.</p>
+  <div id="glance-body"></div>
+</section>
+
 <!-- HOME (3.0.0, ADR-0108). The surface you come up to.
      Before this the landing view was 15 conditional sections in one scroller,
      and reading it was reading an article: you had a position, never a place,
