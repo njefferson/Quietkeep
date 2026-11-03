@@ -7475,7 +7475,7 @@ Watched green on a well-formed entry and red five other ways: no class, no
 resolution, entries beside the placeholder, the register missing, and one of its
 three rules removed.
 
-- *(no entries yet)*
+- Hard block, open: a day ends when putting one thing down costs more than there is left to give, and when what is already held cannot be seen at a glance, so nothing is trusted to be in there. The cost of landing one item and the loss of the glance are one class. It is known only from its shape, which the design review of November 2026 states in its research additions (the class of cause in R21, the mismatch with steady self-regulation in R22, the survival of paper and boards in R25) and its assessment; presses and seconds per route are measured nowhere yet, and no release has answered it. The candidate is the glance surface in that review's proposed shape.
 
 **CLOSED 2026-08-21 by evidence, not by asking (decision 6 of the V2 plan).**
 The proposal was to keep the dogfood gate's definition and its counter untouched

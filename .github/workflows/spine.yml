@@ -252,6 +252,13 @@ jobs:
         if: ${{ !cancelled() }}
         run: npm run release:check
 
+      # THE BLOCK REGISTER IS NOT EMPTY while NOTES.md says the gate runs daily
+      # and the app fails it daily. Shape only: it cannot know an entry is true.
+      # It joined the Spine in the commit that added the first entry.
+      - name: The Block register holds its shape (tools/blocks.mjs)
+        if: ${{ !cancelled() }}
+        run: npm run blocks
+
       # The hosted "why it works this way" page is GENERATED from the rationale
       # doc (tools/thesis.mjs), so the two cannot drift — same rule as the
       # changelog, so it earns the same gate.
