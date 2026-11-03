@@ -2513,9 +2513,11 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   to maintain by hand, and it will lose.**
 - **https://staging.quietkeep.pages.dev** — **3.27.0**: the first screen shows
   what is dated, a day at a time, above the doors (`#glance`, *The weeks ahead*):
-  seven days always listed, then the days out to thirty that hold something, a
-  thing with a start and a due date drawn as a stretch with its two dates in
-  words, who is waited on, and what is still to sort. One reading of when a thing
+  the days in the next seven that hold something, then the days out to thirty
+  that do, three titles to a day, a thing with a start and a due date drawn as a
+  stretch with its two dates in words; who is waited on and what is still to sort
+  stand beneath the doors (`#glance-after`), so the way into sorting stays on a
+  phone's first screen. One reading of when a thing
   comes back (`src/reading.ts`) now serves the days-ahead view, the calendar file
   and the glance; only those three places are on it and twenty-nine other
   derivations stand. A projection, no new event, nothing stored. The pile of

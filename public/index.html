@@ -414,6 +414,19 @@
           data-narrows="#nextup,#held">What&rsquo;s the situation?</button>
 </section>
 
+<!-- THE WEEKS AHEAD, THE PART BENEATH THE DOORS (3.27.0, ADR-0127). Who is
+     waited on and what is still to sort. They were above the doors and, with a
+     few things held, put the way into sorting 1489px down a 844px screen, which
+     the smoke walk refused; the days stay above, these two stand under. Same
+     markers as `#glance`, for the same reasons, and the same absence of a live
+     region. Hidden by `src/ui/glance.ts` when neither block has anything. A
+     section with no heading of its own is named here, because its two blocks
+     carry their own `<h3>`s. -->
+<section id="glance-after" class="glance glance-after" data-hub-part data-not-a-stop
+         aria-label="Waiting on others, and still to sort" hidden>
+  <div id="glance-after-body"></div>
+</section>
+
   <!-- WHERE THE WORRY BOX AND THE LOAD ENTRY WENT (2.8.1, ADR-0099).
        Both were collapsed lines here, directly under capture: `bother-entry`
        from v1.5 and `load-entry` from 1.15.0. They are surfaces now, reached

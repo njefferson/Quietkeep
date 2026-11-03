@@ -1463,7 +1463,7 @@ const REGISTRY = {
   // state that audits it seeds a thing dated today, a thing with a start and a
   // due date, one waited on from somebody named, and unsorted captures.
   'the glance': ['#glance-heading', '#glance-words', '.glance-day-name',
-    '.glance-title', '.glance-kind', '.glance-held', '.glance-none',
+    '.glance-title', '.glance-kind', '.glance-held',
     '.glance-span-words', '.glance-count', '.glance-open'],
   // And the row that is present inside every job: the way back, and the way to
   // put a thought down without leaving the job to find the box.
@@ -2797,8 +2797,9 @@ try {
     // there is no hub, and the block goes with it, so the first screen is what
     // it was before this surface existed.
     const glanceEmpty = await page.evaluate(() =>
-      document.querySelector('#glance')
-        ? getComputedStyle(document.querySelector('#glance')).display : 'missing');
+      ['#glance', '#glance-after'].map((s) => document.querySelector(s)
+        ? getComputedStyle(document.querySelector(s)).display : 'missing')
+        .every((d) => d === 'none') ? 'none' : 'shown');
     (glanceEmpty === 'none' ? pass : fail)(
       `${theme}/empty store: the weeks ahead is not shown with no hub (display ${glanceEmpty})`);
     await auditContrast(page, 'empty store', theme);
@@ -3296,8 +3297,9 @@ try {
     // THE WEEKS AHEAD GOES WITH THE HUB (3.27.0). A survey of dated days is the
     // altitude this mode comes down from, so it is stripped with the doors.
     const glanceInPlain = await page.evaluate(() =>
-      document.querySelector('#glance')
-        ? getComputedStyle(document.querySelector('#glance')).display : 'missing');
+      ['#glance', '#glance-after'].map((s) => document.querySelector(s)
+        ? getComputedStyle(document.querySelector(s)).display : 'missing')
+        .every((d) => d === 'none') ? 'none' : 'shown');
     (glanceInPlain === 'none' ? pass : fail)(
       `${theme}/one thing: the weeks ahead is stripped with the hub (display ${glanceInPlain})`);
 
@@ -6878,13 +6880,18 @@ try {
         return {
           heading: t('#glance-heading'), words: t('#glance-words'),
           week: document.querySelectorAll('#glance-week > li').length,
+          weekEmpty: document.querySelectorAll('#glance-week > li:not(:has(.glance-title))').length,
           stretch: t('#glance-spans .glance-span-words'),
           count: t('.glance-count'),
-          all: t('#glance'),
+          all: t('#glance') + ' ' + t('#glance-after'),
         };
       });
       (gl.heading === 'The weeks ahead' ? pass : fail)(`${theme}/the glance: it is headed "${gl.heading}"`);
-      (gl.week === 7 ? pass : fail)(`${theme}/the glance: the week is seven days (${gl.week})`);
+      // ONLY DAYS THAT CARRY SOMETHING. Seven rows of "Nothing dated." pushed the
+      // way into sorting 645px off a phone's first screen, so a day with nothing
+      // on it is not drawn.
+      (gl.week >= 1 && gl.week <= 7 && gl.weekEmpty === 0 ? pass : fail)(
+        `${theme}/the glance: the week draws only days that carry a title (${gl.week} days, ${gl.weekEmpty} empty)`);
       (/^(Starts|Started) .*, due .*\.$/.test(gl.stretch) ? pass : fail)(
         `${theme}/the glance: a stretch reads as two dates in words ("${gl.stretch}")`);
       (/with other people|with someone/.test(gl.count) ? pass : fail)(
@@ -6929,12 +6936,36 @@ try {
       await auditNames(page, 'the glance', theme);
       await auditSeparationAndTargets(page, 'the glance', theme);
       await auditFocusRings(page, 'the glance', theme,
-        ['#glance .glance-title', '#glance .glance-count', '#glance .glance-open']);
+        ['.glance .glance-title', '.glance .glance-count', '.glance .glance-open']);
+
+      // THE FIRST SCREEN, which is what the smoke walk refused: the hub's first
+      // door has to end on a phone's first screen with this block above it, here
+      // with a stretch, a waited-on thing and four unsorted captures held.
+      const firstDoor = await page.evaluate(() => {
+        const b = document.querySelector('#hub-doors button');
+        const r = b ? b.getBoundingClientRect() : null;
+        return { bottom: r ? Math.round(r.bottom) : null, vh: window.innerHeight };
+      });
+      (firstDoor.bottom !== null && firstDoor.bottom <= firstDoor.vh ? pass : fail)(
+        `${theme}/the glance: the hub's first door is on the first screen (bottom ${firstDoor.bottom} of ${firstDoor.vh})`);
+
+      // WHO IS WAITED ON AND WHAT IS STILL TO SORT STAND BENEATH THE DOORS.
+      const beneath = await page.evaluate(() => {
+        const hub = document.querySelector('#hub').getBoundingClientRect();
+        const after = document.querySelector('#glance-after');
+        const a = after.getBoundingClientRect();
+        return { shown: !after.hidden && getComputedStyle(after).display !== 'none',
+          below: a.top >= hub.bottom - 1,
+          inside: [...after.querySelectorAll('h3')].map((h) => h.id).join(' ') };
+      });
+      (beneath.shown && beneath.below
+        && beneath.inside === 'glance-waiting-heading glance-unsorted-heading' ? pass : fail)(
+        `${theme}/the glance: waiting-on and still-to-sort stand beneath the doors (shown ${beneath.shown}, below ${beneath.below}, holds ${beneath.inside})`);
 
       // TARGETS, measured here as well as by the shared audit: every control the
       // block draws is at least 44px both ways.
       const small = await page.evaluate(() => [...document.querySelectorAll(
-        '#glance .glance-title, #glance .glance-count, #glance .glance-open')]
+        '.glance .glance-title, .glance .glance-count, .glance .glance-open')]
         .map((b) => b.getBoundingClientRect())
         .filter((r) => r.height < 43.5 || r.width < 43.5).length);
       (small === 0 ? pass : fail)(`${theme}/the glance: every title and button is at least 44px (${small} smaller)`);
@@ -6950,19 +6981,20 @@ try {
       (stillThere ? pass : fail)(`${theme}/the glance: a title opens its own sheet, and closing it returns to the landing`);
 
       // The waiting count enters the People job, and inside a job the block is gone.
-      await page.locator('#glance .glance-count').click();
+      await page.locator('#glance-after .glance-count').click();
       const inPeople = await page.waitForSelector('#runway[data-stance="people"]', { timeout: 4000 })
         .then(() => true).catch(() => false);
       (inPeople ? pass : fail)(`${theme}/the glance: the waiting count lands in the People job`);
       const goneInJob = await page.evaluate(() =>
-        getComputedStyle(document.querySelector('#glance')).display === 'none');
-      (goneInJob ? pass : fail)(`${theme}/the glance: and inside a job at phone width the block is not shown`);
+        getComputedStyle(document.querySelector('#glance')).display === 'none'
+        && getComputedStyle(document.querySelector('#glance-after')).display === 'none');
+      (goneInJob ? pass : fail)(`${theme}/the glance: and inside a job at phone width both halves are not shown`);
       await leaveStance(page);
       await page.waitForSelector('#glance-week .glance-title');
 
       // Still to sort presses through to its own group in the complete list,
       // entered from the landing, with the group's heading in view.
-      await page.locator('#glance .glance-open', { hasText: 'Open Not sorted yet' }).click();
+      await page.locator('#glance-after .glance-open', { hasText: 'Open Not sorted yet' }).click();
       const inHeld = await page.waitForSelector('#runway[data-stance="held"]', { timeout: 4000 })
         .then(() => true).catch(() => false);
       const headingSeen = inHeld && await page.waitForFunction(() => {
@@ -6981,14 +7013,16 @@ try {
       await page.setViewportSize({ width: 320, height: 568 });
       await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
       const zoomed = await page.evaluate(() => {
-        const g = document.querySelector('#glance');
-        const gr = g.getBoundingClientRect();
         const doc = document.scrollingElement;
+        const cards = [...document.querySelectorAll('.glance')].filter((g) => !g.hidden);
         return {
-          card: g.scrollWidth - g.clientWidth,
+          card: Math.max(0, ...cards.map((g) => g.scrollWidth - g.clientWidth)),
           page: doc.scrollWidth - doc.clientWidth,
-          outside: [...g.querySelectorAll('.glance-title, .glance-count, .glance-open')]
-            .filter((b) => b.getBoundingClientRect().right > gr.right + 1).length,
+          outside: cards.flatMap((g) => {
+            const gr = g.getBoundingClientRect();
+            return [...g.querySelectorAll('.glance-title, .glance-count, .glance-open')]
+              .filter((b) => b.getBoundingClientRect().right > gr.right + 1);
+          }).length,
         };
       });
       (zoomed.card <= 1 && zoomed.page <= 1 && zoomed.outside === 0 ? pass : fail)(
@@ -7010,7 +7044,8 @@ try {
         `${theme}/the glance at 1024px: shown ${wide.shown}, no wider than the hub ${wide.narrower}, above it ${wide.above}`);
       await enterStance(page, 'held');
       const wideJob = await page.evaluate(() =>
-        getComputedStyle(document.querySelector('#glance')).display === 'none');
+        getComputedStyle(document.querySelector('#glance')).display === 'none'
+        && getComputedStyle(document.querySelector('#glance-after')).display === 'none');
       (wideJob ? pass : fail)(`${theme}/the glance at 1024px: inside a job it is not shown`);
       await leaveStance(page);
       await page.setViewportSize({ width: 390, height: 844 });

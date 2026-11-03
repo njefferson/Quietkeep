@@ -8,8 +8,9 @@
 // than the diary, which is the class `src/ics.ts` and `src/reading.ts` exist to
 // refuse.
 //
-// WHAT IT SHOWS, from today and never before it (law 3). Seven days, then the
-// rest of thirty days where something is dated; the stretches between two dates
+// WHAT IT SHOWS, from today and never before it (law 3). The days of the next
+// seven that carry something, then the rest of thirty days where something is
+// dated; at most three titles on a day; the stretches between two dates
 // of one thing (a lane, drawn as length); who a thing is waited on from; and
 // what is still to sort.
 //
@@ -35,8 +36,11 @@ import type { DatedItem } from './dated.ts';
 export const GLANCE_DAYS = 30;
 /** The days always drawn, one list item each. */
 export const GLANCE_WEEK = 7;
-/** Titles shown on one day before one line says how many more. */
-export const DAY_CAP = 5;
+/** Titles shown on one day before one line says how many more. Three, because
+ *  the first screen has to leave the hub's first door on it at a phone's height
+ *  (the smoke walk measures that), and a day with more says so and opens the
+ *  days-ahead sheet, which holds everything. */
+export const DAY_CAP = 3;
 /** Stretches shown before one line says how many more. */
 export const SPAN_CAP = 4;
 /** Things waited on shown before the count sentence says "these first". */
@@ -81,7 +85,9 @@ export interface GlanceWait {
 export interface GlanceView {
   /** The one sentence under the heading. */
   words: string;
-  /** Always `GLANCE_WEEK` days, in date order. */
+  /** The days of the first `GLANCE_WEEK` that carry a title, in date order. A
+   *  day with nothing on it is not drawn: seven rows of "Nothing dated." pushed
+   *  the hub's first door off a phone's first screen. */
   week: GlanceDay[];
   /** Days eight to thirty that carry a title; a run of empty days is absent. */
   month: GlanceDay[];
@@ -140,13 +146,16 @@ export function glanceView(state: State, nowIso: string, zone: string): GlanceVi
   };
 
   const week: GlanceDay[] = [];
-  for (let i = 0; i < GLANCE_WEEK; i++) week.push(dayOf(i));
+  for (let i = 0; i < GLANCE_WEEK; i++) {
+    const d = dayOf(i);
+    if (d.items.length > 0) week.push(d);
+  }
   const month: GlanceDay[] = [];
   for (let i = GLANCE_WEEK; i < GLANCE_DAYS; i++) {
     const d = dayOf(i);
     if (d.items.length > 0) month.push(d);
   }
-  const anyDated = week.some(d => d.items.length > 0) || month.length > 0;
+  const anyDated = week.length > 0 || month.length > 0;
 
   // --- the stretches -------------------------------------------------------
   // One shape of one node: a start clock and a due clock, both naming a day.

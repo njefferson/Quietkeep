@@ -1,7 +1,8 @@
 // The weeks ahead — the surface (3.27.0, ADR-0127).
 //
-// Draws `glanceView` (src/glance.ts) into the section the shell carries above
-// the hub's doors. It holds no state of its own and writes no event: every
+// Draws `glanceView` (src/glance.ts) into two sections the shell carries: the
+// days and the stretches above the hub's doors, and who is waited on and what
+// is still to sort beneath them. It holds no state of its own and writes no event: every
 // repaint is a fresh read of the log, replacing the section's children whole.
 //
 // NO LIVE REGION. The block repaints with every render, and a standing
@@ -45,8 +46,10 @@ export interface GlanceUI { refresh(): void }
 export function mountGlance(session: Session, now: () => number, deps: GlanceDeps): GlanceUI {
   const words = document.querySelector<HTMLElement>('#glance-words');
   const body = document.querySelector<HTMLElement>('#glance-body');
-  if (!words || !body) return { refresh() {} };
-  const WORDS = words, BODY = body;
+  const afterSection = document.querySelector<HTMLElement>('#glance-after');
+  const afterBody = document.querySelector<HTMLElement>('#glance-after-body');
+  if (!words || !body || !afterBody) return { refresh() {} };
+  const WORDS = words, BODY = body, AFTER_BODY = afterBody, AFTER = afterSection;
 
   /** A title is a door onto the thing's own sheet. */
   const titleButton = (node: NodeState, opts?: DetailOpen): HTMLButtonElement => {
@@ -69,13 +72,10 @@ export function mountGlance(session: Session, now: () => number, deps: GlanceDep
   const dayItem = (d: GlanceDay, nowIso: string): HTMLLIElement => {
     const li = el('li', 'glance-day');
     // The heading is the one place the day is said, in the days-ahead view's own
-    // words, so a row and its heading cannot disagree.
+    // words, so a row and its heading cannot disagree. Only a day that carries a
+    // title is drawn, so there is no empty-day branch.
     const asDay: DatedDay = { day: d.day, days: d.offset, items: d.items };
     li.append(el('h3', 'glance-day-name', datedDayWords(asDay, nowIso, session.zone)));
-    if (d.items.length === 0) {
-      li.append(el('p', 'glance-none', 'Nothing dated.'));
-      return li;
-    }
     const ul = el('ul', 'glance-rows');
     for (const it of d.items) {
       const row = el('li', 'glance-row');
@@ -98,25 +98,27 @@ export function mountGlance(session: Session, now: () => number, deps: GlanceDep
 
     const parts: HTMLElement[] = [];
 
-    // The week: always seven days, in date order.
-    const week = el('ol', 'glance-days');
-    week.id = 'glance-week';
-    week.setAttribute('aria-label', 'The next seven days');
-    week.append(...v.week.map(d => dayItem(d, nowIso)));
-    parts.push(week);
+    // The week: only the days that carry a title, in date order. When none does
+    // but a later day does, one line says so; when nothing at all is dated the
+    // sentence under the heading already says it, and nothing repeats it.
+    if (v.week.length > 0) {
+      const week = el('ol', 'glance-days');
+      week.id = 'glance-week';
+      week.setAttribute('aria-label', 'The next seven days');
+      week.append(...v.week.map(d => dayItem(d, nowIso)));
+      parts.push(week);
+    } else if (v.anyDated) {
+      parts.push(el('p', 'glance-none', 'Nothing dated in the next seven days.'));
+    }
 
     // The rest of the thirty days: only days that carry a title.
-    const month = el('ol', 'glance-days');
-    month.id = 'glance-month';
-    month.setAttribute('aria-label', 'The rest of the thirty days');
-    if (v.month.length === 0) {
-      const li = el('li', 'glance-day');
-      li.append(el('p', 'glance-none', 'Nothing else is dated in the thirty days.'));
-      month.append(li);
-    } else {
+    if (v.month.length > 0) {
+      const month = el('ol', 'glance-days');
+      month.id = 'glance-month';
+      month.setAttribute('aria-label', 'The rest of the thirty days');
       month.append(...v.month.map(d => dayItem(d, nowIso)));
+      parts.push(month);
     }
-    parts.push(month);
 
     // Longer stretches: present only when a thing has a start and a due date
     // that fall in the thirty days.
@@ -147,6 +149,11 @@ export function mountGlance(session: Session, now: () => number, deps: GlanceDep
       }
     }
 
+    // BENEATH THE DOORS from here on. Who a thing is with and what is still to
+    // sort are the two blocks that grew with the store, and above the doors they
+    // pushed the way into sorting off a phone's first screen (1489px of 844).
+    const after: HTMLElement[] = [];
+
     // Who a thing is with.
     if (v.waiting.total > 0) {
       const h = el('h3', 'glance-sub', 'Waiting on others');
@@ -161,7 +168,7 @@ export function mountGlance(session: Session, now: () => number, deps: GlanceDep
         row.append(el('span', 'glance-held', w.whom ? `With ${w.whom}.` : 'Nobody named yet.'));
         ul.append(row);
       }
-      parts.push(h, ul,
+      after.push(h, ul,
         openButton(waitingCountWords(v.waiting.total, v.waiting.shown.length), 'glance-count', deps.goPeople));
     }
 
@@ -177,14 +184,17 @@ export function mountGlance(session: Session, now: () => number, deps: GlanceDep
         row.append(titleButton(n));
         ul.append(row);
       }
-      parts.push(h, ul);
+      after.push(h, ul);
       if (v.unsorted.more) {
-        parts.push(el('p', 'glance-held', unsortedMoreWords(v.unsorted.shown.length)));
+        after.push(el('p', 'glance-held', unsortedMoreWords(v.unsorted.shown.length)));
       }
-      parts.push(openButton('Open Not sorted yet', 'glance-open', deps.goUnsorted));
+      after.push(openButton('Open Not sorted yet', 'glance-open', deps.goUnsorted));
     }
 
     BODY.replaceChildren(...parts);
+    AFTER_BODY.replaceChildren(...after);
+    // An empty card is a box with nothing in it; it is not drawn.
+    if (AFTER) AFTER.hidden = after.length === 0;
   };
 
   refresh();

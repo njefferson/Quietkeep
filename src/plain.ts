@@ -278,6 +278,9 @@ export const PLAIN_CHROME_HIDDEN = [
                       // first screen, so the same reasoning as `#dated-open`:
                       // the altitude this mode comes down from. It sits above
                       // `#hub` and goes with it.
+  '#glance-after',    // THE SAME BLOCK'S SECOND HALF, beneath the doors: who is
+                      // waited on and what is still to sort. The pile in
+                      // miniature is what this mode removes, so it goes too.
   '#search',          // a route, and the only one to search — which is the cost
                       // this entry is, stated rather than discovered: on this day
                       // "where did I put it" is answered by leaving the mode.

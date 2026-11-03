@@ -18,11 +18,11 @@ triplet and what it did for you.
 
 *2026-11-03*
 
-- **The first screen shows what is dated, a day at a time, above the doors.** A new block, *The weeks ahead*, lists this week day by day from today and then anything else dated in the next thirty days. Each thing is a button that opens its own page. It is drawn entirely from dates you already set; nothing is stored for it and nothing in it asks you to do anything.
+- **The first screen shows what is dated, a day at a time, above the doors.** A new block, *The weeks ahead*, lists the days in the next week that hold something, and then any later day out to thirty that does. A day with nothing on it is left out, and a day shows three things and says how many more. Each thing is a button that opens its own page. It is drawn entirely from dates you already set; nothing is stored for it and nothing in it asks you to do anything.
 - **A thing with a start date and a due date shows as a stretch.** Under *Longer stretches* it gets a bar along the thirty days, so how long it runs can be seen and not worked out, and its two dates are written beside the bar for anyone not looking at it.
-- **Who you are waiting on, and what is still to sort, are on the same screen.** Up to three of each, with a button to the whole of it. The count of what is with other people is stated. The count of what is still to sort is left out on purpose: that pile has never had a number on the screen you arrive at, and it still does not.
+- **Who you are waiting on, and what is still to sort, are on the same screen, under the doors.** Up to three of each, with a button to the whole of it. The count of what is with other people is stated. The count of what is still to sort is left out on purpose: that pile has never had a number on the screen you arrive at, and it still does not.
 - **Three places now agree about which day a date puts a thing on.** The days-ahead list, the calendar file and this block read one shared rule, so the three cannot name different mornings for one thing. It is the first part of the fix 3.26.1 began; only these three places are on it, and the rest of the app still works dates out in its own ways.
-- **Still not right:** the first screen is longer now, so the doors sit further down, most of all on a phone. A date that has already gone by is not in the block; those stay under *What slipped*. A day with a great many dated things shows five and says how many more. Whether this is enough to put the paper beside the app away has not been tested yet.
+- **Still not right:** with a lot dated, the block above the doors is still long, and the doors sit further down, most of all on a phone. A date that has already gone by is not in the block; those stay under *What slipped*. Whether this is enough to put the paper beside the app away has not been tested yet.
 
 ## 3.26.2 — ITERATION
 

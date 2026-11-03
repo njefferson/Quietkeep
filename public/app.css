@@ -3553,6 +3553,7 @@ body[data-plain="1"] #arrangements-open,
 body[data-plain="1"] #assurance,
 body[data-plain="1"] #dated-open,
 body[data-plain="1"] #glance,
+body[data-plain="1"] #glance-after,
 body[data-plain="1"] #search,
 body[data-plain="1"] #foot-manual,
 body[data-plain="1"] #situation-open,
@@ -3636,7 +3637,8 @@ body[data-plain="1"] #held
 /* THE WEEKS AHEAD (3.27.0) goes with the hub. With no hub — an empty store — the
    landing rule above that hides every other child of `<main>` is not in force,
    so without this the section would show to a newcomer on the first screen. */
-#runway:not([data-hub]) #glance { display: none; }
+#runway:not([data-hub]) #glance,
+#runway:not([data-hub]) #glance-after { display: none; }
 
 /* --- THE WIDE ARRANGEMENT (3.2.0, ADR-0109) -------------------------------
  *
@@ -3671,7 +3673,8 @@ body[data-plain="1"] #held
      one thing on the page, and a list of doors stretched across 1,040px is a
      worse list. It keeps the measure it had and sits where it sat. */
   #runway[data-hub]:not([data-stance]) main > #hub,
-  #runway[data-hub]:not([data-stance]) main > #glance {
+  #runway[data-hub]:not([data-stance]) main > #glance,
+  #runway[data-hub]:not([data-stance]) main > #glance-after {
     max-width: 46rem;
     margin-inline: auto;
   }

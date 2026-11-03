@@ -69,9 +69,9 @@ no writes. This is where most of the app's thinking lives:
 - `reading.ts` — which clock of a node names a day, stated once (3.27.0). The
   days-ahead view, the calendar file and the glance read it, and no other
   projection does yet.
-- `glance.ts` — the weeks ahead above the hub's doors: seven days, the days out
-  to thirty that hold something, stretches, who is waited on, what is still to
-  sort. It reads `ics.ts`'s selection and `reading.ts`'s days, and owns neither.
+- `glance.ts` — the weeks ahead: the days that hold something in the next seven
+  and out to thirty, stretches (above the hub's doors), who is waited on and what
+  is still to sort (beneath them). It reads `ics.ts`'s selection and `reading.ts`'s days, and owns neither.
 - `search.ts`, `dated.ts`, `horizons.ts`, `review.ts`, `focus.ts`, `menu.ts`,
   `people.ts`, `delta.ts`, `diagnostic.ts` — one surface's question each.
 

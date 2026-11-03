@@ -8,16 +8,17 @@
 and every surface that lays dates out reads one rule for which day a thing
 comes back.**
 
-- One section, `#glance`, titled *The weeks ahead*, directly above `#hub`. It is
-  part of the hub and is not a door, not a stance and not a stop in the Contents
-  list. It is hidden inside every job, with no hub (an empty store), and in the
-  plain mode.
-- Seven days from today, always listed, each heading its dated titles or the
-  words *Nothing dated.* Then only the days that hold something, out to thirty
-  days from today. A thing with both a start and a due date is a stretch: its
-  two dates are written in words and a bar draws its length along the thirty
-  days. At most five titles on a day, four stretches, three things waited on,
-  three things not sorted yet, each with one line and one press to the whole.
+- Two sections. `#glance`, titled *The weeks ahead*, directly above `#hub`,
+  holds the days and the stretches. `#glance-after`, directly below `#hub`,
+  holds who is waited on and what is still to sort. Both are part of the hub and
+  neither is a door, a stance or a stop in the Contents list. Both are hidden
+  inside every job, with no hub (an empty store), and in the plain mode.
+- Only the days that hold something are listed, for the seven days from today
+  and then out to thirty days from today. A day with nothing on it is not drawn.
+  A thing with both a start and a due date is a stretch: its two dates are
+  written in words and a bar draws its length along the thirty days. At most
+  three titles on a day, four stretches, three things waited on, three things
+  not sorted yet, each with one line and one press to the whole.
 - One function, `src/reading.ts`, says which clock of a node names a day:
   due, start, suspense and park always, a review clock only when a person set it,
   never one the app wrote, so a capture names no day. The days-ahead view, the
@@ -62,8 +63,18 @@ own ways, and moving them is the structural assessment's own later step.
 - **A door of its own.** A door is a choice, and the point is that nothing here
   asks for one.
 
+### The first version put the way into sorting off the first screen
+
+Seven always-listed days, five titles on a day, and the two blocks that grow
+with the store, all above the doors, put the first door 1489 pixels down an
+844-pixel phone screen, and the smoke walk's check that the way into sorting is
+on the first screen refused it. The check stands and the block changed: empty
+days are not drawn, a day shows three titles, and the waiting-on and
+still-to-sort blocks moved beneath the doors, where the list of doors is no
+longer pushed down by them.
+
 ## Still not settled
 
 Whether this is enough to put the paper beside the app away has not been tested.
-The first screen is longer, so the doors sit further down, most of all on a
-phone.
+With a great many dated things, or several stretches, the block above the doors
+is still long and the doors sit further down, most of all on a phone.

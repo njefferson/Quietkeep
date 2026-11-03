@@ -117,12 +117,16 @@ test('a review clock a person set appears on its day', () => {
   assert.deepEqual(titlesOn(s, 4), ['W']);
 });
 
-test('the week is always seven days; empty days are said; the month holds only days with a title', () => {
-  const empty = glanceView(st(...item('A', 'one thing', 2)), NOW, DENVER);
-  assert.equal(empty.week.length, GLANCE_WEEK);
-  assert.deepEqual(empty.week.map(d => d.offset), [0, 1, 2, 3, 4, 5, 6]);
-  assert.equal(empty.week.filter(d => d.items.length === 0).length, 6);
-  assert.deepEqual(empty.month, [], 'no day beyond the week has a title');
+test('the week and the month hold only days with a title; an empty day is not drawn', () => {
+  const sparse = glanceView(st(...item('A', 'one thing', 2)), NOW, DENVER);
+  assert.deepEqual(sparse.week.map(d => d.offset), [2], 'only the day that carries a title is drawn');
+  assert.equal(sparse.week.every(d => d.items.length > 0 && d.offset < GLANCE_WEEK), true);
+  assert.deepEqual(sparse.month, [], 'no day beyond the week has a title');
+  assert.equal(sparse.anyDated, true);
+
+  const later = glanceView(st(...item('B', 'only a later thing', 12)), NOW, DENVER);
+  assert.deepEqual(later.week, [], 'nothing in the week is not drawn as seven empty days');
+  assert.equal(later.anyDated, true, 'and the later day still counts as something dated');
 
   const s = st(...item('A', 'one thing', 2), ...item('B', 'a later thing', 12));
   const v = glanceView(s, NOW, DENVER);
@@ -131,12 +135,14 @@ test('the week is always seven days; empty days are said; the month holds only d
 });
 
 test('bounds: a day, the stretches, the waiting rows and the unsorted titles are each capped', () => {
-  // Six titles on one future day show five and one line.
+  // Six titles on one future day show three and one line.
   const six = st(...['a', 'b', 'c', 'd', 'e', 'f'].flatMap(k => item(`D${k}`, `title ${k}`, 3)));
   const day = glanceView(six, NOW, DENVER).week.find(d => d.offset === 3)!;
+  assert.equal(DAY_CAP, 3);
   assert.equal(day.items.length, DAY_CAP);
-  assert.equal(day.hidden, 1);
-  assert.equal(dayMoreWords(day.hidden), '1 more on this day.');
+  assert.equal(day.hidden, 3);
+  assert.equal(dayMoreWords(day.hidden), '3 more on this day.');
+  assert.equal(dayMoreWords(1), '1 more on this day.');
 
   // Five lanes show four and a count of one more.
   const lanes = st(...[1, 2, 3, 4, 5].flatMap(i => [
@@ -228,11 +234,11 @@ test('the glance, the days-ahead view and the calendar agree on every day', () =
   }
 });
 
-test('the empty store renders: seven empty days, nothing else, and no refused word', () => {
+test('the empty store renders: no days at all, nothing else, and no refused word', () => {
   const v = glanceView(emptyState(), NOW, DENVER);
-  assert.equal(v.week.length, GLANCE_WEEK);
-  assert.equal(v.week.every(d => d.items.length === 0), true);
+  assert.deepEqual(v.week, []);
   assert.deepEqual(v.month, []);
+  assert.equal(v.anyDated, false);
   assert.deepEqual(v.spans, []);
   assert.equal(v.waiting.total, 0);
   assert.deepEqual(v.unsorted.shown, []);
@@ -253,6 +259,16 @@ test('no color carries meaning: the glance rules use neither the accent nor the 
   assert.equal(rules.includes('--warm'), false);
 });
 
-test('the plain mode hides the glance with the hub', () => {
+test('the plain mode hides the glance with the hub, both halves', () => {
   assert.ok((PLAIN_CHROME_HIDDEN as readonly string[]).includes('#glance'));
+  assert.ok((PLAIN_CHROME_HIDDEN as readonly string[]).includes('#glance-after'));
+});
+
+test('the first screen: who is waited on and what is still to sort stand beneath the doors', () => {
+  const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+  const glance = html.indexOf('<section id="glance"');
+  const hub = html.indexOf('<section id="hub"');
+  const after = html.indexOf('<section id="glance-after"');
+  assert.ok(glance > 0 && hub > glance && after > hub,
+    'the days are above the hub and the second half is below it');
 });
