@@ -313,7 +313,12 @@ const BUDGET = {
   // sorting step offers are NOT in this number and must not be — they are
   // `MENU_WORDS` in `menu.ts`, rendered from the one source, and a hand copy in
   // the shell is the thing that list exists to prevent.
-  words: 4031,
+  // 4031 -> 4032 on 2026-11-03 (3.27.1), UP by exactly one: the glance's second
+  // section, the waiting-on and still-to-sort blocks that stand under the doors,
+  // adds one word to the shell. Cutting a word of the shell instead would change
+  // the markup four other gates are tied to and need a further release; the
+  // raise is the one this header describes, dated and with its reason.
+  words: 4032,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
