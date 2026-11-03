@@ -1678,3 +1678,191 @@ and Q1 and Q6 are of that kind here.
   it is a design statement with the person axis already built (ADR-0119) and not a method named in
   this pass. Q1 and Q6 are answered by the catalogs, in entry 27 and in sections 3 and 4 of
   planning-for-humans.md, and got no search.
+
+### How the outside sources were read in the fourth pass
+
+- Written in the fourth pass; the numbering continues from R21. Before any fetch the pass read what
+  the environment's proxy reports at its status address. The report says the proxy is enabled and
+  that no relay failure was recorded; it lists no allowed hosts, so reachability was learned one
+  fetch at a time.
+- One page-fetch host was refused at name resolution, in the tool's words outside the session's
+  allowed network domains: csel.eng.ohio-state.edu, which would have returned the full text of the
+  2004 review of trust in automation (R28), the one source here whose claim about how trust is lost
+  and regained the repository's own files lean on. The tool said to stop trying further sites once a
+  host failed that way, so no other host was tried for it and no other route was taken.
+- One page was fetched and read, the abstract page of the 2026 interview study (R23). Everything else
+  rests on what the web search tool returned: bibliographic records, abstracts and secondary
+  summaries. No primary text was opened. A figure from a secondary summary says so in its entry, and
+  no assessment may lean on one until the primary is read.
+- The app's own test is applied as before: grounds where the finding was measured on people for
+  whom the failure it prevents is expensive, background otherwise, practice where nothing was
+  measured. None of the entries below overrides a refusal.
+
+### Why attempts end, as a measured class (gap, Q7)
+
+- R21, Phillips and Zhao, 1993, Predictors of assistive technology abandonment, Assistive
+  Technology. A survey of 227 adults with various disabilities about how devices were chosen,
+  obtained, performed and used. Secondary sources report that about 29 percent of devices were
+  abandoned completely, most often in the first year, and that a change in the needs of the user
+  showed the strongest association with abandonment, with the user's own input in choosing the
+  device also associated; the authors conclude that services should attend to the long-term needs of
+  the people using a device. Where and on whom: adults with disabilities who had been given physical
+  and sensory devices, so a population for whom losing the function is costly, and a class of tool
+  that is not a planner. Verdict: grounds, narrowly, for the class of cause (an attempt ends when the
+  person's needs move out from under the tool, and when the person had no say in its shape); background
+  for the rate, which is for devices. Reason: gap, Q7; it is the only entry in the repository that
+  measures what ended use as a class, and the register's first entry is a class. The percentage and
+  the ordering of factors are from secondary summaries; read the primary before citing either.
+- R22, Chen, Meng and Nie, 2026, a paper on the challenges of task management for adults with ADHD,
+  preprint accepted to a 2026 computer-supported cooperative work conference. Twenty-two
+  semi-structured interviews with adults who identify as having the condition, then a follow-up
+  study with 20 different adults who evaluated 13 speculative design concepts. The abstract holds
+  that the difficulty comes from an emotional and relational mismatch with existing tools, which
+  assume consistent self-regulation and linear time, and not from a lack of willpower, and that task
+  management is carried out with other people and not alone. Where and on whom: the audience, by
+  self-identification, qualitatively. Verdict: grounds, narrowly, for the single claim that a tool
+  assuming steady self-regulation and an orderly sense of time is a mismatch; the abstract was the
+  only text read, so the claim is recorded and not leaned on. The design direction the authors take
+  from it, a social or machine companion that co-regulates, is not a finding and collides with
+  statements 8 and 10 and with the rule that nothing assisted may block; it is not carried. Reason:
+  gap, Q7. The abstract page did not report why people stop using calendars or lists, which is the
+  question this entry was sought for; that part stays unanswered by it.
+- R23, Desrochers, Tuson and Magee, 2019, a conference paper that surveyed adults with and without
+  ADHD and found dissatisfaction among those with the condition with the tools available to them;
+  the title, venue and sample size were not recovered, and the finding is from a search summary of
+  a 2026 paper that cites it. The same summary says earlier work found calendars, lists, planners
+  and reminders rated as much less effective by adults with the condition than by others, while
+  adoption looked similar. Where and on whom: adults with the condition, the audience, by survey.
+  Verdict: grounds in principle and not leaned on, because neither the sample nor the instrument
+  was read. Reason: gap, Q7; it would be the one measure that adoption and benefit come apart for
+  this audience, which is the shape of an attempt that ends without a stated cause. Read the primary
+  first.
+- R24, a 2026 master's thesis at a Danish university on a digital task management assistant for
+  adults with ADHD; the author was not recovered. Its stated reasons that people stop using digital
+  productivity tools soon after installing them are heavy manual input, high upkeep and switching
+  between apps. Where and on whom: a thesis with a user-centered exploration of unstated size, not
+  peer reviewed. Verdict: practice, background. Reason: expand, Q7; the three reasons match what the
+  survey of horizon models (models 6, 14 and 15) finds in software for goals, and are recorded so
+  the match is visible, not as evidence.
+
+### Why paper and boards survive, and trust after a miss (gap and verify, Q2 and Q7)
+
+- R25, Sellen and Harper, 2002 (reprinted 2003), The Myth of the Paperless Office. An account of
+  why paper persists in offices, built on the concept of affordances, the activities an object
+  allows. A review names four affordances of paper: tangibility, spatial flexibility, tailorability
+  and manipulability. Where and on whom: the book's fieldwork in workplaces; the extracts did not
+  describe the studies, and nothing about whiteboards was confirmed. Verdict: background. Reason:
+  gap, Q2 and Q7; it is the construct the inventory found absent, a reason a medium survives that
+  is stated in terms of what it lets a person do with it, and spatial flexibility is the nearest
+  statement to time laid out in space. The four names are from one review of the book; read the
+  book before relying on them.
+- R26, Lee and See, 2004, Trust in automation: designing for appropriate reliance, Human Factors.
+  A review of trust between people and automated systems. Trust guides reliance when full
+  understanding of a system is impractical; trustworthiness has three bases (performance, process
+  and purpose); appropriate trust has calibration, resolution and specificity, meaning that trust
+  should match what the system can do, should change as what it can do changes, and should attach to
+  the part that earned it. Where and on whom: a synthesis of studies of operators of automated
+  systems, in settings where failure is costly but not this audience. Verdict: background. Reason:
+  verify, Q7; what-it-should-be.md and entry 28 hold that trust in a container is all or nothing and
+  does not recover after one discovered exception. This review's searches did not confirm that claim
+  in this source, and the full text was at the refused host, so the claim stays the repository's own
+  reading and no assessment may attribute it to this paper.
+- R27, Rogelberg and colleagues on meeting agendas, reported in a 2019 practitioner article and
+  interviews; the peer-reviewed papers were not reached. Having an agenda is reported as a poor
+  predictor of attendees' perception that a meeting was effective; agendas written as questions to
+  be answered, built from attendees' requests and with named owners, are advised; and a 41-country
+  survey (Geimer, Leach, DeSimone, Rogelberg and Warr) found fewer than half of respondents calling
+  meetings an effective use of time. Where and on whom: working adults in general, by survey and
+  advice. Verdict: background and practice. Reason: gap, Q5; statement 17 asks that a meeting be a
+  context whose list is its agenda. This is the nearest outside account and it says only that an
+  agenda by itself does not make a meeting work; what it does not say is what a person needs shown
+  while inside one. Read the journal papers before citing a figure.
+
+### What is to hand (gap, Q5)
+
+- R28, practice guidance from a national ADHD organization's article on prospective memory in
+  adults, with two indirect studies named by the search. The guidance: make a cue unmissable where
+  the action happens, such as a note on the door that must be passed, and place a reminder in more
+  than one place, because relying less on internal memory makes remembering more reliable. A
+  separate study of event-based prospective memory found that cues outside the focus of attention
+  changed whether they were noticed, in people without the condition; a study in the attention
+  disorders literature found that adults with the condition use predictive information from the
+  environment less well, in a response-inhibition task and not a memory task. Where and on whom:
+  the guidance is practice, not measured; the two studies are lab tasks, one on the general
+  population and one on the audience in a different task. Verdict: practice, background; the second
+  study is not grounds because it measures inhibition. Reason: gap, Q5; it is the only outside text
+  found on what is physically at the place of action as a planning fact. The measured mechanism
+  behind it is already held by entry 24, and no entry measures it for this audience.
+
+### Read and not entered in the fourth pass
+
+- Whittaker and Hirschberg, 2001, The character, value and management of personal paper archives,
+  ACM Transactions on Computer-Human Interaction, volume 8, number 2. Only the record was returned;
+  nothing about its findings, including any reminding function of piles, was confirmed. Not entered,
+  and R1 stays read through a secondary summary.
+- Riemer-Reiss and Wacker, 2000, Factors associated with assistive technology discontinuance, Journal
+  of Rehabilitation, volume 66, number 3. Only the citation was confirmed. A later study by the same
+  authors of 53 college students with disabilities was returned, reporting a high abandonment rate;
+  its figure was not read, and it adds nothing to R21 that would not be restated from a summary.
+- Werner-Seidler and colleagues on goal neglect in depression, a lab prospective memory task; goal
+  neglect there means a gap between a remembered goal and action, which is not neglect of a role by
+  not having looked. Not entered.
+- The experience sampling work on covert task-relevant goal states (a 2023 report) and on attention
+  split across several active goals (Vogt, De Houwer and Crombez, 2011): single-task lab studies. Not
+  entered.
+- Emmons-era experience sampling of personal strivings, a 1991 study of 54 college women: bears on
+  how important goals show up in daily events and not on whether a role was looked at. Not entered.
+- Searched and not found: a measurement of presses or seconds per sorting route; a source that
+  measures why paper, walls or boards survive for people under the condition; a source that
+  measures neglect of a role by not having looked.
+
+### The properties that sources and catalog entries agree a surviving system has
+
+Each property names the entries that support it, catalog entries by number and section, outside
+entries by R number. A mark after each says whether the support was measured on people for whom the
+failure is expensive (grounds), measured elsewhere (background) or described without measurement
+(practice). A property supported only by background and practice is a design hypothesis, not a
+finding about this audience.
+
+- Landing is nearly free, and the sorting waits. Supports: entry 27 (measured, general adults, the
+  strongest), entry 17, what-it-should-be.md Part 2 (practice), R1 and R2 (background; piles and
+  cluttered desks as holding areas held in view). Mark: background plus one repository design, no
+  grounds.
+- The whole is visible without opening anything. Supports: entry 3, R3 and R4 (boards in hospital
+  units, background), R25 (spatial flexibility, background), R12 (grounds, narrowly, for a sequence
+  laid out in view for autistic students), and the paper calendar contrast in the existing R9 and
+  R10 (background). Mark: one narrow grounds, the rest background.
+- The form can be reshaped by its user as needs change. Supports: R21 (grounds, narrowly, for the
+  class of cause), R3 (boards evolved by their users), R25 (tailorability), R19 and R20 as already
+  entered (practice and background), and the dropping of contexts that cost more than they return in
+  R17. Mark: one narrow grounds.
+- Upkeep costs less than it returns, and no data entry lives apart from the work. Supports:
+  horizon-models.md models 6, 14 and 15 (practice), R24 (practice), R17, planning-for-humans.md
+  section 10b (Bellotti, background). Mark: practice and background.
+- A tool does not assume steady self-regulation or an orderly sense of time. Supports: R22 (grounds,
+  narrowly, abstract only), R23 (grounds in principle, not leaned on), horizon-models.md model 5 (a
+  roles sheet with no memory leaves the system gone after two missed sessions; practice),
+  what-it-should-be.md Part 1 (the modal session is a return after an absence). Mark: grounds in
+  principle, none leaned on.
+- The container can be trusted, and one discovered gap costs the trust. Supports: entry 28 (moderate,
+  general adults), what-it-should-be.md Part 1 (practice), R26 (background, and the loss claim
+  itself unconfirmed). Mark: background; the dichotomy is the repository's reading.
+- Unsorted things may stay held without being filed out of sight. Supports: R1, R2 (background),
+  R18 (practice; a periodic decision on every open item), statement 5. Mark: background and
+  practice.
+- The cost of coming back does not depend on how long the absence was. Supports:
+  what-it-should-be.md Part 1 (practice), horizon-models.md models 5 and 7 (practice, systems that
+  outlive their ritual or negotiation), entry 12 (retention near 3 to 4 percent, moderate). Mark:
+  practice plus one moderate figure.
+
+Still held by no entry after this pass, one line each:
+
+- What is physically to hand as a planning axis. Held by practice only (R28) and the measured
+  retrieval mechanism of entry 24; no source measured it for this audience. Nothing was found that
+  makes it a construct of its own.
+- Neglect of a role measured by not having looked. Nothing was found in this pass or in the third;
+  R14 stays the nearest, and its samples remain unread. Two goal-neglect and goal-attention lines
+  were read and set aside as measuring something else.
+- A meeting whose list is its agenda. R27 is the nearest and measures only that an agenda alone does
+  not predict a good meeting, in general adults. Nothing was found on what a person under load needs
+  shown while in a meeting.
