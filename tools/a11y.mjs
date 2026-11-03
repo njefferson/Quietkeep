@@ -1462,7 +1462,7 @@ const REGISTRY = {
   // the registry refuses one that matches nothing in any walked state, so the
   // state that audits it seeds a thing dated today, a thing with a start and a
   // due date, one waited on from somebody named, and unsorted captures.
-  'the glance': ['#glance-heading', '#glance-words', '.glance-day-name',
+  'the glance': ['#glance-heading', '#glance-words', '#glance-after', '.glance-day-name',
     '.glance-title', '.glance-kind', '.glance-held',
     '.glance-span-words', '.glance-count', '.glance-open'],
   // And the row that is present inside every job: the way back, and the way to

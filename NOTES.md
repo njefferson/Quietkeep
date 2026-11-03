@@ -2511,7 +2511,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.27.0**: the first screen shows
+- **https://staging.quietkeep.pages.dev** — **3.27.1** (3.27.0 with the way into sorting back on a phone's first screen): the first screen shows
   what is dated, a day at a time, above the doors (`#glance`, *The weeks ahead*):
   the days in the next seven that hold something, then the days out to thirty
   that do, three titles to a day, a thing with a start and a due date drawn as a
