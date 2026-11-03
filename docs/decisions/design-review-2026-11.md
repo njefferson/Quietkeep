@@ -3,9 +3,13 @@
 This document is a review of the first draft of Quietkeep. It is not a plan. It decides
 nothing, builds nothing, and changes no surface, noun or behavior of the app. It is written in
 passes, each adding its own section below the last, in this order: where the app is, what the
-research already holds, what was asked, research additions, what stands and what falls and what
-is missing, and a proposed shape. This pass writes the first two. Nothing in a later section is
-anticipated here.
+research already holds, what was asked, what the other research and plans already hold, research
+additions (written in two passes, R1 to R20 and then R21 to R28), what stands and what falls and
+what is missing, and a proposed shape. The first pass wrote the first two sections, the second
+wrote what was asked, the third wrote the other research and plans and the first research
+additions, the fourth continued the research additions, and the fifth wrote the last two sections.
+The note on reading just below was written for the first two sections and is true of them only;
+the later sections say how they are read at their own heads.
 
 The first draft means the app as the record describes it on the day of reading: the release at
 the head of the changelog, and everything the decision records say about how it got there.
@@ -1687,10 +1691,10 @@ and Q1 and Q6 are of that kind here.
   fetch at a time.
 - One page-fetch host was refused at name resolution, in the tool's words outside the session's
   allowed network domains: csel.eng.ohio-state.edu, which would have returned the full text of the
-  2004 review of trust in automation (R28), the one source here whose claim about how trust is lost
+  2004 review of trust in automation (R26), the one source here whose claim about how trust is lost
   and regained the repository's own files lean on. The tool said to stop trying further sites once a
   host failed that way, so no other host was tried for it and no other route was taken.
-- One page was fetched and read, the abstract page of the 2026 interview study (R23). Everything else
+- One page was fetched and read, the abstract page of the 2026 interview study (R22). Everything else
   rests on what the web search tool returned: bibliographic records, abstracts and secondary
   summaries. No primary text was opened. A figure from a secondary summary says so in its entry, and
   no assessment may lean on one until the primary is read.
@@ -1866,3 +1870,335 @@ Still held by no entry after this pass, one line each:
 - A meeting whose list is its agenda. R27 is the nearest and measures only that an agenda alone does
   not predict a good meeting, in general adults. Nothing was found on what a person under load needs
   shown while in a meeting.
+
+---
+
+## What stands, what falls, what is missing
+
+Written in the fifth pass. It measures the first draft, as the first section describes it, against the
+twenty-six design statements, the catalog entries the inventory names, the repository's own research
+and plans with the open items of both plans of record, and the research additions R1 to R28. It
+decides nothing and builds nothing; the proposal is in the section after this one.
+
+### How this section is read
+
+- Three verdicts, one to a line, and the line opens with it. Stands: the first draft meets the
+  statements or is neutral to them, and no change is called for by this review. Falls: the form the
+  first draft shipped contradicts a statement, and nothing in the record is a finding about this
+  audience that would hold the form in place; the line names what changes. Missing: a statement asks
+  for something that no surface does.
+- A line names the statement or entry that decides it. A refusal that rests on a collision entry is
+  never overridden here by a general finding. Where such a refusal binds a verdict, the line names the
+  entry.
+- Every outside entry is background except R11, R12, R21 and R22, which are grounds narrowly, and
+  every one of them rests on a search extract or an abstract. No figure from any research addition is
+  used in this section. The figures that appear come from the repository's own files.
+- Entries 24 and 27 were measured on adults in general. They are used here as background that points
+  a direction, which is lower cost, and never to override a refusal.
+- Words about the first draft are facts from the first three sections. Where this section reads a
+  source file again, it says so.
+
+### The ten laws
+
+- Law 1, return engine. Stands. Statements 5, 21 and 23 and entry 3 decide. Every captured thing is
+  covered from the moment it exists. One open item the record already names: the silence test in the
+  write boundary asks the schema's question (a clock, a surface, a Menu place or a clocked parent) and
+  not the reader's question (will this come back as something to act on). Statement 5 is the reader's
+  version, and it is what a glance must show. [docs/what-it-should-be.md, part 4]
+- Law 2, coverage gauge. Stands. Entry 28 decides, with the first part of what-it-should-be: a store
+  that cannot be checked cheaply at the moment of doubt behaves like a half-reliable one. The gauge is
+  one line and must stay one line when anything new lands beside it.
+- Law 3, no past bucket. Stands. Statement 23 decides. It binds anything that lays time out: a strip
+  that draws the days of the calendar week that have gone by, as rows of their own, is an archive by
+  position. This review reads statement 3's current week as the seven days from today.
+- Law 4, levels push down. Stands. The inspection-mode rule of horizon-models.md section 3 refuses
+  the full tree as a landing view and refuses altitude views as workspaces, and statement 2 asks for
+  the weeks ahead on one surface. They do not collide: the glance is the runway laid out in time, which
+  is live work and which law 4 calls the only workspace, and not an altitude view. Statement 7 (long
+  work as titles) is lineage projected downward onto a lane. So the rule binds the tree and the
+  horizons and does not bind a view of live work arranged by date. Narrowing by role is decided
+  further down.
+- Law 5, one decay primitive. Stands, with a prerequisite. Entry 4 and ADR-0010 are untouched by any
+  statement. The prerequisite is the thirty-two derivations of when a thing comes back, in eight
+  rules, and release 3.26.1 recording two screens that name different dates for one thing
+  [docs/structural-assessment.md; CHANGELOG.md]. A surface whose whole job is to set dates side by
+  side shows every one of those disagreements at once, so the one reading (phase 1, src/reading.ts,
+  not built) comes before the glance or inside the same release.
+- Law 6, demand-free types. Stands. A role, a context and a person cannot carry a clock, and nothing
+  proposed below gives one a clock. NOTES.md Q-13 says a role carries its own review clock; the gate,
+  the event vocabulary and ADR-0096 agree with each other that it cannot, and they govern.
+- Law 7, the app plots and the human interprets. Stands. Statement 15 is the point of pressure on
+  it, because measuring neglect by not having looked needs a record of looking; that is settled in
+  the temporal section below without recording a look.
+- Law 8, rest is legitimate. Stands. Statement 23 and the first part of what-it-should-be (the cost of
+  coming back is the same however long the absence was) decide. A glance that begins at today and
+  draws no past satisfies it by construction, and the bounded greeting stays as it is.
+- Law 9, data is never lost to updates. Stands. Everything proposed below is a projection or an
+  additive event.
+- Law 10, AI never blocks. Stands. No assisted rung ships, and nothing asked needs one.
+
+### The surfaces
+
+- Where do you want to be? (the hub). Falls, as the landing. Statement 2 (read at a glance, without
+  choosing a view) and the second part of what-it-should-be (one screen, a layout fixed forever,
+  contents computed) decide. The hub is a list of doors, so nothing of the days ahead is visible until
+  a door is chosen. The earlier shape, fifteen conditional sections in one scroller, is why ADR-0108
+  exists, so the remedy is not a return to a scroller: it is one fixed surface with a bounded reading,
+  and the doors stay beneath it. The doors stand.
+- Hold it. Stands. Statement 4, ADR-0008 and entry 27 decide: one field, first on the screen, two
+  actions and no question.
+- Next up. Stands. Statements 21 and 23 decide. One thing with its reason answers the moment called
+  next, which a glance does not replace.
+- Sort what you put down. Stands, with its cost unmeasured. Statement 4 decides, and ADR-0085 keeps
+  sorting behind its door. The route is measured in the section on the capture route below.
+- What slipped. Stands. Law 3 and ADR-0034.
+- Welcome back. Stands. Law 8.
+- Do one thing. Stands. Statement 4 (the day does not stop for each interruption) and section 3 of
+  planning-for-humans.md: the resume card is written at the moment of the interruption.
+- Upkeep. Stands. The recorded defect (confirmArrangementEvents has no caller) is not a question of
+  this review.
+- Everything you are holding. Stands, as the complete inventory, and it cannot be the glance. It is a
+  grouped list, folded away until asked, and statement 2 asks for what is needed without opening
+  anything or scrolling a list.
+- The coverage proof. Stands. Entry 28.
+- Find something. Stands. Neutral to every statement.
+- What you are working toward, and Your projects, areas and goals. Stands. Statement 7: long work
+  appears as titles.
+- Worth a look (the review). Stands as built, for the exceptions it computes about horizons. It does
+  not do the review direction for roles; see the role section.
+- With other people. Stands. Statement 6 and statement 10: waiting on someone, and having promised
+  someone, are depending on another person.
+- Carrying (the track portfolio). Falls, in part. Statements 8 and 10 decide. Recording who runs a
+  project somebody else executes, and the assignment events behind it, are assigning work to people
+  and following what each carries, which statement 10 puts out. What stays is what a track project
+  emits, waiting-fors and check-ins, because those are depending on another person. Build-plan item 32
+  (a role as the Execute or Track mode) is the same shape and is already unlike the role that shipped.
+  Entry 33 supports it from the other side: nothing the app does is to be claimed as a handover. The
+  change is to the surface; the events already written stay in the log (law 9).
+- How you are, and anything weighing on you. Stands. Neutral to the statements. The pebble
+  disagreement in the inventory is not this review's.
+- The Menu. Stands. Law 6.
+- Chosen for today, and Print today. Stands. Statement 2. The printed page is the portable glance;
+  R9 and R10 are background that paper persists beside a digital calendar, and no figure is leaned on.
+- What's the situation? and In the room. Stands for the three axes. The gaps against statements 16,
+  17 and 18 are in the context section.
+- Where the attention is. Stands as built (words, name order, no bar and no target). It measures
+  minutes the do-now timer measured, which is effort and not looking; see the role section.
+- The days ahead, What comes back and when, and Send to my calendar. Stands. It is the nearest thing
+  in the first draft to statement 3: dated work by day in the reader's zone, with the in-app view and
+  the calendar file reading one selection. It draws no extent. That single selection is the right
+  seam for a glance to be built on.
+- Something on your mind that isn't a task? Stands. Statement 4.
+- Telling someone where things are. Stands. The person is telling someone where things are, which is
+  not following what someone else carries. Entry 33 still refuses any claim that the app performs a
+  handover.
+- The journal. Stands. Neutral.
+- Your data. Stands. Law 9.
+- The information panel and its destinations. Stands. Neutral.
+
+### The capture and clarify route against the cost of landing one item
+
+- Landing. Stands. Two actions and no question, with the commit before the confirmation and a
+  same-day clock given in the same transaction. Entry 27 (set a reminder less when it is effortful,
+  adults in general) points the same way, and statement 4 asks for exactly this.
+- Sorting waits. Stands. Sorting is reached only through its door and is never shown on arrival or
+  turned on by a capture. This is statement 4's second half.
+- Where the cost lands. The catalog says filing and not capture (entry 27's note). As documented, one
+  press settles Do now, Next action, Waiting for, Reference, Trash and Not this one; Someday is two
+  since release 3.26.0 (a Menu kind is asked, with a way past); Put it somewhere and Say where it can
+  be done are one pick or a typed name. Presses and seconds per route are measured nowhere in the
+  repository. So the first draft cannot say whether the mechanism of entry 27 is operating inside
+  sorting, and this review does not call any route a fall without a measurement. Verdict: the route
+  stands, with the Someday ask recorded as the one press added after the fact.
+- Missing: the measurement itself. The test page the doctrine asks for does not exist (a known
+  defect in NOTES.md), so every number about cost on the reference tablet is a container number. An
+  instrument that runs the route on the device and prints presses and median seconds is owed before
+  anyone claims the route is cheap.
+- The unowned. Missing, on the one surface. Statement 5 keeps a problem with no project and no date
+  in view. A capture is offered last among the ordinary tiers in Next up, listed in Everything you are
+  holding under not sorted yet (folded), and counted once a sorting card is in front of the reader
+  (ADR-0113). Each of those needs a press or a fold opened, so the unowned is kept and not kept in
+  view.
+
+### The context noun and the place noun against the contexts distinction
+
+- The nouns. Stand. Statement 11 makes a context (where the person is, what is to hand) and a place a
+  thing lives (the tree gives a thing one parent) different axes that cross. The model keeps them
+  apart: different kinds, a many-to-many link against one parent.
+- The word. Falls. The reader sees place for the context and place for the container, on a card whose
+  adjacent choices are Put it somewhere and Say where it can be done. Statement 13 says the names do
+  not matter and the distinction does, and the distinction is the thing that is blurred. The change
+  is wording only, in src/kind-words.ts and the manual, and it is not a change of any noun.
+- Statement 18, a context shows its own items unless the person chooses otherwise. Stands for
+  narrowing. A thing labeled for another place does not fit the answer, an unlabeled thing fits every
+  answer, and the narrowing is a post-filter on the offer and the held rows that never touches the
+  coverage proof (src/contexts.ts, read again for this section). That is statement 18 for labeled
+  things. The refusal of exclusive places in plan-routed.md binds: hiding everything not labeled for
+  the answer rebuilds the filter nobody trusts (entry 28), so the default for an unlabeled thing is
+  not to be changed.
+- Statement 18, shown only on choice. Missing. Nothing lets the reader look across to the other
+  context's items on purpose without changing the answer that narrows everything.
+- Statement 16, contexts are fluid and some stay physical. Missing. Searched src/contexts.ts for a
+  standing set, nesting and always-to-hand: found only the unlabeled default. A phone that is always to
+  hand, so that a thing needing only a phone fits every answer, is not expressible; the plan-situated
+  walk already recorded two situations answered only in part for the same reason. What is physically to
+  hand is held by no entry (R28 is practice), so this rests on statement 16 and entry 24's mechanism.
+- Statement 17, a meeting is a context whose list is its agenda. Missing. In the room is an
+  inspection over a saved situation that names people and shows what is outstanding with each
+  (ADR-0119), and plan-routed.md refuses a bespoke meeting mode. An agenda planned ahead, items put
+  under a meeting before it happens, has no home. No outside entry says what a person needs shown
+  while in a meeting (R27 is background and says an agenda alone does not make a meeting work), so
+  this is the least supported of the missing items and does not belong in a first release.
+
+### The role noun against three directions
+
+- The noun. Stands. Statements 11 and 12 decide, with entry 34: a role is an identity that crosses
+  areas, a node plus a many-to-many link, so two roles can share a context and the person chooses
+  there. R13 is background and matches statement 11's definition; it grounds nothing.
+- Filtering by role (statement 13). Missing. ADR-0096 refuses on the ground that an identity does not
+  change during a day. That is a design argument and not a finding about this audience, so it does not
+  bind as a refusal resting on one. The rule that does bind is trust: a narrowing hides only what it
+  labels for elsewhere, leaves the proof alone, and says in its own line that it is on (ADR-0054's
+  binding on the lens, which ADR-0092 says binds contexts identically). A role lens chosen on purpose
+  meets both. The inspection-mode rule concerns altitude views and does not apply to a role.
+- Direction one, sort. Missing. The sorting card has nine choices and none is a role; a role is
+  attached on the item's own panel. Say where it can be done already aligns an input against what is
+  to hand. Entry 27 and plan-routed.md bound the remedy: a press added to every card for every
+  reader is the cost entry 27 describes, and a first-run organizing flow is refused. So the sort
+  direction needs a path that adds no press to a card for a reader who has no roles.
+- Direction two, list. Stands for the role's own sheet, which lists the live work carrying the role
+  and the horizons it sits under (ADR-0115). Missing for choosing among what has been sorted, which is
+  statement 13 again.
+- Direction three, review. Missing, and it is the largest of the three. The Review door computes quiet
+  lines, a role that has carried work and carries nothing live now. That finds a role with no live
+  work. Statement 15 describes the other case: a role with live work that nobody has looked at while
+  attention was elsewhere. A role carrying many live things and untouched for weeks is invisible to
+  the Review, to the attention readout unless the do-now timer happened to be used on it, and to
+  pressure. Horizon-models.md model 5 records that a weekly roles review decays when two sessions are
+  missed (practice), and refuses any copy that tells the reader a named role was neglected. That
+  refusal binds: nothing below uses the word, and the order of facts is the whole readout. R14 (role
+  balance) is the nearest outside account, background, and its samples were not read. R15 is the case
+  the repository's rule warns of, a result positive on average from general samples; it does not
+  override the refusal of a mandatory review cadence, and none is proposed.
+
+### The temporal primitive against neglect by not having looked
+
+- Stands, and it is the wrong instrument for this. The primitive needs a finite interval and a
+  comfort window above zero, and a role is demand-free and cannot carry either. Giving a role a
+  window would break law 6 and put a rising pressure on an identity.
+- What statement 15 needs is an order and not a threshold: the roles listed from the least recently
+  attended. An order with no threshold has no state that can be late, so the tie to the refusal of any
+  late state holds by construction. Plain facts in the order, in words, with no count and no color.
+- The source of attended. Any act in the log under a node that carries the role: a done mark, a timed
+  doing, a focus, a capture or a change of a field. Those events exist (families B, C, D and A of the
+  vocabulary), so no new event is needed to find the last of them.
+- What that does not see. Opening a role's sheet or reading an item without acting. The vocabulary has
+  no event for a view, and ADR-0054 and ADR-0092 refuse to record where somebody looked because a trail
+  of where somebody was is not a fact about their work. Recording passive looks would reverse both
+  decisions and add a log of attention to a private app. An act under a role is the strongest sign of
+  having looked and its absence is the weaker sign of not having looked, so the error runs toward
+  calling a role quiet that was only read, which costs a glance and nothing else. This is the first
+  question below.
+- Containers keep their review clocks (horizon-models.md model 5 and section 2) and a passed review
+  clock raises nothing (ADR-0034); neither is changed.
+
+### What is missing, collected
+
+- A surface that shows the day, the week and the weeks ahead together (statements 2, 3 and 7).
+- Extent drawn as length (statement 3). The vocabulary has a start clock and a due clock, so a node
+  that carries both has an extent already; nothing draws it.
+- The unowned, kept in view on the one surface (statement 5).
+- A stretch when another person is unavailable (statement 6, third clause). This one has no noun and
+  would be new to the vocabulary.
+- A review of roles by last attended (statements 14 and 15).
+- A role as a narrowing chosen on purpose (statement 13), and a role at the sorting step that costs a
+  reader with no roles nothing (statement 14).
+- A context that is always to hand, and a look across to another context on choice (statements 16
+  and 18).
+- A meeting whose list is its agenda, planned ahead (statement 17).
+- One reading of when a thing comes back (structural-assessment.md, phase 1), which every dated
+  surface depends on.
+- The measurement of presses and seconds per route, on the device (statement 21).
+
+---
+
+## A proposed shape
+
+Written in the fifth pass. It is the smallest next capability that would make the app readable at a
+glance and cheap to land a thing in. It is stated as what the reader would see and do, and nothing is
+designed beyond that. It is a proposal for the owner to decide on and not a plan.
+
+### What the reader would see
+
+- One surface above the doors on the landing, in a fixed layout with computed contents and nothing to
+  configure. From the top: the line to put a thing down, which is Hold it as it is today; the
+  coverage line as it is today; a strip of the seven days from today; below it a column of the next
+  thirty days; and a few bounded groups beneath, what is being waited on from others and what is not
+  yet sorted.
+- In the strip and the column, what is dated on each day, shown as titles. A node that carries both a
+  start clock and a due clock is drawn as a lane against the column, so its extent is seen as length.
+  Long work appears as a title on its lane. Short work carries its note line under its day (the note
+  field exists). Nothing before today is drawn.
+- Waiting-fors from others in their own row with who they are waited on from, using the kinds and
+  relations that exist. The not-yet-sorted group shows a bounded few with the count stated and one
+  press to open the whole group, the way the Review door is bounded; those are the unowned, kept in
+  view and not filed out of it.
+- Nothing in it is a score, a percentage, a streak or a rank, and no day is colored for pressure.
+  Order and words carry everything, so the surface reads in text order for a reader who does not see
+  the layout.
+
+### What the reader would do
+
+- Put a thing down in the line at the top, as today, and nothing else is asked.
+- Press a title to open the sheet it already has. Press the count of the unsorted to open the group.
+  The doors beneath the surface stay where they are, and nothing is removed in this release.
+
+### Nouns
+
+- None new to the event vocabulary. The start clock, the due clock, the waiting-for kind, the note
+  field and the capture events all exist. One derived name, a lane, is a projection of a node that
+  carries both clocks and is stored nowhere.
+- One reading comes first inside the release: the glance, the days-ahead view and the calendar file
+  read dates through a single function, because a surface that sets dates side by side will otherwise
+  contradict itself (law 5, above).
+
+### Why this one first
+
+- It is the only item that answers statements 2, 3, 5 and 7 together, and it adds no press to landing
+  a thing, which statement 4 and entry 27 want kept that way.
+- It is all projection, so it is reversible and cannot lose data. It builds on the days-ahead view's
+  single selection.
+- Its support from outside is background: entry 3 (what is visible is what is remembered, strong),
+  R25 and the boards of R3 and R4 (background), and R12 (grounds, narrowly, for a sequence laid out
+  in view for autistic students, at the scale of a day and not of weeks). That makes it a hypothesis
+  about this audience and not a finding. The Block register's first entry is where it is tested, by
+  whether the paper beside the app goes away (statement 21).
+- A new surface owes the accessibility walk, the live-region gate, the manual coverage check and the
+  precache list in the commit that creates it, and a layout that is spatial must also read in order.
+
+### Left for later releases, undesigned
+
+- The review of roles by last attended, then the role lens, then a role at the sorting step; the
+  standing set of contexts that are always to hand and the look across; the meeting agenda; the
+  subtraction in Carrying; the away stretch of another person. The order is the order of the support
+  found, and each is a separate decision.
+
+### Questions only the owner can settle
+
+1. What counts as having looked at a role?
+   - Recommended: an act under it, taken from events already in the log, so no new event and no
+     record of looking.
+   - Or: also record that a role's sheet was opened, which is a new event and reverses the deliberate
+     non-recording in ADR-0054 and ADR-0092.
+2. Is a role a narrowing the reader can choose?
+   - Recommended: yes, a lens chosen on purpose, off by default, hiding only what is labeled for
+     another role and saying that it is on, built after the glance.
+   - Or: keep ADR-0096's refusal, so the role's own sheet is the only list by role.
+3. What happens to the part of Carrying that records who runs a project?
+   - Recommended: retire it from the surface and keep waiting-fors and check-ins, with the events
+     staying in the log.
+   - Or: leave Carrying as it is.
+4. Is another person's unavailable stretch in the first release?
+   - Recommended: no. It needs one new event, and the first release should be all projection. Add it
+     after the glance has been used.
+   - Or: include it now, with the new event.
