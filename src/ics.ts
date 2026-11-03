@@ -18,10 +18,17 @@
 // so rather than implying the calendar is live. Both the calendar name and every
 // event description carry the moment they were made.
 
-import { isAppClock, type NodeState, type State } from './fold.ts';
+import type { NodeState, State } from './fold.ts';
 import { heldGroups } from './held.ts';
 import { standingDecline } from './requests.ts';
+import { alarmClock, placingClocks, dayNamed, CALENDAR_KINDS, type PlacingClock } from './reading.ts';
 import { localDayKey, isValidIso, atMidnight} from './time.ts';
+
+// The rule for which clock names a day, and which may carry an alarm, lives in
+// `./reading.ts` (3.27.0) and is read by this file, the days-ahead view and the
+// glance. The two names below are re-exported because other modules and tests
+// import them from here.
+export { CALENDAR_KINDS };
 
 /**
  * What the calendar leaves OUT: completed work, Menu items (demand-free by law
@@ -105,31 +112,8 @@ function fold(line: string): string {
 const stampValue = (iso: string): string =>
   new Date(iso).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
 
-/**
- * Clock kinds a CALENDAR may carry, and the axis is **did the reader choose this
- * day** — not "is it a hard deadline".
- *
- * In: `due` (somebody picked a date, or said "today"), `start`, `suspense` (the day
- * this must move to still land), and `park` — a park is a return date the held list
- * already shows as "parked until…", so leaving it out made the app contradict
- * something plainly on screen. That was settled by an earlier audit and is not
- * reopened here.
- *
- * Out: **`review`, and that exclusion is the whole point of this constant.** A
- * review clock is the app's own resurfacing marker — "bring this back to me on a
- * surface" — and it is what routing, repeats, bother handling, the comms sweep,
- * replan's escalate and renegotiate, and every gate cure set by default. Nobody
- * ever typed one.
- *
- * Exporting them turned "show me this again tomorrow" into "this is due tomorrow",
- * with a nine o'clock alarm, once per item. a reader routed nine things to Next action
- * in one afternoon and the calendar then offered nine all-day events on a single
- * day, none of which had ever been given a date. **A planner that misreports your
- * obligations to a calendar you trust is worse than one with no calendar export at
- * all**: the app can be wrong on its own screen and be corrected by the next
- * glance, but it cannot follow the mistake back out of your diary.
- */
-export const CALENDAR_KINDS: ReadonlySet<string> = new Set(['due', 'start', 'suspense', 'park']);
+// `CALENDAR_KINDS` — the clock kinds a calendar may carry, and why `review` is
+// out of it — moved to `./reading.ts` with its whole rationale (3.27.0).
 
 /**
  * May this node appear in the exported calendar at all? ONE predicate, read by
@@ -150,101 +134,12 @@ export const CALENDAR_KINDS: ReadonlySet<string> = new Set(['due', 'start', 'sus
 export const exportsToCalendar = (n: NodeState): boolean =>
   n.kind !== 'bother' && standingDecline(n) === null;
 
-/** Tie order when two clocks name one instant. The deadline outranks the door
- *  opening (held's own "tie goes to the DEADLINE" rule), and the answer-owed
- *  date outranks plain due because it is the one a reader most needs to see
- *  named. Only the dated view reads the kind — the file writes `at` alone, so
- *  this choice cannot alter a single byte of the export. */
-const KIND_PRIORITY: readonly string[] = ['suspense', 'due', 'start', 'park', 'review'];
-
-/**
- * A clock the READER set, as opposed to one that may carry an alarm — and until
- * 3.23.21 `CALENDAR_KINDS` was one predicate answering both questions.
- *
- * `clock.ts`'s own comment called that set "only the clocks a PERSON set". It is
- * not: a `review` clock is what the app writes when somebody presses *Next
- * action*, answers *when should this come back*, or types a date on a project.
- * Three deliberate acts, none of them in the set named after deliberate acts.
- *
- * The two questions come apart cleanly. **May it carry an alarm** keeps the
- * EXPORTED FILE narrow, and must: an alarm on a soft clock is the nag this app
- * refuses everywhere (entry 15, and the standing-decline reasoning above).
- * **Did a person set it** governs what the app shows the reader about their own
- * dates, and there the answer has to be yes, because a date somebody set that
- * appears on no surface is a date they go on carrying.
- *
- * That is not taste. Entry 28 of `docs/nd-collisions.md` is a well-powered
- * experiment crossing reminder reliability at 0%, 50% and 100%, and the 50%
- * condition "did not substitute at all" — uncertainty kept people maintaining
- * the intention internally. Reliability the reader cannot CHECK is 50%
- * reliability from the inside, whatever the log holds.
- *
- * `isAppClock` is what makes this safe: every node carries the gate's own cure
- * in a `review` slot from the moment it exists, and treating those as dates
- * somebody set would fill the view with dates nobody chose — the 1,012-ready
- * failure `arrivedClock` already records, in a second place.
- */
-const readerSet = (kind: string, c: { source?: string | null } | null | undefined): boolean =>
-  CALENDAR_KINDS.has(kind) || (kind === 'review' && !isAppClock(c as never));
-
-/** The soonest clock a calendar may carry, and WHICH kind is speaking. NOT
- *  `soonestClock`, which answers a different question — `held.ts` groups on any
- *  clock, because the app genuinely should resurface a review-clocked item.
- *  Only the export is narrower. */
-const soonestAt = (
-  n: NodeState, zone: string, nowIso: string, includeSoft = false,
-): { at: string; kind: string } | null => {
-  void zone; void nowIso;
-  const rank = (k: string): number => {
-    const i = KIND_PRIORITY.indexOf(k);
-    return i === -1 ? KIND_PRIORITY.length : i;
-  };
-  let best: { at: string; kind: string; ms: number } | null = null;
-  for (const c of Object.values(n.clocks)) {
-    if (!c || !isValidIso(c.at)) continue;
-    if (!(includeSoft ? readerSet(c.kind, c) : CALENDAR_KINDS.has(c.kind))) continue;
-    const ms = Date.parse(c.at);
-    if (best === null || ms < best.ms || (ms === best.ms && rank(c.kind) < rank(best.kind))) {
-      best = { at: c.at, kind: c.kind, ms };
-    }
-  }
-  return best ? { at: best.at, kind: best.kind } : null;
-};
-
-/**
- * EVERY clock the reader set on one node, soonest first — the VIEW's answer.
- *
- * `soonestAt` returns one, which is right for the FILE: a diary carrying two
- * events for one thing is noise, and narrowness there is ADR-0056 and entry
- * 15. It is wrong for the view, and the header above already said why before
- * the code did it — *a date they set that appears on no surface is a date
- * they go on carrying*.
- *
- * WHAT THAT COST. A thing sorted today carries a `review` clock for today; a
- * date typed on its sheet for five weeks out is a `due` clock. `soonestAt`
- * returns the review, so *The days ahead* filed the item under TODAY and the
- * September date the reader had typed appeared nowhere in the app. The sixth
- * cold read reported five dates set and one surface calling it one — this is
- * the mechanism, and it is entry 28's 50% condition exactly: uncertainty
- * about whether the store is holding something behaves like its not holding
- * it.
- *
- * Still ONE selection and ONE walk — this is called from `calendarEntries`
- * beside `soonestAt` rather than from `dated.ts`, because that file may not
- * re-derive the choice (the 0.9.0 dropped-replan defect the header records).
- */
-const everyReaderClock = (n: NodeState): { at: string; kind: string }[] => {
-  const rank = (k: string): number => {
-    const i = KIND_PRIORITY.indexOf(k);
-    return i === -1 ? KIND_PRIORITY.length : i;
-  };
-  return Object.values(n.clocks)
-    .filter((c): c is NonNullable<typeof c> =>
-      Boolean(c) && isValidIso(c!.at) && readerSet(c!.kind, c))
-    .map(c => ({ at: c.at, kind: c.kind }))
-    .sort((a, b) =>
-      Date.parse(a.at) - Date.parse(b.at) || rank(a.kind) - rank(b.kind));
-};
+// The tie order, the test of whether a clock names a day, the single soonest
+// alarm clock and the walk over every clock the reader set all live in
+// `./reading.ts` now (3.27.0), with the reasoning that used to stand here:
+// why the file takes one clock and the view takes all of them (3.23.21, entry
+// 15 and entry 28 of `docs/nd-collisions.md`), and why a review clock the app
+// wrote names nothing. `calendarEntries` below is still the one SELECTION.
 
 /** One selected row: the node, the instant the diary will date it, and which
  *  clock kind that instant came from. */
@@ -278,9 +173,9 @@ export function calendarEntries(
       // so it is the same flag that decides this. A diary with two events for
       // one thing is noise; a view that hides a date the reader typed is the
       // failure entry 28 measures.
-      const picked = includeSoft
-        ? everyReaderClock(n)
-        : [soonestAt(n, zone, nowIso, includeSoft)].filter(Boolean) as { at: string; kind: string }[];
+      const picked: PlacingClock[] = includeSoft
+        ? placingClocks(n)
+        : [alarmClock(n)].filter(Boolean) as PlacingClock[];
       // No real clock, nothing to put in a calendar. Skipping rather than
       // throwing is deliberate: one malformed stored date must not take the
       // whole export down (the audit's crash class).
@@ -302,9 +197,7 @@ export function calendarEntries(
  * mornings.
  */
 export function calendarDay(at: string, nowIso: string, zone: string): string {
-  const day = localDayKey(at, atMidnight(zone));
-  const today = localDayKey(nowIso, atMidnight(zone));
-  return day < today ? today : day;
+  return dayNamed(at, nowIso, atMidnight(zone));
 }
 
 export interface CalendarOptions {

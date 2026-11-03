@@ -22,6 +22,7 @@
 import type { NodeState, State } from './fold.ts';
 import { calendarEntries, calendarDay } from './ics.ts';
 import { withWhom } from './people.ts';
+import { dayOffset } from './reading.ts';
 import { atMidnight, localDayKey } from './time.ts';
 
 export interface DatedItem {
@@ -96,14 +97,13 @@ export function datedDays(state: State, nowIso: string, zone: string): DatedDay[
       note: e.group === 'replan' ? 'needs a new plan' : null,
     });
   }
-  const today = localDayKey(nowIso, atMidnight(zone));
   return [...byDay.entries()]
     .sort(([a], [b]) => (a < b ? -1 : 1))
     .map(([day, items]) => ({
       day,
-      // Both keys are date-only and parse as UTC midnights, so the difference
-      // is an exact whole number of days with no zone left to get wrong.
-      days: Math.max(0, Math.round((Date.parse(day) - Date.parse(today)) / 86_400_000)),
+      // The one reading's offset (`src/reading.ts`): whole days from today,
+      // never negative, by the same arithmetic this line used to carry.
+      days: dayOffset(day, nowIso, atMidnight(zone)),
       items: items.sort((a, b) =>
         (a.node.title || '').localeCompare(b.node.title || '') || (a.node.id < b.node.id ? -1 : 1)),
     }));
