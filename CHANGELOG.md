@@ -14,6 +14,13 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.28.1 — ITERATION
+
+*2026-11-03*
+
+- **The list of roles by their last activity no longer risks running off the side of a narrow screen.** A long role name now wraps inside the list at the narrowest width with the largest text, and the button to every role stays within the screen.
+- **Still not right:** the same as 3.28.0. A role you only read, and never act under, can sit near the top, and a very large store may add a moment before the list appears.
+
 ## 3.28.0 — CAPABILITY
 
 *2026-11-03*

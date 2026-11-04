@@ -318,7 +318,11 @@ const BUDGET = {
   // adds one word to the shell. Cutting a word of the shell instead would change
   // the markup four other gates are tied to and need a further release; the
   // raise is the one this header describes, dated and with its reason.
-  words: 4032,
+  // 4032 -> 4102 on 2026-11-03 (3.28.0), UP by seventy: the section on the
+  // Review door that orders the roles carrying live work by their last act,
+  // its heading, its hint and its one press. The dated route this header
+  // describes, to the count CI printed.
+  words: 4102,
   // Per DESTINATION, and every one is held to it. 3,000px is a shade over three
   // phone screens — far enough to be a scroll, near enough that the bottom of a
   // screen is a place you can get to rather than a place you give up before.
@@ -756,7 +760,10 @@ const BUDGET = {
   // had answered there was no route back to it anywhere. The six kinds in the
   // new sorting step cost this budget nothing: they are built from `MENU_WORDS`
   // at the moment the step opens, not markup.
-  controls: 280,
+  // 280 -> 281 on 2026-11-03 (3.28.0), UP by exactly one: the one press that
+  // opens the whole order of roles by their last act, on the Review door. The
+  // dated route this header describes, to the count CI printed.
+  controls: 281,
   // 268 -> 271 on 2026-09-01 (3.21.0): the hub's situation door and the
   // room's two lenses. Three controls, each one of the pass's asks.
   // 271 -> 273 on 2026-09-01 (3.22.0): The days ahead's door and its Close.

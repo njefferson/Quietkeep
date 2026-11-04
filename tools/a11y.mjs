@@ -5489,8 +5489,27 @@ try {
       const r = document.querySelector('#review-roles');
       return r ? r.scrollWidth - r.clientWidth : -1;
     });
+    // NAMES the element whose right edge lies furthest past the viewport, so a
+    // red in CI names the cause and is never guessed at.
+    const furthest = narrow <= 1 ? null : await page.evaluate(() => {
+      let best = null;
+      for (const el of document.querySelectorAll('#review-roles, #review-roles *')) {
+        const b = el.getBoundingClientRect();
+        if (b.width === 0 && b.height === 0) continue;
+        if (!best || b.right > best.right) {
+          best = {
+            right: b.right, width: b.width,
+            sel: el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') +
+              (typeof el.className === 'string' && el.className.trim()
+                ? '.' + el.className.trim().split(/\s+/).join('.') : ''),
+          };
+        }
+      }
+      return best && { sel: best.sel, width: Math.round(best.width), right: Math.round(best.right), vw: window.innerWidth };
+    });
     (narrow <= 1 ? pass : fail)(
-      `${theme}/roles by last act: 320px @ 200% horizontal overflow ${narrow}px (must be 1 or less)`);
+      `${theme}/roles by last act: 320px @ 200% horizontal overflow ${narrow}px (must be 1 or less)` +
+      (furthest ? ` — furthest past the edge: ${furthest.sel}, width ${furthest.width}px, right edge ${furthest.right}px of ${furthest.vw}px` : ''));
     await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
     if (vp) await page.setViewportSize(vp);
 

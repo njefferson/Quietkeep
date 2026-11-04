@@ -2511,7 +2511,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.28.0** (3.27.1 with the review of roles): the Review door lists
+- **https://staging.quietkeep.pages.dev** — **3.28.1** (3.28.0 with the roles list kept inside a narrow screen at the largest text; 3.28.0 was 3.27.1 with the review of roles): the Review door lists
   the roles that carry live work from the one longest since anything was done
   under it (`src/attended.ts`, `src/ui/review-roles.ts`), an order and not a
   finding: no threshold, no late state, no color, no count of roles. An act is a

@@ -29,6 +29,15 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.28.1',
+    kind: 'ITERATION',
+    date: '2026-11-03',
+    notes: [
+      '**The list of roles by their last activity no longer risks running off the side of a narrow screen.** A long role name now wraps inside the list at the narrowest width with the largest text, and the button to every role stays within the screen.',
+      '**Still not right:** the same as 3.28.0. A role you only read, and never act under, can sit near the top, and a very large store may add a moment before the list appears.',
+    ],
+  },
+  {
     triplet: '3.28.0',
     kind: 'CAPABILITY',
     date: '2026-11-03',
