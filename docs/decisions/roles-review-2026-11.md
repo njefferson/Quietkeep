@@ -58,8 +58,13 @@ These are findings, each of which changes the build from what the plan assumed.
   inside `#review`, and `#review` stays visible when the section has something to show. That moves the
   review's old promise, that an empty review is not there, by exactly one case, stated in section 6.
 - `tools/a11y.mjs` creates one role, `Parent`, on the first card at its roles state, which comes before
-  its review state. It does not create a second. An order needs two lines to be an order, so the walk
-  must make more roles through the same route, and section 9 says how many and why.
+  its review state. It does not create a second. The cap of three needs four roles to have something
+  behind it, so the walk makes more roles through the same route, and section 8 says how many and why.
+  Built as: the walk gives roles to up to four live action cards through the card sheet's own field, in
+  a state of its own driven right after the review audits, and audits the whole order in a second state,
+  `'every role in order'`, opened by the press, because the three containers the later state makes would
+  otherwise turn the carriers into projects. The partition test and the markup tests are in
+  `test/attended.test.ts` and not in `test/review.test.ts`.
 - `review-all` and `sheet-review` already exist. The rest of the order goes behind the press the door
   already has, as the plan says, with no new dialog.
 
@@ -204,9 +209,11 @@ Inside `#review`, after `#review-list`, a `<div id="review-roles" hidden>`.
 4. `#review-roles-more`, a `<button class="linklike">` reading `Every role, in order`, present only when
    more than three roles are in the order. It opens `#sheet-review`, the sheet the door already has.
 
-The section is absent, with `hidden` set, when fewer than two roles carry live work. An order needs two
-lines to be an order, and a single role alone would be a sentence about nobody. This is a condition on
-the existence of an order and not a threshold on any role.
+The section is absent, with `hidden` set, only when no role carries live work, and present once one
+does. Corrected by the plan's own text for step 14: statement 15's case is one role carrying live work
+with attention elsewhere, so an order of one line is an order, and the earlier rule of two or more would
+have hidden exactly that case. This is a condition on the existence of an order and not a threshold on
+any role.
 
 `#sheet-review` gains, after `#review-all`, `<h3 id="review-all-roles-heading">` with the same heading
 words, and `<ul id="review-all-roles" class="review-list">` with every row in the order, built by the
@@ -214,9 +221,9 @@ same row function. The existing `#review-all-words` and `#review-all` are unchan
 hidden together when the order is absent.
 
 The region's old promise, that an empty review is not there, changes by one case and the record says
-so. `#review` is hidden when there are no exceptions and fewer than two roles carry live work. With two
-or more roles carrying live work it is present, which puts the Review door on the hub for a reader with
-roles and no exceptions. This is the cost of putting the order on the door, and it is a door that has
+so. `#review` is hidden when there are no exceptions and no role carries live work. With one or more roles
+carrying live work it is present, which puts the Review door on the hub for a reader with roles and no
+exceptions. This is the cost of putting the order on the door, and it is a door that has
 something behind it every time it shows.
 
 No color carries anything. No bar, meter, progress element or ordinal numeral. The order is the position
@@ -239,7 +246,7 @@ change is one rule, `#review-roles { margin-top: 1rem; }`, and `#review-roles-he
 - `refresh` is called inside `rerenderLists`, beside `glance.refresh()`. It does two things. First, from
   state alone, `rolesCarryingLive(state, isLiveWork)` decides whether the section exists and whether
   `#review` is shown. `src/ui/app.ts` takes that result into its existing line
-  `region.hidden = rv.total === 0` so it reads `rv.total === 0 && order.length < 2`. Second, it reads
+  `region.hidden = rv.total === 0` so it reads `rv.total === 0 && rolesLive(st).length === 0`. Second, it reads
   `session.store.all()` once, calls `attendedOrder`, and paints the two lists.
 - The read is keyed by `state.eventCount` and the reader's day key and is cached, so a render with
   neither changed paints from the cache with no read. A newer render that starts before an older read
@@ -290,10 +297,10 @@ Step 14, in Quietkeep:
 A new state, `'roles by last act'`, with its own `REGISTRY` entry beside `'review'`:
 `#review-roles-heading`, `#review-roles-words`, `#review-roles-list .review-title`,
 `#review-roles-list .review-why`. The existing `'review'` entry is not extended, because the section is
-absent at that state and the registry refuses a selector that matches nothing. `'everything worth a
-look'` gains `#review-all-roles-heading`, `#review-all-roles .review-title` and
-`#review-all-roles .review-why`, which are present once the walk's roles exist, so that state must come
-after the new one. The press `#review-roles-more` is not registered, because it carries the ordinary
+absent at that state and the registry refuses a selector that matches nothing. a second state,
+`'every role in order'`, holds `#review-all-roles-heading`, `#review-all-roles .review-title` and
+`#review-all-roles .review-why`, and is opened by the press inside the first state (corrected in the
+build: the later state's containers would take the roles out of the order). The press `#review-roles-more` is not registered, because it carries the ordinary
 `linklike` pair that `.review-count` already holds, and it is audited by the focus-ring and
 target audits of its state.
 
@@ -308,7 +315,7 @@ missing card through the capture form, as it does elsewhere, and never writes st
 
 Assertions, each a `pass` or `fail` line in the walk's style, run in both themes:
 
-- the section is absent until a second role carries live work, and present after
+- the section is absent with no role carrying live work (the empty store), and present once one does
 - the section sits inside `#review` after `#review-list`, and its heading is a level-three heading
 - text order: the heading, the sentence, then the rows, in DOM order, equal the order of section 6, and
   the same elements sorted by rendered top edge are in that order too
@@ -344,8 +351,8 @@ and the announce check run and stay green with no change, because the section de
   that doing something under a role means marking something done, timing it, focusing on it, putting
   something down under it, changing it, or giving the role to a thing; that reading a role or opening a
   sheet is not counted and the app does not keep a record of where you looked, so a role you have only
-  been reading can sit near the top; that it is an order and not a judgment, and nothing in it is late;
-  that it appears when two or more roles carry something live; and that three show with a button to all
+  been reading can sit near the top; that it is an order and not a judgment, and no role in it is in
+  trouble; that it appears when any role carries something live; and that three show with a button to all
   of them. It carries no claim the tests do not hold.
 - under "Every screen", "The work surface", the bullet `- **Worth a look**` gains a clause naming the
   roles order, and the bullet `- **Everything worth a look**` gains a clause saying the roles order is
@@ -431,8 +438,8 @@ Release 3.28.0, kind CAPABILITY, dated 2026-11-03. Written as the new head of `R
 `public/sw.js` becoming `quietkeep-3.28.0`. `npm run changelog:check` holds the three together. In the
 reader's words, one idea to a line:
 
-- **Worth a look now lists your roles from the one longest since anything was done under it.** If two or
-  more of your roles carry something that is still live, a short list shows the three whose last
+- **Worth a look now lists your roles from the one longest since anything was done under it.** If any of
+  your roles carries something that is still live, a short list shows the three whose last
   activity is oldest first, with how many days ago something was last done under each, and a button
   to all of them. Each line opens that role.
 - **Doing something is what counts.** Marking a thing done, timing it, focusing on it, putting something

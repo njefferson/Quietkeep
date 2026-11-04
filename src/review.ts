@@ -59,6 +59,8 @@ import { CONTAINER_KINDS } from './tree.ts';
 import type { NodeKind } from './events.ts';
 import { isHeld, isGone } from './fold.ts';
 import { allRoles } from './roles.ts';
+import { attendedOrder, rolesCarryingLive, type Attended } from './attended.ts';
+import type { AppEvent } from './events.ts';
 
 /** Kinds that CONTAIN work rather than being work. These are the ones that can
  *  stall, because stalling means "nothing underneath is moving".
@@ -97,7 +99,7 @@ export interface ReviewView {
 export const REVIEW_CAP = 3;
 
 /** Is this node a live piece of work — something that could actually move? */
-function isLiveWork(n: NodeState): boolean {
+export function isLiveWork(n: NodeState): boolean {
   if (isGone(n)) return false;
   if (n.lastDone) return false;
   if (n.onMenu) return false;                 // demand-free by law 6
@@ -333,6 +335,24 @@ export function reviewExceptions(state: State, nowIso: string, zone: string): Re
     stalled: stall, orphaned: orph, unfed, quietLines: lines, quiet,
     shown: all.slice(0, REVIEW_CAP), total: all.length,
   };
+}
+
+/**
+ * The roles carrying live work, from the one longest since an act under it
+ * (3.28.0, docs/decisions/roles-review-2026-11.md). A section BESIDE the
+ * exceptions and not a sixth class among them: it has no cut and no rank, and it
+ * claims nothing is wrong. It lives here so that the one definition of live work,
+ * `isLiveWork`, is the one passed to the reading, never a copy.
+ */
+export function rolesOrder(
+  state: State, log: readonly AppEvent[], nowIso: string, zone: string,
+): Attended[] {
+  return attendedOrder(state, log, nowIso, zone, isLiveWork);
+}
+
+/** The same roles without the log, for the render pass that has only state. */
+export function rolesLive(state: State): NodeState[] {
+  return rolesCarryingLive(state, isLiveWork);
 }
 
 /** How many there are, in words. A number, never a score — it counts things

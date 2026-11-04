@@ -49,7 +49,8 @@ import {
   HORIZON_WORDS, HORIZON_READOUT_WORDS,
 } from '../horizons.ts';
 import { CONTAINER_KINDS } from '../tree.ts';
-import { reviewExceptions, reviewWords } from '../review.ts';
+import { reviewExceptions, reviewWords, rolesLive } from '../review.ts';
+import { mountReviewRoles } from './review-roles.ts';
 import { meetingView, meetingViewWords, meetingPersonWords, meetingByThing } from '../meeting.ts';
 import { arrangementNodes, arrangementCards } from '../arrangement.ts';
 import { composedFor, todayIsOn } from '../composed.ts';
@@ -1084,7 +1085,10 @@ function render(session: Session, openDetail?: (n: NodeState, opts?: DetailOpen)
       return li;
     };
     if (region && count && list) {
-      region.hidden = rv.total === 0;
+      // THE ROLES ORDER LIVES INSIDE THIS REGION (3.28.0, ADR-0128), so the region
+      // stays shown while any role carries live work even with no exception. The
+      // question is asked of state alone, which is all this synchronous pass has.
+      region.hidden = rv.total === 0 && rolesLive(st).length === 0;
       // A DOOR, AND ONLY WHILE THERE IS SOMETHING BEHIND IT. When the three
       // shown ARE all of them the number is still worth stating, but opening a
       // list identical to the one already on screen is a door onto the room you
@@ -1330,6 +1334,7 @@ export async function main(edition?: Edition): Promise<void> {
   let detail: DetailUI = { open() {} };
   let search: { refresh(): void } = { refresh() {} };
   let glance: { refresh(): void } = { refresh() {} };
+  let reviewRoles: { refresh(): void } = { refresh() {} };
   let sort: { refresh(): void } = { refresh() {} };
   let work: { refresh(): void } = { refresh() {} };
   let triage: import('./clarify.ts').TriageUI = { refresh() {}, relabelTimer() {} };
@@ -1391,7 +1396,7 @@ export async function main(edition?: Edition): Promise<void> {
   // while its row was still on screen — one item, two questions, which is
   // exactly what the exclusion exists to prevent. This is what work.ts is handed
   // as its onChange, since work refreshes itself afterwards.
-  const rerenderLists = (): void => { rerender(); replan.refresh(); focus.refresh(); reentry.refresh(); bother.refresh(); load.refresh(); search.refresh(); glance.refresh(); sort.refresh(); clock.refresh(); };
+  const rerenderLists = (): void => { rerender(); replan.refresh(); focus.refresh(); reentry.refresh(); bother.refresh(); load.refresh(); search.refresh(); glance.refresh(); reviewRoles.refresh(); sort.refresh(); clock.refresh(); };
   rerenderAll = rerenderLists;
   // `relabelTimer`, not `refresh` (1.10.0): the do-now offer names the timer
   // length it will start, and that length is set in the (i) panel, which can be
@@ -1432,6 +1437,16 @@ export async function main(edition?: Edition): Promise<void> {
       goPeople: () => enterStance('people'),
       goUnsorted: () => openGroup('Not sorted yet'),
       openDays: () => { openSheet('sheet-dated'); },
+    });
+  } catch { /* a surface */ }
+
+  // The roles, by when something was last done under them (3.28.0, ADR-0128),
+  // inside the Review door. Mounted after detail because a line opens a role's
+  // own sheet; its refresh joins `rerenderLists`, before `paintHub`.
+  try {
+    reviewRoles = mountReviewRoles(session, now, {
+      openNode: n => detail.open(n),
+      openAll: () => { openSheet('sheet-review'); },
     });
   } catch { /* a surface */ }
 

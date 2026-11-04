@@ -3041,6 +3041,10 @@ summary::-webkit-details-marker { display: none; }
 }
 .review-title { overflow-wrap: anywhere; }
 .review-why { color: var(--ink-soft); font-size: 0.875rem; }
+/* The roles order (3.28.0, ADR-0128). Layout only; the rows are the exceptions' own. */
+#review-roles { margin-top: 1rem; }
+#review-roles-heading { margin: 0 0 0.25rem; }
+#review-roles-more { margin-top: 0.5rem; }
 
 /* --- focus: one thing, and a way to be interrupted without losing it ------- */
 .focus {

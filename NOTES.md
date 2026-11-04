@@ -2511,7 +2511,18 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.27.1** (3.27.0 with the way into sorting back on a phone's first screen): the first screen shows
+- **https://staging.quietkeep.pages.dev** — **3.28.0** (3.27.1 with the review of roles): the Review door lists
+  the roles that carry live work from the one longest since anything was done
+  under it (`src/attended.ts`, `src/ui/review-roles.ts`), an order and not a
+  finding: no threshold, no late state, no color, no count of roles. An act is a
+  done mark, a timed doing, a focus, a capture, a change, a filing or the writing
+  of the role link; opening a sheet is not one, by ADR-0054 and ADR-0092. It sits
+  beside the quiet lines and a role is in exactly one of the two. Three lines
+  show, with a button to every role in the sheet the door already has. A
+  projection: no new event, nothing stored; the log is read once per change.
+  Record: `docs/decisions/roles-review-2026-11.md` and ADR-0128. The Block
+  register is not touched by this release.
+- **3.27.1** (3.27.0 with the way into sorting back on a phone's first screen): the first screen shows
   what is dated, a day at a time, above the doors (`#glance`, *The weeks ahead*):
   the days in the next seven that hold something, then the days out to thirty
   that do, three titles to a day, a thing with a start and a due date drawn as a

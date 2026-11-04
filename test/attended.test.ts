@@ -13,6 +13,8 @@ import {
   attendedOrder, rolesCarryingLive, attendedWords, ATTENDED_KINDS, type Attended,
 } from '../src/attended.ts';
 import { EVENT_KINDS, type AppEvent } from '../src/events.ts';
+import { rolesOrder, rolesLive, quietLines, REVIEW_CAP } from '../src/review.ts';
+import { readFileSync } from 'node:fs';
 
 const NOW = '2026-11-03T12:00:00.000Z';
 const ZONE = 'UTC';
@@ -219,6 +221,68 @@ test('the counted kinds are exactly the record\'s list, and each is a real event
   ]);
   const known = new Set<string>(EVENT_KINDS);
   for (const k of ATTENDED_KINDS) assert.ok(known.has(k), `${k} is in the event vocabulary`);
+});
+
+test('every role with a carrier is in exactly one of the quiet lines and the order', () => {
+  const events = [
+    role('R1', 'Live'), role('R2', 'Spent'), role('R3', 'Unused'), role('R4', 'Project'), role('R5', 'Hollow'),
+    made('A'), attach('A', 'R1', ago(10)),
+    made('B'), attach('B', 'R2', ago(10)), done('B', ago(3)),
+    made('P', ago(50), undefined, 'project'), attach('P', 'R4', ago(10)), made('C', ago(45), 'P'),
+    made('H', ago(50), undefined, 'project'), attach('H', 'R5', ago(10)),
+  ];
+  const state = foldEvents(events);
+  const inOrder = new Set(rolesOrder(state, events, NOW, ZONE).map(r => r.role.id));
+  const inQuiet = new Set(quietLines(state).map(q => q.node.id));
+  for (const id of ['R1', 'R2', 'R4', 'R5']) {
+    assert.equal(Number(inOrder.has(id)) + Number(inQuiet.has(id)), 1, `${id} is in exactly one`);
+  }
+  assert.equal(inOrder.has('R3') || inQuiet.has('R3'), false, 'a role with no carrier is in neither');
+  assert.deepEqual(rolesLive(state).map(r => r.id).sort(), [...inOrder].sort(),
+    'the render pass reads the same set from state alone');
+});
+
+test('the surface and the sheet are built from one order, the surface the first three', () => {
+  const src = readFileSync(new URL('../src/ui/review-roles.ts', import.meta.url), 'utf8');
+  assert.match(src, /order\.slice\(0, REVIEW_CAP\)\.map\(row\)/);
+  assert.match(src, /allList\.replaceChildren\(\.\.\.order\.map\(row\)\)/);
+  assert.equal(REVIEW_CAP, 3);
+});
+
+test('the markup puts the section inside the Review door after its list, and the sheet\'s list inside the sheet', () => {
+  const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+  const review = html.slice(html.indexOf('<section id="review"'), html.indexOf('</section>', html.indexOf('<section id="review"')));
+  assert.ok(review.indexOf('id="review-list"') > 0);
+  assert.ok(review.indexOf('id="review-roles"') > review.indexOf('id="review-list"'));
+  const sheet = html.slice(html.indexOf('<dialog id="sheet-review"'), html.indexOf('</dialog>', html.indexOf('<dialog id="sheet-review"')));
+  assert.ok(sheet.includes('id="review-all-roles"'));
+  assert.ok(sheet.includes('id="review-all-roles-heading"'));
+  // The sentence says what the order cannot see, in its own words.
+  assert.match(review, /Opening a role to read it does not count/);
+});
+
+test('the section\'s rules carry no accent and no warm color', () => {
+  const css = readFileSync(new URL('../public/app.css', import.meta.url), 'utf8');
+  const rules = css.split('\n').filter(l => /#review-roles/.test(l)).join('\n');
+  assert.ok(rules.length > 0);
+  assert.doesNotMatch(rules, /--accent|--warm/);
+});
+
+test('the order over the big sample set finishes inside the readers\' budget, and the figure is printed', () => {
+  const events: AppEvent[] = [];
+  for (let r = 0; r < 40; r++) events.push(role(`BR${r}`, `Role ${r}`));
+  for (let i = 0; i < 4000; i++) {
+    events.push(made(`BN${i}`, ago(200)));
+    events.push(attach(`BN${i}`, `BR${i % 40}`, ago(150)));
+    events.push(field(`BN${i}`, ago(i % 120)));
+  }
+  const state = foldEvents(events);
+  const t0 = performance.now();
+  const rows = attendedOrder(state, events, NOW, ZONE, live);
+  const ms = performance.now() - t0;
+  console.log(`attendedOrder over ${events.length} events and 40 roles: ${ms.toFixed(1)} ms (a container figure, not a device's)`);
+  assert.equal(rows.length, 40);
+  assert.ok(ms < 1000, `inside one second (${ms.toFixed(1)} ms)`);
 });
 
 test('the words are facts, say 1 day never 1 days, and carry no refused word', () => {

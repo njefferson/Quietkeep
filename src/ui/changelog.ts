@@ -29,6 +29,18 @@ export interface Release {
 /** Newest first. The head of this array is the running version. */
 export const RELEASES: readonly Release[] = [
   {
+    triplet: '3.28.0',
+    kind: 'CAPABILITY',
+    date: '2026-11-03',
+    notes: [
+      '**Worth a look now lists your roles from the one longest since anything was done under it.** If any of your roles carries something that is still live, a short list shows the three whose last activity is oldest first, with how many days ago something was last done under each, and a button to all of them. Each line opens that role.',
+      '**Doing something is what counts.** Marking a thing done, timing it, focusing on it, putting something down under it, changing it, or giving the role to a thing all count. Opening a role or reading a thing does not, because the app does not keep a record of where you looked.',
+      '**It is an order and nothing more.** No role is called in trouble, nothing is counted, nothing is colored, and nothing is stored for it. It is worked out from what the app already holds.',
+      '**The Menu button is now one step later in the page; it was one step earlier.** A new button, *Every role, in order*, sits in the review ahead of it, so anyone moving by keyboard or switch reaches the Menu one press later. Nothing else moved.',
+      '**Still not right:** a role you only read, and never act under, can sit near the top. Roles with nothing live are still listed on their own line as before, not here. The list needs the whole history read once, which on a very large store may add a moment before it appears. It does not say what to do about a role near the top.',
+    ],
+  },
+  {
     triplet: '3.27.1',
     kind: 'ITERATION',
     date: '2026-11-03',

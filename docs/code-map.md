@@ -72,6 +72,11 @@ no writes. This is where most of the app's thinking lives:
 - `glance.ts` — the weeks ahead: the days that hold something in the next seven
   and out to thirty, stretches (above the hub's doors), who is waited on and what
   is still to sort (beneath them). It reads `ics.ts`'s selection and `reading.ts`'s days, and owns neither.
+- `attended.ts` — the last act under a role, stated once (3.28.0): the roles
+  carrying live work, from the one longest since an act under them. It reads the
+  LOG, because the fold keeps no time per node for most acts, and is drawn by
+  `ui/review-roles.ts` inside the Review door. `review.ts` passes it its own
+  `isLiveWork`, so one definition of live work stays in one place.
 - `search.ts`, `dated.ts`, `horizons.ts`, `review.ts`, `focus.ts`, `menu.ts`,
   `people.ts`, `delta.ts`, `diagnostic.ts` — one surface's question each.
 

@@ -221,6 +221,21 @@ be changed from there.
 For projects and what sits inside what, **Your projects, areas and goals** is the
 tree.
 
+### See your roles by what was done last
+
+When any of your roles carries something that is still live, the review screen
+lists those roles, the one with the longest wait since anything was done under it
+first. Each line says when something was last done under that role — today,
+yesterday, or some days ago — and opens the role. Three show, with a button to
+all of them.
+
+Doing something under a role means marking something done, timing it, focusing
+on it, putting something down under it, changing it, or giving the role to a
+thing. Reading a role or opening a sheet does not count, and the app does not
+keep a record of where you looked, so a role you have only been reading can sit
+near the top. It is an order and not a judgment: no role in it is in trouble, and
+nothing is counted or colored.
+
 ### Check that everything is somewhere
 
 Under the line that says nothing has gone quiet is a second one: **everything
@@ -442,7 +457,8 @@ when there is a reason.
 - **Carrying** — the weights you said you were carrying.
 - **With other people** — what they owe you, and what you said you would do.
 - **Worth a look** — things that are structurally odd: nothing feeding a goal,
-  a project with no next action, an area gone quiet.
+  a project with no next action, an area gone quiet. Beneath them, your roles
+  by when something was last done under each.
 - **Chosen for today** — what you picked for today, if you picked.
 - **Upkeep** — things that come back on a rhythm rather than on a date.
 - **Welcome back** — what happened while you were away.
@@ -451,7 +467,7 @@ when there is a reason.
 ### Behind a button
 
 - **Everything worth a look** — the whole of what review has found, when the
-  three on the screen are not all of it.
+  three on the screen are not all of it, and every role in order beneath.
 - **Running without you** — everything you have said runs on its own, when you
   last checked each was still true, and where any of it stands.
 - **What's the situation?** — where you are, how long you have, who is in front of you,

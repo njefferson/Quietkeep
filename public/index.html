@@ -1054,6 +1054,15 @@
          is not one — three still greet you, in the same order. -->
     <button id="review-count" class="review-count linklike" type="button" hidden></button>
     <ul id="review-list" class="review-list"></ul>
+    <!-- THE ROLES, BY WHEN SOMETHING WAS LAST DONE UNDER THEM (3.28.0, ADR-0128).
+         An ORDER, not a sixth exception: no cut, no rank, no state. Present when
+         any role carries live work. Opening a role to read it is not an act. -->
+    <div id="review-roles" hidden>
+      <h3 id="review-roles-heading" class="section">Roles, by when something was last done under them</h3>
+      <p id="review-roles-words" class="detail-hint">The one with the longest wait since anything was done under it is first. This is an order, not a verdict. Opening a role to read it does not count, only doing something under it, so a role you have only been reading can sit near the top.</p>
+      <ul id="review-roles-list" class="review-list"></ul>
+      <button id="review-roles-more" class="linklike" type="button" hidden>Every role, in order</button>
+    </div>
   </section>
 
   <!-- Composed Today (1.6.0, ADR-0051). OPTIONAL, off by default — renders
@@ -3567,6 +3576,8 @@
   <div class="sheet-body" tabindex="0">
     <p id="review-all-words" class="detail-hint"></p>
     <ul id="review-all" class="review-list"></ul>
+    <h3 id="review-all-roles-heading" class="section" hidden>Roles, by when something was last done under them</h3>
+    <ul id="review-all-roles" class="review-list" hidden></ul>
   </div>
   <button id="sheet-review-close" data-way-out type="button" class="ghost">Close</button>
 </dialog>

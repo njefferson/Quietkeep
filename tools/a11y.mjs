@@ -1057,6 +1057,18 @@ const REGISTRY = {
   // mistake 'in the room' made first time, when a door registered with the sheet
   // it opens matched nothing, because opening the sheet closed the surface the
   // door was on.
+  // THE ROLES, BY WHEN SOMETHING WAS LAST DONE UNDER THEM (3.28.0, ADR-0128).
+  // Inside the Review door, so it is driven right after the 'review' state, and
+  // its own entry because the section is absent at that state and the registry
+  // refuses a selector that matches nothing. The press `#review-roles-more` is not
+  // registered: it carries the ordinary `.linklike` pair that `.review-count`
+  // already holds, and the focus-ring and target audits of the state reach it.
+  'roles by last act': ['#review-roles-heading', '#review-roles-words',
+    '#review-roles-list .review-title', '#review-roles-list .review-why'],
+  // The same order without the cap, in the sheet the door already has. Its own
+  // state, because the sheet is opened from the press and closes the surface.
+  'every role in order': ['#review-all-roles-heading',
+    '#review-all-roles .review-title', '#review-all-roles .review-why'],
   'everything worth a look': ['#sheet-review-title', '#sheet-review-close',
     '#review-all-words', '#review-all .review-title', '#review-all .review-why'],
   'where the attention is': ['#roles-open'],
@@ -2802,6 +2814,13 @@ try {
         .every((d) => d === 'none') ? 'none' : 'shown');
     (glanceEmpty === 'none' ? pass : fail)(
       `${theme}/empty store: the weeks ahead is not shown with no hub (display ${glanceEmpty})`);
+    // AND THE ROLES ORDER IS ABSENT with no role carrying live work (3.28.0).
+    const rolesEmpty = await page.evaluate(() => {
+      const r = document.querySelector('#review-roles');
+      return r ? getComputedStyle(r).display : 'missing';
+    });
+    (rolesEmpty === 'none' ? pass : fail)(
+      `${theme}/empty store: the roles order is not shown with no role carrying live work (display ${rolesEmpty})`);
     await auditContrast(page, 'empty store', theme);
     await auditAxe(page, 'empty store', theme);
     await auditNames(page, 'empty store', theme);
@@ -5284,6 +5303,197 @@ try {
     await auditSeparationAndTargets(page, 'review', theme);
     await auditFocusRings(page, 'review', theme, ['.review-open']);
 
+    // THE ROLES, BY WHEN SOMETHING WAS LAST DONE UNDER THEM (3.28.0, ADR-0128).
+    //
+    // Driven the way a person reaches it: roles are made through the card sheet's
+    // own field, on cards that are live ACTIONS (a project with nothing under it
+    // carries nothing live, so a role on one would be a quiet line and not in the
+    // order). A role is given to up to four such cards, so the cap of three has
+    // something behind it. If the store runs out of action cards the walk makes
+    // one the way it made the card above, through the capture form and the sort,
+    // and never writes state directly. Names are plain words with no digits.
+    // THIS STATE COMES BEFORE the three containers are made below, which would
+    // turn these carriers into projects and take their roles out of the order.
+    // WHICH CARDS CARRY LIVE WORK is asked of the app and not guessed from the
+    // card: a held list also holds people, things waited on and load, none of which
+    // is live work, and the first version of this took every card with a "make it
+    // a project" button for an action and got two roles in the order out of four.
+    // The whole order is in the DOM behind the press (hidden until opened), so its
+    // length is the count of roles carrying live work, read after the log read
+    // settles. Roles go on cards until four carry live work.
+    const roleNames = ['Neighbor', 'Volunteer', 'Mentor', 'Friend', 'Coach', 'Cousin', 'Tenant', 'Sponsor',
+      'Warden', 'Tutor', 'Captain', 'Steward'];
+    let rolesMade = 0;
+    const liveRoleCount = async () => {
+      await page.waitForTimeout(450);
+      return page.locator('#review-all-roles li').count();
+    };
+    let liveRoles = await liveRoleCount();
+    const giveRoles = async () => {
+      await enterStance(page, 'held');
+      const count = await page.locator('#cards .card-open').count();
+      for (let i = 0; i < count && rolesMade < roleNames.length && liveRoles < 4; i++) {
+        await page.locator('#cards .card-open').nth(i).click();
+        await page.waitForSelector('#detail[open]');
+        await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
+        const isAction = await page.locator('#detail-make-project').isVisible().catch(() => false);
+        const carriesRole = await page.locator('#detail-role-list li').count();
+        if (isAction && carriesRole === 0) {
+          await page.fill('#detail-role', roleNames[rolesMade]);
+          await page.click('#detail-role-set');
+          await page.waitForSelector('#detail-role-list li');
+          rolesMade += 1;
+        }
+        await page.click('#detail-close');
+        await page.waitForSelector('#detail', { state: 'hidden' });
+        liveRoles = await liveRoleCount();
+      }
+    };
+    for (let round = 0; round < 3 && liveRoles < 4; round++) {
+      await giveRoles();
+      if (liveRoles >= 4) break;
+      await page.fill('#capture', 'something a role carries');
+      await page.click('#capture-form button[type=submit]');
+      await page.waitForSelector('#triage-open:not([hidden])', { timeout: 4000 }).then(() => page.click('#triage-open')).catch(() => {});
+      await enterStance(page, 'triage');
+      await page.waitForSelector('#triage:not([hidden]) .route');
+      for (let i = 0; i < 12; i++) {
+        const p = await page.locator('#triage-prompt').textContent();
+        if (!/hot or cold/i.test(p || '')) break;
+        await page.locator('#triage-actions .route', { hasText: 'Hot' }).first().click();
+        await page.waitForTimeout(120);
+      }
+      await page.locator('#triage-actions .route', { hasText: 'Next action' }).first().click();
+      await page.waitForTimeout(250);
+    }
+    (liveRoles >= 4 ? pass : fail)(
+      `${theme}/roles by last act: roles were given through the card sheet until four carry live work (${rolesMade} given, ${liveRoles} carrying)`);
+    await page.waitForSelector('#review-roles:not([hidden])');
+    // THE ORDER IS PAINTED AFTER A READ OF THE LOG, so the lines of the commit before
+    // this one can be on screen for a moment (the cache is shown while the newer
+    // read resolves). Wait for the lines to settle at the cap, which four roles
+    // reach, before measuring; a shorter order is read as it stands.
+    await page.waitForSelector('#review-roles-list .review-open');
+    await page.waitForFunction(() =>
+      document.querySelectorAll('#review-roles-list .review-open').length >= 3
+      && !document.querySelector('#review-roles-more')?.hidden, null, { timeout: 5000 }).catch(() => {});
+    const byAct = await page.evaluate(() => {
+      const root = document.querySelector('#review-roles');
+      const rev = document.querySelector('#review');
+      const head = document.querySelector('#review-roles-heading');
+      const words = document.querySelector('#review-roles-words');
+      const list = document.querySelector('#review-roles-list');
+      const more = document.querySelector('#review-roles-more');
+      const rows = [...document.querySelectorAll('#review-roles-list .review-open')].map((b) => ({
+        title: b.querySelector('.review-title')?.textContent ?? '',
+        why: b.querySelector('.review-why')?.textContent ?? '',
+        h: b.getBoundingClientRect().height, w: b.getBoundingClientRect().width,
+      }));
+      const rel = (a, b) => Boolean(a && b && (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING));
+      return {
+        inside: Boolean(rev && root && rev.contains(root)),
+        afterList: rel(document.querySelector('#review-list'), root),
+        level: head ? head.tagName : '',
+        order: rel(head, words) && rel(words, list),
+        topOrder: head && words && list
+          ? head.getBoundingClientRect().top < words.getBoundingClientRect().top
+            && words.getBoundingClientRect().top < list.getBoundingClientRect().top
+          : false,
+        rows,
+        moreShown: Boolean(more && !more.hidden),
+        moreH: more ? more.getBoundingClientRect().height : 0,
+        sentence: words?.textContent ?? '',
+        meters: root ? root.querySelectorAll('progress, meter, [role="progressbar"]').length : -1,
+      };
+    });
+    (byAct.inside && byAct.afterList ? pass : fail)(
+      `${theme}/roles by last act: the section sits inside the Review door, after its list`);
+    (byAct.level === 'H3' ? pass : fail)(
+      `${theme}/roles by last act: its heading is a level-three heading (${byAct.level})`);
+    (byAct.order && byAct.topOrder ? pass : fail)(
+      `${theme}/roles by last act: heading, then the sentence, then the lines, in the document and on the screen`);
+    (byAct.rows.length >= 1 && byAct.rows.length <= 3 ? pass : fail)(
+      `${theme}/roles by last act: at most three lines show on the surface (${byAct.rows.length})`);
+    (/reading/.test(byAct.sentence) && /order/.test(byAct.sentence) ? pass : fail)(
+      `${theme}/roles by last act: the sentence says it is an order and that reading does not count`);
+    const DAYS = /^(something was done under it (today|yesterday|\d+ days? ago)|nothing is on record under it)$/;
+    const REFUSED = /overdue|late|behind|neglect|ignored|forgotten|streak|score|rank|percent|fail|missed/i;
+    const badWords = byAct.rows.filter((r) => !DAYS.test(r.why) || REFUSED.test(r.why) || REFUSED.test(r.title));
+    (badWords.length === 0 ? pass : fail)(
+      `${theme}/roles by last act: every line says what was done and when, in the refused-word sweep's clean words (${badWords.map((r) => r.why).join(' | ')})`);
+    const digitsElsewhere = byAct.rows.filter((r) => /\d/.test(r.title.replace(/\d+ days? ago/, '')) || /\d/.test(r.why.replace(/\d+ days? ago/, '')));
+    (digitsElsewhere.length === 0 ? pass : fail)(
+      `${theme}/roles by last act: no digit appears but a count of days`);
+    (byAct.meters === 0 ? pass : fail)(
+      `${theme}/roles by last act: no bar, meter or progress element anywhere in the section (${byAct.meters})`);
+    // A tie of whole days falls to the name, and every role was acted under just now.
+    const tied = byAct.rows.every((r, i) => i === 0 || byAct.rows[i - 1].why !== r.why
+      || byAct.rows[i - 1].title.localeCompare(r.title) <= 0);
+    (tied ? pass : fail)(
+      `${theme}/roles by last act: lines that tie on the day fall to the name`);
+    (byAct.rows.every((r) => r.h >= 44 && r.w >= 44) ? pass : fail)(
+      `${theme}/roles by last act: every line is a target of at least 44 pixels`);
+    await auditContrast(page, 'roles by last act', theme);
+    await auditAxe(page, 'roles by last act', theme);
+    await auditNames(page, 'roles by last act', theme);
+    await auditSeparationAndTargets(page, 'roles by last act', theme);
+    await auditFocusRings(page, 'roles by last act', theme,
+      byAct.moreShown ? ['#review-roles-list .review-open', '#review-roles-more'] : ['#review-roles-list .review-open']);
+
+    // The press to a role's own sheet, and back to the Review.
+    await page.locator('#review-roles-list .review-open').first().click();
+    await page.waitForSelector('#detail[open]');
+    const lineSheet = await page.evaluate(() =>
+      Boolean(document.querySelector('#detail-line-group:not([hidden])')));
+    (lineSheet ? pass : fail)(
+      `${theme}/roles by last act: a line opens that role's own sheet, which shows its line`);
+    await page.click('#detail-close');
+    await page.waitForSelector('#detail', { state: 'hidden' });
+
+    // Four roles carry live work: the cap has something behind it, and the whole
+    // order is one press away in the sheet the door already has.
+    (liveRoles >= 4 ? byAct.moreShown : true) ? pass(
+      `${theme}/roles by last act: with more than three roles the press to every role is offered (${byAct.moreShown})`) : fail(
+      `${theme}/roles by last act: with more than three roles the press to every role is offered (${byAct.moreShown})`);
+    if (byAct.moreShown) {
+      await page.click('#review-roles-more');
+      await page.waitForSelector('#sheet-review[open]');
+      const everyRole = await page.evaluate(() => ({
+        rows: document.querySelectorAll('#review-all-roles .review-open').length,
+        surface: document.querySelectorAll('#review-roles-list .review-open').length,
+        head: !document.querySelector('#review-all-roles-heading')?.hidden,
+        first: [...document.querySelectorAll('#review-all-roles .review-title')].slice(0, 3).map((n) => n.textContent),
+        shown: [...document.querySelectorAll('#review-roles-list .review-title')].map((n) => n.textContent),
+      }));
+      (everyRole.head && everyRole.rows > everyRole.surface ? pass : fail)(
+        `${theme}/roles by last act: the sheet lists every role, uncapped (${everyRole.rows} against ${everyRole.surface} on the surface)`);
+      (JSON.stringify(everyRole.first) === JSON.stringify(everyRole.shown) ? pass : fail)(
+        `${theme}/roles by last act: the surface's lines are the first of the sheet's, from one order`);
+      await auditContrast(page, 'every role in order', theme);
+      await auditAxe(page, 'every role in order', theme);
+      await auditNames(page, 'every role in order', theme);
+      await auditSeparationAndTargets(page, 'every role in order', theme);
+      await auditFocusRings(page, 'every role in order', theme, ['#review-all-roles .review-open']);
+      await page.click('#sheet-review-close');
+      await page.waitForSelector('#sheet-review', { state: 'hidden' });
+      const back = await page.evaluate(() => document.activeElement?.id ?? '');
+      (back === 'review-roles-more' ? pass : fail)(
+        `${theme}/roles by last act: closing the sheet returns focus to the press that opened it (${back})`);
+    }
+
+    // 320 wide at 200% text: the section adds no horizontal overflow.
+    const vp = page.viewportSize();
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
+    const narrow = await page.evaluate(() => {
+      const r = document.querySelector('#review-roles');
+      return r ? r.scrollWidth - r.clientWidth : -1;
+    });
+    (narrow <= 1 ? pass : fail)(
+      `${theme}/roles by last act: 320px @ 200% horizontal overflow ${narrow}px (must be 1 or less)`);
+    await page.evaluate(() => { document.documentElement.style.fontSize = ''; });
+    if (vp) await page.setViewportSize(vp);
+
     // EVERYTHING WORTH A LOOK (3.17.0), and it needs FOUR findings to reach.
     //
     // The total is a door only while there is something behind it — three shown
@@ -5370,8 +5580,19 @@ try {
     await page.waitForSelector('#detail[open]');
     await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     const canParent = await page.locator('#detail-parent option').count();
+    // THE CONTAINER THIS CARD GOES UNDER IS REMEMBERED BY ITS WORDS, so the state
+    // below that opens a container with something inside it opens THAT one. The
+    // roles state (3.28.0) adds cards at the top of the held list, so "card 0"
+    // stopped being the container and the line naming what a container holds was
+    // seen on no state.
+    let parentLabel = '';
     if (canParent > 1) {
       await page.selectOption('#detail-parent', { index: 1 });
+      parentLabel = await page.evaluate(() => {
+        const s = document.querySelector('#detail-parent');
+        // The option reads "<title> — <kind>"; the card carries the title.
+        return (s?.options[s.selectedIndex]?.textContent ?? '').split(' — ')[0].trim();
+      });
       await page.click('#detail-parent-set');
       await page.waitForTimeout(250);
       await page.waitForSelector('#detail-place:not([hidden])');
@@ -5411,7 +5632,11 @@ try {
     await page.click('#detail-close');
     await page.waitForSelector('#detail', { state: 'hidden' });
     await enterStance(page, 'held');
-    await page.locator('#cards .card-open').nth(0).click();
+    await (parentLabel
+      // By the card's own TITLE, exactly: a card filed under the container also
+      // carries the container's name in its place line and sits above it.
+      ? page.locator('#cards .card-open').filter({ has: page.locator('.card-title', { hasText: new RegExp(`^${parentLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`) }) }).first()
+      : page.locator('#cards .card-open').nth(0)).click();
     await page.waitForSelector('#detail[open]');
     await page.evaluate(() => { const b = document.querySelector('#detail-more'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); });
     await page.waitForSelector('#detail-repeat-group:not([hidden])');

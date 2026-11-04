@@ -67,6 +67,10 @@ distance as between `stalled` and a container that still has children.
 `REVIEW_CAP` is unchanged at three. A lower-ranked class waiting its turn is
 law 8 working, and the total states everything.
 
+The roles that carry something live are listed beside this class, from the one
+longest since anything was done under it, in ADR-0128. That is an order and not a
+finding, so what is refused above is refused for this class and is unchanged.
+
 ## What it costs, honestly
 
 On the demonstration store this class computes one finding and the cap keeps it
