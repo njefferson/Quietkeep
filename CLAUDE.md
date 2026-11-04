@@ -1,5 +1,20 @@
 # CLAUDE.md — Quietkeep
 
+## Facts first
+
+What a session gets wrong from its prior about this app, each with what fails when it is broken.
+
+- Storage is IndexedDB through Dexie; `localStorage` is banned outright. Fails: the Spine step `No localStorage` (`npm run storage:check`).
+- State is the fold of an append-only event log, and nothing is stored that is not an event named in `docs/event-vocabulary.md`. Fails: the Spine step `The closed event list matches the vocabulary` (`npm run events:check`).
+- An import seeds a fresh store and never merges. Fails: `test/import.test.ts`. Migrations are additive only. Fails: `test/migration-guard.test.ts`.
+- There is no overdue, late or behind state, no streak and no score; a passed date becomes a present replan card. Fails: the Spine step `No banned vocabulary` (`npm run vocabulary`) and `test/replan.test.ts`.
+- No node is silent: the write boundary refuses one that is on no surface, under no clock, not on the Menu and not parented to something under a clock. Fails: `test/spine.test.ts`.
+- A role is demand-free, a node plus a link and never a container or a filter, so the gate refuses a clock on one. Fails: `test/facts.test.ts`. The app records nowhere that a reader looked at anything, so opening a sheet is not an act. Fails: `test/attended.test.ts`.
+- The site's content policy allows scripts and styles from its own files only, so an inline style or script is refused. Fails: `test/facts.test.ts`.
+- Every page the app links to is precached by the worker, or a navigation falls back to the app shell. Fails: the Spine step running `npm run help:check`.
+- Nothing about the owner's person lands in any file. Fails: `test/privacy.test.ts` and the hub's privacy, quote and third-person gates.
+- Every assisted flow has an offline rung, and a cloud rung needs consent naming what leaves the device; a general-population finding never overrides a refusal that rests on a finding about this audience. Held by the review alone.
+
 > **Inherits the Universal App Doctrine** — the canonical copy lives in the hub
 > repo at [`njefferson/noahjefferson/DOCTRINE.md`](https://github.com/njefferson/noahjefferson/blob/main/DOCTRINE.md).
 > It is the single source of truth for the rules shared across all of the owner's
