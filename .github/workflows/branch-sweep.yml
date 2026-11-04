@@ -1,0 +1,27 @@
+name: Branch sweep
+
+# Calls the hub's branch sweep. A dry run unless `delete` is set. The sweep looks
+# only at claude/* branches and removes one only when merging it into main changes
+# nothing. A dispatched workflow must be on the default branch, so this file
+# reaches main at the promote.
+
+on:
+  workflow_dispatch:
+    inputs:
+      delete:
+        description: >-
+          Delete the removable claude/* branches. Off, the run only prints what
+          it would remove.
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    permissions:
+      contents: write
+    uses: njefferson/noahjefferson/.github/workflows/branch-sweep.yml@9480bc607e890616ba30da55d8ef77e0c5031a37
+    with:
+      delete: ${{ inputs.delete }}

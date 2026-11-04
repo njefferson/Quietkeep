@@ -76,7 +76,7 @@ jobs:
   # two jobs now: the one that publishes sets up no runtime and restores no
   # cache. Nothing is suppressed, so a finding from here on is a red step.
   hub-gates:
-    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@73ffa48c7bab3c1c45fec7d4aed523ed72f9ea6f
+    uses: njefferson/noahjefferson/.github/workflows/hub-gates.yml@9480bc607e890616ba30da55d8ef77e0c5031a37
     with:
       pwa: true
       mirror: true
