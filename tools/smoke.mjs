@@ -438,6 +438,11 @@ const routeThroughHub = async (pg) => {
 };
 
 const failures = [];
+// WHAT THE PAGE HELD WHEN THE WALK CRASHED (3.28.1). A red run in CI named only
+// the wait that timed out, never what was on screen or what the page had logged,
+// so the cause was guessed at. Every page the walk drives registers itself here
+// with the array its errors land in; the crash handler below reads them back.
+const crashEvidence = [];
 const ok = (m) => console.log(`  ok    ${m}`);
 const bad = (m) => { failures.push(m); console.error(`  FAIL  ${m}`); };
 const is = (actual, expected, what) =>
@@ -500,6 +505,7 @@ try {
   const pageErrors = [];
   page.on('pageerror', (e) => pageErrors.push(String(e)));
   page.on('console', (m) => { if (m.type() === 'error') pageErrors.push(m.text()); });
+  crashEvidence.push({ name: 'first page', pg: page, errors: pageErrors });
 
   // Wait for the APP, not for `load`. The module is still awaiting IndexedDB
   // when `load` fires, so asserting at that moment tests the gap, not the app.
@@ -1303,6 +1309,7 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   const tErrors = [];
   tpage.on('pageerror', (e) => tErrors.push(String(e)));
   tpage.on('console', (m) => { if (m.type() === 'error') tErrors.push(m.text()); });
+  crashEvidence.push({ name: 'touch page', pg: tpage, errors: tErrors });
   await tpage.goto(url, { waitUntil: 'load' });
   await tpage.waitForSelector('body[data-ready=true]');
   await tpage.click('#tour-skip');                   // dismiss the first-run walkthrough
@@ -9316,6 +9323,16 @@ const ready = () => page.waitForSelector('body[data-ready=true]');
   // the only record of it was a stack trace in the middle of the log.
   failures.push(`CRASHED — ${String((err && err.message) || err).split('\n')
     .slice(0, 3).join(' | ').slice(0, 400)}`);
+  // What each page held at the moment of the crash: its visible text cut to a
+  // few hundred characters, and every console error it logged. Reading a page
+  // that is already closed must never replace the crash line with another.
+  for (const { name, pg, errors } of crashEvidence) {
+    const text = await pg.evaluate(() => (document.body?.innerText ?? '').replace(/\s+/g, ' ').trim())
+      .catch(() => '(page could not be read)');
+    failures.push(`CRASH EVIDENCE, ${name}: text = ${JSON.stringify(String(text).slice(0, 300))}`);
+    failures.push(`CRASH EVIDENCE, ${name}: console errors = ${errors.length
+      ? errors.map((e) => String(e).replace(/\s+/g, ' ').slice(0, 200)).join(' || ') : 'none'}`);
+  }
 } finally {
   await browser.close();
   server.close();
