@@ -257,7 +257,9 @@ data to try the app on, a way to purge the whole set of tasks, and a way to
 select ranges rather than acting on everything or one thing.
 
 ~~Roadmapped, not built.~~ **ALL THREE ARE BUILT** — sample data (*Add some sample
-work*, *Make a set to try things on*), purging (*Clear what I'm holding*, with the
+work*, *Make a set to try things on*; **two sample sets exist**: the thirteen-item
+demonstration set in `src/sample.ts` and the large set in `src/big-sample.ts`, which since 3.28.2 also
+carries the weeks-ahead and roles-review states, record `docs/decisions/test-set-2026-11.md`), purging (*Clear what I'm holding*, with the
 copy-first step), and named ranges (sort mode, the standing "dates that have gone
 by" range, bulk acts through the real gate). **This line said "not built" until
 2026-08-17**, which is the same stale-prose defect this file records three times
@@ -2511,7 +2513,7 @@ a real one looks like, and the fixture was three-quarters filed until 2.32.0.
   right. Same shape as the `### Open` preamble that `questions.mjs` does not
   read. **A second statement of a fact a gate already guards is a second thing
   to maintain by hand, and it will lose.**
-- **https://staging.quietkeep.pages.dev** — **3.28.1** (3.28.0 with the roles list kept inside a narrow screen at the largest text; 3.28.0 was 3.27.1 with the review of roles): the Review door lists
+- **https://staging.quietkeep.pages.dev** — **3.28.2** (3.28.1 with *Make a set to try things on* grown, so the weeks ahead and the review of roles can be seen working on a store of a real size: four roles whose last acts lie 1, 6, 19 and 47 days back, three things drawn as a stretch, a day holding five, one more person waited on and three more captures, all invented and all dated from the moment of loading; no new event, the rule of the last act untouched, the thirteen-item set unchanged; record `docs/decisions/test-set-2026-11.md`, tests in `test/test-set.test.ts`. 3.28.1 was 3.28.0 with the roles list kept inside a narrow screen at the largest text; 3.28.0 was 3.27.1 with the review of roles): the Review door lists
   the roles that carry live work from the one longest since anything was done
   under it (`src/attended.ts`, `src/ui/review-roles.ts`), an order and not a
   finding: no threshold, no late state, no color, no count of roles. An act is a

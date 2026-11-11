@@ -1,6 +1,6 @@
 // A set with everything in it (1.16.0, ADR-0067).
 //
-// `src/sample.ts` is the DEMONSTRATION set: fourteen things, tidy, human, for
+// `src/sample.ts` is the DEMONSTRATION set: thirteen things, tidy, human, for
 // somebody trying the app out. This is a different act. It exists to be looked
 // at hard, on a real device, by somebody hunting for the places the app says
 // something wrong — so it is built out of the shapes that have historically
@@ -40,6 +40,7 @@
 
 import type { AppEvent, ClarifyRoute, NodeId } from './events.ts';
 import { SAMPLE_ARRIVAL } from './events.ts';
+import { compareEvents } from './fold.ts';
 import { MENU_CATEGORIES } from './menu.ts';
 import { deriveKey, KDF_ITERATIONS } from './journal.ts';
 import { seal } from './seal.ts';
@@ -356,9 +357,9 @@ export async function bigSampleEvents(
   const pick = <T>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!;
   const int = (lo: number, hi: number): number => lo + Math.floor(rand() * (hi - lo + 1));
 
-  const stamp = (kind: string, node: string | null, payload: unknown): AppEvent => {
+  const stamp = (kind: string, node: string | null, payload: unknown, at: string = ctx.at): AppEvent => {
     const e = {
-      id: ctx.id(), vault: ctx.vault, at: ctx.at, device: ctx.device, seq: ctx.seq(),
+      id: ctx.id(), vault: ctx.vault, at, device: ctx.device, seq: ctx.seq(),
       kind, node, payload,
     } as unknown as AppEvent;
     out.push(e);
@@ -1012,8 +1013,103 @@ export async function bigSampleEvents(
   for (const c of chain) stamp('today.chosen', c, { day: today });
   stamp('today.released', chain[2]!, { day: today });
 
-  return out;
+  // --- THE TEST SET'S GROWTH (3.28.2, docs/decisions/test-set-2026-11.md) ----
+  //
+  // Appended LAST and drawn from a stream of its own, so nothing above this line
+  // moves: every id, every seq and every draw before it is what it was.
+  //
+  // What it adds is what the two staged surfaces needed to be seen working at
+  // the size of a real store. Stretches drawn as length, one day holding more
+  // than the first screen shows, one more person waited on, and a few more
+  // captures still to sort; and four roles whose last acts lie at different
+  // distances back, so the roles review has an order to show and not one tied
+  // distance of nought days.
+  //
+  // PAST ACTS ARE WRITTEN WITH THEIR OWN TIME, through the same `role.attached`
+  // a real attach writes. Nothing is faked: the rule of the last act counts that
+  // event as it stands. Two consequences, both load-bearing. The role, its
+  // carrier and the carrier's clock are stamped BEFORE the act, because the fold
+  // orders by time and an attach ahead of its carrier would name nothing. And the
+  // batch is sorted into its own event order at the end, because `admit` refuses
+  // a batch that is not in (time, device, sequence) order.
+  const grown = rng(20_261_111);
+  const GROWTH_PERSON = people[Math.floor(grown() * people.length)]!;
+
+  for (const g of GROWTH_ROLES) {
+    const roleAt = day(-(g.back + 8));
+    const madeAt = day(-(g.back + 4));
+    const actAt = day(-g.back);
+    const roleId = ctx.id();
+    stamp('role.created', roleId, { name: g.name }, roleAt);
+    const carrier = ctx.id();
+    stamp('node.created', carrier, {
+      nodeKind: 'action', title: g.carrier, provenance: { for: 'self' },
+      arrival: SAMPLE_ARRIVAL,
+    }, madeAt);
+    stamp('clock.set', carrier, { clockKind: 'due', at: day(g.due), source: 'sample' }, madeAt);
+    stamp('role.attached', carrier, { node: carrier, role: roleId }, actAt);
+  }
+
+  // Things drawn as a stretch: a start and a due on one thing. One wholly ahead,
+  // one already begun, one that runs past the thirty days.
+  for (const s of GROWTH_STRETCHES) {
+    const id = node('action', s.title);
+    clock(id, 'start', s.start);
+    clock(id, 'due', s.due);
+  }
+
+  // One day carrying more than the first screen shows (it shows three).
+  for (const t of GROWTH_CROWDED_DAY) {
+    clock(node('action', t), 'due', GROWTH_CROWDED_OFFSET);
+  }
+
+  // One more person waited on, with a date the answer is due.
+  const hallReply = node('waiting-for', 'The reply about the hall booking');
+  stamp('person.linked', hallReply, { node: hallReply, person: GROWTH_PERSON, relation: 'waiting-on' });
+  stamp('waiting.opened', hallReply, { person: GROWTH_PERSON, forWhat: 'a yes or a no', since: day(-5) });
+  clock(hallReply, 'suspense', 4);
+
+  // And a few captures still to sort.
+  for (const text of GROWTH_CAPTURES) {
+    stamp('capture.recorded', ctx.id(), { text, source: 'sample' });
+  }
+
+  // The batch in its own event order. Everything before the growth shares one
+  // time, so for those events this changes nothing.
+  return out.sort(compareEvents);
 }
+
+/**
+ * The roles the test set adds, each with the thing that carries it and how many
+ * days back the link to it was written. The distances differ on purpose; the
+ * three roles above this file's growth all have a last act of nought days.
+ */
+export const GROWTH_ROLES: readonly { name: string; carrier: string; back: number; due: number }[] = [
+  { name: 'The reading group', carrier: 'Finish the book for the next meeting', back: 1, due: 3 },
+  { name: 'Volunteering at the library', carrier: 'Check the rota for the Saturday shift', back: 6, due: 8 },
+  { name: 'The village hall committee', carrier: 'Send round the minutes from the last meeting', back: 19, due: 14 },
+  { name: 'Evening classes', carrier: 'Sign up for the spring term', back: 47, due: 26 },
+];
+
+/** Things with both a start and a due, in days from now. */
+export const GROWTH_STRETCHES: readonly { title: string; start: number; due: number }[] = [
+  { title: 'Get the spare room ready for visitors', start: 2, due: 12 },
+  { title: 'Plan the autumn planting', start: -4, due: 21 },
+  { title: 'Learn the new phone properly', start: 9, due: 44 },
+];
+
+/** The day, in days from now, that holds more than three things. */
+export const GROWTH_CROWDED_OFFSET = 5;
+export const GROWTH_CROWDED_DAY: readonly string[] = [
+  'Collect the framed print', 'Book the table for Saturday', 'Renew the bus pass',
+  'Water the neighbors’ plants', 'Buy a birthday card',
+];
+
+export const GROWTH_CAPTURES: readonly string[] = [
+  'Find out when the library rota changes (somebody mentioned it)',
+  'Look at the evening class timetable (off the noticeboard)',
+  'Note down the hall booking dates (saw it in passing)',
+];
 
 export interface BigSampleSummary {
   events: number;

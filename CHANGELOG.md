@@ -14,6 +14,14 @@ triplet and what it did for you.
 > Generated from `src/ui/changelog.ts`, which is what the app itself shows in
 > its (i) panel. Edit that, then run `npm run changelog`. Don't edit this file.
 
+## 3.28.2 — ITERATION
+
+*2026-11-11*
+
+- **The set to try things on now shows the weeks ahead and the list of roles working.** It has things drawn between two dates, a day with more on it than fits, someone you are waiting on, more captures still to sort, and four roles whose last activity lies one, six, nineteen and forty-seven days back. All of it is invented, and every date is counted from the moment you make the set.
+- **Nothing else about the set changed.** It is made and brought in the same way, it still replaces what is on the device after you save a copy of your own, and the small set of sample work is as it was.
+- **Still not right:** the set shows whether these two parts work on a store of a real size. It cannot show whether they help you through a day, which only a real day shows. A role with live work and no activity on record cannot be made by any set, so that case is not shown.
+
 ## 3.28.1 — ITERATION
 
 *2026-11-03*
