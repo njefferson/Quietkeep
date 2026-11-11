@@ -84,7 +84,8 @@ jobs:
       zizmor: true
 
   test:
-    runs-on: ubuntu-latest
+    # Pinned on 11 November: the moving image became Ubuntu 26.04, where the pinned Playwright refuses to install chromium.
+    runs-on: ubuntu-24.04
     # A GATE WITH NO ANSWER IS NOT A GATE, and the default here is SIX HOURS.
     #
     # A healthy run of this job is about twenty minutes. Left at the default, a
