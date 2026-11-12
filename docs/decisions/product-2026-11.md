@@ -132,7 +132,7 @@ Each line names the ledger entries it rests on. Where the firmest entry behind a
 
 ## The screen
 
-One surface holds everything, in one fixed order of parts. Above the middle the order follows what the notes ask for, what matters on top, with S1, S4 and H2; below it the order is judgement.
+One surface holds everything, in one fixed order of parts. Above the middle the order follows what the notes ask for, what matters on top, with S1, S4 and H2; below it the order is judgment.
 
 1. The line. One field, first, always on the screen, and beside it a control that finds any held thing by its words. (K1, S4, D1, D4)
 2. The proof. One line beside the line: everything put down is held. It opens to where everything is and when each thing comes back, in groups whose counts sum to the whole, and it is never narrowed. (K3)
@@ -179,7 +179,7 @@ A late mark, a score, a streak, a percentage, or any count of what was done or o
 
 ## What no finding settles
 
-Each of these is judgement and is built so that it can be reversed: that the width is one control with four positions, and their names; that starting a thing turns the width to One thing; the numbers, two at Now, seven days and thirty; the order of parts 5 to 9; roles as the first grouping of part 8; marking what moved in place as well as at the head; and giving the meeting's account as a narrowing of part 6.
+Each of these is judgment and is built so that it can be reversed: that the width is one control with four positions, and their names; that starting a thing turns the width to One thing; the numbers, two at Now, seven days and thirty; the order of parts 5 to 9; roles as the first grouping of part 8; marking what moved in place as well as at the head; and giving the meeting's account as a narrowing of part 6.
 
 ## What stays unmeasured
 
