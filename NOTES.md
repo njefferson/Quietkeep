@@ -111,6 +111,10 @@ decision. It is honest and it is bounded, and it is still the nearest thing in
 this app to the headline the failure above begins with. Worth watching on a real
 long absence, which has not happened yet.
 
+### The product, stated whole, 2026-11-12
+
+The record of that name under the decisions folder, `docs/decisions/product-2026-11.md`, states what the product is as one store seen at four widths. It governs where an earlier plan of record differs about what the product is. Every tie in it is a quotation of its source, checked against the source by script. The first design brief was never committed.
+
 ---
 
 ## The ten product laws (invariants)
