@@ -1,10 +1,7 @@
 #!/bin/bash
-# Printed into every session. Everything it says was already written down and
-# none of it was being read — see noahjefferson/session-brief.mjs for why.
-#
-# The hub may not be checked out beside this repo. The brief SAYS SO when it is
-# missing rather than staying quiet, which is the whole point: a session that
-# does not know the doctrine could not be checked must not assume it was.
+# Prints the session brief. Runs the hub's session-brief.mjs and
+# branch-guard.mjs --install from /root/.claude/hub, and says so when the hub
+# is absent.
 set -uo pipefail
 cd "${CLAUDE_PROJECT_DIR:-$(dirname "$0")/../..}" || exit 0
 # IS THIS CLONE THE ONE ON THE REMOTE? (3.0.1)
@@ -32,16 +29,14 @@ if [ -n "$BR" ]; then
   fi
 fi
 
-if [ -f ../noahjefferson/session-brief.mjs ]; then
-  node ../noahjefferson/session-brief.mjs --repo . 2>/dev/null || true
-  node ../noahjefferson/branch-guard.mjs --repo . --install >/dev/null 2>&1 || true
+if [ -f /root/.claude/hub/session-brief.mjs ]; then
+  node /root/.claude/hub/session-brief.mjs --repo . 2>/dev/null || true
+  node /root/.claude/hub/branch-guard.mjs --repo . --install >/dev/null 2>&1 || true
 else
   echo "=== session brief · Quietkeep ==="
   echo ""
   echo "BRANCH: on $(git symbolic-ref --short HEAD 2>/dev/null || echo '(detached)'). Work commits to 'staging'; 'main' is production."
   echo ""
-  echo "THE HUB IS NOT CHECKED OUT beside this repo, so the doctrine, the cross-app"
-  echo "LESSONS record and the repo map are ALL UNAVAILABLE this session. Nothing has"
-  echo "verified that this repo is current with any of them. Say so rather than"
-  echo "assuming, and do not claim a hub gate ran."
+  echo "THE HUB IS NOT INSTALLED at /root/.claude/hub, so nothing guards a push in this session."
+  echo "Say so before any work, and commit and push nothing until the owner has answered."
 fi

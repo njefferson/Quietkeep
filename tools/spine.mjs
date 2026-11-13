@@ -141,7 +141,7 @@ for job in d.get('jobs', {}).values():
         # IT READS THE LOCAL HUB, WHICH MAY BE AHEAD OF THE PIN, and that is a
         # superset rather than a gap: a gate the pin does not have yet runs here
         # early. hub-pin-check.mjs is what holds the pin itself honest.
-        hub = '../noahjefferson/.github/workflows/hub-gates.yml'
+        hub = '/root/.claude/hub/.github/workflows/hub-gates.yml'
         try:
             hg = yaml.safe_load(open(hub))
         except Exception as e:
@@ -182,7 +182,7 @@ for job in d.get('jobs', {}).values():
             else:
                 args = args.replace('--repo app', '--repo .').replace('"app/$DOCS_PATH"', '.')
             entry = {'name': name + ' (hub)',
-                     'run': 'node ../noahjefferson/' + m.group(1) + (' ' + args if args else ''),
+                     'run': 'node /root/.claude/hub/' + m.group(1) + (' ' + args if args else ''),
                      'uses': '', 'if': ''}
             if keep is None:
                 entry['unreadable'] = 'its condition (%s) is not one this reads' % st.get('if')
@@ -214,10 +214,10 @@ const cannot = (s) => {
   // The hub gates used to be steps here running `.hub-gates/...`, a path that
   // only exists on a runner, so they were listed as un-runnable and left to
   // somebody to remember. They are a called workflow now, and the reader above
-  // synthesises them back as `../noahjefferson/...` — the command a session
+  // synthesises them back as `/root/.claude/hub/...` — the command a session
   // actually runs — so they are RUN here rather than named. The rule stays for
   // any step that still spells the CI-only path.
-  if (/\.hub-gates/.test(s.run)) return 'runs the hub gates from a CI-only checkout — run them from ../noahjefferson';
+  if (/\.hub-gates/.test(s.run)) return 'runs the hub gates from a CI-only checkout — run them from /root/.claude/hub';
   return null;
 };
 

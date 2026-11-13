@@ -151,7 +151,7 @@ console.error(
     'means those gates go\n' +
     'green while running checks that never heard of the rules this repository has\n' +
     'already adopted. Move them together:\n\n' +
-    '  node ../noahjefferson/doctrine-sync.mjs --repo . --adopt\n' +
+    '  node /root/.claude/hub/doctrine-sync.mjs --repo . --adopt\n' +
     '  then move the hub-gates.yml pin in the calling workflow to the same commit\n',
 );
 process.exit(1);

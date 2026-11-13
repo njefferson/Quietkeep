@@ -1,5 +1,7 @@
 # CLAUDE.md — Quietkeep
 
+Read the short page first, at /root/.claude/hub/plans/native/page.md. If that file is absent, the hub is not installed in this session: say so before any work, and commit and push nothing until the owner has answered.
+
 ## Facts first
 
 What a session gets wrong from its prior about this app, each with what fails when it is broken.
@@ -15,457 +17,115 @@ What a session gets wrong from its prior about this app, each with what fails wh
 - Nothing about the owner's person lands in any file. Fails: `test/privacy.test.ts` and the hub's privacy, quote and third-person gates.
 - Every assisted flow has an offline rung, and a cloud rung needs consent naming what leaves the device; a general-population finding never overrides a refusal that rests on a finding about this audience. Held by the review alone.
 
-> **Inherits the Universal App Doctrine** — the canonical copy lives in the hub
-> repo at [`njefferson/noahjefferson/DOCTRINE.md`](https://github.com/njefferson/noahjefferson/blob/main/DOCTRINE.md).
-> It is the single source of truth for the rules shared across all of the owner's
-> apps: product values, taste, accessibility, honesty, verification, release
-> discipline & taxonomy, licensing (PolyForm Noncommercial), privacy, the
-> permanent **AskUserQuestion ban** (§0), and the **repo-metadata confirm rule**
-> (§10). **Where anything below overlaps the Doctrine, the Doctrine wins.** This
-> file keeps only what is specific to this repo. Never fork the doctrine here —
-> link to it. The cross-app [`LESSONS.md`](https://github.com/njefferson/noahjefferson/blob/main/LESSONS.md)
-> lives in the hub too; append to it from this repo's sessions, never copy it.
-
 ## What this repo is
-**Quietkeep** — a free, local-first planner for neurodivergent users, designed
+**Quietkeep** is a free, local-first planner for neurodivergent users, designed
 against a *condition* rather than a diagnosis: low capacity, high demand,
 interruption, and engagement that varies. Neurodivergent people are who meet
 that condition most often and most severely, which is why the design aims there
-and why the refusals are absolute. Static PWA, no accounts, no telemetry, no
-server-side user data. Deployed to Cloudflare Pages.
+and why the refusals are absolute. It is a static PWA with no accounts, no
+telemetry and no server-side user data, deployed to Cloudflare Pages.
 
-**Naming the condition is what makes whole literatures legitimately applicable** —
+Naming the condition is what makes whole literatures legitimately applicable:
 cognitive aids, structured handover, high-reliability work, distributed
-cognition — none of which is reachable from a diagnosis alone, and all of which
+cognition. None of them is reachable from a diagnosis alone, and all of them
 bear on the design (`docs/planning-for-humans.md` §10b).
 
 Tagline: *"Out of sight. Never out of mind."*
 Epigraph: *"It holds the rest, so you can rest."*
 
+A second edition, **Quietkeep Sync**, is built from the same tree by
+`tools/editions.mjs`. The four deploy addresses:
+- quietkeep.pages.dev (production)
+- staging.quietkeep.pages.dev
+- quietkeep-sync.pages.dev (production, Sync)
+- staging.quietkeep-sync.pages.dev
+
 ## Read these first, in this order
-1. [`NOTES.md`](NOTES.md) — the repo source of truth: thesis, the ten product
-   laws, the frozen v1 scope, open questions, Project facts.
-2. [`docs/adr/`](docs/adr/) — every settled architectural decision, one per file.
-3. [`docs/event-vocabulary.md`](docs/event-vocabulary.md) — the complete event
-   noun list. **All application state folds from this.** Nothing is stored that
-   is not an event named here.
-4. [`docs/verifications.md`](docs/verifications.md) — what has actually been
-   checked and what merely looks checked. Consult before assuming a platform fact.
-5. [`docs/code-map.md`](docs/code-map.md) — **the shape of the source, for
-   somebody who has never opened it.** Event → fold → gate → projection →
-   surface, which files hold each, and how to answer the four questions a
-   newcomer actually has. It exists because this codebase carries 0.87 comment
-   lines per line of code and almost every one of them is an INCIDENT HISTORY
-   addressed to a reader who is already oriented — invaluable when changing a
-   thing, useless for finding it. The map is the only document here whose job
-   is *what the shape is* rather than *what went wrong*, and it stops being
-   that the moment it starts collecting incidents.
-
-## The clone rolls back. Expect it; do not report it.
-
-**This container reverts both clones to an earlier commit, repeatedly, without
-warning.** It is a property of the box, not an incident. It has been narrated to
-the owner as a discovery more than once and that is the thing to stop.
-
-So it is a PRECONDITION, like `npm ci`. At the start of any turn that will touch
-the tree, and again after anything that took ten minutes:
-
-    git fetch origin staging && git reset --hard origin/staging
-    git -C ../noahjefferson fetch origin main && git -C ../noahjefferson reset --hard origin/main
-
-Say nothing about it unless it actually cost something — work lost, or a walk
-that measured the wrong tree. "Rolled back again, as expected" is still
-narrating it.
-
-**What follows for the work, and it is the whole reason this matters: PUSH
-BEFORE ANYTHING LONG.** Edit, commit, push, and only then start a walk. The
-browser walks are eight to fourteen minutes and are exactly what the revert
-lands in the middle of; a release has been lost that way twice in one session.
-Receipts get committed the moment their walk goes green, as their own commit,
-rather than banked to the end.
-
-**And a stale hub clone lies about this repo.** `branch-guard --artefact` and
-`third-person-check` both fail for reasons that are not this tree's when
-`../noahjefferson` has reverted — the first compares against a hook generated
-from whatever hub you have, the second needs a file that older hubs do not
-carry. Check its HEAD against its remote before believing either.
-
-**NEVER ESTIMATE HOW FAR BACK IT WENT — READ THE DATE.** A session reported a
-tree "four months behind" when the gap was eleven days and this repo was
-thirty-four days old, because it converted nineteen releases into calendar time.
-`git log -1 --format=%cd` costs nothing. (Hub LESSONS 75.)
-
-## The credit is the owner's money (Doctrine §11b)
-A session cannot see billing, the plan, the balance, or what a turn cost, so no
-warning will ever arrive and the restraint is unconditional. **This repo is the
-expensive one** — the a11y walk, the smoke walk, `look`, `tour-shots` and the
-update walk each drive a real browser, and the full Spine is minutes of compute.
-Run the narrowest thing that answers the question (`--only=`, one grep, one
-`sed -n` range), re-render only what changed, and **say what a long run will
-cost before starting it**. *Continue* resumes the work in front of you; it is
-not authority to start a sweep of your own. Mechanical work — find-and-replace,
-classifying a list against a stated rule, running a gate and reporting its exit
-code — goes to a cheaper model in a subagent. Top tier is for judgment.
-
-## An approved plan is authority for all of it (Doctrine §11c)
-Finishing one phase of a multi-phase plan and going idle to be told to continue
-is doing a fraction of what was asked. **Report what landed and start the next
-piece in the same turn.** If you genuinely must stop, the FIRST line says so in
-those words — *stopping here, waiting on you for X* — because "I'll hold" at the
-end of a long report reads as "I am continuing", and the silence gets discovered
-by being asked what happened. It happened three times in one session, twice
-after the behavior had been ruled out. This does not license a sweep of your
-own: §11b still binds, and the authority is the plan's remaining phases.
-
-**It is enforced by the harness now, because the paragraph did not hold.** It
-was broken a fourth time by the session that wrote it, on the sentence "I'm
-waiting on it". `.claude/hooks/stop-guard.sh` runs the hub's `stop-guard.mjs`
-as a `Stop` hook and REFUSES a turn that ends while saying something is still
-running without opening with the declaration. Wait for the thing and carry on;
-that is the way past it, and it is the one that was wanted all along.
-
-## Rules specific to this app
-- **THE CONDITION FRAMING WIDENS WHAT MAY BE RESEARCHED. IT NEVER RELAXES A
-  REFUSAL.** This is the hazard that arrives with the framing above, and it is
-  written here because it will not announce itself. The moment the frame reads
-  as *people under load*, ordinary productivity research becomes reachable — and
-  that literature is built on streaks, gamification, priority ranking, nudges
-  and completion metrics, every one of which this app structurally may not do.
-  A session will eventually arrive holding real evidence for a thing that is
-  refused here, and it will look like diligence.
-  **So: a general-population finding may inform a design; it may never override
-  a refusal that rests on a finding about this audience.** Where the two
-  conflict, the narrower finding governs. The reason is arithmetic rather than
-  loyalty — **a general-population result is averaged over people for whom the
-  failure is cheap**, and every refusal here exists because this is where the
-  cost is largest and least recoverable. An intervention that is positive on
-  average can be negative exactly where this app lives, and the average will
-  never show it.
-  **The test, before citing anything from a general literature: would this
-  finding have been measured on people for whom the failure it prevents is
-  expensive?** If not, it is background, not grounds.
-- **NOTHING PERSONAL ABOUT THE OWNER EVER LANDS IN THIS REPO — a FAIL state**
-  (the owner's instruction, 2026-08-04). No diagnosis, health fact, or identity
-  disclosure attached to the owner, in any file, commit message, or PR body. The product's framing ("for neurodivergent users") and research
-  about users as a population are fine; a sentence linking THE OWNER to any of it is
-  not. A HARD gate per Doctrine §9b, twice over: the Spine checks the hub out
-  and runs the canonical `privacy-check.mjs` (a pattern widened in the hub
-  binds here on the next push, with no copy to drift), and
-  `test/privacy.test.ts` mirrors the patterns so plain `npm test` fails
-  offline too. Design statements the owner makes stay recordable; who the owner
-  is does not.
-- **The ten product laws in `NOTES.md` are invariants.** Violating one is a
-  defect, not a trade-off. Two carry teeth in code: *no silent nodes* (every node
-  is on a surface, under a clock, on the Menu, or parented to something under a
-  clock — the write boundary refuses anything else) and *no past bucket* (a
-  passed date auto-converts to a present replan card; there is no archive state).
-- **No "overdue" anywhere** — not in the schema, not in a variable name, not in
-  copy. One decay primitive `(last_done, comfort_window, rising pressure)` runs
-  everything temporal. No streaks, ever.
-- **Data is never lost to updates.** Append-only log, state = fold(log),
-  migrations additive-only, auto-export a snapshot before any migration, import
-  always seeds a fresh store and never merges.
-- **AI never blocks.** Every assisted flow has a working offline rung. Cloud
-  rungs require explicit consent naming exactly what leaves the device.
-- **Never use the GTD®/Getting Things Done® marks.** Trigger-list content must be
-  original — the published lists are copyrighted.
-- **Voice:** adult, calm, shame-free, civilian. No military vocabulary in naming
-  or brand copy. Never childlike or mascot-cute. No diagnosis-flavored copy, no
-  sentiment scoring, no cause attribution.
-- **No spiral. Anywhere.** Not in the identity, not in a loading state, not in an
-  illustration. **A spiral is loss of control and it is anxiety-laden** — it is the
-  shape of tightening inward with no way out, and it names the condition this app
-  meets people in. It belongs beside *no red walls* and *no streaks* as something
-  the product structurally cannot say ([ADR-0025](docs/adr/0025-visual-identity.md)).
-- **The voice rules bind the artwork, not only the words.** Check a mark against
-  the audience's own vocabulary, not only against other logos. "Does this look like
-  something else" is a collision check, and it is a lesser question than "what does
-  this mean to the people who will use it".
-- **Storage is IndexedDB via Dexie.** `localStorage` is banned outright.
-
-## Never relay the export warning when reading a diagnostic back
-The report leads with **"No copy has ever left this device"** whenever there is
-no export. That line is for a READER of the app. It is not news to the person
-building it, who is testing on throwaway stores and knows exactly what clearing
-site data does.
-
-Repeating it is nagging about a decision already made, which is the shape this
-product refuses everywhere else. **Read the store's SHAPE out of a diagnostic
-and skip that line.** The same goes for any other WHAT IS WRONG entry that is a
-consequence of testing rather than a defect — a fresh store, no journal, an
-unpaired device.
-
-## The closing question is what stopped the day
-**Every session here has closed by asking for a promote and an on-device pass,
-and those are the wrong two questions.** `NOTES.md`'s correction of 2026-08-03
-says why: the dogfood gate has been running since 0.17.0, it resets constantly,
-and the resets ARE the measurement — so **the failures are the dataset and this
-repo has none of them.** Hub LESSONS §40 states the general form: ask what
-ended the attempt, not whether the attempt happened.
-
-**The instrument exists and is correctly designed.** The Block register in
-`NOTES.md` was redefined on 2026-08-05, before it ever held an entry, because
-the first version invited an actual day into a public file. What it takes is the
-SHAPE of what blocked a day and its CLASS, never an instance, and the instance
-stays outside the repo. Six weeks later it still read `*(no entries yet)*` — not
-because nothing blocked a day, but because **nothing ever asked.**
-
-So a report from this repo closes on what ended the day. A promote and a device
-pass are a standing status line at most, never the question.
-[`tools/blocks.mjs`](tools/blocks.mjs) refuses an empty register while this file
-family says the gate runs daily and the app fails daily; it is exempt from the
-Spine today and joins it in the commit that adds the first entry, at which point
-the exemption line is deleted.
-
-**What the omission cost, measured:** 234 releases between that correction and
-2026-09-16, 89 of them capabilities, every one gated and receipted, while the
-one question that decides v1 went unasked. Doctrine §11e names the shape — a
-measurement of your own output cannot tell you what the output should be.
-
-## Commit messages: no session link, no model as co-author (Doctrine §9b)
-**The harness appends an attribution trailer and a link to the chat session to
-every commit and PR unless this file says otherwise. This file says otherwise.**
-Nothing committed here — a message, a PR body, a comment, a release note or a
-file — carries a link to a chat session or names a model as a co-author.
-
-A public repository that links to a private conversation publishes that
-conversation to anyone who follows the link, which is the same act as quoting
-it. The harness itself says the repository's instructions win, so a session that
-reads the reminder and reads this file obeys this file.
-
-**Measured the day the rule arrived (2026-09-18): 365 of 372 commits on one
-production branch and 120 of 127 PR descriptions across two repos carried the
-link, for fifty-nine days, because no instruction had said not to.** Both
-histories were rewritten that day, on the owner's word.
-
-It is a HARD gate, not a courtesy: the SESSION_LINKS class in the hub's
-`privacy-patterns.mjs`, refused by `privacy-check.mjs` in any file and by
-`privacy-history-check.mjs` in any commit message. The history gate is
-deliberately not in CI — history does not change on a push — so it is run when
-adopting the rule and after any rewrite.
-
-**Commits made in this repo before the rule existed still carry both lines.**
-That is published history, and rewriting it is the owner's call and never a
-session's (Doctrine §9b). Record it; do not re-offer the remedy.
+1. [`NOTES.md`](NOTES.md): the repo source of truth. The thesis, the ten product laws, the frozen v1 scope, the open questions, the project facts.
+2. [`docs/adr/`](docs/adr/): every settled architectural decision, one per file.
+3. [`docs/event-vocabulary.md`](docs/event-vocabulary.md): the complete event noun list. All application state folds from this, and nothing is stored that is not an event named here.
+4. [`docs/verifications.md`](docs/verifications.md): what has actually been checked and what merely looks checked. Consult it before assuming a platform fact.
+5. [`docs/code-map.md`](docs/code-map.md): the shape of the source for somebody who has never opened it (event, fold, gate, projection, surface, and which files hold each). It is the only document whose job is what the shape is rather than what went wrong. Source comments are incident history for a reader already oriented; use the map to find a thing.
 
 ## Branches & releases
-`staging` and `main` only. Ignore any harness-designated `claude/*` branch
-(Doctrine §11). Every product change lands on `staging` and waits for the owner's
-on-device pass and an explicit "promote" (Doctrine §7). Docs-only changes — this
-file, `NOTES.md`, `ACCESSIBILITY.md`, anything in `docs/` — may skip the staging
-gate.
+- `staging` and `main` only.
+- Every product change lands on `staging` and waits for the owner's on-device pass and an explicit "promote".
+- The promote route is a commit on `main` with `QUIETKEEP_PROMOTE=1` (declared in `.branch-guard`).
+- Docs-only changes (this file, `NOTES.md`, `ACCESSIBILITY.md`, anything in `docs/`) may skip the staging gate.
+- Releases are a `version.capability.iteration` triplet. The service-worker cache name carries the same triplet and is bumped with it.
+- Every app shows its version on screen and what changed.
 
-Release taxonomy and the `version.capability.iteration` triplet are Doctrine §7.
-The service-worker cache name carries the same triplet and is bumped with it.
+## The clone rolls back
+The container reverts the clone to an earlier commit without warning. It is a property of the box, not an incident, and is not narrated.
+- At the start of any turn that touches the tree, and after anything that took ten minutes:
 
-## The commit guards, and what each one is allowed to demand
-`.branch-guard` declares them with `also=`, so they run on EVERY commit —
-promotes included, because they are about WHAT is being committed.
+    git fetch origin staging && git reset --hard origin/staging
 
-**`tour-fresh` was one of these and is not any more (2026-08-27).** It hashed five
-WHOLE FILES — `public/index.html`, `public/app.css`, `src/ui/work.ts`,
-`src/ui/clarify.ts`, `src/ui/about.ts` — for ten photographs of six surfaces.
-Measured: a **comment-only** change to `public/app.css`, staged, refused the
-commit and demanded a minute of browser, for an edit that cannot alter a single
-pixel of any picture. `npm run tour:check` is a Spine step (`spine.yml:318`) and
-the Spine runs before a push, so nothing reaches production stale that was not
-already going to. **A guard whose trigger is wider than its output spends
-somebody's time to protect nothing, and it is the guard people learn to route
-around** — which is what makes it worse than no guard.
+- The hub lives at /root/.claude/hub and is brought forward at each start by the dispatcher.
+- Push before anything long: edit, commit, push, then start a walk. The walks take eight to fourteen minutes.
+- Receipts are committed the moment their walk goes green, as their own commit.
+- Never estimate how far back it went. Read `git log -1 --format=%cd`.
 
-**`escape-also=QUIETKEEP_DEFER` is the named way past what remains.** Not
-because the checks are optional, but because without a named door the door is
-`--no-verify`, and that switches off the BRANCH rule too. It prints what it
-deferred, and both remaining checks are also CI steps, so it moves WHEN the work
-happens and never WHETHER.
+## What this repo's own hooks run
+- `.claude/hooks/session-start.sh`: the stale-clone check, then the hub's `session-brief.mjs` and `branch-guard.mjs --install` from /root/.claude/hub. It says so when the hub is absent.
+- `.claude/hooks/plan-guard.sh`: a shim to the hub's `plan-guard.mjs`, which refuses the choice popup and passes every other call.
+- `.claude/hooks/stop-guard.sh`: a shim to the hub's `stop-guard.mjs`, kept at its path, which never refuses a stop.
+- The commit guards. `.branch-guard` declares `work=staging`, `promote=main`, `escape=QUIETKEEP_PROMOTE`, and `also=` checks that run on every commit:
+  - `tools/hooks/a11y-fresh.sh`: refuses a commit that changes the rendered app while `.a11y-stamp` records the previous markup. Lenient on `staging`, a refusal only on `main`. `npm run a11y` writes the receipt, only on a clean run, in about four minutes.
+  - `tools/hooks/branch-state.sh`.
+  - `tools/hub-pin-check.mjs`: the hub commit is written in two places, the marker and the `uses:` pin in `.github/workflows/spine.yml`, and they move together.
+- `escape-also=QUIETKEEP_DEFER` is the named way past those checks. It prints what it deferred, and both checks are also CI steps, so it moves when, never whether.
+- The tracked `.githooks/` files are generated by the hub's `branch-guard.mjs --install` and are never edited by hand.
+- The commit-msg hook refuses a chat link, an attribution trailer or a model's name. The harness appends a trailer and a session link unless the repository's instructions say otherwise: this file says otherwise, and nothing committed here carries either. Commits before 2026-09-18 still carry both. That is published history and the owner's call; it is recorded here and not re-offered.
 
-- **`tools/hooks/a11y-fresh.sh`** — a commit that changes the rendered app while
-  `.a11y-stamp` still records the previous markup is refused. **2.23.1 passed
-  twenty-five static gates and both picture-taking walks and went RED in CI on
-  the a11y walk**, which had never been run locally because nothing asked for
-  it. `npm run a11y` writes the receipt itself, and only on a clean run, so a
-  failing walk cannot be stamped. About four minutes. (Hub LESSONS 126.)
+## The checks before a push
+- `npm run spine` reads `.github/workflows/spine.yml` and runs every step on this machine, in order. It takes about eight minutes, most of it three browser walks. Options: `--list`, `--only <name>`, `--from <n>`. It keeps going past a failure and prints the verdict last.
+- `npm run spine -- --parity` asserts that every `package.json` script is run by a workflow or declared in `.spine-exempt` with a reason, in both directions.
+- The steps it prints as CI-only are run separately. The hub gates run from /root/.claude/hub.
+  - `privacy-check`, `privacy-mirror-check`, `quote-check` and `branch-guard` take `--repo .`.
+  - `docs-check` takes a positional path (`node /root/.claude/hub/docs-check.mjs .`) and dies on `--repo`.
+  - `branch-guard` is run the way CI runs it, `--repo . --artefact`, which asserts the tracked `.githooks/pre-commit` matches `.branch-guard`. Plain `--repo .` checks only this clone's `.git/hooks`.
+- This repo is the expensive one. The a11y walk, the smoke walk, `look`, `tour-shots` and the update walk each drive a real browser. Run the narrowest thing that answers the question and re-render only what changed.
+- Privacy: CI checks the hub out and runs the canonical `privacy-check.mjs`. `test/privacy.test.ts` mirrors the patterns so plain `npm test` fails offline too. Prove a gate with a local plant, never a pushed one.
+- The help gates:
+  - `manual.mjs --check` proves `public/manual.html` matches `docs/manual.md`.
+  - `manual-coverage.mjs` proves every surface the app has is named there.
+  - `tools/help-check.mjs` (`npm run help:check`) reads each app set from the source that defines it (sort routes from `clarify.ts`, container words from `tree.ts`, kind words from `kind-words.ts`, destinations and the tree label from `index.html`) and holds each help surface to the sets it declares, in both directions. It also asserts that every page the app links to is precached, from the links.
+  - An old name a page still mentions is wrapped in `<span data-was>`, per mention.
+- The flowcharts: `docs/paths.html` is the source. `public/paths.html` and `public/paths.css` are the shipped page, split by `tools/paths.mjs` and gated by `paths:check`, because the CSP is `style-src 'self'; font-src 'self'` and the source carries no webfont. They are linked from Help, not the footer.
+- `tools/pages-a11y.mjs` (`npm run pages:a11y`) measures every hosted page the app links to, only when one changes. Each is stamped in `.pages-a11y-stamp`, and the walk runs under the real headers. The population is derived from `index.html`. `plan.html` is `noindex` and linked from nowhere. Inline citation links are exempt under WCAG 2.5.8.
+- The deployed host: `tools/deployed-check.mjs` (`npm run deployed:check`, `-- --prod`) reads what the host serves and compares it to the tree. An unreachable host is a SKIP, never a failure, so it is not a Spine step. Node's `fetch` needs `NODE_USE_ENV_PROXY=1` at startup, so the tool re-execs itself. A 200 proves nothing, because Cloudflare serves the root document for any unknown path, so it compares against the host's own root document.
 
-Note it is **lenient on `staging` and refuses only on `main`** — a note there,
-a refusal at the promote. That is worth knowing before diagnosing which guard is
-costing you something: on work commits it has never been the one.
+## Rules specific to this app
+- **The condition framing widens what may be researched. It never relaxes a refusal.** Ordinary productivity research is built on streaks, gamification, priority ranking, nudges and completion metrics, all of which this app structurally may not do. A general-population finding may inform a design; it may never override a refusal that rests on a finding about this audience, and where the two conflict the narrower finding governs. A general-population result is averaged over people for whom the failure is cheap. The test before citing anything: would this finding have been measured on people for whom the failure it prevents is expensive? If not, it is background, not grounds.
+- **Nothing personal about the owner ever lands in this repo.** No diagnosis, health fact or identity disclosure attached to the owner, in any file, commit message or PR body. This is a FAIL state, gated twice: the hub's `privacy-check.mjs` in CI, and `test/privacy.test.ts` under plain `npm test`. The product's framing and research about users as a population are fine. Design statements the owner makes stay recordable; who the owner is does not.
+- **The ten product laws in `NOTES.md` are invariants.** Violating one is a defect, not a trade-off. Two carry teeth in code: no silent nodes (every node is on a surface, under a clock, on the Menu, or parented to something under a clock, and the write boundary refuses anything else) and no past bucket (a passed date auto-converts to a present replan card; there is no archive state).
+- **No "overdue" anywhere**: not in the schema, a variable name or copy. One decay primitive, `(last_done, comfort_window, rising pressure)`, runs everything temporal. No streaks, ever.
+- **Data is never lost to updates.** Append-only log, state = fold(log), additive-only migrations, an auto-export of a snapshot before any migration, and import always seeds a fresh store and never merges.
+- **AI never blocks.** Every assisted flow has a working offline rung. Cloud rungs require explicit consent naming exactly what leaves the device.
+- **Never use the GTD or Getting Things Done marks.** Trigger-list content must be original, because the published lists are copyrighted.
+- **Voice:** adult, calm, shame-free, civilian. No military vocabulary in naming or brand copy. Never childlike or mascot-cute. No diagnosis-flavored copy, no sentiment scoring, no cause attribution.
+- **No spiral anywhere**: not in the identity, a loading state or an illustration. A spiral is loss of control and is anxiety-laden; it is the shape of tightening inward with no way out. It belongs beside no red walls and no streaks as something the product structurally cannot say ([ADR-0025](docs/adr/0025-visual-identity.md)).
+- **The voice rules bind the artwork, not only the words.** Check a mark against the audience's own vocabulary, not only against other logos. "What does this mean to the people who will use it" is the larger question than "does this look like something else".
 
-They name the one command instead of spending minutes inside a hook, because a
-hook that silently spends four minutes is a hook somebody disables.
+## Reading a diagnostic back
+The report leads with "No copy has ever left this device" whenever there is no export. That line is for a reader of the app, not for the person building it. Read the store's shape out of a diagnostic and skip that line. The same goes for any other WHAT IS WRONG entry that is a consequence of testing: a fresh store, no journal, an unpaired device.
 
-## The help is held to the app that exists — three gates, not one
-`manual.mjs --check` proves `public/manual.html` matches `docs/manual.md`.
-`manual-coverage.mjs` proves every surface the app has is named there and every
-surface the manual claims exists. **Neither reads the words ON the controls, and
-neither looks at the walkthrough or the flowcharts at all** — so 3.6.1 renamed
-one control and left three help surfaces naming a button that no longer existed,
-every one of them freshly generated and fully covered.
-
-[`tools/help-check.mjs`](tools/help-check.mjs) (`npm run help:check`) closes it.
-Each app SET is read from the source that defines it — the sort routes from
-`clarify.ts`, the container words from `tree.ts`, the kind words from
-`kind-words.ts`, the destinations and the tree label from `index.html` — never
-restated in the gate, because a list typed into a checker is the second copy the
-checker exists to prevent. Then, both directions: every label appears verbatim in
-each surface DECLARED to carry that set, and no surface says a retired name.
-
-**Coverage is declared, not swept.** "Every label in every help file" is false —
-the walkthrough is six screens and must not enumerate the app. A gate that fires
-on honest prose is one people route around (`privacy-check.mjs`'s own lesson), so
-each surface names the sets it reproduces and is held to those exactly.
-
-**A help page may say what a thing used to be called** — somebody who learned the
-old name needs the bridge. Wrap it in `<span data-was>`. Per-mention and visible
-in the markup, never a whole-file pass: a file-level exemption is where this
-repo's privacy gate found its material collecting.
-
-Its first run found four things, two of which were the declarations being wrong
-rather than the pages. Planted three ways before landing.
-
-## The flowcharts ship, and are measured only when they change
-**[`docs/paths.html`](docs/paths.html) is the SOURCE** — authored, self-contained,
-one file with its styles inline, which is what an Artifact has to be.
-**`public/paths.html` + `public/paths.css` are the SHIPPED page**, split out by
-[`tools/paths.mjs`](tools/paths.mjs) and gated by `paths:check`. The split is not
-tidiness: the site's CSP is `style-src 'self'; font-src 'self'`, so an inline
-`<style>` is refused and a webfont never loads. `thesis.mjs` learned that in
-1.7.2 when the first deployed thesis shipped unstyled. **The source therefore
-carries no webfont at all** — the sans-display/serif-body pairing runs on faces
-every device already has, and the page makes no network request.
-
-It reuses `doc-page.mjs`'s `page()` rather than a second shell, and is linked
-from **Help**, not the footer: three links in that footer line wrapped at phone
-width into two 44px boxes stacked with no gap, which the a11y walk refused as a
-mis-tap. That line's own comment already recorded it sitting one over its ceiling.
-
-**[`tools/pages-a11y.mjs`](tools/pages-a11y.mjs) (`npm run pages:a11y`) measures
-EVERY hosted page, and only when one changes.** A static document shares no code
-with the app and cannot regress from an app change, so re-walking them every run
-would buy nothing. Each is stamped in `.pages-a11y-stamp` on its own content —
-the page plus the stylesheets it links, parsed from the page — so changing one
-walks one and the rest print as unchanged. It serves them under the REAL headers
-and injects axe as a same-origin file, because `script-src 'self'` refuses both
-forms of inline injection, and a walk under a relaxed CSP is not a walk of the
-page that ships.
-
-**The population is what the app LINKS to**, derived from `index.html`, not
-listed. `plan.html` is `noindex` and linked from nowhere, and its own header says
-it is "a working page for one reader, not a surface … if it ever gains a route
-from the app it becomes a surface and joins that list in the same commit".
-Deriving from the links honors that automatically; a hand-written exception
-would have to be remembered.
-
-**`manual.html` and `why.html` had shipped since 2.29.0 unmeasured** — the app
-walk never looked at them and nothing else did. Both pass.
-
-**Two things its own first runs found, and the second matters more.** On the
-flowcharts, links at 16–21px against the 24px floor — a real defect, fixed. On
-the two older pages, four links flagged that were **citations inside sentences**
-("…rather than by a sweep (ADR-0011)."). WCAG 2.5.8 states an *Inline* exception
-for exactly that, and padding a word mid-paragraph to satisfy a rule that does
-not apply would have damaged the prose to please a gate. The check honors the
-exception structurally now: `display: inline` plus a parent holding text that is
-not the link. **A gate that fires on honest writing is worse than a miss** — it
-trains somebody to change good pages.
-
-**And every page the app LINKS to must be precached**, asserted by `help-check`
-from the links rather than from a list: the worker maps a navigation to its own
-cached body via `SHELL`, so a page left out does not merely miss offline, it
-falls back to the app shell and lands the reader somewhere else (the 1.7.2
-defect). `plan.html` passes by being `noindex` and linked from nowhere.
-
-## Read the deployed host — you probably can
-[`tools/deployed-check.mjs`](tools/deployed-check.mjs) (`npm run deployed:check`,
-`-- --prod` for production and the sync edition) reads what the host actually
-serves and compares it to this tree. NOTES carried "a session cannot read
-production" as a standing fact with a *do not re-test* attached; that was true of
-one container and is not true when the session has `*.pages.dev`. **Try it.**
-
-**Reachability is session configuration, not a property of this tree**, so an
-unreachable host is a SKIP with the reason printed, never a failure — which is
-also why it is not a Spine gate (`.spine-exempt` says so).
-
-Two traps it exists to have already fallen into:
-
-- **Node's `fetch` does not read `HTTPS_PROXY`** unless `NODE_USE_ENV_PROXY=1`,
-  read at STARTUP — in-process is too late. Without it every request returns 403
-  with the proxy's allowlist message in the body, which reads exactly like the
-  host being blocked while `curl` answers 200 for the same URL. The tool re-execs
-  itself rather than depend on how it was invoked.
-- **A 200 proves nothing.** Cloudflare serves the root document for any unknown
-  path, so production answers 200 for `/paths`, which it does not have, with
-  189KB of the app inside. It compares against the host's OWN root document —
-  the first version used a typed `<title>`, which is the default edition's and
-  not the sync edition's, and reported a page that was not there.
-
-(Hub LESSONS 173.)
-
-## Run the whole Spine before you push: `npm run spine`
-It reads `.github/workflows/spine.yml` and runs every step of it, in order, on
-this machine — no second list to go stale, so a step added to CI is run by it the
-same day. **About eight minutes**, most of it the three browser walks; `--list`
-shows what it would run, `--only a11y` runs one, `--from 20` picks up after a
-failure. It keeps going past a failure, for the reason CI does, and **prints the
-verdict last** so the bottom of the output is the answer.
-
-It exists because there is no other way to know. There are around thirty gates,
-and until this a session assembled the list by hand — so what it did not think of
-did not get run, which is by definition the thing it forgot it had changed. On
-one day that cost `size:check` going red for three releases that were pushed and
-promoted anyway, and six waits in the smoke walk left asking the app for words it
-had stopped saying. Both were found afterwards, by CI. (Hub LESSONS 139.)
-
-**`npm run spine -- --parity` is the other direction**, and it is a Spine step
-itself. The run above asks whether everything CI runs passes here; parity asks
-whether CI runs everything there is. A gate written, wired into `package.json`
-and never added to the workflow **looks exactly like a gate that is running**,
-from every angle except this one. Every script is either run by a workflow or
-declared in [`.spine-exempt`](.spine-exempt) with a reason, both directions
-asserted, so an exemption cannot outlive what it exempts. It caught its own the
-first time it ran. (Hub LESSONS 127.)
-
-The steps it cannot run are PRINTED with the reason, never skipped in silence:
-the checkout actions, `npm ci`, the browser install, and the hub gates, which run
-from `../noahjefferson` here rather than from the CI-only `.hub-gates` checkout.
-**Run those separately**, and note they do not all take the same argument:
-`privacy-check`, `privacy-mirror-check`, `quote-check` and `branch-guard` take
-`--repo .`; **`docs-check` takes a positional path** — `node
-../noahjefferson/docs-check.mjs .` — and dies on `--repo`, which it reads as a
-directory name.
-
-**AND RUN `branch-guard` THE WAY CI RUNS IT: `--repo . --artefact`.** The two
-spellings check different things and one passed while the other failed. Plain
-asserts `.git/hooks/pre-commit` is installed and current — a fact about YOUR
-clone. `--artefact` asserts the TRACKED `.githooks/pre-commit` matches
-`.branch-guard`, which is what every other clone gets. A hub change to
-`branch-guard.mjs` regenerates a different hook, so the tracked copy goes stale
-while yours stays right: the escape added on 2026-08-27 was live locally and
-missing from the tracked file, plain green, `--artefact` red, and CI found it.
-The local Spine cannot help — that step is one of the twelve it prints as
-CI-only.
+## The closing question
+A report from this repo closes on what ended the day. A promote and a device pass are a status line at most, never the question. The Block register in `NOTES.md` takes the shape and class of what blocked a day, never an instance; the instance stays outside the repo. `tools/blocks.mjs` refuses an empty register. It is exempt from the Spine today and joins it in the commit that adds the first entry, when the exemption line is deleted.
 
 ## Accessibility
-WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the
-append-only register and it already records the design-time color bindings —
-read it **before** writing any UI. Pressure and decay never ride on hue; the
-contrast gate is computed in CI and exits non-zero, and new foreground/background
-pairs are added to the gate in the same commit that introduces them.
+WCAG 2.2 AA target, COGA-informed. [`ACCESSIBILITY.md`](ACCESSIBILITY.md) is the append-only register and records the design-time color bindings; read it before writing any UI. Pressure and decay never ride on hue. The contrast gate is computed in CI, and new foreground/background pairs are added to the gate in the same commit that introduces them.
 
-## Anything the owner pastes is a code block (Doctrine §2)
-Handoff prompts, commands, configs, a message to send on — if the next thing
-that happens to it is *copy*, it ships as **one fenced code block**, not prose,
-not a blockquote, not styled markdown. Rendered formatting does not survive
-being copied back out, and selecting prose by hand on an iPad is a fight. The
-test is not "is it readable" but "what happens to it next".
+## Repo metadata
+Description, website, topics and social preview are GitHub-UI steps the session cannot perform. List the exact values and ask the owner to confirm each. Never report the repo set up while any is unconfirmed.
 
-## No tables, anywhere (Doctrine §2)
-Markdown tables do not render on a real iPad — they arrive as pipes and dashes
-and the content is lost. **Never put one in anything the owner reads**: chat, commit
-messages, PR bodies, `NOTES.md`, `CHANGELOG.md`, plan files, or anything under
-`docs/`. Headed lists or one fact per line instead. The repo was converted in
-full on 2026-07-29; do not reintroduce one.
-
-## Repo metadata (manual, confirm — see Doctrine §10)
-Description / website / topics / social-preview are GitHub-UI steps the session
-token cannot perform. List the exact values and ask the owner to confirm each; never
-report Quietkeep "set up" while any is unconfirmed.
+## Where things are
+- `NOTES.md`: thesis, product laws, v1 scope, open questions, the Block register.
+- `docs/adr/`: the settled decisions.
+- `docs/`: the event vocabulary, verifications, code map, manual, flowchart source.
+- `tools/`: the gates and renderers. `.spine-exempt` lists what no workflow runs, and why.
+- `ACCESSIBILITY.md`: the accessibility register.
+- `CHANGELOG.md`: written from `src/ui/changelog.ts`.
+- `test/`: the unit tests, including `test/privacy.test.ts`.
+- The hub at /root/.claude/hub: `plans/native/` (the short page, the roles, the procedures), `DOCTRINE.md` with `doctrine/never.md` and `doctrine/apps.md`, `REPOS.md`, and `LESSONS.md` (append to it from this repo's sessions, never copy it).

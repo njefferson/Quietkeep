@@ -1,13 +1,7 @@
 #!/bin/bash
-# Doctrine §11c, made mechanical. A rule in a file did not stop this happening a
-# fourth time; a Stop hook runs whether anything was remembered or not.
-# Canonical script: noahjefferson/stop-guard.mjs — never fork it.
-#
-# FAILS OPEN ON PURPOSE when the hub is not checked out. A guard that blocks
-# every turn because a sibling repo is missing gets switched off within a day,
-# and a switched-off guard is worse than none. The session brief already says
-# loudly when the hub is absent.
+# Calls the hub's stop-guard.mjs at its kept path, which since 12 November 2026
+# is a shell that never refuses a stop; it exits 0 when the hub is absent.
 set -uo pipefail
 cd "${CLAUDE_PROJECT_DIR:-$(dirname "$0")/../..}" || exit 0
-[ -f ../noahjefferson/stop-guard.mjs ] || exit 0
-exec node ../noahjefferson/stop-guard.mjs
+[ -f /root/.claude/hub/stop-guard.mjs ] || exit 0
+exec node /root/.claude/hub/stop-guard.mjs
