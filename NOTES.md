@@ -1698,6 +1698,14 @@ body — and the fix is the same 6px in each. The gate that could not see it can
 now: `auditFocusRings` builds the ring's own rect and checks it against every
 clipping ancestor, and it found ten more the report never mentioned.
 
+## Found queue
+
+Findings recorded for the next plan, one line each, each opening with its key; a plan whose Files section names this repository answers every key here in its Found answered section.
+
+Q-QK-1: the spelling check, the package script spelling:check, reads tracked files only, so a new file passes it on this machine until the file is added to git; on 12 November 2026 a new decision record passed it here and went red on the Spine's spelling step in CI. Until the check reads new files too, it is run after git add.
+
+Q-QK-2: the product drawing of 12 November 2026, which is kept outside the repository, fills a sheet's dates and its put-down setting from a fixed set chosen by the thing's id, so one sheet shows a date that disagrees with what Now says of the same thing, and a setting that does not match the thing's place; a defect of the drawing only and not of the product statement, to put right in any later drawing.
+
 ## Open questions
 
 Owner input needed. Recorded rather than guessed. **Nothing below has been
